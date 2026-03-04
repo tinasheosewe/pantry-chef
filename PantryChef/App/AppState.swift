@@ -14,6 +14,7 @@ final class AppState {
     var mealPlan: [MealPlanEntry] = []
     var shoppingItems: [ShoppingItem] = []
     var isLoading = false
+    var isInitialized = false
     var errorMessage: String?
 
     // MARK: - Computed
@@ -50,7 +51,10 @@ final class AppState {
     // MARK: - Data Loading
     func loadAllData() async {
         isLoading = true
-        defer { isLoading = false }
+        defer {
+            isLoading = false
+            isInitialized = true
+        }
 
         do {
             async let items = storageService.fetchPantryItems()

@@ -36,10 +36,14 @@ struct ContentView: View {
         }
         .animation(.easeOut(duration: 0.4), value: isReady)
         .task {
-            // Wait until AppState has finished its initial load
-            while appState.isLoading { try? await Task.sleep(for: .milliseconds(50)) }
-            // Brief minimum display so the splash isn't a flash
-            try? await Task.sleep(for: .milliseconds(300))
+            // Wait until AppState has finished its initial data load
+            while !appState.isInitialized {
+                try? await Task.sleep(for: .milliseconds(50))
+            }
+            // Minimum splash display so it isn't a sub-frame flash
+            try? await Task.sleep(for: .milliseconds(400))
+            // Reset window background to normal now that UI is ready
+            UIWindow.appearance().backgroundColor = .systemBackground
             isReady = true
         }
     }
