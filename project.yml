@@ -21,6 +21,11 @@ targets:
     info:
       path: PantryChef/Info.plist
       properties:
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+          - UIInterfaceOrientationPortraitUpsideDown
         UILaunchScreen:
           BackgroundColor: LaunchBG
         NSCameraUsageDescription: "Pantry Chef needs camera access to scan barcodes and receipts"

@@ -3,7 +3,8 @@ import Foundation
 // MARK: - Storage Service Protocol (SOLID: Dependency Inversion)
 /// Defines the contract for data persistence.
 /// Swap between InMemoryStorageService and SupabaseStorageService without changing consumers.
-protocol StorageServiceProtocol: AnyObject, Sendable {
+@MainActor
+protocol StorageServiceProtocol: AnyObject {
     // Pantry
     func fetchPantryItems() async throws -> [PantryItem]
     func addPantryItem(_ item: PantryItem) async throws -> PantryItem
@@ -42,6 +43,7 @@ protocol AIServiceProtocol: AnyObject, Sendable {
 
 // MARK: - Speech Service Protocol
 /// Defines the contract for TTS and voice recognition.
+@MainActor
 protocol SpeechServiceProtocol: AnyObject {
     var isSpeaking: Bool { get }
     var isListening: Bool { get }
