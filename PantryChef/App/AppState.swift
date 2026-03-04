@@ -165,8 +165,10 @@ final class AppState {
         let allIngredients = recipes.flatMap { $0.ingredients }
         let missing = allIngredients.filter { ingredient in
             !pantryItems.contains { pantryItem in
-                pantryItem.name.lowercased() == ingredient.name.lowercased() &&
-                (pantryItem.quantity ?? 0) >= ingredient.quantity
+                let pName = pantryItem.name.lowercased()
+                let iName = ingredient.name.lowercased()
+                return (pName.contains(iName) || iName.contains(pName)) &&
+                    (pantryItem.quantity ?? 0) >= ingredient.quantity
             }
         }
         shoppingItems = missing.map { ingredient in
@@ -194,7 +196,9 @@ final class AppState {
         // Deduct ingredients from pantry
         for ingredient in recipe.ingredients {
             if let index = pantryItems.firstIndex(where: {
-                $0.name.lowercased() == ingredient.name.lowercased()
+                let pName = $0.name.lowercased()
+                let iName = ingredient.name.lowercased()
+                return pName.contains(iName) || iName.contains(pName)
             }) {
                 var item = pantryItems[index]
                 let remaining = (item.quantity ?? 0) - ingredient.quantity
