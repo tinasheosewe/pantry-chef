@@ -25,7 +25,7 @@ enum FoodCategory: String, Codable, CaseIterable, Identifiable {
         case .dairy: return "cup.and.saucer.fill"
         case .produce: return "leaf.fill"
         case .protein: return "fish.fill"
-        case .grains: return "wheat.bundle.fill" // Note: use custom or SF alternative
+        case .grains: return "circle.grid.3x3.fill"
         case .spices: return "flame.fill"
         case .condiments: return "waterbottle.fill"
         case .bakingSupplies: return "birthday.cake.fill"

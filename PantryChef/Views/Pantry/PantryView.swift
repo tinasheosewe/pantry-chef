@@ -294,52 +294,227 @@ struct AddPantryItemView: View {
 struct BarcodeScannerView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var scannedCode: String?
-    @State private var isScanning = true
+    @State private var permissionGranted = false
+    @State private var permissionDenied = false
 
     let onScan: (String) -> Void
 
     var body: some View {
         NavigationStack {
-            VStack(spacing: 20) {
-                ZStack {
-                    RoundedRectangle(cornerRadius: 16)
-                        .fill(.black)
-                        .aspectRatio(4/3, contentMode: .fit)
-
-                    VStack(spacing: 12) {
-                        Image(systemName: "barcode.viewfinder")
-                            .font(.system(size: 64))
-                            .foregroundStyle(.white)
-                        Text("Point camera at barcode")
-                            .font(.subheadline)
-                            .foregroundStyle(.white.opacity(0.8))
-                    }
-                }
-                .padding()
-
-                if let code = scannedCode {
-                    VStack(spacing: 8) {
-                        Text("Scanned: \(code)")
+            ZStack {
+                if permissionDenied {
+                    VStack(spacing: 16) {
+                        Image(systemName: "camera.fill")
+                            .font(.system(size: 48))
+                            .foregroundStyle(AppColors.mediumGray)
+                        Text("Camera Access Required")
                             .font(.headline)
-                        Button("Add to Pantry") {
-                            onScan(code)
-                            dismiss()
+                        Text("Go to Settings → Pantry Chef and enable Camera access to scan barcodes.")
+                            .font(.subheadline)
+                            .foregroundStyle(AppColors.subtleText)
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal, 40)
+                        Button("Open Settings") {
+                            if let url = URL(string: UIApplication.openSettingsURLString) {
+                                UIApplication.shared.open(url)
+                            }
                         }
                         .buttonStyle(.borderedProminent)
                         .tint(AppColors.primaryGreen)
                     }
-                }
+                } else if permissionGranted {
+                    // Live camera feed
+                    BarcodeCameraView { code in
+                        guard scannedCode == nil else { return }
+                        scannedCode = code
+                    }
+                    .ignoresSafeArea()
 
-                Spacer()
+                    // Overlay
+                    VStack {
+                        Spacer()
+
+                        // Viewfinder guide
+                        RoundedRectangle(cornerRadius: 16)
+                            .strokeBorder(.white.opacity(0.6), lineWidth: 2)
+                            .frame(width: 280, height: 160)
+                            .overlay(
+                                Text("Point at barcode")
+                                    .font(.caption)
+                                    .foregroundStyle(.white.opacity(0.7))
+                                    .offset(y: 90)
+                            )
+
+                        Spacer()
+
+                        // Result display
+                        if let code = scannedCode {
+                            VStack(spacing: 12) {
+                                HStack(spacing: 8) {
+                                    Image(systemName: "checkmark.circle.fill")
+                                        .foregroundStyle(AppColors.primaryGreen)
+                                    Text(code)
+                                        .font(.headline)
+                                        .foregroundStyle(.white)
+                                }
+
+                                HStack(spacing: 16) {
+                                    Button("Scan Again") {
+                                        scannedCode = nil
+                                    }
+                                    .font(.subheadline)
+                                    .foregroundStyle(.white)
+                                    .padding(.horizontal, 20)
+                                    .padding(.vertical, 10)
+                                    .background(.white.opacity(0.2))
+                                    .clipShape(Capsule())
+
+                                    Button("Add to Pantry") {
+                                        onScan(code)
+                                        dismiss()
+                                    }
+                                    .font(.subheadline)
+                                    .fontWeight(.semibold)
+                                    .foregroundStyle(.white)
+                                    .padding(.horizontal, 20)
+                                    .padding(.vertical, 10)
+                                    .background(AppColors.primaryGreen)
+                                    .clipShape(Capsule())
+                                }
+                            }
+                            .padding()
+                            .background(.ultraThinMaterial.opacity(0.9))
+                            .clipShape(RoundedRectangle(cornerRadius: 16))
+                            .padding()
+                        }
+                    }
+                } else {
+                    ProgressView("Requesting camera access...")
+                }
             }
+            .background(.black)
             .navigationTitle("Scan Barcode")
             .navigationBarTitleDisplayMode(.inline)
+            .toolbarBackground(.hidden, for: .navigationBar)
+            .toolbarColorScheme(.dark, for: .navigationBar)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") { dismiss() }
+                        .foregroundStyle(.white)
                 }
             }
+            .task {
+                await checkCameraPermission()
+            }
         }
+    }
+
+    private func checkCameraPermission() async {
+        switch AVCaptureDevice.authorizationStatus(for: .video) {
+        case .authorized:
+            permissionGranted = true
+        case .notDetermined:
+            let granted = await AVCaptureDevice.requestAccess(for: .video)
+            permissionGranted = granted
+            permissionDenied = !granted
+        default:
+            permissionDenied = true
+        }
+    }
+}
+
+// MARK: - Camera UIViewControllerRepresentable
+import AVFoundation
+
+struct BarcodeCameraView: UIViewControllerRepresentable {
+    let onCodeScanned: (String) -> Void
+
+    func makeUIViewController(context: Context) -> BarcodeScannerViewController {
+        let vc = BarcodeScannerViewController()
+        vc.onCodeScanned = onCodeScanned
+        return vc
+    }
+
+    func updateUIViewController(_ uiViewController: BarcodeScannerViewController, context: Context) {}
+}
+
+final class BarcodeScannerViewController: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
+    var onCodeScanned: ((String) -> Void)?
+
+    private let captureSession = AVCaptureSession()
+    private var previewLayer: AVCaptureVideoPreviewLayer?
+    private let feedbackGenerator = UINotificationFeedbackGenerator()
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        view.backgroundColor = .black
+        setupCamera()
+    }
+
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        previewLayer?.frame = view.bounds
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        if !captureSession.isRunning {
+            DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+                self?.captureSession.startRunning()
+            }
+        }
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        if captureSession.isRunning {
+            DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+                self?.captureSession.stopRunning()
+            }
+        }
+    }
+
+    private func setupCamera() {
+        guard let device = AVCaptureDevice.default(for: .video),
+              let input = try? AVCaptureDeviceInput(device: device) else { return }
+
+        if captureSession.canAddInput(input) {
+            captureSession.addInput(input)
+        }
+
+        let metadataOutput = AVCaptureMetadataOutput()
+        if captureSession.canAddOutput(metadataOutput) {
+            captureSession.addOutput(metadataOutput)
+            metadataOutput.setMetadataObjectsDelegate(self, queue: .main)
+            metadataOutput.metadataObjectTypes = [
+                .ean8, .ean13, .upce, .code128, .code39,
+                .code93, .itf14, .pdf417, .qr, .dataMatrix
+            ]
+        }
+
+        previewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
+        previewLayer?.videoGravity = .resizeAspectFill
+        previewLayer?.frame = view.bounds
+        if let previewLayer {
+            view.layer.addSublayer(previewLayer)
+        }
+
+        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+            self?.captureSession.startRunning()
+        }
+    }
+
+    // MARK: - AVCaptureMetadataOutputObjectsDelegate
+    func metadataOutput(_ output: AVCaptureMetadataOutput,
+                        didOutput metadataObjects: [AVMetadataObject],
+                        from connection: AVCaptureConnection) {
+        guard let object = metadataObjects.first as? AVMetadataMachineReadableCodeObject,
+              let code = object.stringValue else { return }
+
+        // Stop scanning after first hit
+        captureSession.stopRunning()
+        feedbackGenerator.notificationOccurred(.success)
+        onCodeScanned?(code)
     }
 }
 
