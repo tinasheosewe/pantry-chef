@@ -6,7 +6,6 @@ final class AppState {
     // MARK: - Services (protocol-typed for testability)
     let storageService: StorageServiceProtocol
     let aiService: AIServiceProtocol
-    let speechService: SpeechService
 
     // MARK: - Shared State
     var pantryItems: [PantryItem] = []
@@ -14,7 +13,6 @@ final class AppState {
     var mealPlan: [MealPlanEntry] = []
     var shoppingItems: [ShoppingItem] = []
     var isLoading = false
-    var isInitialized = false
     var errorMessage: String?
 
     // MARK: - Computed
@@ -37,23 +35,23 @@ final class AppState {
     init() {
         self.storageService = StorageService()
         self.aiService = AIService()
-        self.speechService = SpeechService()
-        Task { await loadAllData() }
+        // Seed in-memory data synchronously — zero async overhead
+        pantryItems = PantryItem.samples
+        recipes = Recipe.samples
     }
 
-    init(storageService: StorageServiceProtocol, aiService: AIServiceProtocol, speechService: SpeechService) {
+    init(storageService: StorageServiceProtocol, aiService: AIServiceProtocol) {
         self.storageService = storageService
         self.aiService = aiService
-        self.speechService = speechService
-        Task { await loadAllData() }
+        pantryItems = PantryItem.samples
+        recipes = Recipe.samples
     }
 
-    // MARK: - Data Loading
+    // MARK: - Data Loading (for refresh / future network-backed store)
     func loadAllData() async {
         isLoading = true
         defer {
             isLoading = false
-            isInitialized = true
         }
 
         do {

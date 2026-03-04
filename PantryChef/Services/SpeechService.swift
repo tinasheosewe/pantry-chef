@@ -4,18 +4,40 @@ import Speech
 @Observable
 @MainActor
 final class SpeechService: SpeechServiceProtocol {
-    // MARK: - Text-to-Speech
-    private let synthesizer = AVSpeechSynthesizer()
+    // MARK: - Heavy AV objects — created on first use, NOT at init time
+    //
+    // We can't use `lazy var` because @Observable synthesises property wrappers
+    // that are incompatible with lazy storage.  Instead we use optional backing
+    // stores with private computed accessors that initialise-on-first-access.
+
+    @ObservationIgnored private var _synthesizer: AVSpeechSynthesizer?
+    @ObservationIgnored private var _speechRecognizer: SFSpeechRecognizer?
+    @ObservationIgnored private var _audioEngine: AVAudioEngine?
+
+    private var synthesizer: AVSpeechSynthesizer {
+        if _synthesizer == nil { _synthesizer = AVSpeechSynthesizer() }
+        return _synthesizer!
+    }
+
+    private var speechRecognizer: SFSpeechRecognizer? {
+        if _speechRecognizer == nil {
+            _speechRecognizer = SFSpeechRecognizer(locale: Locale(identifier: "en-US"))
+        }
+        return _speechRecognizer
+    }
+
+    private var audioEngine: AVAudioEngine {
+        if _audioEngine == nil { _audioEngine = AVAudioEngine() }
+        return _audioEngine!
+    }
 
     var isSpeaking = false
     var isListening = false
     var recognizedText = ""
 
     // MARK: - Speech Recognition
-    private let speechRecognizer = SFSpeechRecognizer(locale: Locale(identifier: "en-US"))
-    private var recognitionRequest: SFSpeechAudioBufferRecognitionRequest?
-    private var recognitionTask: SFSpeechRecognitionTask?
-    private let audioEngine = AVAudioEngine()
+    @ObservationIgnored private var recognitionRequest: SFSpeechAudioBufferRecognitionRequest?
+    @ObservationIgnored private var recognitionTask: SFSpeechRecognitionTask?
 
     // MARK: - TTS Methods
 
@@ -59,7 +81,7 @@ final class SpeechService: SpeechServiceProtocol {
     }
 
     func startListening(onResult: @escaping (String) -> Void) {
-        guard let speechRecognizer, speechRecognizer.isAvailable else { return }
+        guard let recognizer = speechRecognizer, recognizer.isAvailable else { return }
 
         recognitionRequest = SFSpeechAudioBufferRecognitionRequest()
         guard let recognitionRequest else { return }
@@ -73,7 +95,7 @@ final class SpeechService: SpeechServiceProtocol {
             self?.recognitionRequest?.append(buffer)
         }
 
-        recognitionTask = speechRecognizer.recognitionTask(with: recognitionRequest) { [weak self] result, error in
+        recognitionTask = recognizer.recognitionTask(with: recognitionRequest) { [weak self] result, error in
             if let result {
                 let text = result.bestTranscription.formattedString
                 Task { @MainActor in

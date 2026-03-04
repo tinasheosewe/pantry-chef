@@ -4,7 +4,6 @@ struct ContentView: View {
     @Environment(AppState.self) private var appState
     @State private var selectedTab: Tab = .home
     @State private var showAIChat = false
-    @State private var isReady = false
 
     enum Tab: String, CaseIterable {
         case home = "Home"
@@ -25,29 +24,6 @@ struct ContentView: View {
     }
 
     var body: some View {
-        ZStack {
-            if isReady {
-                mainContent
-                    .transition(.opacity)
-            } else {
-                SplashView()
-                    .transition(.opacity)
-            }
-        }
-        .animation(.easeOut(duration: 0.4), value: isReady)
-        .task {
-            // Wait until AppState has finished its initial data load
-            while !appState.isInitialized {
-                try? await Task.sleep(for: .milliseconds(50))
-            }
-            // Minimum splash display so it isn't a sub-frame flash
-            try? await Task.sleep(for: .milliseconds(400))
-            isReady = true
-        }
-    }
-
-    // MARK: - Main Content
-    private var mainContent: some View {
         ZStack(alignment: .bottomTrailing) {
             TabView(selection: $selectedTab) {
                 HomeView(appState: appState)
@@ -91,47 +67,6 @@ struct ContentView: View {
         }
         .sheet(isPresented: $showAIChat) {
             AIAssistantView(appState: appState)
-        }
-    }
-}
-
-// MARK: - Splash / Launch View
-struct SplashView: View {
-    @State private var iconScale: CGFloat = 0.6
-    @State private var textOpacity: Double = 0
-
-    var body: some View {
-        ZStack {
-            // Match the launch screen background
-            LinearGradient(
-                colors: [
-                    Color(red: 0.30, green: 0.69, blue: 0.31),
-                    Color(red: 0.22, green: 0.56, blue: 0.24)
-                ],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-            .ignoresSafeArea()
-
-            VStack(spacing: 16) {
-                Image(systemName: "fork.knife.circle.fill")
-                    .font(.system(size: 80))
-                    .foregroundStyle(.white)
-                    .scaleEffect(iconScale)
-
-                Text("Pantry Chef")
-                    .font(.system(size: 32, weight: .bold, design: .rounded))
-                    .foregroundStyle(.white)
-                    .opacity(textOpacity)
-            }
-        }
-        .onAppear {
-            withAnimation(.spring(response: 0.5, dampingFraction: 0.6)) {
-                iconScale = 1.0
-            }
-            withAnimation(.easeIn(duration: 0.4).delay(0.2)) {
-                textOpacity = 1.0
-            }
         }
     }
 }

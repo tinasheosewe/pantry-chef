@@ -3,62 +3,79 @@ import SwiftUI
 struct CookModeView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(AppState.self) private var appState
-    @State private var viewModel: CookModeViewModel
+
+    /// Both are created lazily on first appear — no heavy AV objects at app launch.
+    @State private var speechService: SpeechService?
+    @State private var viewModel: CookModeViewModel?
+
+    private let recipe: Recipe
 
     init(recipe: Recipe) {
-        // Temporarily create with a placeholder speech service;
-        // the real one is set in .onAppear from appState
-        _viewModel = State(initialValue: CookModeViewModel(
-            recipe: recipe,
-            speechService: SpeechService()
-        ))
+        self.recipe = recipe
     }
 
     var body: some View {
         ZStack {
             Color.black.ignoresSafeArea()
-
-            if viewModel.showCompletionScreen {
-                completionView
+            if let viewModel {
+                cookContent(vm: viewModel)
             } else {
-                VStack(spacing: 0) {
-                    topBar
-                    progressBar
-
-                    TabView(selection: $viewModel.currentStepIndex) {
-                        ForEach(Array(viewModel.steps.enumerated()), id: \.element.id) { index, step in
-                            stepView(step)
-                                .tag(index)
-                        }
-                    }
-                    .tabViewStyle(.page(indexDisplayMode: .never))
-
-                    if viewModel.currentStep?.timerMinutes != nil || viewModel.isTimerRunning {
-                        timerView
-                    }
-
-                    navigationControls
-
-                    if viewModel.isVoiceControlEnabled {
-                        voiceControlIndicator
-                    }
-                }
+                ProgressView()
+                    .tint(.white)
             }
         }
         .preferredColorScheme(.dark)
         .onAppear {
-            viewModel.speakCurrentStep()
+            if viewModel == nil {
+                let service = SpeechService()
+                speechService = service
+                viewModel = CookModeViewModel(recipe: recipe, speechService: service)
+            }
+            viewModel?.speakCurrentStep()
         }
         .onDisappear {
-            viewModel.cleanup()
+            viewModel?.cleanup()
+        }
+    }
+
+    // MARK: - Cook Content
+
+    @ViewBuilder
+    private func cookContent(vm: CookModeViewModel) -> some View {
+        if vm.showCompletionScreen {
+            completionView(vm: vm)
+        } else {
+            VStack(spacing: 0) {
+                topBar(vm: vm)
+                progressBar(vm: vm)
+
+                TabView(selection: Bindable(vm).currentStepIndex) {
+                    ForEach(Array(vm.steps.enumerated()), id: \.element.id) { index, step in
+                        stepView(step)
+                            .tag(index)
+                    }
+                }
+                .tabViewStyle(.page(indexDisplayMode: .never))
+
+                if vm.currentStep?.timerMinutes != nil || vm.isTimerRunning {
+                    timerView(vm: vm)
+                }
+
+                navigationControls(vm: vm)
+
+                if vm.isVoiceControlEnabled {
+                    voiceControlIndicator()
+                }
+            }
         }
     }
 
     // MARK: - Top Bar
-    private var topBar: some View {
+
+    private func topBar(vm: CookModeViewModel) -> some View {
         HStack {
             Button {
-                viewModel.cleanup()
+                vm.cleanup()
                 dismiss()
             } label: {
                 Image(systemName: "xmark")
@@ -68,7 +85,7 @@ struct CookModeView: View {
 
             Spacer()
 
-            Text(viewModel.recipe.title)
+            Text(vm.recipe.title)
                 .font(.subheadline)
                 .fontWeight(.semibold)
                 .foregroundStyle(.white)
@@ -77,18 +94,19 @@ struct CookModeView: View {
             Spacer()
 
             Button {
-                viewModel.toggleAudio()
+                vm.toggleAudio()
             } label: {
-                Image(systemName: viewModel.isAudioEnabled ? "speaker.wave.3.fill" : "speaker.slash.fill")
+                Image(systemName: vm.isAudioEnabled ? "speaker.wave.3.fill" : "speaker.slash.fill")
                     .font(.title3)
-                    .foregroundStyle(viewModel.isAudioEnabled ? AppColors.primaryGreen : .gray)
+                    .foregroundStyle(vm.isAudioEnabled ? AppColors.primaryGreen : .gray)
             }
         }
         .padding()
     }
 
     // MARK: - Progress Bar
-    private var progressBar: some View {
+
+    private func progressBar(vm: CookModeViewModel) -> some View {
         VStack(spacing: 4) {
             GeometryReader { geo in
                 ZStack(alignment: .leading) {
@@ -96,13 +114,13 @@ struct CookModeView: View {
                         .fill(.white.opacity(0.15))
                     RoundedRectangle(cornerRadius: 3)
                         .fill(AppColors.primaryGreen)
-                        .frame(width: geo.size.width * viewModel.progress)
-                        .animation(.easeInOut(duration: 0.3), value: viewModel.progress)
+                        .frame(width: geo.size.width * vm.progress)
+                        .animation(.easeInOut(duration: 0.3), value: vm.progress)
                 }
             }
             .frame(height: 4)
 
-            Text("Step \(viewModel.currentStepIndex + 1) of \(viewModel.steps.count)")
+            Text("Step \(vm.currentStepIndex + 1) of \(vm.steps.count)")
                 .font(.caption2)
                 .foregroundStyle(.white.opacity(0.6))
         }
@@ -110,6 +128,7 @@ struct CookModeView: View {
     }
 
     // MARK: - Step View
+
     private func stepView(_ step: RecipeStep) -> some View {
         ScrollView {
             VStack(spacing: 24) {
@@ -169,19 +188,20 @@ struct CookModeView: View {
     }
 
     // MARK: - Timer View
-    private var timerView: some View {
+
+    private func timerView(vm: CookModeViewModel) -> some View {
         VStack(spacing: 8) {
-            if viewModel.isTimerRunning {
+            if vm.isTimerRunning {
                 HStack(spacing: 16) {
-                    Text(viewModel.timerDisplay)
+                    Text(vm.timerDisplay)
                         .font(.system(size: 48, weight: .light, design: .monospaced))
-                        .foregroundStyle(viewModel.timerSeconds <= 10 ? AppColors.softRed : AppColors.primaryGreen)
+                        .foregroundStyle(vm.timerSeconds <= 10 ? AppColors.softRed : AppColors.primaryGreen)
 
                     VStack(spacing: 8) {
                         Button {
-                            viewModel.pauseTimer()
+                            vm.pauseTimer()
                         } label: {
-                            Image(systemName: viewModel.isPaused ? "play.fill" : "pause.fill")
+                            Image(systemName: vm.isPaused ? "play.fill" : "pause.fill")
                                 .font(.title3)
                                 .foregroundStyle(.white)
                                 .frame(width: 44, height: 44)
@@ -190,7 +210,7 @@ struct CookModeView: View {
                         }
 
                         Button {
-                            viewModel.stopTimer()
+                            vm.stopTimer()
                         } label: {
                             Image(systemName: "xmark")
                                 .font(.caption)
@@ -204,9 +224,9 @@ struct CookModeView: View {
                 .padding()
                 .background(.white.opacity(0.05))
                 .clipShape(RoundedRectangle(cornerRadius: 16))
-            } else if viewModel.currentStep?.timerMinutes != nil {
+            } else if vm.currentStep?.timerMinutes != nil {
                 Button {
-                    viewModel.startTimer()
+                    vm.startTimer()
                 } label: {
                     Label("Start Timer", systemImage: "timer")
                         .font(.subheadline)
@@ -223,24 +243,25 @@ struct CookModeView: View {
     }
 
     // MARK: - Navigation Controls
-    private var navigationControls: some View {
+
+    private func navigationControls(vm: CookModeViewModel) -> some View {
         HStack(spacing: 32) {
             Button {
-                viewModel.previousStep()
+                vm.previousStep()
             } label: {
                 VStack(spacing: 4) {
                     Image(systemName: "chevron.left.circle.fill")
                         .font(.system(size: 44))
-                        .foregroundStyle(viewModel.isFirstStep ? .gray.opacity(0.3) : .white)
+                        .foregroundStyle(vm.isFirstStep ? .gray.opacity(0.3) : .white)
                     Text("Back")
                         .font(.caption2)
-                        .foregroundStyle(viewModel.isFirstStep ? .gray.opacity(0.3) : .white.opacity(0.6))
+                        .foregroundStyle(vm.isFirstStep ? .gray.opacity(0.3) : .white.opacity(0.6))
                 }
             }
-            .disabled(viewModel.isFirstStep)
+            .disabled(vm.isFirstStep)
 
             Button {
-                viewModel.speakCurrentStep()
+                vm.speakCurrentStep()
             } label: {
                 VStack(spacing: 4) {
                     Image(systemName: "arrow.counterclockwise.circle.fill")
@@ -253,32 +274,32 @@ struct CookModeView: View {
             }
 
             Button {
-                if viewModel.isVoiceControlEnabled {
-                    viewModel.stopVoiceControl()
+                if vm.isVoiceControlEnabled {
+                    vm.stopVoiceControl()
                 } else {
-                    viewModel.startVoiceControl()
+                    vm.startVoiceControl()
                 }
             } label: {
                 VStack(spacing: 4) {
-                    Image(systemName: viewModel.isVoiceControlEnabled ? "mic.fill" : "mic.slash")
+                    Image(systemName: vm.isVoiceControlEnabled ? "mic.fill" : "mic.slash")
                         .font(.system(size: 44))
-                        .foregroundStyle(viewModel.isVoiceControlEnabled ? AppColors.primaryGreen : .white.opacity(0.6))
+                        .foregroundStyle(vm.isVoiceControlEnabled ? AppColors.primaryGreen : .white.opacity(0.6))
                     Text("Voice")
                         .font(.caption2)
-                        .foregroundStyle(viewModel.isVoiceControlEnabled ? AppColors.primaryGreen : .white.opacity(0.6))
+                        .foregroundStyle(vm.isVoiceControlEnabled ? AppColors.primaryGreen : .white.opacity(0.6))
                 }
             }
 
             Button {
-                viewModel.nextStep()
+                vm.nextStep()
             } label: {
                 VStack(spacing: 4) {
-                    Image(systemName: viewModel.isLastStep ? "checkmark.circle.fill" : "chevron.right.circle.fill")
+                    Image(systemName: vm.isLastStep ? "checkmark.circle.fill" : "chevron.right.circle.fill")
                         .font(.system(size: 44))
-                        .foregroundStyle(viewModel.isLastStep ? AppColors.primaryGreen : .white)
-                    Text(viewModel.isLastStep ? "Done" : "Next")
+                        .foregroundStyle(vm.isLastStep ? AppColors.primaryGreen : .white)
+                    Text(vm.isLastStep ? "Done" : "Next")
                         .font(.caption2)
-                        .foregroundStyle(viewModel.isLastStep ? AppColors.primaryGreen : .white.opacity(0.6))
+                        .foregroundStyle(vm.isLastStep ? AppColors.primaryGreen : .white.opacity(0.6))
                 }
             }
         }
@@ -287,7 +308,8 @@ struct CookModeView: View {
     }
 
     // MARK: - Voice Control Indicator
-    private var voiceControlIndicator: some View {
+
+    private func voiceControlIndicator() -> some View {
         HStack(spacing: 8) {
             Circle()
                 .fill(AppColors.primaryGreen)
@@ -309,7 +331,8 @@ struct CookModeView: View {
     }
 
     // MARK: - Completion View
-    private var completionView: some View {
+
+    private func completionView(vm: CookModeViewModel) -> some View {
         VStack(spacing: 24) {
             Spacer()
 
@@ -322,7 +345,7 @@ struct CookModeView: View {
                 .fontWeight(.bold)
                 .foregroundStyle(.white)
 
-            Text("You've completed \(viewModel.recipe.title)")
+            Text("You've completed \(vm.recipe.title)")
                 .font(.subheadline)
                 .foregroundStyle(.white.opacity(0.7))
                 .multilineTextAlignment(.center)
@@ -350,7 +373,7 @@ struct CookModeView: View {
             VStack(spacing: 12) {
                 Button {
                     Task {
-                        await appState.markRecipeAsCooked(viewModel.recipe)
+                        await appState.markRecipeAsCooked(vm.recipe)
                     }
                     dismiss()
                 } label: {
