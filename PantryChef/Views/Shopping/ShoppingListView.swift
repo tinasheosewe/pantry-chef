@@ -1,24 +1,21 @@
 import SwiftUI
 
 struct ShoppingListView: View {
-    @EnvironmentObject var appState: AppState
-    @StateObject private var viewModel: ShoppingViewModel
+    @State private var viewModel: ShoppingViewModel
     @State private var showAddItem = false
     @State private var newItemName = ""
 
-    init() {
-        _viewModel = StateObject(wrappedValue: ShoppingViewModel(appState: AppState()))
+    init(appState: AppState) {
+        _viewModel = State(initialValue: ShoppingViewModel(appState: appState))
     }
 
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
-                // Progress bar
                 if !viewModel.items.isEmpty {
                     progressHeader
                 }
 
-                // Content
                 if viewModel.items.isEmpty {
                     EmptyStateView(
                         icon: "cart",

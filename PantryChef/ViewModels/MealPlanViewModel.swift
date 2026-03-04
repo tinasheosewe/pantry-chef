@@ -1,14 +1,15 @@
 import SwiftUI
 
+@Observable
 @MainActor
-final class MealPlanViewModel: ObservableObject {
-    @Published var weekStartDate: Date
-    @Published var entries: [MealPlanEntry] = []
-    @Published var showRecipePicker = false
-    @Published var selectedSlot: MealSlot?
-    @Published var isLoading = false
+final class MealPlanViewModel {
+    var weekStartDate: Date
+    var entries: [MealPlanEntry] = []
+    var showRecipePicker = false
+    var selectedSlot: MealSlot?
+    var isLoading = false
 
-    private let appState: AppState
+    let appState: AppState
 
     struct MealSlot: Identifiable {
         let id = UUID()

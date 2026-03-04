@@ -1,8 +1,8 @@
 import Foundation
 
-/// In-memory storage service.
+/// In-memory storage service conforming to StorageServiceProtocol.
 /// Swap to a Supabase-backed implementation when you're ready to go cloud.
-final class StorageService {
+final class StorageService: StorageServiceProtocol {
 
     // MARK: - In-Memory Stores
     private var pantryStore: [PantryItem] = PantryItem.samples

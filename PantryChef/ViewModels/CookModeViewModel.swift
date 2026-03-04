@@ -1,15 +1,16 @@
 import SwiftUI
 import Combine
 
+@Observable
 @MainActor
-final class CookModeViewModel: ObservableObject {
-    @Published var currentStepIndex = 0
-    @Published var isAudioEnabled = true
-    @Published var isVoiceControlEnabled = false
-    @Published var timerSeconds: Int = 0
-    @Published var isTimerRunning = false
-    @Published var isPaused = false
-    @Published var showCompletionScreen = false
+final class CookModeViewModel {
+    var currentStepIndex = 0
+    var isAudioEnabled = true
+    var isVoiceControlEnabled = false
+    var timerSeconds: Int = 0
+    var isTimerRunning = false
+    var isPaused = false
+    var showCompletionScreen = false
 
     let recipe: Recipe
     let speechService: SpeechService

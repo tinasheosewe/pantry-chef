@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct RecipeDetailView: View {
-    @EnvironmentObject var appState: AppState
+    @Environment(AppState.self) private var appState
     @State private var recipe: Recipe
     @State private var servings: Int
     @State private var showCookMode = false
@@ -29,34 +29,21 @@ struct RecipeDetailView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
-                // Hero Image
                 heroImage
 
                 VStack(alignment: .leading, spacing: 20) {
-                    // Title & Meta
                     titleSection
-
-                    // Pantry Match Bar
                     pantryMatchSection
-
-                    // Action Buttons
                     actionButtons
-
-                    // Servings Adjuster
                     servingsAdjuster
 
-                    // Nutrition
                     if let nutrition = scaledRecipe.nutrition {
                         nutritionSection(nutrition)
                     }
 
-                    // Ingredients
                     ingredientsSection
-
-                    // Steps
                     stepsSection
 
-                    // Dietary Tags
                     if !recipe.dietaryTags.isEmpty {
                         dietaryTagsSection
                     }
@@ -603,7 +590,6 @@ struct ShoppingPreviewView: View {
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Add to Shopping List") {
-                        // Add to app state shopping list
                         dismiss()
                     }
                 }
@@ -626,12 +612,10 @@ struct AddRecipeView: View {
     @State private var steps: [RecipeStep] = []
     @State private var dietaryTags: Set<DietaryTag> = []
 
-    // Ingredient entry
     @State private var newIngredientName = ""
     @State private var newIngredientQty = ""
     @State private var newIngredientUnit: MeasurementUnit = .piece
 
-    // Step entry
     @State private var newStepText = ""
 
     let onSave: (Recipe) -> Void
@@ -780,7 +764,7 @@ struct AddRecipeView: View {
 // MARK: - Import Recipe URL View
 struct ImportRecipeURLView: View {
     @Environment(\.dismiss) private var dismiss
-    @ObservedObject var viewModel: RecipeViewModel
+    var viewModel: RecipeViewModel
     @State private var urlString = ""
 
     var body: some View {

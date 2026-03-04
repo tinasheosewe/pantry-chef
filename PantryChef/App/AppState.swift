@@ -1,20 +1,20 @@
 import SwiftUI
-import Combine
 
+@Observable
 @MainActor
-final class AppState: ObservableObject {
-    // MARK: - Services
-    let storageService = StorageService()
-    let aiService = AIService()
-    let speechService = SpeechService()
+final class AppState {
+    // MARK: - Services (protocol-typed for testability)
+    let storageService: StorageServiceProtocol
+    let aiService: AIServiceProtocol
+    let speechService: SpeechService
 
     // MARK: - Shared State
-    @Published var pantryItems: [PantryItem] = []
-    @Published var recipes: [Recipe] = []
-    @Published var mealPlan: [MealPlanEntry] = []
-    @Published var shoppingItems: [ShoppingItem] = []
-    @Published var isLoading = false
-    @Published var errorMessage: String?
+    var pantryItems: [PantryItem] = []
+    var recipes: [Recipe] = []
+    var mealPlan: [MealPlanEntry] = []
+    var shoppingItems: [ShoppingItem] = []
+    var isLoading = false
+    var errorMessage: String?
 
     // MARK: - Computed
     var expiringItems: [PantryItem] {
@@ -32,8 +32,18 @@ final class AppState: ObservableObject {
         Dictionary(grouping: pantryItems, by: { $0.category })
     }
 
-    // MARK: - Init
+    // MARK: - Init (DI-friendly)
     init() {
+        self.storageService = StorageService()
+        self.aiService = AIService()
+        self.speechService = SpeechService()
+        Task { await loadAllData() }
+    }
+
+    init(storageService: StorageServiceProtocol, aiService: AIServiceProtocol, speechService: SpeechService) {
+        self.storageService = storageService
+        self.aiService = aiService
+        self.speechService = speechService
         Task { await loadAllData() }
     }
 

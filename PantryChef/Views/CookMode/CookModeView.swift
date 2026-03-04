@@ -2,11 +2,13 @@ import SwiftUI
 
 struct CookModeView: View {
     @Environment(\.dismiss) private var dismiss
-    @EnvironmentObject var appState: AppState
-    @StateObject private var viewModel: CookModeViewModel
+    @Environment(AppState.self) private var appState
+    @State private var viewModel: CookModeViewModel
 
     init(recipe: Recipe) {
-        _viewModel = StateObject(wrappedValue: CookModeViewModel(
+        // Temporarily create with a placeholder speech service;
+        // the real one is set in .onAppear from appState
+        _viewModel = State(initialValue: CookModeViewModel(
             recipe: recipe,
             speechService: SpeechService()
         ))
@@ -14,20 +16,15 @@ struct CookModeView: View {
 
     var body: some View {
         ZStack {
-            // Background
             Color.black.ignoresSafeArea()
 
             if viewModel.showCompletionScreen {
                 completionView
             } else {
                 VStack(spacing: 0) {
-                    // Top bar
                     topBar
-
-                    // Progress bar
                     progressBar
 
-                    // Main content
                     TabView(selection: $viewModel.currentStepIndex) {
                         ForEach(Array(viewModel.steps.enumerated()), id: \.element.id) { index, step in
                             stepView(step)
@@ -36,15 +33,12 @@ struct CookModeView: View {
                     }
                     .tabViewStyle(.page(indexDisplayMode: .never))
 
-                    // Timer (if applicable)
                     if viewModel.currentStep?.timerMinutes != nil || viewModel.isTimerRunning {
                         timerView
                     }
 
-                    // Navigation controls
                     navigationControls
 
-                    // Voice control indicator
                     if viewModel.isVoiceControlEnabled {
                         voiceControlIndicator
                     }
@@ -82,7 +76,6 @@ struct CookModeView: View {
 
             Spacer()
 
-            // Audio toggle
             Button {
                 viewModel.toggleAudio()
             } label: {
@@ -122,14 +115,12 @@ struct CookModeView: View {
             VStack(spacing: 24) {
                 Spacer(minLength: 40)
 
-                // Step number
                 Text("STEP \(step.stepNumber)")
                     .font(.caption)
                     .fontWeight(.bold)
                     .tracking(2)
                     .foregroundStyle(AppColors.primaryGreen)
 
-                // Instruction
                 Text(step.instruction)
                     .font(.title2)
                     .fontWeight(.medium)
@@ -138,7 +129,6 @@ struct CookModeView: View {
                     .padding(.horizontal, 24)
                     .lineSpacing(4)
 
-                // Timer badge
                 if let timer = step.timerMinutes {
                     HStack(spacing: 8) {
                         Image(systemName: "timer")
@@ -153,7 +143,6 @@ struct CookModeView: View {
                     .clipShape(Capsule())
                 }
 
-                // Tip
                 if let tip = step.tip {
                     VStack(alignment: .leading, spacing: 8) {
                         HStack {
@@ -236,7 +225,6 @@ struct CookModeView: View {
     // MARK: - Navigation Controls
     private var navigationControls: some View {
         HStack(spacing: 32) {
-            // Previous
             Button {
                 viewModel.previousStep()
             } label: {
@@ -251,7 +239,6 @@ struct CookModeView: View {
             }
             .disabled(viewModel.isFirstStep)
 
-            // Repeat
             Button {
                 viewModel.speakCurrentStep()
             } label: {
@@ -265,7 +252,6 @@ struct CookModeView: View {
                 }
             }
 
-            // Voice control toggle
             Button {
                 if viewModel.isVoiceControlEnabled {
                     viewModel.stopVoiceControl()
@@ -283,7 +269,6 @@ struct CookModeView: View {
                 }
             }
 
-            // Next
             Button {
                 viewModel.nextStep()
             } label: {
@@ -342,14 +327,13 @@ struct CookModeView: View {
                 .foregroundStyle(.white.opacity(0.7))
                 .multilineTextAlignment(.center)
 
-            // Rating
             VStack(spacing: 8) {
                 Text("How was it?")
                     .font(.subheadline)
                     .foregroundStyle(.white.opacity(0.7))
 
                 HStack(spacing: 8) {
-                    ForEach(1...5, id: \.self) { star in
+                    ForEach(1...5, id: \.self) { _ in
                         Button {
                             // Rate recipe
                         } label: {

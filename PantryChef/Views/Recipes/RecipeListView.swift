@@ -1,24 +1,20 @@
 import SwiftUI
 
 struct RecipeListView: View {
-    @EnvironmentObject var appState: AppState
-    @StateObject private var viewModel: RecipeViewModel
+    @State private var viewModel: RecipeViewModel
 
-    init() {
-        _viewModel = StateObject(wrappedValue: RecipeViewModel(appState: AppState()))
+    init(appState: AppState) {
+        _viewModel = State(initialValue: RecipeViewModel(appState: appState))
     }
 
     var body: some View {
+        @Bindable var viewModel = viewModel
         NavigationStack {
             VStack(spacing: 0) {
-                // Search Bar
                 searchBar
-
-                // Filter Pills
                 filterPills
 
-                // Content
-                if viewModel.filteredRecipes.isEmpty && appState.recipes.isEmpty {
+                if viewModel.filteredRecipes.isEmpty && viewModel.appState.recipes.isEmpty {
                     EmptyStateView(
                         icon: "book.closed",
                         title: "No recipes yet",
@@ -99,7 +95,8 @@ struct RecipeListView: View {
 
     // MARK: - Search Bar
     private var searchBar: some View {
-        HStack {
+        @Bindable var viewModel = viewModel
+        return HStack {
             Image(systemName: "magnifyingglass")
                 .foregroundStyle(AppColors.mediumGray)
             TextField("Search recipes...", text: $viewModel.searchText)
@@ -123,7 +120,6 @@ struct RecipeListView: View {
     private var filterPills: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 8) {
-                // Favorites toggle
                 FilterPill(
                     title: "Favorites",
                     icon: "heart.fill",
@@ -132,7 +128,6 @@ struct RecipeListView: View {
                     viewModel.showOnlyFavorites.toggle()
                 }
 
-                // Difficulty
                 ForEach(DifficultyLevel.allCases) { level in
                     FilterPill(
                         title: level.label,
@@ -142,7 +137,6 @@ struct RecipeListView: View {
                     }
                 }
 
-                // Meal Type
                 ForEach(MealType.allCases) { type in
                     FilterPill(
                         title: type.rawValue,
@@ -153,7 +147,6 @@ struct RecipeListView: View {
                     }
                 }
 
-                // Clear all filters
                 if viewModel.hasActiveFilters {
                     Button {
                         viewModel.clearFilters()
@@ -179,7 +172,7 @@ struct RecipeListView: View {
             ], spacing: 16) {
                 ForEach(viewModel.filteredRecipes) { recipe in
                     NavigationLink(destination: RecipeDetailView(recipe: recipe)) {
-                        RecipeCardView(recipe: recipe, pantry: appState.pantryItems)
+                        RecipeCardView(recipe: recipe, pantry: viewModel.appState.pantryItems)
                     }
                     .contextMenu {
                         Button { Task { await viewModel.toggleFavorite(recipe) } } label: {
@@ -237,7 +230,6 @@ struct RecipeCardView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            // Image
             ZStack(alignment: .topTrailing) {
                 RoundedRectangle(cornerRadius: 12)
                     .fill(AppColors.primaryGreen.opacity(0.1))
@@ -259,25 +251,21 @@ struct RecipeCardView: View {
                 }
             }
 
-            // Title
             Text(recipe.title)
                 .font(.subheadline)
                 .fontWeight(.semibold)
                 .foregroundStyle(AppColors.darkText)
                 .lineLimit(2)
 
-            // Meta
             HStack(spacing: 8) {
                 if let time = recipe.totalTimeDisplay as String? {
                     Label(time, systemImage: "clock")
                         .font(.caption2)
                         .foregroundStyle(AppColors.subtleText)
                 }
-
                 DifficultyBadge(difficulty: recipe.difficulty)
             }
 
-            // Pantry match indicator
             HStack(spacing: 4) {
                 Circle()
                     .fill(match.canMake ? AppColors.primaryGreen : AppColors.warmOrange)
@@ -358,7 +346,6 @@ struct WhatCanIMakeView: View {
                     .foregroundStyle(AppColors.subtleText)
             }
 
-            // Match bar
             GeometryReader { geo in
                 ZStack(alignment: .leading) {
                     RoundedRectangle(cornerRadius: 3)

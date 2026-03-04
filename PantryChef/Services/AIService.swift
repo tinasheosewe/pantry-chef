@@ -1,6 +1,6 @@
 import Foundation
 
-final class AIService {
+final class AIService: AIServiceProtocol {
     private let apiKey: String
     private let baseURL = "https://api.openai.com/v1/chat/completions"
     private let model = "gpt-4o"

@@ -1,14 +1,15 @@
 import AVFoundation
 import Speech
 
+@Observable
 @MainActor
-final class SpeechService: ObservableObject {
+final class SpeechService: SpeechServiceProtocol {
     // MARK: - Text-to-Speech
     private let synthesizer = AVSpeechSynthesizer()
 
-    @Published var isSpeaking = false
-    @Published var isListening = false
-    @Published var recognizedText = ""
+    var isSpeaking = false
+    var isListening = false
+    var recognizedText = ""
 
     // MARK: - Speech Recognition
     private let speechRecognizer = SFSpeechRecognizer(locale: Locale(identifier: "en-US"))

@@ -1,24 +1,20 @@
 import SwiftUI
 
 struct PantryView: View {
-    @EnvironmentObject var appState: AppState
-    @StateObject private var viewModel: PantryViewModel
+    @State private var viewModel: PantryViewModel
 
-    init() {
-        _viewModel = StateObject(wrappedValue: PantryViewModel(appState: AppState()))
+    init(appState: AppState) {
+        _viewModel = State(initialValue: PantryViewModel(appState: appState))
     }
 
     var body: some View {
+        @Bindable var viewModel = viewModel
         NavigationStack {
             VStack(spacing: 0) {
-                // Input Methods Bar
                 inputMethodsBar
-
-                // Search & Sort
                 searchAndSortBar
 
-                // Content
-                if appState.pantryItems.isEmpty {
+                if viewModel.appState.pantryItems.isEmpty {
                     EmptyStateView(
                         icon: "refrigerator",
                         title: "Your pantry is empty",
@@ -76,7 +72,8 @@ struct PantryView: View {
 
     // MARK: - Search & Sort
     private var searchAndSortBar: some View {
-        VStack(spacing: 8) {
+        @Bindable var viewModel = viewModel
+        return VStack(spacing: 8) {
             HStack {
                 Image(systemName: "magnifyingglass")
                     .foregroundStyle(AppColors.mediumGray)
@@ -94,7 +91,6 @@ struct PantryView: View {
             .background(AppColors.lightGray)
             .clipShape(RoundedRectangle(cornerRadius: 10))
 
-            // Category filter pills
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 8) {
                     CategoryPill(title: "All", isSelected: viewModel.selectedCategory == nil) {
@@ -305,7 +301,6 @@ struct BarcodeScannerView: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: 20) {
-                // Camera preview placeholder
                 ZStack {
                     RoundedRectangle(cornerRadius: 16)
                         .fill(.black)
@@ -361,7 +356,6 @@ struct ReceiptScannerView: View {
         NavigationStack {
             VStack(spacing: 16) {
                 if !hasScanned {
-                    // Camera/photo picker placeholder
                     VStack(spacing: 16) {
                         Image(systemName: "doc.text.viewfinder")
                             .font(.system(size: 64))
@@ -375,7 +369,6 @@ struct ReceiptScannerView: View {
                             .foregroundStyle(AppColors.subtleText)
 
                         Button("Take Photo") {
-                            // Trigger camera - placeholder
                             hasScanned = true
                             extractedItems = ["Milk", "Eggs", "Bread", "Tomatoes", "Chicken"]
                             selectedItems = Set(extractedItems)
@@ -385,7 +378,6 @@ struct ReceiptScannerView: View {
                     }
                     .padding()
                 } else {
-                    // Show extracted items
                     List {
                         Section("Found Items") {
                             ForEach(extractedItems, id: \.self) { item in

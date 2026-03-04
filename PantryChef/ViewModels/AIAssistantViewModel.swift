@@ -1,12 +1,13 @@
 import SwiftUI
 
+@Observable
 @MainActor
-final class AIAssistantViewModel: ObservableObject {
-    @Published var messages: [ChatMessage] = []
-    @Published var inputText = ""
-    @Published var isLoading = false
+final class AIAssistantViewModel {
+    var messages: [ChatMessage] = []
+    var inputText = ""
+    var isLoading = false
 
-    private let appState: AppState
+    let appState: AppState
 
     init(appState: AppState) {
         self.appState = appState

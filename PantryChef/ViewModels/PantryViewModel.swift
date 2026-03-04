@@ -1,15 +1,16 @@
 import SwiftUI
 
+@Observable
 @MainActor
-final class PantryViewModel: ObservableObject {
-    @Published var searchText = ""
-    @Published var selectedCategory: FoodCategory?
-    @Published var showAddItem = false
-    @Published var showBarcodeScanner = false
-    @Published var showReceiptScanner = false
-    @Published var showVoiceInput = false
-    @Published var sortOrder: SortOrder = .category
-    @Published var isLoading = false
+final class PantryViewModel {
+    var searchText = ""
+    var selectedCategory: FoodCategory?
+    var showAddItem = false
+    var showBarcodeScanner = false
+    var showReceiptScanner = false
+    var showVoiceInput = false
+    var sortOrder: SortOrder = .category
+    var isLoading = false
 
     enum SortOrder: String, CaseIterable {
         case category = "Category"
@@ -18,7 +19,7 @@ final class PantryViewModel: ObservableObject {
         case dateAdded = "Date Added"
     }
 
-    private let appState: AppState
+    let appState: AppState
     let barcodeScanner = BarcodeScannerService()
     let receiptScanner = ReceiptScannerService()
 

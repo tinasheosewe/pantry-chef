@@ -1,43 +1,33 @@
 import SwiftUI
 
 struct HomeView: View {
-    @EnvironmentObject var appState: AppState
-    @StateObject private var viewModel: HomeViewModel
+    @State private var viewModel: HomeViewModel
 
-    init() {
-        // Will be properly initialized with appState in onAppear
-        _viewModel = StateObject(wrappedValue: HomeViewModel(appState: AppState()))
+    init(appState: AppState) {
+        _viewModel = State(initialValue: HomeViewModel(appState: appState))
     }
 
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: 20) {
-                    // Greeting Header
                     greetingHeader
-
-                    // Today's Meal Plan
                     todaysMealPlanCard
 
-                    // Expiring Soon
-                    if !appState.expiringItems.isEmpty {
+                    if !viewModel.appState.expiringItems.isEmpty {
                         expiringSoonCard
                     }
 
-                    // Quick Actions
                     quickActionsRow
 
-                    // Recipe Suggestion
                     if let recipe = viewModel.suggestedRecipe {
                         recipeSuggestionCard(recipe)
                     }
 
-                    // Weekly Nutrition
                     if let nutrition = viewModel.weeklyNutrition {
                         weeklyNutritionCard(nutrition)
                     }
 
-                    // Batch Prep Tip (show on weekends)
                     if Calendar.current.isDateInWeekend(Date()) {
                         batchPrepCard
                     }
@@ -47,12 +37,12 @@ struct HomeView: View {
             .background(AppColors.background)
             .navigationBarTitleDisplayMode(.inline)
             .refreshable {
-                await appState.loadAllData()
+                await viewModel.appState.loadAllData()
                 viewModel.refresh()
             }
-        }
-        .onAppear {
-            viewModel.refresh()
+            .onAppear {
+                viewModel.refresh()
+            }
         }
     }
 
@@ -75,11 +65,9 @@ struct HomeView: View {
     // MARK: - Today's Meal Plan Card
     private var todaysMealPlanCard: some View {
         VStack(alignment: .leading, spacing: 12) {
-            SectionHeader(title: "Today's Plan", actionTitle: "View All") {
-                // Navigate to meal plan tab
-            }
+            SectionHeader(title: "Today's Plan", actionTitle: "View All") {}
 
-            if appState.mealPlan.isEmpty {
+            if viewModel.appState.mealPlan.isEmpty {
                 HStack {
                     Image(systemName: "calendar.badge.plus")
                         .font(.title2)
@@ -135,24 +123,21 @@ struct HomeView: View {
         VStack(alignment: .leading, spacing: 12) {
             SectionHeader(
                 title: "Expiring Soon",
-                subtitle: "\(appState.expiringItems.count) items need attention"
+                subtitle: "\(viewModel.appState.expiringItems.count) items need attention"
             )
 
-            ForEach(appState.expiringItems.prefix(5)) { item in
+            ForEach(viewModel.appState.expiringItems.prefix(5)) { item in
                 HStack(spacing: 12) {
                     CategoryIcon(category: item.category, size: 28)
-
                     Text(item.name)
                         .font(.subheadline)
-
                     Spacer()
-
                     ExpiryBadge(status: item.expiryStatus, daysLeft: item.daysUntilExpiry)
                 }
             }
 
-            if appState.expiringItems.count > 5 {
-                Text("+ \(appState.expiringItems.count - 5) more")
+            if viewModel.appState.expiringItems.count > 5 {
+                Text("+ \(viewModel.appState.expiringItems.count - 5) more")
                     .font(.caption)
                     .foregroundStyle(AppColors.subtleText)
             }
@@ -173,17 +158,9 @@ struct HomeView: View {
                 GridItem(.flexible()),
                 GridItem(.flexible()),
             ], spacing: 12) {
-                QuickActionButton(icon: "fork.knife", title: "What can\nI make?", color: AppColors.primaryGreen) {
-                    // Navigate to recipe suggestions
-                }
-
-                QuickActionButton(icon: "cart.fill", title: "What to\nbuy?", color: AppColors.warmOrange) {
-                    // Navigate to shopping
-                }
-
-                QuickActionButton(icon: "camera.fill", title: "Scan\nreceipt", color: .blue) {
-                    // Open receipt scanner
-                }
+                QuickActionButton(icon: "fork.knife", title: "What can\nI make?", color: AppColors.primaryGreen) {}
+                QuickActionButton(icon: "cart.fill", title: "What to\nbuy?", color: AppColors.warmOrange) {}
+                QuickActionButton(icon: "camera.fill", title: "Scan\nreceipt", color: .blue) {}
             }
         }
     }
@@ -195,7 +172,6 @@ struct HomeView: View {
 
             NavigationLink(destination: RecipeDetailView(recipe: recipe)) {
                 HStack(spacing: 16) {
-                    // Recipe image placeholder
                     RoundedRectangle(cornerRadius: 12)
                         .fill(AppColors.primaryGreen.opacity(0.15))
                         .frame(width: 80, height: 80)
@@ -220,7 +196,6 @@ struct HomeView: View {
 
                         HStack(spacing: 12) {
                             DifficultyBadge(difficulty: recipe.difficulty)
-
                             if let time = recipe.totalTimeDisplay as String? {
                                 Label(time, systemImage: "clock")
                                     .font(.caption)

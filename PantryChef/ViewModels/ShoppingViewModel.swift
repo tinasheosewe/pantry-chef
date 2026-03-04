@@ -1,11 +1,12 @@
 import SwiftUI
 
+@Observable
 @MainActor
-final class ShoppingViewModel: ObservableObject {
-    @Published var searchText = ""
-    @Published var isLoading = false
+final class ShoppingViewModel {
+    var searchText = ""
+    var isLoading = false
 
-    private let appState: AppState
+    let appState: AppState
 
     init(appState: AppState) {
         self.appState = appState

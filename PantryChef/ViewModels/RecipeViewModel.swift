@@ -1,22 +1,23 @@
 import SwiftUI
 
+@Observable
 @MainActor
-final class RecipeViewModel: ObservableObject {
-    @Published var searchText = ""
-    @Published var selectedDifficulty: DifficultyLevel?
-    @Published var selectedMealType: MealType?
-    @Published var selectedDietaryTags: Set<DietaryTag> = []
-    @Published var showAddRecipe = false
-    @Published var showImportURL = false
-    @Published var showPhotoImport = false
-    @Published var sortOrder: SortOrder = .recent
-    @Published var showOnlyFavorites = false
-    @Published var isLoading = false
-    @Published var importedRecipe: Recipe?
+final class RecipeViewModel {
+    var searchText = ""
+    var selectedDifficulty: DifficultyLevel?
+    var selectedMealType: MealType?
+    var selectedDietaryTags: Set<DietaryTag> = []
+    var showAddRecipe = false
+    var showImportURL = false
+    var showPhotoImport = false
+    var sortOrder: SortOrder = .recent
+    var showOnlyFavorites = false
+    var isLoading = false
+    var importedRecipe: Recipe?
 
     // AI Results
-    @Published var whatCanIMakeResults: [PantryMatchResult] = []
-    @Published var showWhatCanIMake = false
+    var whatCanIMakeResults: [PantryMatchResult] = []
+    var showWhatCanIMake = false
 
     enum SortOrder: String, CaseIterable {
         case recent = "Recent"
@@ -26,7 +27,7 @@ final class RecipeViewModel: ObservableObject {
         case mostCooked = "Most Cooked"
     }
 
-    private let appState: AppState
+    let appState: AppState
 
     init(appState: AppState) {
         self.appState = appState

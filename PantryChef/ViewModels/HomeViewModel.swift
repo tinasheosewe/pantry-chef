@@ -1,15 +1,16 @@
 import SwiftUI
 
+@Observable
 @MainActor
-final class HomeViewModel: ObservableObject {
-    @Published var greetingMessage: String = ""
-    @Published var todaysMeals: [MealPlanEntry] = []
-    @Published var expiringItems: [PantryItem] = []
-    @Published var suggestedRecipe: Recipe?
-    @Published var weeklyNutrition: WeeklyNutritionSummary?
-    @Published var isLoading = false
+final class HomeViewModel {
+    var greetingMessage: String = ""
+    var todaysMeals: [MealPlanEntry] = []
+    var expiringItems: [PantryItem] = []
+    var suggestedRecipe: Recipe?
+    var weeklyNutrition: WeeklyNutritionSummary?
+    var isLoading = false
 
-    private let appState: AppState
+    let appState: AppState
 
     init(appState: AppState) {
         self.appState = appState

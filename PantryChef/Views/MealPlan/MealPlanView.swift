@@ -1,20 +1,18 @@
 import SwiftUI
 
 struct MealPlanView: View {
-    @EnvironmentObject var appState: AppState
-    @StateObject private var viewModel: MealPlanViewModel
+    @State private var viewModel: MealPlanViewModel
 
-    init() {
-        _viewModel = StateObject(wrappedValue: MealPlanViewModel(appState: AppState()))
+    init(appState: AppState) {
+        _viewModel = State(initialValue: MealPlanViewModel(appState: appState))
     }
 
     var body: some View {
+        @Bindable var viewModel = viewModel
         NavigationStack {
             VStack(spacing: 0) {
-                // Week Navigation
                 weekNavigation
 
-                // Calendar Grid
                 ScrollView {
                     VStack(spacing: 0) {
                         ForEach(viewModel.weekDays, id: \.self) { date in
@@ -38,7 +36,7 @@ struct MealPlanView: View {
             }
             .sheet(isPresented: $viewModel.showRecipePicker) {
                 RecipePickerView(
-                    recipes: appState.recipes,
+                    recipes: viewModel.appState.recipes,
                     onSelect: { recipe in
                         if let slot = viewModel.selectedSlot {
                             Task { await viewModel.assignRecipe(recipe, to: slot) }
@@ -83,8 +81,6 @@ struct MealPlanView: View {
         }
         .padding()
         .background(AppColors.cardBackground)
-
-        // Today button
         .overlay(alignment: .bottom) {
             Button("Today") {
                 viewModel.goToCurrentWeek()
@@ -99,7 +95,6 @@ struct MealPlanView: View {
     // MARK: - Day Row
     private func dayRow(_ date: Date) -> some View {
         VStack(alignment: .leading, spacing: 8) {
-            // Day header
             HStack {
                 VStack(alignment: .leading) {
                     Text(date, format: .dateTime.weekday(.wide))
@@ -125,7 +120,6 @@ struct MealPlanView: View {
                 }
             }
 
-            // Meal slots
             HStack(spacing: 8) {
                 ForEach([MealType.breakfast, .lunch, .dinner]) { mealType in
                     mealSlot(date: date, mealType: mealType)

@@ -1,23 +1,20 @@
 import SwiftUI
 
 struct AIAssistantView: View {
-    @EnvironmentObject var appState: AppState
-    @StateObject private var viewModel: AIAssistantViewModel
+    @State private var viewModel: AIAssistantViewModel
     @FocusState private var isInputFocused: Bool
 
-    init() {
-        _viewModel = StateObject(wrappedValue: AIAssistantViewModel(appState: AppState()))
+    init(appState: AppState) {
+        _viewModel = State(initialValue: AIAssistantViewModel(appState: appState))
     }
 
     var body: some View {
+        @Bindable var viewModel = viewModel
         NavigationStack {
             VStack(spacing: 0) {
-                // Quick Actions
                 quickActions
-
                 Divider()
 
-                // Chat Messages
                 ScrollViewReader { proxy in
                     ScrollView {
                         LazyVStack(spacing: 12) {
@@ -50,8 +47,6 @@ struct AIAssistantView: View {
                 }
 
                 Divider()
-
-                // Input Bar
                 inputBar
             }
             .navigationTitle("Pantry Chef AI")
@@ -84,7 +79,8 @@ struct AIAssistantView: View {
 
     // MARK: - Input Bar
     private var inputBar: some View {
-        HStack(spacing: 12) {
+        @Bindable var viewModel = viewModel
+        return HStack(spacing: 12) {
             TextField("Ask anything about cooking...", text: $viewModel.inputText, axis: .vertical)
                 .font(.subheadline)
                 .lineLimit(1...4)
@@ -144,9 +140,7 @@ struct ChatBubble: View {
                             ? AppColors.primaryGreen
                             : AppColors.lightGray
                     )
-                    .clipShape(
-                        RoundedRectangle(cornerRadius: 18)
-                    )
+                    .clipShape(RoundedRectangle(cornerRadius: 18))
 
                 Text(message.timestamp, format: .dateTime.hour().minute())
                     .font(.system(size: 10))

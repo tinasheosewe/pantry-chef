@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct ContentView: View {
-    @EnvironmentObject var appState: AppState
+    @Environment(AppState.self) private var appState
     @State private var selectedTab: Tab = .home
     @State private var showAIChat = false
 
@@ -26,31 +26,31 @@ struct ContentView: View {
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
             TabView(selection: $selectedTab) {
-                HomeView()
+                HomeView(appState: appState)
                     .tabItem {
                         Label(Tab.home.rawValue, systemImage: Tab.home.icon)
                     }
                     .tag(Tab.home)
 
-                PantryView()
+                PantryView(appState: appState)
                     .tabItem {
                         Label(Tab.pantry.rawValue, systemImage: Tab.pantry.icon)
                     }
                     .tag(Tab.pantry)
 
-                RecipeListView()
+                RecipeListView(appState: appState)
                     .tabItem {
                         Label(Tab.recipes.rawValue, systemImage: Tab.recipes.icon)
                     }
                     .tag(Tab.recipes)
 
-                MealPlanView()
+                MealPlanView(appState: appState)
                     .tabItem {
                         Label(Tab.plan.rawValue, systemImage: Tab.plan.icon)
                     }
                     .tag(Tab.plan)
 
-                ShoppingListView()
+                ShoppingListView(appState: appState)
                     .tabItem {
                         Label(Tab.shop.rawValue, systemImage: Tab.shop.icon)
                     }
@@ -66,7 +66,7 @@ struct ContentView: View {
             }
         }
         .sheet(isPresented: $showAIChat) {
-            AIAssistantView()
+            AIAssistantView(appState: appState)
         }
     }
 }
