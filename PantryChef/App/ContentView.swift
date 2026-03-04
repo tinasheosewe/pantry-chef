@@ -42,8 +42,6 @@ struct ContentView: View {
             }
             // Minimum splash display so it isn't a sub-frame flash
             try? await Task.sleep(for: .milliseconds(400))
-            // Reset window background to normal now that UI is ready
-            UIWindow.appearance().backgroundColor = .systemBackground
             isReady = true
         }
     }
