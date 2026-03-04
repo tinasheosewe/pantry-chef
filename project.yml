@@ -21,6 +21,7 @@ targets:
       - PantryChef
     settings:
       base:
+        GENERATE_INFOPLIST_FILE: YES
         INFOPLIST_KEY_NSCameraUsageDescription: "Pantry Chef needs camera access to scan barcodes and receipts"
         INFOPLIST_KEY_NSSpeechRecognitionUsageDescription: "Pantry Chef uses speech recognition for voice commands in cook mode"
         INFOPLIST_KEY_NSMicrophoneUsageDescription: "Pantry Chef needs microphone access for voice input"
@@ -31,5 +32,8 @@ targets:
     platform: iOS
     sources:
       - PantryChefTests
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
     dependencies:
       - target: PantryChef

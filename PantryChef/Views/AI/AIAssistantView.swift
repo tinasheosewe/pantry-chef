@@ -42,7 +42,9 @@ struct AIAssistantView: View {
                     }
                     .onChange(of: viewModel.messages.count) { _, _ in
                         withAnimation {
-                            proxy.scrollTo(viewModel.messages.last?.id ?? "loading", anchor: .bottom)
+                            if let lastId = viewModel.messages.last?.id {
+                                proxy.scrollTo(lastId, anchor: .bottom)
+                            }
                         }
                     }
                 }

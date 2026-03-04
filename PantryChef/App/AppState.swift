@@ -4,7 +4,7 @@ import Combine
 @MainActor
 final class AppState: ObservableObject {
     // MARK: - Services
-    let supabaseService = SupabaseService()
+    let storageService = StorageService()
     let aiService = AIService()
     let speechService = SpeechService()
 
@@ -43,10 +43,10 @@ final class AppState: ObservableObject {
         defer { isLoading = false }
 
         do {
-            async let items = supabaseService.fetchPantryItems()
-            async let recipeList = supabaseService.fetchRecipes()
-            async let plan = supabaseService.fetchMealPlan()
-            async let shopping = supabaseService.fetchShoppingItems()
+            async let items = storageService.fetchPantryItems()
+            async let recipeList = storageService.fetchRecipes()
+            async let plan = storageService.fetchMealPlan()
+            async let shopping = storageService.fetchShoppingItems()
 
             let (fetchedItems, fetchedRecipes, fetchedPlan, fetchedShopping) = try await (items, recipeList, plan, shopping)
             pantryItems = fetchedItems
@@ -61,7 +61,7 @@ final class AppState: ObservableObject {
     // MARK: - Pantry Actions
     func addPantryItem(_ item: PantryItem) async {
         do {
-            let saved = try await supabaseService.addPantryItem(item)
+            let saved = try await storageService.addPantryItem(item)
             pantryItems.append(saved)
         } catch {
             errorMessage = error.localizedDescription
@@ -70,7 +70,7 @@ final class AppState: ObservableObject {
 
     func removePantryItem(_ item: PantryItem) async {
         do {
-            try await supabaseService.deletePantryItem(item)
+            try await storageService.deletePantryItem(item)
             pantryItems.removeAll { $0.id == item.id }
         } catch {
             errorMessage = error.localizedDescription
@@ -79,7 +79,7 @@ final class AppState: ObservableObject {
 
     func updatePantryItem(_ item: PantryItem) async {
         do {
-            let updated = try await supabaseService.updatePantryItem(item)
+            let updated = try await storageService.updatePantryItem(item)
             if let index = pantryItems.firstIndex(where: { $0.id == item.id }) {
                 pantryItems[index] = updated
             }
@@ -91,7 +91,7 @@ final class AppState: ObservableObject {
     // MARK: - Recipe Actions
     func addRecipe(_ recipe: Recipe) async {
         do {
-            let saved = try await supabaseService.addRecipe(recipe)
+            let saved = try await storageService.addRecipe(recipe)
             recipes.append(saved)
         } catch {
             errorMessage = error.localizedDescription
@@ -100,7 +100,7 @@ final class AppState: ObservableObject {
 
     func deleteRecipe(_ recipe: Recipe) async {
         do {
-            try await supabaseService.deleteRecipe(recipe)
+            try await storageService.deleteRecipe(recipe)
             recipes.removeAll { $0.id == recipe.id }
         } catch {
             errorMessage = error.localizedDescription
@@ -131,7 +131,7 @@ final class AppState: ObservableObject {
     // MARK: - Meal Plan Actions
     func addToMealPlan(_ entry: MealPlanEntry) async {
         do {
-            let saved = try await supabaseService.addMealPlanEntry(entry)
+            let saved = try await storageService.addMealPlanEntry(entry)
             mealPlan.append(saved)
         } catch {
             errorMessage = error.localizedDescription
@@ -140,7 +140,7 @@ final class AppState: ObservableObject {
 
     func removeFromMealPlan(_ entry: MealPlanEntry) async {
         do {
-            try await supabaseService.deleteMealPlanEntry(entry)
+            try await storageService.deleteMealPlanEntry(entry)
             mealPlan.removeAll { $0.id == entry.id }
         } catch {
             errorMessage = error.localizedDescription

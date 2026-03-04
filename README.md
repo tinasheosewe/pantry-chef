@@ -69,7 +69,7 @@ static let openAIAPIKey = "YOUR-OPENAI-API-KEY"
 Select your target device/simulator in Xcode and hit ⌘R. The app launches with sample pantry items and recipes preloaded — no backend setup required.
 
 ### Future: Migrating to Supabase
-The service layer (`SupabaseService.swift`) is designed for a seamless swap to cloud storage:
+The service layer (`StorageService.swift`) is designed for a seamless swap to cloud storage:
 1. Add the `supabase-swift` package dependency back to `project.yml`
 2. Replace the in-memory implementation with the Supabase client calls
 3. Run `Supabase/migrations/001_initial_schema.sql` in your Supabase SQL Editor
@@ -93,7 +93,7 @@ PantryChef/
 │   │   ├── ShoppingItem.swift     # Shopping list item model
 │   │   └── AIModels.swift         # AI response models
 │   ├── Services/
-│   │   ├── SupabaseService.swift  # In-memory storage (Supabase-ready)
+│   │   ├── StorageService.swift   # In-memory storage (Supabase-ready)
 │   │   ├── AIService.swift        # OpenAI API integration
 │   │   ├── SpeechService.swift    # TTS + voice recognition
 │   │   └── ScannerService.swift   # Barcode + receipt OCR

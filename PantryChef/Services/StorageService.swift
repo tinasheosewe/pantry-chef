@@ -1,13 +1,12 @@
 import Foundation
 
-/// In-memory storage service that mirrors the SupabaseService API.
-/// Swap this back to the Supabase implementation when you're ready
-/// to go cloud — the interface is identical.
-final class SupabaseService {
+/// In-memory storage service.
+/// Swap to a Supabase-backed implementation when you're ready to go cloud.
+final class StorageService {
 
     // MARK: - In-Memory Stores
-    private var pantryStore: [PantryItem] = PantryItem.sampleItems
-    private var recipeStore: [Recipe] = Recipe.sampleRecipes
+    private var pantryStore: [PantryItem] = PantryItem.samples
+    private var recipeStore: [Recipe] = Recipe.samples
     private var mealPlanStore: [MealPlanEntry] = []
     private var shoppingStore: [ShoppingItem] = []
 
