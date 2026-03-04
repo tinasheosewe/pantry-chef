@@ -39,7 +39,7 @@ A personal iOS kitchen management app powered by AI. Tells you what to buy, what
 
 - **Platform**: iOS 17.0+, Swift 5.9, SwiftUI
 - **Architecture**: MVVM with centralized AppState
-- **Backend**: Supabase (PostgreSQL)
+- **Storage**: In-memory (with sample data preloaded). Supabase-ready service layer included for future cloud migration.
 - **AI**: OpenAI GPT-4o
 - **Speech**: Apple AVSpeechSynthesizer + SFSpeechRecognizer
 - **OCR**: Apple Vision framework
@@ -50,8 +50,7 @@ A personal iOS kitchen management app powered by AI. Tells you what to buy, what
 ### Prerequisites
 - macOS with Xcode 15+
 - [XcodeGen](https://github.com/yonaskolb/XcodeGen) (`brew install xcodegen`)
-- A [Supabase](https://supabase.com) project
-- An [OpenAI](https://platform.openai.com) API key
+- An [OpenAI](https://platform.openai.com) API key (optional — only needed for AI features)
 
 ### 1. Clone & Generate Project
 ```bash
@@ -60,20 +59,21 @@ xcodegen generate
 open PantryChef.xcodeproj
 ```
 
-### 2. Configure API Keys
-Edit `PantryChef/Utils/AppConfig.swift` and replace the placeholder values:
+### 2. Configure API Keys (optional)
+Edit `PantryChef/Utils/AppConfig.swift` and replace the placeholder OpenAI key to enable AI features:
 ```swift
-static let supabaseURL = "https://YOUR-PROJECT.supabase.co"
-static let supabaseAnonKey = "YOUR-ANON-KEY"
 static let openAIAPIKey = "YOUR-OPENAI-API-KEY"
 ```
 
-### 3. Set Up Supabase Database
-1. Go to your Supabase project → SQL Editor
-2. Paste and run the contents of `Supabase/migrations/001_initial_schema.sql`
+### 3. Build & Run
+Select your target device/simulator in Xcode and hit ⌘R. The app launches with sample pantry items and recipes preloaded — no backend setup required.
 
-### 4. Build & Run
-Select your target device/simulator in Xcode and hit ⌘R.
+### Future: Migrating to Supabase
+The service layer (`SupabaseService.swift`) is designed for a seamless swap to cloud storage:
+1. Add the `supabase-swift` package dependency back to `project.yml`
+2. Replace the in-memory implementation with the Supabase client calls
+3. Run `Supabase/migrations/001_initial_schema.sql` in your Supabase SQL Editor
+4. Add your Supabase URL and anon key to `AppConfig.swift`
 
 ## Project Structure
 
@@ -93,7 +93,7 @@ PantryChef/
 │   │   ├── ShoppingItem.swift     # Shopping list item model
 │   │   └── AIModels.swift         # AI response models
 │   ├── Services/
-│   │   ├── SupabaseService.swift  # Supabase CRUD operations
+│   │   ├── SupabaseService.swift  # In-memory storage (Supabase-ready)
 │   │   ├── AIService.swift        # OpenAI API integration
 │   │   ├── SpeechService.swift    # TTS + voice recognition
 │   │   └── ScannerService.swift   # Barcode + receipt OCR
@@ -125,7 +125,8 @@ PantryChef/
 
 ## Notes
 
-- **No Authentication** — This is designed for personal use. Add Supabase Auth + RLS policies before sharing.
+- **In-Memory Storage** — Data resets on app relaunch. Supabase migration path included in `Supabase/migrations/`.
+- **No Authentication** — Designed for personal use. Add Supabase Auth + RLS policies before sharing.
 - **Light Mode Only** — Dark mode support planned for v2.
 - **Barcode Scanner** — Uses the camera; requires a physical device (not simulator).
 - **Voice Commands** — Requires microphone permission; works best in quiet environments.
