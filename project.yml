@@ -1,0 +1,35 @@
+name: PantryChef
+options:
+  bundleIdPrefix: com.pantrychef
+  deploymentTarget:
+    iOS: "17.0"
+  xcodeVersion: "15.0"
+  generateEmptyDirectories: true
+
+settings:
+  base:
+    SWIFT_VERSION: "5.9"
+    TARGETED_DEVICE_FAMILY: "1"
+    INFOPLIST_KEY_UILaunchScreen_Generation: YES
+    INFOPLIST_KEY_CFBundleDisplayName: "Pantry Chef"
+
+targets:
+  PantryChef:
+    type: application
+    platform: iOS
+    sources:
+      - PantryChef
+    settings:
+      base:
+        INFOPLIST_KEY_NSCameraUsageDescription: "Pantry Chef needs camera access to scan barcodes and receipts"
+        INFOPLIST_KEY_NSSpeechRecognitionUsageDescription: "Pantry Chef uses speech recognition for voice commands in cook mode"
+        INFOPLIST_KEY_NSMicrophoneUsageDescription: "Pantry Chef needs microphone access for voice input"
+        INFOPLIST_KEY_NSPhotoLibraryUsageDescription: "Pantry Chef needs photo library access to import recipe photos"
+
+  PantryChefTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - PantryChefTests
+    dependencies:
+      - target: PantryChef
