@@ -35,8 +35,8 @@ struct PantryView: View {
                 }
             }
             .sheet(isPresented: $viewModel.showBarcodeScanner) {
-                BarcodeScannerView { barcode in
-                    Task { await viewModel.handleBarcodeScanned(barcode) }
+                BarcodeScannerView { item in
+                    Task { await viewModel.addItem(item) }
                 }
             }
             .sheet(isPresented: $viewModel.showReceiptScanner) {
@@ -296,8 +296,14 @@ struct BarcodeScannerView: View {
     @State private var scannedCode: String?
     @State private var permissionGranted = false
     @State private var permissionDenied = false
+    @State private var isLookingUp = false
+    @State private var lookupResult: BarcodeLookupResult?
+    @State private var lookupDone = false
+    @State private var manualName = ""
+    @State private var selectedCategory: FoodCategory = .other
 
-    let onScan: (String) -> Void
+    private let barcodeService = BarcodeScannerService()
+    let onItemScanned: (PantryItem) -> Void
 
     var body: some View {
         NavigationStack {
@@ -327,6 +333,7 @@ struct BarcodeScannerView: View {
                     BarcodeCameraView { code in
                         guard scannedCode == nil else { return }
                         scannedCode = code
+                        Task { await performLookup(code) }
                     }
                     .ignoresSafeArea()
 
@@ -334,58 +341,24 @@ struct BarcodeScannerView: View {
                     VStack {
                         Spacer()
 
-                        // Viewfinder guide
-                        RoundedRectangle(cornerRadius: 16)
-                            .strokeBorder(.white.opacity(0.6), lineWidth: 2)
-                            .frame(width: 280, height: 160)
-                            .overlay(
-                                Text("Point at barcode")
-                                    .font(.caption)
-                                    .foregroundStyle(.white.opacity(0.7))
-                                    .offset(y: 90)
-                            )
+                        if scannedCode == nil {
+                            // Viewfinder guide
+                            RoundedRectangle(cornerRadius: 16)
+                                .strokeBorder(.white.opacity(0.6), lineWidth: 2)
+                                .frame(width: 280, height: 160)
+                                .overlay(
+                                    Text("Point at barcode")
+                                        .font(.caption)
+                                        .foregroundStyle(.white.opacity(0.7))
+                                        .offset(y: 90)
+                                )
+                        }
 
                         Spacer()
 
-                        // Result display
-                        if let code = scannedCode {
-                            VStack(spacing: 12) {
-                                HStack(spacing: 8) {
-                                    Image(systemName: "checkmark.circle.fill")
-                                        .foregroundStyle(AppColors.primaryGreen)
-                                    Text(code)
-                                        .font(.headline)
-                                        .foregroundStyle(.white)
-                                }
-
-                                HStack(spacing: 16) {
-                                    Button("Scan Again") {
-                                        scannedCode = nil
-                                    }
-                                    .font(.subheadline)
-                                    .foregroundStyle(.white)
-                                    .padding(.horizontal, 20)
-                                    .padding(.vertical, 10)
-                                    .background(.white.opacity(0.2))
-                                    .clipShape(Capsule())
-
-                                    Button("Add to Pantry") {
-                                        onScan(code)
-                                        dismiss()
-                                    }
-                                    .font(.subheadline)
-                                    .fontWeight(.semibold)
-                                    .foregroundStyle(.white)
-                                    .padding(.horizontal, 20)
-                                    .padding(.vertical, 10)
-                                    .background(AppColors.primaryGreen)
-                                    .clipShape(Capsule())
-                                }
-                            }
-                            .padding()
-                            .background(.ultraThinMaterial.opacity(0.9))
-                            .clipShape(RoundedRectangle(cornerRadius: 16))
-                            .padding()
+                        // Result overlay
+                        if scannedCode != nil {
+                            resultOverlay
                         }
                     }
                 } else {
@@ -407,6 +380,141 @@ struct BarcodeScannerView: View {
                 await checkCameraPermission()
             }
         }
+    }
+
+    // MARK: - Result Overlay
+    @ViewBuilder
+    private var resultOverlay: some View {
+        VStack(spacing: 12) {
+            if isLookingUp {
+                ProgressView()
+                    .tint(.white)
+                Text("Looking up product...")
+                    .font(.subheadline)
+                    .foregroundStyle(.white)
+            } else if lookupDone {
+                if let result = lookupResult {
+                    // Product found
+                    HStack(spacing: 8) {
+                        Image(systemName: "checkmark.circle.fill")
+                            .foregroundStyle(AppColors.primaryGreen)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(result.productName)
+                                .font(.headline)
+                                .foregroundStyle(.white)
+                            if let brand = result.brand {
+                                Text(brand)
+                                    .font(.caption)
+                                    .foregroundStyle(.white.opacity(0.7))
+                            }
+                            Text(result.category?.rawValue ?? "Other")
+                                .font(.caption2)
+                                .foregroundStyle(.white.opacity(0.5))
+                        }
+                    }
+                } else {
+                    // Product not found — manual entry
+                    VStack(spacing: 8) {
+                        HStack(spacing: 8) {
+                            Image(systemName: "questionmark.circle.fill")
+                                .foregroundStyle(.orange)
+                            Text("Product not found")
+                                .font(.subheadline)
+                                .foregroundStyle(.white)
+                        }
+                        TextField("Enter product name", text: $manualName)
+                            .textFieldStyle(.roundedBorder)
+                            .padding(.horizontal)
+                        Picker("Category", selection: $selectedCategory) {
+                            ForEach(FoodCategory.allCases, id: \.self) { cat in
+                                Text(cat.rawValue).tag(cat)
+                            }
+                        }
+                        .pickerStyle(.menu)
+                        .tint(.white)
+                    }
+                }
+
+                // Action buttons
+                HStack(spacing: 16) {
+                    Button("Scan Again") {
+                        resetScan()
+                    }
+                    .font(.subheadline)
+                    .foregroundStyle(.white)
+                    .padding(.horizontal, 20)
+                    .padding(.vertical, 10)
+                    .background(.white.opacity(0.2))
+                    .clipShape(Capsule())
+
+                    Button("Add to Pantry") {
+                        addToPantry()
+                    }
+                    .font(.subheadline)
+                    .fontWeight(.semibold)
+                    .foregroundStyle(.white)
+                    .padding(.horizontal, 20)
+                    .padding(.vertical, 10)
+                    .background(addButtonDisabled ? AppColors.mediumGray : AppColors.primaryGreen)
+                    .clipShape(Capsule())
+                    .disabled(addButtonDisabled)
+                }
+            }
+        }
+        .padding()
+        .background(.ultraThinMaterial.opacity(0.9))
+        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .padding()
+    }
+
+    private var addButtonDisabled: Bool {
+        lookupResult == nil && manualName.trimmingCharacters(in: .whitespaces).isEmpty
+    }
+
+    // MARK: - Actions
+    private func performLookup(_ code: String) async {
+        isLookingUp = true
+        lookupResult = await barcodeService.lookupBarcode(code)
+        isLookingUp = false
+        lookupDone = true
+    }
+
+    private func resetScan() {
+        scannedCode = nil
+        lookupResult = nil
+        lookupDone = false
+        isLookingUp = false
+        manualName = ""
+        selectedCategory = .other
+    }
+
+    private func addToPantry() {
+        guard let code = scannedCode else { return }
+        let name: String
+        let category: FoodCategory
+        let imageURL: String?
+
+        if let result = lookupResult {
+            name = result.productName
+            category = result.category ?? .other
+            imageURL = result.imageURL
+        } else {
+            name = manualName.trimmingCharacters(in: .whitespaces)
+            category = selectedCategory
+            imageURL = nil
+        }
+        guard !name.isEmpty else { return }
+
+        let item = PantryItem(
+            name: name,
+            category: category,
+            quantity: 1,
+            unit: .piece,
+            barcode: code,
+            imageURL: imageURL
+        )
+        onItemScanned(item)
+        dismiss()
     }
 
     private func checkCameraPermission() async {

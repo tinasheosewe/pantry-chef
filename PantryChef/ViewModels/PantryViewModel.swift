@@ -78,17 +78,16 @@ final class PantryViewModel {
         isLoading = true
         defer { isLoading = false }
 
-        if let result = await barcodeScanner.lookupBarcode(barcode) {
-            let item = PantryItem(
-                name: result.productName,
-                category: result.category ?? .other,
-                quantity: 1,
-                unit: .piece,
-                barcode: barcode,
-                imageURL: result.imageURL
-            )
-            await addItem(item)
-        }
+        let result = await barcodeScanner.lookupBarcode(barcode)
+        let item = PantryItem(
+            name: result?.productName ?? "Scanned Item",
+            category: result?.category ?? .other,
+            quantity: 1,
+            unit: .piece,
+            barcode: barcode,
+            imageURL: result?.imageURL
+        )
+        await addItem(item)
     }
 
     func handleReceiptScanned(items: [String]) async {
