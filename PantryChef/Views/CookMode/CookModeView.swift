@@ -6,7 +6,9 @@ struct CookModeView: View {
 
     /// Both are created lazily on first appear — no heavy AV objects at app launch.
     @State private var speechService: SpeechService?
+    @State private var realtimeService: RealtimeService?
     @State private var viewModel: CookModeViewModel?
+    @State private var syncTimer: Timer?
 
     private let recipe: Recipe
 
@@ -28,12 +30,22 @@ struct CookModeView: View {
         .onAppear {
             if viewModel == nil {
                 let service = SpeechService()
+                let realtime = RealtimeService()
                 speechService = service
-                viewModel = CookModeViewModel(recipe: recipe, speechService: service)
+                realtimeService = realtime
+                viewModel = CookModeViewModel(recipe: recipe, speechService: service, realtimeService: realtime)
             }
             viewModel?.speakCurrentStep()
+            // Poll realtime state at ~15 fps when conversation is active
+            syncTimer = Timer.scheduledTimer(withTimeInterval: 0.066, repeats: true) { _ in
+                Task { @MainActor in
+                    viewModel?.syncRealtimeState()
+                }
+            }
         }
         .onDisappear {
+            syncTimer?.invalidate()
+            syncTimer = nil
             viewModel?.cleanup()
         }
         .alert("Voice Control Unavailable",
@@ -49,6 +61,21 @@ struct CookModeView: View {
             Button("Cancel", role: .cancel) { }
         } message: {
             Text("Please enable Speech Recognition and Microphone access in Settings to use voice commands.")
+        }
+        .alert("Voice Chat Error",
+               isPresented: Binding(
+                get: { viewModel?.conversationError != nil },
+                set: { if !$0 { viewModel?.conversationError = nil } }
+               )) {
+            Button("Retry") {
+                viewModel?.stopConversation()
+                viewModel?.startConversation()
+            }
+            Button("Dismiss", role: .cancel) {
+                viewModel?.stopConversation()
+            }
+        } message: {
+            Text(viewModel?.conversationError ?? "Connection lost")
         }
     }
 
@@ -77,7 +104,9 @@ struct CookModeView: View {
 
                 navigationControls(vm: vm)
 
-                if vm.isVoiceControlEnabled {
+                if vm.isConversationMode {
+                    conversationIndicator(vm: vm)
+                } else if vm.isVoiceControlEnabled {
                     voiceControlIndicator()
                 }
             }
@@ -288,19 +317,19 @@ struct CookModeView: View {
             }
 
             Button {
-                if vm.isVoiceControlEnabled {
-                    vm.stopVoiceControl()
+                if vm.isConversationMode {
+                    vm.stopConversation()
                 } else {
-                    vm.startVoiceControl()
+                    vm.startConversation()
                 }
             } label: {
                 VStack(spacing: 4) {
-                    Image(systemName: vm.isVoiceControlEnabled ? "mic.fill" : "mic.slash")
+                    Image(systemName: vm.isConversationMode ? "waveform.circle.fill" : "mic.slash")
                         .font(.system(size: 44))
-                        .foregroundStyle(vm.isVoiceControlEnabled ? AppColors.primaryGreen : .white.opacity(0.6))
-                    Text("Voice")
+                        .foregroundStyle(vm.isConversationMode ? AppColors.primaryGreen : .white.opacity(0.6))
+                    Text(vm.isConversationMode ? "Chat" : "Voice")
                         .font(.caption2)
-                        .foregroundStyle(vm.isVoiceControlEnabled ? AppColors.primaryGreen : .white.opacity(0.6))
+                        .foregroundStyle(vm.isConversationMode ? AppColors.primaryGreen : .white.opacity(0.6))
                 }
             }
 
@@ -321,7 +350,76 @@ struct CookModeView: View {
         .padding(.bottom, 8)
     }
 
-    // MARK: - Voice Control Indicator
+    // MARK: - Conversation Indicator (Realtime API)
+
+    private func conversationIndicator(vm: CookModeViewModel) -> some View {
+        VStack(spacing: 8) {
+            // Status bar with animated waveform
+            HStack(spacing: 10) {
+                if vm.isModelSpeaking {
+                    // AI is speaking — show waveform
+                    HStack(spacing: 3) {
+                        ForEach(0..<5, id: \.self) { i in
+                            RoundedRectangle(cornerRadius: 2)
+                                .fill(AppColors.primaryGreen)
+                                .frame(width: 3, height: CGFloat.random(in: 8...20))
+                        }
+                    }
+                    .modifier(PulseAnimation())
+                    Text("Speaking…")
+                        .font(.caption)
+                        .fontWeight(.medium)
+                        .foregroundStyle(AppColors.primaryGreen)
+                } else if vm.isUserSpeaking {
+                    // User is speaking
+                    Circle()
+                        .fill(.blue)
+                        .frame(width: 10, height: 10)
+                        .modifier(PulseAnimation())
+                    Text("Listening to you…")
+                        .font(.caption)
+                        .fontWeight(.medium)
+                        .foregroundStyle(.blue)
+                } else {
+                    Circle()
+                        .fill(AppColors.primaryGreen)
+                        .frame(width: 8, height: 8)
+                        .modifier(PulseAnimation())
+                    Text(vm.conversationStatus.isEmpty ? "Ready — just talk!" : vm.conversationStatus)
+                        .font(.caption)
+                        .foregroundStyle(.white.opacity(0.7))
+                }
+
+                Spacer()
+            }
+
+            // Show what the AI is saying (live transcript)
+            if vm.isModelSpeaking, !vm.conversationTranscript.isEmpty {
+                Text(vm.conversationTranscript)
+                    .font(.caption)
+                    .foregroundStyle(.white.opacity(0.8))
+                    .lineLimit(2)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+
+            // Show what the user said
+            if !vm.userTranscript.isEmpty, !vm.isModelSpeaking {
+                Text("You: \"\(vm.userTranscript)\"")
+                    .font(.caption2)
+                    .foregroundStyle(.white.opacity(0.5))
+                    .lineLimit(1)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 10)
+        .background(.white.opacity(0.08))
+        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .padding(.horizontal, 16)
+        .padding(.bottom, 8)
+    }
+
+    // MARK: - Voice Control Indicator (legacy fallback)
 
     private func voiceControlIndicator() -> some View {
         VStack(spacing: 4) {

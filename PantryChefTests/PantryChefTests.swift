@@ -1960,7 +1960,8 @@ final class CookModeViewModelTests: XCTestCase {
             ]
         )
         let speechService = SpeechService()
-        return CookModeViewModel(recipe: recipe, speechService: speechService)
+        let realtimeService = RealtimeService()
+        return CookModeViewModel(recipe: recipe, speechService: speechService, realtimeService: realtimeService)
     }
 
     // MARK: - Navigation
