@@ -30,8 +30,7 @@ final class HomeViewModel {
         switch hour {
         case 5..<12: greetingMessage = "Good morning"
         case 12..<17: greetingMessage = "Good afternoon"
-        case 17..<22: greetingMessage = "Good evening"
-        default: greetingMessage = "Good night"
+        default: greetingMessage = "Good evening"
         }
     }
 

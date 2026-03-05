@@ -2,16 +2,18 @@ import SwiftUI
 
 // MARK: - App Colors
 struct AppColors {
+    @Environment(\.colorScheme) static var colorScheme
+
     static let primary = Color("AccentColor")
     static let primaryGreen = Color(red: 0.30, green: 0.69, blue: 0.31)
     static let warmOrange = Color(red: 0.96, green: 0.65, blue: 0.14)
     static let softRed = Color(red: 0.90, green: 0.30, blue: 0.24)
-    static let lightGray = Color(red: 0.96, green: 0.96, blue: 0.97)
-    static let mediumGray = Color(red: 0.78, green: 0.78, blue: 0.80)
-    static let darkText = Color(red: 0.13, green: 0.13, blue: 0.13)
-    static let subtleText = Color(red: 0.56, green: 0.56, blue: 0.58)
-    static let cardBackground = Color.white
-    static let background = Color(red: 0.95, green: 0.95, blue: 0.97)
+    static let lightGray = Color(.systemGray6)
+    static let mediumGray = Color(.systemGray3)
+    static let darkText = Color(.label)
+    static let subtleText = Color(.secondaryLabel)
+    static let cardBackground = Color(.secondarySystemGroupedBackground)
+    static let background = Color(.systemGroupedBackground)
 
     static func categoryColor(_ category: FoodCategory) -> Color {
         switch category {

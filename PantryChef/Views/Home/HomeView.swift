@@ -2,9 +2,15 @@ import SwiftUI
 
 struct HomeView: View {
     @State private var viewModel: HomeViewModel
+    @State private var showWhatCanIMake = false
+    @State private var whatCanIMakeResults: [PantryMatchResult] = []
+    @State private var showReceiptScanner = false
 
-    init(appState: AppState) {
+    var onSwitchToShopping: (() -> Void)?
+
+    init(appState: AppState, onSwitchToShopping: (() -> Void)? = nil) {
         _viewModel = State(initialValue: HomeViewModel(appState: appState))
+        self.onSwitchToShopping = onSwitchToShopping
     }
 
     var body: some View {
@@ -42,6 +48,19 @@ struct HomeView: View {
             }
             .onAppear {
                 viewModel.refresh()
+            }
+            .sheet(isPresented: $showWhatCanIMake) {
+                WhatCanIMakeView(results: whatCanIMakeResults)
+            }
+            .sheet(isPresented: $showReceiptScanner) {
+                ReceiptScannerView { items in
+                    Task {
+                        for itemName in items {
+                            let item = PantryItem(name: itemName, category: .other)
+                            await viewModel.appState.addPantryItem(item)
+                        }
+                    }
+                }
             }
         }
     }
@@ -158,9 +177,21 @@ struct HomeView: View {
                 GridItem(.flexible()),
                 GridItem(.flexible()),
             ], spacing: 12) {
-                QuickActionButton(icon: "fork.knife", title: "What can\nI make?", color: AppColors.primaryGreen) {}
-                QuickActionButton(icon: "cart.fill", title: "What to\nbuy?", color: AppColors.warmOrange) {}
-                QuickActionButton(icon: "camera.fill", title: "Scan\nreceipt", color: .blue) {}
+                QuickActionButton(icon: "fork.knife", title: "What can\nI make?", color: AppColors.primaryGreen) {
+                    whatCanIMakeResults = viewModel.appState.recipes
+                        .map { $0.pantryMatch(pantry: viewModel.appState.pantryItems) }
+                        .sorted { $0.matchPercentage > $1.matchPercentage }
+                    showWhatCanIMake = true
+                }
+                QuickActionButton(icon: "cart.fill", title: "What to\nbuy?", color: AppColors.warmOrange) {
+                    Task {
+                        await viewModel.appState.generateShoppingListFromMealPlan()
+                    }
+                    onSwitchToShopping?()
+                }
+                QuickActionButton(icon: "camera.fill", title: "Scan\nreceipt", color: .blue) {
+                    showReceiptScanner = true
+                }
             }
         }
     }

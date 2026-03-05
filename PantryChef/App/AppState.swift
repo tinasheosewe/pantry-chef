@@ -110,6 +110,17 @@ final class AppState {
         }
     }
 
+    func updateRecipe(_ recipe: Recipe) async {
+        do {
+            let updated = try await storageService.updateRecipe(recipe)
+            if let index = recipes.firstIndex(where: { $0.id == recipe.id }) {
+                recipes[index] = updated
+            }
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+    }
+
     func deleteRecipe(_ recipe: Recipe) async {
         do {
             try await storageService.deleteRecipe(recipe)

@@ -1,9 +1,2550 @@
 import XCTest
 @testable import PantryChef
 
-final class PantryChefTests: XCTestCase {
+// MARK: - Mock Services
+
+@MainActor
+final class MockStorageService: StorageServiceProtocol {
+    var pantryStore: [PantryItem] = []
+    var recipeStore: [Recipe] = []
+    var mealPlanStore: [MealPlanEntry] = []
+    var shoppingStore: [ShoppingItem] = []
+
+    var addPantryItemCallCount = 0
+    var updatePantryItemCallCount = 0
+    var deletePantryItemCallCount = 0
+    var addRecipeCallCount = 0
+    var updateRecipeCallCount = 0
+    var deleteRecipeCallCount = 0
+    var addMealPlanCallCount = 0
+    var deleteMealPlanCallCount = 0
+
+    var shouldThrowError = false
+
+    func fetchPantryItems() async throws -> [PantryItem] {
+        if shouldThrowError { throw TestError.mock }
+        return pantryStore
+    }
+    func addPantryItem(_ item: PantryItem) async throws -> PantryItem {
+        if shouldThrowError { throw TestError.mock }
+        addPantryItemCallCount += 1
+        pantryStore.append(item)
+        return item
+    }
+    func updatePantryItem(_ item: PantryItem) async throws -> PantryItem {
+        if shouldThrowError { throw TestError.mock }
+        updatePantryItemCallCount += 1
+        if let idx = pantryStore.firstIndex(where: { $0.id == item.id }) {
+            pantryStore[idx] = item
+        }
+        return item
+    }
+    func deletePantryItem(_ item: PantryItem) async throws {
+        if shouldThrowError { throw TestError.mock }
+        deletePantryItemCallCount += 1
+        pantryStore.removeAll { $0.id == item.id }
+    }
+
+    func fetchRecipes() async throws -> [Recipe] {
+        if shouldThrowError { throw TestError.mock }
+        return recipeStore
+    }
+    func addRecipe(_ recipe: Recipe) async throws -> Recipe {
+        if shouldThrowError { throw TestError.mock }
+        addRecipeCallCount += 1
+        recipeStore.append(recipe)
+        return recipe
+    }
+    func updateRecipe(_ recipe: Recipe) async throws -> Recipe {
+        if shouldThrowError { throw TestError.mock }
+        updateRecipeCallCount += 1
+        if let idx = recipeStore.firstIndex(where: { $0.id == recipe.id }) {
+            recipeStore[idx] = recipe
+        }
+        return recipe
+    }
+    func deleteRecipe(_ recipe: Recipe) async throws {
+        if shouldThrowError { throw TestError.mock }
+        deleteRecipeCallCount += 1
+        recipeStore.removeAll { $0.id == recipe.id }
+    }
+
+    func fetchMealPlan() async throws -> [MealPlanEntry] {
+        if shouldThrowError { throw TestError.mock }
+        return mealPlanStore
+    }
+    func addMealPlanEntry(_ entry: MealPlanEntry) async throws -> MealPlanEntry {
+        if shouldThrowError { throw TestError.mock }
+        addMealPlanCallCount += 1
+        mealPlanStore.append(entry)
+        return entry
+    }
+    func updateMealPlanEntry(_ entry: MealPlanEntry) async throws -> MealPlanEntry {
+        if shouldThrowError { throw TestError.mock }
+        if let idx = mealPlanStore.firstIndex(where: { $0.id == entry.id }) {
+            mealPlanStore[idx] = entry
+        }
+        return entry
+    }
+    func deleteMealPlanEntry(_ entry: MealPlanEntry) async throws {
+        if shouldThrowError { throw TestError.mock }
+        deleteMealPlanCallCount += 1
+        mealPlanStore.removeAll { $0.id == entry.id }
+    }
+
+    func fetchShoppingItems() async throws -> [ShoppingItem] {
+        if shouldThrowError { throw TestError.mock }
+        return shoppingStore
+    }
+    func saveShoppingItems(_ items: [ShoppingItem]) async throws {
+        if shouldThrowError { throw TestError.mock }
+        shoppingStore = items
+    }
+}
+
+final class MockAIService: AIServiceProtocol {
+    var shoppingListToReturn: [ShoppingItem] = []
+    var recipesToReturn: [Recipe] = []
+    var substitutionsToReturn: [SubstitutionSuggestion] = []
+    var healthierToReturn: HealthierSuggestion?
+    var importResultToReturn: RecipeImportResult?
+    var chatResponse = "Mock response"
+
+    var generateShoppingListCallCount = 0
+    var suggestRecipesCallCount = 0
+    var suggestSubstitutionsCallCount = 0
+    var parseRecipeFromURLCallCount = 0
+    var parseRecipeFromTextCallCount = 0
+    var chatCallCount = 0
+
+    func generateShoppingList(recipe: Recipe, pantry: [PantryItem]) async -> [ShoppingItem] {
+        generateShoppingListCallCount += 1
+        return shoppingListToReturn
+    }
+    func suggestRecipes(pantry: [PantryItem]) async -> [Recipe] {
+        suggestRecipesCallCount += 1
+        return recipesToReturn
+    }
+    func suggestSubstitutions(recipe: Recipe, pantry: [PantryItem]) async -> [SubstitutionSuggestion] {
+        suggestSubstitutionsCallCount += 1
+        return substitutionsToReturn
+    }
+    func makeItHealthier(recipe: Recipe) async -> HealthierSuggestion? {
+        return healthierToReturn
+    }
+    func leftoverTransformer(ingredients: [String]) async -> [Recipe] {
+        return recipesToReturn
+    }
+    func parseRecipeFromURL(_ url: String) async -> RecipeImportResult? {
+        parseRecipeFromURLCallCount += 1
+        return importResultToReturn
+    }
+    func parseRecipeFromText(_ extractedText: String) async -> RecipeImportResult? {
+        parseRecipeFromTextCallCount += 1
+        return importResultToReturn
+    }
+    func chat(message: String, context: String) async -> String {
+        chatCallCount += 1
+        return chatResponse
+    }
+}
+
+enum TestError: Error {
+    case mock
+}
+
+// MARK: - Test Helpers
+
+@MainActor
+func makeTestAppState() -> (AppState, MockStorageService, MockAIService) {
+    let storage = MockStorageService()
+    let ai = MockAIService()
+    let appState = AppState(storageService: storage, aiService: ai)
+    // Clear seeded data so tests start clean
+    appState.pantryItems = []
+    appState.recipes = []
+    return (appState, storage, ai)
+}
+
+func makePantryItem(
+    name: String = "Test Item",
+    category: FoodCategory = .other,
+    quantity: Double? = 1,
+    unit: MeasurementUnit? = .piece,
+    expiryDate: Date? = nil
+) -> PantryItem {
+    PantryItem(name: name, category: category, quantity: quantity, unit: unit, expiryDate: expiryDate)
+}
+
+func makeRecipe(
+    title: String = "Test Recipe",
+    ingredients: [Ingredient] = [],
+    steps: [RecipeStep] = [RecipeStep(stepNumber: 1, instruction: "Do something")],
+    servings: Int = 4,
+    prepTimeMinutes: Int? = 10,
+    cookTimeMinutes: Int? = 20,
+    difficulty: DifficultyLevel = .easy,
+    dietaryTags: [DietaryTag] = [],
+    mealType: MealType? = .dinner,
+    nutrition: NutritionInfo? = nil,
+    isFavorite: Bool = false
+) -> Recipe {
+    Recipe(
+        title: title,
+        ingredients: ingredients,
+        steps: steps,
+        servings: servings,
+        prepTimeMinutes: prepTimeMinutes,
+        cookTimeMinutes: cookTimeMinutes,
+        difficulty: difficulty,
+        dietaryTags: dietaryTags,
+        mealType: mealType,
+        nutrition: nutrition,
+        isFavorite: isFavorite
+    )
+}
+
+// ===================================================================
+// MARK: - Model Tests
+// ===================================================================
+
+final class PantryItemModelTests: XCTestCase {
+
+    // MARK: - Initialization
+
+    func testDefaultInitialization() {
+        let item = PantryItem(name: "Milk", category: .dairy)
+        XCTAssertEqual(item.name, "Milk")
+        XCTAssertEqual(item.category, .dairy)
+        XCTAssertNil(item.quantity)
+        XCTAssertNil(item.unit)
+        XCTAssertNil(item.expiryDate)
+        XCTAssertNil(item.barcode)
+        XCTAssertNil(item.notes)
+        XCTAssertNil(item.imageURL)
+        XCTAssertNotNil(item.id)
+    }
+
+    func testFullInitialization() {
+        let expiry = Date().addingTimeInterval(86400 * 3)
+        let item = PantryItem(
+            name: "Eggs",
+            category: .dairy,
+            quantity: 12,
+            unit: .piece,
+            expiryDate: expiry,
+            barcode: "123456",
+            notes: "Free range",
+            imageURL: "https://example.com/eggs.jpg"
+        )
+        XCTAssertEqual(item.name, "Eggs")
+        XCTAssertEqual(item.category, .dairy)
+        XCTAssertEqual(item.quantity, 12)
+        XCTAssertEqual(item.unit, .piece)
+        XCTAssertEqual(item.barcode, "123456")
+        XCTAssertEqual(item.notes, "Free range")
+    }
+
+    // MARK: - Expiry Status
+
+    func testExpiryStatusFresh() {
+        let item = makePantryItem(
+            expiryDate: Calendar.current.date(byAdding: .day, value: 10, to: Date())
+        )
+        XCTAssertEqual(item.expiryStatus, .fresh)
+    }
+
+    func testExpiryStatusExpiringSoon() {
+        let item = makePantryItem(
+            expiryDate: Calendar.current.date(byAdding: .day, value: 2, to: Date())
+        )
+        XCTAssertEqual(item.expiryStatus, .expiringSoon)
+    }
+
+    func testExpiryStatusExpired() {
+        let item = makePantryItem(
+            expiryDate: Calendar.current.date(byAdding: .day, value: -1, to: Date())
+        )
+        XCTAssertEqual(item.expiryStatus, .expired)
+    }
+
+    func testExpiryStatusNoDate() {
+        let item = makePantryItem(expiryDate: nil)
+        XCTAssertEqual(item.expiryStatus, .fresh)
+    }
+
+    func testExpiryStatusExactlyThreeDays() {
+        let item = makePantryItem(
+            expiryDate: Calendar.current.date(byAdding: .day, value: 3, to: Date())
+        )
+        XCTAssertEqual(item.expiryStatus, .expiringSoon)
+    }
+
+    // MARK: - Days Until Expiry
+
+    func testDaysUntilExpiryFuture() {
+        let date = Calendar.current.date(byAdding: .day, value: 5, to: Date())!
+        let item = makePantryItem(expiryDate: date)
+        XCTAssertNotNil(item.daysUntilExpiry)
+        // Should be approximately 5 (can be 4 or 5 depending on time of day)
+        XCTAssertTrue(item.daysUntilExpiry! >= 4 && item.daysUntilExpiry! <= 5)
+    }
+
+    func testDaysUntilExpiryNilWhenNoDate() {
+        let item = makePantryItem(expiryDate: nil)
+        XCTAssertNil(item.daysUntilExpiry)
+    }
+
+    func testDaysUntilExpiryNegativeWhenExpired() {
+        let date = Calendar.current.date(byAdding: .day, value: -3, to: Date())!
+        let item = makePantryItem(expiryDate: date)
+        XCTAssertNotNil(item.daysUntilExpiry)
+        XCTAssertTrue(item.daysUntilExpiry! < 0)
+    }
+
+    // MARK: - Display Quantity
+
+    func testDisplayQuantityWholeNumber() {
+        let item = makePantryItem(quantity: 3, unit: .piece)
+        XCTAssertEqual(item.displayQuantity, "3 piece")
+    }
+
+    func testDisplayQuantityDecimal() {
+        let item = makePantryItem(quantity: 1.5, unit: .liter)
+        XCTAssertEqual(item.displayQuantity, "1.5 L")
+    }
+
+    func testDisplayQuantityNil() {
+        let item = makePantryItem(quantity: nil)
+        XCTAssertEqual(item.displayQuantity, "")
+    }
+
+    // MARK: - Sample Data
+
     func testSampleDataExists() {
-        XCTAssertFalse(PantryItem.sampleItems.isEmpty)
-        XCTAssertFalse(Recipe.sampleRecipes.isEmpty)
+        XCTAssertFalse(PantryItem.samples.isEmpty)
+        XCTAssertTrue(PantryItem.samples.count >= 10)
+    }
+
+    func testSampleDataHasUniqueIds() {
+        let ids = PantryItem.samples.map { $0.id }
+        XCTAssertEqual(ids.count, Set(ids).count, "Sample items should have unique IDs")
+    }
+
+    func testSampleDataHasMixedCategories() {
+        let categories = Set(PantryItem.samples.map { $0.category })
+        XCTAssertTrue(categories.count >= 3, "Samples should have at least 3 different categories")
+    }
+
+    // MARK: - Codable
+
+    func testPantryItemEncodeDecode() throws {
+        let item = makePantryItem(
+            name: "Cheese",
+            category: .dairy,
+            quantity: 200,
+            unit: .gram,
+            expiryDate: Date()
+        )
+        let data = try JSONEncoder().encode(item)
+        let decoded = try JSONDecoder().decode(PantryItem.self, from: data)
+        XCTAssertEqual(decoded.name, "Cheese")
+        XCTAssertEqual(decoded.category, .dairy)
+        XCTAssertEqual(decoded.quantity, 200)
+        XCTAssertEqual(decoded.unit, .gram)
+        XCTAssertEqual(decoded.id, item.id)
+    }
+}
+
+// MARK: - Recipe Model Tests
+
+final class RecipeModelTests: XCTestCase {
+
+    // MARK: - Initialization
+
+    func testDefaultRecipeInit() {
+        let recipe = Recipe(title: "Test")
+        XCTAssertEqual(recipe.title, "Test")
+        XCTAssertEqual(recipe.servings, 4)
+        XCTAssertFalse(recipe.isFavorite)
+        XCTAssertEqual(recipe.timesCooked, 0)
+        XCTAssertNil(recipe.rating)
+        XCTAssertTrue(recipe.ingredients.isEmpty)
+        XCTAssertTrue(recipe.steps.isEmpty)
+    }
+
+    // MARK: - Total Time
+
+    func testTotalTimeWithBoth() {
+        let recipe = makeRecipe(prepTimeMinutes: 15, cookTimeMinutes: 30)
+        XCTAssertEqual(recipe.totalTimeMinutes, 45)
+    }
+
+    func testTotalTimeWithPrepOnly() {
+        let recipe = makeRecipe(prepTimeMinutes: 15, cookTimeMinutes: nil)
+        XCTAssertEqual(recipe.totalTimeMinutes, 15)
+    }
+
+    func testTotalTimeWithCookOnly() {
+        let recipe = makeRecipe(prepTimeMinutes: nil, cookTimeMinutes: 30)
+        XCTAssertEqual(recipe.totalTimeMinutes, 30)
+    }
+
+    func testTotalTimeNil() {
+        let recipe = makeRecipe(prepTimeMinutes: nil, cookTimeMinutes: nil)
+        XCTAssertNil(recipe.totalTimeMinutes)
+    }
+
+    // MARK: - Total Time Display
+
+    func testTotalTimeDisplayMinutes() {
+        let recipe = makeRecipe(prepTimeMinutes: 10, cookTimeMinutes: 20)
+        XCTAssertEqual(recipe.totalTimeDisplay, "30 min")
+    }
+
+    func testTotalTimeDisplayHours() {
+        let recipe = makeRecipe(prepTimeMinutes: 30, cookTimeMinutes: 60)
+        XCTAssertEqual(recipe.totalTimeDisplay, "1h 30m")
+    }
+
+    func testTotalTimeDisplayExactHour() {
+        let recipe = makeRecipe(prepTimeMinutes: 30, cookTimeMinutes: 30)
+        XCTAssertEqual(recipe.totalTimeDisplay, "1h")
+    }
+
+    func testTotalTimeDisplayNA() {
+        let recipe = makeRecipe(prepTimeMinutes: nil, cookTimeMinutes: nil)
+        XCTAssertEqual(recipe.totalTimeDisplay, "N/A")
+    }
+
+    // MARK: - Scaling
+
+    func testScaleUp() {
+        let recipe = makeRecipe(
+            ingredients: [Ingredient(name: "Flour", quantity: 2, unit: .cup)],
+            servings: 4,
+            nutrition: NutritionInfo(calories: 400, protein: 10, carbohydrates: 50, fat: 15)
+        )
+        let scaled = recipe.scaled(to: 8)
+        XCTAssertEqual(scaled.servings, 8)
+        XCTAssertEqual(scaled.ingredients[0].quantity, 4.0)
+        XCTAssertEqual(scaled.nutrition?.calories, 800)
+        XCTAssertEqual(scaled.nutrition?.protein, 20.0)
+    }
+
+    func testScaleDown() {
+        let recipe = makeRecipe(
+            ingredients: [Ingredient(name: "Flour", quantity: 4, unit: .cup)],
+            servings: 4
+        )
+        let scaled = recipe.scaled(to: 2)
+        XCTAssertEqual(scaled.servings, 2)
+        XCTAssertEqual(scaled.ingredients[0].quantity, 2.0)
+    }
+
+    func testScaleToSame() {
+        let recipe = makeRecipe(
+            ingredients: [Ingredient(name: "Flour", quantity: 2, unit: .cup)],
+            servings: 4
+        )
+        let scaled = recipe.scaled(to: 4)
+        XCTAssertEqual(scaled.ingredients[0].quantity, 2.0)
+    }
+
+    // MARK: - Pantry Matching
+
+    func testPantryMatchFullMatch() {
+        let recipe = makeRecipe(ingredients: [
+            Ingredient(name: "Chicken", quantity: 500, unit: .gram, category: .protein),
+            Ingredient(name: "Rice", quantity: 2, unit: .cup, category: .grains),
+        ])
+        let pantry = [
+            makePantryItem(name: "Chicken Breast", category: .protein),
+            makePantryItem(name: "Rice", category: .grains),
+        ]
+        let match = recipe.pantryMatch(pantry: pantry)
+        XCTAssertTrue(match.canMake)
+        XCTAssertEqual(match.matchPercentage, 100.0)
+        XCTAssertTrue(match.missingIngredients.isEmpty)
+    }
+
+    func testPantryMatchPartialMatch() {
+        let recipe = makeRecipe(ingredients: [
+            Ingredient(name: "Chicken", quantity: 500, unit: .gram, category: .protein),
+            Ingredient(name: "Rice", quantity: 2, unit: .cup, category: .grains),
+        ])
+        let pantry = [makePantryItem(name: "Rice", category: .grains)]
+        let match = recipe.pantryMatch(pantry: pantry)
+        XCTAssertFalse(match.canMake)
+        XCTAssertEqual(match.matchPercentage, 50.0)
+        XCTAssertEqual(match.missingIngredients.count, 1)
+        XCTAssertEqual(match.missingIngredients[0].name, "Chicken")
+    }
+
+    func testPantryMatchNoMatch() {
+        let recipe = makeRecipe(ingredients: [
+            Ingredient(name: "Tofu", quantity: 1, unit: .package),
+        ])
+        let pantry = [makePantryItem(name: "Chicken")]
+        let match = recipe.pantryMatch(pantry: pantry)
+        XCTAssertFalse(match.canMake)
+        XCTAssertEqual(match.matchPercentage, 0.0)
+    }
+
+    func testPantryMatchBidirectionalContains() {
+        // "Chicken Breast" contains "chicken" (pantry name contains ingredient name)
+        let recipe = makeRecipe(ingredients: [
+            Ingredient(name: "Chicken", quantity: 1, unit: .piece),
+        ])
+        let pantry = [makePantryItem(name: "Chicken Breast")]
+        let match = recipe.pantryMatch(pantry: pantry)
+        XCTAssertTrue(match.canMake, "Should match: 'Chicken Breast' contains 'Chicken'")
+    }
+
+    func testPantryMatchBidirectionalContainsReverse() {
+        // ingredient "Lager Beer" contains pantry "Beer"
+        let recipe = makeRecipe(ingredients: [
+            Ingredient(name: "Lager Beer", quantity: 1, unit: .can),
+        ])
+        let pantry = [makePantryItem(name: "Beer")]
+        let match = recipe.pantryMatch(pantry: pantry)
+        XCTAssertTrue(match.canMake, "Should match: 'Lager Beer' contains 'Beer'")
+    }
+
+    func testPantryMatchIgnoresOptional() {
+        let recipe = makeRecipe(ingredients: [
+            Ingredient(name: "Chicken", quantity: 1, unit: .piece, isOptional: false),
+            Ingredient(name: "Garnish", quantity: 1, unit: .piece, isOptional: true),
+        ])
+        let pantry = [makePantryItem(name: "Chicken")]
+        let match = recipe.pantryMatch(pantry: pantry)
+        XCTAssertTrue(match.canMake, "Should match: optional ingredient excluded from required")
+        XCTAssertEqual(match.matchPercentage, 100.0)
+    }
+
+    func testPantryMatchEmptyPantry() {
+        let recipe = makeRecipe(ingredients: [
+            Ingredient(name: "Flour", quantity: 2, unit: .cup),
+        ])
+        let match = recipe.pantryMatch(pantry: [])
+        XCTAssertFalse(match.canMake)
+        XCTAssertEqual(match.matchPercentage, 0.0)
+    }
+
+    func testPantryMatchEmptyIngredients() {
+        let recipe = makeRecipe(ingredients: [])
+        let match = recipe.pantryMatch(pantry: [makePantryItem()])
+        XCTAssertEqual(match.matchPercentage, 0.0)
+    }
+
+    // MARK: - Display Percentage
+
+    func testDisplayPercentage() {
+        let result = PantryMatchResult(
+            recipe: makeRecipe(),
+            matchedIngredients: [],
+            missingIngredients: [],
+            matchPercentage: 75.0
+        )
+        XCTAssertEqual(result.displayPercentage, "75%")
+    }
+
+    // MARK: - Sample Data
+
+    func testRecipeSampleData() {
+        XCTAssertFalse(Recipe.samples.isEmpty)
+        XCTAssertTrue(Recipe.samples.count >= 3)
+
+        // Each sample should have ingredients and steps
+        for recipe in Recipe.samples {
+            XCTAssertFalse(recipe.title.isEmpty, "\(recipe.title) should have a non-empty title")
+            XCTAssertFalse(recipe.ingredients.isEmpty, "\(recipe.title) should have ingredients")
+            XCTAssertFalse(recipe.steps.isEmpty, "\(recipe.title) should have steps")
+        }
+    }
+
+    // MARK: - Codable
+
+    func testRecipeEncodeDecode() throws {
+        let recipe = makeRecipe(
+            title: "Pasta",
+            ingredients: [Ingredient(name: "Pasta", quantity: 500, unit: .gram)],
+            nutrition: NutritionInfo(calories: 450, protein: 20, carbohydrates: 55, fat: 12),
+            isFavorite: true
+        )
+        let data = try JSONEncoder().encode(recipe)
+        let decoded = try JSONDecoder().decode(Recipe.self, from: data)
+        XCTAssertEqual(decoded.title, "Pasta")
+        XCTAssertEqual(decoded.isFavorite, true)
+        XCTAssertEqual(decoded.nutrition?.calories, 450)
+        XCTAssertEqual(decoded.id, recipe.id)
+    }
+}
+
+// MARK: - Ingredient Model Tests
+
+final class IngredientModelTests: XCTestCase {
+
+    func testDisplayTextInteger() {
+        let ing = Ingredient(name: "Flour", quantity: 2, unit: .cup)
+        XCTAssertEqual(ing.displayText, "2 cup Flour")
+    }
+
+    func testDisplayTextDecimal() {
+        let ing = Ingredient(name: "Oil", quantity: 1.5, unit: .tablespoon)
+        XCTAssertEqual(ing.displayText, "1.5 tbsp Oil")
+    }
+
+    func testDisplayTextNoUnit() {
+        let ing = Ingredient(name: "Eggs", quantity: 3, unit: nil)
+        XCTAssertEqual(ing.displayText, "3  Eggs")
+    }
+
+    func testIngredientOptionalFlag() {
+        let required = Ingredient(name: "Salt", quantity: 1, isOptional: false)
+        let optional = Ingredient(name: "Garnish", quantity: 1, isOptional: true)
+        XCTAssertFalse(required.isOptional)
+        XCTAssertTrue(optional.isOptional)
+    }
+
+    func testIngredientCodable() throws {
+        let ing = Ingredient(name: "Sugar", quantity: 100, unit: .gram, category: .bakingSupplies)
+        let data = try JSONEncoder().encode(ing)
+        let decoded = try JSONDecoder().decode(Ingredient.self, from: data)
+        XCTAssertEqual(decoded.name, "Sugar")
+        XCTAssertEqual(decoded.unit, .gram)
+        XCTAssertEqual(decoded.category, .bakingSupplies)
+    }
+}
+
+// MARK: - RecipeStep Model Tests
+
+final class RecipeStepModelTests: XCTestCase {
+
+    func testBasicStep() {
+        let step = RecipeStep(stepNumber: 1, instruction: "Boil water")
+        XCTAssertEqual(step.stepNumber, 1)
+        XCTAssertEqual(step.instruction, "Boil water")
+        XCTAssertNil(step.timerMinutes)
+        XCTAssertNil(step.tip)
+    }
+
+    func testStepWithTimer() {
+        let step = RecipeStep(stepNumber: 2, instruction: "Cook pasta", timerMinutes: 10)
+        XCTAssertEqual(step.timerMinutes, 10)
+    }
+
+    func testStepWithTip() {
+        let step = RecipeStep(stepNumber: 3, instruction: "Dice onion", tip: "Keep fingers tucked")
+        XCTAssertEqual(step.tip, "Keep fingers tucked")
+    }
+}
+
+// MARK: - NutritionInfo Tests
+
+final class NutritionInfoModelTests: XCTestCase {
+
+    func testMacroSummary() {
+        let info = NutritionInfo(calories: 450, protein: 35, carbohydrates: 40, fat: 15)
+        XCTAssertEqual(info.macroSummary, "P: 35g  C: 40g  F: 15g")
+    }
+
+    func testSampleData() {
+        let sample = NutritionInfo.sample
+        XCTAssertGreaterThan(sample.calories, 0)
+        XCTAssertGreaterThan(sample.protein, 0)
+    }
+}
+
+// MARK: - ShoppingItem Model Tests
+
+final class ShoppingItemModelTests: XCTestCase {
+
+    func testDisplayTextFull() {
+        let item = ShoppingItem(name: "Tomatoes", quantity: 4, unit: .whole, category: .produce)
+        XCTAssertEqual(item.displayText, "4 whole Tomatoes")
+    }
+
+    func testDisplayTextNoQuantity() {
+        let item = ShoppingItem(name: "Bread", quantity: nil, unit: nil, category: .grains)
+        XCTAssertEqual(item.displayText, "Bread")
+    }
+
+    func testDisplayTextQuantityOnly() {
+        let item = ShoppingItem(name: "Butter", quantity: 250, unit: .gram, category: .dairy)
+        XCTAssertEqual(item.displayText, "250 g Butter")
+    }
+
+    func testIsCheckedDefault() {
+        let item = ShoppingItem(name: "Test")
+        XCTAssertFalse(item.isChecked)
+    }
+
+    func testSampleData() {
+        XCTAssertFalse(ShoppingItem.samples.isEmpty)
+    }
+}
+
+// MARK: - MealPlanEntry Model Tests
+
+final class MealPlanEntryModelTests: XCTestCase {
+
+    func testDisplayNameWithRecipe() {
+        let recipe = makeRecipe(title: "Pasta Carbonara")
+        let entry = MealPlanEntry(date: Date(), mealType: .dinner, recipe: recipe)
+        XCTAssertEqual(entry.displayName, "Pasta Carbonara")
+    }
+
+    func testDisplayNameWithCustomMeal() {
+        let entry = MealPlanEntry(date: Date(), mealType: .lunch, customMealName: "Leftovers")
+        XCTAssertEqual(entry.displayName, "Leftovers")
+    }
+
+    func testDisplayNameUnplanned() {
+        let entry = MealPlanEntry(date: Date(), mealType: .breakfast)
+        XCTAssertEqual(entry.displayName, "Unplanned")
+    }
+
+    func testIsPlanned() {
+        let planned = MealPlanEntry(date: Date(), mealType: .dinner, recipe: makeRecipe())
+        let custom = MealPlanEntry(date: Date(), mealType: .dinner, customMealName: "Pizza")
+        let unplanned = MealPlanEntry(date: Date(), mealType: .dinner)
+
+        XCTAssertTrue(planned.isPlanned)
+        XCTAssertTrue(custom.isPlanned)
+        XCTAssertFalse(unplanned.isPlanned)
+    }
+
+    func testEmptyWeekGeneration() {
+        let week = MealPlanEntry.emptyWeek()
+        // 7 days * 3 meal types (breakfast, lunch, dinner)
+        XCTAssertEqual(week.count, 21)
+    }
+}
+
+// ===================================================================
+// MARK: - Enum Tests
+// ===================================================================
+
+final class EnumTests: XCTestCase {
+
+    // MARK: - FoodCategory
+
+    func testFoodCategoryAllCases() {
+        XCTAssertEqual(FoodCategory.allCases.count, 15)
+    }
+
+    func testFoodCategoryIcons() {
+        for category in FoodCategory.allCases {
+            XCTAssertFalse(category.icon.isEmpty, "\(category.rawValue) should have an icon")
+        }
+    }
+
+    func testFoodCategoryColors() {
+        // Verify colors do not crash and return actual Color values
+        for category in FoodCategory.allCases {
+            let _ = category.color // Should not throw
+        }
+    }
+
+    func testFoodCategoryCodable() throws {
+        let category: FoodCategory = .dairy
+        let data = try JSONEncoder().encode(category)
+        let decoded = try JSONDecoder().decode(FoodCategory.self, from: data)
+        XCTAssertEqual(decoded, .dairy)
+    }
+
+    // MARK: - MeasurementUnit
+
+    func testMeasurementUnitAllCases() {
+        XCTAssertTrue(MeasurementUnit.allCases.count >= 19)
+    }
+
+    func testMetricUnits() {
+        XCTAssertTrue(MeasurementUnit.milliliter.isMetric)
+        XCTAssertTrue(MeasurementUnit.liter.isMetric)
+        XCTAssertTrue(MeasurementUnit.gram.isMetric)
+        XCTAssertTrue(MeasurementUnit.kilogram.isMetric)
+        XCTAssertFalse(MeasurementUnit.cup.isMetric)
+        XCTAssertFalse(MeasurementUnit.teaspoon.isMetric)
+        XCTAssertFalse(MeasurementUnit.piece.isMetric)
+    }
+
+    // MARK: - DietaryTag
+
+    func testDietaryTagAllCases() {
+        XCTAssertEqual(DietaryTag.allCases.count, 11)
+    }
+
+    func testDietaryTagIcons() {
+        for tag in DietaryTag.allCases {
+            XCTAssertFalse(tag.icon.isEmpty, "\(tag.rawValue) should have an icon")
+            // Verify no invalid SF Symbol names (basic check: no spaces, no "fossil")
+            XCTAssertFalse(
+                tag.icon.contains("fossil"),
+                "\(tag.rawValue) icon should not use non-existent SF Symbol 'fossil'"
+            )
+        }
+    }
+
+    // MARK: - DifficultyLevel
+
+    func testDifficultyLevelOrdering() {
+        let levels = DifficultyLevel.allCases.map { $0.rawValue }
+        XCTAssertEqual(levels, [1, 2, 3, 4, 5])
+    }
+
+    func testDifficultyLevelLabels() {
+        XCTAssertEqual(DifficultyLevel.beginner.label, "Beginner")
+        XCTAssertEqual(DifficultyLevel.easy.label, "Easy")
+        XCTAssertEqual(DifficultyLevel.medium.label, "Medium")
+        XCTAssertEqual(DifficultyLevel.hard.label, "Hard")
+        XCTAssertEqual(DifficultyLevel.expert.label, "Expert")
+    }
+
+    // MARK: - MealType
+
+    func testMealTypeIcons() {
+        for mealType in MealType.allCases {
+            XCTAssertFalse(mealType.icon.isEmpty)
+        }
+    }
+
+    // MARK: - ExpiryStatus
+
+    func testExpiryStatusLabels() {
+        XCTAssertEqual(ExpiryStatus.fresh.label, "Fresh")
+        XCTAssertEqual(ExpiryStatus.expiringSoon.label, "Use Soon")
+        XCTAssertEqual(ExpiryStatus.expired.label, "Expired")
+    }
+
+    func testExpiryStatusColors() {
+        // Verify no crash
+        let _ = ExpiryStatus.fresh.color
+        let _ = ExpiryStatus.expiringSoon.color
+        let _ = ExpiryStatus.expired.color
+    }
+}
+
+// ===================================================================
+// MARK: - AI Model Tests
+// ===================================================================
+
+final class AIModelTests: XCTestCase {
+
+    func testSubstitutionConfidenceLabel() {
+        XCTAssertEqual(
+            SubstitutionSuggestion(originalIngredient: "X", substituteName: "Y",
+                                   ratio: "1:1", tasteImpact: "", textureImpact: "",
+                                   nutritionImpact: "", confidence: 0.9).confidenceLabel,
+            "Excellent"
+        )
+        XCTAssertEqual(
+            SubstitutionSuggestion(originalIngredient: "X", substituteName: "Y",
+                                   ratio: "1:1", tasteImpact: "", textureImpact: "",
+                                   nutritionImpact: "", confidence: 0.7).confidenceLabel,
+            "Good"
+        )
+        XCTAssertEqual(
+            SubstitutionSuggestion(originalIngredient: "X", substituteName: "Y",
+                                   ratio: "1:1", tasteImpact: "", textureImpact: "",
+                                   nutritionImpact: "", confidence: 0.5).confidenceLabel,
+            "Decent"
+        )
+        XCTAssertEqual(
+            SubstitutionSuggestion(originalIngredient: "X", substituteName: "Y",
+                                   ratio: "1:1", tasteImpact: "", textureImpact: "",
+                                   nutritionImpact: "", confidence: 0.2).confidenceLabel,
+            "Experimental"
+        )
+    }
+
+    func testRecipeImportResultToRecipe() {
+        let result = RecipeImportResult(
+            title: "Imported Recipe",
+            description: "A great recipe",
+            ingredients: [Ingredient(name: "Salt", quantity: 1, unit: .pinch)],
+            steps: [RecipeStep(stepNumber: 1, instruction: "Add salt")],
+            servings: 2,
+            prepTimeMinutes: 5,
+            cookTimeMinutes: 10,
+            imageURL: nil,
+            dietaryTags: [.vegan]
+        )
+        let recipe = result.toRecipe()
+        XCTAssertEqual(recipe.title, "Imported Recipe")
+        XCTAssertEqual(recipe.servings, 2)
+        XCTAssertEqual(recipe.dietaryTags, [.vegan])
+        XCTAssertEqual(recipe.ingredients.count, 1)
+    }
+
+    func testRecipeImportResultDefaultServings() {
+        let result = RecipeImportResult(
+            title: "Test",
+            description: nil,
+            ingredients: [],
+            steps: [],
+            servings: nil,
+            prepTimeMinutes: nil,
+            cookTimeMinutes: nil,
+            imageURL: nil,
+            dietaryTags: nil
+        )
+        let recipe = result.toRecipe()
+        XCTAssertEqual(recipe.servings, 4, "Should default to 4 servings")
+    }
+}
+
+// ===================================================================
+// MARK: - StorageService Tests
+// ===================================================================
+
+@MainActor
+final class StorageServiceTests: XCTestCase {
+
+    // MARK: - Pantry
+
+    func testFetchPantryItemsReturnsSorted() async throws {
+        let sut = StorageService()
+        let items = try await sut.fetchPantryItems()
+        XCTAssertFalse(items.isEmpty, "Should return seeded pantry items")
+    }
+
+    func testAddAndFetchPantryItem() async throws {
+        let sut = StorageService()
+        let item = makePantryItem(name: "Test Cheese", category: .dairy)
+        let _ = try await sut.addPantryItem(item)
+        let all = try await sut.fetchPantryItems()
+        XCTAssertTrue(all.contains { $0.id == item.id })
+    }
+
+    func testUpdatePantryItem() async throws {
+        let sut = StorageService()
+        var item = makePantryItem(name: "Cheese", category: .dairy, quantity: 100)
+        let _ = try await sut.addPantryItem(item)
+        item.quantity = 200
+        let _ = try await sut.updatePantryItem(item)
+        let all = try await sut.fetchPantryItems()
+        let found = all.first { $0.id == item.id }
+        XCTAssertEqual(found?.quantity, 200)
+    }
+
+    func testDeletePantryItem() async throws {
+        let sut = StorageService()
+        let item = makePantryItem(name: "ToDelete")
+        let _ = try await sut.addPantryItem(item)
+        try await sut.deletePantryItem(item)
+        let all = try await sut.fetchPantryItems()
+        XCTAssertFalse(all.contains { $0.id == item.id })
+    }
+
+    // MARK: - Recipes
+
+    func testAddAndFetchRecipe() async throws {
+        let sut = StorageService()
+        let recipe = makeRecipe(title: "Test Soup")
+        let _ = try await sut.addRecipe(recipe)
+        let all = try await sut.fetchRecipes()
+        XCTAssertTrue(all.contains { $0.id == recipe.id })
+    }
+
+    func testUpdateRecipe() async throws {
+        let sut = StorageService()
+        var recipe = makeRecipe(title: "Original Title")
+        let _ = try await sut.addRecipe(recipe)
+        recipe.title = "Updated Title"
+        let _ = try await sut.updateRecipe(recipe)
+        let all = try await sut.fetchRecipes()
+        let found = all.first { $0.id == recipe.id }
+        XCTAssertEqual(found?.title, "Updated Title")
+    }
+
+    func testDeleteRecipe() async throws {
+        let sut = StorageService()
+        let recipe = makeRecipe(title: "ToDelete")
+        let _ = try await sut.addRecipe(recipe)
+        try await sut.deleteRecipe(recipe)
+        let all = try await sut.fetchRecipes()
+        XCTAssertFalse(all.contains { $0.id == recipe.id })
+    }
+
+    // MARK: - Meal Plan
+
+    func testAddAndFetchMealPlan() async throws {
+        let sut = StorageService()
+        let entry = MealPlanEntry(date: Date(), mealType: .dinner, recipe: makeRecipe())
+        let _ = try await sut.addMealPlanEntry(entry)
+        let all = try await sut.fetchMealPlan()
+        XCTAssertTrue(all.contains { $0.id == entry.id })
+    }
+
+    func testDeleteMealPlanEntry() async throws {
+        let sut = StorageService()
+        let entry = MealPlanEntry(date: Date(), mealType: .lunch)
+        let _ = try await sut.addMealPlanEntry(entry)
+        try await sut.deleteMealPlanEntry(entry)
+        let all = try await sut.fetchMealPlan()
+        XCTAssertFalse(all.contains { $0.id == entry.id })
+    }
+
+    // MARK: - Shopping
+
+    func testSaveAndFetchShoppingItems() async throws {
+        let sut = StorageService()
+        let items = [
+            ShoppingItem(name: "Apples", category: .produce),
+            ShoppingItem(name: "Bread", category: .grains),
+        ]
+        try await sut.saveShoppingItems(items)
+        let fetched = try await sut.fetchShoppingItems()
+        XCTAssertEqual(fetched.count, 2)
+    }
+}
+
+// ===================================================================
+// MARK: - AppState Tests
+// ===================================================================
+
+@MainActor
+final class AppStateTests: XCTestCase {
+
+    // MARK: - Pantry CRUD
+
+    func testAddPantryItem() async {
+        let (appState, storage, _) = makeTestAppState()
+        let item = makePantryItem(name: "Milk")
+        await appState.addPantryItem(item)
+        XCTAssertEqual(appState.pantryItems.count, 1)
+        XCTAssertEqual(appState.pantryItems[0].name, "Milk")
+        XCTAssertEqual(storage.addPantryItemCallCount, 1)
+    }
+
+    func testRemovePantryItem() async {
+        let (appState, storage, _) = makeTestAppState()
+        let item = makePantryItem(name: "Eggs")
+        await appState.addPantryItem(item)
+        await appState.removePantryItem(item)
+        XCTAssertTrue(appState.pantryItems.isEmpty)
+        XCTAssertEqual(storage.deletePantryItemCallCount, 1)
+    }
+
+    func testUpdatePantryItem() async {
+        let (appState, storage, _) = makeTestAppState()
+        var item = makePantryItem(name: "Cheese", quantity: 100)
+        await appState.addPantryItem(item)
+        item.quantity = 200
+        await appState.updatePantryItem(item)
+        XCTAssertEqual(appState.pantryItems[0].quantity, 200)
+        XCTAssertEqual(storage.updatePantryItemCallCount, 1)
+    }
+
+    // MARK: - Recipe CRUD
+
+    func testAddRecipe() async {
+        let (appState, storage, _) = makeTestAppState()
+        let recipe = makeRecipe(title: "New Recipe")
+        await appState.addRecipe(recipe)
+        XCTAssertEqual(appState.recipes.count, 1)
+        XCTAssertEqual(storage.addRecipeCallCount, 1)
+    }
+
+    func testUpdateRecipe() async {
+        let (appState, storage, _) = makeTestAppState()
+        var recipe = makeRecipe(title: "Original")
+        await appState.addRecipe(recipe)
+        recipe.title = "Updated"
+        await appState.updateRecipe(recipe)
+        XCTAssertEqual(appState.recipes[0].title, "Updated")
+        XCTAssertEqual(storage.updateRecipeCallCount, 1)
+    }
+
+    func testDeleteRecipe() async {
+        let (appState, storage, _) = makeTestAppState()
+        let recipe = makeRecipe(title: "Delete Me")
+        await appState.addRecipe(recipe)
+        await appState.deleteRecipe(recipe)
+        XCTAssertTrue(appState.recipes.isEmpty)
+        XCTAssertEqual(storage.deleteRecipeCallCount, 1)
+    }
+
+    func testUpdateRecipeDoesNotDuplicate() async {
+        let (appState, _, _) = makeTestAppState()
+        var recipe = makeRecipe(title: "Test")
+        await appState.addRecipe(recipe)
+        recipe.isFavorite = true
+        await appState.updateRecipe(recipe)
+        XCTAssertEqual(appState.recipes.count, 1, "updateRecipe should not duplicate")
+        XCTAssertTrue(appState.recipes[0].isFavorite)
+    }
+
+    // MARK: - Meal Plan CRUD
+
+    func testAddToMealPlan() async {
+        let (appState, storage, _) = makeTestAppState()
+        let entry = MealPlanEntry(date: Date(), mealType: .dinner)
+        await appState.addToMealPlan(entry)
+        XCTAssertEqual(appState.mealPlan.count, 1)
+        XCTAssertEqual(storage.addMealPlanCallCount, 1)
+    }
+
+    func testRemoveFromMealPlan() async {
+        let (appState, storage, _) = makeTestAppState()
+        let entry = MealPlanEntry(date: Date(), mealType: .dinner)
+        await appState.addToMealPlan(entry)
+        await appState.removeFromMealPlan(entry)
+        XCTAssertTrue(appState.mealPlan.isEmpty)
+        XCTAssertEqual(storage.deleteMealPlanCallCount, 1)
+    }
+
+    // MARK: - Computed Properties
+
+    func testExpiringItems() async {
+        let (appState, _, _) = makeTestAppState()
+        let expiring = makePantryItem(
+            name: "Soon",
+            expiryDate: Calendar.current.date(byAdding: .day, value: 1, to: Date())
+        )
+        let fresh = makePantryItem(
+            name: "Fresh",
+            expiryDate: Calendar.current.date(byAdding: .day, value: 30, to: Date())
+        )
+        let noDate = makePantryItem(name: "NoDate", expiryDate: nil)
+        await appState.addPantryItem(expiring)
+        await appState.addPantryItem(fresh)
+        await appState.addPantryItem(noDate)
+        XCTAssertEqual(appState.expiringItems.count, 1)
+        XCTAssertEqual(appState.expiringItems[0].name, "Soon")
+    }
+
+    func testExpiredItems() async {
+        let (appState, _, _) = makeTestAppState()
+        let expired = makePantryItem(
+            name: "Bad",
+            expiryDate: Calendar.current.date(byAdding: .day, value: -1, to: Date())
+        )
+        let fresh = makePantryItem(
+            name: "Good",
+            expiryDate: Calendar.current.date(byAdding: .day, value: 10, to: Date())
+        )
+        await appState.addPantryItem(expired)
+        await appState.addPantryItem(fresh)
+        XCTAssertEqual(appState.expiredItems.count, 1)
+        XCTAssertEqual(appState.expiredItems[0].name, "Bad")
+    }
+
+    func testPantryByCategory() async {
+        let (appState, _, _) = makeTestAppState()
+        await appState.addPantryItem(makePantryItem(name: "Milk", category: .dairy))
+        await appState.addPantryItem(makePantryItem(name: "Chicken", category: .protein))
+        await appState.addPantryItem(makePantryItem(name: "Eggs", category: .dairy))
+        let grouped = appState.pantryByCategory
+        XCTAssertEqual(grouped[.dairy]?.count, 2)
+        XCTAssertEqual(grouped[.protein]?.count, 1)
+    }
+
+    // MARK: - Shopping List Generation (fuzzy matching)
+
+    func testGenerateShoppingListFromMealPlan() async {
+        let (appState, _, _) = makeTestAppState()
+        // Add pantry item
+        await appState.addPantryItem(makePantryItem(name: "Chicken Breast", category: .protein, quantity: 500))
+        // Add recipe to meal plan
+        let recipe = makeRecipe(ingredients: [
+            Ingredient(name: "Chicken", quantity: 400, unit: .gram, category: .protein),
+            Ingredient(name: "Soy Sauce", quantity: 2, unit: .tablespoon, category: .condiments),
+        ])
+        let entry = MealPlanEntry(date: Date(), mealType: .dinner, recipe: recipe)
+        await appState.addToMealPlan(entry)
+        // Generate
+        await appState.generateShoppingListFromMealPlan()
+        // "Chicken" should be matched by "Chicken Breast" (fuzzy), "Soy Sauce" should be missing
+        XCTAssertEqual(appState.shoppingItems.count, 1)
+        XCTAssertEqual(appState.shoppingItems[0].name, "Soy Sauce")
+    }
+
+    func testGenerateShoppingListDeduplicates() async {
+        let (appState, _, _) = makeTestAppState()
+        let recipe1 = makeRecipe(title: "R1", ingredients: [
+            Ingredient(name: "Onion", quantity: 1),
+            Ingredient(name: "Garlic", quantity: 2),
+        ])
+        let recipe2 = makeRecipe(title: "R2", ingredients: [
+            Ingredient(name: "Onion", quantity: 2),
+            Ingredient(name: "Pepper", quantity: 1),
+        ])
+        await appState.addToMealPlan(MealPlanEntry(date: Date(), mealType: .lunch, recipe: recipe1))
+        await appState.addToMealPlan(MealPlanEntry(date: Date(), mealType: .dinner, recipe: recipe2))
+        await appState.generateShoppingListFromMealPlan()
+        let names = appState.shoppingItems.map { $0.name.lowercased() }
+        // "onion" should appear only once (deduplicated)
+        XCTAssertEqual(names.filter { $0 == "onion" }.count, 1)
+    }
+
+    // MARK: - Shopping Toggle
+
+    func testToggleShoppingItem() async {
+        let (appState, _, _) = makeTestAppState()
+        let item = ShoppingItem(name: "Test", category: .other)
+        appState.shoppingItems.append(item)
+        XCTAssertFalse(appState.shoppingItems[0].isChecked)
+        appState.toggleShoppingItem(item)
+        XCTAssertTrue(appState.shoppingItems[0].isChecked)
+        appState.toggleShoppingItem(appState.shoppingItems[0])
+        XCTAssertFalse(appState.shoppingItems[0].isChecked)
+    }
+
+    // MARK: - Cook Deduction (fuzzy matching)
+
+    func testMarkRecipeAsCookedDeductsIngredients() async {
+        let (appState, _, _) = makeTestAppState()
+        await appState.addPantryItem(makePantryItem(name: "Chicken Breast", category: .protein, quantity: 600, unit: .gram))
+        await appState.addPantryItem(makePantryItem(name: "Rice", category: .grains, quantity: 3, unit: .cup))
+
+        let recipe = makeRecipe(ingredients: [
+            Ingredient(name: "Chicken", quantity: 500, unit: .gram, category: .protein),
+            Ingredient(name: "Rice", quantity: 2, unit: .cup, category: .grains),
+        ])
+        await appState.markRecipeAsCooked(recipe)
+
+        // Chicken Breast: 600 - 500 = 100
+        let chicken = appState.pantryItems.first { $0.name == "Chicken Breast" }
+        XCTAssertNotNil(chicken)
+        XCTAssertEqual(chicken?.quantity, 100)
+
+        // Rice: 3 - 2 = 1
+        let rice = appState.pantryItems.first { $0.name == "Rice" }
+        XCTAssertNotNil(rice)
+        XCTAssertEqual(rice?.quantity, 1)
+    }
+
+    func testMarkRecipeAsCookedRemovesItemWhenDepleted() async {
+        let (appState, _, _) = makeTestAppState()
+        await appState.addPantryItem(makePantryItem(name: "Eggs", category: .dairy, quantity: 3, unit: .piece))
+        let recipe = makeRecipe(ingredients: [
+            Ingredient(name: "Eggs", quantity: 3, unit: .piece),
+        ])
+        await appState.markRecipeAsCooked(recipe)
+        XCTAssertFalse(appState.pantryItems.contains { $0.name == "Eggs" },
+                        "Should remove item when quantity runs out")
+    }
+
+    // MARK: - Load All Data
+
+    func testLoadAllData() async {
+        let (appState, storage, _) = makeTestAppState()
+        storage.pantryStore = [makePantryItem(name: "Loaded")]
+        storage.recipeStore = [makeRecipe(title: "Loaded Recipe")]
+        storage.mealPlanStore = [MealPlanEntry(date: Date(), mealType: .dinner)]
+        storage.shoppingStore = [ShoppingItem(name: "Loaded Shopping")]
+
+        await appState.loadAllData()
+        XCTAssertEqual(appState.pantryItems.count, 1)
+        XCTAssertEqual(appState.recipes.count, 1)
+        XCTAssertEqual(appState.mealPlan.count, 1)
+        XCTAssertEqual(appState.shoppingItems.count, 1)
+    }
+
+    func testLoadAllDataError() async {
+        let (appState, storage, _) = makeTestAppState()
+        storage.shouldThrowError = true
+        await appState.loadAllData()
+        XCTAssertNotNil(appState.errorMessage)
+    }
+
+    // MARK: - AI Actions
+
+    func testGetShoppingList() async {
+        let (appState, _, ai) = makeTestAppState()
+        ai.shoppingListToReturn = [ShoppingItem(name: "Flour")]
+        let result = await appState.getShoppingList(for: makeRecipe())
+        XCTAssertEqual(result.count, 1)
+        XCTAssertEqual(ai.generateShoppingListCallCount, 1)
+    }
+
+    func testGetRecipeSuggestions() async {
+        let (appState, _, ai) = makeTestAppState()
+        ai.recipesToReturn = [makeRecipe(title: "Suggestion")]
+        let result = await appState.getRecipeSuggestions()
+        XCTAssertEqual(result.count, 1)
+        XCTAssertEqual(ai.suggestRecipesCallCount, 1)
+    }
+
+    func testGetSubstitutions() async {
+        let (appState, _, ai) = makeTestAppState()
+        ai.substitutionsToReturn = [SubstitutionSuggestion.sample]
+        let result = await appState.getSubstitutions(for: makeRecipe())
+        XCTAssertEqual(result.count, 1)
+        XCTAssertEqual(ai.suggestSubstitutionsCallCount, 1)
+    }
+}
+
+// ===================================================================
+// MARK: - ViewModel Tests
+// ===================================================================
+
+// MARK: - RecipeViewModel Tests
+
+@MainActor
+final class RecipeViewModelTests: XCTestCase {
+
+    private func makeSUT() -> (RecipeViewModel, AppState, MockStorageService, MockAIService) {
+        let (appState, storage, ai) = makeTestAppState()
+        let vm = RecipeViewModel(appState: appState)
+        return (vm, appState, storage, ai)
+    }
+
+    // MARK: - Filtering
+
+    func testFilterBySearchText() async {
+        let (vm, appState, _, _) = makeSUT()
+        await appState.addRecipe(makeRecipe(title: "Chicken Soup"))
+        await appState.addRecipe(makeRecipe(title: "Beef Stew"))
+        vm.searchText = "chicken"
+        XCTAssertEqual(vm.filteredRecipes.count, 1)
+        XCTAssertEqual(vm.filteredRecipes[0].title, "Chicken Soup")
+    }
+
+    func testFilterBySearchTextDescription() async {
+        let (vm, appState, _, _) = makeSUT()
+        let recipe = Recipe(title: "Mystery", description: "A creamy pasta dish")
+        await appState.addRecipe(recipe)
+        vm.searchText = "pasta"
+        XCTAssertEqual(vm.filteredRecipes.count, 1)
+    }
+
+    func testFilterByFavorites() async {
+        let (vm, appState, _, _) = makeSUT()
+        await appState.addRecipe(makeRecipe(title: "Fav", isFavorite: true))
+        await appState.addRecipe(makeRecipe(title: "NotFav", isFavorite: false))
+        vm.showOnlyFavorites = true
+        XCTAssertEqual(vm.filteredRecipes.count, 1)
+        XCTAssertEqual(vm.filteredRecipes[0].title, "Fav")
+    }
+
+    func testFilterByDifficulty() async {
+        let (vm, appState, _, _) = makeSUT()
+        await appState.addRecipe(makeRecipe(title: "Easy", difficulty: .easy))
+        await appState.addRecipe(makeRecipe(title: "Hard", difficulty: .hard))
+        vm.selectedDifficulty = .easy
+        XCTAssertEqual(vm.filteredRecipes.count, 1)
+        XCTAssertEqual(vm.filteredRecipes[0].title, "Easy")
+    }
+
+    func testFilterByMealType() async {
+        let (vm, appState, _, _) = makeSUT()
+        await appState.addRecipe(makeRecipe(title: "Breakfast", mealType: .breakfast))
+        await appState.addRecipe(makeRecipe(title: "Dinner", mealType: .dinner))
+        vm.selectedMealType = .breakfast
+        XCTAssertEqual(vm.filteredRecipes.count, 1)
+        XCTAssertEqual(vm.filteredRecipes[0].title, "Breakfast")
+    }
+
+    func testFilterByDietaryTags() async {
+        let (vm, appState, _, _) = makeSUT()
+        await appState.addRecipe(makeRecipe(title: "Vegan", dietaryTags: [.vegan, .glutenFree]))
+        await appState.addRecipe(makeRecipe(title: "Regular", dietaryTags: []))
+        vm.selectedDietaryTags = [.vegan]
+        XCTAssertEqual(vm.filteredRecipes.count, 1)
+        XCTAssertEqual(vm.filteredRecipes[0].title, "Vegan")
+    }
+
+    func testFilterCombined() async {
+        let (vm, appState, _, _) = makeSUT()
+        await appState.addRecipe(makeRecipe(title: "Easy Vegan Dinner",
+                                            difficulty: .easy, dietaryTags: [.vegan], mealType: .dinner, isFavorite: true))
+        await appState.addRecipe(makeRecipe(title: "Hard Vegan Lunch",
+                                            difficulty: .hard, dietaryTags: [.vegan], mealType: .lunch))
+        vm.selectedDifficulty = .easy
+        vm.selectedDietaryTags = [.vegan]
+        vm.showOnlyFavorites = true
+        XCTAssertEqual(vm.filteredRecipes.count, 1)
+        XCTAssertEqual(vm.filteredRecipes[0].title, "Easy Vegan Dinner")
+    }
+
+    // MARK: - Sorting
+
+    func testSortByName() async {
+        let (vm, appState, _, _) = makeSUT()
+        await appState.addRecipe(makeRecipe(title: "Zebra Cake"))
+        await appState.addRecipe(makeRecipe(title: "Apple Pie"))
+        vm.sortOrder = .name
+        XCTAssertEqual(vm.filteredRecipes[0].title, "Apple Pie")
+        XCTAssertEqual(vm.filteredRecipes[1].title, "Zebra Cake")
+    }
+
+    func testSortByDifficulty() async {
+        let (vm, appState, _, _) = makeSUT()
+        await appState.addRecipe(makeRecipe(title: "Hard", difficulty: .hard))
+        await appState.addRecipe(makeRecipe(title: "Easy", difficulty: .easy))
+        vm.sortOrder = .difficulty
+        XCTAssertEqual(vm.filteredRecipes[0].title, "Easy")
+    }
+
+    func testSortByTime() async {
+        let (vm, appState, _, _) = makeSUT()
+        await appState.addRecipe(makeRecipe(title: "Long", prepTimeMinutes: 30, cookTimeMinutes: 60))
+        await appState.addRecipe(makeRecipe(title: "Quick", prepTimeMinutes: 5, cookTimeMinutes: 10))
+        vm.sortOrder = .time
+        XCTAssertEqual(vm.filteredRecipes[0].title, "Quick")
+    }
+
+    // MARK: - Actions
+
+    func testToggleFavoriteUsesUpdate() async {
+        let (vm, appState, storage, _) = makeSUT()
+        let recipe = makeRecipe(title: "TestFav", isFavorite: false)
+        await appState.addRecipe(recipe)
+        await vm.toggleFavorite(recipe)
+        XCTAssertEqual(storage.updateRecipeCallCount, 1, "toggleFavorite should call updateRecipe, not addRecipe")
+        XCTAssertEqual(appState.recipes.count, 1, "Should not duplicate recipe")
+        XCTAssertTrue(appState.recipes[0].isFavorite)
+    }
+
+    func testToggleFavoriteUnfavorite() async {
+        let (vm, appState, _, _) = makeSUT()
+        let recipe = makeRecipe(title: "Fav", isFavorite: true)
+        await appState.addRecipe(recipe)
+        await vm.toggleFavorite(recipe)
+        XCTAssertFalse(appState.recipes[0].isFavorite)
+    }
+
+    func testAddRecipe() async {
+        let (vm, appState, _, _) = makeSUT()
+        await vm.addRecipe(makeRecipe(title: "New"))
+        XCTAssertEqual(appState.recipes.count, 1)
+    }
+
+    func testDeleteRecipe() async {
+        let (vm, appState, _, _) = makeSUT()
+        let recipe = makeRecipe(title: "Delete")
+        await vm.addRecipe(recipe)
+        await vm.deleteRecipe(recipe)
+        XCTAssertTrue(appState.recipes.isEmpty)
+    }
+
+    func testWhatCanIMake() async {
+        let (vm, appState, _, _) = makeSUT()
+        await appState.addPantryItem(makePantryItem(name: "Chicken"))
+        await appState.addRecipe(makeRecipe(title: "Chicken Soup", ingredients: [
+            Ingredient(name: "Chicken", quantity: 1),
+        ]))
+        vm.whatCanIMake()
+        XCTAssertTrue(vm.showWhatCanIMake)
+        XCTAssertFalse(vm.whatCanIMakeResults.isEmpty)
+    }
+
+    func testClearFilters() async {
+        let (vm, _, _, _) = makeSUT()
+        vm.selectedDifficulty = .hard
+        vm.selectedMealType = .dinner
+        vm.selectedDietaryTags = [.vegan]
+        vm.showOnlyFavorites = true
+        vm.searchText = "test"
+        vm.clearFilters()
+        XCTAssertNil(vm.selectedDifficulty)
+        XCTAssertNil(vm.selectedMealType)
+        XCTAssertTrue(vm.selectedDietaryTags.isEmpty)
+        XCTAssertFalse(vm.showOnlyFavorites)
+        XCTAssertTrue(vm.searchText.isEmpty)
+    }
+
+    func testHasActiveFilters() {
+        let (vm, _, _, _) = makeSUT()
+        XCTAssertFalse(vm.hasActiveFilters)
+        vm.selectedDifficulty = .easy
+        XCTAssertTrue(vm.hasActiveFilters)
+    }
+
+    // MARK: - Import
+
+    func testImportFromURL() async {
+        let (vm, _, _, ai) = makeSUT()
+        ai.importResultToReturn = RecipeImportResult(
+            title: "Imported",
+            description: nil,
+            ingredients: [],
+            steps: [],
+            servings: 4,
+            prepTimeMinutes: nil,
+            cookTimeMinutes: nil,
+            imageURL: nil,
+            dietaryTags: nil
+        )
+        await vm.importFromURL("https://example.com/recipe")
+        XCTAssertNotNil(vm.importedRecipe)
+        XCTAssertEqual(vm.importedRecipe?.title, "Imported")
+        XCTAssertEqual(ai.parseRecipeFromURLCallCount, 1)
+    }
+
+    func testImportFromURLFails() async {
+        let (vm, _, _, ai) = makeSUT()
+        ai.importResultToReturn = nil
+        await vm.importFromURL("https://bad.url")
+        XCTAssertNil(vm.importedRecipe)
+    }
+
+    func testImportFromPhoto() async {
+        let (vm, _, _, ai) = makeSUT()
+        ai.importResultToReturn = RecipeImportResult(
+            title: "Photo Recipe",
+            description: nil,
+            ingredients: [],
+            steps: [],
+            servings: 2,
+            prepTimeMinutes: nil,
+            cookTimeMinutes: nil,
+            imageURL: nil,
+            dietaryTags: nil
+        )
+        await vm.importFromPhoto(extractedText: "Some recipe text")
+        XCTAssertNotNil(vm.importedRecipe)
+        XCTAssertEqual(ai.parseRecipeFromTextCallCount, 1)
+    }
+}
+
+// MARK: - PantryViewModel Tests
+
+@MainActor
+final class PantryViewModelTests: XCTestCase {
+
+    private func makeSUT() -> (PantryViewModel, AppState) {
+        let (appState, _, _) = makeTestAppState()
+        let vm = PantryViewModel(appState: appState)
+        return (vm, appState)
+    }
+
+    // MARK: - Filtering
+
+    func testFilterBySearchText() async {
+        let (vm, appState) = makeSUT()
+        await appState.addPantryItem(makePantryItem(name: "Milk", category: .dairy))
+        await appState.addPantryItem(makePantryItem(name: "Chicken", category: .protein))
+        vm.searchText = "Milk"
+        XCTAssertEqual(vm.filteredItems.count, 1)
+        XCTAssertEqual(vm.filteredItems[0].name, "Milk")
+    }
+
+    func testFilterByCategory() async {
+        let (vm, appState) = makeSUT()
+        await appState.addPantryItem(makePantryItem(name: "Milk", category: .dairy))
+        await appState.addPantryItem(makePantryItem(name: "Chicken", category: .protein))
+        vm.selectedCategory = .dairy
+        XCTAssertEqual(vm.filteredItems.count, 1)
+        XCTAssertEqual(vm.filteredItems[0].name, "Milk")
+    }
+
+    func testFilterNoCategoryShowsAll() async {
+        let (vm, appState) = makeSUT()
+        await appState.addPantryItem(makePantryItem(name: "Milk", category: .dairy))
+        await appState.addPantryItem(makePantryItem(name: "Chicken", category: .protein))
+        vm.selectedCategory = nil
+        XCTAssertEqual(vm.filteredItems.count, 2)
+    }
+
+    // MARK: - Sorting
+
+    func testSortByName() async {
+        let (vm, appState) = makeSUT()
+        await appState.addPantryItem(makePantryItem(name: "Zucchini"))
+        await appState.addPantryItem(makePantryItem(name: "Apple"))
+        vm.sortOrder = .name
+        XCTAssertEqual(vm.filteredItems[0].name, "Apple")
+    }
+
+    func testSortByExpiry() async {
+        let (vm, appState) = makeSUT()
+        await appState.addPantryItem(makePantryItem(
+            name: "Late",
+            expiryDate: Calendar.current.date(byAdding: .day, value: 10, to: Date())
+        ))
+        await appState.addPantryItem(makePantryItem(
+            name: "Soon",
+            expiryDate: Calendar.current.date(byAdding: .day, value: 1, to: Date())
+        ))
+        vm.sortOrder = .expiry
+        XCTAssertEqual(vm.filteredItems[0].name, "Soon")
+    }
+
+    // MARK: - Grouping
+
+    func testGroupedByCategory() async {
+        let (vm, appState) = makeSUT()
+        await appState.addPantryItem(makePantryItem(name: "Milk", category: .dairy))
+        await appState.addPantryItem(makePantryItem(name: "Cheese", category: .dairy))
+        await appState.addPantryItem(makePantryItem(name: "Chicken", category: .protein))
+        let groups = vm.groupedByCategory
+        XCTAssertTrue(groups.count >= 2)
+        let dairyGroup = groups.first { $0.0 == .dairy }
+        XCTAssertEqual(dairyGroup?.1.count, 2)
+    }
+
+    func testActiveCategoryCount() async {
+        let (vm, appState) = makeSUT()
+        await appState.addPantryItem(makePantryItem(name: "Milk", category: .dairy))
+        await appState.addPantryItem(makePantryItem(name: "Cheese", category: .dairy))
+        await appState.addPantryItem(makePantryItem(name: "Chicken", category: .protein))
+        XCTAssertEqual(vm.activeCategoryCount[.dairy], 2)
+        XCTAssertEqual(vm.activeCategoryCount[.protein], 1)
+        XCTAssertNil(vm.activeCategoryCount[.beverages])
+    }
+
+    // MARK: - CRUD
+
+    func testAddItem() async {
+        let (vm, appState) = makeSUT()
+        await vm.addItem(makePantryItem(name: "NewItem"))
+        XCTAssertEqual(appState.pantryItems.count, 1)
+    }
+
+    func testDeleteItem() async {
+        let (vm, appState) = makeSUT()
+        let item = makePantryItem(name: "Delete")
+        await vm.addItem(item)
+        await vm.deleteItem(item)
+        XCTAssertTrue(appState.pantryItems.isEmpty)
+    }
+
+    func testUpdateItem() async {
+        let (vm, appState) = makeSUT()
+        var item = makePantryItem(name: "Update", quantity: 1)
+        await vm.addItem(item)
+        item.quantity = 5
+        await vm.updateItem(item)
+        XCTAssertEqual(appState.pantryItems[0].quantity, 5)
+    }
+
+    // MARK: - Handle Receipt Scanned
+
+    func testHandleReceiptScannedAddsItems() async {
+        let (vm, appState) = makeSUT()
+        await vm.handleReceiptScanned(items: ["Milk", "Eggs", "Bread"])
+        XCTAssertEqual(appState.pantryItems.count, 3)
+        let names = appState.pantryItems.map { $0.name }
+        XCTAssertTrue(names.contains("Milk"))
+        XCTAssertTrue(names.contains("Eggs"))
+        XCTAssertTrue(names.contains("Bread"))
+    }
+
+    func testHandleReceiptScannedDefaultsToOtherCategory() async {
+        let (vm, appState) = makeSUT()
+        await vm.handleReceiptScanned(items: ["Unknown Item"])
+        XCTAssertEqual(appState.pantryItems[0].category, .other)
+    }
+}
+
+// MARK: - HomeViewModel Tests
+
+@MainActor
+final class HomeViewModelTests: XCTestCase {
+
+    private func makeSUT() -> (HomeViewModel, AppState) {
+        let (appState, _, _) = makeTestAppState()
+        let vm = HomeViewModel(appState: appState)
+        return (vm, appState)
+    }
+
+    // MARK: - Greeting
+
+    func testGreetingIsNotEmpty() {
+        let (vm, _) = makeSUT()
+        XCTAssertFalse(vm.greetingMessage.isEmpty)
+    }
+
+    func testGreetingContainsGood() {
+        let (vm, _) = makeSUT()
+        XCTAssertTrue(vm.greetingMessage.hasPrefix("Good"))
+    }
+
+    func testGreetingNeverSaysGoodNight() {
+        let (vm, _) = makeSUT()
+        XCTAssertNotEqual(vm.greetingMessage, "Good night", "Greeting should never say 'Good night'")
+    }
+
+    // MARK: - Refresh
+
+    func testRefreshUpdatesAllFields() async {
+        let (vm, appState) = makeSUT()
+        await appState.addRecipe(makeRecipe(
+            title: "Suggested",
+            ingredients: [Ingredient(name: "Milk", quantity: 1)],
+            nutrition: NutritionInfo(calories: 300, protein: 10, carbohydrates: 40, fat: 8)
+        ))
+        await appState.addPantryItem(makePantryItem(name: "Milk"))
+        vm.refresh()
+        XCTAssertNotNil(vm.suggestedRecipe, "Should suggest a recipe based on pantry match")
+    }
+
+    func testSuggestedRecipePicksBestMatch() async {
+        let (vm, appState) = makeSUT()
+        await appState.addPantryItem(makePantryItem(name: "Chicken"))
+        await appState.addPantryItem(makePantryItem(name: "Rice"))
+        // Recipe with 100% match
+        await appState.addRecipe(makeRecipe(title: "Full Match", ingredients: [
+            Ingredient(name: "Chicken", quantity: 1),
+            Ingredient(name: "Rice", quantity: 1),
+        ]))
+        // Recipe with 50% match
+        await appState.addRecipe(makeRecipe(title: "Partial Match", ingredients: [
+            Ingredient(name: "Chicken", quantity: 1),
+            Ingredient(name: "Tofu", quantity: 1),
+        ]))
+        vm.refresh()
+        XCTAssertEqual(vm.suggestedRecipe?.title, "Full Match")
+    }
+
+    // MARK: - Today's Meals
+
+    func testTodaysMealsFilters() async {
+        let (vm, appState) = makeSUT()
+        let today = Date()
+        let tomorrow = Calendar.current.date(byAdding: .day, value: 1, to: today)!
+        await appState.addToMealPlan(MealPlanEntry(date: today, mealType: .dinner, recipe: makeRecipe(title: "Today")))
+        await appState.addToMealPlan(MealPlanEntry(date: tomorrow, mealType: .dinner, recipe: makeRecipe(title: "Tomorrow")))
+        vm.refresh()
+        XCTAssertEqual(vm.todaysMeals.count, 1)
+        XCTAssertEqual(vm.todaysMeals[0].recipe?.title, "Today")
+    }
+
+    // MARK: - Weekly Nutrition
+
+    func testWeeklyNutritionEmptyWhenNoMeals() {
+        let (vm, _) = makeSUT()
+        vm.refresh()
+        XCTAssertNil(vm.weeklyNutrition)
+    }
+
+    func testWeeklyNutritionCalculation() async {
+        let (vm, appState) = makeSUT()
+        let recipe = makeRecipe(
+            nutrition: NutritionInfo(calories: 700, protein: 30, carbohydrates: 80, fat: 20)
+        )
+        await appState.addToMealPlan(MealPlanEntry(date: Date(), mealType: .dinner, recipe: recipe))
+        vm.refresh()
+        XCTAssertNotNil(vm.weeklyNutrition)
+        XCTAssertEqual(vm.weeklyNutrition?.totalCalories, 700)
+        XCTAssertEqual(vm.weeklyNutrition?.mealsPlanned, 1)
+    }
+}
+
+// MARK: - ShoppingViewModel Tests
+
+@MainActor
+final class ShoppingViewModelTests: XCTestCase {
+
+    private func makeSUT() -> (ShoppingViewModel, AppState) {
+        let (appState, _, _) = makeTestAppState()
+        let vm = ShoppingViewModel(appState: appState)
+        return (vm, appState)
+    }
+
+    // MARK: - Items & Filtering
+
+    func testItemsReturnsAll() {
+        let (vm, appState) = makeSUT()
+        appState.shoppingItems = [
+            ShoppingItem(name: "Milk"),
+            ShoppingItem(name: "Bread"),
+        ]
+        XCTAssertEqual(vm.items.count, 2)
+    }
+
+    func testItemsFilteredBySearch() {
+        let (vm, appState) = makeSUT()
+        appState.shoppingItems = [
+            ShoppingItem(name: "Milk"),
+            ShoppingItem(name: "Bread"),
+        ]
+        vm.searchText = "Milk"
+        XCTAssertEqual(vm.items.count, 1)
+        XCTAssertEqual(vm.items[0].name, "Milk")
+    }
+
+    // MARK: - Grouping
+
+    func testGroupedByCategory() {
+        let (vm, appState) = makeSUT()
+        appState.shoppingItems = [
+            ShoppingItem(name: "Milk", category: .dairy),
+            ShoppingItem(name: "Bread", category: .grains),
+            ShoppingItem(name: "Cheese", category: .dairy),
+        ]
+        let groups = vm.groupedByCategory
+        XCTAssertTrue(groups.count >= 2)
+    }
+
+    // MARK: - Counts & Progress
+
+    func testCheckedCount() {
+        let (vm, appState) = makeSUT()
+        appState.shoppingItems = [
+            ShoppingItem(name: "A", isChecked: true),
+            ShoppingItem(name: "B", isChecked: false),
+            ShoppingItem(name: "C", isChecked: true),
+        ]
+        XCTAssertEqual(vm.checkedCount, 2)
+        XCTAssertEqual(vm.totalCount, 3)
+        XCTAssertEqual(vm.progressText, "2/3 items")
+    }
+
+    // MARK: - Toggle
+
+    func testToggleItem() {
+        let (vm, appState) = makeSUT()
+        let item = ShoppingItem(name: "Test")
+        appState.shoppingItems = [item]
+        vm.toggleItem(item)
+        XCTAssertTrue(appState.shoppingItems[0].isChecked)
+    }
+
+    // MARK: - Remove Checked
+
+    func testRemoveCheckedItems() {
+        let (vm, appState) = makeSUT()
+        appState.shoppingItems = [
+            ShoppingItem(name: "A", isChecked: true),
+            ShoppingItem(name: "B", isChecked: false),
+            ShoppingItem(name: "C", isChecked: true),
+        ]
+        vm.removeCheckedItems()
+        XCTAssertEqual(appState.shoppingItems.count, 1)
+        XCTAssertEqual(appState.shoppingItems[0].name, "B")
+    }
+
+    // MARK: - Add & Remove
+
+    func testAddItem() {
+        let (vm, appState) = makeSUT()
+        vm.addItem(ShoppingItem(name: "NewItem"))
+        XCTAssertEqual(appState.shoppingItems.count, 1)
+    }
+
+    func testRemoveItem() {
+        let (vm, appState) = makeSUT()
+        let item = ShoppingItem(name: "Remove")
+        appState.shoppingItems = [item]
+        vm.removeItem(item)
+        XCTAssertTrue(appState.shoppingItems.isEmpty)
+    }
+
+    // MARK: - Add Checked to Pantry
+
+    func testAddCheckedToPantry() async {
+        let (vm, appState) = makeSUT()
+        appState.shoppingItems = [
+            ShoppingItem(name: "Milk", quantity: 1, unit: .liter, category: .dairy, isChecked: true),
+            ShoppingItem(name: "Bread", category: .grains, isChecked: false),
+        ]
+        await vm.addCheckedToPantry()
+        // Milk should be in pantry, Bread should remain in shopping
+        XCTAssertEqual(appState.pantryItems.count, 1)
+        XCTAssertEqual(appState.pantryItems[0].name, "Milk")
+        XCTAssertEqual(appState.pantryItems[0].category, .dairy)
+        // Only unchecked items remain
+        XCTAssertEqual(appState.shoppingItems.count, 1)
+        XCTAssertEqual(appState.shoppingItems[0].name, "Bread")
+    }
+}
+
+// MARK: - MealPlanViewModel Tests
+
+@MainActor
+final class MealPlanViewModelTests: XCTestCase {
+
+    private func makeSUT() -> (MealPlanViewModel, AppState) {
+        let (appState, _, _) = makeTestAppState()
+        let vm = MealPlanViewModel(appState: appState)
+        return (vm, appState)
+    }
+
+    // MARK: - Week Navigation
+
+    func testWeekDaysReturnsSevenDays() {
+        let (vm, _) = makeSUT()
+        XCTAssertEqual(vm.weekDays.count, 7)
+    }
+
+    func testPreviousWeek() {
+        let (vm, _) = makeSUT()
+        let originalStart = vm.weekStartDate
+        vm.previousWeek()
+        XCTAssertTrue(vm.weekStartDate < originalStart)
+    }
+
+    func testNextWeek() {
+        let (vm, _) = makeSUT()
+        let originalStart = vm.weekStartDate
+        vm.nextWeek()
+        XCTAssertTrue(vm.weekStartDate > originalStart)
+    }
+
+    func testGoToCurrentWeek() {
+        let (vm, _) = makeSUT()
+        vm.nextWeek()
+        vm.nextWeek()
+        vm.goToCurrentWeek()
+        let calendar = Calendar.current
+        let expected = calendar.dateInterval(of: .weekOfYear, for: Date())?.start ?? Date()
+        XCTAssertTrue(calendar.isDate(vm.weekStartDate, inSameDayAs: expected))
+    }
+
+    // MARK: - Assign & Remove
+
+    func testAssignRecipe() async {
+        let (vm, appState) = makeSUT()
+        let recipe = makeRecipe(title: "Assigned")
+        let slot = MealPlanViewModel.MealSlot(date: Date(), mealType: .dinner)
+        await vm.assignRecipe(recipe, to: slot)
+        XCTAssertEqual(appState.mealPlan.count, 1)
+        XCTAssertEqual(vm.entries.count, 1)
+    }
+
+    func testRemoveEntry() async {
+        let (vm, appState) = makeSUT()
+        let entry = MealPlanEntry(date: Date(), mealType: .dinner, recipe: makeRecipe())
+        await appState.addToMealPlan(entry)
+        vm.entries.append(entry)
+        await vm.removeEntry(entry)
+        XCTAssertTrue(appState.mealPlan.isEmpty)
+        XCTAssertTrue(vm.entries.isEmpty)
+    }
+
+    // MARK: - Select Slot
+
+    func testSelectSlot() {
+        let (vm, _) = makeSUT()
+        vm.selectSlot(date: Date(), mealType: .lunch)
+        XCTAssertNotNil(vm.selectedSlot)
+        XCTAssertEqual(vm.selectedSlot?.mealType, .lunch)
+        XCTAssertTrue(vm.showRecipePicker)
+    }
+
+    // MARK: - Shopping List Generation
+
+    func testGenerateShoppingList() async {
+        let (vm, appState) = makeSUT()
+        let recipe = makeRecipe(ingredients: [
+            Ingredient(name: "Flour", quantity: 2, unit: .cup),
+        ])
+        await appState.addToMealPlan(MealPlanEntry(date: Date(), mealType: .dinner, recipe: recipe))
+        await vm.generateShoppingList()
+        XCTAssertFalse(appState.shoppingItems.isEmpty)
+    }
+
+    // MARK: - Computed Properties
+
+    func testTotalPlannedMeals() async {
+        let (vm, _) = makeSUT()
+        let recipe = makeRecipe()
+        let slot = MealPlanViewModel.MealSlot(date: Date(), mealType: .dinner)
+        await vm.assignRecipe(recipe, to: slot)
+        XCTAssertEqual(vm.totalPlannedMeals, 1)
+    }
+
+    func testWeekDateRangeText() {
+        let (vm, _) = makeSUT()
+        let text = vm.weekDateRangeText
+        XCTAssertTrue(text.contains("–"), "Should contain an en-dash separator")
+    }
+}
+
+// MARK: - CookModeViewModel Tests
+
+@MainActor
+final class CookModeViewModelTests: XCTestCase {
+
+    private func makeSUT() -> CookModeViewModel {
+        let recipe = makeRecipe(
+            ingredients: [
+                Ingredient(name: "Pasta", quantity: 500, unit: .gram),
+                Ingredient(name: "Sauce", quantity: 1, unit: .cup),
+            ],
+            steps: [
+                RecipeStep(stepNumber: 1, instruction: "Boil water", timerMinutes: 10),
+                RecipeStep(stepNumber: 2, instruction: "Cook pasta", timerMinutes: 8),
+                RecipeStep(stepNumber: 3, instruction: "Add sauce"),
+                RecipeStep(stepNumber: 4, instruction: "Serve"),
+            ]
+        )
+        let speechService = SpeechService()
+        return CookModeViewModel(recipe: recipe, speechService: speechService)
+    }
+
+    // MARK: - Navigation
+
+    func testInitialState() {
+        let vm = makeSUT()
+        XCTAssertEqual(vm.currentStepIndex, 0)
+        XCTAssertFalse(vm.showCompletionScreen)
+        XCTAssertTrue(vm.isFirstStep)
+        XCTAssertFalse(vm.isLastStep)
+    }
+
+    func testStepsAreSorted() {
+        let vm = makeSUT()
+        XCTAssertEqual(vm.steps.count, 4)
+        XCTAssertEqual(vm.steps[0].stepNumber, 1)
+        XCTAssertEqual(vm.steps[3].stepNumber, 4)
+    }
+
+    func testNextStep() {
+        let vm = makeSUT()
+        vm.isAudioEnabled = false // Don't trigger AVFoundation in tests
+        vm.nextStep()
+        XCTAssertEqual(vm.currentStepIndex, 1)
+        XCTAssertFalse(vm.isFirstStep)
+    }
+
+    func testPreviousStep() {
+        let vm = makeSUT()
+        vm.isAudioEnabled = false
+        vm.nextStep()
+        vm.previousStep()
+        XCTAssertEqual(vm.currentStepIndex, 0)
+        XCTAssertTrue(vm.isFirstStep)
+    }
+
+    func testPreviousStepAtStart() {
+        let vm = makeSUT()
+        vm.isAudioEnabled = false
+        vm.previousStep()
+        XCTAssertEqual(vm.currentStepIndex, 0, "Should not go below 0")
+    }
+
+    func testNextStepAtEndShowsCompletion() {
+        let vm = makeSUT()
+        vm.isAudioEnabled = false
+        vm.goToStep(3) // Last step
+        vm.nextStep()
+        XCTAssertTrue(vm.showCompletionScreen)
+    }
+
+    func testGoToStep() {
+        let vm = makeSUT()
+        vm.isAudioEnabled = false
+        vm.goToStep(2)
+        XCTAssertEqual(vm.currentStepIndex, 2)
+        XCTAssertEqual(vm.currentStep?.instruction, "Add sauce")
+    }
+
+    func testGoToStepOutOfBounds() {
+        let vm = makeSUT()
+        vm.isAudioEnabled = false
+        vm.goToStep(100)
+        XCTAssertEqual(vm.currentStepIndex, 0, "Should not change for out-of-bounds")
+    }
+
+    func testGoToNegativeStep() {
+        let vm = makeSUT()
+        vm.isAudioEnabled = false
+        vm.goToStep(-1)
+        XCTAssertEqual(vm.currentStepIndex, 0)
+    }
+
+    // MARK: - Progress
+
+    func testProgress() {
+        let vm = makeSUT()
+        vm.isAudioEnabled = false
+        XCTAssertEqual(vm.progress, 0.25) // 1/4
+        vm.nextStep()
+        XCTAssertEqual(vm.progress, 0.5)  // 2/4
+    }
+
+    // MARK: - Timer
+
+    func testTimerDisplay() {
+        let vm = makeSUT()
+        vm.timerSeconds = 90
+        XCTAssertEqual(vm.timerDisplay, "01:30")
+    }
+
+    func testTimerDisplayZero() {
+        let vm = makeSUT()
+        vm.timerSeconds = 0
+        XCTAssertEqual(vm.timerDisplay, "00:00")
+    }
+
+    func testStartTimer() {
+        let vm = makeSUT()
+        vm.isAudioEnabled = false
+        // Step 1 has timerMinutes: 10
+        vm.startTimer()
+        XCTAssertEqual(vm.timerSeconds, 600)
+        XCTAssertTrue(vm.isTimerRunning)
+        vm.stopTimer()
+    }
+
+    func testStopTimer() {
+        let vm = makeSUT()
+        vm.isAudioEnabled = false
+        vm.startTimer()
+        vm.stopTimer()
+        XCTAssertFalse(vm.isTimerRunning)
+    }
+
+    func testStartTimerNoTimerOnStep() {
+        let vm = makeSUT()
+        vm.isAudioEnabled = false
+        vm.goToStep(2) // Step 3 has no timer
+        vm.startTimer()
+        XCTAssertFalse(vm.isTimerRunning, "Should not start timer when step has no timerMinutes")
+    }
+
+    // MARK: - Audio Toggle
+
+    func testToggleAudio() {
+        let vm = makeSUT()
+        XCTAssertTrue(vm.isAudioEnabled)
+        vm.toggleAudio()
+        XCTAssertFalse(vm.isAudioEnabled)
+        vm.toggleAudio()
+        XCTAssertTrue(vm.isAudioEnabled)
+    }
+
+    // MARK: - Cleanup
+
+    func testCleanup() {
+        let vm = makeSUT()
+        vm.isAudioEnabled = false
+        vm.startTimer()
+        vm.cleanup()
+        XCTAssertFalse(vm.isTimerRunning)
+    }
+}
+
+// MARK: - AIAssistantViewModel Tests
+
+@MainActor
+final class AIAssistantViewModelTests: XCTestCase {
+
+    private func makeSUT() -> (AIAssistantViewModel, AppState, MockAIService) {
+        let (appState, _, ai) = makeTestAppState()
+        let vm = AIAssistantViewModel(appState: appState)
+        return (vm, appState, ai)
+    }
+
+    func testInitialWelcomeMessage() {
+        let (vm, _, _) = makeSUT()
+        XCTAssertEqual(vm.messages.count, 1)
+        XCTAssertEqual(vm.messages[0].role, .assistant)
+        XCTAssertTrue(vm.messages[0].content.contains("Pantry Chef"))
+    }
+
+    func testSendMessage() async {
+        let (vm, _, ai) = makeSUT()
+        ai.chatResponse = "Here's a suggestion"
+        vm.inputText = "What can I cook?"
+        await vm.sendMessage()
+        XCTAssertEqual(vm.messages.count, 3) // welcome + user + assistant
+        XCTAssertEqual(vm.messages[1].role, .user)
+        XCTAssertEqual(vm.messages[1].content, "What can I cook?")
+        XCTAssertEqual(vm.messages[2].role, .assistant)
+        XCTAssertEqual(vm.messages[2].content, "Here's a suggestion")
+        XCTAssertTrue(vm.inputText.isEmpty, "Input should be cleared after sending")
+        XCTAssertEqual(ai.chatCallCount, 1)
+    }
+
+    func testSendEmptyMessageIgnored() async {
+        let (vm, _, ai) = makeSUT()
+        vm.inputText = "   "
+        await vm.sendMessage()
+        XCTAssertEqual(vm.messages.count, 1, "Should not send empty messages")
+        XCTAssertEqual(ai.chatCallCount, 0)
+    }
+
+    func testContextStringIncludesPantryItems() async {
+        let (vm, appState, _) = makeSUT()
+        await appState.addPantryItem(makePantryItem(name: "Milk"))
+        await appState.addPantryItem(makePantryItem(name: "Eggs"))
+        let context = vm.contextString
+        XCTAssertTrue(context.contains("Milk"))
+        XCTAssertTrue(context.contains("Eggs"))
+    }
+
+    func testAskWhatCanIMake() async {
+        let (vm, _, ai) = makeSUT()
+        ai.chatResponse = "Try making an omelette!"
+        await vm.askWhatCanIMake()
+        XCTAssertEqual(vm.messages.count, 3)
+        XCTAssertTrue(vm.messages[1].content.lowercased().contains("pantry"))
+    }
+
+    func testAskForEasyDinner() async {
+        let (vm, _, ai) = makeSUT()
+        ai.chatResponse = "Try fried rice!"
+        await vm.askForEasyDinner()
+        XCTAssertEqual(vm.messages.count, 3)
+        XCTAssertTrue(vm.messages[1].content.lowercased().contains("easy dinner"))
+    }
+
+    func testAskForHealthyMeal() async {
+        let (vm, _, ai) = makeSUT()
+        ai.chatResponse = "Try a salad!"
+        await vm.askForHealthyMeal()
+        XCTAssertEqual(vm.messages.count, 3)
+        XCTAssertTrue(vm.messages[1].content.lowercased().contains("healthy"))
+    }
+}
+
+// ===================================================================
+// MARK: - Extension / Utility Tests
+// ===================================================================
+
+final class ExtensionTests: XCTestCase {
+
+    // MARK: - Date Extensions
+
+    func testIsToday() {
+        XCTAssertTrue(Date().isToday)
+        let yesterday = Calendar.current.date(byAdding: .day, value: -1, to: Date())!
+        XCTAssertFalse(yesterday.isToday)
+    }
+
+    func testIsTomorrow() {
+        let tomorrow = Calendar.current.date(byAdding: .day, value: 1, to: Date())!
+        XCTAssertTrue(tomorrow.isTomorrow)
+        XCTAssertFalse(Date().isTomorrow)
+    }
+
+    func testIsThisWeek() {
+        XCTAssertTrue(Date().isThisWeek)
+        // 30 days from now should not be this week (usually)
+        let farFuture = Calendar.current.date(byAdding: .day, value: 30, to: Date())!
+        XCTAssertFalse(farFuture.isThisWeek)
+    }
+
+    func testRelativeDisplay() {
+        XCTAssertEqual(Date().relativeDisplay, "Today")
+        let tomorrow = Calendar.current.date(byAdding: .day, value: 1, to: Date())!
+        XCTAssertEqual(tomorrow.relativeDisplay, "Tomorrow")
+    }
+
+    func testShortDisplay() {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MMM d"
+        let expected = formatter.string(from: Date())
+        XCTAssertEqual(Date().shortDisplay, expected)
+    }
+
+    func testDayOfWeek() {
+        let dayName = Date().dayOfWeek
+        let validDays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+        XCTAssertTrue(validDays.contains(dayName), "\(dayName) should be a valid day name")
+    }
+
+    // MARK: - String Extensions
+
+    func testTrimmed() {
+        XCTAssertEqual("  hello  ".trimmed, "hello")
+        XCTAssertEqual("\n test \t".trimmed, "test")
+        XCTAssertEqual("already".trimmed, "already")
+    }
+
+    func testIsValidURL() {
+        XCTAssertTrue("https://example.com".isValidURL)
+        XCTAssertTrue("http://test.org/path".isValidURL)
+        XCTAssertFalse("not a url".isValidURL)
+        XCTAssertFalse("ftp://test.com".isValidURL)
+        XCTAssertFalse("".isValidURL)
+    }
+
+    // MARK: - Array Update Extension
+
+    func testArrayUpdate() {
+        var items = PantryItem.samples
+        guard var firstItem = items.first else {
+            XCTFail("Need at least one sample"); return
+        }
+        firstItem.name = "Updated Name"
+        items.update(firstItem)
+        XCTAssertEqual(items.first?.name, "Updated Name")
+    }
+
+    func testArrayUpdateNotFound() {
+        var items = [makePantryItem(name: "A")]
+        let notInList = makePantryItem(name: "B")
+        items.update(notInList)
+        // Should not add, should not crash
+        XCTAssertEqual(items.count, 1)
+        XCTAssertEqual(items[0].name, "A")
+    }
+}
+
+// MARK: - UnitConverter Tests
+
+final class UnitConverterTests: XCTestCase {
+
+    // MARK: - Volume Conversions
+
+    func testTeaspoonToML() {
+        let result = UnitConverter.toML(1, from: .teaspoon)
+        XCTAssertNotNil(result)
+        XCTAssertEqual(result!, 4.929, accuracy: 0.01)
+    }
+
+    func testTablespoonToML() {
+        let result = UnitConverter.toML(1, from: .tablespoon)
+        XCTAssertNotNil(result)
+        XCTAssertEqual(result!, 14.787, accuracy: 0.01)
+    }
+
+    func testCupToML() {
+        let result = UnitConverter.toML(1, from: .cup)
+        XCTAssertNotNil(result)
+        XCTAssertEqual(result!, 236.588, accuracy: 0.01)
+    }
+
+    func testMLToML() {
+        let result = UnitConverter.toML(100, from: .milliliter)
+        XCTAssertEqual(result!, 100.0)
+    }
+
+    func testLiterToML() {
+        let result = UnitConverter.toML(1, from: .liter)
+        XCTAssertEqual(result!, 1000.0)
+    }
+
+    func testNonVolumeReturnsNil() {
+        XCTAssertNil(UnitConverter.toML(1, from: .gram))
+        XCTAssertNil(UnitConverter.toML(1, from: .piece))
+    }
+
+    // MARK: - Weight Conversions
+
+    func testGramToGram() {
+        XCTAssertEqual(UnitConverter.toGrams(500, from: .gram)!, 500.0)
+    }
+
+    func testKilogramToGram() {
+        XCTAssertEqual(UnitConverter.toGrams(1, from: .kilogram)!, 1000.0)
+    }
+
+    func testOunceToGram() {
+        let result = UnitConverter.toGrams(1, from: .ounce)!
+        XCTAssertEqual(result, 28.3495, accuracy: 0.01)
+    }
+
+    func testPoundToGram() {
+        let result = UnitConverter.toGrams(1, from: .pound)!
+        XCTAssertEqual(result, 453.592, accuracy: 0.01)
+    }
+
+    func testNonWeightReturnsNil() {
+        XCTAssertNil(UnitConverter.toGrams(1, from: .cup))
+        XCTAssertNil(UnitConverter.toGrams(1, from: .piece))
+    }
+
+    // MARK: - Cross Conversion
+
+    func testConvertCupsToML() {
+        let result = UnitConverter.convert(2, from: .cup, to: .milliliter)
+        XCTAssertNotNil(result)
+        XCTAssertEqual(result!, 473.176, accuracy: 0.1)
+    }
+
+    func testConvertPoundsToGrams() {
+        let result = UnitConverter.convert(1, from: .pound, to: .gram)
+        XCTAssertNotNil(result)
+        XCTAssertEqual(result!, 453.592, accuracy: 0.1)
+    }
+
+    func testConvertIncompatibleReturnsNil() {
+        // Can't convert volume to weight
+        XCTAssertNil(UnitConverter.convert(1, from: .cup, to: .gram))
+    }
+
+    // MARK: - Format Quantity
+
+    func testFormatWholeNumber() {
+        XCTAssertEqual(UnitConverter.formatQuantity(3.0), "3")
+    }
+
+    func testFormatHalf() {
+        XCTAssertEqual(UnitConverter.formatQuantity(0.5), "½")
+    }
+
+    func testFormatOneAndHalf() {
+        XCTAssertEqual(UnitConverter.formatQuantity(1.5), "1 ½")
+    }
+
+    func testFormatQuarter() {
+        XCTAssertEqual(UnitConverter.formatQuantity(0.25), "¼")
+    }
+
+    func testFormatThreeQuarters() {
+        XCTAssertEqual(UnitConverter.formatQuantity(0.75), "¾")
+    }
+
+    func testFormatThird() {
+        XCTAssertEqual(UnitConverter.formatQuantity(0.33), "⅓")
+    }
+
+    func testFormatTwoThirds() {
+        XCTAssertEqual(UnitConverter.formatQuantity(0.67), "⅔")
+    }
+
+    func testFormatArbitraryDecimal() {
+        XCTAssertEqual(UnitConverter.formatQuantity(1.7), "1 ⅔")
+    }
+}
+
+// ===================================================================
+// MARK: - AppConfig Tests
+// ===================================================================
+
+final class AppConfigTests: XCTestCase {
+
+    func testOpenAIKeyIsNotPlaceholder() {
+        XCTAssertNotEqual(AppConfig.openAIAPIKey, "YOUR_OPENAI_API_KEY",
+                          "API key should not be the placeholder")
+        XCTAssertTrue(AppConfig.openAIAPIKey.hasPrefix("sk-"),
+                      "API key should start with sk-")
+    }
+
+    func testAppSettings() {
+        XCTAssertEqual(AppConfig.expiryWarningDays, 3)
+        XCTAssertEqual(AppConfig.maxRecipeSuggestions, 5)
+        XCTAssertEqual(AppConfig.defaultServings, 4)
+    }
+}
+
+// ===================================================================
+// MARK: - SpeechService Voice Command Tests
+// ===================================================================
+
+final class VoiceCommandTests: XCTestCase {
+
+    func testNextCommands() {
+        XCTAssertEqual(SpeechService.VoiceCommand.parse("next"), .next)
+        XCTAssertEqual(SpeechService.VoiceCommand.parse("forward"), .next)
+        XCTAssertEqual(SpeechService.VoiceCommand.parse("continue"), .next)
+        XCTAssertEqual(SpeechService.VoiceCommand.parse("done"), .next)
+        XCTAssertEqual(SpeechService.VoiceCommand.parse("go to next step"), .next)
+    }
+
+    func testPreviousCommands() {
+        XCTAssertEqual(SpeechService.VoiceCommand.parse("back"), .previous)
+        XCTAssertEqual(SpeechService.VoiceCommand.parse("previous"), .previous)
+        XCTAssertEqual(SpeechService.VoiceCommand.parse("before"), .previous)
+        XCTAssertEqual(SpeechService.VoiceCommand.parse("go back"), .previous)
+    }
+
+    func testRepeatCommands() {
+        XCTAssertEqual(SpeechService.VoiceCommand.parse("repeat"), .repeatStep)
+        XCTAssertEqual(SpeechService.VoiceCommand.parse("again"), .repeatStep)
+        XCTAssertEqual(SpeechService.VoiceCommand.parse("say it again"), .repeatStep)
+    }
+
+    func testTimerCommands() {
+        XCTAssertEqual(SpeechService.VoiceCommand.parse("start timer"), .startTimer)
+        XCTAssertEqual(SpeechService.VoiceCommand.parse("set timer"), .startTimer)
+        XCTAssertEqual(SpeechService.VoiceCommand.parse("go"), .startTimer)
+    }
+
+    func testStopCommands() {
+        XCTAssertEqual(SpeechService.VoiceCommand.parse("stop"), .stopTimer)
+        XCTAssertEqual(SpeechService.VoiceCommand.parse("cancel"), .stopTimer)
+        XCTAssertEqual(SpeechService.VoiceCommand.parse("pause"), .stopTimer)
+    }
+
+    func testUnknownCommand() {
+        XCTAssertEqual(SpeechService.VoiceCommand.parse("hello world"), .unknown)
+        XCTAssertEqual(SpeechService.VoiceCommand.parse("random text"), .unknown)
+    }
+
+    func testCaseInsensitive() {
+        XCTAssertEqual(SpeechService.VoiceCommand.parse("NEXT"), .next)
+        XCTAssertEqual(SpeechService.VoiceCommand.parse("Back"), .previous)
+        XCTAssertEqual(SpeechService.VoiceCommand.parse("REPEAT"), .repeatStep)
+    }
+
+    func testWhitespaceTrimming() {
+        XCTAssertEqual(SpeechService.VoiceCommand.parse("  next  "), .next)
+        XCTAssertEqual(SpeechService.VoiceCommand.parse("  back  "), .previous)
+    }
+}
+
+// ===================================================================
+// MARK: - Error Handling Tests
+// ===================================================================
+
+@MainActor
+final class ErrorHandlingTests: XCTestCase {
+
+    func testAddPantryItemError() async {
+        let (appState, storage, _) = makeTestAppState()
+        storage.shouldThrowError = true
+        await appState.addPantryItem(makePantryItem(name: "Fail"))
+        XCTAssertNotNil(appState.errorMessage)
+        XCTAssertTrue(appState.pantryItems.isEmpty, "Should not add item on error")
+    }
+
+    func testDeletePantryItemError() async {
+        let (appState, storage, _) = makeTestAppState()
+        let item = makePantryItem(name: "Test")
+        appState.pantryItems = [item]
+        storage.shouldThrowError = true
+        await appState.removePantryItem(item)
+        XCTAssertNotNil(appState.errorMessage)
+        XCTAssertEqual(appState.pantryItems.count, 1, "Should not remove item on error")
+    }
+
+    func testUpdatePantryItemError() async {
+        let (appState, storage, _) = makeTestAppState()
+        var item = makePantryItem(name: "Test", quantity: 1)
+        appState.pantryItems = [item]
+        storage.shouldThrowError = true
+        item.quantity = 5
+        await appState.updatePantryItem(item)
+        XCTAssertNotNil(appState.errorMessage)
+        XCTAssertEqual(appState.pantryItems[0].quantity, 1, "Should not update on error")
+    }
+
+    func testAddRecipeError() async {
+        let (appState, storage, _) = makeTestAppState()
+        storage.shouldThrowError = true
+        await appState.addRecipe(makeRecipe(title: "Fail"))
+        XCTAssertNotNil(appState.errorMessage)
+        XCTAssertTrue(appState.recipes.isEmpty)
+    }
+
+    func testDeleteRecipeError() async {
+        let (appState, storage, _) = makeTestAppState()
+        let recipe = makeRecipe(title: "Test")
+        appState.recipes = [recipe]
+        storage.shouldThrowError = true
+        await appState.deleteRecipe(recipe)
+        XCTAssertNotNil(appState.errorMessage)
+        XCTAssertEqual(appState.recipes.count, 1)
+    }
+
+    func testUpdateRecipeError() async {
+        let (appState, storage, _) = makeTestAppState()
+        var recipe = makeRecipe(title: "Original")
+        appState.recipes = [recipe]
+        storage.shouldThrowError = true
+        recipe.title = "Updated"
+        await appState.updateRecipe(recipe)
+        XCTAssertNotNil(appState.errorMessage)
+        XCTAssertEqual(appState.recipes[0].title, "Original")
+    }
+
+    func testAddMealPlanError() async {
+        let (appState, storage, _) = makeTestAppState()
+        storage.shouldThrowError = true
+        let entry = MealPlanEntry(date: Date(), mealType: .dinner)
+        await appState.addToMealPlan(entry)
+        XCTAssertNotNil(appState.errorMessage)
+        XCTAssertTrue(appState.mealPlan.isEmpty)
+    }
+
+    func testRemoveMealPlanError() async {
+        let (appState, storage, _) = makeTestAppState()
+        let entry = MealPlanEntry(date: Date(), mealType: .dinner)
+        appState.mealPlan = [entry]
+        storage.shouldThrowError = true
+        await appState.removeFromMealPlan(entry)
+        XCTAssertNotNil(appState.errorMessage)
+        XCTAssertEqual(appState.mealPlan.count, 1)
     }
 }

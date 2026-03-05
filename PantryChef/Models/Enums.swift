@@ -1,4 +1,5 @@
 import Foundation
+import SwiftUI
 
 // MARK: - Food Category
 enum FoodCategory: String, Codable, CaseIterable, Identifiable {
@@ -40,23 +41,23 @@ enum FoodCategory: String, Codable, CaseIterable, Identifiable {
         }
     }
 
-    var color: String {
+    var color: Color {
         switch self {
-        case .dairy: return "categoryBlue"
-        case .produce: return "categoryGreen"
-        case .protein: return "categoryRed"
-        case .grains: return "categoryAmber"
-        case .spices: return "categoryOrange"
-        case .condiments: return "categoryPurple"
-        case .bakingSupplies: return "categoryPink"
-        case .frozenFoods: return "categoryCyan"
-        case .canned: return "categoryBrown"
-        case .beverages: return "categoryTeal"
-        case .snacks: return "categoryYellow"
-        case .oils: return "categoryGold"
-        case .pasta: return "categoryIndigo"
-        case .nuts: return "categoryTan"
-        case .other: return "categoryGray"
+        case .dairy: return .blue.opacity(0.7)
+        case .produce: return .green
+        case .protein: return .red.opacity(0.7)
+        case .grains: return .orange.opacity(0.8)
+        case .spices: return .orange
+        case .condiments: return .purple.opacity(0.7)
+        case .bakingSupplies: return .pink
+        case .frozenFoods: return .cyan
+        case .canned: return .brown
+        case .beverages: return .teal
+        case .snacks: return .yellow.opacity(0.8)
+        case .oils: return Color(red: 0.85, green: 0.65, blue: 0.13)
+        case .pasta: return .indigo.opacity(0.7)
+        case .nuts: return Color(red: 0.82, green: 0.71, blue: 0.55)
+        case .other: return .gray
         }
     }
 }
@@ -125,7 +126,7 @@ enum DietaryTag: String, Codable, CaseIterable, Identifiable {
         case .lowCarb: return "chart.bar.fill"
         case .highProtein: return "bolt.fill"
         case .keto: return "flame.fill"
-        case .paleo: return "fossil.shell.fill"
+        case .paleo: return "leaf.arrow.circlepath"
         case .halal: return "checkmark.seal.fill"
         case .kosher: return "star.fill"
         }
@@ -190,11 +191,11 @@ enum ExpiryStatus {
     case expiringSoon // within 3 days
     case expired
 
-    var color: String {
+    var color: Color {
         switch self {
-        case .fresh: return "freshGreen"
-        case .expiringSoon: return "warningYellow"
-        case .expired: return "expiredRed"
+        case .fresh: return Color(red: 0.30, green: 0.69, blue: 0.31)
+        case .expiringSoon: return Color(red: 0.96, green: 0.65, blue: 0.14)
+        case .expired: return Color(red: 0.90, green: 0.30, blue: 0.24)
         }
     }
 

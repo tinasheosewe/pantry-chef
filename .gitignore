@@ -32,3 +32,5 @@ Pods/
 !default.perspectivev3
 *.DS_Store
 .env
+TestResults*
+*.xcresult

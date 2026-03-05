@@ -88,7 +88,7 @@ final class RecipeViewModel {
     func toggleFavorite(_ recipe: Recipe) async {
         var updated = recipe
         updated.isFavorite.toggle()
-        await appState.addRecipe(updated) // Acts as upsert
+        await appState.updateRecipe(updated)
     }
 
     func whatCanIMake() {

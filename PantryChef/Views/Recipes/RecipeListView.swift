@@ -87,8 +87,27 @@ struct RecipeListView: View {
             .sheet(isPresented: $viewModel.showImportURL) {
                 ImportRecipeURLView(viewModel: viewModel)
             }
+            .sheet(isPresented: $viewModel.showPhotoImport) {
+                RecipePhotoImportView(viewModel: viewModel)
+            }
             .sheet(isPresented: $viewModel.showWhatCanIMake) {
                 WhatCanIMakeView(results: viewModel.whatCanIMakeResults)
+            }
+            .sheet(item: Binding(
+                get: { viewModel.importedRecipe },
+                set: { viewModel.importedRecipe = $0 }
+            )) { recipe in
+                NavigationStack {
+                    RecipeDetailView(recipe: recipe)
+                        .toolbar {
+                            ToolbarItem(placement: .confirmationAction) {
+                                Button("Save") {
+                                    Task { await viewModel.addRecipe(recipe) }
+                                    viewModel.importedRecipe = nil
+                                }
+                            }
+                        }
+                }
             }
         }
     }

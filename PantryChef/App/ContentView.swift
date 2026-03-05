@@ -26,7 +26,9 @@ struct ContentView: View {
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
             TabView(selection: $selectedTab) {
-                HomeView(appState: appState)
+                HomeView(appState: appState, onSwitchToShopping: {
+                    selectedTab = .shop
+                })
                     .tabItem {
                         Label(Tab.home.rawValue, systemImage: Tab.home.icon)
                     }

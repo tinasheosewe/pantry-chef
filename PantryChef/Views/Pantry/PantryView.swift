@@ -632,7 +632,12 @@ struct ReceiptScannerView: View {
     @State private var extractedItems: [String] = []
     @State private var selectedItems: Set<String> = []
     @State private var hasScanned = false
+    @State private var isProcessing = false
+    @State private var showImagePicker = false
+    @State private var capturedImage: UIImage?
+    @State private var errorText: String?
 
+    private let receiptService = ReceiptScannerService()
     let onSave: ([String]) -> Void
 
     var body: some View {
@@ -647,47 +652,89 @@ struct ReceiptScannerView: View {
                         Text("Take a photo of your receipt")
                             .font(.headline)
 
-                        Text("We'll use AI to extract the grocery items")
+                        Text("We'll use OCR to extract the grocery items")
                             .font(.subheadline)
                             .foregroundStyle(AppColors.subtleText)
 
-                        Button("Take Photo") {
-                            hasScanned = true
-                            extractedItems = ["Milk", "Eggs", "Bread", "Tomatoes", "Chicken"]
-                            selectedItems = Set(extractedItems)
+                        if isProcessing {
+                            ProgressView("Scanning receipt...")
+                                .padding()
+                        } else {
+                            Button("Take Photo") {
+                                showImagePicker = true
+                            }
+                            .buttonStyle(.borderedProminent)
+                            .tint(AppColors.warmOrange)
                         }
-                        .buttonStyle(.borderedProminent)
-                        .tint(AppColors.warmOrange)
+
+                        if let errorText {
+                            Text(errorText)
+                                .font(.caption)
+                                .foregroundStyle(AppColors.softRed)
+                                .padding(.horizontal)
+                        }
                     }
                     .padding()
                 } else {
-                    List {
-                        Section("Found Items") {
-                            ForEach(extractedItems, id: \.self) { item in
-                                HStack {
-                                    Image(systemName: selectedItems.contains(item) ? "checkmark.circle.fill" : "circle")
-                                        .foregroundStyle(selectedItems.contains(item) ? AppColors.primaryGreen : AppColors.mediumGray)
-                                    Text(item)
-                                }
-                                .contentShape(Rectangle())
-                                .onTapGesture {
-                                    if selectedItems.contains(item) {
-                                        selectedItems.remove(item)
-                                    } else {
-                                        selectedItems.insert(item)
+                    if extractedItems.isEmpty {
+                        VStack(spacing: 12) {
+                            Image(systemName: "doc.text.magnifyingglass")
+                                .font(.system(size: 48))
+                                .foregroundStyle(AppColors.mediumGray)
+                            Text("No items found")
+                                .font(.headline)
+                            Text("Try taking a clearer photo of the receipt.")
+                                .font(.subheadline)
+                                .foregroundStyle(AppColors.subtleText)
+                            Button("Try Again") {
+                                hasScanned = false
+                                capturedImage = nil
+                                extractedItems = []
+                            }
+                            .buttonStyle(.borderedProminent)
+                            .tint(AppColors.warmOrange)
+                        }
+                        .padding()
+                    } else {
+                        List {
+                            Section("Found Items (\(extractedItems.count))") {
+                                ForEach(extractedItems, id: \.self) { item in
+                                    HStack {
+                                        Image(systemName: selectedItems.contains(item) ? "checkmark.circle.fill" : "circle")
+                                            .foregroundStyle(selectedItems.contains(item) ? AppColors.primaryGreen : AppColors.mediumGray)
+                                        Text(item)
+                                    }
+                                    .contentShape(Rectangle())
+                                    .onTapGesture {
+                                        if selectedItems.contains(item) {
+                                            selectedItems.remove(item)
+                                        } else {
+                                            selectedItems.insert(item)
+                                        }
                                     }
                                 }
                             }
                         }
-                    }
 
-                    Button("Add \(selectedItems.count) Items to Pantry") {
-                        onSave(Array(selectedItems))
-                        dismiss()
+                        HStack(spacing: 12) {
+                            Button("Scan Again") {
+                                hasScanned = false
+                                capturedImage = nil
+                                extractedItems = []
+                                selectedItems = []
+                            }
+                            .buttonStyle(.bordered)
+
+                            Button("Add \(selectedItems.count) Items to Pantry") {
+                                onSave(Array(selectedItems))
+                                dismiss()
+                            }
+                            .buttonStyle(.borderedProminent)
+                            .tint(AppColors.primaryGreen)
+                            .disabled(selectedItems.isEmpty)
+                        }
+                        .padding()
                     }
-                    .buttonStyle(.borderedProminent)
-                    .tint(AppColors.primaryGreen)
-                    .padding()
                 }
             }
             .navigationTitle("Scan Receipt")
@@ -697,6 +744,66 @@ struct ReceiptScannerView: View {
                     Button("Cancel") { dismiss() }
                 }
             }
+            .sheet(isPresented: $showImagePicker) {
+                ImagePicker(image: $capturedImage)
+            }
+            .onChange(of: capturedImage) { _, newImage in
+                guard let image = newImage else { return }
+                Task {
+                    await processReceipt(image: image)
+                }
+            }
+        }
+    }
+
+    private func processReceipt(image: UIImage) async {
+        isProcessing = true
+        errorText = nil
+        let items = await receiptService.scanReceipt(image: image)
+        isProcessing = false
+        if items.isEmpty {
+            errorText = "Could not find any grocery items. Try a clearer photo."
+            hasScanned = true
+        } else {
+            extractedItems = items
+            selectedItems = Set(items)
+            hasScanned = true
+        }
+    }
+}
+
+// MARK: - Image Picker (Camera + Photo Library)
+struct ImagePicker: UIViewControllerRepresentable {
+    @Binding var image: UIImage?
+    @Environment(\.dismiss) private var dismiss
+
+    func makeUIViewController(context: Context) -> UIImagePickerController {
+        let picker = UIImagePickerController()
+        picker.delegate = context.coordinator
+        // Use camera if available, otherwise photo library
+        if UIImagePickerController.isSourceTypeAvailable(.camera) {
+            picker.sourceType = .camera
+        } else {
+            picker.sourceType = .photoLibrary
+        }
+        return picker
+    }
+
+    func updateUIViewController(_ uiViewController: UIImagePickerController, context: Context) {}
+
+    func makeCoordinator() -> Coordinator { Coordinator(self) }
+
+    class Coordinator: NSObject, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+        let parent: ImagePicker
+        init(_ parent: ImagePicker) { self.parent = parent }
+
+        func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
+            parent.image = info[.originalImage] as? UIImage
+            parent.dismiss()
+        }
+
+        func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+            parent.dismiss()
         }
     }
 }
