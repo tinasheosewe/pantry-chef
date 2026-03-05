@@ -2110,6 +2110,56 @@ final class CookModeViewModelTests: XCTestCase {
         vm.cleanup()
         XCTAssertFalse(vm.isTimerRunning)
     }
+
+    // MARK: - Rating
+
+    func testSetRating() {
+        let vm = makeSUT()
+        XCTAssertNil(vm.selectedRating)
+        vm.setRating(4)
+        XCTAssertEqual(vm.selectedRating, 4)
+    }
+
+    func testSetRatingToggle() {
+        let vm = makeSUT()
+        vm.setRating(3)
+        XCTAssertEqual(vm.selectedRating, 3)
+        vm.setRating(3) // tap same star again to deselect
+        XCTAssertNil(vm.selectedRating)
+    }
+
+    func testRatedRecipe() {
+        let vm = makeSUT()
+        vm.setRating(5)
+        let rated = vm.ratedRecipe
+        XCTAssertEqual(rated.rating, 5)
+        XCTAssertEqual(rated.title, vm.recipe.title)
+    }
+
+    // MARK: - Pause Timer
+
+    func testPauseTimerTogglesState() {
+        let vm = makeSUT()
+        vm.isAudioEnabled = false
+        vm.startTimer()
+        XCTAssertFalse(vm.isPaused)
+        vm.pauseTimer()
+        XCTAssertTrue(vm.isPaused)
+        vm.pauseTimer()
+        XCTAssertFalse(vm.isPaused)
+        vm.stopTimer()
+    }
+
+    func testStopTimerResetsPaused() {
+        let vm = makeSUT()
+        vm.isAudioEnabled = false
+        vm.startTimer()
+        vm.pauseTimer()
+        XCTAssertTrue(vm.isPaused)
+        vm.stopTimer()
+        XCTAssertFalse(vm.isPaused)
+        XCTAssertFalse(vm.isTimerRunning)
+    }
 }
 
 // MARK: - AIAssistantViewModel Tests
@@ -2444,7 +2494,11 @@ final class VoiceCommandTests: XCTestCase {
     func testStopCommands() {
         XCTAssertEqual(SpeechService.VoiceCommand.parse("stop"), .stopTimer)
         XCTAssertEqual(SpeechService.VoiceCommand.parse("cancel"), .stopTimer)
-        XCTAssertEqual(SpeechService.VoiceCommand.parse("pause"), .stopTimer)
+    }
+
+    func testPauseCommands() {
+        XCTAssertEqual(SpeechService.VoiceCommand.parse("pause"), .pauseTimer)
+        XCTAssertEqual(SpeechService.VoiceCommand.parse("please pause"), .pauseTimer)
     }
 
     func testUnknownCommand() {

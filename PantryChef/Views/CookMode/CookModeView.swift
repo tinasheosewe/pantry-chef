@@ -36,6 +36,20 @@ struct CookModeView: View {
         .onDisappear {
             viewModel?.cleanup()
         }
+        .alert("Voice Control Unavailable",
+               isPresented: Binding(
+                get: { viewModel?.voiceAuthorizationDenied ?? false },
+                set: { viewModel?.voiceAuthorizationDenied = $0 }
+               )) {
+            Button("Open Settings") {
+                if let url = URL(string: UIApplication.openSettingsURLString) {
+                    UIApplication.shared.open(url)
+                }
+            }
+            Button("Cancel", role: .cancel) { }
+        } message: {
+            Text("Please enable Speech Recognition and Microphone access in Settings to use voice commands.")
+        }
     }
 
     // MARK: - Cook Content
@@ -310,23 +324,32 @@ struct CookModeView: View {
     // MARK: - Voice Control Indicator
 
     private func voiceControlIndicator() -> some View {
-        HStack(spacing: 8) {
-            Circle()
-                .fill(AppColors.primaryGreen)
-                .frame(width: 8, height: 8)
-                .overlay(
-                    Circle()
-                        .fill(AppColors.primaryGreen.opacity(0.4))
-                        .scaleEffect(1.5)
-                )
-            Text("Listening... Say \"next\", \"back\", or \"repeat\"")
-                .font(.caption)
-                .foregroundStyle(.white.opacity(0.7))
+        VStack(spacing: 4) {
+            HStack(spacing: 8) {
+                Circle()
+                    .fill(AppColors.primaryGreen)
+                    .frame(width: 8, height: 8)
+                    .overlay(
+                        Circle()
+                            .fill(AppColors.primaryGreen.opacity(0.4))
+                            .scaleEffect(1.5)
+                    )
+                    .modifier(PulseAnimation())
+                Text("Listening... Say \"next\", \"back\", \"repeat\", or \"pause\"")
+                    .font(.caption)
+                    .foregroundStyle(.white.opacity(0.7))
+            }
+            if let text = speechService?.recognizedText, !text.isEmpty {
+                Text("\"\(text)\"")
+                    .font(.caption2)
+                    .foregroundStyle(AppColors.primaryGreen.opacity(0.8))
+                    .lineLimit(1)
+            }
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 8)
         .background(.white.opacity(0.08))
-        .clipShape(Capsule())
+        .clipShape(RoundedRectangle(cornerRadius: 16))
         .padding(.bottom, 8)
     }
 
@@ -356,13 +379,13 @@ struct CookModeView: View {
                     .foregroundStyle(.white.opacity(0.7))
 
                 HStack(spacing: 8) {
-                    ForEach(1...5, id: \.self) { _ in
+                    ForEach(1...5, id: \.self) { star in
                         Button {
-                            // Rate recipe
+                            vm.setRating(star)
                         } label: {
-                            Image(systemName: "star.fill")
+                            Image(systemName: star <= (vm.selectedRating ?? 0) ? "star.fill" : "star")
                                 .font(.title2)
-                                .foregroundStyle(.white.opacity(0.3))
+                                .foregroundStyle(star <= (vm.selectedRating ?? 0) ? .yellow : .white.opacity(0.3))
                         }
                     }
                 }
@@ -373,6 +396,10 @@ struct CookModeView: View {
             VStack(spacing: 12) {
                 Button {
                     Task {
+                        // Save rating if set, then mark as cooked
+                        if vm.selectedRating != nil {
+                            await appState.updateRecipe(vm.ratedRecipe)
+                        }
                         await appState.markRecipeAsCooked(vm.recipe)
                     }
                     dismiss()
@@ -396,5 +423,19 @@ struct CookModeView: View {
             .padding(.horizontal, 24)
             .padding(.bottom, 32)
         }
+    }
+}
+
+// MARK: - Pulse Animation
+
+private struct PulseAnimation: ViewModifier {
+    @State private var isPulsing = false
+
+    func body(content: Content) -> some View {
+        content
+            .scaleEffect(isPulsing ? 1.3 : 1.0)
+            .opacity(isPulsing ? 0.6 : 1.0)
+            .animation(.easeInOut(duration: 1.0).repeatForever(autoreverses: true), value: isPulsing)
+            .onAppear { isPulsing = true }
     }
 }

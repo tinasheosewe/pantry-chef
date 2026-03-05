@@ -11,6 +11,8 @@ final class CookModeViewModel {
     var isTimerRunning = false
     var isPaused = false
     var showCompletionScreen = false
+    var selectedRating: Int? = nil
+    var voiceAuthorizationDenied = false
 
     let recipe: Recipe
     let speechService: SpeechService
@@ -43,6 +45,13 @@ final class CookModeViewModel {
         let minutes = timerSeconds / 60
         let seconds = timerSeconds % 60
         return String(format: "%02d:%02d", minutes, seconds)
+    }
+
+    /// Returns a rated copy of the recipe.
+    var ratedRecipe: Recipe {
+        var copy = recipe
+        copy.rating = selectedRating
+        return copy
     }
 
     // MARK: - Navigation
@@ -95,10 +104,22 @@ final class CookModeViewModel {
     // MARK: - Voice Control
 
     func startVoiceControl() {
-        isVoiceControlEnabled = true
-        speechService.startListening { [weak self] text in
-            Task { @MainActor in
-                self?.handleVoiceCommand(text)
+        Task {
+            // Request both permissions before starting
+            let speechAuthorized = await speechService.requestSpeechAuthorization()
+            let micAuthorized = await speechService.requestMicrophoneAuthorization()
+
+            guard speechAuthorized && micAuthorized else {
+                voiceAuthorizationDenied = true
+                return
+            }
+
+            isVoiceControlEnabled = true
+            voiceAuthorizationDenied = false
+            speechService.startListening { [weak self] text in
+                Task { @MainActor in
+                    self?.handleVoiceCommand(text)
+                }
             }
         }
     }
@@ -115,9 +136,16 @@ final class CookModeViewModel {
         case .previous: previousStep()
         case .repeatStep: speakCurrentStep()
         case .startTimer: startTimer()
+        case .pauseTimer: pauseTimer()
         case .stopTimer: stopTimer()
         case .unknown: break
         }
+    }
+
+    // MARK: - Rating
+
+    func setRating(_ stars: Int) {
+        selectedRating = (selectedRating == stars) ? nil : stars // tap again to deselect
     }
 
     // MARK: - Timer
@@ -126,6 +154,7 @@ final class CookModeViewModel {
         guard let step = currentStep, let minutes = step.timerMinutes else { return }
         timerSeconds = minutes * 60
         isTimerRunning = true
+        isPaused = false
 
         timerCancellable = Timer.publish(every: 1, on: .main, in: .common)
             .autoconnect()
@@ -141,6 +170,7 @@ final class CookModeViewModel {
 
     func stopTimer() {
         isTimerRunning = false
+        isPaused = false
         timerCancellable?.cancel()
         timerCancellable = nil
     }
