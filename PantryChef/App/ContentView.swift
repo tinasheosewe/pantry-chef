@@ -27,6 +27,8 @@ struct ContentView: View {
             TabView(selection: $selectedTab) {
                 HomeView(appState: appState, onSwitchToShopping: {
                     selectedTab = .shop
+                }, onSwitchToPlan: {
+                    selectedTab = .plan
                 })
                     .tabItem {
                         Label(Tab.home.rawValue, systemImage: Tab.home.icon)

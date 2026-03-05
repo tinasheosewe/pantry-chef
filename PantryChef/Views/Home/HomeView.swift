@@ -7,10 +7,12 @@ struct HomeView: View {
     @State private var showReceiptScanner = false
 
     var onSwitchToShopping: (() -> Void)?
+    var onSwitchToPlan: (() -> Void)?
 
-    init(appState: AppState, onSwitchToShopping: (() -> Void)? = nil) {
+    init(appState: AppState, onSwitchToShopping: (() -> Void)? = nil, onSwitchToPlan: (() -> Void)? = nil) {
         _viewModel = State(initialValue: HomeViewModel(appState: appState))
         self.onSwitchToShopping = onSwitchToShopping
+        self.onSwitchToPlan = onSwitchToPlan
     }
 
     var body: some View {
@@ -84,7 +86,9 @@ struct HomeView: View {
     // MARK: - Today's Meal Plan Card
     private var todaysMealPlanCard: some View {
         VStack(alignment: .leading, spacing: 12) {
-            SectionHeader(title: "Today's Plan", actionTitle: "View All") {}
+            SectionHeader(title: "Today's Plan", actionTitle: "View All") {
+                onSwitchToPlan?()
+            }
 
             if viewModel.appState.mealPlan.isEmpty {
                 HStack {
