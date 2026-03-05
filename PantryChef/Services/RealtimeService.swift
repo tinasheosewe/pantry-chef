@@ -385,7 +385,7 @@ final class RealtimeService: NSObject {
 
     // MARK: - Server Event Handling
 
-    private func handleServerEvent(_ jsonString: String) {
+    func handleServerEvent(_ jsonString: String) {
         guard let data = jsonString.data(using: .utf8),
               let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
               let type = json["type"] as? String else { return }
@@ -466,7 +466,7 @@ final class RealtimeService: NSObject {
 
     // MARK: - Function Calling
 
-    private func handleFunctionCall(name: String, argumentsJSON: String, callId: String) {
+    func handleFunctionCall(name: String, argumentsJSON: String, callId: String) {
         let args: [String: Any]
         if let data = argumentsJSON.data(using: .utf8),
            let parsed = try? JSONSerialization.jsonObject(with: data) as? [String: Any] {

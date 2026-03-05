@@ -219,7 +219,7 @@ final class CookModeViewModel {
         }
     }
 
-    private func handleRealtimeFunctionCall(name: String, args: [String: Any]) {
+    func handleRealtimeFunctionCall(name: String, args: [String: Any]) {
         switch name {
         case "next_step":
             nextStep()

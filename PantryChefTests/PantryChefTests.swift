@@ -2158,6 +2158,543 @@ final class CookModeViewModelTests: XCTestCase {
 }
 
 // ===================================================================
+// MARK: - RealtimeService Tests
+// ===================================================================
+
+@MainActor
+final class RealtimeServiceTests: XCTestCase {
+
+    private func makeSUT() -> RealtimeService {
+        RealtimeService(apiKey: "test-key")
+    }
+
+    // MARK: - Initial State
+
+    func testInitialState() {
+        let sut = makeSUT()
+        XCTAssertFalse(sut.isConnected)
+        XCTAssertFalse(sut.isModelSpeaking)
+        XCTAssertFalse(sut.isUserSpeaking)
+        XCTAssertTrue(sut.transcript.isEmpty)
+        XCTAssertTrue(sut.userTranscript.isEmpty)
+        XCTAssertTrue(sut.statusMessage.isEmpty)
+        XCTAssertNil(sut.errorMessage)
+    }
+
+    // MARK: - handleServerEvent: session events
+
+    func testSessionCreatedSetsStatus() {
+        let sut = makeSUT()
+        sut.handleServerEvent("""
+        {"type":"session.created","session":{"id":"sess_123"}}
+        """)
+        XCTAssertEqual(sut.statusMessage, "Ready — talk to me!")
+    }
+
+    func testSessionUpdatedSetsStatus() {
+        let sut = makeSUT()
+        sut.handleServerEvent("""
+        {"type":"session.updated","session":{}}
+        """)
+        XCTAssertEqual(sut.statusMessage, "Ready — talk to me!")
+    }
+
+    // MARK: - handleServerEvent: user speech detection
+
+    func testSpeechStartedSetsUserSpeaking() {
+        let sut = makeSUT()
+        sut.handleServerEvent("""
+        {"type":"input_audio_buffer.speech_started"}
+        """)
+        XCTAssertTrue(sut.isUserSpeaking)
+        XCTAssertTrue(sut.userTranscript.isEmpty)
+    }
+
+    func testSpeechStoppedClearsUserSpeaking() {
+        let sut = makeSUT()
+        sut.isUserSpeaking = true
+        sut.handleServerEvent("""
+        {"type":"input_audio_buffer.speech_stopped"}
+        """)
+        XCTAssertFalse(sut.isUserSpeaking)
+    }
+
+    // MARK: - handleServerEvent: transcription
+
+    func testTranscriptionCompletedSetsUserTranscript() {
+        let sut = makeSUT()
+        sut.handleServerEvent("""
+        {"type":"conversation.item.input_audio_transcription.completed","transcript":"next step please"}
+        """)
+        XCTAssertEqual(sut.userTranscript, "next step please")
+    }
+
+    // MARK: - handleServerEvent: model response
+
+    func testResponseAudioTranscriptDeltaAppendsToTranscript() {
+        let sut = makeSUT()
+        sut.handleServerEvent("""
+        {"type":"response.audio_transcript.delta","delta":"Hello "}
+        """)
+        XCTAssertEqual(sut.transcript, "Hello ")
+        XCTAssertTrue(sut.isModelSpeaking)
+
+        sut.handleServerEvent("""
+        {"type":"response.audio_transcript.delta","delta":"there!"}
+        """)
+        XCTAssertEqual(sut.transcript, "Hello there!")
+    }
+
+    func testResponseDoneClearsModelSpeaking() {
+        let sut = makeSUT()
+        sut.isModelSpeaking = true
+        sut.transcript = "Some text"
+        sut.handleServerEvent("""
+        {"type":"response.done"}
+        """)
+        XCTAssertFalse(sut.isModelSpeaking)
+        XCTAssertTrue(sut.transcript.isEmpty)
+        XCTAssertEqual(sut.statusMessage, "Listening…")
+    }
+
+    // MARK: - handleServerEvent: function calls
+
+    func testFunctionCallTriggersCallback() {
+        let sut = makeSUT()
+        var receivedName: String?
+        var receivedArgs: [String: Any]?
+        sut.onFunctionCall = { name, args in
+            receivedName = name
+            receivedArgs = args
+        }
+
+        sut.handleServerEvent("""
+        {"type":"response.output_item.done","item":{"type":"function_call","name":"next_step","arguments":"{}","call_id":"call_abc"}}
+        """)
+
+        XCTAssertEqual(receivedName, "next_step")
+        XCTAssertNotNil(receivedArgs)
+    }
+
+    func testFunctionCallWithArguments() {
+        let sut = makeSUT()
+        var receivedArgs: [String: Any]?
+        sut.onFunctionCall = { _, args in
+            receivedArgs = args
+        }
+
+        sut.handleServerEvent("""
+        {"type":"response.output_item.done","item":{"type":"function_call","name":"go_to_step","arguments":"{\\"step_number\\":3}","call_id":"call_xyz"}}
+        """)
+
+        XCTAssertEqual(receivedArgs?["step_number"] as? Int, 3)
+    }
+
+    func testNonFunctionCallItemIgnored() {
+        let sut = makeSUT()
+        var callbackInvoked = false
+        sut.onFunctionCall = { _, _ in callbackInvoked = true }
+
+        sut.handleServerEvent("""
+        {"type":"response.output_item.done","item":{"type":"message","role":"assistant"}}
+        """)
+
+        XCTAssertFalse(callbackInvoked)
+    }
+
+    // MARK: - handleServerEvent: errors
+
+    func testErrorEventSetsErrorMessage() {
+        let sut = makeSUT()
+        sut.handleServerEvent("""
+        {"type":"error","error":{"message":"Rate limit exceeded"}}
+        """)
+        XCTAssertEqual(sut.errorMessage, "Rate limit exceeded")
+    }
+
+    // MARK: - handleServerEvent: interruption
+
+    func testSpeechStartedInterruptsModel() {
+        let sut = makeSUT()
+        sut.isModelSpeaking = true
+        sut.transcript = "I was saying something"
+
+        sut.handleServerEvent("""
+        {"type":"input_audio_buffer.speech_started"}
+        """)
+
+        XCTAssertTrue(sut.isUserSpeaking)
+        // cancelCurrentResponse should clear model speaking
+        XCTAssertFalse(sut.isModelSpeaking)
+        XCTAssertTrue(sut.transcript.isEmpty)
+    }
+
+    // MARK: - handleServerEvent: malformed JSON
+
+    func testMalformedJSONIgnored() {
+        let sut = makeSUT()
+        sut.handleServerEvent("not json at all{{{")
+        // Should not crash, state unchanged
+        XCTAssertFalse(sut.isModelSpeaking)
+        XCTAssertTrue(sut.statusMessage.isEmpty)
+    }
+
+    func testMissingTypeFieldIgnored() {
+        let sut = makeSUT()
+        sut.handleServerEvent("""
+        {"data":"something"}
+        """)
+        XCTAssertFalse(sut.isModelSpeaking)
+    }
+
+    // MARK: - handleServerEvent: unknown event type
+
+    func testUnknownEventTypeIgnored() {
+        let sut = makeSUT()
+        sut.handleServerEvent("""
+        {"type":"some.future.event","data":{}}
+        """)
+        // Should not crash
+        XCTAssertFalse(sut.isModelSpeaking)
+    }
+
+    // MARK: - Disconnect
+
+    func testDisconnectResetsState() {
+        let sut = makeSUT()
+        sut.isConnected = true
+        sut.isModelSpeaking = true
+        sut.isUserSpeaking = true
+        sut.statusMessage = "Listening…"
+
+        sut.disconnect()
+
+        XCTAssertFalse(sut.isConnected)
+        XCTAssertFalse(sut.isModelSpeaking)
+        XCTAssertFalse(sut.isUserSpeaking)
+        XCTAssertTrue(sut.statusMessage.isEmpty)
+    }
+
+    // MARK: - handleFunctionCall directly
+
+    func testHandleFunctionCallParsesJSON() {
+        let sut = makeSUT()
+        var receivedName: String?
+        var receivedMinutes: Int?
+        sut.onFunctionCall = { name, args in
+            receivedName = name
+            receivedMinutes = args["minutes"] as? Int
+        }
+
+        sut.handleFunctionCall(name: "start_timer", argumentsJSON: "{\"minutes\":5}", callId: "call_1")
+
+        XCTAssertEqual(receivedName, "start_timer")
+        XCTAssertEqual(receivedMinutes, 5)
+    }
+
+    func testHandleFunctionCallInvalidJSON() {
+        let sut = makeSUT()
+        var receivedArgs: [String: Any]?
+        sut.onFunctionCall = { _, args in
+            receivedArgs = args
+        }
+
+        sut.handleFunctionCall(name: "next_step", argumentsJSON: "invalid", callId: "call_2")
+
+        // Should still call back with empty args
+        XCTAssertNotNil(receivedArgs)
+        XCTAssertTrue(receivedArgs!.isEmpty)
+    }
+
+    // MARK: - Response tracking
+
+    func testResponseCreatedTracksId() {
+        let sut = makeSUT()
+        sut.handleServerEvent("""
+        {"type":"response.created","response":{"id":"resp_abc123"}}
+        """)
+        // After response.done the id is cleared
+        sut.handleServerEvent("""
+        {"type":"response.done"}
+        """)
+        XCTAssertFalse(sut.isModelSpeaking)
+    }
+}
+
+// ===================================================================
+// MARK: - CookModeViewModel Conversation Tests
+// ===================================================================
+
+@MainActor
+final class CookModeConversationTests: XCTestCase {
+
+    private func makeSUT() -> CookModeViewModel {
+        let recipe = makeRecipe(
+            title: "Spaghetti Bolognese",
+            ingredients: [
+                Ingredient(name: "Pasta", quantity: 500, unit: .gram),
+                Ingredient(name: "Onion", quantity: 1, unit: .piece),
+            ],
+            steps: [
+                RecipeStep(stepNumber: 1, instruction: "Dice the onion", timerMinutes: nil, tip: "Use a sharp knife"),
+                RecipeStep(stepNumber: 2, instruction: "Boil water", timerMinutes: 10),
+                RecipeStep(stepNumber: 3, instruction: "Cook pasta", timerMinutes: 8),
+                RecipeStep(stepNumber: 4, instruction: "Combine and serve"),
+            ]
+        )
+        let speechService = SpeechService()
+        let realtimeService = RealtimeService(apiKey: "test-key")
+        return CookModeViewModel(recipe: recipe, speechService: speechService, realtimeService: realtimeService)
+    }
+
+    // MARK: - Conversation Initial State
+
+    func testConversationInitialState() {
+        let vm = makeSUT()
+        XCTAssertFalse(vm.isConversationMode)
+        XCTAssertTrue(vm.conversationTranscript.isEmpty)
+        XCTAssertTrue(vm.userTranscript.isEmpty)
+        XCTAssertFalse(vm.isModelSpeaking)
+        XCTAssertFalse(vm.isUserSpeaking)
+        XCTAssertTrue(vm.conversationStatus.isEmpty)
+        XCTAssertNil(vm.conversationError)
+    }
+
+    // MARK: - Function Call: next_step
+
+    func testFunctionCallNextStep() {
+        let vm = makeSUT()
+        vm.isAudioEnabled = false
+        XCTAssertEqual(vm.currentStepIndex, 0)
+
+        vm.handleRealtimeFunctionCall(name: "next_step", args: [:])
+        XCTAssertEqual(vm.currentStepIndex, 1)
+    }
+
+    // MARK: - Function Call: previous_step
+
+    func testFunctionCallPreviousStep() {
+        let vm = makeSUT()
+        vm.isAudioEnabled = false
+        vm.goToStep(2)
+
+        vm.handleRealtimeFunctionCall(name: "previous_step", args: [:])
+        XCTAssertEqual(vm.currentStepIndex, 1)
+    }
+
+    func testFunctionCallPreviousStepAtStart() {
+        let vm = makeSUT()
+        vm.isAudioEnabled = false
+
+        vm.handleRealtimeFunctionCall(name: "previous_step", args: [:])
+        XCTAssertEqual(vm.currentStepIndex, 0, "Should not go below 0")
+    }
+
+    // MARK: - Function Call: go_to_step (1-based → 0-based)
+
+    func testFunctionCallGoToStep() {
+        let vm = makeSUT()
+        vm.isAudioEnabled = false
+
+        vm.handleRealtimeFunctionCall(name: "go_to_step", args: ["step_number": 3])
+        XCTAssertEqual(vm.currentStepIndex, 2, "step_number 3 should map to index 2")
+        XCTAssertEqual(vm.currentStep?.instruction, "Cook pasta")
+    }
+
+    func testFunctionCallGoToStepOutOfBounds() {
+        let vm = makeSUT()
+        vm.isAudioEnabled = false
+
+        vm.handleRealtimeFunctionCall(name: "go_to_step", args: ["step_number": 99])
+        XCTAssertEqual(vm.currentStepIndex, 0, "Out-of-bounds should not change step")
+    }
+
+    func testFunctionCallGoToStepMissingArg() {
+        let vm = makeSUT()
+        vm.isAudioEnabled = false
+
+        vm.handleRealtimeFunctionCall(name: "go_to_step", args: [:])
+        XCTAssertEqual(vm.currentStepIndex, 0, "Missing step_number should not change step")
+    }
+
+    // MARK: - Function Call: start_timer with minutes
+
+    func testFunctionCallStartTimerWithMinutes() {
+        let vm = makeSUT()
+        vm.isAudioEnabled = false
+
+        vm.handleRealtimeFunctionCall(name: "start_timer", args: ["minutes": 5])
+        XCTAssertEqual(vm.timerSeconds, 300)
+        XCTAssertTrue(vm.isTimerRunning)
+        XCTAssertFalse(vm.isPaused)
+        vm.stopTimer() // cleanup
+    }
+
+    func testFunctionCallStartTimerWithoutMinutesFallsBackToStep() {
+        let vm = makeSUT()
+        vm.isAudioEnabled = false
+        vm.goToStep(1) // Step 2: "Boil water" has timerMinutes: 10
+
+        vm.handleRealtimeFunctionCall(name: "start_timer", args: [:])
+        XCTAssertEqual(vm.timerSeconds, 600, "Should use step's timerMinutes=10 → 600s")
+        XCTAssertTrue(vm.isTimerRunning)
+        vm.stopTimer()
+    }
+
+    // MARK: - Function Call: pause_timer
+
+    func testFunctionCallPauseTimer() {
+        let vm = makeSUT()
+        vm.isAudioEnabled = false
+        vm.handleRealtimeFunctionCall(name: "start_timer", args: ["minutes": 3])
+        XCTAssertFalse(vm.isPaused)
+
+        vm.handleRealtimeFunctionCall(name: "pause_timer", args: [:])
+        XCTAssertTrue(vm.isPaused)
+
+        vm.handleRealtimeFunctionCall(name: "pause_timer", args: [:])
+        XCTAssertFalse(vm.isPaused)
+        vm.stopTimer()
+    }
+
+    // MARK: - Function Call: stop_timer
+
+    func testFunctionCallStopTimer() {
+        let vm = makeSUT()
+        vm.isAudioEnabled = false
+        vm.handleRealtimeFunctionCall(name: "start_timer", args: ["minutes": 2])
+        XCTAssertTrue(vm.isTimerRunning)
+
+        vm.handleRealtimeFunctionCall(name: "stop_timer", args: [:])
+        XCTAssertFalse(vm.isTimerRunning)
+    }
+
+    // MARK: - Function Call: finish_cooking
+
+    func testFunctionCallFinishCooking() {
+        let vm = makeSUT()
+        XCTAssertFalse(vm.showCompletionScreen)
+
+        vm.handleRealtimeFunctionCall(name: "finish_cooking", args: [:])
+        XCTAssertTrue(vm.showCompletionScreen)
+    }
+
+    // MARK: - Function Call: repeat_step (no-op)
+
+    func testFunctionCallRepeatStepDoesNotNavigate() {
+        let vm = makeSUT()
+        vm.isAudioEnabled = false
+        vm.goToStep(2)
+
+        vm.handleRealtimeFunctionCall(name: "repeat_step", args: [:])
+        XCTAssertEqual(vm.currentStepIndex, 2, "repeat_step should not change the step index")
+    }
+
+    // MARK: - Function Call: unknown
+
+    func testFunctionCallUnknownIgnored() {
+        let vm = makeSUT()
+        vm.isAudioEnabled = false
+
+        vm.handleRealtimeFunctionCall(name: "do_something_weird", args: [:])
+        XCTAssertEqual(vm.currentStepIndex, 0, "Unknown function should not change state")
+        XCTAssertFalse(vm.isTimerRunning)
+        XCTAssertFalse(vm.showCompletionScreen)
+    }
+
+    // MARK: - Function Call: next_step at last step shows completion
+
+    func testFunctionCallNextStepAtEndShowsCompletion() {
+        let vm = makeSUT()
+        vm.isAudioEnabled = false
+        vm.goToStep(3) // last step
+
+        vm.handleRealtimeFunctionCall(name: "next_step", args: [:])
+        XCTAssertTrue(vm.showCompletionScreen)
+    }
+
+    // MARK: - stopConversation resets state
+
+    func testStopConversationResetsState() {
+        let vm = makeSUT()
+        vm.isConversationMode = true
+        vm.conversationTranscript = "Hello"
+        vm.userTranscript = "go next"
+        vm.isModelSpeaking = true
+        vm.isUserSpeaking = true
+        vm.conversationStatus = "Listening…"
+        vm.conversationError = "Some error"
+
+        vm.stopConversation()
+
+        XCTAssertFalse(vm.isConversationMode)
+        XCTAssertTrue(vm.conversationTranscript.isEmpty)
+        XCTAssertTrue(vm.userTranscript.isEmpty)
+        XCTAssertFalse(vm.isModelSpeaking)
+        XCTAssertFalse(vm.isUserSpeaking)
+        XCTAssertTrue(vm.conversationStatus.isEmpty)
+        XCTAssertNil(vm.conversationError)
+    }
+
+    // MARK: - syncRealtimeState
+
+    func testSyncRealtimeStateWhenNotConversationMode() {
+        let vm = makeSUT()
+        vm.isConversationMode = false
+        vm.realtimeService.isModelSpeaking = true
+
+        vm.syncRealtimeState()
+
+        XCTAssertFalse(vm.isModelSpeaking, "Should not sync when not in conversation mode")
+    }
+
+    func testSyncRealtimeStateSyncsValues() {
+        let vm = makeSUT()
+        vm.isConversationMode = true
+        vm.realtimeService.transcript = "Step 1..."
+        vm.realtimeService.userTranscript = "next"
+        vm.realtimeService.isModelSpeaking = true
+        vm.realtimeService.isUserSpeaking = false
+        vm.realtimeService.statusMessage = "Listening…"
+        vm.realtimeService.errorMessage = nil
+        vm.realtimeService.isConnected = true
+
+        vm.syncRealtimeState()
+
+        XCTAssertEqual(vm.conversationTranscript, "Step 1...")
+        XCTAssertEqual(vm.userTranscript, "next")
+        XCTAssertTrue(vm.isModelSpeaking)
+        XCTAssertFalse(vm.isUserSpeaking)
+        XCTAssertEqual(vm.conversationStatus, "Listening…")
+        XCTAssertNil(vm.conversationError)
+    }
+
+    func testSyncDetectsDisconnect() {
+        let vm = makeSUT()
+        vm.isConversationMode = true
+        vm.realtimeService.isConnected = false
+
+        vm.syncRealtimeState()
+
+        XCTAssertFalse(vm.isConversationMode, "Should exit conversation mode when disconnected")
+    }
+
+    // MARK: - Cleanup stops conversation
+
+    func testCleanupStopsConversation() {
+        let vm = makeSUT()
+        vm.isConversationMode = true
+        vm.isModelSpeaking = true
+
+        vm.cleanup()
+
+        XCTAssertFalse(vm.isConversationMode)
+        XCTAssertFalse(vm.isModelSpeaking)
+        XCTAssertFalse(vm.isTimerRunning)
+    }
+}
+
+// ===================================================================
 // MARK: - Extension / Utility Tests
 // ===================================================================
 
