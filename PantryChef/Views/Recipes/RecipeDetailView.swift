@@ -6,12 +6,12 @@ struct RecipeDetailView: View {
     @State private var servings: Int
     @State private var showCookMode = false
     @State private var showSubstitutions = false
-    @State private var showHealthier = false
     @State private var showShoppingList = false
     @State private var substitutions: [SubstitutionSuggestion] = []
     @State private var healthierSuggestion: HealthierSuggestion?
     @State private var shoppingList: [ShoppingItem] = []
     @State private var isLoadingAI = false
+    @State private var aiErrorMessage: String?
 
     init(recipe: Recipe) {
         _recipe = State(initialValue: recipe)
@@ -72,13 +72,19 @@ struct RecipeDetailView: View {
         .sheet(isPresented: $showSubstitutions) {
             SubstitutionsView(substitutions: substitutions)
         }
-        .sheet(isPresented: $showHealthier) {
-            if let suggestion = healthierSuggestion {
-                HealthierView(suggestion: suggestion)
-            }
+        .sheet(item: $healthierSuggestion) { suggestion in
+            HealthierView(suggestion: suggestion)
         }
         .sheet(isPresented: $showShoppingList) {
             ShoppingPreviewView(items: shoppingList)
+        }
+        .alert("AI Error", isPresented: Binding(
+            get: { aiErrorMessage != nil },
+            set: { if !$0 { aiErrorMessage = nil } }
+        )) {
+            Button("OK", role: .cancel) { }
+        } message: {
+            Text(aiErrorMessage ?? "Something went wrong. Please try again.")
         }
     }
 
@@ -198,27 +204,41 @@ struct RecipeDetailView: View {
                 ActionButton(icon: "cart", title: "What to Buy", color: AppColors.warmOrange) {
                 Task {
                     isLoadingAI = true
-                    shoppingList = await appState.getShoppingList(for: recipe)
+                    let result = await appState.getShoppingList(for: recipe)
                     isLoadingAI = false
-                    showShoppingList = true
+                    if result.isEmpty {
+                        aiErrorMessage = "Couldn't generate shopping list. Please check your internet connection and try again."
+                    } else {
+                        shoppingList = result
+                        showShoppingList = true
+                    }
                 }
             }
 
             ActionButton(icon: "arrow.triangle.2.circlepath", title: "Substitutes", color: .purple) {
                 Task {
                     isLoadingAI = true
-                    substitutions = await appState.getSubstitutions(for: recipe)
+                    let result = await appState.getSubstitutions(for: recipe)
                     isLoadingAI = false
-                    showSubstitutions = true
+                    if result.isEmpty {
+                        aiErrorMessage = "Couldn't find substitutions. Please check your internet connection and try again."
+                    } else {
+                        substitutions = result
+                        showSubstitutions = true
+                    }
                 }
             }
 
             ActionButton(icon: "heart.circle", title: "Healthier", color: AppColors.primaryGreen) {
                 Task {
                     isLoadingAI = true
-                    healthierSuggestion = await appState.getHealthierVersion(of: recipe)
+                    let result = await appState.getHealthierVersion(of: recipe)
                     isLoadingAI = false
-                    showHealthier = true
+                    if let result {
+                        healthierSuggestion = result
+                    } else {
+                        aiErrorMessage = "Couldn't generate healthier suggestions. Please check your internet connection and try again."
+                    }
                 }
             }
             }
