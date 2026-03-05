@@ -108,14 +108,12 @@ final class MockAIService: AIServiceProtocol {
     var substitutionsToReturn: [SubstitutionSuggestion] = []
     var healthierToReturn: HealthierSuggestion?
     var importResultToReturn: RecipeImportResult?
-    var chatResponse = "Mock response"
 
     var generateShoppingListCallCount = 0
     var suggestRecipesCallCount = 0
     var suggestSubstitutionsCallCount = 0
     var parseRecipeFromURLCallCount = 0
     var parseRecipeFromTextCallCount = 0
-    var chatCallCount = 0
 
     func generateShoppingList(recipe: Recipe, pantry: [PantryItem]) async -> [ShoppingItem] {
         generateShoppingListCallCount += 1
@@ -142,10 +140,6 @@ final class MockAIService: AIServiceProtocol {
     func parseRecipeFromText(_ extractedText: String) async -> RecipeImportResult? {
         parseRecipeFromTextCallCount += 1
         return importResultToReturn
-    }
-    func chat(message: String, context: String) async -> String {
-        chatCallCount += 1
-        return chatResponse
     }
 }
 
@@ -2159,80 +2153,6 @@ final class CookModeViewModelTests: XCTestCase {
         vm.stopTimer()
         XCTAssertFalse(vm.isPaused)
         XCTAssertFalse(vm.isTimerRunning)
-    }
-}
-
-// MARK: - AIAssistantViewModel Tests
-
-@MainActor
-final class AIAssistantViewModelTests: XCTestCase {
-
-    private func makeSUT() -> (AIAssistantViewModel, AppState, MockAIService) {
-        let (appState, _, ai) = makeTestAppState()
-        let vm = AIAssistantViewModel(appState: appState)
-        return (vm, appState, ai)
-    }
-
-    func testInitialWelcomeMessage() {
-        let (vm, _, _) = makeSUT()
-        XCTAssertEqual(vm.messages.count, 1)
-        XCTAssertEqual(vm.messages[0].role, .assistant)
-        XCTAssertTrue(vm.messages[0].content.contains("Pantry Chef"))
-    }
-
-    func testSendMessage() async {
-        let (vm, _, ai) = makeSUT()
-        ai.chatResponse = "Here's a suggestion"
-        vm.inputText = "What can I cook?"
-        await vm.sendMessage()
-        XCTAssertEqual(vm.messages.count, 3) // welcome + user + assistant
-        XCTAssertEqual(vm.messages[1].role, .user)
-        XCTAssertEqual(vm.messages[1].content, "What can I cook?")
-        XCTAssertEqual(vm.messages[2].role, .assistant)
-        XCTAssertEqual(vm.messages[2].content, "Here's a suggestion")
-        XCTAssertTrue(vm.inputText.isEmpty, "Input should be cleared after sending")
-        XCTAssertEqual(ai.chatCallCount, 1)
-    }
-
-    func testSendEmptyMessageIgnored() async {
-        let (vm, _, ai) = makeSUT()
-        vm.inputText = "   "
-        await vm.sendMessage()
-        XCTAssertEqual(vm.messages.count, 1, "Should not send empty messages")
-        XCTAssertEqual(ai.chatCallCount, 0)
-    }
-
-    func testContextStringIncludesPantryItems() async {
-        let (vm, appState, _) = makeSUT()
-        await appState.addPantryItem(makePantryItem(name: "Milk"))
-        await appState.addPantryItem(makePantryItem(name: "Eggs"))
-        let context = vm.contextString
-        XCTAssertTrue(context.contains("Milk"))
-        XCTAssertTrue(context.contains("Eggs"))
-    }
-
-    func testAskWhatCanIMake() async {
-        let (vm, _, ai) = makeSUT()
-        ai.chatResponse = "Try making an omelette!"
-        await vm.askWhatCanIMake()
-        XCTAssertEqual(vm.messages.count, 3)
-        XCTAssertTrue(vm.messages[1].content.lowercased().contains("pantry"))
-    }
-
-    func testAskForEasyDinner() async {
-        let (vm, _, ai) = makeSUT()
-        ai.chatResponse = "Try fried rice!"
-        await vm.askForEasyDinner()
-        XCTAssertEqual(vm.messages.count, 3)
-        XCTAssertTrue(vm.messages[1].content.lowercased().contains("easy dinner"))
-    }
-
-    func testAskForHealthyMeal() async {
-        let (vm, _, ai) = makeSUT()
-        ai.chatResponse = "Try a salad!"
-        await vm.askForHealthyMeal()
-        XCTAssertEqual(vm.messages.count, 3)
-        XCTAssertTrue(vm.messages[1].content.lowercased().contains("healthy"))
     }
 }
 

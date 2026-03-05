@@ -244,32 +244,6 @@ struct SectionHeader: View {
     }
 }
 
-// MARK: - Floating AI Button
-struct FloatingAIButton: View {
-    @Binding var isPresented: Bool
-
-    var body: some View {
-        Button {
-            isPresented = true
-        } label: {
-            Image(systemName: "sparkles")
-                .font(.title2)
-                .fontWeight(.semibold)
-                .foregroundStyle(.white)
-                .frame(width: 56, height: 56)
-                .background(
-                    LinearGradient(
-                        colors: [AppColors.primaryGreen, AppColors.primaryGreen.opacity(0.8)],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                )
-                .clipShape(Circle())
-                .shadow(color: AppColors.primaryGreen.opacity(0.4), radius: 8, x: 0, y: 4)
-        }
-    }
-}
-
 // MARK: - Nutrition Bar
 struct NutritionBar: View {
     let label: String

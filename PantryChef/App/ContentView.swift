@@ -3,7 +3,6 @@ import SwiftUI
 struct ContentView: View {
     @Environment(AppState.self) private var appState
     @State private var selectedTab: Tab = .home
-    @State private var showAIChat = false
 
     enum Tab: String, CaseIterable {
         case home = "Home"
@@ -59,16 +58,6 @@ struct ContentView: View {
                     .tag(Tab.shop)
             }
             .tint(AppColors.primary)
-
-            // Floating AI Button
-            if selectedTab == .home || selectedTab == .pantry || selectedTab == .recipes {
-                FloatingAIButton(isPresented: $showAIChat)
-                    .padding(.trailing, 20)
-                    .padding(.bottom, 90)
-            }
-        }
-        .sheet(isPresented: $showAIChat) {
-            AIAssistantView(appState: appState)
         }
     }
 }

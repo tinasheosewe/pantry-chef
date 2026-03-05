@@ -216,23 +216,13 @@ final class AIService: AIServiceProtocol {
         return parseImportResult(from: response)
     }
 
-    // MARK: - General Chat
+    // MARK: - Networking (with retry)
 
-    func chat(message: String, context: String) async -> String {
-        let prompt = """
-        You are Pantry Chef, a friendly and knowledgeable AI kitchen assistant. You help with cooking questions, recipe suggestions, ingredient substitutions, and kitchen tips. Keep answers concise and practical. You focus on helping beginner cooks eat healthy.
+    /// Maximum number of retry attempts for transient failures.
+    private let maxRetries = 3
 
-        Context about the user's kitchen:
-        \(context)
-
-        User's question: \(message)
-        """
-
-        return await sendChatRequest(prompt: prompt) ?? "Sorry, I couldn't process that request. Please try again."
-    }
-
-    // MARK: - Networking
-
+    /// Sends a prompt to OpenAI with automatic retry + exponential backoff.
+    /// Retries on network errors and 5xx / 429 responses. Gives up on 4xx client errors.
     private func sendChatRequest(prompt: String) async -> String? {
         guard let url = URL(string: baseURL) else { return nil }
 
@@ -253,21 +243,45 @@ final class AIService: AIServiceProtocol {
 
         request.httpBody = try? JSONSerialization.data(withJSONObject: body)
 
-        do {
-            let (data, response) = try await URLSession.shared.data(for: request)
-            guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
-                return nil
-            }
+        for attempt in 1...maxRetries {
+            do {
+                let (data, response) = try await URLSession.shared.data(for: request)
 
-            if let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
-               let choices = json["choices"] as? [[String: Any]],
-               let firstChoice = choices.first,
-               let message = firstChoice["message"] as? [String: Any],
-               let content = message["content"] as? String {
-                return content
+                if let httpResponse = response as? HTTPURLResponse {
+                    // Success
+                    if httpResponse.statusCode == 200 {
+                        if let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+                           let choices = json["choices"] as? [[String: Any]],
+                           let firstChoice = choices.first,
+                           let message = firstChoice["message"] as? [String: Any],
+                           let content = message["content"] as? String {
+                            return content
+                        }
+                        return nil // valid 200 but unexpected shape — don't retry
+                    }
+
+                    // Rate limited or server error — retryable
+                    if httpResponse.statusCode == 429 || httpResponse.statusCode >= 500 {
+                        if attempt < maxRetries {
+                            let delay = Double(attempt) * 1.5 // 1.5s, 3s
+                            try await Task.sleep(for: .seconds(delay))
+                            continue
+                        }
+                        return nil
+                    }
+
+                    // 4xx client error (bad key, etc.) — not retryable
+                    return nil
+                }
+            } catch {
+                // Network error — retry with backoff
+                if attempt < maxRetries {
+                    let delay = Double(attempt) * 1.5
+                    try? await Task.sleep(for: .seconds(delay))
+                    continue
+                }
+                print("AI Service Error after \(maxRetries) attempts: \(error.localizedDescription)")
             }
-        } catch {
-            print("AI Service Error: \(error.localizedDescription)")
         }
 
         return nil
