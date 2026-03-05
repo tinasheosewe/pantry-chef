@@ -173,6 +173,13 @@ final class SpeechService: NSObject, SpeechServiceProtocol, AVSpeechSynthesizerD
         let inputNode = audioEngine.inputNode
         let recordingFormat = inputNode.outputFormat(forBus: 0)
 
+        // Guard against invalid format (0 Hz sample rate on Simulator)
+        guard recordingFormat.sampleRate > 0, recordingFormat.channelCount > 0 else {
+            print("SpeechService: audio input format invalid (sampleRate=\(recordingFormat.sampleRate)), cannot start listening")
+            stopListeningSession()
+            return
+        }
+
         inputNode.installTap(onBus: 0, bufferSize: 1024, format: recordingFormat) { [weak self] buffer, _ in
             self?.recognitionRequest?.append(buffer)
         }

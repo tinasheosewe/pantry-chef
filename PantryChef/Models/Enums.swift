@@ -121,7 +121,7 @@ enum DietaryTag: String, Codable, CaseIterable, Identifiable {
         case .vegetarian: return "leaf.fill"
         case .vegan: return "leaf.circle.fill"
         case .glutenFree: return "xmark.circle.fill"
-        case .dairyFree: return "drop.slash.fill" // Note: symbolic
+        case .dairyFree: return "cup.and.saucer.fill"
         case .nutFree: return "exclamationmark.triangle.fill"
         case .lowCarb: return "chart.bar.fill"
         case .highProtein: return "bolt.fill"
