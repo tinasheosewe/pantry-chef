@@ -55,26 +55,14 @@ struct RecipeDetailView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
-                HStack {
-                    Button {
-                        recipe.isFavorite.toggle()
-                        Task {
-                            await appState.updateRecipe(recipe)
-                        }
-                    } label: {
-                        Image(systemName: recipe.isFavorite ? "heart.fill" : "heart")
-                            .foregroundStyle(recipe.isFavorite ? .red : AppColors.mediumGray)
+                Button {
+                    recipe.isFavorite.toggle()
+                    Task {
+                        await appState.updateRecipe(recipe)
                     }
-
-                    Button {
-                        showCookMode = true
-                    } label: {
-                        Label("Cook", systemImage: "play.fill")
-                            .font(.subheadline)
-                            .fontWeight(.semibold)
-                    }
-                    .buttonStyle(.borderedProminent)
-                    .tint(AppColors.primaryGreen)
+                } label: {
+                    Image(systemName: recipe.isFavorite ? "heart.fill" : "heart")
+                        .foregroundStyle(recipe.isFavorite ? .red : AppColors.mediumGray)
                 }
             }
         }
@@ -188,8 +176,26 @@ struct RecipeDetailView: View {
 
     // MARK: - Action Buttons
     private var actionButtons: some View {
-        HStack(spacing: 12) {
-            ActionButton(icon: "cart", title: "What to Buy", color: AppColors.warmOrange) {
+        VStack(spacing: 12) {
+            // Prominent Cook button
+            Button {
+                showCookMode = true
+            } label: {
+                HStack(spacing: 8) {
+                    Image(systemName: "play.fill")
+                        .font(.title3)
+                    Text("Start Cooking")
+                        .font(.headline)
+                }
+                .foregroundStyle(.white)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 14)
+                .background(AppColors.primaryGreen)
+                .clipShape(RoundedRectangle(cornerRadius: 14))
+            }
+
+            HStack(spacing: 12) {
+                ActionButton(icon: "cart", title: "What to Buy", color: AppColors.warmOrange) {
                 Task {
                     isLoadingAI = true
                     shoppingList = await appState.getShoppingList(for: recipe)
@@ -214,6 +220,7 @@ struct RecipeDetailView: View {
                     isLoadingAI = false
                     showHealthier = true
                 }
+            }
             }
         }
         .overlay {
