@@ -197,18 +197,51 @@ final class RealtimeService: NSObject, RealtimeServiceProtocol {
             interleaved: true
         ) else { return }
 
-        let capConverter = AVAudioConverter(from: vpioFormat, to: captureTarget)
+        guard let capConverter = AVAudioConverter(from: vpioFormat, to: captureTarget) else {
+            print("[RealtimeService] startCapture: failed to create capture converter")
+            return
+        }
         self.captureConverter = capConverter
+        let apiRate = realtimeSampleRate
 
+        // ── CRITICAL: Convert audio synchronously in the tap callback ──
+        // The tap's AVAudioPCMBuffer is only valid during the callback.
+        // Dispatching the buffer to another thread causes use-after-recycle.
+        // We convert to PCM16 Data here (audio thread), then dispatch the
+        // safe Data value to @MainActor for WebSocket transmission.
         inputNode.installTap(onBus: 0, bufferSize: 2400, format: vpioFormat) { [weak self] buffer, _ in
-            guard let self else { return }
-            Task { @MainActor in
-                self.processAndSendAudio(buffer: buffer, converter: capConverter, targetFormat: captureTarget)
+            guard self != nil else { return }
+
+            let pcmData: Data
+            let ratio = apiRate / buffer.format.sampleRate
+            let outputFrameCount = AVAudioFrameCount(Double(buffer.frameLength) * ratio)
+            guard let outputBuffer = AVAudioPCMBuffer(pcmFormat: captureTarget, frameCapacity: outputFrameCount) else { return }
+
+            var error: NSError?
+            var consumedAll = false
+            capConverter.convert(to: outputBuffer, error: &error) { _, outStatus in
+                if consumedAll {
+                    outStatus.pointee = .noDataNow
+                    return nil
+                }
+                consumedAll = true
+                outStatus.pointee = .haveData
+                return buffer
+            }
+
+            if error != nil { return }
+            guard let int16Ptr = outputBuffer.int16ChannelData else { return }
+            pcmData = Data(bytes: int16Ptr[0], count: Int(outputBuffer.frameLength) * 2)
+            guard !pcmData.isEmpty else { return }
+
+            Task { @MainActor [weak self] in
+                self?.sendCapturedPCM(pcmData)
             }
         }
 
         isCapturing = true
         statusMessage = "Listening…"
+        print("[RealtimeService] Mic tap installed, vpioRate=\(vpioFormat.sampleRate), targetRate=\(apiRate)")
     }
 
     /// Removes the mic tap (engine keeps running for playback).
@@ -283,6 +316,16 @@ final class RealtimeService: NSObject, RealtimeServiceProtocol {
             isAudioEngineRunning = true
             node.play()
             print("[RealtimeService] Audio engine started, mixerRate=\(mixerRate)")
+
+            // Re-apply speaker override + audio session after VPIO setup.
+            // VPIO changes the audio unit graph and may reset the output route.
+            try AVAudioSession.sharedInstance().setCategory(
+                .playAndRecord, mode: .default,
+                options: [.defaultToSpeaker, .allowBluetooth]
+            )
+            try AVAudioSession.sharedInstance().setActive(true)
+            try AVAudioSession.sharedInstance().overrideOutputAudioPort(.speaker)
+            print("[RealtimeService] Audio session re-applied after VPIO")
         } catch {
             print("RealtimeService: audio engine start error: \(error)")
             statusMessage = "Mic error"
@@ -323,55 +366,28 @@ final class RealtimeService: NSObject, RealtimeServiceProtocol {
 
     // MARK: - Mic → API
 
-    private func processAndSendAudio(buffer: AVAudioPCMBuffer, converter: AVAudioConverter?, targetFormat: AVAudioFormat) {
+    /// Sends pre-converted PCM16 audio data to the Realtime API.
+    /// Called from the tap callback's Task after synchronous conversion.
+    private func sendCapturedPCM(_ pcmData: Data) {
         guard isConnected else { return }
-
-        let pcmData: Data
-
-        if let converter {
-            let ratio = realtimeSampleRate / buffer.format.sampleRate
-            let outputFrameCount = AVAudioFrameCount(Double(buffer.frameLength) * ratio)
-            guard let outputBuffer = AVAudioPCMBuffer(pcmFormat: targetFormat, frameCapacity: outputFrameCount) else { return }
-
-            var error: NSError?
-            var consumedAll = false
-            converter.convert(to: outputBuffer, error: &error) { _, outStatus in
-                if consumedAll {
-                    outStatus.pointee = .noDataNow
-                    return nil
-                }
-                consumedAll = true
-                outStatus.pointee = .haveData
-                return buffer
-            }
-
-            if error != nil { return }
-
-            guard let int16Ptr = outputBuffer.int16ChannelData else { return }
-            pcmData = Data(bytes: int16Ptr[0], count: Int(outputBuffer.frameLength) * 2)
-        } else {
-            guard let int16Ptr = buffer.int16ChannelData else { return }
-            pcmData = Data(bytes: int16Ptr[0], count: Int(buffer.frameLength) * 2)
-        }
-
-        guard !pcmData.isEmpty else { return }
-
         let base64 = pcmData.base64EncodedString()
-        let event: [String: Any] = [
+        sendJSON([
             "type": "input_audio_buffer.append",
             "audio": base64
-        ]
-        sendJSON(event)
+        ])
     }
 
     // MARK: - API → Speaker
 
     private func enqueueAudio(_ base64: String) {
-        guard let data = Data(base64Encoded: base64) else { return }
+        guard let data = AudioPipelineHelper.base64ToPCM16(base64) else {
+            print("[RealtimeService] enqueueAudio: base64 decode failed")
+            return
+        }
         pendingAudioData.append(data)
 
         // Schedule playback chunks every ~100ms worth of audio
-        let chunkThreshold = Int(realtimeSampleRate * 0.1) * 2  // 2 bytes per sample
+        let chunkThreshold = AudioPipelineHelper.chunkThreshold(sampleRate: realtimeSampleRate)
         if pendingAudioData.count >= chunkThreshold {
             flushPendingAudio()
         }
@@ -383,7 +399,10 @@ final class RealtimeService: NSObject, RealtimeServiceProtocol {
         let data = pendingAudioData
         pendingAudioData = Data()
 
-        guard let playerNode, isAudioEngineRunning else { return }
+        guard let playerNode, isAudioEngineRunning else {
+            print("[RealtimeService] flushPendingAudio: skipped — playerNode=\(self.playerNode != nil), engineRunning=\(isAudioEngineRunning)")
+            return
+        }
 
         // Convert PCM16 24 kHz → Float32 at API rate first
         let apiFrameCount = AVAudioFrameCount(data.count / 2)
@@ -399,14 +418,9 @@ final class RealtimeService: NSObject, RealtimeServiceProtocol {
         guard let apiBuffer = AVAudioPCMBuffer(pcmFormat: apiFormat, frameCapacity: apiFrameCount) else { return }
         apiBuffer.frameLength = apiFrameCount
 
-        // Int16 → Float32
+        // Int16 → Float32 (uses the same math tested in AudioPipelineHelper)
         guard let floatData = apiBuffer.floatChannelData else { return }
-        data.withUnsafeBytes { rawBuf in
-            let int16Ptr = rawBuf.bindMemory(to: Int16.self)
-            for i in 0..<Int(apiFrameCount) {
-                floatData[0][i] = Float(int16Ptr[i]) / 32768.0
-            }
-        }
+        AudioPipelineHelper.pcm16ToFloatBuffer(from: data, into: floatData[0], frameCount: Int(apiFrameCount))
 
         // If mixer rate differs from 24 kHz, resample up to mixer rate
         if let converter = playbackConverter {

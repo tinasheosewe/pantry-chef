@@ -2397,6 +2397,203 @@ final class RealtimeServiceTests: XCTestCase {
 }
 
 // ===================================================================
+// MARK: - Audio Pipeline Tests
+// ===================================================================
+
+/// Tests the pure conversion functions in AudioPipelineHelper —
+/// PCM16 ↔ Float32, base64 round-trips, and chunk thresholds.
+/// These validate the exact math used in RealtimeService's mic
+/// capture and playback paths.
+@MainActor
+final class AudioPipelineTests: XCTestCase {
+
+    // MARK: - PCM16 → Float32
+
+    func testPCM16ToFloat32_silence() {
+        let data = int16sToData([0, 0, 0, 0])
+        let floats = AudioPipelineHelper.pcm16ToFloat32(data)
+        XCTAssertEqual(floats, [0, 0, 0, 0])
+    }
+
+    func testPCM16ToFloat32_maxPositive() {
+        let data = int16sToData([Int16.max])
+        let floats = AudioPipelineHelper.pcm16ToFloat32(data)
+        XCTAssertEqual(floats.count, 1)
+        XCTAssertEqual(floats[0], Float(Int16.max) / 32768.0, accuracy: 1e-6)
+    }
+
+    func testPCM16ToFloat32_maxNegative() {
+        let data = int16sToData([Int16.min])
+        let floats = AudioPipelineHelper.pcm16ToFloat32(data)
+        XCTAssertEqual(floats.count, 1)
+        XCTAssertEqual(floats[0], -1.0, accuracy: 1e-6)
+    }
+
+    func testPCM16ToFloat32_knownValues() {
+        let data = int16sToData([16384, -16384, 100, -100])
+        let floats = AudioPipelineHelper.pcm16ToFloat32(data)
+        XCTAssertEqual(floats[0], 0.5, accuracy: 1e-4)
+        XCTAssertEqual(floats[1], -0.5, accuracy: 1e-4)
+        XCTAssertEqual(floats[2], Float(100) / 32768.0, accuracy: 1e-6)
+        XCTAssertEqual(floats[3], Float(-100) / 32768.0, accuracy: 1e-6)
+    }
+
+    func testPCM16ToFloat32_empty() {
+        XCTAssertTrue(AudioPipelineHelper.pcm16ToFloat32(Data()).isEmpty)
+    }
+
+    func testPCM16ToFloat32_oddByteCountDropsPartial() {
+        // 3 bytes → 1 complete sample (2 bytes), trailing byte dropped
+        var data = int16sToData([1000])
+        data.append(0xFF)
+        let floats = AudioPipelineHelper.pcm16ToFloat32(data)
+        XCTAssertEqual(floats.count, 1)
+        XCTAssertEqual(floats[0], Float(1000) / 32768.0, accuracy: 1e-6)
+    }
+
+    // MARK: - Float32 → PCM16
+
+    func testFloat32ToPCM16_silence() {
+        let data = AudioPipelineHelper.float32ToPCM16([0, 0, 0])
+        let samples = dataToInt16s(data)
+        XCTAssertEqual(samples, [0, 0, 0])
+    }
+
+    func testFloat32ToPCM16_halfScale() {
+        let data = AudioPipelineHelper.float32ToPCM16([0.5, -0.5])
+        let samples = dataToInt16s(data)
+        XCTAssertEqual(samples[0], 16384)
+        XCTAssertEqual(samples[1], -16384)
+    }
+
+    func testFloat32ToPCM16_negativeOne() {
+        let data = AudioPipelineHelper.float32ToPCM16([-1.0])
+        let samples = dataToInt16s(data)
+        XCTAssertEqual(samples[0], Int16.min)
+    }
+
+    func testFloat32ToPCM16_clampsAboveOne() {
+        let data = AudioPipelineHelper.float32ToPCM16([1.5])
+        let samples = dataToInt16s(data)
+        XCTAssertEqual(samples[0], Int16.max)
+    }
+
+    func testFloat32ToPCM16_clampsBelowNegativeOne() {
+        let data = AudioPipelineHelper.float32ToPCM16([-1.5])
+        let samples = dataToInt16s(data)
+        XCTAssertEqual(samples[0], Int16.min)
+    }
+
+    func testFloat32ToPCM16_empty() {
+        XCTAssertTrue(AudioPipelineHelper.float32ToPCM16([]).isEmpty)
+    }
+
+    // MARK: - Round Trip
+
+    func testRoundTrip_preservesFidelity() {
+        let original: [Int16] = [0, 100, -100, 1000, -1000,
+                                  Int16.max, Int16.min, 12345, -12345]
+        let data = int16sToData(original)
+        let floats = AudioPipelineHelper.pcm16ToFloat32(data)
+        let roundTripped = AudioPipelineHelper.float32ToPCM16(floats)
+        let result = dataToInt16s(roundTripped)
+        XCTAssertEqual(result, original)
+    }
+
+    func testRoundTrip_allNormalizedValuesInRange() {
+        // Every converted float should be in [-1.0, 1.0]
+        let edgeCases: [Int16] = [Int16.min, Int16.min + 1, -1, 0, 1, Int16.max - 1, Int16.max]
+        let data = int16sToData(edgeCases)
+        let floats = AudioPipelineHelper.pcm16ToFloat32(data)
+        for f in floats {
+            XCTAssertGreaterThanOrEqual(f, -1.0)
+            XCTAssertLessThanOrEqual(f, 1.0)
+        }
+    }
+
+    // MARK: - Base64
+
+    func testBase64RoundTrip() {
+        let original = int16sToData([100, 200, 300])
+        let base64 = AudioPipelineHelper.pcm16ToBase64(original)
+        let decoded = AudioPipelineHelper.base64ToPCM16(base64)
+        XCTAssertEqual(decoded, original)
+    }
+
+    func testBase64DecodeInvalidReturnsNil() {
+        XCTAssertNil(AudioPipelineHelper.base64ToPCM16("!!!not-base64!!!"))
+    }
+
+    func testBase64EncodeNotEmpty() {
+        let data = int16sToData([42])
+        XCTAssertFalse(AudioPipelineHelper.pcm16ToBase64(data).isEmpty)
+    }
+
+    // MARK: - Chunk Threshold
+
+    func testChunkThreshold_24kHz() {
+        // 24000 * 0.1 * 2 = 4800 bytes
+        XCTAssertEqual(AudioPipelineHelper.chunkThreshold(sampleRate: 24_000), 4800)
+    }
+
+    func testChunkThreshold_48kHz() {
+        // 48000 * 0.1 * 2 = 9600 bytes
+        XCTAssertEqual(AudioPipelineHelper.chunkThreshold(sampleRate: 48_000), 9600)
+    }
+
+    // MARK: - RealtimeService audio event integration
+
+    func testAudioDeltaEventSetsModelSpeaking() {
+        let sut = RealtimeService(apiKey: "test-key")
+        // Construct a valid base64 audio delta (small silent chunk)
+        let silentPCM = int16sToData([0, 0, 0, 0])
+        let base64 = silentPCM.base64EncodedString()
+
+        sut.handleServerEvent("""
+        {"type":"response.audio.delta","delta":"\(base64)"}
+        """)
+
+        XCTAssertTrue(sut.isModelSpeaking, "Audio delta should set isModelSpeaking")
+    }
+
+    func testAudioDoneEventFlushesRemaining() {
+        let sut = RealtimeService(apiKey: "test-key")
+        // Send a small audio delta (below chunk threshold so it stays pending)
+        let silentPCM = int16sToData([0, 0])
+        let base64 = silentPCM.base64EncodedString()
+
+        sut.handleServerEvent("""
+        {"type":"response.audio.delta","delta":"\(base64)"}
+        """)
+        // Flush by sending audio.done
+        sut.handleServerEvent("""
+        {"type":"response.audio.done"}
+        """)
+        // Should not crash; isModelSpeaking stays true until response.done
+        XCTAssertTrue(sut.isModelSpeaking)
+    }
+
+    // MARK: - Helpers
+
+    private func int16sToData(_ values: [Int16]) -> Data {
+        var data = Data(count: values.count * 2)
+        data.withUnsafeMutableBytes { rawBuf in
+            let ptr = rawBuf.bindMemory(to: Int16.self)
+            for i in 0..<values.count { ptr[i] = values[i] }
+        }
+        return data
+    }
+
+    private func dataToInt16s(_ data: Data) -> [Int16] {
+        let count = data.count / 2
+        return data.withUnsafeBytes { rawBuf in
+            let ptr = rawBuf.bindMemory(to: Int16.self)
+            return (0..<count).map { ptr[$0] }
+        }
+    }
+}
+
+// ===================================================================
 // MARK: - CookModeViewModel Conversation Tests
 // ===================================================================
 
