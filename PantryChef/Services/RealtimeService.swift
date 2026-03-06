@@ -57,6 +57,11 @@ final class RealtimeService: NSObject {
     /// Tracks ongoing response so we know when the model stops speaking.
     @ObservationIgnored var activeResponseId: String?
 
+    /// Set during intentional disconnect to suppress spurious receive errors.
+    @ObservationIgnored private var isDisconnecting = false
+    @ObservationIgnored private var interruptionObserver: Any?
+    @ObservationIgnored private var routeChangeObserver: Any?
+
     // MARK: - Init
 
     init(apiKey: String = AppConfig.openAIAPIKey) {
@@ -94,6 +99,7 @@ final class RealtimeService: NSObject {
     // MARK: - Disconnect
 
     func disconnect() {
+        isDisconnecting = true
         tearDownAudioEngine()
         webSocketTask?.cancel(with: .normalClosure, reason: nil)
         webSocketTask = nil
@@ -104,6 +110,7 @@ final class RealtimeService: NSObject {
         isUserSpeaking = false
         statusMessage = ""
         activeResponseId = nil
+        isDisconnecting = false
     }
 
     // MARK: - Session Configuration
@@ -151,77 +158,21 @@ final class RealtimeService: NSObject {
     //   • Mic  → 24 kHz PCM16  (for the Realtime API)
     //   • API  → mixer rate Float32  (for the speaker)
 
-    func startCapture() {
-        guard !isCapturing else { return }
-
+    /// Prepares the audio engine asynchronously.  VPIO (Voice Processing IO)
+    /// can take 5-15 seconds on first call — this yields the main thread so
+    /// the UI stays responsive.  Call this BEFORE connect() so audio is ready
+    /// when the first API response arrives.
+    func prepareAudio() async {
         configureAudioSession()
-        setupAudioEngine()
-
-        guard isAudioEngineRunning else { return }
-        isCapturing = true
-        statusMessage = "Listening…"
+        await setupAudioEngine()
     }
 
-    func stopCapture() {
-        guard let engine = audioEngine else { return }
-        engine.inputNode.removeTap(onBus: 0)
-        isCapturing = false
-    }
+    /// Installs the mic tap and begins streaming audio to the API.
+    /// The audio engine must already be running (call prepareAudio first).
+    func startCapture() {
+        guard !isCapturing, isAudioEngineRunning, let engine = audioEngine else { return }
 
-    // MARK: - Audio Engine Setup
-
-    private func setupAudioEngine() {
-        guard audioEngine == nil else { return }
-
-        let engine = AVAudioEngine()
-        self.audioEngine = engine
-
-        // ── 1.  Enable Voice Processing IO for hardware AEC ──
         let inputNode = engine.inputNode
-        do {
-            try inputNode.setVoiceProcessingEnabled(true)
-        } catch {
-            print("RealtimeService: VPIO enable failed: \(error)")
-            // Fall back — AEC won't work but at least we can still talk
-        }
-
-        // ── 2.  Attach player node at the mixer's native rate ──
-        let mixerFormat = engine.mainMixerNode.outputFormat(forBus: 0)
-        let mixerRate = mixerFormat.sampleRate > 0 ? mixerFormat.sampleRate : 48_000
-
-        // Player format: Float32, mono, at the mixer's native rate
-        guard let playerFormat = AVAudioFormat(
-            commonFormat: .pcmFormatFloat32,
-            sampleRate: mixerRate,
-            channels: realtimeChannels,
-            interleaved: false
-        ) else {
-            statusMessage = "Audio format error"
-            return
-        }
-
-        let node = AVAudioPlayerNode()
-        node.volume = 1.5            // boost above default to stay audible
-        self.playerNode = node
-        engine.attach(node)
-        engine.connect(node, to: engine.mainMixerNode, format: playerFormat)
-        engine.mainMixerNode.outputVolume = 1.0
-
-        // Build a converter: API PCM16 24 kHz → player Float32 at mixer rate
-        guard let apiFormat = AVAudioFormat(
-            commonFormat: .pcmFormatFloat32,
-            sampleRate: realtimeSampleRate,
-            channels: realtimeChannels,
-            interleaved: false
-        ) else { return }
-
-        if mixerRate != realtimeSampleRate {
-            self.playbackConverter = AVAudioConverter(from: apiFormat, to: playerFormat)
-        }
-
-        // ── 3.  Install mic tap (post-VPIO = echo-cancelled audio) ──
-        //        The VPIO input node's output format is whatever the hardware gives us
-        //        (usually 48 kHz Float32 mono when VPIO is on).  We convert to 24 kHz PCM16.
         let vpioFormat = inputNode.outputFormat(forBus: 0)
         guard vpioFormat.sampleRate > 0, vpioFormat.channelCount > 0 else {
             statusMessage = "No microphone available"
@@ -245,7 +196,76 @@ final class RealtimeService: NSObject {
             }
         }
 
-        // ── 4.  Start the unified engine ──
+        isCapturing = true
+        statusMessage = "Listening…"
+    }
+
+    /// Removes the mic tap (engine keeps running for playback).
+    func stopCapture() {
+        guard isCapturing, let engine = audioEngine else { return }
+        engine.inputNode.removeTap(onBus: 0)
+        isCapturing = false
+    }
+
+    // MARK: - Audio Engine Setup
+
+    /// One-time engine creation: enables VPIO (async because it's slow),
+    /// attaches the player node, and starts the engine.  Mic tap is
+    /// installed separately by startCapture().
+    private func setupAudioEngine() async {
+        guard audioEngine == nil else { return }
+
+        let engine = AVAudioEngine()
+        self.audioEngine = engine
+
+        // ── 1.  Enable Voice Processing IO for hardware AEC ──
+        //        This call can block for 5-15 seconds.  Yield the main thread.
+        let inputNode = engine.inputNode
+        await withCheckedContinuation { (cont: CheckedContinuation<Void, Never>) in
+            DispatchQueue.global(qos: .userInitiated).async {
+                do {
+                    try inputNode.setVoiceProcessingEnabled(true)
+                } catch {
+                    print("RealtimeService: VPIO enable failed: \(error)")
+                }
+                cont.resume()
+            }
+        }
+
+        // ── 2.  Attach player node at the mixer's native rate ──
+        let mixerFormat = engine.mainMixerNode.outputFormat(forBus: 0)
+        let mixerRate = mixerFormat.sampleRate > 0 ? mixerFormat.sampleRate : 48_000
+
+        guard let playerFormat = AVAudioFormat(
+            commonFormat: .pcmFormatFloat32,
+            sampleRate: mixerRate,
+            channels: realtimeChannels,
+            interleaved: false
+        ) else {
+            statusMessage = "Audio format error"
+            return
+        }
+
+        let node = AVAudioPlayerNode()
+        node.volume = 1.5
+        self.playerNode = node
+        engine.attach(node)
+        engine.connect(node, to: engine.mainMixerNode, format: playerFormat)
+        engine.mainMixerNode.outputVolume = 1.0
+
+        // Build a converter: API Float32 24 kHz → player Float32 at mixer rate
+        guard let apiFormat = AVAudioFormat(
+            commonFormat: .pcmFormatFloat32,
+            sampleRate: realtimeSampleRate,
+            channels: realtimeChannels,
+            interleaved: false
+        ) else { return }
+
+        if mixerRate != realtimeSampleRate {
+            self.playbackConverter = AVAudioConverter(from: apiFormat, to: playerFormat)
+        }
+
+        // ── 3.  Start the unified engine ──
         engine.prepare()
         do {
             try engine.start()
@@ -255,11 +275,24 @@ final class RealtimeService: NSObject {
             print("RealtimeService: audio engine start error: \(error)")
             statusMessage = "Mic error"
         }
+
+        // ── 4.  Observe audio session interruptions / route changes ──
+        observeAudioSession()
     }
 
     // MARK: - Tear Down
 
     private func tearDownAudioEngine() {
+        // Remove notification observers
+        if let obs = interruptionObserver {
+            NotificationCenter.default.removeObserver(obs)
+            interruptionObserver = nil
+        }
+        if let obs = routeChangeObserver {
+            NotificationCenter.default.removeObserver(obs)
+            routeChangeObserver = nil
+        }
+
         if let engine = audioEngine {
             engine.inputNode.removeTap(onBus: 0)
             playerNode?.stop()
@@ -338,8 +371,6 @@ final class RealtimeService: NSObject {
         let data = pendingAudioData
         pendingAudioData = Data()
 
-        // Ensure engine is set up (lazy setup for initial greeting before startCapture)
-        setupAudioEngine()
         guard let playerNode, isAudioEngineRunning else { return }
 
         // Convert PCM16 24 kHz → Float32 at API rate first
@@ -447,6 +478,8 @@ final class RealtimeService: NSObject {
                     self.receiveLoop()
 
                 case .failure(let error):
+                    // Intentional disconnect triggers a socket error — suppress it
+                    guard !self.isDisconnecting else { return }
                     print("RealtimeService receive error: \(error)")
                     self.isConnected = false
                     self.statusMessage = "Disconnected"
@@ -640,5 +673,70 @@ final class RealtimeService: NSObject {
 
         let response: [String: Any] = ["type": "response.create"]
         sendJSON(response)
+    }
+
+    // MARK: - Audio Session Observation
+
+    private func observeAudioSession() {
+        interruptionObserver = NotificationCenter.default.addObserver(
+            forName: AVAudioSession.interruptionNotification,
+            object: nil,
+            queue: .main
+        ) { [weak self] notification in
+            guard let self else { return }
+            Task { @MainActor in
+                self.handleInterruption(notification)
+            }
+        }
+
+        routeChangeObserver = NotificationCenter.default.addObserver(
+            forName: AVAudioSession.routeChangeNotification,
+            object: nil,
+            queue: .main
+        ) { [weak self] notification in
+            guard let self else { return }
+            Task { @MainActor in
+                self.handleRouteChange(notification)
+            }
+        }
+    }
+
+    private func handleInterruption(_ notification: Notification) {
+        guard let info = notification.userInfo,
+              let typeValue = info[AVAudioSessionInterruptionTypeKey] as? UInt,
+              let type = AVAudioSession.InterruptionType(rawValue: typeValue) else { return }
+
+        switch type {
+        case .began:
+            // System paused audio (e.g. phone call) — nothing to do yet
+            break
+        case .ended:
+            // Restart audio engine after interruption
+            if let engine = audioEngine, !engine.isRunning {
+                do {
+                    try AVAudioSession.sharedInstance().setActive(true)
+                    try engine.start()
+                    playerNode?.play()
+                } catch {
+                    print("RealtimeService: restart after interruption failed: \(error)")
+                }
+            }
+        @unknown default:
+            break
+        }
+    }
+
+    private func handleRouteChange(_ notification: Notification) {
+        guard let info = notification.userInfo,
+              let reasonValue = info[AVAudioSessionRouteChangeReasonKey] as? UInt,
+              let reason = AVAudioSession.RouteChangeReason(rawValue: reasonValue) else { return }
+
+        switch reason {
+        case .oldDeviceUnavailable, .newDeviceAvailable:
+            // Headphones unplugged / Bluetooth changed — re-override to speaker
+            try? AVAudioSession.sharedInstance().overrideOutputAudioPort(.speaker)
+        default:
+            break
+        }
     }
 }

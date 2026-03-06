@@ -133,10 +133,16 @@ final class CookModeViewModel {
             isConversationActive = true
             voiceAuthorizationDenied = false
 
+            // Prepare audio first — VPIO enable is slow (5-15s).
+            // This awaits off the main thread so the UI stays responsive.
+            await realtimeService.prepareAudio()
+
+            // Connect WebSocket (audio engine is ready for playback now)
             let instructions = buildConversationInstructions()
             let tools = buildConversationTools()
-
             realtimeService.connect(withInstructions: instructions, tools: tools)
+
+            // Start mic capture (installs tap — engine is already running)
             realtimeService.startCapture()
 
             // Greet the user by triggering a response with the current step context
