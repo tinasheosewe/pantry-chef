@@ -2317,6 +2317,7 @@ final class RealtimeServiceTests: XCTestCase {
     func testSpeechStartedInterruptsModel() {
         let sut = makeSUT()
         sut.isModelSpeaking = true
+        sut.activeResponseId = "resp_active"
         sut.transcript = "I was saying something"
 
         sut.handleServerEvent("""

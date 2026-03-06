@@ -50,7 +50,7 @@ final class RealtimeService: NSObject {
     @ObservationIgnored private var audioPlaybackTimer: Timer?
 
     /// Tracks ongoing response so we know when the model stops speaking.
-    @ObservationIgnored private var activeResponseId: String?
+    @ObservationIgnored var activeResponseId: String?
 
     // MARK: - Init
 
@@ -122,7 +122,7 @@ final class RealtimeService: NSObject {
             ],
             "tools": tools,
             "tool_choice": "auto",
-            "temperature": 0.7
+            "temperature": 0.75
         ]
 
         let event: [String: Any] = [
@@ -397,8 +397,8 @@ final class RealtimeService: NSObject {
         case "input_audio_buffer.speech_started":
             isUserSpeaking = true
             userTranscript = ""
-            // Interrupt model if it's speaking
-            if isModelSpeaking {
+            // Interrupt model if it's actively speaking AND there's a response to cancel
+            if isModelSpeaking, activeResponseId != nil {
                 cancelCurrentResponse()
             }
 
@@ -456,7 +456,12 @@ final class RealtimeService: NSObject {
             if let error = json["error"] as? [String: Any],
                let message = error["message"] as? String {
                 print("RealtimeService API error: \(message)")
-                errorMessage = message
+                // Don't surface benign cancellation errors to the user
+                let benignPatterns = ["no active response", "cancellation failed"]
+                let isBenign = benignPatterns.contains { message.lowercased().contains($0) }
+                if !isBenign {
+                    errorMessage = message
+                }
             }
 
         default:
