@@ -16,7 +16,8 @@ final class CookModeViewModel {
     /// Conversational voice mode (Realtime API) — always-on in cook mode
     var isConversationActive = false
     /// True while prepareAudio() is running (prevents sync timer from killing the session).
-    private var isPreparing = false
+    /// Internal for testability.
+    var isPreparing = false
     var conversationTranscript = ""   // what the AI is currently saying
     var userTranscript = ""           // what the user said
     var isModelSpeaking = false
@@ -27,11 +28,11 @@ final class CookModeViewModel {
     var isMicMuted = false
 
     let recipe: Recipe
-    let realtimeService: RealtimeService
+    let realtimeService: any RealtimeServiceProtocol
 
     private var timerCancellable: AnyCancellable?
 
-    init(recipe: Recipe, realtimeService: RealtimeService) {
+    init(recipe: Recipe, realtimeService: any RealtimeServiceProtocol) {
         self.recipe = recipe
         self.realtimeService = realtimeService
         setupRealtimeCallbacks()

@@ -13,7 +13,7 @@ import Foundation
 
 @Observable
 @MainActor
-final class RealtimeService: NSObject {
+final class RealtimeService: NSObject, RealtimeServiceProtocol {
 
     // MARK: - Public state (observed by SwiftUI)
 

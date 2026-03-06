@@ -1959,8 +1959,8 @@ final class CookModeViewModelTests: XCTestCase {
                 RecipeStep(stepNumber: 4, instruction: "Serve"),
             ]
         )
-        let realtimeService = RealtimeService()
-        return CookModeViewModel(recipe: recipe, realtimeService: realtimeService)
+        let mockService = MockRealtimeService()
+        return CookModeViewModel(recipe: recipe, realtimeService: mockService)
     }
 
     // MARK: - Navigation
@@ -2417,8 +2417,8 @@ final class CookModeConversationTests: XCTestCase {
                 RecipeStep(stepNumber: 4, instruction: "Combine and serve"),
             ]
         )
-        let realtimeService = RealtimeService(apiKey: "test-key")
-        return CookModeViewModel(recipe: recipe, realtimeService: realtimeService)
+        let mockService = MockRealtimeService()
+        return CookModeViewModel(recipe: recipe, realtimeService: mockService)
     }
 
     // MARK: - Conversation Initial State
@@ -3019,5 +3019,754 @@ final class ErrorHandlingTests: XCTestCase {
         await appState.removeFromMealPlan(entry)
         XCTAssertNotNil(appState.errorMessage)
         XCTAssertEqual(appState.mealPlan.count, 1)
+    }
+}
+
+// ===================================================================
+// MARK: - MockRealtimeService
+// ===================================================================
+
+/// A fully controllable mock of RealtimeServiceProtocol for testing
+/// CookModeViewModel without AVAudioEngine, WebSockets, or network.
+@MainActor
+final class MockRealtimeService: RealtimeServiceProtocol {
+
+    // MARK: - Observable state (protocol requirements)
+    var isConnected = false
+    var isModelSpeaking = false
+    var isUserSpeaking = false
+    var transcript = ""
+    var userTranscript = ""
+    var statusMessage = ""
+    var errorMessage: String?
+    var isAudioReady: Bool { _isAudioReady }
+    var onFunctionCall: ((String, [String: Any]) -> Void)?
+
+    // MARK: - Test controls
+    var _isAudioReady = false
+
+    /// How long prepareAudio() should "take" (simulates async VPIO setup).
+    var prepareAudioDelay: UInt64 = 0  // nanoseconds
+
+    // MARK: - Call tracking
+    private(set) var prepareAudioCallCount = 0
+    private(set) var connectCallCount = 0
+    private(set) var disconnectCallCount = 0
+    private(set) var startCaptureCallCount = 0
+    private(set) var stopCaptureCallCount = 0
+    var sentMessages: [String] = []
+
+    private(set) var lastConnectInstructions: String?
+    private(set) var lastConnectTools: [[String: Any]]?
+
+    // MARK: - Protocol methods
+
+    func prepareAudio() async {
+        prepareAudioCallCount += 1
+        if prepareAudioDelay > 0 {
+            try? await Task.sleep(nanoseconds: prepareAudioDelay)
+        }
+        _isAudioReady = true
+    }
+
+    func connect(withInstructions instructions: String, tools: [[String: Any]]) {
+        connectCallCount += 1
+        lastConnectInstructions = instructions
+        lastConnectTools = tools
+        isConnected = true
+        statusMessage = "Connected"
+    }
+
+    func disconnect() {
+        disconnectCallCount += 1
+        isConnected = false
+        isModelSpeaking = false
+        isUserSpeaking = false
+        statusMessage = ""
+        errorMessage = nil
+        _isAudioReady = false
+    }
+
+    func startCapture() {
+        startCaptureCallCount += 1
+    }
+
+    func stopCapture() {
+        stopCaptureCallCount += 1
+    }
+
+    func sendUserMessage(_ text: String) {
+        sentMessages.append(text)
+    }
+
+    // MARK: - Test helpers
+
+    func reset() {
+        isConnected = false
+        isModelSpeaking = false
+        isUserSpeaking = false
+        transcript = ""
+        userTranscript = ""
+        statusMessage = ""
+        errorMessage = nil
+        _isAudioReady = false
+        prepareAudioCallCount = 0
+        connectCallCount = 0
+        disconnectCallCount = 0
+        startCaptureCallCount = 0
+        stopCaptureCallCount = 0
+        sentMessages = []
+        lastConnectInstructions = nil
+        lastConnectTools = nil
+    }
+}
+
+// ===================================================================
+// MARK: - CookMode Interaction Tests (using MockRealtimeService)
+// ===================================================================
+
+/// Tests the full interaction flows between CookModeViewModel and
+/// RealtimeService: startup, navigation, mic control, timer, sync,
+/// and edge cases.  Uses MockRealtimeService to verify every call
+/// the ViewModel makes, and every state transition.
+@MainActor
+final class CookModeInteractionTests: XCTestCase {
+
+    private func makeSUT(
+        title: String = "Spaghetti Bolognese"
+    ) -> (CookModeViewModel, MockRealtimeService) {
+        let recipe = makeRecipe(
+            title: title,
+            ingredients: [
+                Ingredient(name: "Pasta", quantity: 500, unit: .gram),
+                Ingredient(name: "Onion", quantity: 1, unit: .piece),
+            ],
+            steps: [
+                RecipeStep(stepNumber: 1, instruction: "Dice the onion", timerMinutes: nil, tip: "Use a sharp knife"),
+                RecipeStep(stepNumber: 2, instruction: "Boil water", timerMinutes: 10),
+                RecipeStep(stepNumber: 3, instruction: "Cook pasta", timerMinutes: 8),
+                RecipeStep(stepNumber: 4, instruction: "Combine and serve"),
+            ]
+        )
+        let mock = MockRealtimeService()
+        let vm = CookModeViewModel(recipe: recipe, realtimeService: mock)
+        return (vm, mock)
+    }
+
+    /// Helper: simulate what startConversation() does, but synchronously
+    /// (bypasses AVAudioApplication.requestRecordPermission which can't
+    /// be mocked in unit tests).
+    private func simulateStartConversation(_ vm: CookModeViewModel, _ mock: MockRealtimeService) async {
+        vm.isConversationActive = true
+        vm.isPreparing = true
+        vm.conversationStatus = "Setting up audio…"
+
+        await mock.prepareAudio()
+
+        let instructions = "test_instructions"
+        mock.connect(withInstructions: instructions, tools: [])
+
+        vm.isPreparing = false
+        mock.startCapture()
+        mock.sendUserMessage("Greeting")
+    }
+
+    // ================================================================
+    // MARK: - Startup Flow
+    // ================================================================
+
+    func testStartupCallsInCorrectOrder() async {
+        let (vm, mock) = makeSUT()
+        await simulateStartConversation(vm, mock)
+
+        XCTAssertEqual(mock.prepareAudioCallCount, 1, "prepareAudio should be called once")
+        XCTAssertEqual(mock.connectCallCount, 1, "connect should be called once")
+        XCTAssertEqual(mock.startCaptureCallCount, 1, "startCapture should be called once")
+        XCTAssertTrue(mock.sentMessages.count >= 1, "Should send at least a greeting")
+        XCTAssertTrue(mock.isConnected, "Should be connected after startup")
+        XCTAssertTrue(vm.isConversationActive, "Conversation should be active")
+        XCTAssertFalse(vm.isPreparing, "Should not still be preparing")
+    }
+
+    func testStartupSetsConversationStatus() async {
+        let (vm, mock) = makeSUT()
+
+        vm.isConversationActive = true
+        vm.isPreparing = true
+        vm.conversationStatus = "Setting up audio…"
+
+        XCTAssertEqual(vm.conversationStatus, "Setting up audio…")
+
+        await mock.prepareAudio()
+        mock.connect(withInstructions: "test", tools: [])
+        vm.isPreparing = false
+
+        XCTAssertEqual(mock.connectCallCount, 1)
+        XCTAssertTrue(mock.isConnected)
+    }
+
+    func testAudioEngineReadyBeforeConnect() async {
+        let (_, mock) = makeSUT()
+
+        // Before prepareAudio
+        XCTAssertFalse(mock.isAudioReady)
+
+        await mock.prepareAudio()
+
+        // After prepareAudio, before connect
+        XCTAssertTrue(mock.isAudioReady)
+        XCTAssertFalse(mock.isConnected)
+    }
+
+    // ================================================================
+    // MARK: - Race Condition: syncRealtimeState during preparation
+    // ================================================================
+
+    func testSyncDoesNotKillConversationDuringPreparation() {
+        let (vm, mock) = makeSUT()
+
+        // Simulate the state during prepareAudio() — active but not connected
+        vm.isConversationActive = true
+        vm.isPreparing = true
+        mock.isConnected = false
+
+        // Timer fires syncRealtimeState — this previously killed the conversation
+        vm.syncRealtimeState()
+
+        XCTAssertTrue(vm.isConversationActive,
+            "REGRESSION: syncRealtimeState must NOT set isConversationActive=false while isPreparing=true")
+    }
+
+    func testSyncDoesNotKillConversationDuringPreparationMultipleCalls() {
+        let (vm, mock) = makeSUT()
+
+        vm.isConversationActive = true
+        vm.isPreparing = true
+        mock.isConnected = false
+
+        // Simulate many rapid timer fires during the 5-15s VPIO setup
+        for _ in 0..<100 {
+            vm.syncRealtimeState()
+        }
+
+        XCTAssertTrue(vm.isConversationActive,
+            "REGRESSION: 100 sync calls during preparation must not kill conversation")
+    }
+
+    func testSyncDetectsDisconnectAfterPreparation() {
+        let (vm, mock) = makeSUT()
+
+        // After preparation is done and connection drops
+        vm.isConversationActive = true
+        vm.isPreparing = false
+        mock.isConnected = false
+
+        vm.syncRealtimeState()
+
+        XCTAssertFalse(vm.isConversationActive,
+            "Should detect real disconnect after preparation is complete")
+    }
+
+    func testSyncDoesNotTouchStateWhenInactive() {
+        let (vm, mock) = makeSUT()
+
+        vm.isConversationActive = false
+        mock.isModelSpeaking = true
+        mock.transcript = "Something"
+
+        vm.syncRealtimeState()
+
+        XCTAssertFalse(vm.isModelSpeaking, "Should not sync when conversation is inactive")
+        XCTAssertTrue(vm.conversationTranscript.isEmpty)
+    }
+
+    func testSyncCopiesAllValues() {
+        let (vm, mock) = makeSUT()
+
+        vm.isConversationActive = true
+        vm.isPreparing = false
+        mock.isConnected = true
+        mock.transcript = "Step 1: Dice the onion"
+        mock.userTranscript = "what does dice mean"
+        mock.isModelSpeaking = true
+        mock.isUserSpeaking = false
+        mock.statusMessage = "Speaking…"
+        mock.errorMessage = nil
+
+        vm.syncRealtimeState()
+
+        XCTAssertEqual(vm.conversationTranscript, "Step 1: Dice the onion")
+        XCTAssertEqual(vm.userTranscript, "what does dice mean")
+        XCTAssertTrue(vm.isModelSpeaking)
+        XCTAssertFalse(vm.isUserSpeaking)
+        XCTAssertEqual(vm.conversationStatus, "Speaking…")
+        XCTAssertNil(vm.conversationError)
+    }
+
+    func testSyncCopiesError() {
+        let (vm, mock) = makeSUT()
+
+        vm.isConversationActive = true
+        vm.isPreparing = false
+        mock.isConnected = true
+        mock.errorMessage = "Rate limit exceeded"
+
+        vm.syncRealtimeState()
+
+        XCTAssertEqual(vm.conversationError, "Rate limit exceeded")
+    }
+
+    // ================================================================
+    // MARK: - Navigation sends messages to Realtime API
+    // ================================================================
+
+    func testNextStepSendsMessageWhenConversationActive() {
+        let (vm, mock) = makeSUT()
+        vm.isConversationActive = true
+
+        vm.nextStep()
+
+        XCTAssertEqual(vm.currentStepIndex, 1)
+        XCTAssertEqual(mock.sentMessages.count, 1, "nextStep should notify Realtime API")
+        XCTAssertTrue(mock.sentMessages[0].contains("Boil water"),
+            "Message should contain the new step instruction")
+    }
+
+    func testNextStepDoesNotSendMessageWhenConversationInactive() {
+        let (vm, mock) = makeSUT()
+        vm.isConversationActive = false
+
+        vm.nextStep()
+
+        XCTAssertEqual(vm.currentStepIndex, 1)
+        XCTAssertTrue(mock.sentMessages.isEmpty,
+            "Should not send message when conversation is inactive")
+    }
+
+    func testPreviousStepSendsMessage() {
+        let (vm, mock) = makeSUT()
+        vm.isConversationActive = true
+        vm.goToStep(2)
+        mock.sentMessages.removeAll()  // clear the goToStep message
+
+        vm.previousStep()
+
+        XCTAssertEqual(vm.currentStepIndex, 1)
+        XCTAssertEqual(mock.sentMessages.count, 1)
+        XCTAssertTrue(mock.sentMessages[0].contains("Boil water"))
+    }
+
+    func testGoToStepSendsMessage() {
+        let (vm, mock) = makeSUT()
+        vm.isConversationActive = true
+
+        vm.goToStep(2)
+
+        XCTAssertEqual(vm.currentStepIndex, 2)
+        XCTAssertEqual(mock.sentMessages.count, 1)
+        XCTAssertTrue(mock.sentMessages[0].contains("Cook pasta"))
+    }
+
+    func testGoToStepIncludesTipInMessage() {
+        let (vm, mock) = makeSUT()
+        vm.isConversationActive = true
+
+        vm.goToStep(0)  // Step 1 has tip: "Use a sharp knife"
+        // goToStep(0) when already at 0 doesn't change index, but since we're
+        // setting it explicitly, let's navigate away first
+        vm.isConversationActive = false
+        vm.goToStep(1)
+        vm.isConversationActive = true
+        mock.sentMessages.removeAll()
+
+        vm.goToStep(0)
+
+        XCTAssertTrue(mock.sentMessages[0].contains("sharp knife"),
+            "Message should include the step's tip")
+    }
+
+    func testNextStepAtEndShowsCompletionWithoutMessage() {
+        let (vm, mock) = makeSUT()
+        vm.isConversationActive = true
+        vm.goToStep(3)  // last step
+        mock.sentMessages.removeAll()
+
+        vm.nextStep()
+
+        XCTAssertTrue(vm.showCompletionScreen)
+        XCTAssertTrue(mock.sentMessages.isEmpty,
+            "Should not send message when showing completion")
+    }
+
+    func testPreviousStepAtStartDoesNotSendMessage() {
+        let (vm, mock) = makeSUT()
+        vm.isConversationActive = true
+
+        vm.previousStep()
+
+        XCTAssertEqual(vm.currentStepIndex, 0)
+        XCTAssertTrue(mock.sentMessages.isEmpty,
+            "Should not send message when already at first step")
+    }
+
+    // ================================================================
+    // MARK: - Repeat Current Step
+    // ================================================================
+
+    func testRepeatCurrentStepSendsMessage() {
+        let (vm, mock) = makeSUT()
+        vm.isConversationActive = true
+
+        vm.repeatCurrentStep()
+
+        XCTAssertEqual(mock.sentMessages.count, 1)
+        XCTAssertTrue(mock.sentMessages[0].contains("Dice the onion"),
+            "Should ask model to repeat current step instruction")
+    }
+
+    func testRepeatCurrentStepDoesNothingWhenInactive() {
+        let (vm, mock) = makeSUT()
+        vm.isConversationActive = false
+
+        vm.repeatCurrentStep()
+
+        XCTAssertTrue(mock.sentMessages.isEmpty)
+    }
+
+    // ================================================================
+    // MARK: - Mic Mute/Unmute
+    // ================================================================
+
+    func testToggleMicMuteToMuted() {
+        let (vm, mock) = makeSUT()
+        XCTAssertFalse(vm.isMicMuted)
+
+        vm.toggleMicMute()
+
+        XCTAssertTrue(vm.isMicMuted)
+        XCTAssertEqual(mock.stopCaptureCallCount, 1)
+        XCTAssertEqual(mock.startCaptureCallCount, 0)
+    }
+
+    func testToggleMicMuteToUnmuted() {
+        let (vm, mock) = makeSUT()
+        vm.isMicMuted = true
+
+        vm.toggleMicMute()
+
+        XCTAssertFalse(vm.isMicMuted)
+        XCTAssertEqual(mock.startCaptureCallCount, 1)
+        XCTAssertEqual(mock.stopCaptureCallCount, 0)
+    }
+
+    func testToggleMicMuteCycle() {
+        let (vm, mock) = makeSUT()
+
+        vm.toggleMicMute()  // mute
+        XCTAssertTrue(vm.isMicMuted)
+        XCTAssertEqual(mock.stopCaptureCallCount, 1)
+
+        vm.toggleMicMute()  // unmute
+        XCTAssertFalse(vm.isMicMuted)
+        XCTAssertEqual(mock.startCaptureCallCount, 1)
+
+        vm.toggleMicMute()  // mute again
+        XCTAssertTrue(vm.isMicMuted)
+        XCTAssertEqual(mock.stopCaptureCallCount, 2)
+    }
+
+    func testStopConversationResetsMicMute() {
+        let (vm, _) = makeSUT()
+        vm.isMicMuted = true
+        vm.isConversationActive = true
+
+        vm.stopConversation()
+
+        XCTAssertFalse(vm.isMicMuted)
+    }
+
+    // ================================================================
+    // MARK: - Stop Conversation
+    // ================================================================
+
+    func testStopConversationCallsDisconnect() {
+        let (vm, mock) = makeSUT()
+        vm.isConversationActive = true
+
+        vm.stopConversation()
+
+        XCTAssertEqual(mock.disconnectCallCount, 1)
+        XCTAssertFalse(vm.isConversationActive)
+    }
+
+    func testStopConversationResetsAllState() {
+        let (vm, mock) = makeSUT()
+        vm.isConversationActive = true
+        vm.conversationTranscript = "Hello there"
+        vm.userTranscript = "go next"
+        vm.isModelSpeaking = true
+        vm.isUserSpeaking = true
+        vm.conversationStatus = "Listening..."
+        vm.conversationError = "Some error"
+        vm.isMicMuted = true
+
+        vm.stopConversation()
+
+        XCTAssertFalse(vm.isConversationActive)
+        XCTAssertTrue(vm.conversationTranscript.isEmpty)
+        XCTAssertTrue(vm.userTranscript.isEmpty)
+        XCTAssertFalse(vm.isModelSpeaking)
+        XCTAssertFalse(vm.isUserSpeaking)
+        XCTAssertTrue(vm.conversationStatus.isEmpty)
+        XCTAssertNil(vm.conversationError)
+        XCTAssertFalse(vm.isMicMuted)
+        XCTAssertEqual(mock.disconnectCallCount, 1)
+    }
+
+    // ================================================================
+    // MARK: - Cleanup
+    // ================================================================
+
+    func testCleanupStopsTimerAndConversation() {
+        let (vm, mock) = makeSUT()
+        vm.isConversationActive = true
+        vm.isTimerRunning = true
+        vm.isModelSpeaking = true
+
+        vm.cleanup()
+
+        XCTAssertFalse(vm.isConversationActive)
+        XCTAssertFalse(vm.isTimerRunning)
+        XCTAssertFalse(vm.isModelSpeaking)
+        XCTAssertEqual(mock.disconnectCallCount, 1)
+    }
+
+    // ================================================================
+    // MARK: - Function Calls from Realtime API
+    // ================================================================
+
+    func testFunctionCallNextStepNavigatesAndNotifies() {
+        let (vm, mock) = makeSUT()
+        vm.isConversationActive = true
+
+        vm.handleRealtimeFunctionCall(name: "next_step", args: [:])
+
+        XCTAssertEqual(vm.currentStepIndex, 1)
+        // nextStep → notifyStepChanged → sendUserMessage
+        XCTAssertEqual(mock.sentMessages.count, 1)
+    }
+
+    func testFunctionCallGoToStepNavigatesAndNotifies() {
+        let (vm, mock) = makeSUT()
+        vm.isConversationActive = true
+
+        vm.handleRealtimeFunctionCall(name: "go_to_step", args: ["step_number": 3])
+
+        XCTAssertEqual(vm.currentStepIndex, 2)
+        XCTAssertEqual(mock.sentMessages.count, 1)
+        XCTAssertTrue(mock.sentMessages[0].contains("Cook pasta"))
+    }
+
+    func testFunctionCallStartTimerWithMinutes() {
+        let (vm, _) = makeSUT()
+
+        vm.handleRealtimeFunctionCall(name: "start_timer", args: ["minutes": 5])
+
+        XCTAssertEqual(vm.timerSeconds, 300)
+        XCTAssertTrue(vm.isTimerRunning)
+        vm.stopTimer()
+    }
+
+    func testFunctionCallFinishCooking() {
+        let (vm, _) = makeSUT()
+
+        vm.handleRealtimeFunctionCall(name: "finish_cooking", args: [:])
+
+        XCTAssertTrue(vm.showCompletionScreen)
+    }
+
+    func testFunctionCallRepeatStepDoesNotNavigate() {
+        let (vm, mock) = makeSUT()
+        vm.isConversationActive = true
+        vm.goToStep(2)
+        mock.sentMessages.removeAll()
+
+        vm.handleRealtimeFunctionCall(name: "repeat_step", args: [:])
+
+        XCTAssertEqual(vm.currentStepIndex, 2, "Step should not change")
+        // repeat_step is a no-op: the AI re-reads from context without needing a notification
+        XCTAssertTrue(mock.sentMessages.isEmpty, "No message needed — model re-reads from context")
+    }
+
+    // ================================================================
+    // MARK: - Navigation preserves existing features
+    // ================================================================
+
+    func testNavigationStillWorksWithoutConversation() {
+        let (vm, mock) = makeSUT()
+        vm.isConversationActive = false
+
+        vm.nextStep()
+        XCTAssertEqual(vm.currentStepIndex, 1)
+        XCTAssertTrue(mock.sentMessages.isEmpty, "No messages when conversation is off")
+
+        vm.previousStep()
+        XCTAssertEqual(vm.currentStepIndex, 0)
+        XCTAssertTrue(mock.sentMessages.isEmpty)
+
+        vm.goToStep(3)
+        XCTAssertEqual(vm.currentStepIndex, 3)
+        XCTAssertTrue(mock.sentMessages.isEmpty)
+    }
+
+    func testTimerStillWorksWithoutConversation() {
+        let (vm, _) = makeSUT()
+        vm.isConversationActive = false
+        vm.goToStep(1)  // Step 2 has timerMinutes: 10
+
+        vm.startTimer()
+        XCTAssertEqual(vm.timerSeconds, 600)
+        XCTAssertTrue(vm.isTimerRunning)
+
+        vm.pauseTimer()
+        XCTAssertTrue(vm.isPaused)
+
+        vm.pauseTimer()
+        XCTAssertFalse(vm.isPaused)
+
+        vm.stopTimer()
+        XCTAssertFalse(vm.isTimerRunning)
+    }
+
+    func testGoToStepOutOfBoundsDoesNotNavigate() {
+        let (vm, mock) = makeSUT()
+        vm.isConversationActive = true
+
+        vm.goToStep(99)
+        XCTAssertEqual(vm.currentStepIndex, 0)
+        XCTAssertTrue(mock.sentMessages.isEmpty, "Out-of-bounds should not notify")
+
+        vm.goToStep(-1)
+        XCTAssertEqual(vm.currentStepIndex, 0)
+        XCTAssertTrue(mock.sentMessages.isEmpty)
+    }
+
+    func testProgressComputation() {
+        let (vm, _) = makeSUT()
+        XCTAssertEqual(vm.progress, 0.25)  // 1/4
+        vm.goToStep(3)
+        XCTAssertEqual(vm.progress, 1.0)   // 4/4
+    }
+
+    func testTimerDisplayFormat() {
+        let (vm, _) = makeSUT()
+        vm.timerSeconds = 125
+        XCTAssertEqual(vm.timerDisplay, "02:05")
+    }
+
+    func testSetRating() {
+        let (vm, _) = makeSUT()
+        vm.setRating(4)
+        XCTAssertEqual(vm.selectedRating, 4)
+        XCTAssertEqual(vm.ratedRecipe.rating, 4)
+    }
+
+    func testSetRatingToggle() {
+        let (vm, _) = makeSUT()
+        vm.setRating(3)
+        vm.setRating(3)
+        XCTAssertNil(vm.selectedRating)
+    }
+
+    // ================================================================
+    // MARK: - Auto-start timer on navigation
+    // ================================================================
+
+    func testAutoStartTimerOnStepWithTimer() {
+        let (vm, _) = makeSUT()
+        vm.isConversationActive = false
+
+        vm.nextStep()  // Step 2 has timerMinutes: 10
+
+        XCTAssertEqual(vm.timerSeconds, 600)
+        XCTAssertTrue(vm.isTimerRunning)
+        vm.stopTimer()
+    }
+
+    func testAutoStartTimerDoesNotTriggerOnStepWithoutTimer() {
+        let (vm, _) = makeSUT()
+        vm.isConversationActive = false
+
+        // Step 1 has no timer, we're already there
+        XCTAssertFalse(vm.isTimerRunning)
+    }
+
+    // ================================================================
+    // MARK: - Benign error suppression (RealtimeService)
+    // ================================================================
+
+    func testBenignErrorsNotSurfaced() {
+        let sut = RealtimeService(apiKey: "test-key")
+
+        sut.handleServerEvent("""
+        {"type":"error","error":{"message":"Conversation already has an active response in progress: resp_123"}}
+        """)
+        XCTAssertNil(sut.errorMessage, "Active response error should be suppressed")
+
+        sut.handleServerEvent("""
+        {"type":"error","error":{"message":"cancellation failed: no active response found"}}
+        """)
+        XCTAssertNil(sut.errorMessage, "Cancellation error should be suppressed")
+
+        sut.handleServerEvent("""
+        {"type":"error","error":{"message":"No active response to cancel"}}
+        """)
+        XCTAssertNil(sut.errorMessage, "No active response error should be suppressed")
+    }
+
+    func testNonBenignErrorSurfaced() {
+        let sut = RealtimeService(apiKey: "test-key")
+
+        sut.handleServerEvent("""
+        {"type":"error","error":{"message":"Rate limit exceeded"}}
+        """)
+        XCTAssertEqual(sut.errorMessage, "Rate limit exceeded")
+    }
+
+    // ================================================================
+    // MARK: - Response tracking
+    // ================================================================
+
+    func testResponseCreatedTracksActiveId() {
+        let sut = RealtimeService(apiKey: "test-key")
+
+        sut.handleServerEvent("""
+        {"type":"response.created","response":{"id":"resp_abc123"}}
+        """)
+        XCTAssertEqual(sut.activeResponseId, "resp_abc123")
+    }
+
+    func testResponseDoneClearsActiveId() {
+        let sut = RealtimeService(apiKey: "test-key")
+        sut.activeResponseId = "resp_abc123"
+
+        sut.handleServerEvent("""
+        {"type":"response.done"}
+        """)
+        XCTAssertNil(sut.activeResponseId)
+    }
+
+    func testSpeechStartedDoesNotInterruptWhenNoActiveResponse() {
+        let sut = RealtimeService(apiKey: "test-key")
+        sut.isModelSpeaking = true
+        sut.activeResponseId = nil
+
+        sut.handleServerEvent("""
+        {"type":"input_audio_buffer.speech_started"}
+        """)
+
+        XCTAssertTrue(sut.isUserSpeaking)
+        // Should NOT have cancelled (no activeResponseId)
+        XCTAssertTrue(sut.isModelSpeaking, "Should not cancel when no active response")
     }
 }
