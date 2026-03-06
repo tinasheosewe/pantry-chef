@@ -201,9 +201,11 @@ final class RealtimeService: NSObject {
         }
 
         let node = AVAudioPlayerNode()
+        node.volume = 1.5            // boost above default to stay audible
         self.playerNode = node
         engine.attach(node)
         engine.connect(node, to: engine.mainMixerNode, format: playerFormat)
+        engine.mainMixerNode.outputVolume = 1.0
 
         // Build a converter: API PCM16 24 kHz → player Float32 at mixer rate
         guard let apiFormat = AVAudioFormat(
@@ -398,11 +400,14 @@ final class RealtimeService: NSObject {
     private func configureAudioSession() {
         let session = AVAudioSession.sharedInstance()
         do {
-            // .voiceChat mode enables system-level echo cancellation as well.
+            // .default mode — we handle echo cancellation via VPIO on the
+            // audio engine input node, so we don't need .voiceChat mode's
+            // extra processing which aggressively ducks playback volume.
             // .defaultToSpeaker routes to the loudspeaker for hands-free cooking.
-            try session.setCategory(.playAndRecord, mode: .voiceChat,
+            try session.setCategory(.playAndRecord, mode: .default,
                                     options: [.defaultToSpeaker, .allowBluetooth])
             try session.setActive(true)
+            try session.overrideOutputAudioPort(.speaker)
         } catch {
             print("RealtimeService: audio session error: \(error)")
         }
@@ -524,8 +529,12 @@ final class RealtimeService: NSObject {
             if let error = json["error"] as? [String: Any],
                let message = error["message"] as? String {
                 print("RealtimeService API error: \(message)")
-                // Don't surface benign cancellation errors to the user
-                let benignPatterns = ["no active response", "cancellation failed"]
+                // Don't surface benign / transient errors to the user
+                let benignPatterns = [
+                    "no active response",
+                    "cancellation failed",
+                    "already has an active response"
+                ]
                 let isBenign = benignPatterns.contains { message.lowercased().contains($0) }
                 if !isBenign {
                     errorMessage = message
@@ -589,6 +598,7 @@ final class RealtimeService: NSObject {
             // Create a fresh player node — AVAudioPlayerNode can't reliably
             // schedule new buffers after .stop() in some iOS versions.
             let newNode = AVAudioPlayerNode()
+            newNode.volume = 1.5
             self.playerNode = newNode
             let mixerRate = engine.mainMixerNode.outputFormat(forBus: 0).sampleRate
             let rate = mixerRate > 0 ? mixerRate : 48_000
@@ -611,6 +621,11 @@ final class RealtimeService: NSObject {
     // MARK: - Send User Text (fallback / initial greeting)
 
     func sendUserMessage(_ text: String) {
+        // Cancel any in-flight response before requesting a new one
+        if activeResponseId != nil {
+            cancelCurrentResponse()
+        }
+
         let event: [String: Any] = [
             "type": "conversation.item.create",
             "item": [
