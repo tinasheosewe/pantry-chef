@@ -73,6 +73,7 @@ final class RealtimeService: NSObject {
 
     func connect(withInstructions instructions: String, tools: [[String: Any]]) {
         guard !isConnected else { return }
+        isDisconnecting = false
         statusMessage = "Connecting…"
 
         let url = URL(string: "wss://api.openai.com/v1/realtime?model=gpt-4o-realtime-preview")!
@@ -110,7 +111,8 @@ final class RealtimeService: NSObject {
         isUserSpeaking = false
         statusMessage = ""
         activeResponseId = nil
-        isDisconnecting = false
+        // Note: isDisconnecting stays true — the async receive callback
+        // hasn't fired yet.  It resets on the next connect().
     }
 
     // MARK: - Session Configuration
@@ -479,7 +481,7 @@ final class RealtimeService: NSObject {
 
                 case .failure(let error):
                     // Intentional disconnect triggers a socket error — suppress it
-                    guard !self.isDisconnecting else { return }
+                    guard !self.isDisconnecting, self.isConnected else { return }
                     print("RealtimeService receive error: \(error)")
                     self.isConnected = false
                     self.statusMessage = "Disconnected"
