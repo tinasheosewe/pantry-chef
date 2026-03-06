@@ -1959,9 +1959,8 @@ final class CookModeViewModelTests: XCTestCase {
                 RecipeStep(stepNumber: 4, instruction: "Serve"),
             ]
         )
-        let speechService = SpeechService()
         let realtimeService = RealtimeService()
-        return CookModeViewModel(recipe: recipe, speechService: speechService, realtimeService: realtimeService)
+        return CookModeViewModel(recipe: recipe, realtimeService: realtimeService)
     }
 
     // MARK: - Navigation
@@ -1983,7 +1982,6 @@ final class CookModeViewModelTests: XCTestCase {
 
     func testNextStep() {
         let vm = makeSUT()
-        vm.isAudioEnabled = false // Don't trigger AVFoundation in tests
         vm.nextStep()
         XCTAssertEqual(vm.currentStepIndex, 1)
         XCTAssertFalse(vm.isFirstStep)
@@ -1991,7 +1989,6 @@ final class CookModeViewModelTests: XCTestCase {
 
     func testPreviousStep() {
         let vm = makeSUT()
-        vm.isAudioEnabled = false
         vm.nextStep()
         vm.previousStep()
         XCTAssertEqual(vm.currentStepIndex, 0)
@@ -2000,14 +1997,12 @@ final class CookModeViewModelTests: XCTestCase {
 
     func testPreviousStepAtStart() {
         let vm = makeSUT()
-        vm.isAudioEnabled = false
         vm.previousStep()
         XCTAssertEqual(vm.currentStepIndex, 0, "Should not go below 0")
     }
 
     func testNextStepAtEndShowsCompletion() {
         let vm = makeSUT()
-        vm.isAudioEnabled = false
         vm.goToStep(3) // Last step
         vm.nextStep()
         XCTAssertTrue(vm.showCompletionScreen)
@@ -2015,7 +2010,6 @@ final class CookModeViewModelTests: XCTestCase {
 
     func testGoToStep() {
         let vm = makeSUT()
-        vm.isAudioEnabled = false
         vm.goToStep(2)
         XCTAssertEqual(vm.currentStepIndex, 2)
         XCTAssertEqual(vm.currentStep?.instruction, "Add sauce")
@@ -2023,14 +2017,12 @@ final class CookModeViewModelTests: XCTestCase {
 
     func testGoToStepOutOfBounds() {
         let vm = makeSUT()
-        vm.isAudioEnabled = false
         vm.goToStep(100)
         XCTAssertEqual(vm.currentStepIndex, 0, "Should not change for out-of-bounds")
     }
 
     func testGoToNegativeStep() {
         let vm = makeSUT()
-        vm.isAudioEnabled = false
         vm.goToStep(-1)
         XCTAssertEqual(vm.currentStepIndex, 0)
     }
@@ -2039,7 +2031,6 @@ final class CookModeViewModelTests: XCTestCase {
 
     func testProgress() {
         let vm = makeSUT()
-        vm.isAudioEnabled = false
         XCTAssertEqual(vm.progress, 0.25) // 1/4
         vm.nextStep()
         XCTAssertEqual(vm.progress, 0.5)  // 2/4
@@ -2061,7 +2052,6 @@ final class CookModeViewModelTests: XCTestCase {
 
     func testStartTimer() {
         let vm = makeSUT()
-        vm.isAudioEnabled = false
         // Step 1 has timerMinutes: 10
         vm.startTimer()
         XCTAssertEqual(vm.timerSeconds, 600)
@@ -2071,7 +2061,6 @@ final class CookModeViewModelTests: XCTestCase {
 
     func testStopTimer() {
         let vm = makeSUT()
-        vm.isAudioEnabled = false
         vm.startTimer()
         vm.stopTimer()
         XCTAssertFalse(vm.isTimerRunning)
@@ -2079,28 +2068,15 @@ final class CookModeViewModelTests: XCTestCase {
 
     func testStartTimerNoTimerOnStep() {
         let vm = makeSUT()
-        vm.isAudioEnabled = false
         vm.goToStep(2) // Step 3 has no timer
         vm.startTimer()
         XCTAssertFalse(vm.isTimerRunning, "Should not start timer when step has no timerMinutes")
-    }
-
-    // MARK: - Audio Toggle
-
-    func testToggleAudio() {
-        let vm = makeSUT()
-        XCTAssertTrue(vm.isAudioEnabled)
-        vm.toggleAudio()
-        XCTAssertFalse(vm.isAudioEnabled)
-        vm.toggleAudio()
-        XCTAssertTrue(vm.isAudioEnabled)
     }
 
     // MARK: - Cleanup
 
     func testCleanup() {
         let vm = makeSUT()
-        vm.isAudioEnabled = false
         vm.startTimer()
         vm.cleanup()
         XCTAssertFalse(vm.isTimerRunning)
@@ -2135,7 +2111,6 @@ final class CookModeViewModelTests: XCTestCase {
 
     func testPauseTimerTogglesState() {
         let vm = makeSUT()
-        vm.isAudioEnabled = false
         vm.startTimer()
         XCTAssertFalse(vm.isPaused)
         vm.pauseTimer()
@@ -2147,7 +2122,6 @@ final class CookModeViewModelTests: XCTestCase {
 
     func testStopTimerResetsPaused() {
         let vm = makeSUT()
-        vm.isAudioEnabled = false
         vm.startTimer()
         vm.pauseTimer()
         XCTAssertTrue(vm.isPaused)
@@ -2443,16 +2417,15 @@ final class CookModeConversationTests: XCTestCase {
                 RecipeStep(stepNumber: 4, instruction: "Combine and serve"),
             ]
         )
-        let speechService = SpeechService()
         let realtimeService = RealtimeService(apiKey: "test-key")
-        return CookModeViewModel(recipe: recipe, speechService: speechService, realtimeService: realtimeService)
+        return CookModeViewModel(recipe: recipe, realtimeService: realtimeService)
     }
 
     // MARK: - Conversation Initial State
 
     func testConversationInitialState() {
         let vm = makeSUT()
-        XCTAssertFalse(vm.isConversationMode)
+        XCTAssertFalse(vm.isConversationActive)
         XCTAssertTrue(vm.conversationTranscript.isEmpty)
         XCTAssertTrue(vm.userTranscript.isEmpty)
         XCTAssertFalse(vm.isModelSpeaking)
@@ -2465,7 +2438,6 @@ final class CookModeConversationTests: XCTestCase {
 
     func testFunctionCallNextStep() {
         let vm = makeSUT()
-        vm.isAudioEnabled = false
         XCTAssertEqual(vm.currentStepIndex, 0)
 
         vm.handleRealtimeFunctionCall(name: "next_step", args: [:])
@@ -2476,7 +2448,6 @@ final class CookModeConversationTests: XCTestCase {
 
     func testFunctionCallPreviousStep() {
         let vm = makeSUT()
-        vm.isAudioEnabled = false
         vm.goToStep(2)
 
         vm.handleRealtimeFunctionCall(name: "previous_step", args: [:])
@@ -2485,17 +2456,15 @@ final class CookModeConversationTests: XCTestCase {
 
     func testFunctionCallPreviousStepAtStart() {
         let vm = makeSUT()
-        vm.isAudioEnabled = false
 
         vm.handleRealtimeFunctionCall(name: "previous_step", args: [:])
         XCTAssertEqual(vm.currentStepIndex, 0, "Should not go below 0")
     }
 
-    // MARK: - Function Call: go_to_step (1-based → 0-based)
+    // MARK: - Function Call: go_to_step (1-based -> 0-based)
 
     func testFunctionCallGoToStep() {
         let vm = makeSUT()
-        vm.isAudioEnabled = false
 
         vm.handleRealtimeFunctionCall(name: "go_to_step", args: ["step_number": 3])
         XCTAssertEqual(vm.currentStepIndex, 2, "step_number 3 should map to index 2")
@@ -2504,7 +2473,6 @@ final class CookModeConversationTests: XCTestCase {
 
     func testFunctionCallGoToStepOutOfBounds() {
         let vm = makeSUT()
-        vm.isAudioEnabled = false
 
         vm.handleRealtimeFunctionCall(name: "go_to_step", args: ["step_number": 99])
         XCTAssertEqual(vm.currentStepIndex, 0, "Out-of-bounds should not change step")
@@ -2512,7 +2480,6 @@ final class CookModeConversationTests: XCTestCase {
 
     func testFunctionCallGoToStepMissingArg() {
         let vm = makeSUT()
-        vm.isAudioEnabled = false
 
         vm.handleRealtimeFunctionCall(name: "go_to_step", args: [:])
         XCTAssertEqual(vm.currentStepIndex, 0, "Missing step_number should not change step")
@@ -2522,7 +2489,6 @@ final class CookModeConversationTests: XCTestCase {
 
     func testFunctionCallStartTimerWithMinutes() {
         let vm = makeSUT()
-        vm.isAudioEnabled = false
 
         vm.handleRealtimeFunctionCall(name: "start_timer", args: ["minutes": 5])
         XCTAssertEqual(vm.timerSeconds, 300)
@@ -2533,11 +2499,10 @@ final class CookModeConversationTests: XCTestCase {
 
     func testFunctionCallStartTimerWithoutMinutesFallsBackToStep() {
         let vm = makeSUT()
-        vm.isAudioEnabled = false
         vm.goToStep(1) // Step 2: "Boil water" has timerMinutes: 10
 
         vm.handleRealtimeFunctionCall(name: "start_timer", args: [:])
-        XCTAssertEqual(vm.timerSeconds, 600, "Should use step's timerMinutes=10 → 600s")
+        XCTAssertEqual(vm.timerSeconds, 600, "Should use step's timerMinutes=10 -> 600s")
         XCTAssertTrue(vm.isTimerRunning)
         vm.stopTimer()
     }
@@ -2546,7 +2511,6 @@ final class CookModeConversationTests: XCTestCase {
 
     func testFunctionCallPauseTimer() {
         let vm = makeSUT()
-        vm.isAudioEnabled = false
         vm.handleRealtimeFunctionCall(name: "start_timer", args: ["minutes": 3])
         XCTAssertFalse(vm.isPaused)
 
@@ -2562,7 +2526,6 @@ final class CookModeConversationTests: XCTestCase {
 
     func testFunctionCallStopTimer() {
         let vm = makeSUT()
-        vm.isAudioEnabled = false
         vm.handleRealtimeFunctionCall(name: "start_timer", args: ["minutes": 2])
         XCTAssertTrue(vm.isTimerRunning)
 
@@ -2584,7 +2547,6 @@ final class CookModeConversationTests: XCTestCase {
 
     func testFunctionCallRepeatStepDoesNotNavigate() {
         let vm = makeSUT()
-        vm.isAudioEnabled = false
         vm.goToStep(2)
 
         vm.handleRealtimeFunctionCall(name: "repeat_step", args: [:])
@@ -2595,7 +2557,6 @@ final class CookModeConversationTests: XCTestCase {
 
     func testFunctionCallUnknownIgnored() {
         let vm = makeSUT()
-        vm.isAudioEnabled = false
 
         vm.handleRealtimeFunctionCall(name: "do_something_weird", args: [:])
         XCTAssertEqual(vm.currentStepIndex, 0, "Unknown function should not change state")
@@ -2607,7 +2568,6 @@ final class CookModeConversationTests: XCTestCase {
 
     func testFunctionCallNextStepAtEndShowsCompletion() {
         let vm = makeSUT()
-        vm.isAudioEnabled = false
         vm.goToStep(3) // last step
 
         vm.handleRealtimeFunctionCall(name: "next_step", args: [:])
@@ -2618,17 +2578,17 @@ final class CookModeConversationTests: XCTestCase {
 
     func testStopConversationResetsState() {
         let vm = makeSUT()
-        vm.isConversationMode = true
+        vm.isConversationActive = true
         vm.conversationTranscript = "Hello"
         vm.userTranscript = "go next"
         vm.isModelSpeaking = true
         vm.isUserSpeaking = true
-        vm.conversationStatus = "Listening…"
+        vm.conversationStatus = "Listening..."
         vm.conversationError = "Some error"
 
         vm.stopConversation()
 
-        XCTAssertFalse(vm.isConversationMode)
+        XCTAssertFalse(vm.isConversationActive)
         XCTAssertTrue(vm.conversationTranscript.isEmpty)
         XCTAssertTrue(vm.userTranscript.isEmpty)
         XCTAssertFalse(vm.isModelSpeaking)
@@ -2641,7 +2601,7 @@ final class CookModeConversationTests: XCTestCase {
 
     func testSyncRealtimeStateWhenNotConversationMode() {
         let vm = makeSUT()
-        vm.isConversationMode = false
+        vm.isConversationActive = false
         vm.realtimeService.isModelSpeaking = true
 
         vm.syncRealtimeState()
@@ -2651,12 +2611,12 @@ final class CookModeConversationTests: XCTestCase {
 
     func testSyncRealtimeStateSyncsValues() {
         let vm = makeSUT()
-        vm.isConversationMode = true
+        vm.isConversationActive = true
         vm.realtimeService.transcript = "Step 1..."
         vm.realtimeService.userTranscript = "next"
         vm.realtimeService.isModelSpeaking = true
         vm.realtimeService.isUserSpeaking = false
-        vm.realtimeService.statusMessage = "Listening…"
+        vm.realtimeService.statusMessage = "Listening..."
         vm.realtimeService.errorMessage = nil
         vm.realtimeService.isConnected = true
 
@@ -2666,30 +2626,30 @@ final class CookModeConversationTests: XCTestCase {
         XCTAssertEqual(vm.userTranscript, "next")
         XCTAssertTrue(vm.isModelSpeaking)
         XCTAssertFalse(vm.isUserSpeaking)
-        XCTAssertEqual(vm.conversationStatus, "Listening…")
+        XCTAssertEqual(vm.conversationStatus, "Listening...")
         XCTAssertNil(vm.conversationError)
     }
 
     func testSyncDetectsDisconnect() {
         let vm = makeSUT()
-        vm.isConversationMode = true
+        vm.isConversationActive = true
         vm.realtimeService.isConnected = false
 
         vm.syncRealtimeState()
 
-        XCTAssertFalse(vm.isConversationMode, "Should exit conversation mode when disconnected")
+        XCTAssertFalse(vm.isConversationActive, "Should exit conversation mode when disconnected")
     }
 
     // MARK: - Cleanup stops conversation
 
     func testCleanupStopsConversation() {
         let vm = makeSUT()
-        vm.isConversationMode = true
+        vm.isConversationActive = true
         vm.isModelSpeaking = true
 
         vm.cleanup()
 
-        XCTAssertFalse(vm.isConversationMode)
+        XCTAssertFalse(vm.isConversationActive)
         XCTAssertFalse(vm.isModelSpeaking)
         XCTAssertFalse(vm.isTimerRunning)
     }

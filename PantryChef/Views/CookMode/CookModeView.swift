@@ -4,8 +4,7 @@ struct CookModeView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(AppState.self) private var appState
 
-    /// Both are created lazily on first appear — no heavy AV objects at app launch.
-    @State private var speechService: SpeechService?
+    /// Created lazily on first appear — no heavy AV objects at app launch.
     @State private var realtimeService: RealtimeService?
     @State private var viewModel: CookModeViewModel?
     @State private var syncTimer: Timer?
@@ -29,14 +28,14 @@ struct CookModeView: View {
         .preferredColorScheme(.dark)
         .onAppear {
             if viewModel == nil {
-                let service = SpeechService()
                 let realtime = RealtimeService()
-                speechService = service
                 realtimeService = realtime
-                viewModel = CookModeViewModel(recipe: recipe, speechService: service, realtimeService: realtime)
+                let vm = CookModeViewModel(recipe: recipe, realtimeService: realtime)
+                viewModel = vm
+                // Auto-start conversational cook mode
+                vm.startConversation()
             }
-            viewModel?.speakCurrentStep()
-            // Poll realtime state at ~15 fps when conversation is active
+            // Poll realtime state at ~15 fps
             syncTimer = Timer.scheduledTimer(withTimeInterval: 0.066, repeats: true) { _ in
                 Task { @MainActor in
                     viewModel?.syncRealtimeState()
@@ -104,10 +103,8 @@ struct CookModeView: View {
 
                 navigationControls(vm: vm)
 
-                if vm.isConversationMode {
+                if vm.isConversationActive {
                     conversationIndicator(vm: vm)
-                } else if vm.isVoiceControlEnabled {
-                    voiceControlIndicator()
                 }
             }
         }
@@ -136,12 +133,13 @@ struct CookModeView: View {
 
             Spacer()
 
+            // Mute/unmute mic
             Button {
-                vm.toggleAudio()
+                vm.toggleMicMute()
             } label: {
-                Image(systemName: vm.isAudioEnabled ? "speaker.wave.3.fill" : "speaker.slash.fill")
+                Image(systemName: vm.isMicMuted ? "mic.slash.fill" : "mic.fill")
                     .font(.title3)
-                    .foregroundStyle(vm.isAudioEnabled ? AppColors.primaryGreen : .gray)
+                    .foregroundStyle(vm.isMicMuted ? .gray : AppColors.primaryGreen)
             }
         }
         .padding()
@@ -304,7 +302,7 @@ struct CookModeView: View {
             .disabled(vm.isFirstStep)
 
             Button {
-                vm.speakCurrentStep()
+                vm.repeatCurrentStep()
             } label: {
                 VStack(spacing: 4) {
                     Image(systemName: "arrow.counterclockwise.circle.fill")
@@ -313,23 +311,6 @@ struct CookModeView: View {
                     Text("Repeat")
                         .font(.caption2)
                         .foregroundStyle(.white.opacity(0.6))
-                }
-            }
-
-            Button {
-                if vm.isConversationMode {
-                    vm.stopConversation()
-                } else {
-                    vm.startConversation()
-                }
-            } label: {
-                VStack(spacing: 4) {
-                    Image(systemName: vm.isConversationMode ? "waveform.circle.fill" : "mic.slash")
-                        .font(.system(size: 44))
-                        .foregroundStyle(vm.isConversationMode ? AppColors.primaryGreen : .white.opacity(0.6))
-                    Text(vm.isConversationMode ? "Chat" : "Voice")
-                        .font(.caption2)
-                        .foregroundStyle(vm.isConversationMode ? AppColors.primaryGreen : .white.opacity(0.6))
                 }
             }
 
@@ -416,38 +397,6 @@ struct CookModeView: View {
         .background(.white.opacity(0.08))
         .clipShape(RoundedRectangle(cornerRadius: 16))
         .padding(.horizontal, 16)
-        .padding(.bottom, 8)
-    }
-
-    // MARK: - Voice Control Indicator (legacy fallback)
-
-    private func voiceControlIndicator() -> some View {
-        VStack(spacing: 4) {
-            HStack(spacing: 8) {
-                Circle()
-                    .fill(AppColors.primaryGreen)
-                    .frame(width: 8, height: 8)
-                    .overlay(
-                        Circle()
-                            .fill(AppColors.primaryGreen.opacity(0.4))
-                            .scaleEffect(1.5)
-                    )
-                    .modifier(PulseAnimation())
-                Text("Listening... Say \"next\", \"back\", \"repeat\", or \"pause\"")
-                    .font(.caption)
-                    .foregroundStyle(.white.opacity(0.7))
-            }
-            if let text = speechService?.recognizedText, !text.isEmpty {
-                Text("\"\(text)\"")
-                    .font(.caption2)
-                    .foregroundStyle(AppColors.primaryGreen.opacity(0.8))
-                    .lineLimit(1)
-            }
-        }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 8)
-        .background(.white.opacity(0.08))
-        .clipShape(RoundedRectangle(cornerRadius: 16))
         .padding(.bottom, 8)
     }
 

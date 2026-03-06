@@ -1,12 +1,11 @@
 import SwiftUI
+import AVFoundation
 import Combine
 
 @Observable
 @MainActor
 final class CookModeViewModel {
     var currentStepIndex = 0
-    var isAudioEnabled = true
-    var isVoiceControlEnabled = false
     var timerSeconds: Int = 0
     var isTimerRunning = false
     var isPaused = false
@@ -14,24 +13,24 @@ final class CookModeViewModel {
     var selectedRating: Int? = nil
     var voiceAuthorizationDenied = false
 
-    /// Conversational voice mode (Realtime API)
-    var isConversationMode = false
+    /// Conversational voice mode (Realtime API) — always-on in cook mode
+    var isConversationActive = false
     var conversationTranscript = ""   // what the AI is currently saying
     var userTranscript = ""           // what the user said
     var isModelSpeaking = false
     var isUserSpeaking = false
     var conversationStatus = ""
     var conversationError: String?
+    /// Whether the mic is muted (user can still hear the AI)
+    var isMicMuted = false
 
     let recipe: Recipe
-    let speechService: SpeechService
     let realtimeService: RealtimeService
 
     private var timerCancellable: AnyCancellable?
 
-    init(recipe: Recipe, speechService: SpeechService, realtimeService: RealtimeService) {
+    init(recipe: Recipe, realtimeService: RealtimeService) {
         self.recipe = recipe
-        self.speechService = speechService
         self.realtimeService = realtimeService
         setupRealtimeCallbacks()
     }
@@ -75,7 +74,7 @@ final class CookModeViewModel {
         }
         stopTimer()
         currentStepIndex += 1
-        speakCurrentStep()
+        notifyStepChanged()
         autoStartTimerIfNeeded()
     }
 
@@ -83,91 +82,55 @@ final class CookModeViewModel {
         guard !isFirstStep else { return }
         stopTimer()
         currentStepIndex -= 1
-        speakCurrentStep()
+        notifyStepChanged()
     }
 
     func goToStep(_ index: Int) {
         guard index >= 0 && index < steps.count else { return }
         stopTimer()
         currentStepIndex = index
-        speakCurrentStep()
+        notifyStepChanged()
         autoStartTimerIfNeeded()
     }
 
-    // MARK: - Audio
+    /// Tell the Realtime API model about the new step so it reads it aloud.
+    private func notifyStepChanged() {
+        guard isConversationActive, let step = currentStep else { return }
+        var msg = "The user moved to step \(step.stepNumber): \(step.instruction)."
+        if let tip = step.tip { msg += " Tip: \(tip)." }
+        msg += " Read this step aloud for them, briefly."
+        realtimeService.sendUserMessage(msg)
+    }
 
-    func speakCurrentStep() {
-        guard isAudioEnabled, let step = currentStep else { return }
-        let stepText = "Step \(step.stepNumber). \(step.instruction)"
-        if let tip = step.tip {
-            speechService.speak(stepText + ". Tip: \(tip)")
+    /// Ask the model to re-read the current step.
+    func repeatCurrentStep() {
+        guard isConversationActive, let step = currentStep else { return }
+        let msg = "Please repeat step \(step.stepNumber): \(step.instruction)"
+        realtimeService.sendUserMessage(msg)
+    }
+
+    // MARK: - Mic Mute
+
+    func toggleMicMute() {
+        isMicMuted.toggle()
+        if isMicMuted {
+            realtimeService.stopCapture()
         } else {
-            speechService.speak(stepText)
+            realtimeService.startCapture()
         }
     }
 
-    func toggleAudio() {
-        isAudioEnabled.toggle()
-        if !isAudioEnabled {
-            speechService.stop()
-        }
-    }
-
-    // MARK: - Voice Control (legacy keyword-based — kept as fallback)
-
-    func startVoiceControl() {
-        Task {
-            let speechAuthorized = await speechService.requestSpeechAuthorization()
-            let micAuthorized = await speechService.requestMicrophoneAuthorization()
-
-            guard speechAuthorized && micAuthorized else {
-                voiceAuthorizationDenied = true
-                return
-            }
-
-            isVoiceControlEnabled = true
-            voiceAuthorizationDenied = false
-            speechService.startListening { [weak self] text in
-                Task { @MainActor in
-                    self?.handleVoiceCommand(text)
-                }
-            }
-        }
-    }
-
-    func stopVoiceControl() {
-        isVoiceControlEnabled = false
-        speechService.stopListening()
-    }
-
-    private func handleVoiceCommand(_ text: String) {
-        let command = SpeechService.VoiceCommand.parse(text)
-        switch command {
-        case .next: nextStep()
-        case .previous: previousStep()
-        case .repeatStep: speakCurrentStep()
-        case .startTimer: startTimer()
-        case .pauseTimer: pauseTimer()
-        case .stopTimer: stopTimer()
-        case .unknown: break
-        }
-    }
-
-    // MARK: - Conversational Voice Mode (OpenAI Realtime API)
+    // MARK: - Conversational Voice (OpenAI Realtime API)
 
     func startConversation() {
         Task {
-            let micAuthorized = await speechService.requestMicrophoneAuthorization()
+            let micAuthorized = await Self.requestMicrophoneAuthorization()
             guard micAuthorized else {
                 voiceAuthorizationDenied = true
                 return
             }
 
-            // Stop any legacy voice / TTS
-            stopVoiceControl()
-            speechService.stop()
-
-            isConversationMode = true
+            isConversationActive = true
             voiceAuthorizationDenied = false
 
             let instructions = buildConversationInstructions()
@@ -185,7 +148,7 @@ final class CookModeViewModel {
     }
 
     func stopConversation() {
-        isConversationMode = false
+        isConversationActive = false
         realtimeService.disconnect()
         conversationTranscript = ""
         userTranscript = ""
@@ -193,6 +156,17 @@ final class CookModeViewModel {
         conversationError = nil
         isModelSpeaking = false
         isUserSpeaking = false
+        isMicMuted = false
+    }
+
+    // MARK: - Mic Permission
+
+    static func requestMicrophoneAuthorization() async -> Bool {
+        await withCheckedContinuation { continuation in
+            AVAudioApplication.requestRecordPermission { granted in
+                continuation.resume(returning: granted)
+            }
+        }
     }
 
     private func setupRealtimeCallbacks() {
@@ -203,9 +177,9 @@ final class CookModeViewModel {
         }
     }
 
-    /// Syncs observable state from RealtimeService — called by the view's onChange or timer.
+    /// Syncs observable state from RealtimeService — called by the view's timer.
     func syncRealtimeState() {
-        guard isConversationMode else { return }
+        guard isConversationActive else { return }
         conversationTranscript = realtimeService.transcript
         userTranscript = realtimeService.userTranscript
         isModelSpeaking = realtimeService.isModelSpeaking
@@ -213,9 +187,9 @@ final class CookModeViewModel {
         conversationStatus = realtimeService.statusMessage
         conversationError = realtimeService.errorMessage
 
-        if !realtimeService.isConnected && isConversationMode {
+        if !realtimeService.isConnected && isConversationActive {
             // Connection dropped
-            isConversationMode = false
+            isConversationActive = false
         }
     }
 
@@ -440,8 +414,11 @@ final class CookModeViewModel {
 
     private func timerComplete() {
         stopTimer()
-        if isAudioEnabled {
-            speechService.speak("Timer is done! Ready for the next step.")
+        // Notify through the Realtime API so the AI announces it
+        if isConversationActive {
+            realtimeService.sendUserMessage(
+                "The timer just finished! Let the user know and ask if they're ready for the next step."
+            )
         }
     }
 
@@ -455,8 +432,6 @@ final class CookModeViewModel {
 
     func cleanup() {
         stopTimer()
-        stopVoiceControl()
         stopConversation()
-        speechService.stop()
     }
 }
