@@ -47,6 +47,9 @@ final class RealtimeService: NSObject {
     @ObservationIgnored private var isCapturing = false
     @ObservationIgnored private var isAudioEngineRunning = false
 
+    /// Whether the audio engine is running and ready for playback/capture.
+    var isAudioReady: Bool { isAudioEngineRunning }
+
     // Audio format: PCM 16-bit signed integer, mono, 24 kHz  (Realtime API native format)
     @ObservationIgnored private let realtimeSampleRate: Double = 24_000
     @ObservationIgnored private let realtimeChannels: AVAudioChannelCount = 1
@@ -89,6 +92,7 @@ final class RealtimeService: NSObject {
 
         isConnected = true
         statusMessage = "Connected"
+        print("[RealtimeService] WebSocket connected")
 
         // Start the receive loop
         receiveLoop()
@@ -165,14 +169,19 @@ final class RealtimeService: NSObject {
     /// the UI stays responsive.  Call this BEFORE connect() so audio is ready
     /// when the first API response arrives.
     func prepareAudio() async {
+        print("[RealtimeService] prepareAudio() start")
         configureAudioSession()
         await setupAudioEngine()
+        print("[RealtimeService] prepareAudio() done, engineRunning=\(isAudioEngineRunning)")
     }
 
     /// Installs the mic tap and begins streaming audio to the API.
     /// The audio engine must already be running (call prepareAudio first).
     func startCapture() {
-        guard !isCapturing, isAudioEngineRunning, let engine = audioEngine else { return }
+        guard !isCapturing, isAudioEngineRunning, let engine = audioEngine else {
+            print("[RealtimeService] startCapture() guard failed: isCapturing=\(isCapturing), engineRunning=\(isAudioEngineRunning), hasEngine=\(audioEngine != nil)")
+            return
+        }
 
         let inputNode = engine.inputNode
         let vpioFormat = inputNode.outputFormat(forBus: 0)
@@ -273,6 +282,7 @@ final class RealtimeService: NSObject {
             try engine.start()
             isAudioEngineRunning = true
             node.play()
+            print("[RealtimeService] Audio engine started, mixerRate=\(mixerRate)")
         } catch {
             print("RealtimeService: audio engine start error: \(error)")
             statusMessage = "Mic error"

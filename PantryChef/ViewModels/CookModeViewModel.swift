@@ -15,6 +15,8 @@ final class CookModeViewModel {
 
     /// Conversational voice mode (Realtime API) — always-on in cook mode
     var isConversationActive = false
+    /// True while prepareAudio() is running (prevents sync timer from killing the session).
+    private var isPreparing = false
     var conversationTranscript = ""   // what the AI is currently saying
     var userTranscript = ""           // what the user said
     var isModelSpeaking = false
@@ -131,25 +133,35 @@ final class CookModeViewModel {
             }
 
             isConversationActive = true
+            isPreparing = true
             voiceAuthorizationDenied = false
+            conversationStatus = "Setting up audio…"
 
             // Prepare audio first — VPIO enable is slow (5-15s).
             // This awaits off the main thread so the UI stays responsive.
+            print("[CookMode] Preparing audio engine…")
             await realtimeService.prepareAudio()
+            print("[CookMode] Audio engine ready, isRunning=\(realtimeService.isAudioReady)")
 
             // Connect WebSocket (audio engine is ready for playback now)
             let instructions = buildConversationInstructions()
             let tools = buildConversationTools()
             realtimeService.connect(withInstructions: instructions, tools: tools)
+            print("[CookMode] WebSocket connected=\(realtimeService.isConnected)")
+
+            // Now it's safe for the sync timer to check connection state
+            isPreparing = false
 
             // Start mic capture (installs tap — engine is already running)
             realtimeService.startCapture()
+            print("[CookMode] Mic capture started")
 
             // Greet the user by triggering a response with the current step context
             let greeting = "The user just started cooking \(recipe.title). "
                 + "Greet them warmly and briefly read step \(currentStepIndex + 1): "
                 + "\(currentStep?.instruction ?? ""). Keep it concise."
             realtimeService.sendUserMessage(greeting)
+            print("[CookMode] Greeting sent")
         }
     }
 
@@ -193,7 +205,8 @@ final class CookModeViewModel {
         conversationStatus = realtimeService.statusMessage
         conversationError = realtimeService.errorMessage
 
-        if !realtimeService.isConnected && isConversationActive {
+        // Don't check connection state while still preparing audio
+        if !isPreparing && !realtimeService.isConnected && isConversationActive {
             // Connection dropped
             isConversationActive = false
         }
