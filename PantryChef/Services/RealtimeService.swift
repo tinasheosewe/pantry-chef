@@ -35,11 +35,17 @@ final class RealtimeService: NSObject {
     private var webSocketTask: URLSessionWebSocketTask?
     private var urlSession: URLSession?
 
-    @ObservationIgnored private var captureEngine: AVAudioEngine?
-    @ObservationIgnored private var playbackEngine: AVAudioEngine?
+    /// Single audio engine for both capture and playback.
+    /// VPIO (Voice Processing IO) on the input node enables hardware acoustic
+    /// echo cancellation — the engine knows what's playing through the speaker
+    /// and subtracts it from the mic signal.  This lets the user interrupt the
+    /// model naturally while preventing the model from hearing its own output.
+    @ObservationIgnored private var audioEngine: AVAudioEngine?
     @ObservationIgnored private var playerNode: AVAudioPlayerNode?
-    @ObservationIgnored private var audioConverter: AVAudioConverter?
+    @ObservationIgnored private var captureConverter: AVAudioConverter?
+    @ObservationIgnored private var playbackConverter: AVAudioConverter?
     @ObservationIgnored private var isCapturing = false
+    @ObservationIgnored private var isAudioEngineRunning = false
 
     // Audio format: PCM 16-bit signed integer, mono, 24 kHz  (Realtime API native format)
     @ObservationIgnored private let realtimeSampleRate: Double = 24_000
@@ -47,7 +53,6 @@ final class RealtimeService: NSObject {
 
     /// Accumulates audio chunks so we can schedule larger buffers to avoid pops.
     @ObservationIgnored private var pendingAudioData = Data()
-    @ObservationIgnored private var audioPlaybackTimer: Timer?
 
     /// Tracks ongoing response so we know when the model stops speaking.
     @ObservationIgnored var activeResponseId: String?
@@ -89,8 +94,7 @@ final class RealtimeService: NSObject {
     // MARK: - Disconnect
 
     func disconnect() {
-        stopCapture()
-        stopPlayback()
+        tearDownAudioEngine()
         webSocketTask?.cancel(with: .normalClosure, reason: nil)
         webSocketTask = nil
         urlSession?.invalidateAndCancel()
@@ -116,9 +120,10 @@ final class RealtimeService: NSObject {
             ],
             "turn_detection": [
                 "type": "server_vad",
-                "threshold": 0.5,
+                "threshold": 0.6,
                 "prefix_padding_ms": 300,
-                "silence_duration_ms": 700
+                "silence_duration_ms": 800,
+                "create_response": true
             ],
             "tools": tools,
             "tool_choice": "auto",
@@ -133,64 +138,143 @@ final class RealtimeService: NSObject {
         sendJSON(event)
     }
 
-    // MARK: - Audio Capture (Microphone → API)
+    // MARK: - Unified Audio Engine (capture + playback + AEC)
+    //
+    // A single AVAudioEngine hosts both the mic input tap and the player node.
+    // Enabling Voice Processing IO on the input node gives us Apple's hardware
+    // Acoustic Echo Cancellation (AEC) — the engine subtracts what it's playing
+    // from what the mic hears, so the model can't hear itself.  The user can
+    // still interrupt normally because AEC passes through real human speech.
+    //
+    // The player node is connected at the mixer's native sample rate (typically
+    // 48 kHz) to avoid CoreAudio format conflicts.  We resample:
+    //   • Mic  → 24 kHz PCM16  (for the Realtime API)
+    //   • API  → mixer rate Float32  (for the speaker)
 
     func startCapture() {
         guard !isCapturing else { return }
 
         configureAudioSession()
+        setupAudioEngine()
+
+        guard isAudioEngineRunning else { return }
+        isCapturing = true
+        statusMessage = "Listening…"
+    }
+
+    func stopCapture() {
+        guard let engine = audioEngine else { return }
+        engine.inputNode.removeTap(onBus: 0)
+        isCapturing = false
+    }
+
+    // MARK: - Audio Engine Setup
+
+    private func setupAudioEngine() {
+        guard audioEngine == nil else { return }
 
         let engine = AVAudioEngine()
-        self.captureEngine = engine
+        self.audioEngine = engine
 
+        // ── 1.  Enable Voice Processing IO for hardware AEC ──
         let inputNode = engine.inputNode
-        let inputFormat = inputNode.outputFormat(forBus: 0)
+        do {
+            try inputNode.setVoiceProcessingEnabled(true)
+        } catch {
+            print("RealtimeService: VPIO enable failed: \(error)")
+            // Fall back — AEC won't work but at least we can still talk
+        }
 
-        // Guard against Simulator with no mic (0 Hz sample rate)
-        guard inputFormat.sampleRate > 0, inputFormat.channelCount > 0 else {
+        // ── 2.  Attach player node at the mixer's native rate ──
+        let mixerFormat = engine.mainMixerNode.outputFormat(forBus: 0)
+        let mixerRate = mixerFormat.sampleRate > 0 ? mixerFormat.sampleRate : 48_000
+
+        // Player format: Float32, mono, at the mixer's native rate
+        guard let playerFormat = AVAudioFormat(
+            commonFormat: .pcmFormatFloat32,
+            sampleRate: mixerRate,
+            channels: realtimeChannels,
+            interleaved: false
+        ) else {
+            statusMessage = "Audio format error"
+            return
+        }
+
+        let node = AVAudioPlayerNode()
+        self.playerNode = node
+        engine.attach(node)
+        engine.connect(node, to: engine.mainMixerNode, format: playerFormat)
+
+        // Build a converter: API PCM16 24 kHz → player Float32 at mixer rate
+        guard let apiFormat = AVAudioFormat(
+            commonFormat: .pcmFormatFloat32,
+            sampleRate: realtimeSampleRate,
+            channels: realtimeChannels,
+            interleaved: false
+        ) else { return }
+
+        if mixerRate != realtimeSampleRate {
+            self.playbackConverter = AVAudioConverter(from: apiFormat, to: playerFormat)
+        }
+
+        // ── 3.  Install mic tap (post-VPIO = echo-cancelled audio) ──
+        //        The VPIO input node's output format is whatever the hardware gives us
+        //        (usually 48 kHz Float32 mono when VPIO is on).  We convert to 24 kHz PCM16.
+        let vpioFormat = inputNode.outputFormat(forBus: 0)
+        guard vpioFormat.sampleRate > 0, vpioFormat.channelCount > 0 else {
             statusMessage = "No microphone available"
             return
         }
 
-        // Target format: PCM16, mono, 24kHz
-        guard let targetFormat = AVAudioFormat(
+        guard let captureTarget = AVAudioFormat(
             commonFormat: .pcmFormatInt16,
             sampleRate: realtimeSampleRate,
             channels: realtimeChannels,
             interleaved: true
         ) else { return }
 
-        // We'll need a converter if the mic format differs from our target
-        let converter = AVAudioConverter(from: inputFormat, to: targetFormat)
-        self.audioConverter = converter
+        let capConverter = AVAudioConverter(from: vpioFormat, to: captureTarget)
+        self.captureConverter = capConverter
 
-        inputNode.installTap(onBus: 0, bufferSize: 2400, format: inputFormat) { [weak self] buffer, _ in
+        inputNode.installTap(onBus: 0, bufferSize: 2400, format: vpioFormat) { [weak self] buffer, _ in
             guard let self else { return }
             Task { @MainActor in
-                self.processAndSendAudio(buffer: buffer, converter: converter, targetFormat: targetFormat)
+                self.processAndSendAudio(buffer: buffer, converter: capConverter, targetFormat: captureTarget)
             }
         }
 
+        // ── 4.  Start the unified engine ──
         engine.prepare()
         do {
             try engine.start()
-            isCapturing = true
-            statusMessage = "Listening…"
+            isAudioEngineRunning = true
+            node.play()
         } catch {
             print("RealtimeService: audio engine start error: \(error)")
             statusMessage = "Mic error"
         }
     }
 
-    func stopCapture() {
-        if captureEngine?.isRunning == true {
-            captureEngine?.stop()
+    // MARK: - Tear Down
+
+    private func tearDownAudioEngine() {
+        if let engine = audioEngine {
+            engine.inputNode.removeTap(onBus: 0)
+            playerNode?.stop()
+            if engine.isRunning {
+                engine.stop()
+            }
         }
-        captureEngine?.inputNode.removeTap(onBus: 0)
-        captureEngine = nil
-        audioConverter = nil
+        playerNode = nil
+        audioEngine = nil
+        captureConverter = nil
+        playbackConverter = nil
+        pendingAudioData = Data()
         isCapturing = false
+        isAudioEngineRunning = false
     }
+
+    // MARK: - Mic → API
 
     private func processAndSendAudio(buffer: AVAudioPCMBuffer, converter: AVAudioConverter?, targetFormat: AVAudioFormat) {
         guard isConnected else { return }
@@ -198,7 +282,6 @@ final class RealtimeService: NSObject {
         let pcmData: Data
 
         if let converter {
-            // Convert from mic format to PCM16 24kHz mono
             let ratio = realtimeSampleRate / buffer.format.sampleRate
             let outputFrameCount = AVAudioFrameCount(Double(buffer.frameLength) * ratio)
             guard let outputBuffer = AVAudioPCMBuffer(pcmFormat: targetFormat, frameCapacity: outputFrameCount) else { return }
@@ -220,7 +303,6 @@ final class RealtimeService: NSObject {
             guard let int16Ptr = outputBuffer.int16ChannelData else { return }
             pcmData = Data(bytes: int16Ptr[0], count: Int(outputBuffer.frameLength) * 2)
         } else {
-            // Already in the right format
             guard let int16Ptr = buffer.int16ChannelData else { return }
             pcmData = Data(bytes: int16Ptr[0], count: Int(buffer.frameLength) * 2)
         }
@@ -235,40 +317,7 @@ final class RealtimeService: NSObject {
         sendJSON(event)
     }
 
-    // MARK: - Audio Playback (API → Speaker)
-
-    private func setupPlaybackIfNeeded() {
-        guard playerNode == nil else { return }
-
-        // Dedicated playback engine — separate from capture to avoid format conflicts.
-        // The capture engine's mixer runs at the mic's native rate (e.g. 48 kHz),
-        // so connecting a 24 kHz player node to it causes a CoreAudio crash.
-        let engine = AVAudioEngine()
-        self.playbackEngine = engine
-
-        guard let outputFormat = AVAudioFormat(
-            commonFormat: .pcmFormatFloat32,
-            sampleRate: realtimeSampleRate,
-            channels: realtimeChannels,
-            interleaved: false
-        ) else { return }
-
-        let node = AVAudioPlayerNode()
-        self.playerNode = node
-
-        engine.attach(node)
-        engine.connect(node, to: engine.mainMixerNode, format: outputFormat)
-
-        engine.prepare()
-        do {
-            try engine.start()
-        } catch {
-            print("RealtimeService: playback engine start error: \(error)")
-            return
-        }
-
-        node.play()
-    }
+    // MARK: - API → Speaker
 
     private func enqueueAudio(_ base64: String) {
         guard let data = Data(base64Encoded: base64) else { return }
@@ -287,43 +336,61 @@ final class RealtimeService: NSObject {
         let data = pendingAudioData
         pendingAudioData = Data()
 
-        setupPlaybackIfNeeded()
+        // Ensure engine is set up (lazy setup for initial greeting before startCapture)
+        setupAudioEngine()
+        guard let playerNode, isAudioEngineRunning else { return }
 
-        // The player node is connected with Float32 format, so convert PCM16 → Float32
-        guard let format = AVAudioFormat(
+        // Convert PCM16 24 kHz → Float32 at API rate first
+        let apiFrameCount = AVAudioFrameCount(data.count / 2)
+        guard apiFrameCount > 0 else { return }
+
+        guard let apiFormat = AVAudioFormat(
             commonFormat: .pcmFormatFloat32,
             sampleRate: realtimeSampleRate,
             channels: realtimeChannels,
             interleaved: false
         ) else { return }
 
-        let frameCount = AVAudioFrameCount(data.count / 2)  // 2 bytes per PCM16 sample
-        guard frameCount > 0,
-              let pcmBuffer = AVAudioPCMBuffer(pcmFormat: format, frameCapacity: frameCount) else { return }
-        pcmBuffer.frameLength = frameCount
+        guard let apiBuffer = AVAudioPCMBuffer(pcmFormat: apiFormat, frameCapacity: apiFrameCount) else { return }
+        apiBuffer.frameLength = apiFrameCount
 
-        // Convert Int16 samples to Float32
-        guard let floatData = pcmBuffer.floatChannelData else { return }
+        // Int16 → Float32
+        guard let floatData = apiBuffer.floatChannelData else { return }
         data.withUnsafeBytes { rawBuf in
             let int16Ptr = rawBuf.bindMemory(to: Int16.self)
-            for i in 0..<Int(frameCount) {
+            for i in 0..<Int(apiFrameCount) {
                 floatData[0][i] = Float(int16Ptr[i]) / 32768.0
             }
         }
 
-        playerNode?.scheduleBuffer(pcmBuffer, completionHandler: nil)
-    }
+        // If mixer rate differs from 24 kHz, resample up to mixer rate
+        if let converter = playbackConverter {
+            let ratio = converter.outputFormat.sampleRate / realtimeSampleRate
+            let outFrames = AVAudioFrameCount(Double(apiFrameCount) * ratio)
+            guard let outBuffer = AVAudioPCMBuffer(
+                pcmFormat: converter.outputFormat,
+                frameCapacity: outFrames
+            ) else { return }
 
-    private func stopPlayback() {
-        audioPlaybackTimer?.invalidate()
-        audioPlaybackTimer = nil
-        playerNode?.stop()
-        playerNode = nil
-        if playbackEngine?.isRunning == true {
-            playbackEngine?.stop()
+            var error: NSError?
+            var consumedAll = false
+            converter.convert(to: outBuffer, error: &error) { _, outStatus in
+                if consumedAll {
+                    outStatus.pointee = .noDataNow
+                    return nil
+                }
+                consumedAll = true
+                outStatus.pointee = .haveData
+                return apiBuffer
+            }
+
+            if error == nil, outBuffer.frameLength > 0 {
+                playerNode.scheduleBuffer(outBuffer, completionHandler: nil)
+            }
+        } else {
+            // Already at mixer rate
+            playerNode.scheduleBuffer(apiBuffer, completionHandler: nil)
         }
-        playbackEngine = nil
-        pendingAudioData = Data()
     }
 
     // MARK: - Audio Session
@@ -331,9 +398,10 @@ final class RealtimeService: NSObject {
     private func configureAudioSession() {
         let session = AVAudioSession.sharedInstance()
         do {
+            // .voiceChat mode enables system-level echo cancellation as well.
+            // .defaultToSpeaker routes to the loudspeaker for hands-free cooking.
             try session.setCategory(.playAndRecord, mode: .voiceChat,
                                     options: [.defaultToSpeaker, .allowBluetooth])
-            try session.setPreferredSampleRate(realtimeSampleRate)
             try session.setActive(true)
         } catch {
             print("RealtimeService: audio session error: \(error)")
@@ -508,13 +576,34 @@ final class RealtimeService: NSObject {
     // MARK: - Interrupt Model
 
     private func cancelCurrentResponse() {
-        // Truncate the model's response so it stops talking
+        // Tell the API to stop generating
         let cancel: [String: Any] = ["type": "response.cancel"]
         sendJSON(cancel)
 
-        // Stop audio playback immediately
-        playerNode?.stop()
+        // Stop audio playback immediately and clear pending data
         pendingAudioData = Data()
+        if let oldNode = playerNode, let engine = audioEngine {
+            oldNode.stop()
+            engine.detach(oldNode)
+
+            // Create a fresh player node — AVAudioPlayerNode can't reliably
+            // schedule new buffers after .stop() in some iOS versions.
+            let newNode = AVAudioPlayerNode()
+            self.playerNode = newNode
+            let mixerRate = engine.mainMixerNode.outputFormat(forBus: 0).sampleRate
+            let rate = mixerRate > 0 ? mixerRate : 48_000
+            if let fmt = AVAudioFormat(
+                commonFormat: .pcmFormatFloat32,
+                sampleRate: rate,
+                channels: realtimeChannels,
+                interleaved: false
+            ) {
+                engine.attach(newNode)
+                engine.connect(newNode, to: engine.mainMixerNode, format: fmt)
+                newNode.play()
+            }
+        }
+
         isModelSpeaking = false
         transcript = ""
     }
