@@ -47,6 +47,8 @@ struct RecipeStep: Identifiable, Codable, Hashable {
     /// Realistic wall-clock duration for this step in seconds.
     /// Used for deterministic background notification scheduling.
     var estimatedDurationSeconds: Int?
+    /// Atomic tasks within this step for cross-recipe merging/scheduling.
+    var tasks: [StepTask]
 
     init(
         id: UUID = UUID(),
@@ -54,7 +56,8 @@ struct RecipeStep: Identifiable, Codable, Hashable {
         instruction: String,
         timerMinutes: Int? = nil,
         tip: String? = nil,
-        estimatedDurationSeconds: Int? = nil
+        estimatedDurationSeconds: Int? = nil,
+        tasks: [StepTask] = []
     ) {
         self.id = id
         self.stepNumber = stepNumber
@@ -62,6 +65,7 @@ struct RecipeStep: Identifiable, Codable, Hashable {
         self.timerMinutes = timerMinutes
         self.tip = tip
         self.estimatedDurationSeconds = estimatedDurationSeconds
+        self.tasks = tasks
     }
 
     /// Best estimate of this step's duration in seconds.
@@ -239,15 +243,33 @@ struct Recipe: Identifiable, Codable, Hashable {
             Ingredient(name: "Salt", quantity: 1, unit: .pinch, category: .spices, isOptional: true),
         ],
         steps: [
-            RecipeStep(stepNumber: 1, instruction: "Cook the rice according to package directions.", timerMinutes: 15, estimatedDurationSeconds: 900),
-            RecipeStep(stepNumber: 2, instruction: "Slice the chicken breast into thin strips.", estimatedDurationSeconds: 120),
+            RecipeStep(stepNumber: 1, instruction: "Cook the rice according to package directions.", timerMinutes: 15, estimatedDurationSeconds: 900, tasks: [
+                StepTask(action: .boil, ingredient: "rice", quantity: 2, unit: "cup", durationSeconds: 900, type: .passive, requiresEquipment: "stovetop")
+            ]),
+            RecipeStep(stepNumber: 2, instruction: "Slice the chicken breast into thin strips.", estimatedDurationSeconds: 120, tasks: [
+                StepTask(action: .cut(.slice), ingredient: "chicken breast", quantity: 500, unit: "g", durationSeconds: 120, type: .active, requiresEquipment: "cutting board")
+            ]),
             RecipeStep(stepNumber: 3, instruction: "Dice the onion, mince the garlic, and slice the bell pepper.",
-                       tip: "Dice means cutting into small cubes, about 1/4 inch.", estimatedDurationSeconds: 180),
-            RecipeStep(stepNumber: 4, instruction: "Heat olive oil in a large pan over medium-high heat.", estimatedDurationSeconds: 60),
-            RecipeStep(stepNumber: 5, instruction: "Cook the chicken strips until golden brown, about 5-6 minutes.", timerMinutes: 6, estimatedDurationSeconds: 360),
-            RecipeStep(stepNumber: 6, instruction: "Add onion, garlic, and bell pepper. Cook for 3 minutes.", timerMinutes: 3, estimatedDurationSeconds: 180),
-            RecipeStep(stepNumber: 7, instruction: "Add soy sauce and toss everything together. Cook 1 more minute.", timerMinutes: 1, estimatedDurationSeconds: 60),
-            RecipeStep(stepNumber: 8, instruction: "Serve the stir fry over the cooked rice. Enjoy!", estimatedDurationSeconds: 30),
+                       tip: "Dice means cutting into small cubes, about 1/4 inch.", estimatedDurationSeconds: 180, tasks: [
+                StepTask(action: .cut(.dice), ingredient: "onion", quantity: 1, unit: "whole", durationSeconds: 60, type: .active, requiresEquipment: "cutting board"),
+                StepTask(action: .cut(.mince), ingredient: "garlic", quantity: 3, unit: "clove", durationSeconds: 30, type: .active, requiresEquipment: "cutting board"),
+                StepTask(action: .cut(.slice), ingredient: "bell pepper", quantity: 1, unit: "whole", durationSeconds: 60, type: .active, requiresEquipment: "cutting board")
+            ]),
+            RecipeStep(stepNumber: 4, instruction: "Heat olive oil in a large pan over medium-high heat.", estimatedDurationSeconds: 60, tasks: [
+                StepTask(action: .heat, ingredient: "olive oil", quantity: 2, unit: "tbsp", durationSeconds: 60, type: .active, requiresEquipment: "stovetop")
+            ]),
+            RecipeStep(stepNumber: 5, instruction: "Cook the chicken strips until golden brown, about 5-6 minutes.", timerMinutes: 6, estimatedDurationSeconds: 360, tasks: [
+                StepTask(action: .fry(.pan), ingredient: "chicken", quantity: 500, unit: "g", durationSeconds: 360, type: .active, requiresEquipment: "stovetop")
+            ]),
+            RecipeStep(stepNumber: 6, instruction: "Add onion, garlic, and bell pepper. Cook for 3 minutes.", timerMinutes: 3, estimatedDurationSeconds: 180, tasks: [
+                StepTask(action: .saute, ingredient: "vegetables", durationSeconds: 180, type: .active, requiresEquipment: "stovetop")
+            ]),
+            RecipeStep(stepNumber: 7, instruction: "Add soy sauce and toss everything together. Cook 1 more minute.", timerMinutes: 1, estimatedDurationSeconds: 60, tasks: [
+                StepTask(action: .toss, ingredient: "soy sauce", quantity: 2, unit: "tbsp", durationSeconds: 60, type: .active, requiresEquipment: "stovetop")
+            ]),
+            RecipeStep(stepNumber: 8, instruction: "Serve the stir fry over the cooked rice. Enjoy!", estimatedDurationSeconds: 30, tasks: [
+                StepTask(action: .plate, durationSeconds: 30, type: .active)
+            ]),
         ],
         servings: 4,
         prepTimeMinutes: 15,
@@ -280,10 +302,19 @@ struct Recipe: Identifiable, Codable, Hashable {
                 Ingredient(name: "Red Pepper Flakes", quantity: 1, unit: .pinch, category: .spices, isOptional: true),
             ],
             steps: [
-                RecipeStep(stepNumber: 1, instruction: "Toast the bread until golden and crispy.", estimatedDurationSeconds: 180),
-                RecipeStep(stepNumber: 2, instruction: "Halve the avocado, remove the pit, and scoop the flesh into a bowl.", estimatedDurationSeconds: 30),
-                RecipeStep(stepNumber: 3, instruction: "Mash the avocado with a fork. Add salt and lemon juice if using.", estimatedDurationSeconds: 60),
-                RecipeStep(stepNumber: 4, instruction: "Spread the mashed avocado on the toast. Add red pepper flakes if desired.", estimatedDurationSeconds: 30),
+                RecipeStep(stepNumber: 1, instruction: "Toast the bread until golden and crispy.", estimatedDurationSeconds: 180, tasks: [
+                    StepTask(action: .heat, ingredient: "bread", quantity: 2, unit: "slice", durationSeconds: 180, type: .passive, requiresEquipment: "toaster")
+                ]),
+                RecipeStep(stepNumber: 2, instruction: "Halve the avocado, remove the pit, and scoop the flesh into a bowl.", estimatedDurationSeconds: 30, tasks: [
+                    StepTask(action: .cut(.halve), ingredient: "avocado", quantity: 1, unit: "whole", durationSeconds: 30, type: .active)
+                ]),
+                RecipeStep(stepNumber: 3, instruction: "Mash the avocado with a fork. Add salt and lemon juice if using.", estimatedDurationSeconds: 60, tasks: [
+                    StepTask(action: .mix, ingredient: "avocado", durationSeconds: 45, type: .active),
+                    StepTask(action: .season, ingredient: "salt", quantity: 1, unit: "pinch", durationSeconds: 15, type: .active)
+                ]),
+                RecipeStep(stepNumber: 4, instruction: "Spread the mashed avocado on the toast. Add red pepper flakes if desired.", estimatedDurationSeconds: 30, tasks: [
+                    StepTask(action: .plate, durationSeconds: 30, type: .active)
+                ]),
             ],
             servings: 1,
             prepTimeMinutes: 5,
@@ -306,11 +337,24 @@ struct Recipe: Identifiable, Codable, Hashable {
                 Ingredient(name: "Salt", quantity: 1, unit: .pinch, category: .spices, isOptional: true),
             ],
             steps: [
-                RecipeStep(stepNumber: 1, instruction: "Heat oil in a large pan or wok over high heat.", estimatedDurationSeconds: 60),
-                RecipeStep(stepNumber: 2, instruction: "Scramble the eggs and set aside.", estimatedDurationSeconds: 90),
-                RecipeStep(stepNumber: 3, instruction: "Sauté diced onion and minced garlic until fragrant.", timerMinutes: 2, estimatedDurationSeconds: 120),
-                RecipeStep(stepNumber: 4, instruction: "Add rice and stir-fry for 3-4 minutes until heated through.", timerMinutes: 4, estimatedDurationSeconds: 240),
-                RecipeStep(stepNumber: 5, instruction: "Add soy sauce and scrambled eggs. Toss together and serve.", estimatedDurationSeconds: 60),
+                RecipeStep(stepNumber: 1, instruction: "Heat oil in a large pan or wok over high heat.", estimatedDurationSeconds: 60, tasks: [
+                    StepTask(action: .heat, ingredient: "olive oil", quantity: 2, unit: "tbsp", durationSeconds: 60, type: .active, requiresEquipment: "stovetop")
+                ]),
+                RecipeStep(stepNumber: 2, instruction: "Scramble the eggs and set aside.", estimatedDurationSeconds: 90, tasks: [
+                    StepTask(action: .scramble, ingredient: "eggs", quantity: 3, unit: "piece", durationSeconds: 90, type: .active, requiresEquipment: "stovetop")
+                ]),
+                RecipeStep(stepNumber: 3, instruction: "Sauté diced onion and minced garlic until fragrant.", timerMinutes: 2, estimatedDurationSeconds: 120, tasks: [
+                    StepTask(action: .cut(.dice), ingredient: "onion", quantity: 1, unit: "whole", durationSeconds: 30, type: .active, requiresEquipment: "cutting board"),
+                    StepTask(action: .cut(.mince), ingredient: "garlic", quantity: 2, unit: "clove", durationSeconds: 20, type: .active, requiresEquipment: "cutting board"),
+                    StepTask(action: .saute, ingredient: "onion and garlic", durationSeconds: 120, type: .active, requiresEquipment: "stovetop")
+                ]),
+                RecipeStep(stepNumber: 4, instruction: "Add rice and stir-fry for 3-4 minutes until heated through.", timerMinutes: 4, estimatedDurationSeconds: 240, tasks: [
+                    StepTask(action: .fry(.stir), ingredient: "rice", quantity: 3, unit: "cup", durationSeconds: 240, type: .active, requiresEquipment: "stovetop")
+                ]),
+                RecipeStep(stepNumber: 5, instruction: "Add soy sauce and scrambled eggs. Toss together and serve.", estimatedDurationSeconds: 60, tasks: [
+                    StepTask(action: .toss, ingredient: "soy sauce and eggs", durationSeconds: 30, type: .active, requiresEquipment: "stovetop"),
+                    StepTask(action: .serve, durationSeconds: 30, type: .active)
+                ]),
             ],
             servings: 3,
             prepTimeMinutes: 10,

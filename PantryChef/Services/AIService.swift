@@ -61,7 +61,7 @@ final class AIService: AIServiceProtocol {
         - "title": string
         - "description": string (1-2 sentences)
         - "ingredients": [{"name": string, "quantity": number, "unit": string}]
-        - "steps": [{"stepNumber": number, "instruction": string, "timerMinutes": number or null, "estimatedDurationSeconds": number}]
+        - "steps": [{"stepNumber": number, "instruction": string, "timerMinutes": number or null, "estimatedDurationSeconds": number, "tasks": [task]}]
         - "servings": number
         - "prepTimeMinutes": number
         - "cookTimeMinutes": number
@@ -69,6 +69,9 @@ final class AIService: AIServiceProtocol {
         - "dietaryTags": [string]
         - "calories": number (estimated per serving)
 
+        Each task object: {"action": string, "ingredient": string or null, "durationSeconds": number, "type": "active" or "passive", "requiresEquipment": string or null}
+        Valid actions: "cut_dice", "cut_mince", "cut_slice", "cut_chop", "cut_julienne", "cut_halve", "peel", "measure", "mix", "marinate", "season", "heat", "saute", "boil", "simmer", "fry_pan", "fry_deep", "fry_stir", "bake", "roast", "grill", "steam", "scramble", "plate", "garnish", "rest", "serve", "toss", or a custom string.
+        Use "passive" for tasks that don't need hands (baking, boiling, resting). Use "active" otherwise.
         For estimatedDurationSeconds, provide the realistic wall-clock time for each step in seconds (including active work, waiting, and cooking). For example: "chop onion" ≈ 60, "boil water" ≈ 300, "bake for 30 minutes" = 1800.
         - "protein": number (grams per serving)
         - "carbohydrates": number (grams per serving)
@@ -153,12 +156,14 @@ final class AIService: AIServiceProtocol {
         - "title": string
         - "description": string (1-2 sentences)
         - "ingredients": [{"name": string, "quantity": number, "unit": string}]
-        - "steps": [{"stepNumber": number, "instruction": string, "timerMinutes": number or null, "estimatedDurationSeconds": number}]
+        - "steps": [{"stepNumber": number, "instruction": string, "timerMinutes": number or null, "estimatedDurationSeconds": number, "tasks": [task]}]
         - "servings": number
         - "prepTimeMinutes": number
         - "cookTimeMinutes": number
         - "difficulty": number (1-5)
 
+        Each task object: {"action": string, "ingredient": string or null, "durationSeconds": number, "type": "active" or "passive", "requiresEquipment": string or null}
+        Valid actions: "cut_dice", "cut_mince", "cut_slice", "cut_chop", "peel", "measure", "mix", "season", "heat", "saute", "boil", "simmer", "fry_pan", "fry_stir", "bake", "roast", "grill", "steam", "scramble", "plate", "garnish", "rest", "serve", "toss", or a custom string.
         For estimatedDurationSeconds, provide the realistic wall-clock time for each step in seconds (including active work, waiting, and cooking).
 
         Return ONLY the JSON array, no other text.
@@ -178,12 +183,13 @@ final class AIService: AIServiceProtocol {
         - "title": string
         - "description": string
         - "ingredients": [{"name": string, "quantity": number, "unit": string, "category": string}]
-        - "steps": [{"stepNumber": number, "instruction": string, "timerMinutes": number or null, "estimatedDurationSeconds": number}]
+        - "steps": [{"stepNumber": number, "instruction": string, "timerMinutes": number or null, "estimatedDurationSeconds": number, "tasks": [task]}]
         - "servings": number
         - "prepTimeMinutes": number
         - "cookTimeMinutes": number
         - "dietaryTags": [string]
 
+        Each task object: {"action": string, "ingredient": string or null, "durationSeconds": number, "type": "active" or "passive", "requiresEquipment": string or null}
         For estimatedDurationSeconds, provide the realistic wall-clock time for each step in seconds.
         For category, use one of: Dairy, Produce, Protein, Grains & Cereals, Spices & Herbs, Condiments & Sauces, Baking Supplies, Oils & Fats, Other.
         For unit, use: tsp, tbsp, cup, ml, L, g, kg, oz, lb, piece, whole, slice, clove, bunch, can, pinch.
@@ -208,12 +214,13 @@ final class AIService: AIServiceProtocol {
         - "title": string
         - "description": string (brief summary, generate if not present)
         - "ingredients": [{"name": string, "quantity": number, "unit": string, "category": string}]
-        - "steps": [{"stepNumber": number, "instruction": string, "timerMinutes": number or null, "estimatedDurationSeconds": number}]
+        - "steps": [{"stepNumber": number, "instruction": string, "timerMinutes": number or null, "estimatedDurationSeconds": number, "tasks": [task]}]
         - "servings": number
         - "prepTimeMinutes": number (estimate if not stated)
         - "cookTimeMinutes": number (estimate if not stated)
         - "dietaryTags": [string] (infer from ingredients)
 
+        Each task object: {"action": string, "ingredient": string or null, "durationSeconds": number, "type": "active" or "passive", "requiresEquipment": string or null}
         For estimatedDurationSeconds, provide the realistic wall-clock time for each step in seconds.
 
         Return ONLY the JSON object, no other text.
@@ -387,7 +394,20 @@ final class AIService: AIServiceProtocol {
                     let num = (step["stepNumber"] as? Int) ?? 1
                     let timer = step["timerMinutes"] as? Int
                     let estDuration = step["estimatedDurationSeconds"] as? Int
-                    return RecipeStep(stepNumber: num, instruction: instruction, timerMinutes: timer, estimatedDurationSeconds: estDuration)
+
+                    // Parse task decomposition from AI response
+                    let tasks: [StepTask] = (step["tasks"] as? [[String: Any]])?.compactMap { taskDict in
+                        guard let actionStr = taskDict["action"] as? String else { return nil }
+                        let action = Self.parseAction(actionStr)
+                        let ingredient = taskDict["ingredient"] as? String
+                        let duration = (taskDict["durationSeconds"] as? Int) ?? 60
+                        let typeStr = taskDict["type"] as? String ?? "active"
+                        let type: TaskType = typeStr == "passive" ? .passive : .active
+                        let equipment = taskDict["requiresEquipment"] as? String
+                        return StepTask(action: action, ingredient: ingredient, durationSeconds: duration, type: type, requiresEquipment: equipment)
+                    } ?? []
+
+                    return RecipeStep(stepNumber: num, instruction: instruction, timerMinutes: timer, estimatedDurationSeconds: estDuration, tasks: tasks)
                 } ?? []
 
                 var nutrition: NutritionInfo?
@@ -510,6 +530,46 @@ struct AnyCodable: Codable {
         case let stringValue as String: try container.encode(stringValue)
         case let boolValue as Bool: try container.encode(boolValue)
         default: try container.encodeNil()
+        }
+    }
+}
+
+// MARK: - Action String Parsing Helper
+extension AIService {
+    /// Parse an action string from AI response into a CookingAction.
+    static func parseAction(_ str: String) -> CookingAction {
+        let lower = str.lowercased().trimmingCharacters(in: .whitespaces)
+        switch lower {
+        case "cut_dice": return .cut(.dice)
+        case "cut_mince": return .cut(.mince)
+        case "cut_slice": return .cut(.slice)
+        case "cut_chop": return .cut(.chop)
+        case "cut_julienne": return .cut(.julienne)
+        case "cut_halve": return .cut(.halve)
+        case "cut_rough": return .cut(.rough)
+        case "peel": return .peel
+        case "measure": return .measure
+        case "mix": return .mix
+        case "marinate": return .marinate
+        case "season": return .season
+        case "heat": return .heat
+        case "saute", "sauté": return .saute
+        case "boil": return .boil
+        case "simmer": return .simmer
+        case "fry_pan": return .fry(.pan)
+        case "fry_deep": return .fry(.deep)
+        case "fry_stir": return .fry(.stir)
+        case "bake": return .bake
+        case "roast": return .roast
+        case "grill": return .grill
+        case "steam": return .steam
+        case "scramble": return .scramble
+        case "plate": return .plate
+        case "garnish": return .garnish
+        case "rest": return .rest
+        case "serve": return .serve
+        case "toss": return .toss
+        default: return .other(str)
         }
     }
 }

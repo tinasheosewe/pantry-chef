@@ -5,6 +5,7 @@ struct HomeView: View {
     @State private var showWhatCanIMake = false
     @State private var whatCanIMakeResults: [PantryMatchResult] = []
     @State private var showReceiptScanner = false
+    @State private var resumeRecipe: Recipe?
 
     var onSwitchToShopping: (() -> Void)?
     var onSwitchToPlan: (() -> Void)?
@@ -20,6 +21,12 @@ struct HomeView: View {
             ScrollView {
                 VStack(spacing: 20) {
                     greetingHeader
+
+                    // Active cooking sessions banner
+                    if viewModel.appState.activeCooks.hasActiveSessions {
+                        activeCooksBanner
+                    }
+
                     todaysMealPlanCard
 
                     if !viewModel.appState.expiringItems.isEmpty {
@@ -50,6 +57,7 @@ struct HomeView: View {
             }
             .onAppear {
                 viewModel.refresh()
+                viewModel.appState.activeCooks.refresh()
             }
             .sheet(isPresented: $showWhatCanIMake) {
                 WhatCanIMakeView(results: whatCanIMakeResults)
@@ -63,6 +71,12 @@ struct HomeView: View {
                         }
                     }
                 }
+            }
+            .fullScreenCover(item: $resumeRecipe) { recipe in
+                let session = CookingSession.load(recipeId: recipe.id)
+                let stepIndex = session?.currentStepIndex ?? 0
+                CookModeView(recipe: recipe, resumeAtStep: stepIndex, isResuming: true)
+                    .environment(viewModel.appState)
             }
         }
     }
@@ -287,6 +301,79 @@ struct HomeView: View {
         }
         .padding()
         .cardStyle()
+    }
+
+    // MARK: - Active Cooks Banner
+    private var activeCooksBanner: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Image(systemName: "flame.fill")
+                    .foregroundStyle(.orange)
+                Text("Active Cooks")
+                    .font(.headline)
+                    .foregroundStyle(AppColors.darkText)
+                Spacer()
+                Text("\(viewModel.appState.activeCooks.count)")
+                    .font(.caption)
+                    .fontWeight(.bold)
+                    .foregroundStyle(.white)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .background(.orange)
+                    .clipShape(Capsule())
+            }
+
+            ForEach(viewModel.appState.activeCooks.activeSessions) { session in
+                Button {
+                    if let recipe = viewModel.appState.recipes.first(where: { $0.id == session.recipeId }) {
+                        resumeRecipe = recipe
+                    }
+                } label: {
+                    HStack(spacing: 12) {
+                        ZStack {
+                            Circle()
+                                .fill(AppColors.primaryGreen.opacity(0.15))
+                                .frame(width: 44, height: 44)
+                            Image(systemName: "frying.pan.fill")
+                                .foregroundStyle(AppColors.primaryGreen)
+                        }
+
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(session.recipeName)
+                                .font(.subheadline)
+                                .fontWeight(.semibold)
+                                .foregroundStyle(AppColors.darkText)
+                            Text("Step \(session.currentStepIndex + 1) of \(session.totalSteps)")
+                                .font(.caption)
+                                .foregroundStyle(AppColors.subtleText)
+                        }
+
+                        Spacer()
+
+                        // Elapsed time since backgrounded
+                        let elapsed = Int(Date().timeIntervalSince(session.backgroundedAt))
+                        let minutes = elapsed / 60
+                        Text(minutes < 1 ? "Just now" : "\(minutes)m ago")
+                            .font(.caption2)
+                            .foregroundStyle(AppColors.subtleText)
+
+                        Image(systemName: "chevron.right")
+                            .font(.caption)
+                            .foregroundStyle(AppColors.mediumGray)
+                    }
+                    .padding(.vertical, 8)
+                }
+            }
+        }
+        .padding()
+        .background(
+            RoundedRectangle(cornerRadius: 16)
+                .fill(.orange.opacity(0.08))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 16)
+                        .strokeBorder(.orange.opacity(0.2), lineWidth: 1)
+                )
+        )
     }
 }
 

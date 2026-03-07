@@ -682,7 +682,7 @@ final class CookModeViewModel {
     func endCookingSession() {
         isEndingSession = true
         NotificationService.shared.cancelAllNotifications(recipeId: recipe.id.uuidString)
-        CookingSession.clear()
+        CookingSession.clear(recipeId: recipe.id)
         didContinueInBackground = false
         cleanup()
     }

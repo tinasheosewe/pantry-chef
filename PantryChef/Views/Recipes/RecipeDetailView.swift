@@ -12,6 +12,7 @@ struct RecipeDetailView: View {
     @State private var shoppingList: [ShoppingItem] = []
     @State private var isLoadingAI = false
     @State private var aiErrorMessage: String?
+    @State private var existingSession: CookingSession?
 
     init(recipe: Recipe) {
         _recipe = State(initialValue: recipe)
@@ -53,6 +54,9 @@ struct RecipeDetailView: View {
         }
         .background(AppColors.background)
         .navigationBarTitleDisplayMode(.inline)
+        .onAppear {
+            existingSession = CookingSession.load(recipeId: recipe.id)
+        }
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
                 Button {
@@ -67,7 +71,11 @@ struct RecipeDetailView: View {
             }
         }
         .fullScreenCover(isPresented: $showCookMode) {
-            CookModeView(recipe: scaledRecipe)
+            if let session = existingSession {
+                CookModeView(recipe: scaledRecipe, resumeAtStep: session.currentStepIndex, isResuming: true)
+            } else {
+                CookModeView(recipe: scaledRecipe)
+            }
         }
         .sheet(isPresented: $showSubstitutions) {
             SubstitutionsView(substitutions: substitutions)
@@ -185,18 +193,24 @@ struct RecipeDetailView: View {
         VStack(spacing: 12) {
             // Prominent Cook button
             Button {
+                existingSession = CookingSession.load(recipeId: recipe.id)
                 showCookMode = true
             } label: {
                 HStack(spacing: 8) {
-                    Image(systemName: "play.fill")
+                    Image(systemName: existingSession != nil ? "arrow.counterclockwise" : "play.fill")
                         .font(.title3)
-                    Text("Start Cooking")
-                        .font(.headline)
+                    if let session = existingSession {
+                        Text("Resume Cooking (step \(session.currentStepIndex + 1)/\(session.totalSteps))")
+                            .font(.headline)
+                    } else {
+                        Text("Start Cooking")
+                            .font(.headline)
+                    }
                 }
                 .foregroundStyle(.white)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 14)
-                .background(AppColors.primaryGreen)
+                .background(existingSession != nil ? .orange : AppColors.primaryGreen)
                 .clipShape(RoundedRectangle(cornerRadius: 14))
             }
 

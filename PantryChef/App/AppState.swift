@@ -18,6 +18,9 @@ final class AppState {
     /// Set by notification tap to deep-link into cook mode for a specific recipe.
     var deepLinkCookModeRecipeId: String?
 
+    /// Tracks all active cooking sessions for the UI.
+    let activeCooks = ActiveCooksManager()
+
     // MARK: - Computed
     var expiringItems: [PantryItem] {
         let threeDaysFromNow = Calendar.current.date(byAdding: .day, value: 3, to: Date()) ?? Date()

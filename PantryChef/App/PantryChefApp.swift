@@ -35,19 +35,20 @@ struct PantryChefApp: App {
               let stepIndex = info["stepIndex"] as? Int else { return }
 
         let actionId = info["actionIdentifier"] as? String ?? ""
+        let recipeUUID = UUID(uuidString: recipeId)
 
         if actionId == NotificationService.actionDone {
             // "Done ✓" action — advance step in persisted session without opening UI
-            if var session = CookingSession.load(),
-               session.recipeId.uuidString == recipeId {
+            if let uuid = recipeUUID,
+               var session = CookingSession.load(recipeId: uuid) {
                 session.currentStepIndex = min(stepIndex + 1, session.totalSteps - 1)
                 session.save()
                 print("[PantryChefApp] Step \(stepIndex + 1) marked done via notification")
             }
         } else {
             // Default tap or "Open Cook Mode" — update persisted session step and deep-link
-            if var session = CookingSession.load(),
-               session.recipeId.uuidString == recipeId {
+            if let uuid = recipeUUID,
+               var session = CookingSession.load(recipeId: uuid) {
                 session.currentStepIndex = stepIndex
                 session.save()
             }
@@ -57,8 +58,12 @@ struct PantryChefApp: App {
     }
 
     private func cleanUpExpiredSessions() {
-        if let session = CookingSession.load() {
-            print("[PantryChefApp] Active cooking session: \(session.recipeName) (step \(session.currentStepIndex + 1)/\(session.totalSteps))")
+        let sessions = CookingSession.loadAll()
+        if !sessions.isEmpty {
+            for session in sessions {
+                print("[PantryChefApp] Active cooking session: \(session.recipeName) (step \(session.currentStepIndex + 1)/\(session.totalSteps))")
+            }
         }
+        appState.activeCooks.refresh()
     }
 }

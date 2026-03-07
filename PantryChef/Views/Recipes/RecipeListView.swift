@@ -2,6 +2,7 @@ import SwiftUI
 
 struct RecipeListView: View {
     @State private var viewModel: RecipeViewModel
+    @State private var showMultiCookSelection = false
 
     init(appState: AppState) {
         _viewModel = State(initialValue: RecipeViewModel(appState: appState))
@@ -54,6 +55,9 @@ struct RecipeListView: View {
                         Button { viewModel.whatCanIMake() } label: {
                             Label("What Can I Make?", systemImage: "sparkles")
                         }
+                        Button { showMultiCookSelection = true } label: {
+                            Label("Multi-Cook", systemImage: "flame.fill")
+                        }
                     } label: {
                         Image(systemName: "plus.circle.fill")
                             .font(.title3)
@@ -92,6 +96,10 @@ struct RecipeListView: View {
             }
             .sheet(isPresented: $viewModel.showWhatCanIMake) {
                 WhatCanIMakeView(results: viewModel.whatCanIMakeResults)
+            }
+            .sheet(isPresented: $showMultiCookSelection) {
+                MultiCookSelectionView()
+                    .environment(viewModel.appState)
             }
             .sheet(item: Binding(
                 get: { viewModel.importedRecipe },
