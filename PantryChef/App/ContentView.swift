@@ -65,7 +65,8 @@ struct ContentView: View {
             .tint(AppColors.primary)
         }
         .fullScreenCover(item: $deepLinkRecipe) { recipe in
-            CookModeView(recipe: recipe)
+            let stepIndex = CookingSession.load()?.currentStepIndex ?? 0
+            CookModeView(recipe: recipe, resumeAtStep: stepIndex)
                 .environment(appState)
         }
         .onChange(of: appState.deepLinkCookModeRecipeId) { _, newId in

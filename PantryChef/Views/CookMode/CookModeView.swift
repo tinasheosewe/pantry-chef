@@ -12,9 +12,11 @@ struct CookModeView: View {
     @State private var showBackgroundConfirm = false
 
     private let recipe: Recipe
+    private let resumeAtStep: Int
 
-    init(recipe: Recipe) {
+    init(recipe: Recipe, resumeAtStep: Int = 0) {
         self.recipe = recipe
+        self.resumeAtStep = resumeAtStep
     }
 
     var body: some View {
@@ -32,7 +34,7 @@ struct CookModeView: View {
             if viewModel == nil {
                 let realtime = RealtimeService()
                 realtimeService = realtime
-                let vm = CookModeViewModel(recipe: recipe, realtimeService: realtime)
+                let vm = CookModeViewModel(recipe: recipe, realtimeService: realtime, initialStepIndex: resumeAtStep)
                 viewModel = vm
                 // Auto-start conversational cook mode
                 vm.startConversation()

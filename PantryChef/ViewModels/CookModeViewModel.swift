@@ -38,15 +38,20 @@ final class CookModeViewModel {
     let recipe: Recipe
     let realtimeService: any RealtimeServiceProtocol
 
+    /// Whether this session was launched from a background deep-link.
+    private let isResuming: Bool
+
     /// Date-based timer tracking — survives backgrounding
     private var timerStartedAt: Date?
     private var timerDuration: TimeInterval = 0
     private var timerPausedRemaining: TimeInterval = 0
     private var timerCancellable: AnyCancellable?
 
-    init(recipe: Recipe, realtimeService: any RealtimeServiceProtocol) {
+    init(recipe: Recipe, realtimeService: any RealtimeServiceProtocol, initialStepIndex: Int = 0) {
         self.recipe = recipe
         self.realtimeService = realtimeService
+        self.isResuming = initialStepIndex > 0
+        self.currentStepIndex = initialStepIndex
         setupRealtimeCallbacks()
     }
 
@@ -172,12 +177,19 @@ final class CookModeViewModel {
             realtimeService.startCapture()
             print("[CookMode] Mic capture started")
 
-            // Greet the user by triggering a response with the current step context
-            let greeting = "The user just started cooking \(recipe.title). "
-                + "Greet them warmly and briefly read step \(currentStepIndex + 1): "
-                + "\(currentStep?.instruction ?? ""). Keep it concise."
+            // Greet the user or resume at the right step
+            let greeting: String
+            if isResuming {
+                greeting = "The user is resuming cooking \(recipe.title) from step \(currentStepIndex + 1). "
+                    + "Welcome them back briefly and read step \(currentStepIndex + 1): "
+                    + "\(currentStep?.instruction ?? ""). Keep it concise — no need to re-introduce the recipe."
+            } else {
+                greeting = "The user just started cooking \(recipe.title). "
+                    + "Greet them warmly and briefly read step \(currentStepIndex + 1): "
+                    + "\(currentStep?.instruction ?? ""). Keep it concise."
+            }
             realtimeService.sendUserMessage(greeting)
-            print("[CookMode] Greeting sent")
+            print("[CookMode] Greeting sent (resume=\(isResuming), step=\(currentStepIndex + 1))")
         }
     }
 
