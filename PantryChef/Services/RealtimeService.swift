@@ -48,6 +48,16 @@ final class RealtimeService: NSObject, RealtimeServiceProtocol {
     @ObservationIgnored private var isAudioEngineRunning = false
     @ObservationIgnored private var isAudioEnginePrepared = false
 
+    /// Tracks how many scheduled audio buffers haven't finished playing yet.
+    /// Used to know when the speaker is truly silent (not just when the API
+    /// response stream ended).
+    @ObservationIgnored private var pendingBuffersCount = 0
+
+    /// Set when response.done arrives but audio is still playing through speaker.
+    /// The actual isModelSpeaking=false transition happens when the last buffer
+    /// finishes, so interruption and echo suppression work correctly.
+    @ObservationIgnored private var responseStreamDone = false
+
     /// Whether the audio engine is running and ready for playback/capture.
     var isAudioReady: Bool { isAudioEngineRunning }
 
@@ -508,20 +518,49 @@ final class RealtimeService: NSObject, RealtimeServiceProtocol {
 
             if error == nil, outBuffer.frameLength > 0 {
                 playbackBuffersScheduled += 1
+                pendingBuffersCount += 1
                 if playbackBuffersScheduled <= 3 || playbackBuffersScheduled % 20 == 0 {
-                    print("[Audio][API→Spk] scheduleBuffer #\(playbackBuffersScheduled): \(outBuffer.frameLength) frames at \(converter.outputFormat.sampleRate)Hz, isPlaying=\(playerNode.isPlaying)")
+                    print("[Audio][API→Spk] scheduleBuffer #\(playbackBuffersScheduled): \(outBuffer.frameLength) frames at \(converter.outputFormat.sampleRate)Hz, isPlaying=\(playerNode.isPlaying), pending=\(pendingBuffersCount)")
                 }
-                playerNode.scheduleBuffer(outBuffer, completionHandler: nil)
+                playerNode.scheduleBuffer(outBuffer) { [weak self] in
+                    Task { @MainActor [weak self] in
+                        self?.bufferDidFinishPlaying()
+                    }
+                }
             } else {
                 print("[Audio][API→Spk] ❌ resample failed: error=\(String(describing: error)), outFrames=\(outBuffer.frameLength)")
             }
         } else {
             playbackBuffersScheduled += 1
+            pendingBuffersCount += 1
             if playbackBuffersScheduled <= 3 || playbackBuffersScheduled % 20 == 0 {
-                print("[Audio][API→Spk] scheduleBuffer #\(playbackBuffersScheduled): \(apiBuffer.frameLength) frames (no resample), isPlaying=\(playerNode.isPlaying)")
+                print("[Audio][API→Spk] scheduleBuffer #\(playbackBuffersScheduled): \(apiBuffer.frameLength) frames (no resample), isPlaying=\(playerNode.isPlaying), pending=\(pendingBuffersCount)")
             }
-            playerNode.scheduleBuffer(apiBuffer, completionHandler: nil)
+            playerNode.scheduleBuffer(apiBuffer) { [weak self] in
+                Task { @MainActor [weak self] in
+                    self?.bufferDidFinishPlaying()
+                }
+            }
         }
+    }
+
+    // MARK: - Playback Completion
+
+    /// Called on @MainActor when each scheduled buffer finishes playing.
+    private func bufferDidFinishPlaying() {
+        pendingBuffersCount = max(0, pendingBuffersCount - 1)
+        if pendingBuffersCount == 0, responseStreamDone {
+            print("[Audio] Last buffer finished playing — finalizing playback")
+            finalizePlayback()
+        }
+    }
+
+    /// Transitions from "model speaking" to "listening" once audio is truly done.
+    private func finalizePlayback() {
+        print("[Audio] finalizePlayback: isModelSpeaking=false, clearing activeResponseId")
+        isModelSpeaking = false
+        activeResponseId = nil
+        responseStreamDone = false
     }
 
     // MARK: - Audio Session
@@ -602,11 +641,11 @@ final class RealtimeService: NSObject, RealtimeServiceProtocol {
             statusMessage = "Ready — talk to me!"
 
         case "input_audio_buffer.speech_started":
-            print("[WS] speech_started (modelSpeaking=\(isModelSpeaking), activeResp=\(activeResponseId ?? "nil"))")
+            print("[WS] speech_started (modelSpeaking=\(isModelSpeaking), activeResp=\(activeResponseId ?? "nil"), pendingBuffers=\(pendingBuffersCount))")
             isUserSpeaking = true
             userTranscript = ""
-            // Interrupt model if it's actively speaking AND there's a response to cancel
-            if isModelSpeaking, activeResponseId != nil {
+            // Interrupt model if it's actively speaking OR audio is still playing
+            if isModelSpeaking || pendingBuffersCount > 0, activeResponseId != nil {
                 print("[WS] → interrupting model response \(activeResponseId!)")
                 cancelCurrentResponse()
             }
@@ -670,11 +709,18 @@ final class RealtimeService: NSObject, RealtimeServiceProtocol {
             }
 
         case "response.done":
-            print("[WS] response.done — totalAudioChunks=\(playbackChunksReceived), totalAudioBytes=\(playbackBytesReceived), buffersScheduled=\(playbackBuffersScheduled)")
-            isModelSpeaking = false
+            print("[WS] response.done — totalAudioChunks=\(playbackChunksReceived), totalAudioBytes=\(playbackBytesReceived), buffersScheduled=\(playbackBuffersScheduled), pendingBuffers=\(pendingBuffersCount)")
             transcript = ""
-            activeResponseId = nil
             statusMessage = "Listening…"
+            // Don't clear isModelSpeaking / activeResponseId here!
+            // Audio is still physically playing through the speaker.
+            // Mark the stream as done; the last buffer completion handler
+            // will finalize the transition.
+            responseStreamDone = true
+            if pendingBuffersCount <= 0 {
+                // All buffers already played (or none were scheduled)
+                finalizePlayback()
+            }
 
         case "error":
             if let error = json["error"] as? [String: Any],
@@ -737,13 +783,15 @@ final class RealtimeService: NSObject, RealtimeServiceProtocol {
     // MARK: - Interrupt Model
 
     private func cancelCurrentResponse() {
-        print("[Audio] cancelCurrentResponse — clearing \(pendingAudioData.count) pending bytes, resp=\(activeResponseId ?? "nil")")
+        print("[Audio] cancelCurrentResponse — clearing \(pendingAudioData.count) pending bytes, pendingBuffers=\(pendingBuffersCount), resp=\(activeResponseId ?? "nil")")
         // Tell the API to stop generating
         let cancel: [String: Any] = ["type": "response.cancel"]
         sendJSON(cancel)
 
         // Stop audio playback immediately and clear pending data
         pendingAudioData = Data()
+        pendingBuffersCount = 0
+        responseStreamDone = false
         if let oldNode = playerNode, let engine = audioEngine {
             oldNode.stop()
             engine.detach(oldNode)
