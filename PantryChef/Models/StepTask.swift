@@ -16,6 +16,10 @@ struct StepTask: Identifiable, Codable, Hashable {
     let requiresEquipment: String?    // "oven", "stovetop", "cutting board"
     let temperature: Int?             // °F — for merging "preheat oven" steps
 
+    /// Attention cost for the effort-budget scheduler.
+    /// Set by the LLM at recipe creation time. Passive tasks always cost 0.
+    let effort: EffortLevel
+
     /// Explicit dependency graph: IDs of tasks that must complete before this one.
     /// Built by the LLM at recipe-creation time so the scheduler uses an exact DAG
     /// instead of fuzzy ingredient-name matching.
@@ -28,6 +32,11 @@ struct StepTask: Identifiable, Codable, Hashable {
     /// Original step number within the source recipe.
     var sourceStepNumber: Int?
 
+    /// Effort points consumed when this task is active (passive tasks cost 0).
+    var effortPoints: Int {
+        type == .passive ? 0 : effort.points
+    }
+
     init(
         id: UUID = UUID(),
         action: CookingAction,
@@ -38,6 +47,7 @@ struct StepTask: Identifiable, Codable, Hashable {
         type: TaskType = .active,
         requiresEquipment: String? = nil,
         temperature: Int? = nil,
+        effort: EffortLevel = .easy,
         dependsOn: [UUID] = [],
         recipeId: UUID? = nil,
         recipeName: String? = nil,
@@ -52,6 +62,7 @@ struct StepTask: Identifiable, Codable, Hashable {
         self.type = type
         self.requiresEquipment = requiresEquipment
         self.temperature = temperature
+        self.effort = effort
         self.dependsOn = dependsOn
         self.recipeId = recipeId
         self.recipeName = recipeName
@@ -167,15 +178,59 @@ enum CookingAction: Codable, Hashable {
     }
 }
 
-// MARK: - Action Class (coarse grouping for merging)
+// MARK: - Effort Level
+
+/// How much active attention a task demands. Used by the scheduler to
+/// decide how many tasks a cook can handle simultaneously.
+///   • Budget per block: 3 points
+///   • Passive tasks always cost 0 (background timers).
+enum EffortLevel: Int, Codable, Hashable, CaseIterable {
+    case easy   = 1   // occasional checking — boiling, toasting, simmering
+    case medium = 2   // periodic attention  — sautéing, pan-frying, flipping
+    case hard   = 3   // constant hands-on   — stir-frying, tempering, roux
+
+    var points: Int { rawValue }
+
+    var displayName: String {
+        switch self {
+        case .easy:   return "Easy"
+        case .medium: return "Medium"
+        case .hard:   return "Hard"
+        }
+    }
+
+    init(from string: String) {
+        switch string.lowercased() {
+        case "easy", "1":   self = .easy
+        case "medium", "2": self = .medium
+        case "hard", "3":   self = .hard
+        default:            self = .medium
+        }
+    }
+}
+
+// MARK: - Action Class (phase preference for scheduling tiebreaks)
 
 enum ActionClass: String, Codable, Hashable, CaseIterable {
-    case prepCut      // dice, mince, slice, julienne, chop — same workspace
-    case prepOther    // peel, measure, mix, whisk — same phase
-    case heatSetup    // preheat oven, boil water, heat oil — mergeable if same equipment+temp
-    case activeCook   // sauté, fry, stir, flip — needs attention, one at a time
-    case passiveCook  // bake, simmer, marinate, rest — schedulable as gaps
-    case finish       // plate, garnish, serve — end phase
+    case prepCut      // dice, mince, slice, julienne, chop
+    case prepOther    // peel, measure, mix, whisk
+    case heatSetup    // preheat oven, boil water, heat oil
+    case activeCook   // sauté, fry, stir, flip
+    case passiveCook  // bake, simmer, marinate, rest
+    case finish       // plate, garnish, serve
+
+    /// Phase priority for the scheduler: lower = earlier.
+    /// Used only as a tiebreaker when picking from the ready set.
+    var phasePriority: Int {
+        switch self {
+        case .prepCut:    return 0
+        case .prepOther:  return 1
+        case .heatSetup:  return 2
+        case .passiveCook: return 2   // start passive early too
+        case .activeCook: return 3
+        case .finish:     return 4
+        }
+    }
 
     var displayName: String {
         switch self {
@@ -198,10 +253,4 @@ enum ActionClass: String, Codable, Hashable, CaseIterable {
         case .finish: return "fork.knife"
         }
     }
-
-    /// Prep-phase tasks (no implicit ordering constraints).
-    var isPrep: Bool { self == .prepCut || self == .prepOther }
-
-    /// Tasks that share a pan/vessel sequentially within a recipe.
-    var isActiveChain: Bool { self == .activeCook || self == .heatSetup }
 }

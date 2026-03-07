@@ -69,13 +69,18 @@ final class AIService: AIServiceProtocol {
         - "dietaryTags": [string]
         - "calories": number (estimated per serving)
 
-        Each task object: {"taskIndex": number, "action": string, "ingredient": string or null, "durationSeconds": number, "type": "active" or "passive", "requiresEquipment": string or null, "dependsOn": [number]}
+        Each task object: {"taskIndex": number, "action": string, "ingredient": string or null, "durationSeconds": number, "type": "active" or "passive", "effort": "easy" or "medium" or "hard", "requiresEquipment": string or null, "dependsOn": [number]}
         "taskIndex" — a unique integer starting at 0, incrementing across ALL steps in the recipe (not per-step). The first task is 0, the second 1, etc.
         "dependsOn" — array of taskIndex values for tasks that MUST finish before this one can start. Use this to encode the real cooking workflow:
           • A task that uses the output of an earlier task must list that task (e.g., "sauté onion" depends on "dice onion").
           • Sequential pan/vessel use: if two cook tasks share the same pan, the later one depends on the earlier.
           • "plate"/"serve" usually depends on all cooking tasks.
           • Independent prep tasks (different ingredients, no shared vessel) have an empty dependsOn [].
+        "effort" — how much active attention this task demands:
+          • "easy" (1 pt) = occasional checking — boiling water, toasting bread, simmering, resting.
+          • "medium" (2 pts) = periodic attention — sautéing, pan-frying, flipping.
+          • "hard" (3 pts) = constant hands-on — stir-frying, tempering, making roux.
+          The scheduler can run multiple tasks in parallel up to 3 effort points total.
         Valid actions: "cut_dice", "cut_mince", "cut_slice", "cut_chop", "cut_julienne", "cut_halve", "peel", "measure", "mix", "marinate", "season", "heat", "saute", "boil", "simmer", "fry_pan", "fry_deep", "fry_stir", "bake", "roast", "grill", "steam", "scramble", "plate", "garnish", "rest", "serve", "toss", or a custom string.
         Use "passive" for tasks that don't need hands (baking, boiling, resting). Use "active" otherwise.
         For estimatedDurationSeconds, provide the realistic wall-clock time for each step in seconds (including active work, waiting, and cooking). For example: "chop onion" ≈ 60, "boil water" ≈ 300, "bake for 30 minutes" = 1800.
@@ -168,12 +173,13 @@ final class AIService: AIServiceProtocol {
         - "cookTimeMinutes": number
         - "difficulty": number (1-5)
 
-        Each task object: {"taskIndex": number, "action": string, "ingredient": string or null, "durationSeconds": number, "type": "active" or "passive", "requiresEquipment": string or null, "dependsOn": [number]}
+        Each task object: {"taskIndex": number, "action": string, "ingredient": string or null, "durationSeconds": number, "type": "active" or "passive", "effort": "easy" or "medium" or "hard", "requiresEquipment": string or null, "dependsOn": [number]}
         "taskIndex" — a unique integer starting at 0, incrementing across ALL steps in the recipe. The first task is 0, the second 1, etc.
         "dependsOn" — array of taskIndex values for tasks that MUST finish before this one can start:
           • A task that uses the output of an earlier task depends on it (e.g., "sauté onion" depends on "dice onion").
           • Sequential pan use: if cook tasks share a pan, the later depends on the earlier.
           • "plate"/"serve" depends on all cooking tasks. Independent prep tasks have empty dependsOn [].
+        "effort" — "easy" (occasional checking), "medium" (periodic attention), "hard" (constant hands-on). Scheduler runs up to 3 effort points in parallel.
         Valid actions: "cut_dice", "cut_mince", "cut_slice", "cut_chop", "peel", "measure", "mix", "season", "heat", "saute", "boil", "simmer", "fry_pan", "fry_stir", "bake", "roast", "grill", "steam", "scramble", "plate", "garnish", "rest", "serve", "toss", or a custom string.
         For estimatedDurationSeconds, provide the realistic wall-clock time for each step in seconds (including active work, waiting, and cooking).
 
@@ -200,8 +206,8 @@ final class AIService: AIServiceProtocol {
         - "cookTimeMinutes": number
         - "dietaryTags": [string]
 
-        Each task object: {"taskIndex": number, "action": string, "ingredient": string or null, "durationSeconds": number, "type": "active" or "passive", "requiresEquipment": string or null, "dependsOn": [number]}
-        "taskIndex" — unique integer starting at 0, incrementing across ALL steps. "dependsOn" — taskIndex values of prerequisite tasks.
+        Each task object: {"taskIndex": number, "action": string, "ingredient": string or null, "durationSeconds": number, "type": "active" or "passive", "effort": "easy" or "medium" or "hard", "requiresEquipment": string or null, "dependsOn": [number]}
+        "taskIndex" — unique integer starting at 0, incrementing across ALL steps. "dependsOn" — taskIndex values of prerequisite tasks. "effort" — "easy"/"medium"/"hard" attention level.
         For estimatedDurationSeconds, provide the realistic wall-clock time for each step in seconds.
         For category, use one of: Dairy, Produce, Protein, Grains & Cereals, Spices & Herbs, Condiments & Sauces, Baking Supplies, Oils & Fats, Other.
         For unit, use: tsp, tbsp, cup, ml, L, g, kg, oz, lb, piece, whole, slice, clove, bunch, can, pinch.
@@ -232,8 +238,8 @@ final class AIService: AIServiceProtocol {
         - "cookTimeMinutes": number (estimate if not stated)
         - "dietaryTags": [string] (infer from ingredients)
 
-        Each task object: {"taskIndex": number, "action": string, "ingredient": string or null, "durationSeconds": number, "type": "active" or "passive", "requiresEquipment": string or null, "dependsOn": [number]}
-        "taskIndex" — unique integer starting at 0, incrementing across ALL steps. "dependsOn" — taskIndex values of prerequisite tasks.
+        Each task object: {"taskIndex": number, "action": string, "ingredient": string or null, "durationSeconds": number, "type": "active" or "passive", "effort": "easy" or "medium" or "hard", "requiresEquipment": string or null, "dependsOn": [number]}
+        "taskIndex" — unique integer starting at 0, incrementing across ALL steps. "dependsOn" — taskIndex values of prerequisite tasks. "effort" — "easy"/"medium"/"hard" attention level.
         For estimatedDurationSeconds, provide the realistic wall-clock time for each step in seconds.
 
         Return ONLY the JSON object, no other text.
@@ -440,6 +446,8 @@ final class AIService: AIServiceProtocol {
                         let duration = (taskDict["durationSeconds"] as? Int) ?? 60
                         let typeStr = taskDict["type"] as? String ?? "active"
                         let type: TaskType = typeStr == "passive" ? .passive : .active
+                        let effortStr = taskDict["effort"] as? String ?? "medium"
+                        let effort = EffortLevel(from: effortStr)
                         let equipment = taskDict["requiresEquipment"] as? String
 
                         let idx = taskDict["taskIndex"] as? Int
@@ -447,7 +455,7 @@ final class AIService: AIServiceProtocol {
                         let rawDeps = rawDepsMap[taskId] ?? []
                         let resolvedDeps = rawDeps.compactMap { indexToUUID[$0] }
 
-                        return StepTask(id: taskId, action: action, ingredient: ingredient, durationSeconds: duration, type: type, requiresEquipment: equipment, dependsOn: resolvedDeps)
+                        return StepTask(id: taskId, action: action, ingredient: ingredient, durationSeconds: duration, type: type, requiresEquipment: equipment, effort: effort, dependsOn: resolvedDeps)
                     }
                     return RecipeStep(stepNumber: info.num, instruction: info.instruction, timerMinutes: info.timer, estimatedDurationSeconds: info.estDuration, tasks: tasks)
                 }

@@ -229,21 +229,6 @@ struct MultiCookModeView: View {
                 }
                 .padding(.horizontal)
 
-                // Separate vessels warning
-                if block.separateVessels {
-                    HStack(spacing: 6) {
-                        Image(systemName: "exclamationmark.triangle.fill")
-                            .font(.caption)
-                        Text("Use separate pans — recipes diverge after this step")
-                            .font(.caption)
-                    }
-                    .foregroundStyle(.orange)
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 8)
-                    .background(.orange.opacity(0.1))
-                    .clipShape(RoundedRectangle(cornerRadius: 10))
-                }
-
                 // Recipe source tags
                 HStack(spacing: 8) {
                     ForEach(block.recipeNames, id: \.self) { name in

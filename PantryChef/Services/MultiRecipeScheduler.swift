@@ -2,29 +2,47 @@ import Foundation
 
 // MARK: - Multi-Recipe Scheduler
 //
-// Deterministic interleaving scheduler for cooking multiple recipes simultaneously.
-// Uses three rules:
-//   1. Action-Class Grouping — batch same-class tasks together (e.g. all cutting)
-//   2. Passive-Before-Active — start passive tasks, fill gaps with active work
-//   3. Dependency Preservation — within-recipe step order is preserved
+// Generic DAG-based scheduler for cooking multiple recipes simultaneously.
+// The LLM builds the dependency graph and assigns effort levels at recipe
+// creation time. The scheduler is a dumb executor — it packs ready tasks
+// into time slots under an attention budget, using action-class phase
+// priority only as a tiebreaker.
 //
-// Produces a flat timeline of ScheduledBlocks that a cook mode UI can step through.
+// Key concepts:
+//   1. DAG — task.dependsOn defines hard ordering (built by the LLM).
+//   2. Effort budget — up to 3 "effort points" of active work per block.
+//      easy=1, medium=2, hard=3, passive=0. Tasks of any class can share a block.
+//   3. Phase preference — when multiple tasks are ready and could fill the budget,
+//      prefer prep → cook → finish. This gives the natural "chop everything first" feel.
+//   4. Passive tasks — emitted as background timer blocks (0 effort cost)
+//      and do not block the active work pipeline.
 
 struct MultiRecipeScheduler {
 
+    /// Maximum attention points the cook can handle simultaneously.
+    static let effortBudget = 3
+
     // MARK: - Output Types
 
-    /// A block in the scheduled timeline. May contain tasks from multiple recipes.
+    /// A block in the scheduled timeline. May contain tasks from multiple recipes
+    /// running in parallel (within the effort budget).
     struct ScheduledBlock: Identifiable, Hashable {
         let id: UUID
         let tasks: [StepTask]
         let type: TaskType
-        let actionClass: ActionClass
         let totalDurationSeconds: Int
 
-        /// When true, tasks from different recipes in this block
-        /// need separate vessels (downstream paths diverge).
-        var separateVessels: Bool = false
+        /// Total effort points consumed by this block.
+        var totalEffort: Int {
+            tasks.reduce(0) { $0 + $1.effortPoints }
+        }
+
+        /// Dominant action class (most common among tasks), used for display.
+        var actionClass: ActionClass {
+            let classes = tasks.map { $0.action.actionClass }
+            let grouped = Dictionary(grouping: classes, by: { $0 })
+            return grouped.max(by: { $0.value.count < $1.value.count })?.key ?? .activeCook
+        }
 
         /// Human-readable instruction combining all tasks.
         var displayInstruction: String {
@@ -42,11 +60,7 @@ struct MultiRecipeScheduler {
                 let descs = recipeTasks.map { $0.displayText }.joined(separator: ", ")
                 lines.append("\(descs) (\(recipe))")
             }
-            var result = lines.joined(separator: "\n")
-            if separateVessels {
-                result += "\n⚠️ Use separate pans for each recipe"
-            }
-            return result
+            return lines.joined(separator: "\n")
         }
 
         /// Short label for the block.
@@ -82,14 +96,11 @@ struct MultiRecipeScheduler {
         // 1. Extract all tasks with recipe context
         let allTasks = extractTasks(from: recipes)
 
-        // 2. Build dependency graph (ingredient-flow DAG)
-        let dependencies = buildDependencies(tasks: allTasks, recipes: recipes)
+        // 2. Build dependency graph from task.dependsOn
+        let dependencies = buildDependencies(tasks: allTasks)
 
-        // 3. Build reverse graph for divergence detection
-        let dependents = buildDependents(dependencies: dependencies)
-
-        // 4. Schedule using priority-based list scheduling
-        return listSchedule(tasks: allTasks, dependencies: dependencies, dependents: dependents)
+        // 3. Schedule using effort-budget packing
+        return effortPackSchedule(tasks: allTasks, dependencies: dependencies)
     }
 
     // MARK: - Single Recipe (simple linear)
@@ -101,14 +112,12 @@ struct MultiRecipeScheduler {
                 : step.tasks.map { var t = $0; t.recipeId = recipe.id; t.recipeName = recipe.title; t.sourceStepNumber = step.stepNumber; return t }
 
             let type = tasks.allSatisfy({ $0.type == .passive }) ? TaskType.passive : .active
-            let actionClass = tasks.first?.action.actionClass ?? .activeCook
             let duration = tasks.map(\.durationSeconds).max() ?? step.effectiveDurationSeconds
 
             return ScheduledBlock(
                 id: UUID(),
                 tasks: tasks,
                 type: type,
-                actionClass: actionClass,
                 totalDurationSeconds: duration
             )
         }
@@ -145,181 +154,104 @@ struct MultiRecipeScheduler {
     }
 
     // MARK: - Dependency Graph (explicit DAG from recipe data)
-    //
-    // Each StepTask carries a `dependsOn: [UUID]` array populated at recipe
-    // creation time (by the LLM or hand-authored for built-in recipes).
-    // The scheduler simply reads this graph — no fuzzy matching needed.
 
-    private static func buildDependencies(tasks: [StepTask], recipes: [Recipe]) -> [UUID: Set<UUID>] {
-        var deps: [UUID: Set<UUID>] = [:]
-        // Collect all task IDs in this scheduling run for validation
+    private static func buildDependencies(tasks: [StepTask]) -> [UUID: Set<UUID>] {
         let validIds = Set(tasks.map(\.id))
+        var deps: [UUID: Set<UUID>] = [:]
         for task in tasks {
-            // Only include dependsOn references that exist in the current task set
             deps[task.id] = Set(task.dependsOn.filter { validIds.contains($0) })
         }
         return deps
     }
 
-    // MARK: - Reverse Dependency Graph (for divergence detection)
+    // MARK: - Effort-Budget Packing Scheduler
+    //
+    // Algorithm:
+    //   1. Find all ready tasks (deps satisfied).
+    //   2. Separate passive (background timers, 0 effort) from active.
+    //   3. Emit each passive task as its own timer block.
+    //   4. Sort active ready tasks by phase priority (tiebreaker), then by effort ascending.
+    //   5. Greedily pack active tasks into one block up to `effortBudget` points.
+    //   6. Mark completed, repeat.
 
-    /// Returns taskId -> [dependent taskIds] (children in the DAG).
-    private static func buildDependents(dependencies: [UUID: Set<UUID>]) -> [UUID: Set<UUID>] {
-        var dependents: [UUID: Set<UUID>] = [:]
-        for (taskId, _) in dependencies { dependents[taskId] = [] }
-        for (taskId, prereqs) in dependencies {
-            for prereq in prereqs {
-                dependents[prereq, default: []].insert(taskId)
-            }
-        }
-        return dependents
-    }
-
-    // MARK: - Vessel Divergence Detection
-
-    /// Check if tasks from different recipes in a block need separate vessels.
-    /// Returns true if any two tasks from different recipes have differing downstream paths
-    /// (i.e., they diverge after this step — different things happen next).
-    private static func tasksDiverge(_ tasks: [StepTask], dependents: [UUID: Set<UUID>], allTasks: [StepTask]) -> Bool {
-        // Only relevant when block contains tasks from multiple recipes
-        let recipeIds = Set(tasks.compactMap(\.recipeId))
-        guard recipeIds.count > 1 else { return false }
-
-        // Only relevant for cook tasks — prep tasks share a cutting board, no vessel
-        guard tasks.allSatisfy({ $0.action.actionClass.isActiveChain }) else { return false }
-
-        // Check if downstream actions differ across recipes
-        let taskById = Dictionary(uniqueKeysWithValues: allTasks.map { ($0.id, $0) })
-        var downstreamByRecipe: [UUID: Set<String>] = [:]
-
-        for task in tasks {
-            guard let recipeId = task.recipeId else { continue }
-            let children = dependents[task.id] ?? []
-            let childActions = Set(children.compactMap { taskById[$0]?.action.verb })
-            downstreamByRecipe[recipeId, default: []].formUnion(childActions)
-        }
-
-        // If downstream actions differ between any two recipes → separate vessels
-        let allDownstreams = Array(downstreamByRecipe.values)
-        for i in 0..<allDownstreams.count {
-            for j in (i+1)..<allDownstreams.count {
-                if allDownstreams[i] != allDownstreams[j] { return true }
-            }
-        }
-        return false
-    }
-
-    // MARK: - List Scheduling
-
-    private static func listSchedule(tasks: [StepTask], dependencies: [UUID: Set<UUID>], dependents: [UUID: Set<UUID>]) -> [ScheduledBlock] {
+    private static func effortPackSchedule(tasks: [StepTask], dependencies: [UUID: Set<UUID>]) -> [ScheduledBlock] {
         var timeline: [ScheduledBlock] = []
         var completed = Set<UUID>()
         var remaining = Set(tasks.map(\.id))
         let taskById = Dictionary(uniqueKeysWithValues: tasks.map { ($0.id, $0) })
 
         func isReady(_ taskId: UUID) -> Bool {
-            let prereqs = dependencies[taskId] ?? []
-            return prereqs.isSubset(of: completed)
+            (dependencies[taskId] ?? []).isSubset(of: completed)
         }
 
         var iterations = 0
-        let maxIterations = tasks.count * 3 // safety
+        let maxIterations = tasks.count * 3
 
         while !remaining.isEmpty && iterations < maxIterations {
             iterations += 1
 
-            // Find ready tasks
             let readyIds = remaining.filter { isReady($0) }
             guard !readyIds.isEmpty else { break }
 
-            // Group ready tasks by action class
             let readyTasks = readyIds.compactMap { taskById[$0] }
-            let byClass = Dictionary(grouping: readyTasks, by: { $0.action.actionClass })
 
-            // Priority: prepCut > prepOther > passive (start early) > heatSetup (JIT) > active > finish
-            let classPriority: [ActionClass] = [.prepCut, .prepOther, .passiveCook, .heatSetup, .activeCook, .finish]
-
-            // Pick highest-priority group
-            var selected: [StepTask]?
-            var selectedClass: ActionClass = .activeCook
-
-            for cls in classPriority {
-                if let group = byClass[cls], !group.isEmpty {
-                    selected = group
-                    selectedClass = cls
-                    break
-                }
+            // --- Passive tasks: emit as background timer blocks ---
+            let passiveTasks = readyTasks.filter { $0.type == .passive }
+            for task in passiveTasks {
+                timeline.append(ScheduledBlock(
+                    id: UUID(),
+                    tasks: [task],
+                    type: .passive,
+                    totalDurationSeconds: task.durationSeconds
+                ))
+                completed.insert(task.id)
+                remaining.remove(task.id)
             }
 
-            guard let selectedTasks = selected else { break }
-
-            // If passive, schedule it and look for active fillers
-            if selectedClass == .passiveCook {
-                // Schedule one passive task at a time
-                let passiveTask = selectedTasks[0]
-                let passiveBlock = ScheduledBlock(
-                    id: UUID(),
-                    tasks: [passiveTask],
-                    type: .passive,
-                    actionClass: .passiveCook,
-                    totalDurationSeconds: passiveTask.durationSeconds
-                )
-                timeline.append(passiveBlock)
-
-                // Mark as completed
-                completed.insert(passiveTask.id)
-                remaining.remove(passiveTask.id)
-
-                // Fill passive gap with active tasks, recalculating readiness after each
-                var gap = passiveTask.durationSeconds
-                while gap > 0 {
-                    let fillerCandidates = remaining.filter { isReady($0) }
-                        .compactMap { taskById[$0] }
-                        .filter { $0.type == .active && $0.durationSeconds <= gap }
-                        .sorted { $0.durationSeconds < $1.durationSeconds }
-
-                    guard let filler = fillerCandidates.first else { break }
-
-                    let fillerBlock = ScheduledBlock(
-                        id: UUID(),
-                        tasks: [filler],
-                        type: .active,
-                        actionClass: filler.action.actionClass,
-                        totalDurationSeconds: filler.durationSeconds
-                    )
-                    timeline.append(fillerBlock)
-                    gap -= filler.durationSeconds
-                    completed.insert(filler.id)
-                    remaining.remove(filler.id)
+            // --- Active tasks: effort-budget packing ---
+            // Re-check readiness after passive completions may have unlocked new tasks
+            let activeReadyIds = remaining.filter { isReady($0) }
+            let activeReady = activeReadyIds.compactMap { taskById[$0] }
+                .filter { $0.type == .active }
+                .sorted {
+                    // Primary: phase priority (prep first)
+                    let p0 = $0.action.actionClass.phasePriority
+                    let p1 = $1.action.actionClass.phasePriority
+                    if p0 != p1 { return p0 < p1 }
+                    // Secondary: lower effort first (pack more tasks)
+                    return $0.effortPoints < $1.effortPoints
                 }
-            } else if selectedClass == .prepCut || selectedClass == .prepOther || selectedClass == .heatSetup {
-                // Batch all same-class tasks into one block
-                var block = ScheduledBlock(
+
+            guard !activeReady.isEmpty else {
+                // Only passive tasks were ready this iteration
+                if passiveTasks.isEmpty { break }
+                continue
+            }
+
+            // Greedily fill one block up to the budget
+            var blockTasks: [StepTask] = []
+            var budgetUsed = 0
+
+            for task in activeReady {
+                if budgetUsed + task.effortPoints <= effortBudget {
+                    blockTasks.append(task)
+                    budgetUsed += task.effortPoints
+                }
+                if budgetUsed >= effortBudget { break }
+            }
+
+            if !blockTasks.isEmpty {
+                let duration = blockTasks.map(\.durationSeconds).max() ?? 60
+                timeline.append(ScheduledBlock(
                     id: UUID(),
-                    tasks: selectedTasks,
-                    type: selectedTasks.allSatisfy({ $0.type == .passive }) ? .passive : .active,
-                    actionClass: selectedClass,
-                    totalDurationSeconds: selectedTasks.map(\.durationSeconds).reduce(0, +)
-                )
-                block.separateVessels = tasksDiverge(selectedTasks, dependents: dependents, allTasks: tasks)
-                timeline.append(block)
-                for task in selectedTasks {
+                    tasks: blockTasks,
+                    type: .active,
+                    totalDurationSeconds: duration
+                ))
+                for task in blockTasks {
                     completed.insert(task.id)
                     remaining.remove(task.id)
                 }
-            } else {
-                // Active or finish — schedule one at a time
-                let task = selectedTasks[0]
-                let block = ScheduledBlock(
-                    id: UUID(),
-                    tasks: [task],
-                    type: task.type,
-                    actionClass: selectedClass,
-                    totalDurationSeconds: task.durationSeconds
-                )
-                timeline.append(block)
-                completed.insert(task.id)
-                remaining.remove(task.id)
             }
         }
 
@@ -330,7 +262,6 @@ struct MultiRecipeScheduler {
 
     /// Estimate total cooking time for the interleaved schedule.
     static func estimatedTotalTime(blocks: [ScheduledBlock]) -> Int {
-        // Sum all active blocks + longest passive (they overlap)
         var activeTime = 0
         var maxPassive = 0
 
