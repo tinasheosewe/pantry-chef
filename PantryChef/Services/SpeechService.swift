@@ -117,7 +117,7 @@ final class SpeechService: NSObject, SpeechServiceProtocol, AVSpeechSynthesizerD
         do {
             if forRecording {
                 try session.setCategory(.playAndRecord, mode: .default,
-                                        options: [.defaultToSpeaker, .allowBluetooth])
+                                        options: [.defaultToSpeaker, .allowBluetoothHFP])
             } else {
                 try session.setCategory(.playback, mode: .default)
             }

@@ -374,17 +374,17 @@ struct CookModeView: View {
                 Spacer()
             }
 
-            // Show what the AI is saying (live transcript)
-            if vm.isModelSpeaking, !vm.conversationTranscript.isEmpty {
+            // Show what the AI is saying (or last said)
+            if !vm.conversationTranscript.isEmpty {
                 Text(vm.conversationTranscript)
                     .font(.caption)
                     .foregroundStyle(.white.opacity(0.8))
-                    .lineLimit(2)
+                    .lineLimit(3)
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
 
             // Show what the user said
-            if !vm.userTranscript.isEmpty, !vm.isModelSpeaking {
+            if !vm.userTranscript.isEmpty {
                 Text("You: \"\(vm.userTranscript)\"")
                     .font(.caption2)
                     .foregroundStyle(.white.opacity(0.5))

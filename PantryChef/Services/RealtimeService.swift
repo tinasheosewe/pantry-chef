@@ -42,6 +42,7 @@ final class RealtimeService: RealtimeServiceProtocol {
     // MARK: - Private
 
     private let apiKey: String
+    private let urlSession: URLSession
     private var conversation: Conversation?
 
     /// Ephemeral key fetched from OpenAI REST API for WebRTC auth.
@@ -59,16 +60,34 @@ final class RealtimeService: RealtimeServiceProtocol {
 
     // MARK: - Init
 
-    init(apiKey: String = AppConfig.openAIAPIKey) {
+    init(apiKey: String = AppConfig.openAIAPIKey, urlSession: URLSession = .shared) {
         self.apiKey = apiKey
+        self.urlSession = urlSession
     }
 
     // MARK: - Prepare Audio
 
     /// Fetches an ephemeral key from OpenAI for WebRTC connection.
-    /// Call before connect() — the key is short-lived (~2 minutes).
+    /// Also pre-configures the audio session so WebRTC can create audio tracks.
     func prepareAudio() async {
         statusMessage = "Setting up…"
+
+        // Configure the audio session for WebRTC BEFORE the SDK tries to
+        // create a peer connection. Without this, the SDP offer won't
+        // contain an audio media section and the server returns 400.
+        do {
+            let session = AVAudioSession.sharedInstance()
+            try session.setCategory(
+                .playAndRecord,
+                mode: .voiceChat,
+                options: [.defaultToSpeaker, .allowBluetoothA2DP]
+            )
+            try session.setActive(true)
+            print("[RealtimeService] Audio session configured for WebRTC")
+        } catch {
+            print("[RealtimeService] ⚠️ Audio session setup warning: \(error)")
+        }
+
         do {
             ephemeralKey = try await fetchEphemeralKey()
             statusMessage = "Ready"
@@ -98,7 +117,6 @@ final class RealtimeService: RealtimeServiceProtocol {
         // so session preferences are applied at the right time.
         conversation = Conversation(debug: true) { session in
             session.instructions = instructions
-            session.modalities = [.text, .audio]
             session.audio.output.voice = .sage
             session.audio.input.transcription = .init(model: .gpt4oMini)
             session.audio.input.turnDetection = .serverVad(
@@ -109,17 +127,40 @@ final class RealtimeService: RealtimeServiceProtocol {
             )
             session.tools = sdkTools
             session.toolChoice = .auto
-            session.temperature = 0.75
+            // Note: temperature and modalities are not supported by the GA API
+            // session.update and will cause the entire update to be rejected.
         }
 
         // Connect asynchronously via WebRTC
+        let realtimeModel = "gpt-4o-realtime-preview"
         Task { [weak self] in
             guard let self, let conv = self.conversation else { return }
             do {
-                try await conv.connect(ephemeralKey: key)
+                try await conv.connect(ephemeralKey: key, model: .custom(realtimeModel))
                 print("[RealtimeService] Connected via WebRTC")
                 self.isConnected = true
                 self.statusMessage = "Connected"
+
+                // Wait for the session.update round-trip to complete before
+                // sending any messages. The SDK fires `session.update` when it
+                // receives `session.created`, but connect() returns as soon as
+                // the WebRTC handshake is done — before that event arrives.
+                // Without this wait, the greeting races ahead and the API
+                // uses the default session config (wrong voice, Spanish, etc.).
+                //
+                // We detect completion by checking that the voice has changed
+                // from the default (alloy) to our requested voice (sage).
+                var waited = 0
+                while conv.session?.audio.output.voice != .sage,
+                      waited < 50 {  // up to 5 seconds
+                    try await Task.sleep(for: .milliseconds(100))
+                    waited += 1
+                }
+                if waited >= 50 {
+                    print("[RealtimeService] ⚠️ Session update timed out, sending greeting anyway")
+                } else {
+                    print("[RealtimeService] Session updated after \(waited * 100)ms")
+                }
 
                 // Send any message that was queued before connection completed
                 if let msg = self.pendingMessage {
@@ -142,7 +183,22 @@ final class RealtimeService: RealtimeServiceProtocol {
 
     func disconnect() {
         print("[RealtimeService] disconnect()")
+
+        // Mute mic and stop audio session BEFORE tearing down the
+        // conversation. The SDK's Conversation has an internal retain
+        // cycle (Task.detached + guard let self) that prevents deinit,
+        // so setting conversation = nil alone won't close WebRTC.
+        // Deactivating the audio session kills playback immediately.
+        conversation?.muted = true
         cleanUpConversation()
+
+        do {
+            try AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
+            print("[RealtimeService] Audio session deactivated")
+        } catch {
+            print("[RealtimeService] ⚠️ Audio session deactivation: \(error)")
+        }
+
         isConnected = false
         isModelSpeaking = false
         isUserSpeaking = false
@@ -189,27 +245,25 @@ final class RealtimeService: RealtimeServiceProtocol {
 
     // MARK: - Ephemeral Key
 
-    /// Calls OpenAI's REST API to create a short-lived session token
+    /// Calls OpenAI's GA Realtime API to create a short-lived client secret
     /// for WebRTC authentication.
     private func fetchEphemeralKey() async throws -> String {
-        let url = URL(string: "https://api.openai.com/v1/realtime/sessions")!
+        let url = URL(string: "https://api.openai.com/v1/realtime/client_secrets")!
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
 
-        let body: [String: Any] = [
-            "model": "gpt-4o-realtime-preview",
-            "voice": "sage"
-        ]
-        request.httpBody = try JSONSerialization.data(withJSONObject: body)
+        // GA endpoint takes no model param — model is set on the connect URL
+        request.httpBody = "{}".data(using: .utf8)
 
-        let (data, response) = try await URLSession.shared.data(for: request)
+        let (data, response) = try await urlSession.data(for: request)
 
         guard let httpResponse = response as? HTTPURLResponse,
               httpResponse.statusCode == 200 else {
             let code = (response as? HTTPURLResponse)?.statusCode ?? -1
             let bodyStr = String(data: data, encoding: .utf8) ?? ""
+            print("[RealtimeService] Ephemeral key request failed (\(code)): \(bodyStr)")
             throw NSError(
                 domain: "RealtimeService", code: code,
                 userInfo: [NSLocalizedDescriptionKey:
@@ -217,16 +271,30 @@ final class RealtimeService: RealtimeServiceProtocol {
             )
         }
 
-        guard let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
-              let clientSecret = json["client_secret"] as? [String: Any],
-              let key = clientSecret["value"] as? String else {
+        guard let json = try JSONSerialization.jsonObject(with: data) as? [String: Any] else {
             throw NSError(
                 domain: "RealtimeService", code: -1,
-                userInfo: [NSLocalizedDescriptionKey: "Invalid ephemeral key response"]
+                userInfo: [NSLocalizedDescriptionKey: "Invalid ephemeral key response (not JSON)"]
             )
         }
 
-        return key
+        print("[RealtimeService] Client secret response keys: \(json.keys.sorted())")
+
+        // GA endpoint returns { "value": "ek_...", "expires_at": ..., "session": {...} }
+        if let key = json["value"] as? String { return key }
+
+        // Beta endpoint fallback: { "client_secret": { "value": "ek_..." } }
+        if let clientSecret = json["client_secret"] as? [String: Any],
+           let key = clientSecret["value"] as? String {
+            return key
+        }
+
+        let bodyStr = String(data: data, encoding: .utf8) ?? ""
+        print("[RealtimeService] ❌ Could not parse key from: \(bodyStr)")
+        throw NSError(
+            domain: "RealtimeService", code: -1,
+            userInfo: [NSLocalizedDescriptionKey: "Invalid ephemeral key response"]
+        )
     }
 
     // MARK: - State Sync Loop
@@ -261,14 +329,17 @@ final class RealtimeService: RealtimeServiceProtocol {
 
         // ── Transcript: latest assistant message ──
         if conv.isModelSpeaking {
+            // Clear stale transcript when model starts a new response
+            if !wasModelSpeaking {
+                transcript = ""
+            }
             if let lastMsg = conv.messages.last(where: { $0.role == .assistant }) {
                 let text = extractTranscript(from: lastMsg)
                 if !text.isEmpty { transcript = text }
             }
-        } else if wasModelSpeaking {
-            // Model just stopped → clear the rolling transcript
-            transcript = ""
         }
+        // When model stops speaking, keep the transcript visible
+        // (it will be cleared when the next response starts)
 
         // ── User transcript ──
         if let lastUserMsg = conv.messages.last(where: { $0.role == .user }) {

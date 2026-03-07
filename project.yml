@@ -11,6 +11,8 @@ settings:
     SWIFT_VERSION: "5.9"
     TARGETED_DEVICE_FAMILY: "1"
     INFOPLIST_KEY_CFBundleDisplayName: "Pantry Chef"
+    DEVELOPMENT_TEAM: WZ7SK754J9
+    CODE_SIGN_STYLE: Automatic
 
 packages:
   swift-realtime-openai:
