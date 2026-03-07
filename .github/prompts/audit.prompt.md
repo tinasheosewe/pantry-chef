@@ -25,6 +25,10 @@ Perform a comprehensive, deep audit of the entire codebase. Scan every file meth
 - Violations of SOLID principles (god classes, tight coupling, leaky abstractions)
 - Business logic in the wrong layer (e.g., logic in views, UI in services)
 - Duplicated logic that should be extracted (DRY violations)
+- Copy-pasted code across files — identify every instance and recommend where to centralize (shared utility, extension, base class, helper module, or internal package)
+- Repeated patterns that have drifted apart — same intent implemented slightly differently in multiple places, leading to inconsistent behavior
+- Helpers or utilities scattered in arbitrary files instead of living in a dedicated shared location
+- Opportunities to consolidate similar classes/structs into a single generic or protocol-driven implementation
 - Inconsistent patterns — similar things done differently across the codebase
 - Missing protocol abstractions where dependency injection is needed
 - Overly complex code that could be simplified without losing correctness

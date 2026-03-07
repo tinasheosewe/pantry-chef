@@ -10,6 +10,7 @@ struct MultiCookSelectionView: View {
     @Environment(\.dismiss) private var dismiss
 
     @State private var selectedRecipeIds: Set<UUID> = []
+    @State private var showGathering = false
     @State private var showMultiCookMode = false
 
     var body: some View {
@@ -89,10 +90,17 @@ struct MultiCookSelectionView: View {
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Start") {
-                        showMultiCookMode = true
+                        showGathering = true
                     }
                     .fontWeight(.bold)
                     .disabled(selectedRecipeIds.count < 2)
+                }
+            }
+            .sheet(isPresented: $showGathering) {
+                let selectedRecipes = appState.recipes.filter { selectedRecipeIds.contains($0.id) }
+                IngredientGatheringView(recipes: selectedRecipes) {
+                    showGathering = false
+                    showMultiCookMode = true
                 }
             }
             .fullScreenCover(isPresented: $showMultiCookMode) {

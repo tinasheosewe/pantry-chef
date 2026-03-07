@@ -5,6 +5,7 @@ struct RecipeDetailView: View {
     @State private var recipe: Recipe
     @State private var servings: Int
     @State private var showCookMode = false
+    @State private var showGathering = false
     @State private var showSubstitutions = false
     @State private var showShoppingList = false
     @State private var substitutions: [SubstitutionSuggestion] = []
@@ -68,6 +69,12 @@ struct RecipeDetailView: View {
                     Image(systemName: recipe.isFavorite ? "heart.fill" : "heart")
                         .foregroundStyle(recipe.isFavorite ? .red : AppColors.mediumGray)
                 }
+            }
+        }
+        .sheet(isPresented: $showGathering) {
+            IngredientGatheringView(recipes: [scaledRecipe]) {
+                showGathering = false
+                showCookMode = true
             }
         }
         .fullScreenCover(isPresented: $showCookMode) {
@@ -194,7 +201,11 @@ struct RecipeDetailView: View {
             // Prominent Cook button
             Button {
                 existingSession = CookingSession.load(recipeId: recipe.id)
-                showCookMode = true
+                if existingSession != nil {
+                    showCookMode = true       // resume — skip gathering
+                } else {
+                    showGathering = true       // new session — show ingredients first
+                }
             } label: {
                 HStack(spacing: 8) {
                     Image(systemName: existingSession != nil ? "arrow.counterclockwise" : "play.fill")

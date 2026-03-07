@@ -9,6 +9,9 @@
 - Code must be clean, scalable, and maintainable. Never take the easy route — always take the correct route for long-term maintainability and scale.
 - Complexity is not a blocker. If the right solution is complex, implement it correctly rather than cutting corners.
 - Follow DRY (Don't Repeat Yourself) — extract shared logic into reusable functions, protocols, or modules.
+- When the same pattern appears in two or more places, centralize it immediately. Use shared utilities, extensions, base classes, or helper modules — whichever fits the language and framework. Do not tolerate copy-paste across files.
+- If repeated code spans multiple features or layers, create a dedicated shared module or internal package rather than scattering helpers in arbitrary files.
+- Before writing new code, search the codebase for existing utilities or patterns that already solve the problem. Reuse and extend before creating.
 - Follow SOLID principles:
   - **S**ingle Responsibility: each type/function does one thing.
   - **O**pen/Closed: extend behavior without modifying existing code.
