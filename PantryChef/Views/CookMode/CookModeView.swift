@@ -2,12 +2,14 @@ import SwiftUI
 
 struct CookModeView: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.scenePhase) private var scenePhase
     @Environment(AppState.self) private var appState
 
     /// Created lazily on first appear — no heavy AV objects at app launch.
     @State private var realtimeService: RealtimeService?
     @State private var viewModel: CookModeViewModel?
     @State private var syncTimer: Timer?
+    @State private var showBackgroundConfirm = false
 
     private let recipe: Recipe
 
@@ -46,6 +48,32 @@ struct CookModeView: View {
             syncTimer?.invalidate()
             syncTimer = nil
             viewModel?.cleanup()
+        }
+        .onChange(of: scenePhase) { _, newPhase in
+            if newPhase == .active {
+                viewModel?.syncTimerOnForeground()
+            }
+        }
+        .onChange(of: viewModel?.didContinueInBackground ?? false) { _, didBackground in
+            if didBackground {
+                dismiss()
+            }
+        }
+        .confirmationDialog(
+            "Continue Cooking?",
+            isPresented: $showBackgroundConfirm,
+            titleVisibility: .visible
+        ) {
+            Button("Continue in Background") {
+                viewModel?.continueInBackground()
+            }
+            Button("End Session", role: .destructive) {
+                viewModel?.cleanup()
+                dismiss()
+            }
+            Button("Cancel", role: .cancel) { }
+        } message: {
+            Text("Schedule notifications for remaining steps so you can cook without the app open.")
         }
         .alert("Voice Control Unavailable",
                isPresented: Binding(
@@ -133,6 +161,18 @@ struct CookModeView: View {
 
             Spacer()
 
+            // Continue in Background
+            if vm.isConversationActive {
+                Button {
+                    showBackgroundConfirm = true
+                } label: {
+                    Image(systemName: "bell.badge")
+                        .font(.title3)
+                        .foregroundStyle(AppColors.warmOrange)
+                }
+                .disabled(vm.isSchedulingBackground)
+            }
+
             // Mute/unmute mic
             Button {
                 vm.toggleMicMute()
@@ -143,6 +183,21 @@ struct CookModeView: View {
             }
         }
         .padding()
+        .overlay {
+            if vm.isSchedulingBackground {
+                HStack(spacing: 8) {
+                    ProgressView()
+                        .tint(.white)
+                    Text("Scheduling reminders…")
+                        .font(.caption)
+                        .foregroundStyle(.white)
+                }
+                .padding(.horizontal, 16)
+                .padding(.vertical, 8)
+                .background(.ultraThinMaterial)
+                .clipShape(Capsule())
+            }
+        }
     }
 
     // MARK: - Progress Bar

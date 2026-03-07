@@ -27,9 +27,21 @@ final class CookModeViewModel {
     /// Whether the mic is muted (user can still hear the AI)
     var isMicMuted = false
 
+    /// Continue in Background state
+    var isSchedulingBackground = false
+    var didContinueInBackground = false
+
+    /// Tracks whether the WebRTC connection has ever succeeded in this session,
+    /// so we can distinguish "not yet connected" from "connection dropped".
+    private var wasEverConnected = false
+
     let recipe: Recipe
     let realtimeService: any RealtimeServiceProtocol
 
+    /// Date-based timer tracking — survives backgrounding
+    private var timerStartedAt: Date?
+    private var timerDuration: TimeInterval = 0
+    private var timerPausedRemaining: TimeInterval = 0
     private var timerCancellable: AnyCancellable?
 
     init(recipe: Recipe, realtimeService: any RealtimeServiceProtocol) {
@@ -168,6 +180,7 @@ final class CookModeViewModel {
 
     func stopConversation() {
         isConversationActive = false
+        wasEverConnected = false
         realtimeService.disconnect()
         conversationTranscript = ""
         userTranscript = ""
@@ -206,32 +219,52 @@ final class CookModeViewModel {
         conversationStatus = realtimeService.statusMessage
         conversationError = realtimeService.errorMessage
 
-        // Don't check connection state while still preparing audio
-        if !isPreparing && !realtimeService.isConnected && isConversationActive {
+        if realtimeService.isConnected {
+            wasEverConnected = true
+        }
+
+        // Only detect connection drops after we've been connected at least
+        // once. Before that, the WebRTC handshake is still in progress and
+        // isConnected would be transiently false.
+        if !isPreparing && wasEverConnected && !realtimeService.isConnected && isConversationActive {
             // Connection dropped
             isConversationActive = false
         }
     }
 
     func handleRealtimeFunctionCall(name: String, args: [String: Any]) {
+        // Model-initiated navigation: update UI directly WITHOUT calling
+        // notifyStepChanged(), which would send a redundant message back
+        // to the model (it already knows the step — it chose to call the
+        // function). The dispatchFunctionCall sends createResponse() so
+        // the model will naturally speak about the new step.
         switch name {
         case "next_step":
-            nextStep()
+            guard !isLastStep else {
+                showCompletionScreen = true
+                return
+            }
+            stopTimer()
+            currentStepIndex += 1
+            autoStartTimerIfNeeded()
         case "previous_step":
-            previousStep()
+            guard !isFirstStep else { return }
+            stopTimer()
+            currentStepIndex -= 1
         case "go_to_step":
             if let step = args["step_number"] as? Int {
-                goToStep(step - 1) // API uses 1-based, we use 0-based
+                let index = step - 1
+                guard index >= 0 && index < steps.count else { return }
+                stopTimer()
+                currentStepIndex = index
+                autoStartTimerIfNeeded()
             }
         case "repeat_step":
             // No navigation needed — the model will re-read it
             break
         case "start_timer":
             if let minutes = args["minutes"] as? Int {
-                timerSeconds = minutes * 60
-                isTimerRunning = true
-                isPaused = false
-                startTimerTick()
+                startTimerWithMinutes(minutes)
             } else {
                 startTimer()
             }
@@ -240,7 +273,10 @@ final class CookModeViewModel {
         case "stop_timer":
             stopTimer()
         case "finish_cooking":
+            endCookingSession()
             showCompletionScreen = true
+        case "schedule_notifications":
+            handleScheduleNotifications(args: args)
         default:
             break
         }
@@ -279,6 +315,25 @@ final class CookModeViewModel {
         a specific question.
         - If the user says they're done or finished, call finish_cooking.
         - You can be interrupted — that's fine, just respond to the new input.
+        - IMPORTANT: If the user says "stop", "pause", "wait", "hold on", or "quiet" — even \
+        if they interrupt you mid-sentence — you MUST stop talking immediately. Do NOT continue \
+        with recipe instructions. Do NOT advance to the next step. Just say something very brief \
+        like "OK" or "Sure, I'll wait" and then be completely silent until the user speaks again. \
+        This takes absolute priority over everything else.
+        - NEVER move to the next step unless the user explicitly says "next", "next step", \
+        "move on", "continue", "I'm ready", or similar. Do NOT assume they are ready.
+        - CRITICAL: You MUST call the next_step tool to advance steps. NEVER just verbally \
+        describe the next step without calling the tool first. The UI tracks steps via tool calls.
+        - NOISE REJECTION: The microphone picks up kitchen noise (sizzling, clanking, fans) \
+        that sometimes gets transcribed as garbage — typically 1-3 random characters, lone \
+        punctuation, or tiny fragments that don't form a meaningful word or phrase in any \
+        language (e.g. "請。", "...", "uh", a single random character). If the transcribed \
+        input looks like this kind of noise artifact rather than an intentional utterance, \
+        do NOT respond at all — stay completely silent and wait for real speech. Real user \
+        speech will be recognizable words or phrases, even if short (like "no", "next", \
+        "stop") or in another language (like an ingredient name). When in doubt, lean toward \
+        ignoring rather than responding to prevent the assistant from talking unprompted.
+        - Always speak in English.
         """
     }
 
@@ -373,6 +428,38 @@ final class CookModeViewModel {
                     "properties": [:] as [String: Any],
                     "required": [] as [String]
                 ]
+            ],
+            [
+                "type": "function",
+                "name": "schedule_notifications",
+                "description": "Schedule local notifications for remaining recipe steps. Called when the user wants to continue cooking in the background. Each step should have a cumulative delay from now.",
+                "parameters": [
+                    "type": "object",
+                    "properties": [
+                        "steps": [
+                            "type": "array",
+                            "description": "Array of step notifications to schedule",
+                            "items": [
+                                "type": "object",
+                                "properties": [
+                                    "step_number": [
+                                        "type": "integer",
+                                        "description": "1-based step number"
+                                    ],
+                                    "delay_seconds": [
+                                        "type": "number",
+                                        "description": "Seconds from now until this notification fires (cumulative)"
+                                    ],
+                                    "message": [
+                                        "type": "string",
+                                        "description": "Self-contained instruction for the notification body"
+                                    ]
+                                ] as [String: Any]
+                            ] as [String: Any]
+                        ] as [String: Any]
+                    ],
+                    "required": ["steps"]
+                ]
             ]
         ]
     }
@@ -383,10 +470,18 @@ final class CookModeViewModel {
         selectedRating = (selectedRating == stars) ? nil : stars // tap again to deselect
     }
 
-    // MARK: - Timer
+    // MARK: - Timer (Date-based — survives backgrounding)
 
     func startTimer() {
         guard let step = currentStep, let minutes = step.timerMinutes else { return }
+        startTimerWithMinutes(minutes)
+    }
+
+    private func startTimerWithMinutes(_ minutes: Int) {
+        let duration = TimeInterval(minutes * 60)
+        timerDuration = duration
+        timerStartedAt = Date()
+        timerPausedRemaining = 0
         timerSeconds = minutes * 60
         isTimerRunning = true
         isPaused = false
@@ -399,17 +494,37 @@ final class CookModeViewModel {
             .autoconnect()
             .sink { [weak self] _ in
                 guard let self else { return }
-                if self.timerSeconds > 0 {
-                    self.timerSeconds -= 1
-                } else {
+                self.recalculateTimerSeconds()
+                if self.timerSeconds <= 0 {
                     self.timerComplete()
                 }
             }
     }
 
+    /// Recalculates timerSeconds from the stored start date and duration.
+    /// This ensures the timer "catches up" correctly after returning from background.
+    private func recalculateTimerSeconds() {
+        guard let startedAt = timerStartedAt else { return }
+        let elapsed = Date().timeIntervalSince(startedAt)
+        let remaining = max(0, timerDuration - elapsed)
+        timerSeconds = Int(remaining.rounded(.up))
+    }
+
+    /// Called when the app returns to foreground — syncs Display from real time.
+    func syncTimerOnForeground() {
+        guard isTimerRunning, !isPaused else { return }
+        recalculateTimerSeconds()
+        if timerSeconds <= 0 {
+            timerComplete()
+        }
+    }
+
     func stopTimer() {
         isTimerRunning = false
         isPaused = false
+        timerStartedAt = nil
+        timerDuration = 0
+        timerPausedRemaining = 0
         timerCancellable?.cancel()
         timerCancellable = nil
     }
@@ -417,18 +532,15 @@ final class CookModeViewModel {
     func pauseTimer() {
         isPaused.toggle()
         if isPaused {
+            // Snapshot remaining time
+            recalculateTimerSeconds()
+            timerPausedRemaining = TimeInterval(timerSeconds)
             timerCancellable?.cancel()
         } else {
-            timerCancellable = Timer.publish(every: 1, on: .main, in: .common)
-                .autoconnect()
-                .sink { [weak self] _ in
-                    guard let self else { return }
-                    if self.timerSeconds > 0 {
-                        self.timerSeconds -= 1
-                    } else {
-                        self.timerComplete()
-                    }
-                }
+            // Resume: reset startedAt to now, with remaining duration
+            timerDuration = timerPausedRemaining
+            timerStartedAt = Date()
+            startTimerTick()
         }
     }
 
@@ -446,6 +558,127 @@ final class CookModeViewModel {
         if let step = currentStep, step.timerMinutes != nil {
             startTimer()
         }
+    }
+
+    // MARK: - Continue in Background
+
+    /// Tells the AI to schedule notifications for all remaining steps, then
+    /// disconnects voice and saves the session.
+    func continueInBackground() {
+        guard isConversationActive else { return }
+        isSchedulingBackground = true
+
+        let remainingSteps = steps.enumerated()
+            .filter { $0.offset >= currentStepIndex }
+            .map { "Step \($0.element.stepNumber): \($0.element.instruction)" +
+                   ($0.element.timerMinutes != nil ? " [Timer: \($0.element.timerMinutes!) min]" : "") }
+            .joined(separator: "\n")
+
+        let message = """
+        The user is leaving cook mode. Schedule notifications for ALL remaining steps \
+        using the schedule_notifications tool. For each step, estimate the cumulative \
+        delay_seconds from now (timed steps use their timer duration; action-only steps \
+        estimate ~60-120 seconds of active cooking time). Include a clear, self-contained \
+        message for each notification so the user can cook from the notification alone. \
+        Current step: \(currentStepIndex + 1) of \(steps.count).
+
+        Remaining steps:
+        \(remainingSteps)
+
+        Call schedule_notifications now with the full schedule.
+        """
+
+        realtimeService.sendUserMessage(message)
+
+        // The AI will call schedule_notifications tool.
+        // handleScheduleNotifications() will finish the background transition.
+    }
+
+    /// Handles the AI's schedule_notifications tool call.
+    private func handleScheduleNotifications(args: [String: Any]) {
+        guard let stepsArray = args["steps"] as? [[String: Any]] else {
+            print("[CookMode] ❌ schedule_notifications: missing steps array")
+            isSchedulingBackground = false
+            return
+        }
+
+        let recipeId = recipe.id.uuidString
+        let notificationService = NotificationService.shared
+
+        // Cancel any existing notifications for this recipe
+        notificationService.cancelAllNotifications(recipeId: recipeId)
+
+        // Schedule each step notification
+        for stepInfo in stepsArray {
+            guard let stepNumber = stepInfo["step_number"] as? Int,
+                  let delaySeconds = stepInfo["delay_seconds"] as? Double,
+                  let message = stepInfo["message"] as? String else {
+                continue
+            }
+
+            let stepIndex = stepNumber - 1
+            let nextPreview: String?
+            if stepIndex + 1 < steps.count {
+                nextPreview = steps[stepIndex + 1].instruction
+            } else {
+                nextPreview = nil
+            }
+
+            notificationService.scheduleStepNotification(
+                recipeId: recipeId,
+                stepIndex: stepIndex,
+                totalSteps: steps.count,
+                recipeName: recipe.title,
+                message: message,
+                nextStepPreview: nextPreview,
+                delaySeconds: delaySeconds
+            )
+        }
+
+        // Schedule session expiry (2 hours after last notification)
+        let maxDelay = stepsArray.compactMap { $0["delay_seconds"] as? Double }.max() ?? 0
+        let expiryDelay = maxDelay + 7200 // 2 hours after last step
+        notificationService.scheduleSessionExpiry(
+            recipeId: recipeId,
+            recipeName: recipe.title,
+            delaySeconds: expiryDelay
+        )
+
+        // Save session for potential deep-link return
+        let session = CookingSession(
+            recipeId: recipe.id,
+            recipeName: recipe.title,
+            totalSteps: steps.count,
+            stepSummaries: steps.map {
+                CookingSession.StepSummary(
+                    stepNumber: $0.stepNumber,
+                    instruction: $0.instruction,
+                    timerMinutes: $0.timerMinutes
+                )
+            },
+            currentStepIndex: currentStepIndex,
+            startedAt: Date(),
+            backgroundedAt: Date(),
+            isActive: true,
+            expiryTimeoutSeconds: expiryDelay
+        )
+        session.save()
+
+        print("[CookMode] Background notifications scheduled (\(stepsArray.count) steps)")
+
+        // Complete the background transition
+        isSchedulingBackground = false
+        didContinueInBackground = true
+
+        // Disconnect voice — notifications take over
+        stopConversation()
+    }
+
+    /// End the cooking session — clears notifications and persisted session.
+    func endCookingSession() {
+        NotificationService.shared.cancelAllNotifications(recipeId: recipe.id.uuidString)
+        CookingSession.clear()
+        didContinueInBackground = false
     }
 
     // MARK: - Cleanup

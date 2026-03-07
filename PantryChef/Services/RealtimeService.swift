@@ -121,14 +121,52 @@ final class RealtimeService: RealtimeServiceProtocol {
             session.audio.input.transcription = .init(model: .gpt4oMini)
             session.audio.input.turnDetection = .serverVad(
                 createResponse: true,
-                prefixPaddingMs: 300,
+                prefixPaddingMs: 500,
                 silenceDurationMs: 800,
-                threshold: 0.5
+                threshold: 0.8
             )
             session.tools = sdkTools
             session.toolChoice = .auto
             // Note: temperature and modalities are not supported by the GA API
             // session.update and will cause the entire update to be rejected.
+        }
+
+        // ── Event-driven function call dispatch ──
+        // The SDK fires this callback synchronously on MainActor the
+        // instant `response.output_item.done` arrives with a function
+        // call item.  No polling, no race conditions.
+        conversation?.onFunctionCallCompleted = { [weak self] fc in
+            guard let self, let conv = self.conversation else { return }
+            guard !self.processedFunctionCallIds.contains(fc.callId) else {
+                print("[RealtimeService] Skipping duplicate function call: \(fc.name)")
+                return
+            }
+            self.processedFunctionCallIds.insert(fc.callId)
+            self.dispatchFunctionCall(fc, via: conv)
+        }
+
+        // ── Client-side garbage rejection ──
+        // When user transcription arrives, check if it looks like noise
+        // (sizzling, clanking, etc. that VAD falsely triggered on).
+        // If so, cancel the in-progress response and remove the noise
+        // item from the conversation to prevent the AI from responding.
+        conversation?.onUserTranscriptionCompleted = { [weak self] itemId, transcript in
+            guard let self, let conv = self.conversation else { return }
+            if Self.isGarbageTranscription(transcript) {
+                print("[RealtimeService] 🗑️ Garbage transcription detected: \"\(transcript)\" — cancelling response")
+                do {
+                    // Cancel the in-progress response (stops AI from speaking)
+                    try conv.send(event: .cancelResponse(eventId: nil, responseId: nil))
+                    // Clear the output audio buffer (stops any audio already queued)
+                    try conv.send(event: .outputAudioBufferClear(eventId: nil))
+                    // Delete the noise item from conversation history so it
+                    // doesn't pollute future context
+                    try conv.send(event: .deleteConversationItem(eventId: nil, itemId: itemId))
+                    print("[RealtimeService] 🗑️ Cancelled response and removed noise item")
+                } catch {
+                    print("[RealtimeService] ⚠️ Failed to cancel garbage response: \(error)")
+                }
+            }
         }
 
         // Connect asynchronously via WebRTC
@@ -328,18 +366,16 @@ final class RealtimeService: RealtimeServiceProtocol {
         }
 
         // ── Transcript: latest assistant message ──
-        if conv.isModelSpeaking {
-            // Clear stale transcript when model starts a new response
-            if !wasModelSpeaking {
-                transcript = ""
-            }
-            if let lastMsg = conv.messages.last(where: { $0.role == .assistant }) {
-                let text = extractTranscript(from: lastMsg)
-                if !text.isEmpty { transcript = text }
-            }
+        // Clear stale transcript when model starts a NEW response
+        if conv.isModelSpeaking && !wasModelSpeaking {
+            transcript = ""
         }
-        // When model stops speaking, keep the transcript visible
-        // (it will be cleared when the next response starts)
+        // Always update from the latest assistant message so we catch
+        // deltas that arrive before outputAudioBufferStarted.
+        if let lastMsg = conv.messages.last(where: { $0.role == .assistant }) {
+            let text = extractTranscript(from: lastMsg)
+            if !text.isEmpty { transcript = text }
+        }
 
         // ── User transcript ──
         if let lastUserMsg = conv.messages.last(where: { $0.role == .user }) {
@@ -348,21 +384,17 @@ final class RealtimeService: RealtimeServiceProtocol {
         }
 
         // ── Function calls ──
-        for entry in conv.entries {
-            if case let .functionCall(fc) = entry,
-               fc.status == .completed,
-               !processedFunctionCallIds.contains(fc.callId) {
-                processedFunctionCallIds.insert(fc.callId)
-                dispatchFunctionCall(fc, via: conv)
-            }
-        }
+        // Handled via event-driven callback (onFunctionCallCompleted)
+        // set up in connect(). No polling needed.
 
         // ── Status message ──
         if conv.status == .connected {
             if conv.isModelSpeaking {
                 statusMessage = "Speaking…"
-            } else {
+            } else if conv.isUserSpeaking {
                 statusMessage = "Listening…"
+            } else {
+                statusMessage = "Ready"
             }
         }
     }
@@ -381,7 +413,8 @@ final class RealtimeService: RealtimeServiceProtocol {
         }.joined()
     }
 
-    /// Calls the onFunctionCall callback and sends the result back to the API.
+    /// Sends the function result back to the API, notifies the view model,
+    /// then triggers a follow-up response.
     private func dispatchFunctionCall(_ fc: Item.FunctionCall, via conv: Conversation) {
         // Parse JSON arguments
         let args: [String: Any]
@@ -394,19 +427,27 @@ final class RealtimeService: RealtimeServiceProtocol {
 
         print("[RealtimeService] Function call: \(fc.name)(\(fc.arguments))")
 
-        // Notify the view model
-        onFunctionCall?(fc.name, args)
-
-        // Respond to the API with a success result
+        // 1. Send function output FIRST so the API knows the call succeeded
         do {
+            // OpenAI requires item.id ≤ 32 chars; UUID has 36 (with hyphens)
+            let shortId = UUID().uuidString.replacingOccurrences(of: "-", with: "").prefix(32)
             try conv.send(result: Item.FunctionCallOutput(
-                id: UUID().uuidString,
+                id: String(shortId),
                 callId: fc.callId,
                 output: "{\"status\":\"done\"}"
             ))
+        } catch {
+            print("[RealtimeService] ❌ Function output error: \(error)")
+        }
+
+        // 2. Notify the view model (this may update currentStepIndex etc.)
+        onFunctionCall?(fc.name, args)
+
+        // 3. Trigger a follow-up response so the model speaks after the tool call
+        do {
             try conv.send(event: .createResponse())
         } catch {
-            print("[RealtimeService] ❌ Function response error: \(error)")
+            print("[RealtimeService] ❌ createResponse error: \(error)")
         }
     }
 
@@ -474,5 +515,48 @@ final class RealtimeService: RealtimeServiceProtocol {
 
             return .function(.init(name: name, description: description, parameters: schema))
         }
+    }
+
+    // MARK: - Garbage Transcription Detection
+
+    /// Returns true if the transcription looks like noise rather than real speech.
+    ///
+    /// Kitchen microphones pick up sizzling, clanking, fans etc. that VAD
+    /// sometimes falsely triggers on. The Whisper transcriber then produces
+    /// garbage like "請。", "…", single random characters, or just punctuation.
+    ///
+    /// Real speech always contains recognisable words (even short ones like
+    /// "no", "next", "stop", or foreign ingredient names like "mirin").
+    static func isGarbageTranscription(_ transcript: String) -> Bool {
+        let trimmed = transcript.trimmingCharacters(in: .whitespacesAndNewlines)
+
+        // Empty or whitespace-only
+        if trimmed.isEmpty { return true }
+
+        // Strip all punctuation and whitespace — what's left?
+        let stripped = trimmed.unicodeScalars.filter {
+            !CharacterSet.punctuationCharacters.contains($0) &&
+            !CharacterSet.whitespacesAndNewlines.contains($0) &&
+            !CharacterSet.symbols.contains($0)
+        }
+        let letterContent = String(stripped)
+
+        // Nothing left after stripping punctuation (e.g. "…", "。", "...")
+        if letterContent.isEmpty { return true }
+
+        // Very short (1-2 characters) AND entirely non-Latin script
+        // Real commands like "no", "ok" are Latin. Noise like "請" is not.
+        // But "mirin" (5 chars) or "五香粉" (3 chars worth of meaning) are real.
+        if letterContent.count <= 2 {
+            let latinRange = letterContent.range(
+                of: "[a-zA-Z]",
+                options: .regularExpression
+            )
+            if latinRange == nil {
+                return true  // 1-2 non-Latin chars = noise
+            }
+        }
+
+        return false
     }
 }
