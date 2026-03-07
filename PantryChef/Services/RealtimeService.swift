@@ -46,6 +46,7 @@ final class RealtimeService: NSObject, RealtimeServiceProtocol {
     @ObservationIgnored private var playbackConverter: AVAudioConverter?
     @ObservationIgnored private var isCapturing = false
     @ObservationIgnored private var isAudioEngineRunning = false
+    @ObservationIgnored private var isAudioEnginePrepared = false
 
     /// Whether the audio engine is running and ready for playback/capture.
     var isAudioReady: Bool { isAudioEngineRunning }
@@ -175,11 +176,13 @@ final class RealtimeService: NSObject, RealtimeServiceProtocol {
         print("[RealtimeService] prepareAudio() done, engineRunning=\(isAudioEngineRunning)")
     }
 
-    /// Installs the mic tap and begins streaming audio to the API.
-    /// The audio engine must already be running (call prepareAudio first).
+    /// Installs the mic tap, starts the audio engine, and begins streaming
+    /// audio to the API.  The engine is started AFTER the tap is installed
+    /// so that VPIO's audio graph is fully wired before any processing.
+    /// Call prepareAudio() first to create the engine and enable VPIO.
     func startCapture() {
-        guard !isCapturing, isAudioEngineRunning, let engine = audioEngine else {
-            print("[RealtimeService] startCapture() guard failed: isCapturing=\(isCapturing), engineRunning=\(isAudioEngineRunning), hasEngine=\(audioEngine != nil)")
+        guard !isCapturing, isAudioEnginePrepared, let engine = audioEngine else {
+            print("[Audio][Mic] startCapture() guard failed: isCapturing=\(isCapturing), prepared=\(isAudioEnginePrepared), hasEngine=\(audioEngine != nil)")
             return
         }
 
@@ -203,7 +206,7 @@ final class RealtimeService: NSObject, RealtimeServiceProtocol {
         }
         self.captureConverter = capConverter
         let apiRate = realtimeSampleRate
-        print("[Audio][Mic] Installing tap: vpioFormat=\(vpioFormat.sampleRate)Hz/\(vpioFormat.channelCount)ch, target=\(apiRate)Hz")
+        print("[Audio][Mic] Installing tap BEFORE engine start: vpioFormat=\(vpioFormat.sampleRate)Hz/\(vpioFormat.channelCount)ch, target=\(apiRate)Hz")
 
         // ── CRITICAL: Convert audio synchronously in the tap callback ──
         // The tap's AVAudioPCMBuffer is only valid during the callback.
@@ -216,12 +219,15 @@ final class RealtimeService: NSObject, RealtimeServiceProtocol {
         // Use a class wrapper so the closure can mutate the count from the audio thread
         final class TapCounter: @unchecked Sendable { var count = 0 }
         let tapCounter = TapCounter()
-        inputNode.installTap(onBus: 0, bufferSize: 2400, format: vpioFormat) { [weak self] buffer, _ in
+
+        // Pass nil for format – lets Core Audio choose the VPIO output format,
+        // avoiding a potential format mismatch that silences the tap.
+        inputNode.installTap(onBus: 0, bufferSize: 2400, format: nil) { [weak self] buffer, _ in
             guard self != nil else { return }
             tapCounter.count += 1
             let n = tapCounter.count
-            if n <= 3 || n % 100 == 0 {
-                print("[Audio][Mic] tap callback #\(n): \(buffer.frameLength) frames, format=\(buffer.format.sampleRate)Hz")
+            if n <= 5 || n % 100 == 0 {
+                print("[Audio][Mic] tap callback #\(n): \(buffer.frameLength) frames, format=\(buffer.format.sampleRate)Hz/\(buffer.format.channelCount)ch")
             }
 
             let pcmData: Data
@@ -241,7 +247,10 @@ final class RealtimeService: NSObject, RealtimeServiceProtocol {
                 return buffer
             }
 
-            if error != nil { return }
+            if error != nil {
+                if n <= 3 { print("[Audio][Mic] ❌ converter error: \(error!)" ) }
+                return
+            }
             guard let int16Ptr = outputBuffer.int16ChannelData else { return }
             pcmData = Data(bytes: int16Ptr[0], count: Int(outputBuffer.frameLength) * 2)
             guard !pcmData.isEmpty else { return }
@@ -250,10 +259,24 @@ final class RealtimeService: NSObject, RealtimeServiceProtocol {
                 self?.sendCapturedPCM(pcmData)
             }
         }
+        print("[Audio][Mic] Tap installed (format: nil / auto)")
 
-        isCapturing = true
-        statusMessage = "Listening…"
-        print("[RealtimeService] Mic tap installed, vpioRate=\(vpioFormat.sampleRate), targetRate=\(apiRate)")
+        // ── Start the engine NOW — tap is wired, audio graph is complete ──
+        do {
+            try engine.start()
+            playerNode?.play()
+            isAudioEngineRunning = true
+            isCapturing = true
+            statusMessage = "Listening…"
+            print("[Audio] Engine started AFTER tap: engine.isRunning=\(engine.isRunning), playerNode.isPlaying=\(playerNode?.isPlaying ?? false)")
+
+            let route = AVAudioSession.sharedInstance().currentRoute
+            let outputs = route.outputs.map { "\($0.portName)(\($0.portType.rawValue))" }.joined(separator: ", ")
+            print("[Audio] Final audio route: [\(outputs)]")
+        } catch {
+            print("[Audio] ❌ engine start (in startCapture) failed: \(error)")
+            statusMessage = "Mic error"
+        }
     }
 
     /// Removes the mic tap (engine keeps running for playback).
@@ -345,19 +368,15 @@ final class RealtimeService: NSObject, RealtimeServiceProtocol {
             self.playbackConverter = AVAudioConverter(from: apiFormat, to: playerFormat)
         }
 
-        // ── 4.  Start the unified engine ──
+        // ── 4.  Prepare (but do NOT start) the engine ──
+        // The engine must be started AFTER the mic tap is installed so
+        // VPIO's audio graph is complete.  engine.start() happens in
+        // startCapture().
         engine.prepare()
-        do {
-            try engine.start()
-            isAudioEngineRunning = true
-            node.play()
-            print("[Audio] Engine started: mixerRate=\(mixerRate), engine.isRunning=\(engine.isRunning), playerNode.isPlaying=\(node.isPlaying)")
-        } catch {
-            print("[Audio] ❌ engine start error: \(error)")
-            statusMessage = "Mic error"
-        }
+        isAudioEnginePrepared = true
+        print("[Audio] Engine prepared (not started yet). mixerRate=\(mixerRate)")
 
-        // ── 4.  Observe audio session interruptions / route changes ──
+        // ── 5.  Observe audio session interruptions / route changes ──
         observeAudioSession()
     }
 
@@ -389,6 +408,7 @@ final class RealtimeService: NSObject, RealtimeServiceProtocol {
         pendingAudioData = Data()
         isCapturing = false
         isAudioEngineRunning = false
+        isAudioEnginePrepared = false
     }
 
     // MARK: - Mic → API
