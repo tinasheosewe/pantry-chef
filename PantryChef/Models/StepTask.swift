@@ -16,6 +16,11 @@ struct StepTask: Identifiable, Codable, Hashable {
     let requiresEquipment: String?    // "oven", "stovetop", "cutting board"
     let temperature: Int?             // °F — for merging "preheat oven" steps
 
+    /// Explicit dependency graph: IDs of tasks that must complete before this one.
+    /// Built by the LLM at recipe-creation time so the scheduler uses an exact DAG
+    /// instead of fuzzy ingredient-name matching.
+    var dependsOn: [UUID]
+
     /// Which recipe this task belongs to (set during scheduling).
     var recipeId: UUID?
     var recipeName: String?
@@ -33,6 +38,7 @@ struct StepTask: Identifiable, Codable, Hashable {
         type: TaskType = .active,
         requiresEquipment: String? = nil,
         temperature: Int? = nil,
+        dependsOn: [UUID] = [],
         recipeId: UUID? = nil,
         recipeName: String? = nil,
         sourceStepNumber: Int? = nil
@@ -46,6 +52,7 @@ struct StepTask: Identifiable, Codable, Hashable {
         self.type = type
         self.requiresEquipment = requiresEquipment
         self.temperature = temperature
+        self.dependsOn = dependsOn
         self.recipeId = recipeId
         self.recipeName = recipeName
         self.sourceStepNumber = sourceStepNumber

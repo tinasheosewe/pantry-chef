@@ -69,7 +69,13 @@ final class AIService: AIServiceProtocol {
         - "dietaryTags": [string]
         - "calories": number (estimated per serving)
 
-        Each task object: {"action": string, "ingredient": string or null, "durationSeconds": number, "type": "active" or "passive", "requiresEquipment": string or null}
+        Each task object: {"taskIndex": number, "action": string, "ingredient": string or null, "durationSeconds": number, "type": "active" or "passive", "requiresEquipment": string or null, "dependsOn": [number]}
+        "taskIndex" — a unique integer starting at 0, incrementing across ALL steps in the recipe (not per-step). The first task is 0, the second 1, etc.
+        "dependsOn" — array of taskIndex values for tasks that MUST finish before this one can start. Use this to encode the real cooking workflow:
+          • A task that uses the output of an earlier task must list that task (e.g., "sauté onion" depends on "dice onion").
+          • Sequential pan/vessel use: if two cook tasks share the same pan, the later one depends on the earlier.
+          • "plate"/"serve" usually depends on all cooking tasks.
+          • Independent prep tasks (different ingredients, no shared vessel) have an empty dependsOn [].
         Valid actions: "cut_dice", "cut_mince", "cut_slice", "cut_chop", "cut_julienne", "cut_halve", "peel", "measure", "mix", "marinate", "season", "heat", "saute", "boil", "simmer", "fry_pan", "fry_deep", "fry_stir", "bake", "roast", "grill", "steam", "scramble", "plate", "garnish", "rest", "serve", "toss", or a custom string.
         Use "passive" for tasks that don't need hands (baking, boiling, resting). Use "active" otherwise.
         For estimatedDurationSeconds, provide the realistic wall-clock time for each step in seconds (including active work, waiting, and cooking). For example: "chop onion" ≈ 60, "boil water" ≈ 300, "bake for 30 minutes" = 1800.
@@ -162,7 +168,12 @@ final class AIService: AIServiceProtocol {
         - "cookTimeMinutes": number
         - "difficulty": number (1-5)
 
-        Each task object: {"action": string, "ingredient": string or null, "durationSeconds": number, "type": "active" or "passive", "requiresEquipment": string or null}
+        Each task object: {"taskIndex": number, "action": string, "ingredient": string or null, "durationSeconds": number, "type": "active" or "passive", "requiresEquipment": string or null, "dependsOn": [number]}
+        "taskIndex" — a unique integer starting at 0, incrementing across ALL steps in the recipe. The first task is 0, the second 1, etc.
+        "dependsOn" — array of taskIndex values for tasks that MUST finish before this one can start:
+          • A task that uses the output of an earlier task depends on it (e.g., "sauté onion" depends on "dice onion").
+          • Sequential pan use: if cook tasks share a pan, the later depends on the earlier.
+          • "plate"/"serve" depends on all cooking tasks. Independent prep tasks have empty dependsOn [].
         Valid actions: "cut_dice", "cut_mince", "cut_slice", "cut_chop", "peel", "measure", "mix", "season", "heat", "saute", "boil", "simmer", "fry_pan", "fry_stir", "bake", "roast", "grill", "steam", "scramble", "plate", "garnish", "rest", "serve", "toss", or a custom string.
         For estimatedDurationSeconds, provide the realistic wall-clock time for each step in seconds (including active work, waiting, and cooking).
 
@@ -189,7 +200,8 @@ final class AIService: AIServiceProtocol {
         - "cookTimeMinutes": number
         - "dietaryTags": [string]
 
-        Each task object: {"action": string, "ingredient": string or null, "durationSeconds": number, "type": "active" or "passive", "requiresEquipment": string or null}
+        Each task object: {"taskIndex": number, "action": string, "ingredient": string or null, "durationSeconds": number, "type": "active" or "passive", "requiresEquipment": string or null, "dependsOn": [number]}
+        "taskIndex" — unique integer starting at 0, incrementing across ALL steps. "dependsOn" — taskIndex values of prerequisite tasks.
         For estimatedDurationSeconds, provide the realistic wall-clock time for each step in seconds.
         For category, use one of: Dairy, Produce, Protein, Grains & Cereals, Spices & Herbs, Condiments & Sauces, Baking Supplies, Oils & Fats, Other.
         For unit, use: tsp, tbsp, cup, ml, L, g, kg, oz, lb, piece, whole, slice, clove, bunch, can, pinch.
@@ -220,7 +232,8 @@ final class AIService: AIServiceProtocol {
         - "cookTimeMinutes": number (estimate if not stated)
         - "dietaryTags": [string] (infer from ingredients)
 
-        Each task object: {"action": string, "ingredient": string or null, "durationSeconds": number, "type": "active" or "passive", "requiresEquipment": string or null}
+        Each task object: {"taskIndex": number, "action": string, "ingredient": string or null, "durationSeconds": number, "type": "active" or "passive", "requiresEquipment": string or null, "dependsOn": [number]}
+        "taskIndex" — unique integer starting at 0, incrementing across ALL steps. "dependsOn" — taskIndex values of prerequisite tasks.
         For estimatedDurationSeconds, provide the realistic wall-clock time for each step in seconds.
 
         Return ONLY the JSON object, no other text.
@@ -389,14 +402,38 @@ final class AIService: AIServiceProtocol {
                     return Ingredient(name: name, quantity: qty, unit: unit)
                 } ?? []
 
-                let steps: [RecipeStep] = (dict["steps"]?.value as? [[String: Any]])?.compactMap { step in
-                    guard let instruction = step["instruction"] as? String else { return nil }
-                    let num = (step["stepNumber"] as? Int) ?? 1
-                    let timer = step["timerMinutes"] as? Int
-                    let estDuration = step["estimatedDurationSeconds"] as? Int
+                // --- Two-pass task parsing: create tasks, then resolve dependsOn indices → UUIDs ---
+                // Pass 1: parse all tasks across all steps, assign stable UUIDs, record taskIndex → UUID
+                var indexToUUID: [Int: UUID] = [:]
+                var rawDepsMap: [UUID: [Int]] = [:]   // taskId → raw dependsOn indices
 
-                    // Parse task decomposition from AI response
-                    let tasks: [StepTask] = (step["tasks"] as? [[String: Any]])?.compactMap { taskDict in
+                var parsedSteps: [(instruction: String, num: Int, timer: Int?, estDuration: Int?, taskDicts: [[String: Any]])] = []
+                if let stepDicts = dict["steps"]?.value as? [[String: Any]] {
+                    for step in stepDicts {
+                        guard let instruction = step["instruction"] as? String else { continue }
+                        let num = (step["stepNumber"] as? Int) ?? 1
+                        let timer = step["timerMinutes"] as? Int
+                        let estDuration = step["estimatedDurationSeconds"] as? Int
+                        let taskDicts = (step["tasks"] as? [[String: Any]]) ?? []
+                        parsedSteps.append((instruction, num, timer, estDuration, taskDicts))
+
+                        for taskDict in taskDicts {
+                            let idx = taskDict["taskIndex"] as? Int
+                            let taskId = UUID()
+                            if let idx { indexToUUID[idx] = taskId }
+                            let rawDeps = (taskDict["dependsOn"] as? [Int]) ?? []
+                            rawDepsMap[taskId] = rawDeps
+                        }
+                    }
+                }
+
+                // Pass 2: build RecipeSteps with resolved dependsOn UUIDs
+                var taskDictCursor = 0
+                let allTaskDicts = parsedSteps.flatMap(\.taskDicts)
+                let sortedIndices = allTaskDicts.compactMap { $0["taskIndex"] as? Int }.sorted()
+
+                let steps: [RecipeStep] = parsedSteps.map { info in
+                    let tasks: [StepTask] = info.taskDicts.compactMap { taskDict in
                         guard let actionStr = taskDict["action"] as? String else { return nil }
                         let action = Self.parseAction(actionStr)
                         let ingredient = taskDict["ingredient"] as? String
@@ -404,11 +441,16 @@ final class AIService: AIServiceProtocol {
                         let typeStr = taskDict["type"] as? String ?? "active"
                         let type: TaskType = typeStr == "passive" ? .passive : .active
                         let equipment = taskDict["requiresEquipment"] as? String
-                        return StepTask(action: action, ingredient: ingredient, durationSeconds: duration, type: type, requiresEquipment: equipment)
-                    } ?? []
 
-                    return RecipeStep(stepNumber: num, instruction: instruction, timerMinutes: timer, estimatedDurationSeconds: estDuration, tasks: tasks)
-                } ?? []
+                        let idx = taskDict["taskIndex"] as? Int
+                        let taskId = idx.flatMap { indexToUUID[$0] } ?? UUID()
+                        let rawDeps = rawDepsMap[taskId] ?? []
+                        let resolvedDeps = rawDeps.compactMap { indexToUUID[$0] }
+
+                        return StepTask(id: taskId, action: action, ingredient: ingredient, durationSeconds: duration, type: type, requiresEquipment: equipment, dependsOn: resolvedDeps)
+                    }
+                    return RecipeStep(stepNumber: info.num, instruction: info.instruction, timerMinutes: info.timer, estimatedDurationSeconds: info.estDuration, tasks: tasks)
+                }
 
                 var nutrition: NutritionInfo?
                 if let cal = dict["calories"]?.value as? Int {

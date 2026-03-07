@@ -144,75 +144,19 @@ struct MultiRecipeScheduler {
         return result
     }
 
-    // MARK: - Dependency Graph (ingredient-flow DAG)
+    // MARK: - Dependency Graph (explicit DAG from recipe data)
     //
-    // Five rules, evaluated per-task within each recipe:
-    //   1. Finish tasks → depend on ALL earlier tasks in the recipe.
-    //   2. Ingredient match → task T depends on earlier task P if their
-    //      ingredient names overlap (case-insensitive substring).
-    //   3. Active cook chain → activeCook + heatSetup form a sequential
-    //      chain (pan-sharing); each depends on its predecessor.
-    //   4. Cook convergence (fallback) → an activeCook/heatSetup task
-    //      with NO ingredient match AND NO chain predecessor depends
-    //      on all earlier prep tasks (safety net).
-    //   5. No match → leaf (zero prerequisites).
-    //
-    // passiveCook with no ingredient match is a leaf — start it ASAP.
+    // Each StepTask carries a `dependsOn: [UUID]` array populated at recipe
+    // creation time (by the LLM or hand-authored for built-in recipes).
+    // The scheduler simply reads this graph — no fuzzy matching needed.
 
     private static func buildDependencies(tasks: [StepTask], recipes: [Recipe]) -> [UUID: Set<UUID>] {
         var deps: [UUID: Set<UUID>] = [:]
-        for task in tasks { deps[task.id] = [] }
-
-        for recipe in recipes {
-            // All tasks for this recipe, sorted by step number
-            let recipeTasks = tasks
-                .filter { $0.recipeId == recipe.id }
-                .sorted { ($0.sourceStepNumber ?? 0) < ($1.sourceStepNumber ?? 0) }
-
-            // Build active cook chain (activeCook + heatSetup, ordered by step).
-            // Each entry depends on the one before it (sequential pan use).
-            let activeChain = recipeTasks.filter { $0.action.actionClass.isActiveChain }
-            var chainPredecessor: [UUID: UUID] = [:]
-            for i in 1..<activeChain.count {
-                chainPredecessor[activeChain[i].id] = activeChain[i - 1].id
-            }
-
-            for task in recipeTasks {
-                let taskStep = task.sourceStepNumber ?? 0
-                let earlier = recipeTasks.filter { ($0.sourceStepNumber ?? 0) < taskStep }
-
-                // Rule 1: Finish tasks depend on ALL earlier tasks
-                if task.action.actionClass == .finish {
-                    for e in earlier { deps[task.id]?.insert(e.id) }
-                    continue
-                }
-
-                // Rule 2: Ingredient-flow dependencies
-                var ingredientDeps: Set<UUID> = []
-                if let ing = task.ingredient?.lowercased(), !ing.isEmpty {
-                    for e in earlier {
-                        if let eIng = e.ingredient?.lowercased(), !eIng.isEmpty {
-                            if ing.contains(eIng) || eIng.contains(ing) {
-                                ingredientDeps.insert(e.id)
-                            }
-                        }
-                    }
-                }
-
-                // Rule 3: Active cook chain
-                let chainDep = chainPredecessor[task.id]
-
-                if !ingredientDeps.isEmpty || chainDep != nil {
-                    // Has explicit deps — use them
-                    deps[task.id]?.formUnion(ingredientDeps)
-                    if let cd = chainDep { deps[task.id]?.insert(cd) }
-                } else if task.action.actionClass.isActiveChain {
-                    // Rule 4: Cook convergence fallback
-                    let earlierPrep = earlier.filter { $0.action.actionClass.isPrep }
-                    for e in earlierPrep { deps[task.id]?.insert(e.id) }
-                }
-                // Rule 5: No match → leaf (nothing added)
-            }
+        // Collect all task IDs in this scheduling run for validation
+        let validIds = Set(tasks.map(\.id))
+        for task in tasks {
+            // Only include dependsOn references that exist in the current task set
+            deps[task.id] = Set(task.dependsOn.filter { validIds.contains($0) })
         }
         return deps
     }

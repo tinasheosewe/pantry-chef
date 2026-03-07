@@ -233,6 +233,19 @@ struct Recipe: Identifiable, Codable, Hashable {
     static let avocadoId  = UUID(uuidString: "A1B2C3D4-0002-0002-0002-AABBCCDDEEFF")!
     static let friedRiceId = UUID(uuidString: "A1B2C3D4-0003-0003-0003-AABBCCDDEEFF")!
 
+    // MARK: - Stable task IDs for dependency wiring (built-in recipes)
+    // Stir Fry tasks
+    private static let sf0 = UUID(uuidString: "10000000-0000-0000-0000-000000000000")!  // boil rice
+    private static let sf1 = UUID(uuidString: "10000000-0000-0000-0000-000000000001")!  // slice chicken
+    private static let sf2 = UUID(uuidString: "10000000-0000-0000-0000-000000000002")!  // dice onion
+    private static let sf3 = UUID(uuidString: "10000000-0000-0000-0000-000000000003")!  // mince garlic
+    private static let sf4 = UUID(uuidString: "10000000-0000-0000-0000-000000000004")!  // slice bell pepper
+    private static let sf5 = UUID(uuidString: "10000000-0000-0000-0000-000000000005")!  // heat oil
+    private static let sf6 = UUID(uuidString: "10000000-0000-0000-0000-000000000006")!  // fry chicken
+    private static let sf7 = UUID(uuidString: "10000000-0000-0000-0000-000000000007")!  // sauté vegetables
+    private static let sf8 = UUID(uuidString: "10000000-0000-0000-0000-000000000008")!  // toss soy sauce
+    private static let sf9 = UUID(uuidString: "10000000-0000-0000-0000-000000000009")!  // plate
+
     // MARK: - Sample Data
     static let sample = Recipe(
         id: stirFryId,
@@ -250,31 +263,31 @@ struct Recipe: Identifiable, Codable, Hashable {
         ],
         steps: [
             RecipeStep(stepNumber: 1, instruction: "Cook the rice according to package directions.", timerMinutes: 15, estimatedDurationSeconds: 900, tasks: [
-                StepTask(action: .boil, ingredient: "rice", quantity: 2, unit: "cup", durationSeconds: 900, type: .passive, requiresEquipment: "stovetop")
+                StepTask(id: sf0, action: .boil, ingredient: "rice", quantity: 2, unit: "cup", durationSeconds: 900, type: .passive, requiresEquipment: "stovetop", dependsOn: [])
             ]),
             RecipeStep(stepNumber: 2, instruction: "Slice the chicken breast into thin strips.", estimatedDurationSeconds: 120, tasks: [
-                StepTask(action: .cut(.slice), ingredient: "chicken breast", quantity: 500, unit: "g", durationSeconds: 120, type: .active, requiresEquipment: "cutting board")
+                StepTask(id: sf1, action: .cut(.slice), ingredient: "chicken breast", quantity: 500, unit: "g", durationSeconds: 120, type: .active, requiresEquipment: "cutting board", dependsOn: [])
             ]),
             RecipeStep(stepNumber: 3, instruction: "Dice the onion, mince the garlic, and slice the bell pepper.",
                        tip: "Dice means cutting into small cubes, about 1/4 inch.", estimatedDurationSeconds: 180, tasks: [
-                StepTask(action: .cut(.dice), ingredient: "onion", quantity: 1, unit: "whole", durationSeconds: 60, type: .active, requiresEquipment: "cutting board"),
-                StepTask(action: .cut(.mince), ingredient: "garlic", quantity: 3, unit: "clove", durationSeconds: 30, type: .active, requiresEquipment: "cutting board"),
-                StepTask(action: .cut(.slice), ingredient: "bell pepper", quantity: 1, unit: "whole", durationSeconds: 60, type: .active, requiresEquipment: "cutting board")
+                StepTask(id: sf2, action: .cut(.dice), ingredient: "onion", quantity: 1, unit: "whole", durationSeconds: 60, type: .active, requiresEquipment: "cutting board", dependsOn: []),
+                StepTask(id: sf3, action: .cut(.mince), ingredient: "garlic", quantity: 3, unit: "clove", durationSeconds: 30, type: .active, requiresEquipment: "cutting board", dependsOn: []),
+                StepTask(id: sf4, action: .cut(.slice), ingredient: "bell pepper", quantity: 1, unit: "whole", durationSeconds: 60, type: .active, requiresEquipment: "cutting board", dependsOn: [])
             ]),
             RecipeStep(stepNumber: 4, instruction: "Heat olive oil in a large pan over medium-high heat.", estimatedDurationSeconds: 60, tasks: [
-                StepTask(action: .heat, ingredient: "olive oil", quantity: 2, unit: "tbsp", durationSeconds: 60, type: .active, requiresEquipment: "stovetop")
+                StepTask(id: sf5, action: .heat, ingredient: "olive oil", quantity: 2, unit: "tbsp", durationSeconds: 60, type: .active, requiresEquipment: "stovetop", dependsOn: [])
             ]),
             RecipeStep(stepNumber: 5, instruction: "Cook the chicken strips until golden brown, about 5-6 minutes.", timerMinutes: 6, estimatedDurationSeconds: 360, tasks: [
-                StepTask(action: .fry(.pan), ingredient: "chicken", quantity: 500, unit: "g", durationSeconds: 360, type: .active, requiresEquipment: "stovetop")
+                StepTask(id: sf6, action: .fry(.pan), ingredient: "chicken", quantity: 500, unit: "g", durationSeconds: 360, type: .active, requiresEquipment: "stovetop", dependsOn: [sf1, sf5])
             ]),
             RecipeStep(stepNumber: 6, instruction: "Add onion, garlic, and bell pepper. Cook for 3 minutes.", timerMinutes: 3, estimatedDurationSeconds: 180, tasks: [
-                StepTask(action: .saute, ingredient: "vegetables", durationSeconds: 180, type: .active, requiresEquipment: "stovetop")
+                StepTask(id: sf7, action: .saute, ingredient: "vegetables", durationSeconds: 180, type: .active, requiresEquipment: "stovetop", dependsOn: [sf2, sf3, sf4, sf6])
             ]),
             RecipeStep(stepNumber: 7, instruction: "Add soy sauce and toss everything together. Cook 1 more minute.", timerMinutes: 1, estimatedDurationSeconds: 60, tasks: [
-                StepTask(action: .toss, ingredient: "soy sauce", quantity: 2, unit: "tbsp", durationSeconds: 60, type: .active, requiresEquipment: "stovetop")
+                StepTask(id: sf8, action: .toss, ingredient: "soy sauce", quantity: 2, unit: "tbsp", durationSeconds: 60, type: .active, requiresEquipment: "stovetop", dependsOn: [sf7])
             ]),
             RecipeStep(stepNumber: 8, instruction: "Serve the stir fry over the cooked rice. Enjoy!", estimatedDurationSeconds: 30, tasks: [
-                StepTask(action: .plate, durationSeconds: 30, type: .active)
+                StepTask(id: sf9, action: .plate, durationSeconds: 30, type: .active, dependsOn: [sf0, sf8])
             ]),
         ],
         servings: 4,
@@ -295,6 +308,23 @@ struct Recipe: Identifiable, Codable, Hashable {
         isFavorite: true
     )
 
+    // Avocado Toast tasks
+    private static let at0 = UUID(uuidString: "20000000-0000-0000-0000-000000000000")!  // toast bread
+    private static let at1 = UUID(uuidString: "20000000-0000-0000-0000-000000000001")!  // halve avocado
+    private static let at2 = UUID(uuidString: "20000000-0000-0000-0000-000000000002")!  // mash avocado
+    private static let at3 = UUID(uuidString: "20000000-0000-0000-0000-000000000003")!  // season salt
+    private static let at4 = UUID(uuidString: "20000000-0000-0000-0000-000000000004")!  // plate
+
+    // Fried Rice tasks
+    private static let fr0 = UUID(uuidString: "30000000-0000-0000-0000-000000000000")!  // heat oil
+    private static let fr1 = UUID(uuidString: "30000000-0000-0000-0000-000000000001")!  // scramble eggs
+    private static let fr2 = UUID(uuidString: "30000000-0000-0000-0000-000000000002")!  // dice onion
+    private static let fr3 = UUID(uuidString: "30000000-0000-0000-0000-000000000003")!  // mince garlic
+    private static let fr4 = UUID(uuidString: "30000000-0000-0000-0000-000000000004")!  // sauté onion+garlic
+    private static let fr5 = UUID(uuidString: "30000000-0000-0000-0000-000000000005")!  // stir fry rice
+    private static let fr6 = UUID(uuidString: "30000000-0000-0000-0000-000000000006")!  // toss soy+eggs
+    private static let fr7 = UUID(uuidString: "30000000-0000-0000-0000-000000000007")!  // serve
+
     static let samples: [Recipe] = [
         sample,
         Recipe(
@@ -310,17 +340,17 @@ struct Recipe: Identifiable, Codable, Hashable {
             ],
             steps: [
                 RecipeStep(stepNumber: 1, instruction: "Toast the bread until golden and crispy.", estimatedDurationSeconds: 180, tasks: [
-                    StepTask(action: .heat, ingredient: "bread", quantity: 2, unit: "slice", durationSeconds: 180, type: .passive, requiresEquipment: "toaster")
+                    StepTask(id: at0, action: .heat, ingredient: "bread", quantity: 2, unit: "slice", durationSeconds: 180, type: .passive, requiresEquipment: "toaster", dependsOn: [])
                 ]),
                 RecipeStep(stepNumber: 2, instruction: "Halve the avocado, remove the pit, and scoop the flesh into a bowl.", estimatedDurationSeconds: 30, tasks: [
-                    StepTask(action: .cut(.halve), ingredient: "avocado", quantity: 1, unit: "whole", durationSeconds: 30, type: .active)
+                    StepTask(id: at1, action: .cut(.halve), ingredient: "avocado", quantity: 1, unit: "whole", durationSeconds: 30, type: .active, dependsOn: [])
                 ]),
                 RecipeStep(stepNumber: 3, instruction: "Mash the avocado with a fork. Add salt and lemon juice if using.", estimatedDurationSeconds: 60, tasks: [
-                    StepTask(action: .mix, ingredient: "avocado", durationSeconds: 45, type: .active),
-                    StepTask(action: .season, ingredient: "salt", quantity: 1, unit: "pinch", durationSeconds: 15, type: .active)
+                    StepTask(id: at2, action: .mix, ingredient: "avocado", durationSeconds: 45, type: .active, dependsOn: [at1]),
+                    StepTask(id: at3, action: .season, ingredient: "salt", quantity: 1, unit: "pinch", durationSeconds: 15, type: .active, dependsOn: [at2])
                 ]),
                 RecipeStep(stepNumber: 4, instruction: "Spread the mashed avocado on the toast. Add red pepper flakes if desired.", estimatedDurationSeconds: 30, tasks: [
-                    StepTask(action: .plate, durationSeconds: 30, type: .active)
+                    StepTask(id: at4, action: .plate, durationSeconds: 30, type: .active, dependsOn: [at0, at3])
                 ]),
             ],
             servings: 1,
@@ -346,22 +376,22 @@ struct Recipe: Identifiable, Codable, Hashable {
             ],
             steps: [
                 RecipeStep(stepNumber: 1, instruction: "Heat oil in a large pan or wok over high heat.", estimatedDurationSeconds: 60, tasks: [
-                    StepTask(action: .heat, ingredient: "olive oil", quantity: 2, unit: "tbsp", durationSeconds: 60, type: .active, requiresEquipment: "stovetop")
+                    StepTask(id: fr0, action: .heat, ingredient: "olive oil", quantity: 2, unit: "tbsp", durationSeconds: 60, type: .active, requiresEquipment: "stovetop", dependsOn: [])
                 ]),
                 RecipeStep(stepNumber: 2, instruction: "Scramble the eggs and set aside.", estimatedDurationSeconds: 90, tasks: [
-                    StepTask(action: .scramble, ingredient: "eggs", quantity: 3, unit: "piece", durationSeconds: 90, type: .active, requiresEquipment: "stovetop")
+                    StepTask(id: fr1, action: .scramble, ingredient: "eggs", quantity: 3, unit: "piece", durationSeconds: 90, type: .active, requiresEquipment: "stovetop", dependsOn: [fr0])
                 ]),
                 RecipeStep(stepNumber: 3, instruction: "Sauté diced onion and minced garlic until fragrant.", timerMinutes: 2, estimatedDurationSeconds: 120, tasks: [
-                    StepTask(action: .cut(.dice), ingredient: "onion", quantity: 1, unit: "whole", durationSeconds: 30, type: .active, requiresEquipment: "cutting board"),
-                    StepTask(action: .cut(.mince), ingredient: "garlic", quantity: 2, unit: "clove", durationSeconds: 20, type: .active, requiresEquipment: "cutting board"),
-                    StepTask(action: .saute, ingredient: "onion and garlic", durationSeconds: 120, type: .active, requiresEquipment: "stovetop")
+                    StepTask(id: fr2, action: .cut(.dice), ingredient: "onion", quantity: 1, unit: "whole", durationSeconds: 30, type: .active, requiresEquipment: "cutting board", dependsOn: []),
+                    StepTask(id: fr3, action: .cut(.mince), ingredient: "garlic", quantity: 2, unit: "clove", durationSeconds: 20, type: .active, requiresEquipment: "cutting board", dependsOn: []),
+                    StepTask(id: fr4, action: .saute, ingredient: "onion and garlic", durationSeconds: 120, type: .active, requiresEquipment: "stovetop", dependsOn: [fr1, fr2, fr3])
                 ]),
                 RecipeStep(stepNumber: 4, instruction: "Add rice and stir-fry for 3-4 minutes until heated through.", timerMinutes: 4, estimatedDurationSeconds: 240, tasks: [
-                    StepTask(action: .fry(.stir), ingredient: "rice", quantity: 3, unit: "cup", durationSeconds: 240, type: .active, requiresEquipment: "stovetop")
+                    StepTask(id: fr5, action: .fry(.stir), ingredient: "rice", quantity: 3, unit: "cup", durationSeconds: 240, type: .active, requiresEquipment: "stovetop", dependsOn: [fr4])
                 ]),
                 RecipeStep(stepNumber: 5, instruction: "Add soy sauce and scrambled eggs. Toss together and serve.", estimatedDurationSeconds: 60, tasks: [
-                    StepTask(action: .toss, ingredient: "soy sauce and eggs", durationSeconds: 30, type: .active, requiresEquipment: "stovetop"),
-                    StepTask(action: .serve, durationSeconds: 30, type: .active)
+                    StepTask(id: fr6, action: .toss, ingredient: "soy sauce and eggs", durationSeconds: 30, type: .active, requiresEquipment: "stovetop", dependsOn: [fr5]),
+                    StepTask(id: fr7, action: .serve, durationSeconds: 30, type: .active, dependsOn: [fr6])
                 ]),
             ],
             servings: 3,
