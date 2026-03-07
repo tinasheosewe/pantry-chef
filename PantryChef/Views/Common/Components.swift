@@ -5,33 +5,41 @@ struct AppColors {
     @Environment(\.colorScheme) static var colorScheme
 
     static let primary = Color("AccentColor")
-    static let primaryGreen = Color(red: 0.30, green: 0.69, blue: 0.31)
-    static let warmOrange = Color(red: 0.96, green: 0.65, blue: 0.14)
-    static let softRed = Color(red: 0.90, green: 0.30, blue: 0.24)
-    static let lightGray = Color(.systemGray6)
-    static let mediumGray = Color(.systemGray3)
-    static let darkText = Color(.label)
-    static let subtleText = Color(.secondaryLabel)
-    static let cardBackground = Color(.secondarySystemGroupedBackground)
-    static let background = Color(.systemGroupedBackground)
+
+    // Brand palette — bright & warm
+    static let primaryGreen = Color(red: 0.13, green: 0.77, blue: 0.37)   // #22C55E — vivid emerald
+    static let warmOrange  = Color(red: 0.98, green: 0.62, blue: 0.20)    // #FA9E33 — sunny amber
+    static let softRed     = Color(red: 0.96, green: 0.40, blue: 0.40)    // #F56565 — warm coral
+
+    // Neutral palette — clean & airy
+    static let lightGray   = Color(red: 0.965, green: 0.969, blue: 0.976) // #F7F8F9 — near-white
+    static let mediumGray  = Color(.systemGray3)
+    static let darkText    = Color(red: 0.15, green: 0.16, blue: 0.18)    // #262A2E — soft black
+    static let subtleText  = Color(red: 0.44, green: 0.47, blue: 0.52)    // #707884 — muted slate
+    static let cardBackground = Color.white
+    static let background  = Color(red: 0.965, green: 0.969, blue: 0.976) // #F7F8F9
+
+    // Accent helpers
+    static let accentTeal  = Color(red: 0.06, green: 0.73, blue: 0.70)    // #0FBAB3 — teal pop
+    static let accentBlue  = Color(red: 0.24, green: 0.51, blue: 0.96)    // #3D82F5 — vibrant blue
 
     static func categoryColor(_ category: FoodCategory) -> Color {
         switch category {
-        case .dairy: return .blue.opacity(0.7)
-        case .produce: return .green
-        case .protein: return .red.opacity(0.7)
-        case .grains: return .orange.opacity(0.8)
-        case .spices: return .orange
-        case .condiments: return .purple.opacity(0.7)
-        case .bakingSupplies: return .pink
-        case .frozenFoods: return .cyan
-        case .canned: return .brown
-        case .beverages: return .teal
-        case .snacks: return .yellow.opacity(0.8)
-        case .oils: return Color(red: 0.85, green: 0.65, blue: 0.13)
-        case .pasta: return .indigo.opacity(0.7)
-        case .nuts: return Color(red: 0.82, green: 0.71, blue: 0.55)
-        case .other: return .gray
+        case .dairy:          return Color(red: 0.38, green: 0.65, blue: 0.96) // sky blue
+        case .produce:        return primaryGreen
+        case .protein:        return Color(red: 0.94, green: 0.44, blue: 0.44) // salmon
+        case .grains:         return Color(red: 0.96, green: 0.72, blue: 0.26) // golden
+        case .spices:         return warmOrange
+        case .condiments:     return Color(red: 0.62, green: 0.44, blue: 0.87) // lavender
+        case .bakingSupplies: return Color(red: 0.94, green: 0.53, blue: 0.68) // rose
+        case .frozenFoods:    return Color(red: 0.35, green: 0.78, blue: 0.88) // ice blue
+        case .canned:         return Color(red: 0.73, green: 0.56, blue: 0.41) // warm brown
+        case .beverages:      return accentTeal
+        case .snacks:         return Color(red: 0.96, green: 0.80, blue: 0.22) // bright yellow
+        case .oils:           return Color(red: 0.88, green: 0.70, blue: 0.18) // golden oil
+        case .pasta:          return Color(red: 0.48, green: 0.40, blue: 0.82) // soft indigo
+        case .nuts:           return Color(red: 0.78, green: 0.66, blue: 0.48) // warm tan
+        case .other:          return Color(red: 0.62, green: 0.65, blue: 0.70) // cool gray
         }
     }
 
@@ -50,7 +58,7 @@ struct CardStyle: ViewModifier {
         content
             .background(AppColors.cardBackground)
             .clipShape(RoundedRectangle(cornerRadius: 16))
-            .shadow(color: .black.opacity(0.04), radius: 8, x: 0, y: 2)
+            .shadow(color: Color(red: 0.15, green: 0.16, blue: 0.18).opacity(0.06), radius: 12, x: 0, y: 4)
     }
 }
 

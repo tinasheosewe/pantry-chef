@@ -23,7 +23,10 @@ struct MultiCookModeView: View {
 
     /// Distinct color per recipe.
     private let recipeColors: [Color] = [
-        .blue, .orange, .purple, .pink, .teal, .mint
+        AppColors.accentBlue, AppColors.warmOrange, AppColors.accentTeal,
+        Color(red: 0.94, green: 0.53, blue: 0.68),   // rose
+        AppColors.primaryGreen,
+        Color(red: 0.48, green: 0.40, blue: 0.82)     // soft indigo
     ]
 
     init(recipes: [Recipe], blocks: [MultiRecipeScheduler.ScheduledBlock]) {
@@ -43,7 +46,7 @@ struct MultiCookModeView: View {
 
     var body: some View {
         ZStack {
-            Color.black.ignoresSafeArea()
+            AppColors.background.ignoresSafeArea()
 
             VStack(spacing: 0) {
                 topBar
@@ -61,7 +64,6 @@ struct MultiCookModeView: View {
                 }
             }
         }
-        .preferredColorScheme(.dark)
         .confirmationDialog("End Multi-Cook?", isPresented: $showEndConfirm, titleVisibility: .visible) {
             Button("End All Sessions", role: .destructive) {
                 endSession()
@@ -89,7 +91,7 @@ struct MultiCookModeView: View {
                 Image(systemName: "chevron.down")
                     .font(.title3)
                     .fontWeight(.semibold)
-                    .foregroundStyle(.white)
+                    .foregroundStyle(AppColors.darkText)
                     .padding(8)
             }
 
@@ -98,11 +100,11 @@ struct MultiCookModeView: View {
             VStack(spacing: 2) {
                 Text("Multi-Cook")
                     .font(.caption)
-                    .foregroundStyle(.gray)
+                    .foregroundStyle(AppColors.subtleText)
                 Text("\(recipes.count) Recipes")
                     .font(.subheadline)
                     .fontWeight(.semibold)
-                    .foregroundStyle(.white)
+                    .foregroundStyle(AppColors.darkText)
             }
 
             Spacer()
@@ -112,10 +114,10 @@ struct MultiCookModeView: View {
             }
             .font(.subheadline)
             .fontWeight(.semibold)
-            .foregroundStyle(.red)
+            .foregroundStyle(AppColors.softRed)
             .padding(.horizontal, 12)
             .padding(.vertical, 6)
-            .background(.red.opacity(0.15))
+            .background(AppColors.softRed.opacity(0.12))
             .clipShape(Capsule())
         }
         .padding(.horizontal)
@@ -129,7 +131,7 @@ struct MultiCookModeView: View {
             GeometryReader { geo in
                 ZStack(alignment: .leading) {
                     RoundedRectangle(cornerRadius: 3)
-                        .fill(.white.opacity(0.1))
+                        .fill(AppColors.primaryGreen.opacity(0.15))
                     RoundedRectangle(cornerRadius: 3)
                         .fill(AppColors.primaryGreen)
                         .frame(width: geo.size.width * progress)
@@ -141,12 +143,12 @@ struct MultiCookModeView: View {
             HStack {
                 Text("Step \(min(currentBlockIndex + 1, blocks.count)) of \(blocks.count)")
                     .font(.caption2)
-                    .foregroundStyle(.gray)
+                    .foregroundStyle(AppColors.subtleText)
                 Spacer()
                 let totalSeconds = blocks.map(\.totalDurationSeconds).reduce(0, +)
                 Text("~\(totalSeconds / 60) min total")
                     .font(.caption2)
-                    .foregroundStyle(.gray)
+                    .foregroundStyle(AppColors.subtleText)
             }
         }
         .padding(.horizontal)
@@ -209,15 +211,15 @@ struct MultiCookModeView: View {
                             Text("Passive — \(block.totalDurationSeconds / 60) min wait")
                                 .font(.caption)
                         }
-                        .foregroundStyle(.yellow)
+                        .foregroundStyle(AppColors.warmOrange)
 
                         Text("Start this, then tap Next to continue with other tasks")
                             .font(.caption2)
-                            .foregroundStyle(.gray)
+                            .foregroundStyle(AppColors.subtleText)
                     }
                     .padding(.horizontal, 12)
                     .padding(.vertical, 8)
-                    .background(.yellow.opacity(0.1))
+                    .background(AppColors.warmOrange.opacity(0.1))
                     .clipShape(RoundedRectangle(cornerRadius: 10))
                 }
 
@@ -235,7 +237,7 @@ struct MultiCookModeView: View {
                         Text(name)
                             .font(.caption2)
                             .fontWeight(.medium)
-                            .foregroundStyle(.white)
+                            .foregroundStyle(Color.white)
                             .padding(.horizontal, 8)
                             .padding(.vertical, 4)
                             .background(colorForRecipe(name).opacity(0.6))
@@ -256,10 +258,10 @@ struct MultiCookModeView: View {
                                 Text("Previous")
                             }
                             .font(.headline)
-                            .foregroundStyle(.white)
+                            .foregroundStyle(AppColors.darkText)
                             .padding(.vertical, 14)
                             .padding(.horizontal, 24)
-                            .background(.white.opacity(0.15))
+                            .background(AppColors.lightGray)
                             .clipShape(RoundedRectangle(cornerRadius: 14))
                         }
                     }
@@ -276,10 +278,10 @@ struct MultiCookModeView: View {
                                   : "checkmark")
                         }
                         .font(.headline)
-                        .foregroundStyle(.white)
+                        .foregroundStyle(Color.white)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 14)
-                        .background(block.type == .passive ? Color.yellow.opacity(0.8) : AppColors.primaryGreen)
+                        .background(block.type == .passive ? AppColors.warmOrange : AppColors.primaryGreen)
                         .clipShape(RoundedRectangle(cornerRadius: 14))
                     }
                 }
@@ -301,7 +303,7 @@ struct MultiCookModeView: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text(task.displayText)
                     .font(.body)
-                    .foregroundStyle(.white)
+                    .foregroundStyle(AppColors.darkText)
 
                 HStack(spacing: 8) {
                     if let name = task.recipeName {
@@ -312,12 +314,12 @@ struct MultiCookModeView: View {
                     if let step = task.sourceStepNumber {
                         Text("Step \(step)")
                             .font(.caption2)
-                            .foregroundStyle(.gray)
+                            .foregroundStyle(AppColors.subtleText)
                     }
                     if task.durationSeconds > 0 {
                         Text("\(task.durationSeconds / 60)m")
                             .font(.caption2)
-                            .foregroundStyle(.gray)
+                            .foregroundStyle(AppColors.subtleText)
                     }
                 }
             }
@@ -325,8 +327,9 @@ struct MultiCookModeView: View {
             Spacer()
         }
         .padding()
-        .background(.white.opacity(0.05))
+        .background(AppColors.cardBackground)
         .clipShape(RoundedRectangle(cornerRadius: 12))
+        .shadow(color: Color.black.opacity(0.04), radius: 6, x: 0, y: 2)
     }
 
     // MARK: - Advance Block
@@ -401,11 +404,11 @@ struct MultiCookModeView: View {
             Text("All Done!")
                 .font(.largeTitle)
                 .fontWeight(.bold)
-                .foregroundStyle(.white)
+                .foregroundStyle(AppColors.darkText)
 
             Text("You cooked \(recipes.count) recipes together!")
                 .font(.title3)
-                .foregroundStyle(.gray)
+                .foregroundStyle(AppColors.subtleText)
 
             VStack(spacing: 8) {
                 ForEach(recipes) { recipe in
@@ -415,7 +418,7 @@ struct MultiCookModeView: View {
                             .frame(width: 8, height: 8)
                         Text(recipe.title)
                             .font(.subheadline)
-                            .foregroundStyle(.white)
+                            .foregroundStyle(AppColors.darkText)
                         Spacer()
                         Image(systemName: "checkmark")
                             .foregroundStyle(AppColors.primaryGreen)
@@ -423,8 +426,9 @@ struct MultiCookModeView: View {
                 }
             }
             .padding()
-            .background(.white.opacity(0.05))
+            .background(AppColors.cardBackground)
             .clipShape(RoundedRectangle(cornerRadius: 12))
+            .shadow(color: Color.black.opacity(0.04), radius: 6, x: 0, y: 2)
             .padding(.horizontal)
 
             Spacer()
@@ -434,7 +438,7 @@ struct MultiCookModeView: View {
             } label: {
                 Text("Done")
                     .font(.headline)
-                    .foregroundStyle(.white)
+                    .foregroundStyle(Color.white)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 14)
                     .background(AppColors.primaryGreen)
@@ -454,12 +458,12 @@ struct MultiCookModeView: View {
     }
 
     private func colorForBlock(_ block: MultiRecipeScheduler.ScheduledBlock) -> Color {
-        if block.recipeNames.count > 1 { return .white }
+        if block.recipeNames.count > 1 { return AppColors.darkText }
         return colorForRecipe(block.recipeNames.first ?? "")
     }
 
     private func colorForRecipe(_ name: String) -> Color {
-        guard let idx = recipes.firstIndex(where: { $0.title == name }) else { return .gray }
+        guard let idx = recipes.firstIndex(where: { $0.title == name }) else { return AppColors.mediumGray }
         return recipeColors[idx % recipeColors.count]
     }
 

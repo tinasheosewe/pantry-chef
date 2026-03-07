@@ -207,7 +207,7 @@ struct HomeView: View {
                     }
                     onSwitchToShopping?()
                 }
-                QuickActionButton(icon: "camera.fill", title: "Scan\nreceipt", color: .blue) {
+                QuickActionButton(icon: "camera.fill", title: "Scan\nreceipt", color: AppColors.accentBlue) {
                     showReceiptScanner = true
                 }
             }
@@ -277,7 +277,7 @@ struct HomeView: View {
                 NutritionCircle(label: "Avg Cal", value: nutrition.avgCaloriesPerDay, unit: "kcal", color: AppColors.warmOrange)
                 NutritionCircle(label: "Protein", value: Int(nutrition.totalProtein / 7), unit: "g", color: AppColors.softRed)
                 NutritionCircle(label: "Carbs", value: Int(nutrition.totalCarbs / 7), unit: "g", color: AppColors.primaryGreen)
-                NutritionCircle(label: "Fat", value: Int(nutrition.totalFat / 7), unit: "g", color: .blue)
+                NutritionCircle(label: "Fat", value: Int(nutrition.totalFat / 7), unit: "g", color: AppColors.accentBlue)
             }
             .frame(maxWidth: .infinity)
         }
@@ -308,7 +308,7 @@ struct HomeView: View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
                 Image(systemName: "flame.fill")
-                    .foregroundStyle(.orange)
+                    .foregroundStyle(AppColors.warmOrange)
                 Text("Active Cooks")
                     .font(.headline)
                     .foregroundStyle(AppColors.darkText)
@@ -319,7 +319,7 @@ struct HomeView: View {
                     .foregroundStyle(.white)
                     .padding(.horizontal, 8)
                     .padding(.vertical, 4)
-                    .background(.orange)
+                    .background(AppColors.warmOrange)
                     .clipShape(Capsule())
             }
 
@@ -368,10 +368,10 @@ struct HomeView: View {
         .padding()
         .background(
             RoundedRectangle(cornerRadius: 16)
-                .fill(.orange.opacity(0.08))
+                .fill(AppColors.warmOrange.opacity(0.08))
                 .overlay(
                     RoundedRectangle(cornerRadius: 16)
-                        .strokeBorder(.orange.opacity(0.2), lineWidth: 1)
+                        .strokeBorder(AppColors.warmOrange.opacity(0.2), lineWidth: 1)
                 )
         )
     }

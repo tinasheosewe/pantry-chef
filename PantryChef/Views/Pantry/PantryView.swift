@@ -54,13 +54,13 @@ struct PantryView: View {
                 InputMethodButton(icon: "plus.circle.fill", title: "Add", color: AppColors.primaryGreen) {
                     viewModel.showAddItem = true
                 }
-                InputMethodButton(icon: "barcode.viewfinder", title: "Barcode", color: .blue) {
+                InputMethodButton(icon: "barcode.viewfinder", title: "Barcode", color: AppColors.accentBlue) {
                     viewModel.showBarcodeScanner = true
                 }
                 InputMethodButton(icon: "doc.text.viewfinder", title: "Receipt", color: AppColors.warmOrange) {
                     viewModel.showReceiptScanner = true
                 }
-                InputMethodButton(icon: "mic.fill", title: "Voice", color: .purple) {
+                InputMethodButton(icon: "mic.fill", title: "Voice", color: AppColors.accentTeal) {
                     viewModel.showVoiceInput = true
                 }
             }

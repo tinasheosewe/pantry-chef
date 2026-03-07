@@ -14,6 +14,7 @@ struct PantryChefApp: App {
         WindowGroup {
             ContentView()
                 .environment(appState)
+                .preferredColorScheme(.light)
                 .onReceive(
                     NotificationCenter.default.publisher(
                         for: NotificationService.didReceiveActionNotification

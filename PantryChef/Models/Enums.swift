@@ -43,21 +43,21 @@ enum FoodCategory: String, Codable, CaseIterable, Identifiable {
 
     var color: Color {
         switch self {
-        case .dairy: return .blue.opacity(0.7)
-        case .produce: return .green
-        case .protein: return .red.opacity(0.7)
-        case .grains: return .orange.opacity(0.8)
-        case .spices: return .orange
-        case .condiments: return .purple.opacity(0.7)
-        case .bakingSupplies: return .pink
-        case .frozenFoods: return .cyan
-        case .canned: return .brown
-        case .beverages: return .teal
-        case .snacks: return .yellow.opacity(0.8)
-        case .oils: return Color(red: 0.85, green: 0.65, blue: 0.13)
-        case .pasta: return .indigo.opacity(0.7)
-        case .nuts: return Color(red: 0.82, green: 0.71, blue: 0.55)
-        case .other: return .gray
+        case .dairy:          return Color(red: 0.38, green: 0.65, blue: 0.96) // sky blue
+        case .produce:        return Color(red: 0.13, green: 0.77, blue: 0.37) // emerald
+        case .protein:        return Color(red: 0.94, green: 0.44, blue: 0.44) // salmon
+        case .grains:         return Color(red: 0.96, green: 0.72, blue: 0.26) // golden
+        case .spices:         return Color(red: 0.98, green: 0.62, blue: 0.20) // amber
+        case .condiments:     return Color(red: 0.62, green: 0.44, blue: 0.87) // lavender
+        case .bakingSupplies: return Color(red: 0.94, green: 0.53, blue: 0.68) // rose
+        case .frozenFoods:    return Color(red: 0.35, green: 0.78, blue: 0.88) // ice blue
+        case .canned:         return Color(red: 0.73, green: 0.56, blue: 0.41) // warm brown
+        case .beverages:      return Color(red: 0.06, green: 0.73, blue: 0.70) // teal
+        case .snacks:         return Color(red: 0.96, green: 0.80, blue: 0.22) // bright yellow
+        case .oils:           return Color(red: 0.88, green: 0.70, blue: 0.18) // golden oil
+        case .pasta:          return Color(red: 0.48, green: 0.40, blue: 0.82) // soft indigo
+        case .nuts:           return Color(red: 0.78, green: 0.66, blue: 0.48) // warm tan
+        case .other:          return Color(red: 0.62, green: 0.65, blue: 0.70) // cool gray
         }
     }
 }

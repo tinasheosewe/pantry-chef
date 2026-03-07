@@ -197,10 +197,10 @@ struct IngredientGatheringView: View {
                         if item.isOptional {
                             Text("optional")
                                 .font(.caption2)
-                                .foregroundStyle(.orange)
+                                .foregroundStyle(AppColors.warmOrange)
                                 .padding(.horizontal, 4)
                                 .padding(.vertical, 1)
-                                .background(.orange.opacity(0.12))
+                                .background(AppColors.warmOrange.opacity(0.12))
                                 .clipShape(Capsule())
                         }
                     }

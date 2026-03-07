@@ -109,7 +109,11 @@ struct RecipeDetailView: View {
             Rectangle()
                 .fill(
                     LinearGradient(
-                        colors: [AppColors.primaryGreen.opacity(0.2), AppColors.primaryGreen.opacity(0.05)],
+                        colors: [
+                            AppColors.primaryGreen.opacity(0.18),
+                            AppColors.accentTeal.opacity(0.10),
+                            AppColors.warmOrange.opacity(0.06)
+                        ],
                         startPoint: .topLeading,
                         endPoint: .bottomTrailing
                     )
@@ -118,7 +122,7 @@ struct RecipeDetailView: View {
 
             Image(systemName: recipe.mealType?.icon ?? "fork.knife")
                 .font(.system(size: 56))
-                .foregroundStyle(AppColors.primaryGreen.opacity(0.4))
+                .foregroundStyle(AppColors.primaryGreen.opacity(0.35))
         }
     }
 
@@ -221,7 +225,7 @@ struct RecipeDetailView: View {
                 .foregroundStyle(.white)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 14)
-                .background(existingSession != nil ? .orange : AppColors.primaryGreen)
+                .background(existingSession != nil ? AppColors.warmOrange : AppColors.primaryGreen)
                 .clipShape(RoundedRectangle(cornerRadius: 14))
             }
 
@@ -240,7 +244,7 @@ struct RecipeDetailView: View {
                 }
             }
 
-            ActionButton(icon: "arrow.triangle.2.circlepath", title: "Substitutes", color: .purple) {
+            ActionButton(icon: "arrow.triangle.2.circlepath", title: "Substitutes", color: AppColors.accentTeal) {
                 Task {
                     isLoadingAI = true
                     let result = await appState.getSubstitutions(for: recipe)
@@ -324,7 +328,7 @@ struct RecipeDetailView: View {
                 NutritionCircle(label: "Calories", value: nutrition.calories, unit: "kcal", color: AppColors.warmOrange)
                 NutritionCircle(label: "Protein", value: Int(nutrition.protein), unit: "g", color: AppColors.softRed)
                 NutritionCircle(label: "Carbs", value: Int(nutrition.carbohydrates), unit: "g", color: AppColors.primaryGreen)
-                NutritionCircle(label: "Fat", value: Int(nutrition.fat), unit: "g", color: .blue)
+                NutritionCircle(label: "Fat", value: Int(nutrition.fat), unit: "g", color: AppColors.accentBlue)
             }
             .frame(maxWidth: .infinity)
         }

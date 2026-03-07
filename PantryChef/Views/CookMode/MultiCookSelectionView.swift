@@ -70,7 +70,7 @@ struct MultiCookSelectionView: View {
                                             .foregroundStyle(.white)
                                             .padding(.horizontal, 6)
                                             .padding(.vertical, 2)
-                                            .background(.orange)
+                                            .background(AppColors.warmOrange)
                                             .clipShape(Capsule())
                                     }
                                 }
@@ -140,7 +140,7 @@ struct MultiCookSelectionView: View {
                     Text("\(blocks.count)")
                         .font(.title2)
                         .fontWeight(.bold)
-                        .foregroundStyle(.blue)
+                        .foregroundStyle(AppColors.accentBlue)
                     Text("Steps")
                         .font(.caption)
                         .foregroundStyle(AppColors.subtleText)
