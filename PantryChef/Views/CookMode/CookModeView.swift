@@ -9,7 +9,7 @@ struct CookModeView: View {
     @State private var realtimeService: RealtimeService?
     @State private var viewModel: CookModeViewModel?
     @State private var syncTimer: Timer?
-    @State private var showBackgroundConfirm = false
+    @State private var showEndConfirm = false
 
     private let recipe: Recipe
     private let resumeAtStep: Int
@@ -51,33 +51,42 @@ struct CookModeView: View {
         .onDisappear {
             syncTimer?.invalidate()
             syncTimer = nil
-            viewModel?.cleanup()
-        }
-        .onChange(of: scenePhase) { _, newPhase in
-            if newPhase == .active {
-                viewModel?.syncTimerOnForeground()
+            // Auto-background on any dismiss (unless explicitly ending)
+            if let vm = viewModel, !vm.isEndingSession, !vm.didContinueInBackground {
+                vm.continueInBackground()
             }
         }
-        .onChange(of: viewModel?.didContinueInBackground ?? false) { _, didBackground in
-            if didBackground {
+        .onChange(of: scenePhase) { _, newPhase in
+            switch newPhase {
+            case .active:
+                viewModel?.syncTimerOnForeground()
+                // If we auto-backgrounded when the app went inactive, resume live voice
+                if let vm = viewModel, vm.didContinueInBackground {
+                    vm.resumeFromBackground()
+                }
+            case .background:
+                // Auto-schedule notifications when app goes to background
+                viewModel?.continueInBackground()
+            default:
+                break
+            }
+        }
+        .onChange(of: viewModel?.isEndingSession ?? false) { _, isEnding in
+            if isEnding {
                 dismiss()
             }
         }
         .confirmationDialog(
-            "Continue Cooking?",
-            isPresented: $showBackgroundConfirm,
+            "End Cooking Session?",
+            isPresented: $showEndConfirm,
             titleVisibility: .visible
         ) {
-            Button("Continue in Background") {
-                viewModel?.continueInBackground()
-            }
             Button("End Session", role: .destructive) {
-                viewModel?.cleanup()
-                dismiss()
+                viewModel?.endCookingSession()
             }
             Button("Cancel", role: .cancel) { }
         } message: {
-            Text("Schedule notifications for remaining steps so you can cook without the app open.")
+            Text("This will stop all step notifications. You can minimize to keep cooking in the background.")
         }
         .alert("Voice Control Unavailable",
                isPresented: Binding(
@@ -146,11 +155,11 @@ struct CookModeView: View {
 
     private func topBar(vm: CookModeViewModel) -> some View {
         HStack {
+            // Minimize — auto-backgrounds and dismisses
             Button {
-                vm.cleanup()
                 dismiss()
             } label: {
-                Image(systemName: "xmark")
+                Image(systemName: "chevron.down")
                     .font(.title3)
                     .foregroundStyle(.white)
             }
@@ -165,16 +174,14 @@ struct CookModeView: View {
 
             Spacer()
 
-            // Continue in Background
-            if vm.isConversationActive {
-                Button {
-                    showBackgroundConfirm = true
-                } label: {
-                    Image(systemName: "bell.badge")
-                        .font(.title3)
-                        .foregroundStyle(AppColors.warmOrange)
-                }
-                .disabled(vm.isSchedulingBackground)
+            // End Session (explicit kill)
+            Button {
+                showEndConfirm = true
+            } label: {
+                Text("End")
+                    .font(.subheadline)
+                    .fontWeight(.semibold)
+                    .foregroundStyle(AppColors.softRed)
             }
 
             // Mute/unmute mic

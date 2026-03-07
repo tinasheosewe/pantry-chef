@@ -30,16 +30,22 @@ final class CookModeViewModel {
     /// Continue in Background state
     var isSchedulingBackground = false
     var didContinueInBackground = false
+    /// Set when the user explicitly ends the session (vs. auto-backgrounding)
+    var isEndingSession = false
 
     /// Tracks whether the WebRTC connection has ever succeeded in this session,
     /// so we can distinguish "not yet connected" from "connection dropped".
     private var wasEverConnected = false
 
+    /// Cached notification permission result from startConversation() so
+    /// auto-background can schedule synchronously without an async re-check.
+    private var cachedNotificationPermission = false
+
     let recipe: Recipe
     let realtimeService: any RealtimeServiceProtocol
 
-    /// Whether this session was launched from a background deep-link.
-    private let isResuming: Bool
+    /// Whether the next startConversation() should use resume greeting.
+    private var isResuming: Bool
 
     /// Date-based timer tracking — survives backgrounding
     private var timerStartedAt: Date?
@@ -150,8 +156,8 @@ final class CookModeViewModel {
                 return
             }
 
-            // Pre-request notification permission so "Continue in Background" works
-            let _ = await NotificationService.shared.requestPermission()
+            // Pre-request notification permission so auto-background works
+            cachedNotificationPermission = await NotificationService.shared.requestPermission()
 
             // If resuming from background, cancel pending notifications (we're live again)
             if isResuming {
@@ -550,14 +556,20 @@ final class CookModeViewModel {
 
     /// Schedules notifications deterministically using pre-computed step durations,
     /// then disconnects voice and saves the session.
+    /// Safe to call multiple times — guards against double-scheduling.
     func continueInBackground() {
-        guard isConversationActive else { return }
+        guard isConversationActive, !didContinueInBackground, !isEndingSession else { return }
         isSchedulingBackground = true
 
         Task {
-            // Ensure we have notification permission (should already be granted from
-            // startConversation, but verify in case the user revoked it).
-            let authorized = await NotificationService.shared.requestPermission()
+            // Use cached permission when available (fast path for auto-background).
+            let authorized: Bool
+            if cachedNotificationPermission {
+                authorized = true
+            } else {
+                authorized = await NotificationService.shared.requestPermission()
+            }
+
             if !authorized {
                 print("[CookMode] ⚠️ Notification permission denied — background mode will not work")
                 conversationError = "Please enable notifications in Settings to use background cook mode."
@@ -567,6 +579,21 @@ final class CookModeViewModel {
 
             await scheduleBackgroundNotifications()
         }
+    }
+
+    /// Resume live voice session after returning from background.
+    /// Cancels pending notifications and reconnects.
+    func resumeFromBackground() {
+        guard didContinueInBackground else { return }
+        didContinueInBackground = false
+        isSchedulingBackground = false
+        isResuming = true
+
+        NotificationService.shared.cancelAllNotifications(recipeId: recipe.id.uuidString)
+        print("[CookMode] Resuming from background — cancelled pending notifications")
+
+        // Reconnect voice
+        startConversation()
     }
 
     /// The actual scheduling logic, separated so it can run after permission is confirmed.
@@ -651,10 +678,13 @@ final class CookModeViewModel {
     }
 
     /// End the cooking session — clears notifications and persisted session.
+    /// This is the ONLY way to fully stop background mode.
     func endCookingSession() {
+        isEndingSession = true
         NotificationService.shared.cancelAllNotifications(recipeId: recipe.id.uuidString)
         CookingSession.clear()
         didContinueInBackground = false
+        cleanup()
     }
 
     // MARK: - Cleanup
