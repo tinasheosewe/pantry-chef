@@ -45,7 +45,12 @@ struct PantryChefApp: App {
                 print("[PantryChefApp] Step \(stepIndex + 1) marked done via notification")
             }
         } else {
-            // Default tap or "Open Cook Mode" — deep-link via AppState
+            // Default tap or "Open Cook Mode" — update persisted session step and deep-link
+            if var session = CookingSession.load(),
+               session.recipeId.uuidString == recipeId {
+                session.currentStepIndex = stepIndex
+                session.save()
+            }
             appState.deepLinkCookModeRecipeId = recipeId
             print("[PantryChefApp] Deep-link to cook mode for recipe \(recipeId.prefix(8))… step \(stepIndex + 1)")
         }

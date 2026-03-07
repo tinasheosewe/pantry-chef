@@ -47,10 +47,10 @@ final class CookModeViewModel {
     private var timerPausedRemaining: TimeInterval = 0
     private var timerCancellable: AnyCancellable?
 
-    init(recipe: Recipe, realtimeService: any RealtimeServiceProtocol, initialStepIndex: Int = 0) {
+    init(recipe: Recipe, realtimeService: any RealtimeServiceProtocol, initialStepIndex: Int = 0, isResuming: Bool = false) {
         self.recipe = recipe
         self.realtimeService = realtimeService
-        self.isResuming = initialStepIndex > 0
+        self.isResuming = isResuming
         self.currentStepIndex = initialStepIndex
         setupRealtimeCallbacks()
     }
@@ -152,6 +152,11 @@ final class CookModeViewModel {
 
             // Pre-request notification permission so "Continue in Background" works
             let _ = await NotificationService.shared.requestPermission()
+
+            // If resuming from background, cancel pending notifications (we're live again)
+            if isResuming {
+                NotificationService.shared.cancelAllNotifications(recipeId: recipe.id.uuidString)
+            }
 
             isConversationActive = true
             isPreparing = true
