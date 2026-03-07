@@ -145,6 +145,9 @@ final class CookModeViewModel {
                 return
             }
 
+            // Pre-request notification permission so "Continue in Background" works
+            let _ = await NotificationService.shared.requestPermission()
+
             isConversationActive = true
             isPreparing = true
             voiceAuthorizationDenied = false
@@ -534,6 +537,23 @@ final class CookModeViewModel {
         guard isConversationActive else { return }
         isSchedulingBackground = true
 
+        Task {
+            // Ensure we have notification permission (should already be granted from
+            // startConversation, but verify in case the user revoked it).
+            let authorized = await NotificationService.shared.requestPermission()
+            if !authorized {
+                print("[CookMode] ⚠️ Notification permission denied — background mode will not work")
+                conversationError = "Please enable notifications in Settings to use background cook mode."
+                isSchedulingBackground = false
+                return
+            }
+
+            await scheduleBackgroundNotifications()
+        }
+    }
+
+    /// The actual scheduling logic, separated so it can run after permission is confirmed.
+    private func scheduleBackgroundNotifications() async {
         let remaining = steps.enumerated().filter { $0.offset >= currentStepIndex }
         let recipeId = recipe.id.uuidString
         let notificationService = NotificationService.shared
