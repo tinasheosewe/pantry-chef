@@ -561,6 +561,13 @@ final class RealtimeService: NSObject, RealtimeServiceProtocol {
         isModelSpeaking = false
         activeResponseId = nil
         responseStreamDone = false
+        transcript = ""
+
+        // Flush the API’s input audio buffer to discard any residual echo
+        // that leaked through VPIO while the model was speaking.  Without
+        // this, the API’s VAD triggers on the echo and the model hears itself.
+        print("[Audio] Sending input_audio_buffer.clear to flush echo")
+        sendJSON(["type": "input_audio_buffer.clear"])
     }
 
     // MARK: - Audio Session
@@ -710,7 +717,8 @@ final class RealtimeService: NSObject, RealtimeServiceProtocol {
 
         case "response.done":
             print("[WS] response.done — totalAudioChunks=\(playbackChunksReceived), totalAudioBytes=\(playbackBytesReceived), buffersScheduled=\(playbackBuffersScheduled), pendingBuffers=\(pendingBuffersCount)")
-            transcript = ""
+            // Don't clear transcript here — audio is still playing through
+            // the speaker.  transcript is cleared in finalizePlayback().
             statusMessage = "Listening…"
             // Don't clear isModelSpeaking / activeResponseId here!
             // Audio is still physically playing through the speaker.
