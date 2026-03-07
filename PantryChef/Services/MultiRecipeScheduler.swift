@@ -22,6 +22,10 @@ struct MultiRecipeScheduler {
         let actionClass: ActionClass
         let totalDurationSeconds: Int
 
+        /// When true, tasks from different recipes in this block
+        /// need separate vessels (downstream paths diverge).
+        var separateVessels: Bool = false
+
         /// Human-readable instruction combining all tasks.
         var displayInstruction: String {
             if tasks.count == 1, let task = tasks.first {
@@ -38,7 +42,11 @@ struct MultiRecipeScheduler {
                 let descs = recipeTasks.map { $0.displayText }.joined(separator: ", ")
                 lines.append("\(descs) (\(recipe))")
             }
-            return lines.joined(separator: "\n")
+            var result = lines.joined(separator: "\n")
+            if separateVessels {
+                result += "\n⚠️ Use separate pans for each recipe"
+            }
+            return result
         }
 
         /// Short label for the block.
@@ -74,12 +82,14 @@ struct MultiRecipeScheduler {
         // 1. Extract all tasks with recipe context
         let allTasks = extractTasks(from: recipes)
 
-        // 2. Build dependency graph (within-recipe ordering)
+        // 2. Build dependency graph (ingredient-flow DAG)
         let dependencies = buildDependencies(tasks: allTasks, recipes: recipes)
 
-        // 3. Schedule using priority-based list scheduling
-        //    (no pre-merging — the scheduler batches same-class tasks naturally)
-        return listSchedule(tasks: allTasks, dependencies: dependencies)
+        // 3. Build reverse graph for divergence detection
+        let dependents = buildDependents(dependencies: dependencies)
+
+        // 4. Schedule using priority-based list scheduling
+        return listSchedule(tasks: allTasks, dependencies: dependencies, dependents: dependents)
     }
 
     // MARK: - Single Recipe (simple linear)
@@ -134,31 +144,130 @@ struct MultiRecipeScheduler {
         return result
     }
 
-    // MARK: - Dependency Graph
+    // MARK: - Dependency Graph (ingredient-flow DAG)
+    //
+    // Five rules, evaluated per-task within each recipe:
+    //   1. Finish tasks → depend on ALL earlier tasks in the recipe.
+    //   2. Ingredient match → task T depends on earlier task P if their
+    //      ingredient names overlap (case-insensitive substring).
+    //   3. Active cook chain → activeCook + heatSetup form a sequential
+    //      chain (pan-sharing); each depends on its predecessor.
+    //   4. Cook convergence (fallback) → an activeCook/heatSetup task
+    //      with NO ingredient match AND NO chain predecessor depends
+    //      on all earlier prep tasks (safety net).
+    //   5. No match → leaf (zero prerequisites).
+    //
+    // passiveCook with no ingredient match is a leaf — start it ASAP.
 
-    /// Returns a dictionary: taskId -> [prerequisite taskIds].
-    /// Within a recipe, each step's tasks depend on all tasks from the previous step.
     private static func buildDependencies(tasks: [StepTask], recipes: [Recipe]) -> [UUID: Set<UUID>] {
         var deps: [UUID: Set<UUID>] = [:]
         for task in tasks { deps[task.id] = [] }
 
         for recipe in recipes {
-            let steps = recipe.steps.sorted { $0.stepNumber < $1.stepNumber }
-            for i in 1..<steps.count {
-                let prevStepTasks = tasks.filter { $0.recipeId == recipe.id && $0.sourceStepNumber == steps[i-1].stepNumber }
-                let currStepTasks = tasks.filter { $0.recipeId == recipe.id && $0.sourceStepNumber == steps[i].stepNumber }
-                let prevIds = Set(prevStepTasks.map(\.id))
-                for task in currStepTasks {
-                    deps[task.id, default: []].formUnion(prevIds)
+            // All tasks for this recipe, sorted by step number
+            let recipeTasks = tasks
+                .filter { $0.recipeId == recipe.id }
+                .sorted { ($0.sourceStepNumber ?? 0) < ($1.sourceStepNumber ?? 0) }
+
+            // Build active cook chain (activeCook + heatSetup, ordered by step).
+            // Each entry depends on the one before it (sequential pan use).
+            let activeChain = recipeTasks.filter { $0.action.actionClass.isActiveChain }
+            var chainPredecessor: [UUID: UUID] = [:]
+            for i in 1..<activeChain.count {
+                chainPredecessor[activeChain[i].id] = activeChain[i - 1].id
+            }
+
+            for task in recipeTasks {
+                let taskStep = task.sourceStepNumber ?? 0
+                let earlier = recipeTasks.filter { ($0.sourceStepNumber ?? 0) < taskStep }
+
+                // Rule 1: Finish tasks depend on ALL earlier tasks
+                if task.action.actionClass == .finish {
+                    for e in earlier { deps[task.id]?.insert(e.id) }
+                    continue
                 }
+
+                // Rule 2: Ingredient-flow dependencies
+                var ingredientDeps: Set<UUID> = []
+                if let ing = task.ingredient?.lowercased(), !ing.isEmpty {
+                    for e in earlier {
+                        if let eIng = e.ingredient?.lowercased(), !eIng.isEmpty {
+                            if ing.contains(eIng) || eIng.contains(ing) {
+                                ingredientDeps.insert(e.id)
+                            }
+                        }
+                    }
+                }
+
+                // Rule 3: Active cook chain
+                let chainDep = chainPredecessor[task.id]
+
+                if !ingredientDeps.isEmpty || chainDep != nil {
+                    // Has explicit deps — use them
+                    deps[task.id]?.formUnion(ingredientDeps)
+                    if let cd = chainDep { deps[task.id]?.insert(cd) }
+                } else if task.action.actionClass.isActiveChain {
+                    // Rule 4: Cook convergence fallback
+                    let earlierPrep = earlier.filter { $0.action.actionClass.isPrep }
+                    for e in earlierPrep { deps[task.id]?.insert(e.id) }
+                }
+                // Rule 5: No match → leaf (nothing added)
             }
         }
         return deps
     }
 
+    // MARK: - Reverse Dependency Graph (for divergence detection)
+
+    /// Returns taskId -> [dependent taskIds] (children in the DAG).
+    private static func buildDependents(dependencies: [UUID: Set<UUID>]) -> [UUID: Set<UUID>] {
+        var dependents: [UUID: Set<UUID>] = [:]
+        for (taskId, _) in dependencies { dependents[taskId] = [] }
+        for (taskId, prereqs) in dependencies {
+            for prereq in prereqs {
+                dependents[prereq, default: []].insert(taskId)
+            }
+        }
+        return dependents
+    }
+
+    // MARK: - Vessel Divergence Detection
+
+    /// Check if tasks from different recipes in a block need separate vessels.
+    /// Returns true if any two tasks from different recipes have differing downstream paths
+    /// (i.e., they diverge after this step — different things happen next).
+    private static func tasksDiverge(_ tasks: [StepTask], dependents: [UUID: Set<UUID>], allTasks: [StepTask]) -> Bool {
+        // Only relevant when block contains tasks from multiple recipes
+        let recipeIds = Set(tasks.compactMap(\.recipeId))
+        guard recipeIds.count > 1 else { return false }
+
+        // Only relevant for cook tasks — prep tasks share a cutting board, no vessel
+        guard tasks.allSatisfy({ $0.action.actionClass.isActiveChain }) else { return false }
+
+        // Check if downstream actions differ across recipes
+        let taskById = Dictionary(uniqueKeysWithValues: allTasks.map { ($0.id, $0) })
+        var downstreamByRecipe: [UUID: Set<String>] = [:]
+
+        for task in tasks {
+            guard let recipeId = task.recipeId else { continue }
+            let children = dependents[task.id] ?? []
+            let childActions = Set(children.compactMap { taskById[$0]?.action.verb })
+            downstreamByRecipe[recipeId, default: []].formUnion(childActions)
+        }
+
+        // If downstream actions differ between any two recipes → separate vessels
+        let allDownstreams = Array(downstreamByRecipe.values)
+        for i in 0..<allDownstreams.count {
+            for j in (i+1)..<allDownstreams.count {
+                if allDownstreams[i] != allDownstreams[j] { return true }
+            }
+        }
+        return false
+    }
+
     // MARK: - List Scheduling
 
-    private static func listSchedule(tasks: [StepTask], dependencies: [UUID: Set<UUID>]) -> [ScheduledBlock] {
+    private static func listSchedule(tasks: [StepTask], dependencies: [UUID: Set<UUID>], dependents: [UUID: Set<UUID>]) -> [ScheduledBlock] {
         var timeline: [ScheduledBlock] = []
         var completed = Set<UUID>()
         var remaining = Set(tasks.map(\.id))
@@ -241,13 +350,14 @@ struct MultiRecipeScheduler {
                 }
             } else if selectedClass == .prepCut || selectedClass == .prepOther || selectedClass == .heatSetup {
                 // Batch all same-class tasks into one block
-                let block = ScheduledBlock(
+                var block = ScheduledBlock(
                     id: UUID(),
                     tasks: selectedTasks,
                     type: selectedTasks.allSatisfy({ $0.type == .passive }) ? .passive : .active,
                     actionClass: selectedClass,
                     totalDurationSeconds: selectedTasks.map(\.durationSeconds).reduce(0, +)
                 )
+                block.separateVessels = tasksDiverge(selectedTasks, dependents: dependents, allTasks: tasks)
                 timeline.append(block)
                 for task in selectedTasks {
                     completed.insert(task.id)

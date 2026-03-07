@@ -191,4 +191,10 @@ enum ActionClass: String, Codable, Hashable, CaseIterable {
         case .finish: return "fork.knife"
         }
     }
+
+    /// Prep-phase tasks (no implicit ordering constraints).
+    var isPrep: Bool { self == .prepCut || self == .prepOther }
+
+    /// Tasks that share a pan/vessel sequentially within a recipe.
+    var isActiveChain: Bool { self == .activeCook || self == .heatSetup }
 }
