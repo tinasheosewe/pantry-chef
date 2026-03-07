@@ -12,12 +12,20 @@ settings:
     TARGETED_DEVICE_FAMILY: "1"
     INFOPLIST_KEY_CFBundleDisplayName: "Pantry Chef"
 
+packages:
+  swift-realtime-openai:
+    url: https://github.com/m1guelpf/swift-realtime-openai.git
+    branch: main
+
 targets:
   PantryChef:
     type: application
     platform: iOS
     sources:
       - PantryChef
+    dependencies:
+      - package: swift-realtime-openai
+        product: RealtimeAPI
     info:
       path: PantryChef/Info.plist
       properties:
