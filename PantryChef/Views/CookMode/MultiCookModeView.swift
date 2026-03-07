@@ -4,7 +4,7 @@ import SwiftUI
 //
 // Displays the interleaved timeline from MultiRecipeScheduler.
 // Each block is color-coded by source recipe.
-// Supports stepping through blocks with voice guidance.
+// Passive blocks start a background timer pill when the user advances past them.
 
 struct MultiCookModeView: View {
     @Environment(\.dismiss) private var dismiss
@@ -14,11 +14,12 @@ struct MultiCookModeView: View {
     @State private var blocks: [MultiRecipeScheduler.ScheduledBlock]
     @State private var currentBlockIndex = 0
     @State private var showEndConfirm = false
-    @State private var timerSeconds = 0
-    @State private var isTimerRunning = false
-    @State private var timerStartedAt: Date?
-    @State private var timerDuration: TimeInterval = 0
-    @State private var timer: Timer?
+
+    // MARK: - Passive Timer State
+    @State private var runningTimers: [RunningPassiveTimer] = []
+    @State private var tickTimer: Timer?
+    @State private var finishedTimerName: String?
+    @State private var showTimerFinishedAlert = false
 
     /// Distinct color per recipe.
     private let recipeColors: [Color] = [
@@ -48,6 +49,11 @@ struct MultiCookModeView: View {
                 topBar
                 progressBar
 
+                // Passive timer pills
+                if !runningTimers.isEmpty {
+                    passiveTimerBanner
+                }
+
                 if let block = currentBlock {
                     blockContent(block)
                 } else {
@@ -64,9 +70,13 @@ struct MultiCookModeView: View {
         } message: {
             Text("This will end all \(recipes.count) cooking sessions.")
         }
-        .onDisappear {
-            timer?.invalidate()
+        .alert("Timer Done!", isPresented: $showTimerFinishedAlert) {
+            Button("OK") {}
+        } message: {
+            Text("\(finishedTimerName ?? "A passive task") is ready!")
         }
+        .onAppear { startTickTimer() }
+        .onDisappear { tickTimer?.invalidate() }
     }
 
     // MARK: - Top Bar
@@ -129,7 +139,7 @@ struct MultiCookModeView: View {
             .frame(height: 6)
 
             HStack {
-                Text("Block \(min(currentBlockIndex + 1, blocks.count)) of \(blocks.count)")
+                Text("Step \(min(currentBlockIndex + 1, blocks.count)) of \(blocks.count)")
                     .font(.caption2)
                     .foregroundStyle(.gray)
                 Spacer()
@@ -141,6 +151,38 @@ struct MultiCookModeView: View {
         }
         .padding(.horizontal)
         .padding(.top, 8)
+    }
+
+    // MARK: - Passive Timer Banner
+
+    private var passiveTimerBanner: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 8) {
+                ForEach(runningTimers) { rt in
+                    HStack(spacing: 6) {
+                        Image(systemName: "timer")
+                            .font(.caption2)
+                        Text(rt.label)
+                            .font(.caption2)
+                            .fontWeight(.medium)
+                            .lineLimit(1)
+                        Text(formatTimer(rt.remainingSeconds))
+                            .font(.caption.monospaced())
+                            .fontWeight(.semibold)
+                    }
+                    .foregroundStyle(rt.remainingSeconds <= 30 ? .red : .yellow)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 6)
+                    .background(
+                        (rt.remainingSeconds <= 30 ? Color.red : Color.yellow)
+                            .opacity(0.12)
+                    )
+                    .clipShape(Capsule())
+                }
+            }
+            .padding(.horizontal)
+        }
+        .padding(.top, 6)
     }
 
     // MARK: - Block Content
@@ -158,19 +200,25 @@ struct MultiCookModeView: View {
                 .foregroundStyle(colorForBlock(block))
                 .padding(.top, 24)
 
-                // Type indicator
+                // Passive indicator
                 if block.type == .passive {
-                    HStack(spacing: 6) {
-                        Image(systemName: "timer")
-                            .font(.caption)
-                        Text("Passive — do other tasks while waiting")
-                            .font(.caption)
+                    VStack(spacing: 4) {
+                        HStack(spacing: 6) {
+                            Image(systemName: "timer")
+                                .font(.caption)
+                            Text("Passive — \(block.totalDurationSeconds / 60) min wait")
+                                .font(.caption)
+                        }
+                        .foregroundStyle(.yellow)
+
+                        Text("Start this, then tap Next to continue with other tasks")
+                            .font(.caption2)
+                            .foregroundStyle(.gray)
                     }
-                    .foregroundStyle(.yellow)
                     .padding(.horizontal, 12)
-                    .padding(.vertical, 6)
+                    .padding(.vertical, 8)
                     .background(.yellow.opacity(0.1))
-                    .clipShape(Capsule())
+                    .clipShape(RoundedRectangle(cornerRadius: 10))
                 }
 
                 // Tasks list
@@ -180,11 +228,6 @@ struct MultiCookModeView: View {
                     }
                 }
                 .padding(.horizontal)
-
-                // Timer (for passive blocks or blocks with duration)
-                if block.totalDurationSeconds > 0 {
-                    timerView(duration: block.totalDurationSeconds)
-                }
 
                 // Recipe source tags
                 HStack(spacing: 8) {
@@ -207,7 +250,6 @@ struct MultiCookModeView: View {
                     if currentBlockIndex > 0 {
                         Button {
                             withAnimation { currentBlockIndex -= 1 }
-                            resetTimer()
                         } label: {
                             HStack {
                                 Image(systemName: "chevron.left")
@@ -223,18 +265,21 @@ struct MultiCookModeView: View {
                     }
 
                     Button {
-                        withAnimation { currentBlockIndex += 1 }
-                        resetTimer()
+                        advanceBlock()
                     } label: {
                         HStack {
-                            Text(currentBlockIndex < blocks.count - 1 ? "Next" : "Finish")
-                            Image(systemName: currentBlockIndex < blocks.count - 1 ? "chevron.right" : "checkmark")
+                            Text(currentBlockIndex < blocks.count - 1
+                                 ? (block.type == .passive ? "Start & Next" : "Next")
+                                 : "Finish")
+                            Image(systemName: currentBlockIndex < blocks.count - 1
+                                  ? (block.type == .passive ? "timer" : "chevron.right")
+                                  : "checkmark")
                         }
                         .font(.headline)
                         .foregroundStyle(.white)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 14)
-                        .background(AppColors.primaryGreen)
+                        .background(block.type == .passive ? Color.yellow.opacity(0.8) : AppColors.primaryGreen)
                         .clipShape(RoundedRectangle(cornerRadius: 14))
                     }
                 }
@@ -284,43 +329,63 @@ struct MultiCookModeView: View {
         .clipShape(RoundedRectangle(cornerRadius: 12))
     }
 
-    // MARK: - Timer
+    // MARK: - Advance Block
 
-    private func timerView(duration: Int) -> some View {
-        VStack(spacing: 8) {
-            Text(formatTimer(timerSeconds))
-                .font(.system(size: 48, weight: .light, design: .monospaced))
-                .foregroundStyle(.white)
+    private func advanceBlock() {
+        // If current block is passive, start a background timer for it
+        if let block = currentBlock, block.type == .passive, block.totalDurationSeconds > 0 {
+            let label = block.tasks.first.map { task -> String in
+                let name = task.recipeName ?? "Timer"
+                let verb = task.action.verb
+                return "\(verb) (\(name))"
+            } ?? "Passive"
 
-            HStack(spacing: 16) {
-                Button {
-                    if isTimerRunning {
-                        pauseTimer()
-                    } else {
-                        startTimer(duration: duration)
-                    }
-                } label: {
-                    Image(systemName: isTimerRunning ? "pause.fill" : "play.fill")
-                        .font(.title2)
-                        .foregroundStyle(.white)
-                        .frame(width: 56, height: 56)
-                        .background(.white.opacity(0.15))
-                        .clipShape(Circle())
-                }
+            let rt = RunningPassiveTimer(
+                blockId: block.id,
+                label: label,
+                totalSeconds: block.totalDurationSeconds,
+                startedAt: Date()
+            )
+            runningTimers.append(rt)
+        }
 
-                Button {
-                    resetTimer()
-                } label: {
-                    Image(systemName: "arrow.counterclockwise")
-                        .font(.title2)
-                        .foregroundStyle(.white)
-                        .frame(width: 56, height: 56)
-                        .background(.white.opacity(0.15))
-                        .clipShape(Circle())
-                }
+        withAnimation { currentBlockIndex += 1 }
+    }
+
+    // MARK: - Tick Timer (updates all passive countdowns)
+
+    private func startTickTimer() {
+        tickTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { _ in
+            Task { @MainActor in
+                tickPassiveTimers()
             }
         }
-        .padding()
+    }
+
+    private func tickPassiveTimers() {
+        var finished: [RunningPassiveTimer] = []
+
+        for i in runningTimers.indices {
+            let elapsed = Date().timeIntervalSince(runningTimers[i].startedAt)
+            let remaining = max(0, runningTimers[i].totalSeconds - Int(elapsed))
+            runningTimers[i].remainingSeconds = remaining
+
+            if remaining == 0 {
+                finished.append(runningTimers[i])
+            }
+        }
+
+        // Remove finished timers and alert
+        if let first = finished.first {
+            runningTimers.removeAll { $0.remainingSeconds == 0 }
+            finishedTimerName = first.label
+
+            // Haptic
+            let generator = UINotificationFeedbackGenerator()
+            generator.notificationOccurred(.success)
+
+            showTimerFinishedAlert = true
+        }
     }
 
     // MARK: - Completion Screen
@@ -380,49 +445,13 @@ struct MultiCookModeView: View {
         }
     }
 
-    // MARK: - Timer Helpers
-
-    private func startTimer(duration: Int) {
-        timerSeconds = duration
-        timerDuration = TimeInterval(duration)
-        timerStartedAt = Date()
-        isTimerRunning = true
-
-        timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { _ in
-            Task { @MainActor in
-                guard let start = timerStartedAt else { return }
-                let elapsed = Date().timeIntervalSince(start)
-                let remaining = max(0, Int(timerDuration - elapsed))
-                timerSeconds = remaining
-                if remaining == 0 {
-                    isTimerRunning = false
-                    timer?.invalidate()
-                }
-            }
-        }
-    }
-
-    private func pauseTimer() {
-        isTimerRunning = false
-        timer?.invalidate()
-        timerDuration = TimeInterval(timerSeconds)
-        timerStartedAt = nil
-    }
-
-    private func resetTimer() {
-        isTimerRunning = false
-        timer?.invalidate()
-        timerSeconds = 0
-        timerStartedAt = nil
-    }
+    // MARK: - Helpers
 
     private func formatTimer(_ seconds: Int) -> String {
         let m = seconds / 60
         let s = seconds % 60
         return String(format: "%02d:%02d", m, s)
     }
-
-    // MARK: - Colors
 
     private func colorForBlock(_ block: MultiRecipeScheduler.ScheduledBlock) -> Color {
         if block.recipeNames.count > 1 { return .white }
@@ -437,10 +466,30 @@ struct MultiCookModeView: View {
     // MARK: - Session Management
 
     private func endSession() {
+        tickTimer?.invalidate()
         for recipe in recipes {
             CookingSession.clear(recipeId: recipe.id)
         }
         appState.activeCooks.refresh()
         dismiss()
+    }
+}
+
+// MARK: - Running Passive Timer Model
+
+struct RunningPassiveTimer: Identifiable {
+    let id = UUID()
+    let blockId: UUID
+    let label: String
+    let totalSeconds: Int
+    let startedAt: Date
+    var remainingSeconds: Int
+
+    init(blockId: UUID, label: String, totalSeconds: Int, startedAt: Date) {
+        self.blockId = blockId
+        self.label = label
+        self.totalSeconds = totalSeconds
+        self.startedAt = startedAt
+        self.remainingSeconds = totalSeconds
     }
 }

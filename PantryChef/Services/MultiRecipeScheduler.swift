@@ -183,8 +183,8 @@ struct MultiRecipeScheduler {
             let readyTasks = readyIds.compactMap { taskById[$0] }
             let byClass = Dictionary(grouping: readyTasks, by: { $0.action.actionClass })
 
-            // Priority: prepCut > prepOther > heatSetup > passive (start early) > active > finish
-            let classPriority: [ActionClass] = [.prepCut, .prepOther, .heatSetup, .passiveCook, .activeCook, .finish]
+            // Priority: prepCut > prepOther > passive (start early) > heatSetup (JIT) > active > finish
+            let classPriority: [ActionClass] = [.prepCut, .prepOther, .passiveCook, .heatSetup, .activeCook, .finish]
 
             // Pick highest-priority group
             var selected: [StepTask]?
