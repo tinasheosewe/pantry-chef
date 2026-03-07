@@ -4,6 +4,9 @@ struct ContentView: View {
     @Environment(AppState.self) private var appState
     @State private var selectedTab: Tab = .home
 
+    /// Recipe resolved from a deep-link notification tap.
+    @State private var deepLinkRecipe: Recipe?
+
     enum Tab: String, CaseIterable {
         case home = "Home"
         case pantry = "Pantry"
@@ -60,6 +63,21 @@ struct ContentView: View {
                     .tag(Tab.shop)
             }
             .tint(AppColors.primary)
+        }
+        .fullScreenCover(item: $deepLinkRecipe) { recipe in
+            CookModeView(recipe: recipe)
+                .environment(appState)
+        }
+        .onChange(of: appState.deepLinkCookModeRecipeId) { _, newId in
+            guard let recipeId = newId else { return }
+            // Clear immediately so it doesn't re-trigger
+            appState.deepLinkCookModeRecipeId = nil
+
+            if let recipe = appState.recipes.first(where: { $0.id.uuidString == recipeId }) {
+                deepLinkRecipe = recipe
+            } else {
+                print("[ContentView] ⚠️ Deep-link recipe \(recipeId.prefix(8))… not found in appState.recipes")
+            }
         }
     }
 }

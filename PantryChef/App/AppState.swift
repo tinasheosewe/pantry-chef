@@ -15,6 +15,9 @@ final class AppState {
     var isLoading = false
     var errorMessage: String?
 
+    /// Set by notification tap to deep-link into cook mode for a specific recipe.
+    var deepLinkCookModeRecipeId: String?
+
     // MARK: - Computed
     var expiringItems: [PantryItem] {
         let threeDaysFromNow = Calendar.current.date(byAdding: .day, value: 3, to: Date()) ?? Date()
