@@ -293,7 +293,25 @@ final class RealtimeService: NSObject, RealtimeServiceProtocol {
         }
         print("[Audio] VPIO: isVoiceProcessingEnabled=\(inputNode.isVoiceProcessingEnabled)")
 
-        // ── 2.  Attach player node at the mixer's native rate ──
+        // ── 2.  Re-apply audio session AFTER VPIO but BEFORE engine.start() ──
+        // VPIO changes the audio unit graph and may reset the output route.
+        // We must re-apply BEFORE starting the engine — doing it after
+        // engine.start() causes the system to stop the engine.
+        do {
+            try AVAudioSession.sharedInstance().setCategory(
+                .playAndRecord, mode: .default,
+                options: [.defaultToSpeaker, .allowBluetooth]
+            )
+            try AVAudioSession.sharedInstance().setActive(true)
+            try AVAudioSession.sharedInstance().overrideOutputAudioPort(.speaker)
+            let postRoute = AVAudioSession.sharedInstance().currentRoute
+            let postOutputs = postRoute.outputs.map { "\($0.portName)(\($0.portType.rawValue))" }.joined(separator: ", ")
+            print("[Audio] Post-VPIO session re-applied (before engine start). Route outputs: [\(postOutputs)]")
+        } catch {
+            print("[Audio] ❌ Post-VPIO session re-apply failed: \(error)")
+        }
+
+        // ── 3.  Attach player node at the mixer's native rate ──
         let mixerFormat = engine.mainMixerNode.outputFormat(forBus: 0)
         let mixerRate = mixerFormat.sampleRate > 0 ? mixerFormat.sampleRate : 48_000
 
@@ -327,28 +345,15 @@ final class RealtimeService: NSObject, RealtimeServiceProtocol {
             self.playbackConverter = AVAudioConverter(from: apiFormat, to: playerFormat)
         }
 
-        // ── 3.  Start the unified engine ──
+        // ── 4.  Start the unified engine ──
         engine.prepare()
         do {
             try engine.start()
             isAudioEngineRunning = true
             node.play()
-            print("[RealtimeService] Audio engine started, mixerRate=\(mixerRate)")
-
-            // Re-apply speaker override + audio session after VPIO setup.
-            // VPIO changes the audio unit graph and may reset the output route.
-            try AVAudioSession.sharedInstance().setCategory(
-                .playAndRecord, mode: .default,
-                options: [.defaultToSpeaker, .allowBluetooth]
-            )
-            try AVAudioSession.sharedInstance().setActive(true)
-            try AVAudioSession.sharedInstance().overrideOutputAudioPort(.speaker)
-            let postRoute = AVAudioSession.sharedInstance().currentRoute
-            let postOutputs = postRoute.outputs.map { "\($0.portName)(\($0.portType.rawValue))" }.joined(separator: ", ")
-            print("[Audio] Post-VPIO session re-applied. Route outputs: [\(postOutputs)]")
-            print("[Audio] Engine running=\(engine.isRunning), playerNode.isPlaying=\(node.isPlaying)")
+            print("[Audio] Engine started: mixerRate=\(mixerRate), engine.isRunning=\(engine.isRunning), playerNode.isPlaying=\(node.isPlaying)")
         } catch {
-            print("RealtimeService: audio engine start error: \(error)")
+            print("[Audio] ❌ engine start error: \(error)")
             statusMessage = "Mic error"
         }
 
