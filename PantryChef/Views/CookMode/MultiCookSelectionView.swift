@@ -11,7 +11,6 @@ struct MultiCookSelectionView: View {
 
     @State private var selectedRecipeIds: Set<UUID> = []
     @State private var showMultiCookMode = false
-    @State private var scheduledBlocks: [MultiRecipeScheduler.ScheduledBlock] = []
 
     var body: some View {
         NavigationStack {
@@ -90,7 +89,6 @@ struct MultiCookSelectionView: View {
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Start") {
-                        generateSchedule()
                         showMultiCookMode = true
                     }
                     .fontWeight(.bold)
@@ -99,9 +97,10 @@ struct MultiCookSelectionView: View {
             }
             .fullScreenCover(isPresented: $showMultiCookMode) {
                 let selectedRecipes = appState.recipes.filter { selectedRecipeIds.contains($0.id) }
+                let blocks = MultiRecipeScheduler.schedule(recipes: selectedRecipes)
                 MultiCookModeView(
                     recipes: selectedRecipes,
-                    blocks: scheduledBlocks
+                    blocks: blocks
                 )
                 .environment(appState)
             }
@@ -173,11 +172,6 @@ struct MultiCookSelectionView: View {
         } else {
             selectedRecipeIds.insert(id)
         }
-    }
-
-    private func generateSchedule() {
-        let selectedRecipes = appState.recipes.filter { selectedRecipeIds.contains($0.id) }
-        scheduledBlocks = MultiRecipeScheduler.schedule(recipes: selectedRecipes)
     }
 
     private func formatDuration(_ seconds: Int) -> String {
