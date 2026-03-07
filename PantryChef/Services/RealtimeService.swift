@@ -198,19 +198,31 @@ final class RealtimeService: NSObject, RealtimeServiceProtocol {
         ) else { return }
 
         guard let capConverter = AVAudioConverter(from: vpioFormat, to: captureTarget) else {
-            print("[RealtimeService] startCapture: failed to create capture converter")
+            print("[Audio][Mic] ❌ failed to create capture converter: vpioFormat=\(vpioFormat)")
             return
         }
         self.captureConverter = capConverter
         let apiRate = realtimeSampleRate
+        print("[Audio][Mic] Installing tap: vpioFormat=\(vpioFormat.sampleRate)Hz/\(vpioFormat.channelCount)ch, target=\(apiRate)Hz")
 
         // ── CRITICAL: Convert audio synchronously in the tap callback ──
         // The tap's AVAudioPCMBuffer is only valid during the callback.
         // Dispatching the buffer to another thread causes use-after-recycle.
         // We convert to PCM16 Data here (audio thread), then dispatch the
         // safe Data value to @MainActor for WebSocket transmission.
+        micChunksSent = 0
+        micBytesSent = 0
+
+        // Use a class wrapper so the closure can mutate the count from the audio thread
+        final class TapCounter: @unchecked Sendable { var count = 0 }
+        let tapCounter = TapCounter()
         inputNode.installTap(onBus: 0, bufferSize: 2400, format: vpioFormat) { [weak self] buffer, _ in
             guard self != nil else { return }
+            tapCounter.count += 1
+            let n = tapCounter.count
+            if n <= 3 || n % 100 == 0 {
+                print("[Audio][Mic] tap callback #\(n): \(buffer.frameLength) frames, format=\(buffer.format.sampleRate)Hz")
+            }
 
             let pcmData: Data
             let ratio = apiRate / buffer.format.sampleRate
@@ -265,16 +277,21 @@ final class RealtimeService: NSObject, RealtimeServiceProtocol {
         // ── 1.  Enable Voice Processing IO for hardware AEC ──
         //        This call can block for 5-15 seconds.  Yield the main thread.
         let inputNode = engine.inputNode
+        print("[Audio] VPIO: enabling (this may take 5-15s)...")
+        let vpioStart = CFAbsoluteTimeGetCurrent()
         await withCheckedContinuation { (cont: CheckedContinuation<Void, Never>) in
             DispatchQueue.global(qos: .userInitiated).async {
                 do {
                     try inputNode.setVoiceProcessingEnabled(true)
+                    let elapsed = CFAbsoluteTimeGetCurrent() - vpioStart
+                    print("[Audio] VPIO: enabled in \(String(format: "%.1f", elapsed))s")
                 } catch {
-                    print("RealtimeService: VPIO enable failed: \(error)")
+                    print("[Audio] ❌ VPIO enable FAILED: \(error)")
                 }
                 cont.resume()
             }
         }
+        print("[Audio] VPIO: isVoiceProcessingEnabled=\(inputNode.isVoiceProcessingEnabled)")
 
         // ── 2.  Attach player node at the mixer's native rate ──
         let mixerFormat = engine.mainMixerNode.outputFormat(forBus: 0)
@@ -296,6 +313,7 @@ final class RealtimeService: NSObject, RealtimeServiceProtocol {
         engine.attach(node)
         engine.connect(node, to: engine.mainMixerNode, format: playerFormat)
         engine.mainMixerNode.outputVolume = 1.0
+        print("[Audio] Player node attached: volume=\(node.volume), mixerOutputVol=\(engine.mainMixerNode.outputVolume), playerFormat=\(playerFormat)")
 
         // Build a converter: API Float32 24 kHz → player Float32 at mixer rate
         guard let apiFormat = AVAudioFormat(
@@ -325,7 +343,10 @@ final class RealtimeService: NSObject, RealtimeServiceProtocol {
             )
             try AVAudioSession.sharedInstance().setActive(true)
             try AVAudioSession.sharedInstance().overrideOutputAudioPort(.speaker)
-            print("[RealtimeService] Audio session re-applied after VPIO")
+            let postRoute = AVAudioSession.sharedInstance().currentRoute
+            let postOutputs = postRoute.outputs.map { "\($0.portName)(\($0.portType.rawValue))" }.joined(separator: ", ")
+            print("[Audio] Post-VPIO session re-applied. Route outputs: [\(postOutputs)]")
+            print("[Audio] Engine running=\(engine.isRunning), playerNode.isPlaying=\(node.isPlaying)")
         } catch {
             print("RealtimeService: audio engine start error: \(error)")
             statusMessage = "Mic error"
@@ -338,6 +359,7 @@ final class RealtimeService: NSObject, RealtimeServiceProtocol {
     // MARK: - Tear Down
 
     private func tearDownAudioEngine() {
+        print("[Audio] tearDownAudioEngine called")
         // Remove notification observers
         if let obs = interruptionObserver {
             NotificationCenter.default.removeObserver(obs)
@@ -368,8 +390,15 @@ final class RealtimeService: NSObject, RealtimeServiceProtocol {
 
     /// Sends pre-converted PCM16 audio data to the Realtime API.
     /// Called from the tap callback's Task after synchronous conversion.
+    @ObservationIgnored private var micChunksSent = 0
+    @ObservationIgnored private var micBytesSent = 0
     private func sendCapturedPCM(_ pcmData: Data) {
         guard isConnected else { return }
+        micChunksSent += 1
+        micBytesSent += pcmData.count
+        if micChunksSent <= 3 || micChunksSent % 50 == 0 {
+            print("[Audio][Mic→API] chunk #\(micChunksSent): \(pcmData.count) bytes, totalSent=\(micBytesSent) bytes")
+        }
         let base64 = pcmData.base64EncodedString()
         sendJSON([
             "type": "input_audio_buffer.append",
@@ -379,12 +408,21 @@ final class RealtimeService: NSObject, RealtimeServiceProtocol {
 
     // MARK: - API → Speaker
 
+    @ObservationIgnored private var playbackChunksReceived = 0
+    @ObservationIgnored private var playbackBytesReceived = 0
+    @ObservationIgnored private var playbackBuffersScheduled = 0
     private func enqueueAudio(_ base64: String) {
         guard let data = AudioPipelineHelper.base64ToPCM16(base64) else {
-            print("[RealtimeService] enqueueAudio: base64 decode failed")
+            print("[Audio][API→Spk] ❌ base64 decode failed, len=\(base64.count) chars")
             return
         }
+        playbackChunksReceived += 1
+        playbackBytesReceived += data.count
         pendingAudioData.append(data)
+
+        if playbackChunksReceived <= 3 {
+            print("[Audio][API→Spk] chunk #\(playbackChunksReceived): \(data.count) bytes, pending=\(pendingAudioData.count), totalRecv=\(playbackBytesReceived)")
+        }
 
         // Schedule playback chunks every ~100ms worth of audio
         let chunkThreshold = AudioPipelineHelper.chunkThreshold(sampleRate: realtimeSampleRate)
@@ -400,7 +438,7 @@ final class RealtimeService: NSObject, RealtimeServiceProtocol {
         pendingAudioData = Data()
 
         guard let playerNode, isAudioEngineRunning else {
-            print("[RealtimeService] flushPendingAudio: skipped — playerNode=\(self.playerNode != nil), engineRunning=\(isAudioEngineRunning)")
+            print("[Audio][API→Spk] ❌ flush skipped — playerNode=\(self.playerNode != nil), engineRunning=\(isAudioEngineRunning), dataSize=\(data.count)")
             return
         }
 
@@ -444,10 +482,19 @@ final class RealtimeService: NSObject, RealtimeServiceProtocol {
             }
 
             if error == nil, outBuffer.frameLength > 0 {
+                playbackBuffersScheduled += 1
+                if playbackBuffersScheduled <= 3 || playbackBuffersScheduled % 20 == 0 {
+                    print("[Audio][API→Spk] scheduleBuffer #\(playbackBuffersScheduled): \(outBuffer.frameLength) frames at \(converter.outputFormat.sampleRate)Hz, isPlaying=\(playerNode.isPlaying)")
+                }
                 playerNode.scheduleBuffer(outBuffer, completionHandler: nil)
+            } else {
+                print("[Audio][API→Spk] ❌ resample failed: error=\(String(describing: error)), outFrames=\(outBuffer.frameLength)")
             }
         } else {
-            // Already at mixer rate
+            playbackBuffersScheduled += 1
+            if playbackBuffersScheduled <= 3 || playbackBuffersScheduled % 20 == 0 {
+                print("[Audio][API→Spk] scheduleBuffer #\(playbackBuffersScheduled): \(apiBuffer.frameLength) frames (no resample), isPlaying=\(playerNode.isPlaying)")
+            }
             playerNode.scheduleBuffer(apiBuffer, completionHandler: nil)
         }
     }
@@ -457,16 +504,18 @@ final class RealtimeService: NSObject, RealtimeServiceProtocol {
     private func configureAudioSession() {
         let session = AVAudioSession.sharedInstance()
         do {
-            // .default mode — we handle echo cancellation via VPIO on the
-            // audio engine input node, so we don't need .voiceChat mode's
-            // extra processing which aggressively ducks playback volume.
-            // .defaultToSpeaker routes to the loudspeaker for hands-free cooking.
             try session.setCategory(.playAndRecord, mode: .default,
                                     options: [.defaultToSpeaker, .allowBluetooth])
             try session.setActive(true)
             try session.overrideOutputAudioPort(.speaker)
+            let route = session.currentRoute
+            let outputs = route.outputs.map { "\($0.portName)(\($0.portType.rawValue))" }.joined(separator: ", ")
+            let inputs = route.inputs.map { "\($0.portName)(\($0.portType.rawValue))" }.joined(separator: ", ")
+            print("[Audio] Session configured: category=\(session.category.rawValue), mode=\(session.mode.rawValue)")
+            print("[Audio] Route — outputs: [\(outputs)], inputs: [\(inputs)]")
+            print("[Audio] Session sampleRate=\(session.sampleRate), ioBufferDuration=\(session.ioBufferDuration)")
         } catch {
-            print("RealtimeService: audio session error: \(error)")
+            print("[Audio] ❌ Session config FAILED: \(error)")
         }
     }
 
@@ -524,39 +573,55 @@ final class RealtimeService: NSObject, RealtimeServiceProtocol {
 
         switch type {
         case "session.created", "session.updated":
+            print("[WS] \(type)")
             statusMessage = "Ready — talk to me!"
 
         case "input_audio_buffer.speech_started":
+            print("[WS] speech_started (modelSpeaking=\(isModelSpeaking), activeResp=\(activeResponseId ?? "nil"))")
             isUserSpeaking = true
             userTranscript = ""
             // Interrupt model if it's actively speaking AND there's a response to cancel
             if isModelSpeaking, activeResponseId != nil {
+                print("[WS] → interrupting model response \(activeResponseId!)")
                 cancelCurrentResponse()
             }
 
         case "input_audio_buffer.speech_stopped":
+            print("[WS] speech_stopped")
             isUserSpeaking = false
 
         case "conversation.item.input_audio_transcription.completed":
             if let transcriptText = json["transcript"] as? String {
+                print("[WS] user transcription: \"\(transcriptText.prefix(80))\"")
                 userTranscript = transcriptText
             }
 
         case "response.created":
             if let response = json["response"] as? [String: Any],
                let responseId = response["id"] as? String {
+                print("[WS] response.created id=\(responseId)")
                 activeResponseId = responseId
+                // Reset playback counters for this response
+                playbackChunksReceived = 0
+                playbackBytesReceived = 0
+                playbackBuffersScheduled = 0
             }
 
         case "response.audio_transcript.delta":
             if let delta = json["delta"] as? String {
                 transcript += delta
                 isModelSpeaking = true
+                if transcript.count <= 30 {
+                    print("[WS] audio_transcript.delta: \"\(transcript)\"")
+                }
             }
 
         case "response.audio.delta":
             if let delta = json["delta"] as? String {
                 isModelSpeaking = true
+                if playbackChunksReceived == 0 {
+                    print("[WS] FIRST response.audio.delta received (\(delta.count) base64 chars)")
+                }
                 enqueueAudio(delta)
             }
 
@@ -566,6 +631,7 @@ final class RealtimeService: NSObject, RealtimeServiceProtocol {
 
         case "response.audio.done":
             // Flush any remaining audio
+            print("[WS] response.audio.done — flushing remaining \(pendingAudioData.count) bytes, totalChunks=\(playbackChunksReceived), totalBytes=\(playbackBytesReceived), scheduled=\(playbackBuffersScheduled)")
             flushPendingAudio()
 
         case "response.output_item.done":
@@ -579,6 +645,7 @@ final class RealtimeService: NSObject, RealtimeServiceProtocol {
             }
 
         case "response.done":
+            print("[WS] response.done — totalAudioChunks=\(playbackChunksReceived), totalAudioBytes=\(playbackBytesReceived), buffersScheduled=\(playbackBuffersScheduled)")
             isModelSpeaking = false
             transcript = ""
             activeResponseId = nil
@@ -601,6 +668,7 @@ final class RealtimeService: NSObject, RealtimeServiceProtocol {
             }
 
         default:
+            print("[WS] unhandled event: \(type)")
             break
         }
     }
@@ -644,6 +712,7 @@ final class RealtimeService: NSObject, RealtimeServiceProtocol {
     // MARK: - Interrupt Model
 
     private func cancelCurrentResponse() {
+        print("[Audio] cancelCurrentResponse — clearing \(pendingAudioData.count) pending bytes, resp=\(activeResponseId ?? "nil")")
         // Tell the API to stop generating
         let cancel: [String: Any] = ["type": "response.cancel"]
         sendJSON(cancel)
@@ -734,17 +803,19 @@ final class RealtimeService: NSObject, RealtimeServiceProtocol {
 
         switch type {
         case .began:
-            // System paused audio (e.g. phone call) — nothing to do yet
+            print("[Audio] ⚠️ Interruption BEGAN (e.g. phone call)")
             break
         case .ended:
+            print("[Audio] Interruption ENDED — restarting engine")
             // Restart audio engine after interruption
             if let engine = audioEngine, !engine.isRunning {
                 do {
                     try AVAudioSession.sharedInstance().setActive(true)
                     try engine.start()
                     playerNode?.play()
+                    print("[Audio] Engine restarted after interruption, playerNode.isPlaying=\(playerNode?.isPlaying ?? false)")
                 } catch {
-                    print("RealtimeService: restart after interruption failed: \(error)")
+                    print("[Audio] ❌ restart after interruption failed: \(error)")
                 }
             }
         @unknown default:
@@ -759,9 +830,11 @@ final class RealtimeService: NSObject, RealtimeServiceProtocol {
 
         switch reason {
         case .oldDeviceUnavailable, .newDeviceAvailable:
+            print("[Audio] Route change: \(reason.rawValue) — re-overriding to speaker")
             // Headphones unplugged / Bluetooth changed — re-override to speaker
             try? AVAudioSession.sharedInstance().overrideOutputAudioPort(.speaker)
         default:
+            print("[Audio] Route change reason=\(reason.rawValue) (no action)")
             break
         }
     }
