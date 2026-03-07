@@ -55,9 +55,6 @@ struct CookingSession: Codable, Identifiable {
 
     private static let storageKey = "active_cooking_sessions"
 
-    /// Legacy single-session key for migration.
-    private static let legacyStorageKey = "active_cooking_session"
-
     /// Save this session (upserts into the sessions array).
     func save() {
         var sessions = Self.loadAll()
@@ -72,9 +69,6 @@ struct CookingSession: Codable, Identifiable {
 
     /// Load all active sessions, clearing expired ones.
     static func loadAll() -> [CookingSession] {
-        // Migrate legacy single session if present
-        migrateLegacySession()
-
         guard let data = UserDefaults.standard.data(forKey: storageKey),
               let sessions = try? JSONDecoder().decode([CookingSession].self, from: data) else {
             return []
@@ -124,46 +118,4 @@ struct CookingSession: Codable, Identifiable {
         UserDefaults.standard.set(data, forKey: storageKey)
     }
 
-    private static func migrateLegacySession() {
-        guard let data = UserDefaults.standard.data(forKey: legacyStorageKey),
-              let legacy = try? JSONDecoder().decode(LegacyCookingSession.self, from: data) else { return }
-
-        // Convert to new format and save
-        let session = CookingSession(
-            recipeId: legacy.recipeId,
-            recipeName: legacy.recipeName,
-            totalSteps: legacy.totalSteps,
-            stepSummaries: legacy.stepSummaries.map {
-                StepSummary(stepNumber: $0.stepNumber, instruction: $0.instruction, timerMinutes: $0.timerMinutes)
-            },
-            currentStepIndex: legacy.currentStepIndex,
-            startedAt: legacy.startedAt,
-            backgroundedAt: legacy.backgroundedAt,
-            isActive: legacy.isActive,
-            expiryTimeoutSeconds: legacy.expiryTimeoutSeconds
-        )
-        session.save()
-        UserDefaults.standard.removeObject(forKey: legacyStorageKey)
-        print("[CookingSession] Migrated legacy session for \(legacy.recipeName)")
-    }
-}
-
-// MARK: - Legacy format for migration
-
-private struct LegacyCookingSession: Codable {
-    let recipeId: UUID
-    let recipeName: String
-    let totalSteps: Int
-    let stepSummaries: [LegacyStepSummary]
-    var currentStepIndex: Int
-    let startedAt: Date
-    let backgroundedAt: Date
-    var isActive: Bool
-    var expiryTimeoutSeconds: TimeInterval
-
-    struct LegacyStepSummary: Codable {
-        let stepNumber: Int
-        let instruction: String
-        let timerMinutes: Int?
-    }
 }
