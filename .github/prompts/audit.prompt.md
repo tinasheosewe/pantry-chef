@@ -59,6 +59,30 @@ Perform a comprehensive, deep audit of the entire codebase. Scan every file meth
 - Hardcoded secrets, API keys, or URLs that should be in config
 - Outdated or unused dependencies
 - Missing or incorrect access control (public vs internal vs private)
+- Hand-rolled implementations where a well-maintained library would be simpler, more resilient, and less code to maintain
+
+### Performance & Efficiency
+- Wrong data structure for the job (e.g., array scans where a dictionary/set lookup would be O(1))
+- Redundant work — same value computed multiple times, collections iterated repeatedly when once suffices, data re-fetched when already available
+- Values computable at development/build time that are instead calculated at runtime (lookup tables, constants, static mappings)
+- Unbatched operations — individual database writes, network calls, or UI updates that should be batched
+- Unnecessary allocations in hot paths — large copies, avoidable object creation in loops
+- Blocking the main thread with expensive synchronous work
+
+### Type Safety & Correctness
+- Raw strings or integers used where enums or strong types would make invalid states unrepresentable
+- Stringly-typed APIs, dictionary-based data passing, or Any/AnyObject where concrete types exist
+- Implicit conversions or loose typing that could silently produce wrong results
+
+### Logging & Observability
+- Key operations (start/end, state transitions, error paths) with no logging — would be invisible when debugging production issues
+- Excessive or noisy logging that drowns out meaningful signals
+- Inconsistent log levels (errors logged as info, debug noise in production)
+
+### Consistency & Incomplete Changes
+- Partial migrations — new patterns introduced alongside old ones without completing the transition
+- Orphaned code left behind from refactors (unused functions, stale references, dead imports)
+- Inconsistent conventions — the same thing done two different ways in different parts of the codebase
 
 ## Output Format
 
