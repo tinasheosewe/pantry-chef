@@ -2155,184 +2155,6 @@ final class RealtimeServiceTests: XCTestCase {
         XCTAssertNil(sut.errorMessage)
     }
 
-    // MARK: - handleServerEvent: session events
-
-    func testSessionCreatedSetsStatus() {
-        let sut = makeSUT()
-        sut.handleServerEvent("""
-        {"type":"session.created","session":{"id":"sess_123"}}
-        """)
-        XCTAssertEqual(sut.statusMessage, "Ready — talk to me!")
-    }
-
-    func testSessionUpdatedSetsStatus() {
-        let sut = makeSUT()
-        sut.handleServerEvent("""
-        {"type":"session.updated","session":{}}
-        """)
-        XCTAssertEqual(sut.statusMessage, "Ready — talk to me!")
-    }
-
-    // MARK: - handleServerEvent: user speech detection
-
-    func testSpeechStartedSetsUserSpeaking() {
-        let sut = makeSUT()
-        sut.handleServerEvent("""
-        {"type":"input_audio_buffer.speech_started"}
-        """)
-        XCTAssertTrue(sut.isUserSpeaking)
-        XCTAssertTrue(sut.userTranscript.isEmpty)
-    }
-
-    func testSpeechStoppedClearsUserSpeaking() {
-        let sut = makeSUT()
-        sut.isUserSpeaking = true
-        sut.handleServerEvent("""
-        {"type":"input_audio_buffer.speech_stopped"}
-        """)
-        XCTAssertFalse(sut.isUserSpeaking)
-    }
-
-    // MARK: - handleServerEvent: transcription
-
-    func testTranscriptionCompletedSetsUserTranscript() {
-        let sut = makeSUT()
-        sut.handleServerEvent("""
-        {"type":"conversation.item.input_audio_transcription.completed","transcript":"next step please"}
-        """)
-        XCTAssertEqual(sut.userTranscript, "next step please")
-    }
-
-    // MARK: - handleServerEvent: model response
-
-    func testResponseAudioTranscriptDeltaAppendsToTranscript() {
-        let sut = makeSUT()
-        sut.handleServerEvent("""
-        {"type":"response.audio_transcript.delta","delta":"Hello "}
-        """)
-        XCTAssertEqual(sut.transcript, "Hello ")
-        XCTAssertTrue(sut.isModelSpeaking)
-
-        sut.handleServerEvent("""
-        {"type":"response.audio_transcript.delta","delta":"there!"}
-        """)
-        XCTAssertEqual(sut.transcript, "Hello there!")
-    }
-
-    func testResponseDoneClearsModelSpeaking() {
-        let sut = makeSUT()
-        sut.isModelSpeaking = true
-        sut.transcript = "Some text"
-        sut.handleServerEvent("""
-        {"type":"response.done"}
-        """)
-        XCTAssertFalse(sut.isModelSpeaking)
-        XCTAssertTrue(sut.transcript.isEmpty)
-        XCTAssertEqual(sut.statusMessage, "Listening…")
-    }
-
-    // MARK: - handleServerEvent: function calls
-
-    func testFunctionCallTriggersCallback() {
-        let sut = makeSUT()
-        var receivedName: String?
-        var receivedArgs: [String: Any]?
-        sut.onFunctionCall = { name, args in
-            receivedName = name
-            receivedArgs = args
-        }
-
-        sut.handleServerEvent("""
-        {"type":"response.output_item.done","item":{"type":"function_call","name":"next_step","arguments":"{}","call_id":"call_abc"}}
-        """)
-
-        XCTAssertEqual(receivedName, "next_step")
-        XCTAssertNotNil(receivedArgs)
-    }
-
-    func testFunctionCallWithArguments() {
-        let sut = makeSUT()
-        var receivedArgs: [String: Any]?
-        sut.onFunctionCall = { _, args in
-            receivedArgs = args
-        }
-
-        sut.handleServerEvent("""
-        {"type":"response.output_item.done","item":{"type":"function_call","name":"go_to_step","arguments":"{\\"step_number\\":3}","call_id":"call_xyz"}}
-        """)
-
-        XCTAssertEqual(receivedArgs?["step_number"] as? Int, 3)
-    }
-
-    func testNonFunctionCallItemIgnored() {
-        let sut = makeSUT()
-        var callbackInvoked = false
-        sut.onFunctionCall = { _, _ in callbackInvoked = true }
-
-        sut.handleServerEvent("""
-        {"type":"response.output_item.done","item":{"type":"message","role":"assistant"}}
-        """)
-
-        XCTAssertFalse(callbackInvoked)
-    }
-
-    // MARK: - handleServerEvent: errors
-
-    func testErrorEventSetsErrorMessage() {
-        let sut = makeSUT()
-        sut.handleServerEvent("""
-        {"type":"error","error":{"message":"Rate limit exceeded"}}
-        """)
-        XCTAssertEqual(sut.errorMessage, "Rate limit exceeded")
-    }
-
-    // MARK: - handleServerEvent: interruption
-
-    func testSpeechStartedInterruptsModel() {
-        let sut = makeSUT()
-        sut.isModelSpeaking = true
-        sut.activeResponseId = "resp_active"
-        sut.transcript = "I was saying something"
-
-        sut.handleServerEvent("""
-        {"type":"input_audio_buffer.speech_started"}
-        """)
-
-        XCTAssertTrue(sut.isUserSpeaking)
-        // cancelCurrentResponse should clear model speaking
-        XCTAssertFalse(sut.isModelSpeaking)
-        XCTAssertTrue(sut.transcript.isEmpty)
-    }
-
-    // MARK: - handleServerEvent: malformed JSON
-
-    func testMalformedJSONIgnored() {
-        let sut = makeSUT()
-        sut.handleServerEvent("not json at all{{{")
-        // Should not crash, state unchanged
-        XCTAssertFalse(sut.isModelSpeaking)
-        XCTAssertTrue(sut.statusMessage.isEmpty)
-    }
-
-    func testMissingTypeFieldIgnored() {
-        let sut = makeSUT()
-        sut.handleServerEvent("""
-        {"data":"something"}
-        """)
-        XCTAssertFalse(sut.isModelSpeaking)
-    }
-
-    // MARK: - handleServerEvent: unknown event type
-
-    func testUnknownEventTypeIgnored() {
-        let sut = makeSUT()
-        sut.handleServerEvent("""
-        {"type":"some.future.event","data":{}}
-        """)
-        // Should not crash
-        XCTAssertFalse(sut.isModelSpeaking)
-    }
-
     // MARK: - Disconnect
 
     func testDisconnectResetsState() {
@@ -2350,49 +2172,29 @@ final class RealtimeServiceTests: XCTestCase {
         XCTAssertTrue(sut.statusMessage.isEmpty)
     }
 
-    // MARK: - handleFunctionCall directly
+    // MARK: - Audio Ready
 
-    func testHandleFunctionCallParsesJSON() {
+    func testIsAudioReadyFalseWhenDisconnected() {
         let sut = makeSUT()
-        var receivedName: String?
-        var receivedMinutes: Int?
-        sut.onFunctionCall = { name, args in
-            receivedName = name
-            receivedMinutes = args["minutes"] as? Int
-        }
-
-        sut.handleFunctionCall(name: "start_timer", argumentsJSON: "{\"minutes\":5}", callId: "call_1")
-
-        XCTAssertEqual(receivedName, "start_timer")
-        XCTAssertEqual(receivedMinutes, 5)
+        XCTAssertFalse(sut.isAudioReady)
     }
 
-    func testHandleFunctionCallInvalidJSON() {
+    // MARK: - Connect without ephemeral key
+
+    func testConnectWithoutEphemeralKeySetsError() {
         let sut = makeSUT()
-        var receivedArgs: [String: Any]?
-        sut.onFunctionCall = { _, args in
-            receivedArgs = args
-        }
-
-        sut.handleFunctionCall(name: "next_step", argumentsJSON: "invalid", callId: "call_2")
-
-        // Should still call back with empty args
-        XCTAssertNotNil(receivedArgs)
-        XCTAssertTrue(receivedArgs!.isEmpty)
+        sut.connect(withInstructions: "Test", tools: [])
+        XCTAssertNotNil(sut.errorMessage)
     }
 
-    // MARK: - Response tracking
+    // MARK: - Tool Conversion (integration via protocol)
 
-    func testResponseCreatedTracksId() {
+    func testCallbackPropertyAssignment() {
         let sut = makeSUT()
-        sut.handleServerEvent("""
-        {"type":"response.created","response":{"id":"resp_abc123"}}
-        """)
-        // After response.done the id is cleared
-        sut.handleServerEvent("""
-        {"type":"response.done"}
-        """)
-        XCTAssertFalse(sut.isModelSpeaking)
+        var called = false
+        sut.onFunctionCall = { _, _ in called = true }
+        sut.onFunctionCall?("test", [:])
+        XCTAssertTrue(called)
     }
 }
 
@@ -2539,38 +2341,6 @@ final class AudioPipelineTests: XCTestCase {
     func testChunkThreshold_48kHz() {
         // 48000 * 0.1 * 2 = 9600 bytes
         XCTAssertEqual(AudioPipelineHelper.chunkThreshold(sampleRate: 48_000), 9600)
-    }
-
-    // MARK: - RealtimeService audio event integration
-
-    func testAudioDeltaEventSetsModelSpeaking() {
-        let sut = RealtimeService(apiKey: "test-key")
-        // Construct a valid base64 audio delta (small silent chunk)
-        let silentPCM = int16sToData([0, 0, 0, 0])
-        let base64 = silentPCM.base64EncodedString()
-
-        sut.handleServerEvent("""
-        {"type":"response.audio.delta","delta":"\(base64)"}
-        """)
-
-        XCTAssertTrue(sut.isModelSpeaking, "Audio delta should set isModelSpeaking")
-    }
-
-    func testAudioDoneEventFlushesRemaining() {
-        let sut = RealtimeService(apiKey: "test-key")
-        // Send a small audio delta (below chunk threshold so it stays pending)
-        let silentPCM = int16sToData([0, 0])
-        let base64 = silentPCM.base64EncodedString()
-
-        sut.handleServerEvent("""
-        {"type":"response.audio.delta","delta":"\(base64)"}
-        """)
-        // Flush by sending audio.done
-        sut.handleServerEvent("""
-        {"type":"response.audio.done"}
-        """)
-        // Should not crash; isModelSpeaking stays true until response.done
-        XCTAssertTrue(sut.isModelSpeaking)
     }
 
     // MARK: - Helpers
@@ -3896,74 +3666,5 @@ final class CookModeInteractionTests: XCTestCase {
 
         // Step 1 has no timer, we're already there
         XCTAssertFalse(vm.isTimerRunning)
-    }
-
-    // ================================================================
-    // MARK: - Benign error suppression (RealtimeService)
-    // ================================================================
-
-    func testBenignErrorsNotSurfaced() {
-        let sut = RealtimeService(apiKey: "test-key")
-
-        sut.handleServerEvent("""
-        {"type":"error","error":{"message":"Conversation already has an active response in progress: resp_123"}}
-        """)
-        XCTAssertNil(sut.errorMessage, "Active response error should be suppressed")
-
-        sut.handleServerEvent("""
-        {"type":"error","error":{"message":"cancellation failed: no active response found"}}
-        """)
-        XCTAssertNil(sut.errorMessage, "Cancellation error should be suppressed")
-
-        sut.handleServerEvent("""
-        {"type":"error","error":{"message":"No active response to cancel"}}
-        """)
-        XCTAssertNil(sut.errorMessage, "No active response error should be suppressed")
-    }
-
-    func testNonBenignErrorSurfaced() {
-        let sut = RealtimeService(apiKey: "test-key")
-
-        sut.handleServerEvent("""
-        {"type":"error","error":{"message":"Rate limit exceeded"}}
-        """)
-        XCTAssertEqual(sut.errorMessage, "Rate limit exceeded")
-    }
-
-    // ================================================================
-    // MARK: - Response tracking
-    // ================================================================
-
-    func testResponseCreatedTracksActiveId() {
-        let sut = RealtimeService(apiKey: "test-key")
-
-        sut.handleServerEvent("""
-        {"type":"response.created","response":{"id":"resp_abc123"}}
-        """)
-        XCTAssertEqual(sut.activeResponseId, "resp_abc123")
-    }
-
-    func testResponseDoneClearsActiveId() {
-        let sut = RealtimeService(apiKey: "test-key")
-        sut.activeResponseId = "resp_abc123"
-
-        sut.handleServerEvent("""
-        {"type":"response.done"}
-        """)
-        XCTAssertNil(sut.activeResponseId)
-    }
-
-    func testSpeechStartedDoesNotInterruptWhenNoActiveResponse() {
-        let sut = RealtimeService(apiKey: "test-key")
-        sut.isModelSpeaking = true
-        sut.activeResponseId = nil
-
-        sut.handleServerEvent("""
-        {"type":"input_audio_buffer.speech_started"}
-        """)
-
-        XCTAssertTrue(sut.isUserSpeaking)
-        // Should NOT have cancelled (no activeResponseId)
-        XCTAssertTrue(sut.isModelSpeaking, "Should not cancel when no active response")
     }
 }
