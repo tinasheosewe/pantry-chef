@@ -16,6 +16,15 @@
   - **I**nterface Segregation: prefer small, focused protocols over large ones.
   - **D**ependency Inversion: depend on abstractions, not concrete implementations.
 
+## Performance & Efficiency
+- Write efficient code. Speed matters. If there is a faster way to accomplish the same result, use it.
+- Choose the right data structure for the job — dictionaries for lookups, sets for membership checks, arrays only when order matters. O(n) vs O(1) is not a nitpick.
+- Avoid redundant work: don't compute the same value twice, don't iterate a collection multiple times when once suffices, don't re-fetch data you already have.
+- Precalculate at development/build time whatever can be known ahead of runtime — lookup tables, constants, static mappings, parsed formats. Move work out of runtime wherever possible.
+- Minimize allocations in hot paths. Reuse buffers, prefer value types, avoid unnecessary copies of large data.
+- Batch operations where possible (database writes, network calls, UI updates) instead of performing them one at a time.
+- Profile before optimizing blind, but never write knowingly slow code with "we'll optimize later" as an excuse. Write it efficiently the first time.
+
 ## Naming & Readability
 - Names are documentation. Use clear, descriptive names that make comments unnecessary. If a name needs a comment to explain it, rename it.
 - Comments explain **why**, never **what**. The code itself should make the "what" obvious.
