@@ -60,13 +60,6 @@ struct MultiRecipeScheduler {
         }
     }
 
-    /// A parallel activity that runs during a passive block.
-    struct ParallelActivity: Identifiable {
-        let id = UUID()
-        let passiveBlock: ScheduledBlock
-        let activeBlocks: [ScheduledBlock]
-    }
-
     // MARK: - Schedule
 
     /// Build an interleaved timeline from multiple recipes.
@@ -84,11 +77,9 @@ struct MultiRecipeScheduler {
         // 2. Build dependency graph (within-recipe ordering)
         let dependencies = buildDependencies(tasks: allTasks, recipes: recipes)
 
-        // 3. Merge prep tasks across recipes
-        let (mergedTasks, mergeMap) = mergePrepTasks(allTasks)
-
-        // 4. Schedule using priority-based list scheduling
-        return listSchedule(tasks: mergedTasks, dependencies: dependencies, mergeMap: mergeMap)
+        // 3. Schedule using priority-based list scheduling
+        //    (no pre-merging — the scheduler batches same-class tasks naturally)
+        return listSchedule(tasks: allTasks, dependencies: dependencies)
     }
 
     // MARK: - Single Recipe (simple linear)
@@ -165,83 +156,17 @@ struct MultiRecipeScheduler {
         return deps
     }
 
-    // MARK: - Prep Task Merging
-
-    /// Merge prep-class tasks across recipes into combined blocks.
-    /// Returns (merged task list, mapping from merged ID to original IDs).
-    private static func mergePrepTasks(_ tasks: [StepTask]) -> ([StepTask], [UUID: [UUID]]) {
-        var mergeMap: [UUID: [UUID]] = [:]
-        var result: [StepTask] = []
-        var consumed = Set<UUID>()
-
-        // Group by action class
-        let byClass = Dictionary(grouping: tasks, by: { $0.action.actionClass })
-
-        // Merge prepCut tasks that can be done together
-        if let cutTasks = byClass[.prepCut], cutTasks.count > 1 {
-            // Group by equipment (all cutting board tasks can merge)
-            let merged = StepTask(
-                action: .cut(.dice), // representative action
-                ingredient: cutTasks.compactMap(\.ingredient).joined(separator: ", "),
-                durationSeconds: cutTasks.map(\.durationSeconds).reduce(0, +),
-                type: .active,
-                requiresEquipment: "cutting board"
-            )
-            mergeMap[merged.id] = cutTasks.map(\.id)
-            result.append(merged)
-            consumed.formUnion(cutTasks.map(\.id))
-        }
-
-        // Merge heatSetup tasks (same equipment + temp)
-        if let heatTasks = byClass[.heatSetup], heatTasks.count > 1 {
-            // Group by equipment
-            let byEquip = Dictionary(grouping: heatTasks, by: { $0.requiresEquipment ?? "unknown" })
-            for (_, equipTasks) in byEquip {
-                if equipTasks.count > 1 {
-                    let merged = StepTask(
-                        action: .heat,
-                        ingredient: equipTasks.compactMap(\.ingredient).joined(separator: " & "),
-                        durationSeconds: equipTasks.map(\.durationSeconds).max() ?? 60,
-                        type: .active,
-                        requiresEquipment: equipTasks.first?.requiresEquipment,
-                        temperature: equipTasks.compactMap(\.temperature).max()
-                    )
-                    mergeMap[merged.id] = equipTasks.map(\.id)
-                    result.append(merged)
-                    consumed.formUnion(equipTasks.map(\.id))
-                }
-            }
-        }
-
-        // Add all non-merged tasks
-        for task in tasks where !consumed.contains(task.id) {
-            result.append(task)
-            mergeMap[task.id] = [task.id]
-        }
-
-        return (result, mergeMap)
-    }
-
     // MARK: - List Scheduling
 
-    private static func listSchedule(tasks: [StepTask], dependencies: [UUID: Set<UUID>], mergeMap: [UUID: [UUID]]) -> [ScheduledBlock] {
+    private static func listSchedule(tasks: [StepTask], dependencies: [UUID: Set<UUID>]) -> [ScheduledBlock] {
         var timeline: [ScheduledBlock] = []
         var completed = Set<UUID>()
         var remaining = Set(tasks.map(\.id))
         let taskById = Dictionary(uniqueKeysWithValues: tasks.map { ($0.id, $0) })
 
-        // Resolve original IDs for dependency checking
-        func originalIds(for taskId: UUID) -> [UUID] {
-            mergeMap[taskId] ?? [taskId]
-        }
-
         func isReady(_ taskId: UUID) -> Bool {
-            let originals = originalIds(for: taskId)
-            for origId in originals {
-                let prereqs = dependencies[origId] ?? []
-                if !prereqs.isSubset(of: completed) { return false }
-            }
-            return true
+            let prereqs = dependencies[taskId] ?? []
+            return prereqs.isSubset(of: completed)
         }
 
         var iterations = 0
@@ -289,20 +214,19 @@ struct MultiRecipeScheduler {
                 timeline.append(passiveBlock)
 
                 // Mark as completed
-                for origId in originalIds(for: passiveTask.id) {
-                    completed.insert(origId)
-                }
+                completed.insert(passiveTask.id)
                 remaining.remove(passiveTask.id)
 
-                // Fill passive gap with active tasks
+                // Fill passive gap with active tasks, recalculating readiness after each
                 var gap = passiveTask.durationSeconds
-                let activeReady = remaining.filter { isReady($0) }
-                    .compactMap { taskById[$0] }
-                    .filter { $0.type == .active }
-                    .sorted { $0.durationSeconds < $1.durationSeconds }
+                while gap > 0 {
+                    let fillerCandidates = remaining.filter { isReady($0) }
+                        .compactMap { taskById[$0] }
+                        .filter { $0.type == .active && $0.durationSeconds <= gap }
+                        .sorted { $0.durationSeconds < $1.durationSeconds }
 
-                for filler in activeReady {
-                    guard gap > 0 && filler.durationSeconds <= gap else { continue }
+                    guard let filler = fillerCandidates.first else { break }
+
                     let fillerBlock = ScheduledBlock(
                         id: UUID(),
                         tasks: [filler],
@@ -312,25 +236,21 @@ struct MultiRecipeScheduler {
                     )
                     timeline.append(fillerBlock)
                     gap -= filler.durationSeconds
-                    for origId in originalIds(for: filler.id) {
-                        completed.insert(origId)
-                    }
+                    completed.insert(filler.id)
                     remaining.remove(filler.id)
                 }
-            } else if selectedClass == .prepCut || selectedClass == .prepOther {
-                // Batch all prep tasks of this class into one block
+            } else if selectedClass == .prepCut || selectedClass == .prepOther || selectedClass == .heatSetup {
+                // Batch all same-class tasks into one block
                 let block = ScheduledBlock(
                     id: UUID(),
                     tasks: selectedTasks,
-                    type: .active,
+                    type: selectedTasks.allSatisfy({ $0.type == .passive }) ? .passive : .active,
                     actionClass: selectedClass,
                     totalDurationSeconds: selectedTasks.map(\.durationSeconds).reduce(0, +)
                 )
                 timeline.append(block)
                 for task in selectedTasks {
-                    for origId in originalIds(for: task.id) {
-                        completed.insert(origId)
-                    }
+                    completed.insert(task.id)
                     remaining.remove(task.id)
                 }
             } else {
@@ -344,9 +264,7 @@ struct MultiRecipeScheduler {
                     totalDurationSeconds: task.durationSeconds
                 )
                 timeline.append(block)
-                for origId in originalIds(for: task.id) {
-                    completed.insert(origId)
-                }
+                completed.insert(task.id)
                 remaining.remove(task.id)
             }
         }

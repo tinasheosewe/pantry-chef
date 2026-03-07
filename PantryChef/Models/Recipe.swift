@@ -228,8 +228,14 @@ struct Recipe: Identifiable, Codable, Hashable {
         )
     }
 
+    // MARK: - Stable IDs for built-in recipes (survive app restarts for CookingSession matching)
+    static let stirFryId  = UUID(uuidString: "A1B2C3D4-0001-0001-0001-AABBCCDDEEFF")!
+    static let avocadoId  = UUID(uuidString: "A1B2C3D4-0002-0002-0002-AABBCCDDEEFF")!
+    static let friedRiceId = UUID(uuidString: "A1B2C3D4-0003-0003-0003-AABBCCDDEEFF")!
+
     // MARK: - Sample Data
     static let sample = Recipe(
+        id: stirFryId,
         title: "Simple Chicken Stir Fry",
         description: "A quick and healthy chicken stir fry with vegetables.",
         ingredients: [
@@ -292,6 +298,7 @@ struct Recipe: Identifiable, Codable, Hashable {
     static let samples: [Recipe] = [
         sample,
         Recipe(
+            id: avocadoId,
             title: "Avocado Toast",
             description: "Quick, healthy, and delicious breakfast.",
             ingredients: [
@@ -325,6 +332,7 @@ struct Recipe: Identifiable, Codable, Hashable {
             nutrition: NutritionInfo(calories: 280, protein: 6, carbohydrates: 30, fat: 16, fiber: 8, sugar: 2, sodium: 300)
         ),
         Recipe(
+            id: friedRiceId,
             title: "Egg Fried Rice",
             description: "A classic quick dinner using leftover rice.",
             ingredients: [
