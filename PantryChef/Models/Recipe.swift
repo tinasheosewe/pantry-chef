@@ -44,19 +44,32 @@ struct RecipeStep: Identifiable, Codable, Hashable {
     var instruction: String
     var timerMinutes: Int?
     var tip: String?
+    /// Realistic wall-clock duration for this step in seconds.
+    /// Used for deterministic background notification scheduling.
+    var estimatedDurationSeconds: Int?
 
     init(
         id: UUID = UUID(),
         stepNumber: Int,
         instruction: String,
         timerMinutes: Int? = nil,
-        tip: String? = nil
+        tip: String? = nil,
+        estimatedDurationSeconds: Int? = nil
     ) {
         self.id = id
         self.stepNumber = stepNumber
         self.instruction = instruction
         self.timerMinutes = timerMinutes
         self.tip = tip
+        self.estimatedDurationSeconds = estimatedDurationSeconds
+    }
+
+    /// Best estimate of this step's duration in seconds.
+    /// Priority: estimatedDurationSeconds > timerMinutes*60 > 90s default.
+    var effectiveDurationSeconds: Int {
+        if let est = estimatedDurationSeconds { return est }
+        if let timer = timerMinutes { return timer * 60 }
+        return 90 // sensible default for an untimed prep step
     }
 }
 
@@ -226,15 +239,15 @@ struct Recipe: Identifiable, Codable, Hashable {
             Ingredient(name: "Salt", quantity: 1, unit: .pinch, category: .spices, isOptional: true),
         ],
         steps: [
-            RecipeStep(stepNumber: 1, instruction: "Cook the rice according to package directions.", timerMinutes: 15),
-            RecipeStep(stepNumber: 2, instruction: "Slice the chicken breast into thin strips."),
+            RecipeStep(stepNumber: 1, instruction: "Cook the rice according to package directions.", timerMinutes: 15, estimatedDurationSeconds: 900),
+            RecipeStep(stepNumber: 2, instruction: "Slice the chicken breast into thin strips.", estimatedDurationSeconds: 120),
             RecipeStep(stepNumber: 3, instruction: "Dice the onion, mince the garlic, and slice the bell pepper.",
-                       tip: "Dice means cutting into small cubes, about 1/4 inch."),
-            RecipeStep(stepNumber: 4, instruction: "Heat olive oil in a large pan over medium-high heat."),
-            RecipeStep(stepNumber: 5, instruction: "Cook the chicken strips until golden brown, about 5-6 minutes.", timerMinutes: 6),
-            RecipeStep(stepNumber: 6, instruction: "Add onion, garlic, and bell pepper. Cook for 3 minutes.", timerMinutes: 3),
-            RecipeStep(stepNumber: 7, instruction: "Add soy sauce and toss everything together. Cook 1 more minute.", timerMinutes: 1),
-            RecipeStep(stepNumber: 8, instruction: "Serve the stir fry over the cooked rice. Enjoy!"),
+                       tip: "Dice means cutting into small cubes, about 1/4 inch.", estimatedDurationSeconds: 180),
+            RecipeStep(stepNumber: 4, instruction: "Heat olive oil in a large pan over medium-high heat.", estimatedDurationSeconds: 60),
+            RecipeStep(stepNumber: 5, instruction: "Cook the chicken strips until golden brown, about 5-6 minutes.", timerMinutes: 6, estimatedDurationSeconds: 360),
+            RecipeStep(stepNumber: 6, instruction: "Add onion, garlic, and bell pepper. Cook for 3 minutes.", timerMinutes: 3, estimatedDurationSeconds: 180),
+            RecipeStep(stepNumber: 7, instruction: "Add soy sauce and toss everything together. Cook 1 more minute.", timerMinutes: 1, estimatedDurationSeconds: 60),
+            RecipeStep(stepNumber: 8, instruction: "Serve the stir fry over the cooked rice. Enjoy!", estimatedDurationSeconds: 30),
         ],
         servings: 4,
         prepTimeMinutes: 15,
@@ -267,10 +280,10 @@ struct Recipe: Identifiable, Codable, Hashable {
                 Ingredient(name: "Red Pepper Flakes", quantity: 1, unit: .pinch, category: .spices, isOptional: true),
             ],
             steps: [
-                RecipeStep(stepNumber: 1, instruction: "Toast the bread until golden and crispy."),
-                RecipeStep(stepNumber: 2, instruction: "Halve the avocado, remove the pit, and scoop the flesh into a bowl."),
-                RecipeStep(stepNumber: 3, instruction: "Mash the avocado with a fork. Add salt and lemon juice if using."),
-                RecipeStep(stepNumber: 4, instruction: "Spread the mashed avocado on the toast. Add red pepper flakes if desired."),
+                RecipeStep(stepNumber: 1, instruction: "Toast the bread until golden and crispy.", estimatedDurationSeconds: 180),
+                RecipeStep(stepNumber: 2, instruction: "Halve the avocado, remove the pit, and scoop the flesh into a bowl.", estimatedDurationSeconds: 30),
+                RecipeStep(stepNumber: 3, instruction: "Mash the avocado with a fork. Add salt and lemon juice if using.", estimatedDurationSeconds: 60),
+                RecipeStep(stepNumber: 4, instruction: "Spread the mashed avocado on the toast. Add red pepper flakes if desired.", estimatedDurationSeconds: 30),
             ],
             servings: 1,
             prepTimeMinutes: 5,
@@ -293,11 +306,11 @@ struct Recipe: Identifiable, Codable, Hashable {
                 Ingredient(name: "Salt", quantity: 1, unit: .pinch, category: .spices, isOptional: true),
             ],
             steps: [
-                RecipeStep(stepNumber: 1, instruction: "Heat oil in a large pan or wok over high heat."),
-                RecipeStep(stepNumber: 2, instruction: "Scramble the eggs and set aside."),
-                RecipeStep(stepNumber: 3, instruction: "Sauté diced onion and minced garlic until fragrant.", timerMinutes: 2),
-                RecipeStep(stepNumber: 4, instruction: "Add rice and stir-fry for 3-4 minutes until heated through.", timerMinutes: 4),
-                RecipeStep(stepNumber: 5, instruction: "Add soy sauce and scrambled eggs. Toss together and serve."),
+                RecipeStep(stepNumber: 1, instruction: "Heat oil in a large pan or wok over high heat.", estimatedDurationSeconds: 60),
+                RecipeStep(stepNumber: 2, instruction: "Scramble the eggs and set aside.", estimatedDurationSeconds: 90),
+                RecipeStep(stepNumber: 3, instruction: "Sauté diced onion and minced garlic until fragrant.", timerMinutes: 2, estimatedDurationSeconds: 120),
+                RecipeStep(stepNumber: 4, instruction: "Add rice and stir-fry for 3-4 minutes until heated through.", timerMinutes: 4, estimatedDurationSeconds: 240),
+                RecipeStep(stepNumber: 5, instruction: "Add soy sauce and scrambled eggs. Toss together and serve.", estimatedDurationSeconds: 60),
             ],
             servings: 3,
             prepTimeMinutes: 10,

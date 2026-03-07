@@ -275,8 +275,6 @@ final class CookModeViewModel {
         case "finish_cooking":
             endCookingSession()
             showCompletionScreen = true
-        case "schedule_notifications":
-            handleScheduleNotifications(args: args)
         default:
             break
         }
@@ -428,38 +426,6 @@ final class CookModeViewModel {
                     "properties": [:] as [String: Any],
                     "required": [] as [String]
                 ]
-            ],
-            [
-                "type": "function",
-                "name": "schedule_notifications",
-                "description": "Schedule local notifications for remaining recipe steps. Called when the user wants to continue cooking in the background. Each step should have a cumulative delay from now.",
-                "parameters": [
-                    "type": "object",
-                    "properties": [
-                        "steps": [
-                            "type": "array",
-                            "description": "Array of step notifications to schedule",
-                            "items": [
-                                "type": "object",
-                                "properties": [
-                                    "step_number": [
-                                        "type": "integer",
-                                        "description": "1-based step number"
-                                    ],
-                                    "delay_seconds": [
-                                        "type": "number",
-                                        "description": "Seconds from now until this notification fires (cumulative)"
-                                    ],
-                                    "message": [
-                                        "type": "string",
-                                        "description": "Self-contained instruction for the notification body"
-                                    ]
-                                ] as [String: Any]
-                            ] as [String: Any]
-                        ] as [String: Any]
-                    ],
-                    "required": ["steps"]
-                ]
             ]
         ]
     }
@@ -562,61 +528,33 @@ final class CookModeViewModel {
 
     // MARK: - Continue in Background
 
-    /// Tells the AI to schedule notifications for all remaining steps, then
-    /// disconnects voice and saves the session.
+    /// Schedules notifications deterministically using pre-computed step durations,
+    /// then disconnects voice and saves the session.
     func continueInBackground() {
         guard isConversationActive else { return }
         isSchedulingBackground = true
 
-        let remainingSteps = steps.enumerated()
-            .filter { $0.offset >= currentStepIndex }
-            .map { "Step \($0.element.stepNumber): \($0.element.instruction)" +
-                   ($0.element.timerMinutes != nil ? " [Timer: \($0.element.timerMinutes!) min]" : "") }
-            .joined(separator: "\n")
-
-        let message = """
-        The user is leaving cook mode. Schedule notifications for ALL remaining steps \
-        using the schedule_notifications tool. For each step, estimate the cumulative \
-        delay_seconds from now (timed steps use their timer duration; action-only steps \
-        estimate ~60-120 seconds of active cooking time). Include a clear, self-contained \
-        message for each notification so the user can cook from the notification alone. \
-        Current step: \(currentStepIndex + 1) of \(steps.count).
-
-        Remaining steps:
-        \(remainingSteps)
-
-        Call schedule_notifications now with the full schedule.
-        """
-
-        realtimeService.sendUserMessage(message)
-
-        // The AI will call schedule_notifications tool.
-        // handleScheduleNotifications() will finish the background transition.
-    }
-
-    /// Handles the AI's schedule_notifications tool call.
-    private func handleScheduleNotifications(args: [String: Any]) {
-        guard let stepsArray = args["steps"] as? [[String: Any]] else {
-            print("[CookMode] ❌ schedule_notifications: missing steps array")
-            isSchedulingBackground = false
-            return
-        }
-
+        let remaining = steps.enumerated().filter { $0.offset >= currentStepIndex }
         let recipeId = recipe.id.uuidString
         let notificationService = NotificationService.shared
 
         // Cancel any existing notifications for this recipe
         notificationService.cancelAllNotifications(recipeId: recipeId)
 
-        // Schedule each step notification
-        for stepInfo in stepsArray {
-            guard let stepNumber = stepInfo["step_number"] as? Int,
-                  let delaySeconds = stepInfo["delay_seconds"] as? Double,
-                  let message = stepInfo["message"] as? String else {
-                continue
+        var cumulativeDelay: Double = 0
+
+        for (_, step) in remaining {
+            let duration = Double(step.effectiveDurationSeconds)
+
+            // Build a concise, self-contained notification message
+            let message: String
+            if let timer = step.timerMinutes {
+                message = "Step \(step.stepNumber)/\(steps.count): \(step.instruction) ⏱ \(timer) min"
+            } else {
+                message = "Step \(step.stepNumber)/\(steps.count): \(step.instruction)"
             }
 
-            let stepIndex = stepNumber - 1
+            let stepIndex = step.stepNumber - 1
             let nextPreview: String?
             if stepIndex + 1 < steps.count {
                 nextPreview = steps[stepIndex + 1].instruction
@@ -631,13 +569,14 @@ final class CookModeViewModel {
                 recipeName: recipe.title,
                 message: message,
                 nextStepPreview: nextPreview,
-                delaySeconds: delaySeconds
+                delaySeconds: cumulativeDelay
             )
+
+            cumulativeDelay += duration
         }
 
         // Schedule session expiry (2 hours after last notification)
-        let maxDelay = stepsArray.compactMap { $0["delay_seconds"] as? Double }.max() ?? 0
-        let expiryDelay = maxDelay + 7200 // 2 hours after last step
+        let expiryDelay = cumulativeDelay + 7200
         notificationService.scheduleSessionExpiry(
             recipeId: recipeId,
             recipeName: recipe.title,
@@ -664,7 +603,7 @@ final class CookModeViewModel {
         )
         session.save()
 
-        print("[CookMode] Background notifications scheduled (\(stepsArray.count) steps)")
+        print("[CookMode] ✅ Background notifications scheduled deterministically (\(remaining.count) steps, total \(Int(cumulativeDelay))s)")
 
         // Complete the background transition
         isSchedulingBackground = false

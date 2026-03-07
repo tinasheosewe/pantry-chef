@@ -141,6 +141,9 @@ final class MockAIService: AIServiceProtocol {
         parseRecipeFromTextCallCount += 1
         return importResultToReturn
     }
+    func estimateStepDurations(for steps: [RecipeStep], recipeTitle: String) async -> [RecipeStep] {
+        return steps
+    }
 }
 
 enum TestError: Error {

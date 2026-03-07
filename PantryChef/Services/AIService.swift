@@ -61,13 +61,15 @@ final class AIService: AIServiceProtocol {
         - "title": string
         - "description": string (1-2 sentences)
         - "ingredients": [{"name": string, "quantity": number, "unit": string}]
-        - "steps": [{"stepNumber": number, "instruction": string, "timerMinutes": number or null}]
+        - "steps": [{"stepNumber": number, "instruction": string, "timerMinutes": number or null, "estimatedDurationSeconds": number}]
         - "servings": number
         - "prepTimeMinutes": number
         - "cookTimeMinutes": number
         - "difficulty": number (1-5, where 1 is easiest)
         - "dietaryTags": [string]
         - "calories": number (estimated per serving)
+
+        For estimatedDurationSeconds, provide the realistic wall-clock time for each step in seconds (including active work, waiting, and cooking). For example: "chop onion" ≈ 60, "boil water" ≈ 300, "bake for 30 minutes" = 1800.
         - "protein": number (grams per serving)
         - "carbohydrates": number (grams per serving)
         - "fat": number (grams per serving)
@@ -151,11 +153,13 @@ final class AIService: AIServiceProtocol {
         - "title": string
         - "description": string (1-2 sentences)
         - "ingredients": [{"name": string, "quantity": number, "unit": string}]
-        - "steps": [{"stepNumber": number, "instruction": string, "timerMinutes": number or null}]
+        - "steps": [{"stepNumber": number, "instruction": string, "timerMinutes": number or null, "estimatedDurationSeconds": number}]
         - "servings": number
         - "prepTimeMinutes": number
         - "cookTimeMinutes": number
         - "difficulty": number (1-5)
+
+        For estimatedDurationSeconds, provide the realistic wall-clock time for each step in seconds (including active work, waiting, and cooking).
 
         Return ONLY the JSON array, no other text.
         """
@@ -174,12 +178,13 @@ final class AIService: AIServiceProtocol {
         - "title": string
         - "description": string
         - "ingredients": [{"name": string, "quantity": number, "unit": string, "category": string}]
-        - "steps": [{"stepNumber": number, "instruction": string, "timerMinutes": number or null}]
+        - "steps": [{"stepNumber": number, "instruction": string, "timerMinutes": number or null, "estimatedDurationSeconds": number}]
         - "servings": number
         - "prepTimeMinutes": number
         - "cookTimeMinutes": number
         - "dietaryTags": [string]
 
+        For estimatedDurationSeconds, provide the realistic wall-clock time for each step in seconds.
         For category, use one of: Dairy, Produce, Protein, Grains & Cereals, Spices & Herbs, Condiments & Sauces, Baking Supplies, Oils & Fats, Other.
         For unit, use: tsp, tbsp, cup, ml, L, g, kg, oz, lb, piece, whole, slice, clove, bunch, can, pinch.
 
@@ -203,17 +208,66 @@ final class AIService: AIServiceProtocol {
         - "title": string
         - "description": string (brief summary, generate if not present)
         - "ingredients": [{"name": string, "quantity": number, "unit": string, "category": string}]
-        - "steps": [{"stepNumber": number, "instruction": string, "timerMinutes": number or null}]
+        - "steps": [{"stepNumber": number, "instruction": string, "timerMinutes": number or null, "estimatedDurationSeconds": number}]
         - "servings": number
         - "prepTimeMinutes": number (estimate if not stated)
         - "cookTimeMinutes": number (estimate if not stated)
         - "dietaryTags": [string] (infer from ingredients)
+
+        For estimatedDurationSeconds, provide the realistic wall-clock time for each step in seconds.
 
         Return ONLY the JSON object, no other text.
         """
 
         guard let response = await sendChatRequest(prompt: prompt) else { return nil }
         return parseImportResult(from: response)
+    }
+
+    // MARK: - Step Duration Estimation (legacy backfill)
+
+    /// One-shot AI call to estimate step durations for recipes that lack them.
+    /// Returns updated steps with `estimatedDurationSeconds` populated.
+    func estimateStepDurations(for steps: [RecipeStep], recipeTitle: String) async -> [RecipeStep] {
+        let stepDescriptions = steps.enumerated().map { idx, step in
+            "Step \(step.stepNumber): \(step.instruction)" +
+            (step.timerMinutes != nil ? " [Timer: \(step.timerMinutes!) min]" : "")
+        }.joined(separator: "\n")
+
+        let prompt = """
+        For this recipe ("\(recipeTitle)"), estimate the realistic wall-clock duration \
+        of each step in seconds. Include all active work, waiting, and cooking time.
+
+        Steps:
+        \(stepDescriptions)
+
+        Return a JSON array where each element is:
+        {"stepNumber": number, "estimatedDurationSeconds": number}
+
+        Return ONLY the JSON array, no other text.
+        """
+
+        guard let response = await sendChatRequest(prompt: prompt) else { return steps }
+        guard let data = extractJSON(from: response) else { return steps }
+
+        do {
+            let items = try JSONDecoder().decode([[String: Int]].self, from: data)
+            var lookup: [Int: Int] = [:]
+            for item in items {
+                if let num = item["stepNumber"], let dur = item["estimatedDurationSeconds"] {
+                    lookup[num] = dur
+                }
+            }
+            return steps.map { step in
+                var updated = step
+                if updated.estimatedDurationSeconds == nil, let dur = lookup[step.stepNumber] {
+                    updated.estimatedDurationSeconds = dur
+                }
+                return updated
+            }
+        } catch {
+            print("[AIService] Failed to parse step durations: \(error)")
+            return steps
+        }
     }
 
     // MARK: - Networking (with retry)
@@ -332,7 +386,8 @@ final class AIService: AIServiceProtocol {
                     guard let instruction = step["instruction"] as? String else { return nil }
                     let num = (step["stepNumber"] as? Int) ?? 1
                     let timer = step["timerMinutes"] as? Int
-                    return RecipeStep(stepNumber: num, instruction: instruction, timerMinutes: timer)
+                    let estDuration = step["estimatedDurationSeconds"] as? Int
+                    return RecipeStep(stepNumber: num, instruction: instruction, timerMinutes: timer, estimatedDurationSeconds: estDuration)
                 } ?? []
 
                 var nutrition: NutritionInfo?

@@ -38,6 +38,7 @@ protocol AIServiceProtocol: AnyObject, Sendable {
     func leftoverTransformer(ingredients: [String]) async -> [Recipe]
     func parseRecipeFromURL(_ url: String) async -> RecipeImportResult?
     func parseRecipeFromText(_ extractedText: String) async -> RecipeImportResult?
+    func estimateStepDurations(for steps: [RecipeStep], recipeTitle: String) async -> [RecipeStep]
 }
 
 // MARK: - Speech Service Protocol
