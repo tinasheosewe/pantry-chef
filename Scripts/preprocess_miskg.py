@@ -14,7 +14,7 @@ Strategy:
 import json
 import csv
 import re
-from collections import defaultdict, Counter
+from collections import defaultdict
 from pathlib import Path
 
 DATA_DIR = Path("Scripts/miskg_data/Competition-Dataset")
@@ -97,22 +97,6 @@ MODIFIER_WORDS = {
     "unbleached", "enriched", "instant", "quick", "old", "fashioned",
 }
 
-# Things that appear so frequently in MISKG they're meaningless as substitutes.
-# They flood results and create nonsense pairings (green chili → ham, etc.)
-BLOCKLIST_SUBSTITUTES = {
-    # Generic proteins that co-occur in recipes but aren't substitutes for veggies/spices
-    "chicken", "beef", "meat", "pork", "ham", "turkey", "lamb",
-    "chicken breast", "ground beef", "ground pork", "ground turkey",
-    # Generic catch-alls
-    "spice", "seasoning", "sauce", "broth", "stock",
-    # Over-generic vegetables that appear for everything
-    "broccoli", "spinach", "zucchini", "carrot",
-}
-
-# Cap how many times the same substitute can appear globally.
-# If "ham" or "chicken" appears as a substitute for 50 different things, it's noise.
-MAX_GLOBAL_FREQUENCY = 15
-
 
 def is_modifier_variant(a, b):
     wa = set(a.lower().split()) - MODIFIER_WORDS
@@ -142,41 +126,41 @@ def main():
     print("  {} hand-curated ingredients".format(len(curated)))
 
     # Phase 1: Build filtered MISKG index
-    print("\nPhase 1: Filtering MISKG pairs...")
+    print("\nPhase 1: Building bidirectionality index...")
+    # Index which pairs appear in both directions in MISKG.
+    # True substitutions are symmetric (butter↔coconut oil). Co-ingredient noise
+    # is asymmetric (green chili appears with ham in a casserole, but ham recipes
+    # don't list green chili as their substitute). Requiring both directions is the
+    # most principled gate — no domain-specific blocklists needed.
+    forward = defaultdict(set)
+    for p in pairs:
+        forward[p["ingredient"].lower().strip()].add(p["substitution"].lower().strip())
+
+    bidirectional = set()
+    for ingr, subs in forward.items():
+        for sub in subs:
+            if ingr in forward.get(sub, set()):
+                bidirectional.add((min(ingr, sub), max(ingr, sub)))
+    print(f"  {len(bidirectional)} bidirectional pairs (out of {len(pairs)} total)")
+
+    print("\nPhase 1b: Applying food/modifier/Edamam filters...")
     known_foods = set(nutrition.keys())
     miskg = defaultdict(set)
     kept = 0
-    blocked_generic = 0
-    for p in pairs:
-        ingr = p["ingredient"].lower().strip()
-        sub = p["substitution"].lower().strip()
-        if is_same(ingr, sub):
+    dropped_not_food = 0
+    dropped_same = 0
+    for a, b in bidirectional:
+        if is_same(a, b) or is_modifier_variant(a, b):
+            dropped_same += 1
             continue
-        if is_modifier_variant(ingr, sub):
+        if a not in known_foods or b not in known_foods:
+            dropped_not_food += 1
             continue
-        if ingr not in known_foods or sub not in known_foods:
-            continue
-        if sub in BLOCKLIST_SUBSTITUTES:
-            blocked_generic += 1
-            continue
-        miskg[ingr].add(sub)
+        miskg[a].add(b)
+        miskg[b].add(a)
         kept += 1
-    print("  Kept {} pairs across {} ingredients".format(kept, len(miskg)))
-    print("  Blocked {} generic/noisy substitutes".format(blocked_generic))
-
-    # Apply global frequency cap: if a substitute appears for >MAX_GLOBAL_FREQUENCY
-    # different ingredients, it's too generic to be useful (recipe co-occurrence noise)
-    sub_freq = Counter(sub for subs in miskg.values() for sub in subs)
-    too_common = {sub for sub, freq in sub_freq.items() if freq > MAX_GLOBAL_FREQUENCY}
-    if too_common:
-        print("  Removing {} over-common substitutes (>{} uses): {}".format(
-            len(too_common), MAX_GLOBAL_FREQUENCY, sorted(too_common)[:10]))
-        before = sum(len(v) for v in miskg.values())
-        miskg = {ingr: {s for s in subs if s not in too_common}
-                 for ingr, subs in miskg.items()}
-        miskg = {k: v for k, v in miskg.items() if v}  # drop empty
-        after = sum(len(v) for v in miskg.values())
-        print("  Pairs after freq-cap: {} -> {}".format(before, after))
+    print(f"  Kept {kept} pairs -> {len(miskg)} ingredients")
+    print(f"  Dropped {dropped_same} self/modifier pairs, {dropped_not_food} unknown-food pairs")
 
     # Phase 2: Rank MISKG substitutes by nutrition similarity
     print("\nPhase 2: Ranking...")
