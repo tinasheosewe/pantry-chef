@@ -98,6 +98,14 @@ final class RecipeRepository {
         if changed { saveCachedRecipes() }
     }
 
+    /// Update favorite state in cached recipe
+    func updateFavoriteState(id: UUID, isFavorite: Bool) {
+        if let idx = cachedRecipes.firstIndex(where: { $0.id == id }) {
+            cachedRecipes[idx].isFavorite = isFavorite
+            saveCachedRecipes()
+        }
+    }
+
     /// Clear old cache entries (older than 7 days)
     func pruneCache() {
         let cutoff = Calendar.current.date(byAdding: .day, value: -7, to: Date()) ?? Date()

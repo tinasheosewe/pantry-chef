@@ -147,6 +147,33 @@ final class AppState {
         }
     }
 
+    /// Toggle favorite and handle cross-list movement:
+    /// - Favoriting a discover/AI recipe saves a copy into My Recipes (with isFavorite = true)
+    /// - Unfavoriting a saved-from-discover recipe removes it from My Recipes
+    func toggleFavoriteWithSave(_ recipe: Recipe) async {
+        var updated = recipe
+        updated.isFavorite.toggle()
+
+        let isAlreadyInMyRecipes = recipes.contains { $0.id == recipe.id }
+
+        if updated.isFavorite && !isAlreadyInMyRecipes {
+            // Save to My Recipes
+            await addRecipe(updated)
+        } else if !updated.isFavorite && isAlreadyInMyRecipes && !recipe.source.isUserRecipe {
+            // Remove non-user recipes from My Recipes when un-hearted
+            await deleteRecipe(updated)
+        } else {
+            // Normal update for user-created recipes
+            await updateRecipe(updated)
+        }
+
+        // Also update in discover cache so the heart state is reflected there
+        if let idx = discoverRecipes.firstIndex(where: { $0.id == recipe.id }) {
+            discoverRecipes[idx].isFavorite = updated.isFavorite
+        }
+        recipeRepository.updateFavoriteState(id: recipe.id, isFavorite: updated.isFavorite)
+    }
+
     func deleteRecipe(_ recipe: Recipe) async {
         do {
             try await storageService.deleteRecipe(recipe)

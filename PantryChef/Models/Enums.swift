@@ -233,12 +233,14 @@ enum RecipeSource: Codable, Hashable {
     case user
     case bundled
     case spoonacular(id: Int)
+    case aiGenerated
 
     var label: String {
         switch self {
         case .user: return "My Recipe"
         case .bundled: return "Featured"
         case .spoonacular: return "Discover"
+        case .aiGenerated: return "Chef"
         }
     }
 

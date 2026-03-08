@@ -185,9 +185,7 @@ final class RecipeViewModel {
     }
 
     func toggleFavorite(_ recipe: Recipe) async {
-        var updated = recipe
-        updated.isFavorite.toggle()
-        await appState.updateRecipe(updated)
+        await appState.toggleFavoriteWithSave(recipe)
     }
 
     /// Called when searchText changes — debounces then triggers API search on Discover tab.

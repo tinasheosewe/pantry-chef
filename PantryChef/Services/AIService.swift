@@ -277,6 +277,421 @@ final class AIService: AIServiceProtocol {
         return parseImportResult(from: response)
     }
 
+    // MARK: - AI Recipe Generation
+
+    /// Generate a complete recipe from a search query and user preferences.
+    // MARK: - Status Messages (lightweight, fast)
+
+    func generateStatusMessages(query: String, preferences: RecipeGenerationPreferences) async -> [String] {
+        var context = "Dish: \(query)"
+        if preferences.spiceLevel != .medium {
+            context += ", Spice: \(preferences.spiceLevel.rawValue)"
+        }
+        if let time = preferences.maxTimeMinutes {
+            context += ", Max time: \(time) min"
+        }
+        if !preferences.dietaryTags.isEmpty {
+            context += ", Dietary: \(preferences.dietaryTags.map(\.rawValue).joined(separator: ", "))"
+        }
+        if preferences.usePantry {
+            context += ", Using pantry ingredients"
+        }
+        if preferences.servings != 4 {
+            context += ", Servings: \(preferences.servings)"
+        }
+
+        let prompt = """
+        I'm about to generate a recipe for: \(context)
+
+        While the user waits (~30 seconds), I want to show fun, specific status messages about what's happening.
+        Generate exactly 8 short status messages (max 8 words each) that reference this SPECIFIC dish, its cuisine, \
+        its cooking techniques, and the user's preferences. Make them feel like a real chef is working.
+
+        Rules:
+        - Each message must end with "…" (ellipsis)
+        - Reference the actual dish, its ingredients, or techniques — NOT generic placeholders
+        - Progress from research → ingredients → technique → cooking → finishing
+        - Be playful and knowledgeable — show you know this dish
+        - If there are dietary/spice/time constraints, weave 1-2 of them in naturally
+        - Use standard sentence capitalization (capitalize first word only, not every word)
+
+        Return ONLY a JSON array of 8 strings. No explanation.
+        """
+
+        guard let response = await sendChatRequest(prompt: prompt, maxTokens: 300) else {
+            return Self.fallbackMessages(dish: query)
+        }
+
+        if let data = extractJSON(from: response),
+           let messages = try? JSONDecoder().decode([String].self, from: data),
+           messages.count >= 4 {
+            return messages
+        }
+
+        return Self.fallbackMessages(dish: query)
+    }
+
+    private static func fallbackMessages(dish: String) -> [String] {
+        [
+            "Researching the best \(dish) recipes…",
+            "Selecting the perfect ingredients…",
+            "Working out the technique…",
+            "Writing step-by-step instructions…",
+            "Calculating nutrition info…",
+            "Adding finishing touches…",
+            "Your \(dish) is almost ready…",
+        ]
+    }
+
+    // MARK: - Recipe Generation
+
+    func generateRecipe(query: String, preferences: RecipeGenerationPreferences) async -> Recipe? {
+        var contextLines: [String] = []
+        contextLines.append("Create a recipe for: \(query)")
+        contextLines.append("Servings: \(preferences.servings)")
+        contextLines.append("Spice level: \(preferences.spiceLevel.rawValue)")
+
+        if let maxTime = preferences.maxTimeMinutes {
+            contextLines.append("Maximum total time: \(maxTime) minutes")
+        }
+        if !preferences.dietaryTags.isEmpty {
+            contextLines.append("Dietary requirements: \(preferences.dietaryTags.map(\.rawValue).joined(separator: ", "))")
+        }
+        if preferences.usePantry, !preferences.pantryIngredients.isEmpty {
+            contextLines.append("Adapt the recipe to use these available ingredients where possible: \(preferences.pantryIngredients.joined(separator: ", "))")
+        }
+
+        let context = contextLines.joined(separator: "\n")
+
+        let prompt = """
+        \(context)
+
+        Create an authentic, well-tested recipe. Use realistic quantities, proper technique, \
+        and accurate cooking times. The recipe should feel like it comes from an experienced \
+        home cook, not a generic template.
+
+        IMPORTANT: Use standard title capitalization for the recipe title (capitalize major words). \
+        Use sentence case for ingredient names (lowercase unless a proper noun, e.g. "chicken breast" not "Chicken Breast"). \
+        Use sentence case for step instructions.
+
+        Return a single JSON object with:
+        - "title": string (specific and descriptive, e.g. "Hyderabadi Chicken Dum Biryani" not just "Chicken Biryani")
+        - "description": string (2-3 sentences about the dish, its origin, and what makes it special)
+        - "ingredients": [{"name": string, "quantity": number, "unit": string, "category": string}]
+        - "steps": [{"stepNumber": number, "instruction": string, "timerMinutes": number or null, "estimatedDurationSeconds": number, "tasks": [task]}]
+        - "servings": \(preferences.servings)
+        - "prepTimeMinutes": number
+        - "cookTimeMinutes": number
+        - "difficulty": number (1-5)
+        - "dietaryTags": [string] (from: Vegetarian, Vegan, Gluten-Free, Dairy-Free, Nut-Free, Low Carb, High Protein, Keto, Paleo, Halal, Kosher)
+        - "mealType": string (one of: Breakfast, Lunch, Dinner, Snack, Dessert)
+        - "cuisine": string (one of: Italian, Mexican, Chinese, Japanese, Indian, Thai, French, Mediterranean, American, Korean, Vietnamese, Greek, Middle Eastern, Ethiopian, Caribbean, Other)
+        - "calories": number (per serving)
+        - "protein": number (grams per serving)
+        - "carbohydrates": number (grams per serving)
+        - "fat": number (grams per serving)
+        - "fiber": number (grams per serving)
+        - "sugar": number (grams per serving)
+        - "sodium": number (mg per serving)
+
+        For unit, use: tsp, tbsp, cup, ml, L, g, kg, oz, lb, piece, whole, slice, clove, bunch, can, pinch, to taste.
+        For category, use: Dairy, Produce, Protein, Grains & Cereals, Spices & Herbs, Condiments & Sauces, Baking Supplies, Oils & Fats, Other.
+
+        Each task object: {"taskIndex": number, "action": string, "ingredient": string or null, "durationSeconds": number, "type": "active" or "passive", "effort": "easy" or "medium" or "hard", "requiresEquipment": string or null, "dependsOn": [number]}
+        "taskIndex" — unique integer starting at 0, incrementing across ALL steps.
+        "dependsOn" — taskIndex values of prerequisite tasks.
+        "effort" — "easy" (occasional checking), "medium" (periodic attention), "hard" (constant hands-on).
+        Valid actions: "cut_dice", "cut_mince", "cut_slice", "cut_chop", "peel", "measure", "mix", "marinate", "season", "heat", "saute", "boil", "simmer", "fry_pan", "fry_deep", "fry_stir", "bake", "roast", "grill", "steam", "plate", "garnish", "rest", "serve", "toss", or a custom string.
+
+        Return ONLY the JSON object, no other text.
+        """
+
+        guard let response = await sendChatRequest(prompt: prompt) else { return nil }
+
+        // Parse the single recipe from the response
+        guard let data = extractJSON(from: response) else { return nil }
+        do {
+            let dict = try JSONDecoder().decode([String: AnyCodable].self, from: data)
+            guard let title = dict["title"]?.value as? String else { return nil }
+            let description = dict["description"]?.value as? String
+            let servings = dict["servings"]?.value as? Int ?? preferences.servings
+            let prepTime = dict["prepTimeMinutes"]?.value as? Int
+            let cookTime = dict["cookTimeMinutes"]?.value as? Int
+            let difficultyRaw = dict["difficulty"]?.value as? Int ?? 2
+            let difficulty = DifficultyLevel(rawValue: difficultyRaw) ?? .easy
+
+            let ingredients: [Ingredient] = (dict["ingredients"]?.value as? [[String: Any]])?.compactMap { ing in
+                guard let name = ing["name"] as? String else { return nil }
+                let qty = (ing["quantity"] as? Double) ?? (ing["quantity"] as? Int).map { Double($0) } ?? 1
+                let unitStr = ing["unit"] as? String
+                let unit = MeasurementUnit.allCases.first { $0.rawValue == unitStr }
+                let categoryStr = ing["category"] as? String
+                let category = FoodCategory.allCases.first { $0.rawValue == categoryStr }
+                return Ingredient(name: name, quantity: qty, unit: unit, category: category ?? .other)
+            } ?? []
+
+            // Parse steps with tasks (same two-pass approach as parseRecipes)
+            var indexToUUID: [Int: UUID] = [:]
+            var rawDepsMap: [UUID: [Int]] = [:]
+
+            var parsedSteps: [(instruction: String, num: Int, timer: Int?, estDuration: Int?, taskDicts: [[String: Any]])] = []
+            if let stepDicts = dict["steps"]?.value as? [[String: Any]] {
+                for step in stepDicts {
+                    guard let instruction = step["instruction"] as? String else { continue }
+                    let num = (step["stepNumber"] as? Int) ?? 1
+                    let timer = step["timerMinutes"] as? Int
+                    let estDuration = step["estimatedDurationSeconds"] as? Int
+                    let taskDicts = (step["tasks"] as? [[String: Any]]) ?? []
+                    parsedSteps.append((instruction, num, timer, estDuration, taskDicts))
+                    for taskDict in taskDicts {
+                        let idx = taskDict["taskIndex"] as? Int
+                        let taskId = UUID()
+                        if let idx { indexToUUID[idx] = taskId }
+                        rawDepsMap[taskId] = (taskDict["dependsOn"] as? [Int]) ?? []
+                    }
+                }
+            }
+
+            let steps: [RecipeStep] = parsedSteps.map { info in
+                let tasks: [StepTask] = info.taskDicts.compactMap { taskDict in
+                    guard let actionStr = taskDict["action"] as? String else { return nil }
+                    let action = Self.parseAction(actionStr)
+                    let ingredient = taskDict["ingredient"] as? String
+                    let duration = (taskDict["durationSeconds"] as? Int) ?? 60
+                    let typeStr = taskDict["type"] as? String ?? "active"
+                    let type: TaskType = typeStr == "passive" ? .passive : .active
+                    let effortStr = taskDict["effort"] as? String ?? "medium"
+                    let effort = EffortLevel(from: effortStr)
+                    let equipment = taskDict["requiresEquipment"] as? String
+                    let idx = taskDict["taskIndex"] as? Int
+                    let taskId = idx.flatMap { indexToUUID[$0] } ?? UUID()
+                    let rawDeps = rawDepsMap[taskId] ?? []
+                    let resolvedDeps = rawDeps.compactMap { indexToUUID[$0] }
+                    return StepTask(id: taskId, action: action, ingredient: ingredient, durationSeconds: duration, type: type, requiresEquipment: equipment, effort: effort, dependsOn: resolvedDeps)
+                }
+                return RecipeStep(stepNumber: info.num, instruction: info.instruction, timerMinutes: info.timer, estimatedDurationSeconds: info.estDuration, tasks: tasks)
+            }
+
+            // Dietary tags
+            let tagStrings = dict["dietaryTags"]?.value as? [String] ?? []
+            let dietaryTags = tagStrings.compactMap { DietaryTag(rawValue: $0) }
+
+            // Meal type & cuisine
+            let mealTypeStr = dict["mealType"]?.value as? String
+            let mealType = mealTypeStr.flatMap { MealType(rawValue: $0) }
+            let cuisineStr = dict["cuisine"]?.value as? String
+            let cuisine = cuisineStr.flatMap { CuisineType(rawValue: $0) }
+
+            // Nutrition
+            var nutrition: NutritionInfo?
+            if let cal = dict["calories"]?.value as? Int {
+                nutrition = NutritionInfo(
+                    calories: cal,
+                    protein: (dict["protein"]?.value as? Double) ?? 0,
+                    carbohydrates: (dict["carbohydrates"]?.value as? Double) ?? 0,
+                    fat: (dict["fat"]?.value as? Double) ?? 0,
+                    fiber: dict["fiber"]?.value as? Double,
+                    sugar: dict["sugar"]?.value as? Double,
+                    sodium: dict["sodium"]?.value as? Double
+                )
+            }
+
+            return Recipe(
+                title: title,
+                description: description,
+                ingredients: ingredients,
+                steps: steps,
+                servings: servings,
+                prepTimeMinutes: prepTime,
+                cookTimeMinutes: cookTime,
+                difficulty: difficulty,
+                dietaryTags: dietaryTags,
+                mealType: mealType,
+                cuisine: cuisine,
+                source: .aiGenerated,
+                nutrition: nutrition
+            )
+        } catch {
+            print("[AIService] Failed to parse generated recipe: \(error)")
+            return nil
+        }
+    }
+
+    // MARK: - Recipe Modification
+
+    func modifyRecipe(_ recipe: Recipe, feedback: String, pantryIngredients: [String]) async -> Recipe? {
+        let ingredientList = recipe.ingredients.map { ing in
+            "\(ing.quantity) \(ing.unit?.rawValue ?? "") \(ing.name)"
+        }.joined(separator: "\n")
+
+        let stepList = recipe.steps.map { step in
+            "Step \(step.stepNumber): \(step.instruction)"
+        }.joined(separator: "\n")
+
+        var contextLines: [String] = []
+        contextLines.append("Current recipe: \(recipe.title)")
+        if let desc = recipe.description { contextLines.append("Description: \(desc)") }
+        contextLines.append("Servings: \(recipe.servings)")
+        contextLines.append("\nIngredients:\n\(ingredientList)")
+        contextLines.append("\nSteps:\n\(stepList)")
+        if !pantryIngredients.isEmpty {
+            contextLines.append("\nUser's pantry contains: \(pantryIngredients.joined(separator: ", "))")
+        }
+        contextLines.append("\nUser's modification request: \(feedback)")
+
+        let context = contextLines.joined(separator: "\n")
+
+        let prompt = """
+        \(context)
+
+        Modify this recipe according to the user's request. Keep the recipe's identity \
+        and character intact — only change what the user asked for. If the user references \
+        their pantry or available ingredients, use those. If they ask to make it spicier, \
+        healthier, faster, etc., adjust accordingly.
+
+        IMPORTANT: Use standard title capitalization for the recipe title. \
+        Use sentence case for ingredient names (lowercase unless a proper noun). \
+        Use sentence case for step instructions.
+
+        Return the COMPLETE modified recipe as a single JSON object with the same structure:
+        - "title": string
+        - "description": string (update to reflect changes)
+        - "ingredients": [{"name": string, "quantity": number, "unit": string, "category": string}]
+        - "steps": [{"stepNumber": number, "instruction": string, "timerMinutes": number or null, "estimatedDurationSeconds": number, "tasks": [task]}]
+        - "servings": number
+        - "prepTimeMinutes": number
+        - "cookTimeMinutes": number
+        - "difficulty": number (1-5)
+        - "dietaryTags": [string]
+        - "mealType": string
+        - "cuisine": string
+        - "calories": number (per serving)
+        - "protein": number (grams per serving)
+        - "carbohydrates": number (grams per serving)
+        - "fat": number (grams per serving)
+        - "fiber": number (grams per serving)
+        - "sugar": number (grams per serving)
+        - "sodium": number (mg per serving)
+
+        For unit, use: tsp, tbsp, cup, ml, L, g, kg, oz, lb, piece, whole, slice, clove, bunch, can, pinch, to taste.
+        For category, use: Dairy, Produce, Protein, Grains & Cereals, Spices & Herbs, Condiments & Sauces, Baking Supplies, Oils & Fats, Other.
+        Each task object: {"taskIndex": number, "action": string, "ingredient": string or null, "durationSeconds": number, "type": "active" or "passive", "effort": "easy" or "medium" or "hard", "requiresEquipment": string or null, "dependsOn": [number]}
+
+        Return ONLY the JSON object, no other text.
+        """
+
+        guard let response = await sendChatRequest(prompt: prompt) else { return nil }
+        guard let data = extractJSON(from: response) else { return nil }
+
+        do {
+            let dict = try JSONDecoder().decode([String: AnyCodable].self, from: data)
+            guard let title = dict["title"]?.value as? String else { return nil }
+            let description = dict["description"]?.value as? String
+            let servings = dict["servings"]?.value as? Int ?? recipe.servings
+            let prepTime = dict["prepTimeMinutes"]?.value as? Int
+            let cookTime = dict["cookTimeMinutes"]?.value as? Int
+            let difficultyRaw = dict["difficulty"]?.value as? Int ?? 2
+            let difficulty = DifficultyLevel(rawValue: difficultyRaw) ?? .easy
+
+            let ingredients: [Ingredient] = (dict["ingredients"]?.value as? [[String: Any]])?.compactMap { ing in
+                guard let name = ing["name"] as? String else { return nil }
+                let qty = (ing["quantity"] as? Double) ?? (ing["quantity"] as? Int).map { Double($0) } ?? 1
+                let unitStr = ing["unit"] as? String
+                let unit = MeasurementUnit.allCases.first { $0.rawValue == unitStr }
+                let categoryStr = ing["category"] as? String
+                let category = FoodCategory.allCases.first { $0.rawValue == categoryStr }
+                return Ingredient(name: name, quantity: qty, unit: unit, category: category ?? .other)
+            } ?? []
+
+            var indexToUUID: [Int: UUID] = [:]
+            var rawDepsMap: [UUID: [Int]] = [:]
+            var parsedSteps: [(instruction: String, num: Int, timer: Int?, estDuration: Int?, taskDicts: [[String: Any]])] = []
+            if let stepDicts = dict["steps"]?.value as? [[String: Any]] {
+                for step in stepDicts {
+                    guard let instruction = step["instruction"] as? String else { continue }
+                    let num = (step["stepNumber"] as? Int) ?? 1
+                    let timer = step["timerMinutes"] as? Int
+                    let estDuration = step["estimatedDurationSeconds"] as? Int
+                    let taskDicts = (step["tasks"] as? [[String: Any]]) ?? []
+                    parsedSteps.append((instruction, num, timer, estDuration, taskDicts))
+                    for taskDict in taskDicts {
+                        let idx = taskDict["taskIndex"] as? Int
+                        let taskId = UUID()
+                        if let idx { indexToUUID[idx] = taskId }
+                        rawDepsMap[taskId] = (taskDict["dependsOn"] as? [Int]) ?? []
+                    }
+                }
+            }
+
+            let steps: [RecipeStep] = parsedSteps.map { info in
+                let tasks: [StepTask] = info.taskDicts.compactMap { taskDict in
+                    guard let actionStr = taskDict["action"] as? String else { return nil }
+                    let action = Self.parseAction(actionStr)
+                    let ingredient = taskDict["ingredient"] as? String
+                    let duration = (taskDict["durationSeconds"] as? Int) ?? 60
+                    let typeStr = taskDict["type"] as? String ?? "active"
+                    let type: TaskType = typeStr == "passive" ? .passive : .active
+                    let effortStr = taskDict["effort"] as? String ?? "medium"
+                    let effort = EffortLevel(from: effortStr)
+                    let equipment = taskDict["requiresEquipment"] as? String
+                    let idx = taskDict["taskIndex"] as? Int
+                    let taskId = idx.flatMap { indexToUUID[$0] } ?? UUID()
+                    let rawDeps = rawDepsMap[taskId] ?? []
+                    let resolvedDeps = rawDeps.compactMap { indexToUUID[$0] }
+                    return StepTask(id: taskId, action: action, ingredient: ingredient, durationSeconds: duration, type: type, requiresEquipment: equipment, effort: effort, dependsOn: resolvedDeps)
+                }
+                return RecipeStep(stepNumber: info.num, instruction: info.instruction, timerMinutes: info.timer, estimatedDurationSeconds: info.estDuration, tasks: tasks)
+            }
+
+            let tagStrings = dict["dietaryTags"]?.value as? [String] ?? []
+            let dietaryTags = tagStrings.compactMap { DietaryTag(rawValue: $0) }
+            let mealTypeStr = dict["mealType"]?.value as? String
+            let mealType = mealTypeStr.flatMap { MealType(rawValue: $0) }
+            let cuisineStr = dict["cuisine"]?.value as? String
+            let cuisine = cuisineStr.flatMap { CuisineType(rawValue: $0) }
+
+            var nutrition: NutritionInfo?
+            if let cal = dict["calories"]?.value as? Int {
+                nutrition = NutritionInfo(
+                    calories: cal,
+                    protein: (dict["protein"]?.value as? Double) ?? 0,
+                    carbohydrates: (dict["carbohydrates"]?.value as? Double) ?? 0,
+                    fat: (dict["fat"]?.value as? Double) ?? 0,
+                    fiber: dict["fiber"]?.value as? Double,
+                    sugar: dict["sugar"]?.value as? Double,
+                    sodium: dict["sodium"]?.value as? Double
+                )
+            }
+
+            // Preserve original recipe's identity
+            return Recipe(
+                id: recipe.id,
+                title: title,
+                description: description,
+                ingredients: ingredients,
+                steps: steps,
+                servings: servings,
+                prepTimeMinutes: prepTime,
+                cookTimeMinutes: cookTime,
+                difficulty: difficulty,
+                dietaryTags: dietaryTags,
+                mealType: mealType,
+                cuisine: cuisine,
+                source: recipe.source,
+                nutrition: nutrition,
+                imageURL: recipe.imageURL,
+                sourceURL: recipe.sourceURL,
+                isFavorite: recipe.isFavorite,
+                dateAdded: recipe.dateAdded,
+                timesCooked: recipe.timesCooked,
+                rating: recipe.rating
+            )
+        } catch {
+            print("[AIService] Failed to parse modified recipe: \(error)")
+            return nil
+        }
+    }
+
     // MARK: - Step Duration Estimation (legacy backfill)
 
     /// One-shot AI call to estimate step durations for recipes that lack them.
@@ -331,7 +746,7 @@ final class AIService: AIServiceProtocol {
 
     /// Sends a prompt to OpenAI with automatic retry + exponential backoff.
     /// Retries on network errors and 5xx / 429 responses. Gives up on 4xx client errors.
-    private func sendChatRequest(prompt: String) async -> String? {
+    private func sendChatRequest(prompt: String, maxTokens: Int = 4096) async -> String? {
         guard let url = URL(string: baseURL) else { return nil }
 
         var request = URLRequest(url: url)
@@ -346,7 +761,7 @@ final class AIService: AIServiceProtocol {
                 ["role": "user", "content": prompt]
             ],
             "temperature": 0.7,
-            "max_tokens": 4096
+            "max_tokens": maxTokens
         ]
 
         request.httpBody = try? JSONSerialization.data(withJSONObject: body)

@@ -15,6 +15,9 @@ struct RecipeDetailView: View {
     @State private var isLoadingAI = false
     @State private var aiErrorMessage: String?
     @State private var existingSession: CookingSession?
+    @State private var showModify = false
+    @State private var modifyText = ""
+    @State private var isModifying = false
 
     init(recipe: Recipe) {
         _recipe = State(initialValue: recipe)
@@ -38,6 +41,7 @@ struct RecipeDetailView: View {
                     titleSection
                     pantryMatchSection
                     actionButtons
+                    modifySection
                     servingsAdjuster
 
                     if let nutrition = scaledRecipe.nutrition {
@@ -64,7 +68,7 @@ struct RecipeDetailView: View {
                 Button {
                     recipe.isFavorite.toggle()
                     Task {
-                        await appState.updateRecipe(recipe)
+                        await appState.toggleFavoriteWithSave(recipe)
                     }
                 } label: {
                     Image(systemName: recipe.isFavorite ? "heart.fill" : "heart")
@@ -451,9 +455,135 @@ struct RecipeDetailView: View {
                 NutritionCircle(label: "Fat", value: Int(nutrition.fat), unit: "g", color: AppColors.accentBlue)
             }
             .frame(maxWidth: .infinity)
+
+            // Extended macros
+            let extras: [(String, String)] = [
+                nutrition.fiber.map { ("Fiber", "\(Int($0))g") },
+                nutrition.sugar.map { ("Sugar", "\(Int($0))g") },
+                nutrition.sodium.map { ("Sodium", "\(Int($0))mg") },
+            ].compactMap { $0 }
+
+            if !extras.isEmpty {
+                HStack(spacing: 16) {
+                    ForEach(extras, id: \.0) { item in
+                        HStack(spacing: 4) {
+                            Text(item.0)
+                                .font(.caption2)
+                                .foregroundStyle(AppColors.subtleText)
+                            Text(item.1)
+                                .font(.caption2)
+                                .fontWeight(.semibold)
+                                .foregroundStyle(AppColors.darkText)
+                        }
+                    }
+                }
+                .frame(maxWidth: .infinity)
+            }
         }
         .padding()
         .cardStyle()
+    }
+
+    // MARK: - Modify Section
+    private var modifySection: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Button {
+                withAnimation(.easeInOut(duration: 0.25)) {
+                    showModify.toggle()
+                    if !showModify { modifyText = "" }
+                }
+            } label: {
+                HStack(spacing: 8) {
+                    Image(systemName: "wand.and.stars")
+                        .font(.subheadline)
+                        .foregroundStyle(AppColors.accentTeal)
+                    Text("Modify Recipe")
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+                        .foregroundStyle(AppColors.darkText)
+                    Spacer()
+                    Image(systemName: showModify ? "chevron.up" : "chevron.down")
+                        .font(.caption)
+                        .foregroundStyle(AppColors.subtleText)
+                }
+            }
+
+            if showModify {
+                VStack(alignment: .leading, spacing: 10) {
+                    Text("Describe what you'd like changed — be as specific or vague as you want.")
+                        .font(.caption)
+                        .foregroundStyle(AppColors.subtleText)
+
+                    HStack(spacing: 4) {
+                        ForEach(["Make it spicier", "Use my pantry", "Halve the carbs", "Make it faster"], id: \.self) { suggestion in
+                            Button {
+                                modifyText = suggestion
+                            } label: {
+                                Text(suggestion)
+                                    .font(.system(size: 10))
+                                    .foregroundStyle(AppColors.accentTeal)
+                                    .padding(.horizontal, 8)
+                                    .padding(.vertical, 5)
+                                    .background(AppColors.accentTeal.opacity(0.1))
+                                    .clipShape(Capsule())
+                            }
+                        }
+                    }
+
+                    HStack(spacing: 8) {
+                        TextField("e.g. Make it dairy-free using my pantry", text: $modifyText, axis: .vertical)
+                            .font(.subheadline)
+                            .lineLimit(1...4)
+                            .textFieldStyle(.plain)
+                            .padding(10)
+                            .background(AppColors.lightGray)
+                            .clipShape(RoundedRectangle(cornerRadius: 10))
+
+                        Button {
+                            Task { await performModify() }
+                        } label: {
+                            Group {
+                                if isModifying {
+                                    ProgressView()
+                                        .tint(.white)
+                                } else {
+                                    Image(systemName: "arrow.up.circle.fill")
+                                        .font(.title2)
+                                }
+                            }
+                            .foregroundStyle(.white)
+                            .frame(width: 44, height: 44)
+                            .background(modifyText.trimmingCharacters(in: .whitespaces).isEmpty ? AppColors.mediumGray : AppColors.accentTeal)
+                            .clipShape(Circle())
+                        }
+                        .disabled(modifyText.trimmingCharacters(in: .whitespaces).isEmpty || isModifying)
+                    }
+                }
+                .transition(.opacity.combined(with: .move(edge: .top)))
+            }
+        }
+        .padding()
+        .cardStyle()
+    }
+
+    private func performModify() async {
+        isModifying = true
+        let pantryNames = appState.pantryItems.map(\.name)
+        if let modified = await appState.aiService.modifyRecipe(recipe, feedback: modifyText, pantryIngredients: pantryNames) {
+            withAnimation {
+                recipe = modified
+                servings = modified.servings
+            }
+            modifyText = ""
+            showModify = false
+            // Persist if it's a saved recipe
+            if appState.recipes.contains(where: { $0.id == recipe.id }) {
+                await appState.updateRecipe(recipe)
+            }
+        } else {
+            aiErrorMessage = "Couldn't modify the recipe. Please try again."
+        }
+        isModifying = false
     }
 
     // MARK: - Ingredients Section

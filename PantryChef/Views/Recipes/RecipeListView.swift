@@ -5,6 +5,8 @@ struct RecipeListView: View {
     @State private var showMultiCookSelection = false
     @State private var selectedSection: RecipeSection = .myRecipes
     @State private var showCuisinePicker = false
+    @State private var showRecipeBuilder = false
+    @State private var generatedRecipe: Recipe?
     @Binding var activateCanMakeFilter: Bool
 
     enum RecipeSection: String, CaseIterable {
@@ -93,6 +95,17 @@ struct RecipeListView: View {
             .sheet(isPresented: $showMultiCookSelection) {
                 MultiCookSelectionView()
                     .environment(viewModel.appState)
+            }
+            .sheet(isPresented: $showRecipeBuilder) {
+                RecipeBuilderView(
+                    query: viewModel.searchText.trimmingCharacters(in: .whitespaces)
+                ) { recipe in
+                    generatedRecipe = recipe
+                }
+                .environment(viewModel.appState)
+            }
+            .navigationDestination(item: $generatedRecipe) { recipe in
+                RecipeDetailView(recipe: recipe)
             }
             .sheet(item: Binding(
                 get: { viewModel.importedRecipe },
@@ -360,11 +373,17 @@ struct RecipeListView: View {
 
     private var discoverContent: some View {
         Group {
+            let hasQuery = viewModel.searchText.trimmingCharacters(in: .whitespaces).count >= 3
             if viewModel.isSearchingAPI {
-                centeredEmptyState {
-                    ProgressView("Searching...")
+                if hasQuery {
+                    // Show grid with AI tile + loading indicator while API results load
+                    recipeGrid(recipes: viewModel.filteredDiscoverRecipes, isUserSection: false)
+                } else {
+                    centeredEmptyState {
+                        ProgressView("Searching...")
+                    }
                 }
-            } else if viewModel.filteredDiscoverRecipes.isEmpty {
+            } else if viewModel.filteredDiscoverRecipes.isEmpty && !hasQuery {
                 centeredEmptyState {
                     if !viewModel.searchText.isEmpty {
                         EmptyStateView(
@@ -412,6 +431,16 @@ struct RecipeListView: View {
                 GridItem(.flexible(), spacing: 16),
                 GridItem(.flexible(), spacing: 16),
             ], spacing: 16) {
+                // AI Generate tile — first card in Discover when query is 3+ chars
+                if !isUserSection && viewModel.searchText.trimmingCharacters(in: .whitespaces).count >= 3 {
+                    Button {
+                        showRecipeBuilder = true
+                    } label: {
+                        AIGenerateTileView(query: viewModel.searchText.trimmingCharacters(in: .whitespaces))
+                    }
+                    .buttonStyle(.plain)
+                }
+
                 ForEach(recipes) { recipe in
                     NavigationLink(destination: RecipeDetailView(recipe: recipe)) {
                         RecipeCardView(recipe: recipe, pantry: viewModel.appState.pantryItems)
@@ -559,8 +588,11 @@ struct RecipeCardView: View {
 
             // Pantry match status
             pantryMatchStatus
+
+            Spacer(minLength: 0)
         }
         .padding(12)
+        .frame(maxHeight: .infinity, alignment: .top)
         .cardStyle()
     }
 
@@ -617,7 +649,85 @@ struct RecipeCardView: View {
         case .user: return AppColors.primaryGreen
         case .bundled: return AppColors.warmOrange
         case .spoonacular: return Color(red: 0.38, green: 0.65, blue: 0.96)
+        case .aiGenerated: return AppColors.accentTeal
         }
+    }
+}
+
+// MARK: - AI Generate Tile
+struct AIGenerateTileView: View {
+    let query: String
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            ZStack {
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(
+                        LinearGradient(
+                            colors: [
+                                AppColors.warmOrange.opacity(0.15),
+                                AppColors.accentTeal.opacity(0.12),
+                            ],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+                    .aspectRatio(4/3, contentMode: .fit)
+
+                VStack(spacing: 8) {
+                    Image(systemName: "sparkles")
+                        .font(.largeTitle)
+                        .foregroundStyle(
+                            LinearGradient(
+                                colors: [AppColors.warmOrange, AppColors.accentTeal],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                    Text("Chef")
+                        .font(.caption)
+                        .fontWeight(.semibold)
+                        .foregroundStyle(AppColors.subtleText)
+                }
+            }
+
+            HStack(spacing: 4) {
+                Text("Chef")
+                    .font(.system(size: 9, weight: .bold))
+                    .textCase(.uppercase)
+                    .foregroundStyle(.white)
+                    .padding(.horizontal, 5)
+                    .padding(.vertical, 2)
+                    .background(AppColors.accentTeal)
+                    .clipShape(Capsule())
+
+                Text("Create \"\(query)\"")
+                    .font(.subheadline)
+                    .fontWeight(.semibold)
+                    .foregroundStyle(AppColors.darkText)
+                    .lineLimit(2)
+            }
+
+            HStack(spacing: 8) {
+                Label("Custom", systemImage: "slider.horizontal.3")
+                    .font(.caption2)
+                    .foregroundStyle(AppColors.subtleText)
+            }
+
+            HStack(spacing: 4) {
+                Image(systemName: "sparkles")
+                    .font(.system(size: 8))
+                    .foregroundStyle(AppColors.warmOrange)
+                Text("Tap to customize & generate")
+                    .font(.caption2)
+                    .foregroundStyle(AppColors.warmOrange)
+            }
+
+            Spacer(minLength: 0)
+        }
+        .padding(12)
+        .frame(maxHeight: .infinity, alignment: .top)
+        .cardStyle()
     }
 }
 

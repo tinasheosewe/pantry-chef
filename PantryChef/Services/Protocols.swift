@@ -39,6 +39,35 @@ protocol AIServiceProtocol: AnyObject, Sendable {
     func parseRecipeFromURL(_ url: String) async -> RecipeImportResult?
     func parseRecipeFromText(_ extractedText: String) async -> RecipeImportResult?
     func estimateStepDurations(for steps: [RecipeStep], recipeTitle: String) async -> [RecipeStep]
+    func generateRecipe(query: String, preferences: RecipeGenerationPreferences) async -> Recipe?
+    func generateStatusMessages(query: String, preferences: RecipeGenerationPreferences) async -> [String]
+    func modifyRecipe(_ recipe: Recipe, feedback: String, pantryIngredients: [String]) async -> Recipe?
+}
+
+// MARK: - Recipe Generation Preferences
+struct RecipeGenerationPreferences: Sendable {
+    var servings: Int = 4
+    var maxTimeMinutes: Int? = nil
+    var spiceLevel: SpiceLevel = .medium
+    var dietaryTags: [DietaryTag] = []
+    var usePantry: Bool = false
+    var pantryIngredients: [String] = []
+
+    enum SpiceLevel: String, CaseIterable, Sendable {
+        case mild = "Mild"
+        case medium = "Medium"
+        case spicy = "Spicy"
+        case extraSpicy = "Extra Spicy"
+
+        var icon: String {
+            switch self {
+            case .mild: return "🌶️"
+            case .medium: return "🌶️🌶️"
+            case .spicy: return "🌶️🌶️🌶️"
+            case .extraSpicy: return "🌶️🌶️🌶️🌶️"
+            }
+        }
+    }
 }
 
 // MARK: - Speech Service Protocol
