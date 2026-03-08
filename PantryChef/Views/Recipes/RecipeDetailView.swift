@@ -296,7 +296,7 @@ struct RecipeDetailView: View {
     }
 
     private func missingIngredientRow(_ ingredient: Ingredient) -> some View {
-        let subs = SubstitutionRepository.shared.substitutions(for: ingredient.name)
+        let subs = SubstitutionRepository.shared.substitutions(for: ingredient.name, pantry: appState.pantryItems)
         return VStack(alignment: .leading, spacing: 3) {
             HStack(spacing: 6) {
                 Image(systemName: "xmark.circle.fill")
@@ -317,31 +317,44 @@ struct RecipeDetailView: View {
             }
 
             if !subs.isEmpty {
-                ForEach(subs.prefix(2), id: \.substitute) { sub in
+                ForEach(subs.prefix(3), id: \.substitute) { sub in
                     HStack(spacing: 4) {
-                        Image(systemName: "arrow.turn.down.right")
+                        Image(systemName: sub.inPantry ? "checkmark.circle.fill" : "arrow.turn.down.right")
                             .font(.system(size: 8))
-                            .foregroundStyle(Color(red: 0.60, green: 0.76, blue: 0.25))
+                            .foregroundStyle(sub.inPantry ? AppColors.primaryGreen : Color(red: 0.60, green: 0.76, blue: 0.25))
                         Text(sub.substitute)
                             .font(.caption2)
                             .fontWeight(.medium)
-                            .foregroundStyle(Color(red: 0.60, green: 0.76, blue: 0.25))
-                        Text("(\(sub.ratio))")
-                            .font(.system(size: 9))
-                            .foregroundStyle(AppColors.subtleText)
-                        let worst = sub.tasteImpact.ordinal >= sub.textureImpact.ordinal
-                            ? sub.tasteImpact : sub.textureImpact
-                        if worst != .none {
-                            Text(worst.rawValue.lowercased())
+                            .foregroundStyle(sub.inPantry ? AppColors.primaryGreen : Color(red: 0.60, green: 0.76, blue: 0.25))
+                        if sub.inPantry {
+                            Text("In pantry")
                                 .font(.system(size: 8))
                                 .padding(.horizontal, 4)
                                 .padding(.vertical, 1)
-                                .background(worst.color.opacity(0.15))
-                                .foregroundStyle(worst.color)
+                                .background(AppColors.primaryGreen.opacity(0.15))
+                                .foregroundStyle(AppColors.primaryGreen)
                                 .clipShape(Capsule())
+                        }
+                        if let ratio = sub.ratio {
+                            Text("(\(ratio))")
+                                .font(.system(size: 9))
+                                .foregroundStyle(AppColors.subtleText)
+                        }
+                        if let taste = sub.tasteImpact, let texture = sub.textureImpact {
+                            let worst = taste.ordinal >= texture.ordinal ? taste : texture
+                            if worst != .none {
+                                Text(worst.rawValue.lowercased())
+                                    .font(.system(size: 8))
+                                    .padding(.horizontal, 4)
+                                    .padding(.vertical, 1)
+                                    .background(worst.color.opacity(0.15))
+                                    .foregroundStyle(worst.color)
+                                    .clipShape(Capsule())
+                            }
                         }
                     }
                     .padding(.leading, 16)
+                    .opacity(sub.inPantry ? 1.0 : 0.7)
                 }
             }
         }
@@ -760,6 +773,17 @@ struct SubstitutionsView: View {
     @Environment(\.dismiss) private var dismiss
     let substitutions: [SubstitutionSuggestion]
 
+    /// Group substitutions by original ingredient for multi-sub display
+    private var grouped: [(ingredient: String, suggestions: [SubstitutionSuggestion])] {
+        var dict: [String: [SubstitutionSuggestion]] = [:]
+        var order: [String] = []
+        for sub in substitutions {
+            if dict[sub.originalIngredient] == nil { order.append(sub.originalIngredient) }
+            dict[sub.originalIngredient, default: []].append(sub)
+        }
+        return order.map { (ingredient: $0, suggestions: dict[$0]!) }
+    }
+
     var body: some View {
         NavigationStack {
             List {
@@ -770,44 +794,18 @@ struct SubstitutionsView: View {
                         message: "You have all the ingredients!"
                     )
                 } else {
-                    ForEach(substitutions) { sub in
-                        VStack(alignment: .leading, spacing: 8) {
-                            HStack {
-                                Text(sub.originalIngredient)
-                                    .font(.subheadline)
-                                    .strikethrough()
-                                    .foregroundStyle(AppColors.subtleText)
-                                Image(systemName: "arrow.right")
-                                    .font(.caption)
-                                    .foregroundStyle(AppColors.mediumGray)
-                                Text(sub.substituteName)
-                                    .font(.subheadline)
-                                    .fontWeight(.semibold)
-                                    .foregroundStyle(AppColors.primaryGreen)
+                    ForEach(grouped, id: \.ingredient) { group in
+                        Section {
+                            ForEach(group.suggestions) { sub in
+                                substitutionRow(sub)
+                                    .opacity(sub.inPantry ? 1.0 : 0.8)
                             }
-
-                            Text("Ratio: \(sub.ratio)")
-                                .font(.caption)
-                                .foregroundStyle(AppColors.subtleText)
-
-                            HStack(spacing: 16) {
-                                DetailChip(icon: "mouth", text: sub.tasteImpact)
-                                DetailChip(icon: "hand.point.up", text: sub.textureImpact)
-                            }
-
-                            Text(sub.nutritionImpact)
-                                .font(.caption)
-                                .foregroundStyle(AppColors.primaryGreen)
-
-                            HStack {
-                                Text("Confidence: \(sub.confidenceLabel)")
-                                    .font(.caption2)
-                                    .foregroundStyle(AppColors.subtleText)
-                                Spacer()
-                                ConfidenceBar(confidence: sub.confidence)
-                            }
+                        } header: {
+                            Text(group.ingredient)
+                                .font(.subheadline)
+                                .fontWeight(.semibold)
+                                .foregroundStyle(AppColors.darkText)
                         }
-                        .padding(.vertical, 4)
                     }
                 }
             }
@@ -819,6 +817,60 @@ struct SubstitutionsView: View {
                 }
             }
         }
+    }
+
+    @ViewBuilder
+    private func substitutionRow(_ sub: SubstitutionSuggestion) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                Text(sub.substituteName)
+                    .font(.subheadline)
+                    .fontWeight(.semibold)
+                    .foregroundStyle(sub.inPantry ? AppColors.primaryGreen : AppColors.darkText)
+
+                if sub.inPantry {
+                    Text("In your pantry")
+                        .font(.system(size: 9))
+                        .fontWeight(.medium)
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 2)
+                        .background(AppColors.primaryGreen.opacity(0.15))
+                        .foregroundStyle(AppColors.primaryGreen)
+                        .clipShape(Capsule())
+                }
+                Spacer()
+            }
+
+            if sub.ratio != "Ratio not available" {
+                Text("Ratio: \(sub.ratio)")
+                    .font(.caption)
+                    .foregroundStyle(AppColors.subtleText)
+            }
+
+            if sub.enriched {
+                HStack(spacing: 16) {
+                    if sub.tasteImpact != "Unknown" {
+                        DetailChip(icon: "mouth", text: sub.tasteImpact)
+                    }
+                    if sub.textureImpact != "Unknown" {
+                        DetailChip(icon: "hand.point.up", text: sub.textureImpact)
+                    }
+                }
+            }
+
+            Text(sub.nutritionImpact)
+                .font(.caption)
+                .foregroundStyle(AppColors.primaryGreen)
+
+            HStack {
+                Text("Confidence: \(sub.confidenceLabel)")
+                    .font(.caption2)
+                    .foregroundStyle(AppColors.subtleText)
+                Spacer()
+                ConfidenceBar(confidence: sub.confidence)
+            }
+        }
+        .padding(.vertical, 4)
     }
 }
 

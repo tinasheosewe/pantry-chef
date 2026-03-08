@@ -11,6 +11,8 @@ struct SubstitutionSuggestion: Identifiable, Codable {
     let textureImpact: String
     let nutritionImpact: String
     let confidence: Double // 0-1
+    var inPantry: Bool     // true if substitute is in user's pantry
+    var enriched: Bool     // true if from hand-curated data with full metadata
 
     init(
         id: UUID = UUID(),
@@ -20,7 +22,9 @@ struct SubstitutionSuggestion: Identifiable, Codable {
         tasteImpact: String,
         textureImpact: String,
         nutritionImpact: String,
-        confidence: Double
+        confidence: Double,
+        inPantry: Bool = false,
+        enriched: Bool = true
     ) {
         self.id = id
         self.originalIngredient = originalIngredient
@@ -30,6 +34,8 @@ struct SubstitutionSuggestion: Identifiable, Codable {
         self.textureImpact = textureImpact
         self.nutritionImpact = nutritionImpact
         self.confidence = confidence
+        self.inPantry = inPantry
+        self.enriched = enriched
     }
 
     var confidenceLabel: String {

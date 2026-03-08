@@ -34,3 +34,6 @@ Pods/
 .env
 TestResults*
 *.xcresult
+
+# Raw MISKG data (large, not needed in repo — only processed output is committed)
+Scripts/miskg_data/

@@ -123,25 +123,35 @@ final class AIService: AIServiceProtocol {
         let matchResult = recipe.pantryMatch(pantry: pantry)
         guard !matchResult.missingIngredients.isEmpty else { return [] }
 
-        // Try local SubstitutionRepository first
+        // Try local SubstitutionRepository first (pantry-aware ranking, top 3)
         var localSuggestions: [SubstitutionSuggestion] = []
         var unresolvedIngredients: [Ingredient] = []
 
         for ingredient in matchResult.missingIngredients {
-            let subs = SubstitutionRepository.shared.substitutions(for: ingredient.name)
-            if let best = subs.first {
-                let worstImpact = max(best.tasteImpact.ordinal, best.textureImpact.ordinal)
-                localSuggestions.append(SubstitutionSuggestion(
-                    originalIngredient: ingredient.name,
-                    substituteName: best.substitute,
-                    ratio: best.ratio,
-                    tasteImpact: best.tasteImpact.rawValue,
-                    textureImpact: best.textureImpact.rawValue,
-                    nutritionImpact: "Similar",
-                    confidence: worstImpact == 0 ? 0.95 : worstImpact == 1 ? 0.8 : 0.6
-                ))
-            } else {
+            let subs = SubstitutionRepository.shared.substitutions(for: ingredient.name, pantry: pantry)
+            let top3 = Array(subs.prefix(3))
+            if top3.isEmpty {
                 unresolvedIngredients.append(ingredient)
+            } else {
+                for sub in top3 {
+                    let worstOrdinal: Int
+                    if let taste = sub.tasteImpact, let texture = sub.textureImpact {
+                        worstOrdinal = max(taste.ordinal, texture.ordinal)
+                    } else {
+                        worstOrdinal = 1 // default for unenriched
+                    }
+                    localSuggestions.append(SubstitutionSuggestion(
+                        originalIngredient: ingredient.name,
+                        substituteName: sub.substitute,
+                        ratio: sub.ratio ?? "Ratio not available",
+                        tasteImpact: sub.tasteImpact?.rawValue ?? "Unknown",
+                        textureImpact: sub.textureImpact?.rawValue ?? "Unknown",
+                        nutritionImpact: sub.nutritionImpact ?? "Similar",
+                        confidence: sub.inPantry ? 0.95 : (sub.enriched ? (worstOrdinal == 0 ? 0.9 : worstOrdinal == 1 ? 0.75 : 0.55) : 0.5),
+                        inPantry: sub.inPantry,
+                        enriched: sub.enriched
+                    ))
+                }
             }
         }
 

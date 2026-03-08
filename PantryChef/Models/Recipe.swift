@@ -397,11 +397,22 @@ struct SubstitutionEntry: Codable, Hashable, Identifiable {
     var id: String { "\(original)-\(substitute)" }
     let original: String
     let substitute: String
-    let ratio: String           // e.g. "1:1", "use half"
-    let tasteImpact: SubstitutionImpact
-    let textureImpact: SubstitutionImpact
+    let ratio: String?                      // nil for unenriched MISKG entries
+    let tasteImpact: SubstitutionImpact?    // nil for unenriched
+    let textureImpact: SubstitutionImpact?  // nil for unenriched
+    let nutritionImpact: String?            // e.g. "Higher protein, Lower fat"
     let notes: String?
-    let dietary: [DietaryTag]
+    let dietary: [DietaryTag]?
+    let enriched: Bool                      // true = hand-curated with full metadata
+
+    /// Whether this substitute is currently in the user's pantry (set at query time, not persisted).
+    var inPantry: Bool = false
+
+    // Coding keys to exclude transient properties
+    enum CodingKeys: String, CodingKey {
+        case original, substitute, ratio, tasteImpact, textureImpact
+        case nutritionImpact, notes, dietary, enriched
+    }
 }
 
 // MARK: - Ingredient Match Detail
