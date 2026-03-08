@@ -3,9 +3,18 @@ import SwiftUI
 struct RecipeListView: View {
     @State private var viewModel: RecipeViewModel
     @State private var showMultiCookSelection = false
+    @State private var selectedSection: RecipeSection = .myRecipes
+    @State private var showCuisinePicker = false
+    @Binding var activateCanMakeFilter: Bool
 
-    init(appState: AppState) {
+    enum RecipeSection: String, CaseIterable {
+        case myRecipes = "My Recipes"
+        case discover = "Discover"
+    }
+
+    init(appState: AppState, activateCanMakeFilter: Binding<Bool> = .constant(false)) {
         _viewModel = State(initialValue: RecipeViewModel(appState: appState))
+        _activateCanMakeFilter = activateCanMakeFilter
     }
 
     var body: some View {
@@ -13,28 +22,13 @@ struct RecipeListView: View {
         NavigationStack {
             VStack(spacing: 0) {
                 searchBar
+                sectionPicker
                 filterPills
 
-                if viewModel.filteredRecipes.isEmpty && viewModel.appState.recipes.isEmpty {
-                    EmptyStateView(
-                        icon: "book.closed",
-                        title: "No recipes yet",
-                        message: "Add recipes manually, import from a URL, or photograph a cookbook page.",
-                        actionTitle: "Add Recipe"
-                    ) {
-                        viewModel.showAddRecipe = true
-                    }
-                } else if viewModel.filteredRecipes.isEmpty {
-                    EmptyStateView(
-                        icon: "magnifyingglass",
-                        title: "No matches",
-                        message: "Try adjusting your search or filters.",
-                        actionTitle: "Clear Filters"
-                    ) {
-                        viewModel.clearFilters()
-                    }
+                if selectedSection == .myRecipes {
+                    userRecipesContent
                 } else {
-                    recipeGrid
+                    discoverContent
                 }
             }
             .background(AppColors.background)
@@ -52,7 +46,9 @@ struct RecipeListView: View {
                             Label("Photo of Recipe", systemImage: "camera")
                         }
                         Divider()
-                        Button { viewModel.whatCanIMake() } label: {
+                        Button {
+                            viewModel.activateWhatCanIMake()
+                        } label: {
                             Label("What Can I Make?", systemImage: "sparkles")
                         }
                         Button { showMultiCookSelection = true } label: {
@@ -94,9 +90,6 @@ struct RecipeListView: View {
             .sheet(isPresented: $viewModel.showPhotoImport) {
                 RecipePhotoImportView(viewModel: viewModel)
             }
-            .sheet(isPresented: $viewModel.showWhatCanIMake) {
-                WhatCanIMakeView(results: viewModel.whatCanIMakeResults)
-            }
             .sheet(isPresented: $showMultiCookSelection) {
                 MultiCookSelectionView()
                     .environment(viewModel.appState)
@@ -117,7 +110,67 @@ struct RecipeListView: View {
                         }
                 }
             }
+            .onChange(of: activateCanMakeFilter) { _, newValue in
+                if newValue {
+                    viewModel.activateWhatCanIMake()
+                    activateCanMakeFilter = false
+                }
+            }
+            .onAppear {
+                // Safety net: ensure discover recipes are loaded even if init timing was off
+                if viewModel.appState.discoverRecipes.isEmpty {
+                    print("[RecipeListView] discoverRecipes empty on appear — refreshing")
+                    viewModel.appState.refreshDiscoverRecipes()
+                } else {
+                    print("[RecipeListView] discoverRecipes has \(viewModel.appState.discoverRecipes.count) recipes on appear")
+                }
+            }
         }
+    }
+
+    // MARK: - Section Picker
+
+    private var sectionPicker: some View {
+        HStack(spacing: 0) {
+            ForEach(RecipeSection.allCases, id: \.self) { section in
+                Button {
+                    withAnimation(.easeInOut(duration: 0.2)) {
+                        selectedSection = section
+                    }
+                    // No-op on section switch — state is preserved
+                } label: {
+                    VStack(spacing: 6) {
+                        HStack(spacing: 4) {
+                            Text(section.rawValue)
+                                .font(.subheadline)
+                                .fontWeight(selectedSection == section ? .semibold : .regular)
+
+                            if section == .discover {
+                                let count = viewModel.filteredDiscoverRecipes.count
+                                if count > 0 {
+                                    Text("\(count)")
+                                        .font(.caption2)
+                                        .fontWeight(.bold)
+                                        .foregroundStyle(.white)
+                                        .padding(.horizontal, 5)
+                                        .padding(.vertical, 1)
+                                        .background(AppColors.primaryGreen)
+                                        .clipShape(Capsule())
+                                }
+                            }
+                        }
+                        .foregroundStyle(selectedSection == section ? AppColors.darkText : AppColors.subtleText)
+
+                        Rectangle()
+                            .fill(selectedSection == section ? AppColors.primaryGreen : .clear)
+                            .frame(height: 2)
+                    }
+                }
+                .frame(maxWidth: .infinity)
+            }
+        }
+        .padding(.horizontal)
+        .padding(.top, 4)
     }
 
     // MARK: - Search Bar
@@ -128,6 +181,9 @@ struct RecipeListView: View {
                 .foregroundStyle(AppColors.mediumGray)
             TextField("Search recipes...", text: $viewModel.searchText)
                 .font(.subheadline)
+                .onChange(of: viewModel.searchText) {
+                    viewModel.onSearchTextChanged(isDiscoverTab: selectedSection == .discover)
+                }
 
             if !viewModel.searchText.isEmpty {
                 Button { viewModel.searchText = "" } label: {
@@ -147,21 +203,48 @@ struct RecipeListView: View {
     private var filterPills: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 8) {
+                // Can Make toggle
                 FilterPill(
-                    title: "Favorites",
-                    icon: "heart.fill",
-                    isSelected: viewModel.showOnlyFavorites
+                    title: "Can Make",
+                    icon: "checkmark.circle.fill",
+                    isSelected: viewModel.showCanMakeOnly
                 ) {
-                    viewModel.showOnlyFavorites.toggle()
+                    viewModel.showCanMakeOnly.toggle()
+                    if viewModel.showCanMakeOnly {
+                        viewModel.sortOrder = .matchPercent
+                    }
                 }
 
-                ForEach(DifficultyLevel.allCases) { level in
+                if viewModel.showCanMakeOnly {
                     FilterPill(
-                        title: level.label,
-                        isSelected: viewModel.selectedDifficulty == level
+                        title: "+ Subs",
+                        icon: "arrow.triangle.swap",
+                        isSelected: viewModel.showWithSubstitutions
                     ) {
-                        viewModel.selectedDifficulty = viewModel.selectedDifficulty == level ? nil : level
+                        viewModel.showWithSubstitutions.toggle()
                     }
+                }
+
+                if selectedSection == .myRecipes {
+                    FilterPill(
+                        title: "Favorites",
+                        icon: "heart.fill",
+                        isSelected: viewModel.showOnlyFavorites
+                    ) {
+                        viewModel.showOnlyFavorites.toggle()
+                    }
+                }
+
+                // Cuisine pill
+                FilterPill(
+                    title: viewModel.selectedCuisine?.rawValue ?? "Cuisine",
+                    icon: nil,
+                    isSelected: viewModel.selectedCuisine != nil
+                ) {
+                    showCuisinePicker.toggle()
+                }
+                .popover(isPresented: $showCuisinePicker) {
+                    cuisinePickerContent
                 }
 
                 ForEach(MealType.allCases) { type in
@@ -190,31 +273,185 @@ struct RecipeListView: View {
         }
     }
 
+    // MARK: - Cuisine Picker
+
+    private var cuisinePickerContent: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 4) {
+                Button {
+                    viewModel.selectedCuisine = nil
+                    showCuisinePicker = false
+                } label: {
+                    HStack {
+                        Text("All Cuisines")
+                        Spacer()
+                        if viewModel.selectedCuisine == nil {
+                            Image(systemName: "checkmark")
+                                .foregroundStyle(AppColors.primaryGreen)
+                        }
+                    }
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 10)
+                }
+                .foregroundStyle(AppColors.darkText)
+
+                Divider()
+
+                ForEach(CuisineType.allCases) { cuisine in
+                    Button {
+                        viewModel.selectedCuisine = cuisine
+                        showCuisinePicker = false
+                    } label: {
+                        HStack {
+                            Text(cuisine.icon)
+                            Text(cuisine.rawValue)
+                            Spacer()
+                            if viewModel.selectedCuisine == cuisine {
+                                Image(systemName: "checkmark")
+                                    .foregroundStyle(AppColors.primaryGreen)
+                            }
+                        }
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 8)
+                    }
+                    .foregroundStyle(AppColors.darkText)
+                }
+            }
+            .padding(.vertical, 8)
+        }
+        .frame(width: 220)
+        .frame(maxHeight: 350)
+        .presentationCompactAdaptation(.popover)
+    }
+
+    // MARK: - User Recipes Content
+
+    private var userRecipesContent: some View {
+        Group {
+            if viewModel.filteredUserRecipes.isEmpty && viewModel.appState.recipes.isEmpty {
+                centeredEmptyState {
+                    EmptyStateView(
+                        icon: "book.closed",
+                        title: "No recipes yet",
+                        message: "Add recipes manually, import from a URL, or photograph a cookbook page.",
+                        actionTitle: "Add Recipe"
+                    ) {
+                        viewModel.showAddRecipe = true
+                    }
+                }
+            } else if viewModel.filteredUserRecipes.isEmpty {
+                centeredEmptyState {
+                    EmptyStateView(
+                        icon: "magnifyingglass",
+                        title: "No matches",
+                        message: "Try adjusting your search or filters.",
+                        actionTitle: "Clear Filters"
+                    ) {
+                        viewModel.clearFilters()
+                    }
+                }
+            } else {
+                recipeGrid(recipes: viewModel.filteredUserRecipes, isUserSection: true)
+            }
+        }
+    }
+
+    // MARK: - Discover Content
+
+    private var discoverContent: some View {
+        Group {
+            if viewModel.isSearchingAPI {
+                centeredEmptyState {
+                    ProgressView("Searching...")
+                }
+            } else if viewModel.filteredDiscoverRecipes.isEmpty {
+                centeredEmptyState {
+                    if !viewModel.searchText.isEmpty {
+                        EmptyStateView(
+                            icon: "magnifyingglass",
+                            title: "No results",
+                            message: "No recipes match \"\(viewModel.searchText)\". Try a different search term.",
+                            actionTitle: "Clear Search"
+                        ) {
+                            viewModel.searchText = ""
+                        }
+                    } else {
+                        EmptyStateView(
+                            icon: "globe",
+                            title: "Discover recipes",
+                            message: "Browse featured recipes or search to find new ones. Use \"Can Make\" to filter by your pantry.",
+                            actionTitle: "Search by Pantry"
+                        ) {
+                            viewModel.showCanMakeOnly = true
+                            viewModel.sortOrder = .matchPercent
+                        }
+                    }
+                }
+            } else {
+                recipeGrid(recipes: viewModel.filteredDiscoverRecipes, isUserSection: false)
+            }
+        }
+    }
+
+    /// Wraps empty-state content in a full-bleed, centered container
+    /// so it fills the available space with the correct background.
+    private func centeredEmptyState<Content: View>(@ViewBuilder content: () -> Content) -> some View {
+        ZStack {
+            AppColors.background
+                .ignoresSafeArea()
+            content()
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+
     // MARK: - Recipe Grid
-    private var recipeGrid: some View {
+
+    private func recipeGrid(recipes: [Recipe], isUserSection: Bool) -> some View {
         ScrollView {
             LazyVGrid(columns: [
                 GridItem(.flexible(), spacing: 16),
                 GridItem(.flexible(), spacing: 16),
             ], spacing: 16) {
-                ForEach(viewModel.filteredRecipes) { recipe in
+                ForEach(recipes) { recipe in
                     NavigationLink(destination: RecipeDetailView(recipe: recipe)) {
                         RecipeCardView(recipe: recipe, pantry: viewModel.appState.pantryItems)
                     }
                     .contextMenu {
-                        Button { Task { await viewModel.toggleFavorite(recipe) } } label: {
-                            Label(recipe.isFavorite ? "Unfavorite" : "Favorite",
-                                  systemImage: recipe.isFavorite ? "heart.slash" : "heart")
+                        if isUserSection {
+                            Button { Task { await viewModel.toggleFavorite(recipe) } } label: {
+                                Label(recipe.isFavorite ? "Unfavorite" : "Favorite",
+                                      systemImage: recipe.isFavorite ? "heart.slash" : "heart")
+                            }
+                            Button(role: .destructive) {
+                                Task { await viewModel.deleteRecipe(recipe) }
+                            } label: {
+                                Label("Delete", systemImage: "trash")
+                            }
+                        } else {
+                            Button {
+                                Task { await viewModel.addRecipe(recipe) }
+                            } label: {
+                                Label("Save to My Recipes", systemImage: "square.and.arrow.down")
+                            }
                         }
-                        Button(role: .destructive) {
-                            Task { await viewModel.deleteRecipe(recipe) }
-                        } label: {
-                            Label("Delete", systemImage: "trash")
+                    }
+                    // Infinite scroll: trigger next page when last few items appear
+                    .onAppear {
+                        if !isUserSection,
+                           recipe.id == recipes.last?.id,
+                           viewModel.hasMorePages {
+                            Task { await viewModel.loadMoreDiscoverRecipes() }
                         }
                     }
                 }
             }
             .padding()
+
+            // Loading indicator at bottom during API search or pagination
+            if !isUserSection && (viewModel.isSearchingAPI || viewModel.isLoadingMore) {
+                ProgressView()
+                    .padding()
+            }
         }
     }
 }
@@ -262,27 +499,54 @@ struct RecipeCardView: View {
                     .fill(AppColors.primaryGreen.opacity(0.1))
                     .aspectRatio(4/3, contentMode: .fit)
                     .overlay(
-                        Image(systemName: recipe.mealType?.icon ?? "fork.knife")
-                            .font(.title)
-                            .foregroundStyle(AppColors.primaryGreen.opacity(0.5))
+                        VStack(spacing: 4) {
+                            Image(systemName: recipe.mealType?.icon ?? "fork.knife")
+                                .font(.title)
+                                .foregroundStyle(AppColors.primaryGreen.opacity(0.5))
+                            if let cuisine = recipe.cuisine {
+                                Text(cuisine.icon)
+                                    .font(.caption)
+                            }
+                        }
                     )
 
-                if recipe.isFavorite {
-                    Image(systemName: "heart.fill")
-                        .font(.caption)
-                        .foregroundStyle(.red)
-                        .padding(6)
-                        .background(.white.opacity(0.9))
-                        .clipShape(Circle())
-                        .padding(8)
+                VStack(alignment: .trailing, spacing: 4) {
+                    if recipe.isFavorite {
+                        Image(systemName: "heart.fill")
+                            .font(.caption)
+                            .foregroundStyle(.red)
+                            .padding(6)
+                            .background(.white.opacity(0.9))
+                            .clipShape(Circle())
+                    }
+
+                    // Match percentage badge
+                    if !pantry.isEmpty {
+                        matchBadge
+                    }
                 }
+                .padding(8)
             }
 
-            Text(recipe.title)
-                .font(.subheadline)
-                .fontWeight(.semibold)
-                .foregroundStyle(AppColors.darkText)
-                .lineLimit(2)
+            HStack(spacing: 4) {
+                // Source tag
+                if !recipe.source.isUserRecipe {
+                    Text(recipe.source.label)
+                        .font(.system(size: 9, weight: .bold))
+                        .textCase(.uppercase)
+                        .foregroundStyle(.white)
+                        .padding(.horizontal, 5)
+                        .padding(.vertical, 2)
+                        .background(sourceColor)
+                        .clipShape(Capsule())
+                }
+
+                Text(recipe.title)
+                    .font(.subheadline)
+                    .fontWeight(.semibold)
+                    .foregroundStyle(AppColors.darkText)
+                    .lineLimit(2)
+            }
 
             HStack(spacing: 8) {
                 if let time = recipe.totalTimeDisplay as String? {
@@ -293,23 +557,71 @@ struct RecipeCardView: View {
                 DifficultyBadge(difficulty: recipe.difficulty)
             }
 
-            HStack(spacing: 4) {
-                Circle()
-                    .fill(match.canMake ? AppColors.primaryGreen : AppColors.warmOrange)
-                    .frame(width: 6, height: 6)
-
-                Text(match.canMake ? "Ready to cook" :
-                     "Need \(match.missingIngredients.count) item\(match.missingIngredients.count == 1 ? "" : "s")")
-                    .font(.caption2)
-                    .foregroundStyle(match.canMake ? AppColors.primaryGreen : AppColors.warmOrange)
-            }
+            // Pantry match status
+            pantryMatchStatus
         }
         .padding(12)
         .cardStyle()
     }
+
+    private var matchBadge: some View {
+        let pct = Int(match.effectiveMatchPercentage)
+        return Text("\(pct)%")
+            .font(.system(size: 11, weight: .bold, design: .rounded))
+            .foregroundStyle(.white)
+            .padding(.horizontal, 6)
+            .padding(.vertical, 3)
+            .background(matchBadgeColor(pct))
+            .clipShape(Capsule())
+    }
+
+    private func matchBadgeColor(_ pct: Int) -> Color {
+        if pct >= 100 { return AppColors.primaryGreen }
+        if pct >= 75 { return Color(red: 0.60, green: 0.76, blue: 0.25) }
+        if pct >= 50 { return AppColors.warmOrange }
+        return AppColors.softRed
+    }
+
+    private var pantryMatchStatus: some View {
+        HStack(spacing: 4) {
+            if match.canMake {
+                Circle()
+                    .fill(AppColors.primaryGreen)
+                    .frame(width: 6, height: 6)
+                Text("Ready to cook")
+                    .font(.caption2)
+                    .foregroundStyle(AppColors.primaryGreen)
+            } else if match.canMakeWithSubstitutions {
+                Circle()
+                    .fill(Color(red: 0.60, green: 0.76, blue: 0.25))
+                    .frame(width: 6, height: 6)
+                Text("With subs")
+                    .font(.caption2)
+                    .foregroundStyle(Color(red: 0.60, green: 0.76, blue: 0.25))
+                Image(systemName: "arrow.triangle.swap")
+                    .font(.system(size: 8))
+                    .foregroundStyle(Color(red: 0.60, green: 0.76, blue: 0.25))
+            } else {
+                Circle()
+                    .fill(AppColors.warmOrange)
+                    .frame(width: 6, height: 6)
+                Text("Need \(match.missingIngredients.count) item\(match.missingIngredients.count == 1 ? "" : "s")")
+                    .font(.caption2)
+                    .foregroundStyle(AppColors.warmOrange)
+            }
+        }
+    }
+
+    private var sourceColor: Color {
+        switch recipe.source {
+        case .user: return AppColors.primaryGreen
+        case .bundled: return AppColors.warmOrange
+        case .spoonacular: return Color(red: 0.38, green: 0.65, blue: 0.96)
+        }
+    }
 }
 
-// MARK: - What Can I Make View
+// MARK: - What Can I Make View (legacy, kept for compatibility)
 struct WhatCanIMakeView: View {
     @Environment(\.dismiss) private var dismiss
     let results: [PantryMatchResult]
@@ -318,11 +630,20 @@ struct WhatCanIMakeView: View {
         NavigationStack {
             List {
                 let canMake = results.filter { $0.canMake }
-                let nearMisses = results.filter { !$0.canMake && $0.matchPercentage >= 50 }
+                let withSubs = results.filter { !$0.canMake && $0.canMakeWithSubstitutions }
+                let nearMisses = results.filter { !$0.canMake && !$0.canMakeWithSubstitutions && $0.matchPercentage >= 50 }
 
                 if !canMake.isEmpty {
                     Section("Ready to Cook") {
                         ForEach(canMake) { result in
+                            matchRow(result)
+                        }
+                    }
+                }
+
+                if !withSubs.isEmpty {
+                    Section("With Substitutions") {
+                        ForEach(withSubs) { result in
                             matchRow(result)
                         }
                     }
@@ -336,7 +657,7 @@ struct WhatCanIMakeView: View {
                     }
                 }
 
-                if canMake.isEmpty && nearMisses.isEmpty {
+                if canMake.isEmpty && withSubs.isEmpty && nearMisses.isEmpty {
                     EmptyStateView(
                         icon: "fork.knife",
                         title: "Add more items",
@@ -361,6 +682,13 @@ struct WhatCanIMakeView: View {
                     .font(.subheadline)
                     .fontWeight(.medium)
                 Spacer()
+
+                if result.canMakeWithSubstitutions && !result.canMake {
+                    Image(systemName: "arrow.triangle.swap")
+                        .font(.caption2)
+                        .foregroundStyle(Color(red: 0.60, green: 0.76, blue: 0.25))
+                }
+
                 Text(result.displayPercentage)
                     .font(.caption)
                     .fontWeight(.bold)
@@ -371,6 +699,12 @@ struct WhatCanIMakeView: View {
                 Text("Missing: \(result.missingIngredients.map { $0.name }.joined(separator: ", "))")
                     .font(.caption)
                     .foregroundStyle(AppColors.subtleText)
+            }
+
+            if !result.substitutableIngredients.isEmpty {
+                Text("Subs available: \(result.substitutableIngredients.map { $0.ingredient.name }.joined(separator: ", "))")
+                    .font(.caption)
+                    .foregroundStyle(Color(red: 0.60, green: 0.76, blue: 0.25))
             }
 
             GeometryReader { geo in

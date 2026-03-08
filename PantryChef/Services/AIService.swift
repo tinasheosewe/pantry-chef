@@ -101,7 +101,35 @@ final class AIService: AIServiceProtocol {
         let matchResult = recipe.pantryMatch(pantry: pantry)
         guard !matchResult.missingIngredients.isEmpty else { return [] }
 
-        let missingList = matchResult.missingIngredients.map { $0.displayText }.joined(separator: "\n")
+        // Try local SubstitutionRepository first
+        var localSuggestions: [SubstitutionSuggestion] = []
+        var unresolvedIngredients: [Ingredient] = []
+
+        for ingredient in matchResult.missingIngredients {
+            let subs = SubstitutionRepository.shared.substitutions(for: ingredient.name)
+            if let best = subs.first {
+                let worstImpact = max(best.tasteImpact.ordinal, best.textureImpact.ordinal)
+                localSuggestions.append(SubstitutionSuggestion(
+                    originalIngredient: ingredient.name,
+                    substituteName: best.substitute,
+                    ratio: best.ratio,
+                    tasteImpact: best.tasteImpact.rawValue,
+                    textureImpact: best.textureImpact.rawValue,
+                    nutritionImpact: "Similar",
+                    confidence: worstImpact == 0 ? 0.95 : worstImpact == 1 ? 0.8 : 0.6
+                ))
+            } else {
+                unresolvedIngredients.append(ingredient)
+            }
+        }
+
+        // If all resolved locally, skip AI
+        if unresolvedIngredients.isEmpty {
+            return localSuggestions
+        }
+
+        // AI fallback for unresolved ingredients only
+        let missingList = unresolvedIngredients.map { $0.displayText }.joined(separator: "\n")
         let availableList = pantry.map { $0.name }.joined(separator: ", ")
 
         let prompt = """
@@ -125,8 +153,8 @@ final class AIService: AIServiceProtocol {
         Return ONLY the JSON array, no other text.
         """
 
-        guard let response = await sendChatRequest(prompt: prompt) else { return [] }
-        return parseSubstitutions(from: response)
+        guard let response = await sendChatRequest(prompt: prompt) else { return localSuggestions }
+        return localSuggestions + parseSubstitutions(from: response)
     }
 
     // MARK: - Make It Healthier

@@ -2,18 +2,18 @@ import SwiftUI
 
 struct HomeView: View {
     @State private var viewModel: HomeViewModel
-    @State private var showWhatCanIMake = false
-    @State private var whatCanIMakeResults: [PantryMatchResult] = []
     @State private var showReceiptScanner = false
     @State private var resumeRecipe: Recipe?
 
     var onSwitchToShopping: (() -> Void)?
     var onSwitchToPlan: (() -> Void)?
+    var onSwitchToRecipesCanMake: (() -> Void)?
 
-    init(appState: AppState, onSwitchToShopping: (() -> Void)? = nil, onSwitchToPlan: (() -> Void)? = nil) {
+    init(appState: AppState, onSwitchToShopping: (() -> Void)? = nil, onSwitchToPlan: (() -> Void)? = nil, onSwitchToRecipesCanMake: (() -> Void)? = nil) {
         _viewModel = State(initialValue: HomeViewModel(appState: appState))
         self.onSwitchToShopping = onSwitchToShopping
         self.onSwitchToPlan = onSwitchToPlan
+        self.onSwitchToRecipesCanMake = onSwitchToRecipesCanMake
     }
 
     var body: some View {
@@ -58,9 +58,6 @@ struct HomeView: View {
             .onAppear {
                 viewModel.refresh()
                 viewModel.appState.activeCooks.refresh()
-            }
-            .sheet(isPresented: $showWhatCanIMake) {
-                WhatCanIMakeView(results: whatCanIMakeResults)
             }
             .sheet(isPresented: $showReceiptScanner) {
                 ReceiptScannerView { items in
@@ -196,10 +193,7 @@ struct HomeView: View {
                 GridItem(.flexible()),
             ], spacing: 12) {
                 QuickActionButton(icon: "fork.knife", title: "What can\nI make?", color: AppColors.primaryGreen) {
-                    whatCanIMakeResults = viewModel.appState.recipes
-                        .map { $0.pantryMatch(pantry: viewModel.appState.pantryItems) }
-                        .sorted { $0.matchPercentage > $1.matchPercentage }
-                    showWhatCanIMake = true
+                    onSwitchToRecipesCanMake?()
                 }
                 QuickActionButton(icon: "cart.fill", title: "What to\nbuy?", color: AppColors.warmOrange) {
                     Task {

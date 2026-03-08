@@ -115,6 +115,8 @@ struct Recipe: Identifiable, Codable, Hashable {
     var difficulty: DifficultyLevel
     var dietaryTags: [DietaryTag]
     var mealType: MealType?
+    var cuisine: CuisineType?
+    var source: RecipeSource
     var nutrition: NutritionInfo?
     var imageURL: String?
     var sourceURL: String?
@@ -135,6 +137,8 @@ struct Recipe: Identifiable, Codable, Hashable {
         difficulty: DifficultyLevel = .easy,
         dietaryTags: [DietaryTag] = [],
         mealType: MealType? = nil,
+        cuisine: CuisineType? = nil,
+        source: RecipeSource = .user,
         nutrition: NutritionInfo? = nil,
         imageURL: String? = nil,
         sourceURL: String? = nil,
@@ -154,6 +158,8 @@ struct Recipe: Identifiable, Codable, Hashable {
         self.difficulty = difficulty
         self.dietaryTags = dietaryTags
         self.mealType = mealType
+        self.cuisine = cuisine
+        self.source = source
         self.nutrition = nutrition
         self.imageURL = imageURL
         self.sourceURL = sourceURL
@@ -203,29 +209,7 @@ struct Recipe: Identifiable, Codable, Hashable {
 
     // MARK: - Pantry Matching
     func pantryMatch(pantry: [PantryItem]) -> PantryMatchResult {
-        let requiredIngredients = ingredients.filter { !$0.isOptional }
-        var matched: [Ingredient] = []
-        var missing: [Ingredient] = []
-
-        for ingredient in requiredIngredients {
-            let found = pantry.contains { item in
-                item.name.lowercased().contains(ingredient.name.lowercased()) ||
-                ingredient.name.lowercased().contains(item.name.lowercased())
-            }
-            if found {
-                matched.append(ingredient)
-            } else {
-                missing.append(ingredient)
-            }
-        }
-
-        return PantryMatchResult(
-            recipe: self,
-            matchedIngredients: matched,
-            missingIngredients: missing,
-            matchPercentage: requiredIngredients.isEmpty ? 0 :
-                Double(matched.count) / Double(requiredIngredients.count) * 100
-        )
+        IngredientMatcher.match(recipe: self, pantry: pantry)
     }
 
     // MARK: - Stable IDs for built-in recipes (survive app restarts for CookingSession matching)
@@ -296,6 +280,7 @@ struct Recipe: Identifiable, Codable, Hashable {
         difficulty: .beginner,
         dietaryTags: [.dairyFree],
         mealType: .dinner,
+        cuisine: .chinese,
         nutrition: NutritionInfo(
             calories: 420,
             protein: 38,
@@ -359,6 +344,7 @@ struct Recipe: Identifiable, Codable, Hashable {
             difficulty: .beginner,
             dietaryTags: [.vegan, .dairyFree],
             mealType: .breakfast,
+            cuisine: .american,
             nutrition: NutritionInfo(calories: 280, protein: 6, carbohydrates: 30, fat: 16, fiber: 8, sugar: 2, sodium: 300)
         ),
         Recipe(
@@ -400,9 +386,36 @@ struct Recipe: Identifiable, Codable, Hashable {
             difficulty: .beginner,
             dietaryTags: [.dairyFree],
             mealType: .dinner,
+            cuisine: .chinese,
             nutrition: NutritionInfo(calories: 380, protein: 14, carbohydrates: 52, fat: 12, fiber: 2, sugar: 3, sodium: 700)
         ),
     ]
+}
+
+// MARK: - Substitution Entry (local repository result)
+struct SubstitutionEntry: Codable, Hashable, Identifiable {
+    var id: String { "\(original)-\(substitute)" }
+    let original: String
+    let substitute: String
+    let ratio: String           // e.g. "1:1", "use half"
+    let tasteImpact: SubstitutionImpact
+    let textureImpact: SubstitutionImpact
+    let notes: String?
+    let dietary: [DietaryTag]
+}
+
+// MARK: - Ingredient Match Detail
+enum IngredientMatchType: Hashable {
+    case fullMatch
+    case partialMatch(have: Double, need: Double)
+    case noMatch
+}
+
+struct IngredientMatchDetail: Identifiable, Hashable {
+    let id = UUID()
+    let ingredient: Ingredient
+    let matchType: IngredientMatchType
+    let matchedPantryItem: PantryItem?
 }
 
 // MARK: - Pantry Match Result
@@ -413,9 +426,39 @@ struct PantryMatchResult: Identifiable {
     let missingIngredients: [Ingredient]
     let matchPercentage: Double
 
+    /// Missing ingredients that have local substitutes the user owns
+    let substitutableIngredients: [(ingredient: Ingredient, substitutions: [SubstitutionEntry])]
+    /// True if all missing ingredients can be covered by pantry substitutes
+    let canMakeWithSubstitutions: Bool
+    /// Match % counting subs as partial credit
+    let effectiveMatchPercentage: Double
+
     var canMake: Bool { missingIngredients.isEmpty }
 
     var displayPercentage: String {
         "\(Int(matchPercentage))%"
+    }
+
+    var effectiveDisplayPercentage: String {
+        "\(Int(effectiveMatchPercentage))%"
+    }
+
+    /// Convenience init for backward compat (no substitution data)
+    init(
+        recipe: Recipe,
+        matchedIngredients: [Ingredient],
+        missingIngredients: [Ingredient],
+        matchPercentage: Double,
+        substitutableIngredients: [(ingredient: Ingredient, substitutions: [SubstitutionEntry])] = [],
+        canMakeWithSubstitutions: Bool = false,
+        effectiveMatchPercentage: Double? = nil
+    ) {
+        self.recipe = recipe
+        self.matchedIngredients = matchedIngredients
+        self.missingIngredients = missingIngredients
+        self.matchPercentage = matchPercentage
+        self.substitutableIngredients = substitutableIngredients
+        self.canMakeWithSubstitutions = canMakeWithSubstitutions
+        self.effectiveMatchPercentage = effectiveMatchPercentage ?? matchPercentage
     }
 }

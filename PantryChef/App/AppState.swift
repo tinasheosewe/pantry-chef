@@ -6,10 +6,11 @@ final class AppState {
     // MARK: - Services (protocol-typed for testability)
     let storageService: StorageServiceProtocol
     let aiService: AIServiceProtocol
+    let recipeRepository = RecipeRepository.shared
 
     // MARK: - Shared State
     var pantryItems: [PantryItem] = []
-    var recipes: [Recipe] = []
+    var recipes: [Recipe] = []    // User's own recipes
     var mealPlan: [MealPlanEntry] = []
     var shoppingItems: [ShoppingItem] = []
     var isLoading = false
@@ -37,6 +38,19 @@ final class AppState {
         Dictionary(grouping: pantryItems, by: { $0.category })
     }
 
+    /// All non-user recipes (bundled + cached API) — eagerly loaded for observability
+    var discoverRecipes: [Recipe] = []
+
+    /// All recipes combined (user + discover) for unified search
+    var allRecipes: [Recipe] {
+        recipes + discoverRecipes
+    }
+
+    /// Reload discover recipes from the repository (call after caching new recipes)
+    func refreshDiscoverRecipes() {
+        discoverRecipes = recipeRepository.discoverRecipes
+    }
+
     // MARK: - Init (DI-friendly)
     init() {
         self.storageService = StorageService()
@@ -44,6 +58,9 @@ final class AppState {
         // Seed in-memory data synchronously — zero async overhead
         pantryItems = PantryItem.samples
         recipes = Recipe.samples
+        let discover = recipeRepository.discoverRecipes
+        print("[AppState] init — recipeRepository.discoverRecipes.count = \(discover.count)")
+        discoverRecipes = discover
     }
 
     init(storageService: StorageServiceProtocol, aiService: AIServiceProtocol) {
@@ -51,6 +68,9 @@ final class AppState {
         self.aiService = aiService
         pantryItems = PantryItem.samples
         recipes = Recipe.samples
+        let discover = recipeRepository.discoverRecipes
+        print("[AppState] init(DI) — recipeRepository.discoverRecipes.count = \(discover.count)")
+        discoverRecipes = discover
     }
 
     // MARK: - Data Loading (for refresh / future network-backed store)

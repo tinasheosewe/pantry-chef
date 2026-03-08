@@ -54,6 +54,9 @@ final class RealtimeService: RealtimeServiceProtocol {
     /// Tracks function call IDs already dispatched to avoid double-firing.
     @ObservationIgnored private var processedFunctionCallIds = Set<String>()
 
+    /// Tracks user message item IDs already checked for garbage transcription.
+    @ObservationIgnored private var processedUserTranscriptIds = Set<String>()
+
     /// Background tasks for state sync and error listening.
     @ObservationIgnored private var syncTask: Task<Void, Never>?
     @ObservationIgnored private var errorTask: Task<Void, Never>?
@@ -129,44 +132,6 @@ final class RealtimeService: RealtimeServiceProtocol {
             session.toolChoice = .auto
             // Note: temperature and modalities are not supported by the GA API
             // session.update and will cause the entire update to be rejected.
-        }
-
-        // ── Event-driven function call dispatch ──
-        // The SDK fires this callback synchronously on MainActor the
-        // instant `response.output_item.done` arrives with a function
-        // call item.  No polling, no race conditions.
-        conversation?.onFunctionCallCompleted = { [weak self] fc in
-            guard let self, let conv = self.conversation else { return }
-            guard !self.processedFunctionCallIds.contains(fc.callId) else {
-                print("[RealtimeService] Skipping duplicate function call: \(fc.name)")
-                return
-            }
-            self.processedFunctionCallIds.insert(fc.callId)
-            self.dispatchFunctionCall(fc, via: conv)
-        }
-
-        // ── Client-side garbage rejection ──
-        // When user transcription arrives, check if it looks like noise
-        // (sizzling, clanking, etc. that VAD falsely triggered on).
-        // If so, cancel the in-progress response and remove the noise
-        // item from the conversation to prevent the AI from responding.
-        conversation?.onUserTranscriptionCompleted = { [weak self] itemId, transcript in
-            guard let self, let conv = self.conversation else { return }
-            if Self.isGarbageTranscription(transcript) {
-                print("[RealtimeService] 🗑️ Garbage transcription detected: \"\(transcript)\" — cancelling response")
-                do {
-                    // Cancel the in-progress response (stops AI from speaking)
-                    try conv.send(event: .cancelResponse(eventId: nil, responseId: nil))
-                    // Clear the output audio buffer (stops any audio already queued)
-                    try conv.send(event: .outputAudioBufferClear(eventId: nil))
-                    // Delete the noise item from conversation history so it
-                    // doesn't pollute future context
-                    try conv.send(event: .deleteConversationItem(eventId: nil, itemId: itemId))
-                    print("[RealtimeService] 🗑️ Cancelled response and removed noise item")
-                } catch {
-                    print("[RealtimeService] ⚠️ Failed to cancel garbage response: \(error)")
-                }
-            }
         }
 
         // Connect asynchronously via WebRTC
@@ -384,8 +349,43 @@ final class RealtimeService: RealtimeServiceProtocol {
         }
 
         // ── Function calls ──
-        // Handled via event-driven callback (onFunctionCallCompleted)
-        // set up in connect(). No polling needed.
+        // Scan entries for completed function calls not yet dispatched.
+        for entry in conv.entries {
+            if case let .functionCall(fc) = entry,
+               fc.status == .completed,
+               !processedFunctionCallIds.contains(fc.callId) {
+                processedFunctionCallIds.insert(fc.callId)
+                dispatchFunctionCall(fc, via: conv)
+            }
+        }
+
+        // ── Garbage transcription rejection ──
+        // Check new user messages for noise transcriptions and cancel
+        // the AI response if detected.
+        for entry in conv.entries {
+            if case let .message(msg) = entry,
+               msg.role == .user,
+               !processedUserTranscriptIds.contains(msg.id) {
+                // Extract transcript from inputAudio content
+                for content in msg.content {
+                    if case let .inputAudio(audio) = content,
+                       let transcript = audio.transcript {
+                        processedUserTranscriptIds.insert(msg.id)
+                        if Self.isGarbageTranscription(transcript) {
+                            print("[RealtimeService] 🗑️ Garbage transcription detected: \"\(transcript)\" — cancelling response")
+                            do {
+                                try conv.send(event: .cancelResponse(eventId: nil, responseId: nil))
+                                try conv.send(event: .outputAudioBufferClear(eventId: nil))
+                                try conv.send(event: .deleteConversationItem(eventId: nil, itemId: msg.id))
+                                print("[RealtimeService] 🗑️ Cancelled response and removed noise item")
+                            } catch {
+                                print("[RealtimeService] ⚠️ Failed to cancel garbage response: \(error)")
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
         // ── Status message ──
         if conv.status == .connected {
@@ -482,6 +482,7 @@ final class RealtimeService: RealtimeServiceProtocol {
         errorTask = nil
         conversation = nil  // triggers SDK disconnect on deinit
         processedFunctionCallIds.removeAll()
+        processedUserTranscriptIds.removeAll()
     }
 
     // MARK: - Tool Conversion

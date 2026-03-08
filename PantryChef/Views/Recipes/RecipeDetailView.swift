@@ -6,6 +6,7 @@ struct RecipeDetailView: View {
     @State private var servings: Int
     @State private var showCookMode = false
     @State private var showGathering = false
+    @State private var isFetchingSteps = false
     @State private var showSubstitutions = false
     @State private var showShoppingList = false
     @State private var substitutions: [SubstitutionSuggestion] = []
@@ -103,6 +104,42 @@ struct RecipeDetailView: View {
         }
     }
 
+    // MARK: - Fetch Steps Fallback
+
+    /// For Spoonacular recipes that arrived without steps (complexSearch sometimes
+    /// omits analyzedInstructions), fetch the full recipe detail before entering cook mode.
+    private func fetchStepsThenCook(spoonId: Int) async {
+        isFetchingSteps = true
+        defer { isFetchingSteps = false }
+        do {
+            if let detailed = try await SpoonacularService.shared.getRecipeDetail(id: spoonId),
+               !detailed.steps.isEmpty {
+                recipe = Recipe(
+                    id: recipe.id,
+                    title: recipe.title,
+                    description: recipe.description,
+                    ingredients: detailed.ingredients.isEmpty ? recipe.ingredients : detailed.ingredients,
+                    steps: detailed.steps,
+                    servings: recipe.servings,
+                    prepTimeMinutes: recipe.prepTimeMinutes ?? detailed.prepTimeMinutes,
+                    cookTimeMinutes: recipe.cookTimeMinutes ?? detailed.cookTimeMinutes,
+                    difficulty: detailed.difficulty,
+                    dietaryTags: recipe.dietaryTags,
+                    mealType: recipe.mealType,
+                    cuisine: recipe.cuisine,
+                    source: recipe.source,
+                    nutrition: recipe.nutrition ?? detailed.nutrition,
+                    imageURL: recipe.imageURL,
+                    sourceURL: recipe.sourceURL
+                )
+            }
+        } catch {
+            print("[RecipeDetailView] Failed to fetch steps: \(error)")
+        }
+        // Proceed to cook even if fetch failed — user can still see the recipe
+        showGathering = true
+    }
+
     // MARK: - Hero Image
     private var heroImage: some View {
         ZStack {
@@ -189,14 +226,86 @@ struct RecipeDetailView: View {
             }
             .frame(height: 8)
 
-            if !pantryMatch.missingIngredients.isEmpty {
-                Text("Missing: \(pantryMatch.missingIngredients.map { $0.name }.joined(separator: ", "))")
+            // Status line
+            if pantryMatch.canMake {
+                Label("You have everything!", systemImage: "checkmark.circle.fill")
                     .font(.caption)
-                    .foregroundStyle(AppColors.subtleText)
+                    .foregroundStyle(AppColors.primaryGreen)
+            } else if pantryMatch.canMakeWithSubstitutions {
+                Label("Can make with substitutions", systemImage: "arrow.triangle.swap")
+                    .font(.caption)
+                    .foregroundStyle(Color(red: 0.60, green: 0.76, blue: 0.25))
+            }
+
+            // Missing ingredients with inline substitution suggestions
+            if !pantryMatch.missingIngredients.isEmpty {
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("Missing Ingredients")
+                        .font(.caption)
+                        .fontWeight(.medium)
+                        .foregroundStyle(AppColors.subtleText)
+
+                    ForEach(pantryMatch.missingIngredients, id: \.name) { ingredient in
+                        missingIngredientRow(ingredient)
+                    }
+                }
+                .padding(.top, 4)
             }
         }
         .padding()
         .cardStyle()
+    }
+
+    private func missingIngredientRow(_ ingredient: Ingredient) -> some View {
+        let subs = SubstitutionRepository.shared.substitutions(for: ingredient.name)
+        return VStack(alignment: .leading, spacing: 3) {
+            HStack(spacing: 6) {
+                Image(systemName: "xmark.circle.fill")
+                    .font(.system(size: 10))
+                    .foregroundStyle(AppColors.softRed)
+                Text(ingredient.name)
+                    .font(.caption)
+                    .foregroundStyle(AppColors.darkText)
+
+                let qty = ingredient.displayText
+                    .replacingOccurrences(of: ingredient.name, with: "")
+                    .trimmingCharacters(in: .whitespaces)
+                if !qty.isEmpty {
+                    Text("(\(qty))")
+                        .font(.caption2)
+                        .foregroundStyle(AppColors.subtleText)
+                }
+            }
+
+            if !subs.isEmpty {
+                ForEach(subs.prefix(2), id: \.substitute) { sub in
+                    HStack(spacing: 4) {
+                        Image(systemName: "arrow.turn.down.right")
+                            .font(.system(size: 8))
+                            .foregroundStyle(Color(red: 0.60, green: 0.76, blue: 0.25))
+                        Text(sub.substitute)
+                            .font(.caption2)
+                            .fontWeight(.medium)
+                            .foregroundStyle(Color(red: 0.60, green: 0.76, blue: 0.25))
+                        Text("(\(sub.ratio))")
+                            .font(.system(size: 9))
+                            .foregroundStyle(AppColors.subtleText)
+                        let worst = sub.tasteImpact.ordinal >= sub.textureImpact.ordinal
+                            ? sub.tasteImpact : sub.textureImpact
+                        if worst != .none {
+                            Text(worst.rawValue.lowercased())
+                                .font(.system(size: 8))
+                                .padding(.horizontal, 4)
+                                .padding(.vertical, 1)
+                                .background(worst.color.opacity(0.15))
+                                .foregroundStyle(worst.color)
+                                .clipShape(Capsule())
+                        }
+                    }
+                    .padding(.leading, 16)
+                }
+            }
+        }
     }
 
     // MARK: - Action Buttons
@@ -208,17 +317,27 @@ struct RecipeDetailView: View {
                 if existingSession != nil {
                     showCookMode = true       // resume — skip gathering
                 } else {
-                    showGathering = true       // new session — show ingredients first
+                    // If this is a Spoonacular recipe with no steps, fetch full details first
+                    if recipe.steps.isEmpty, case .spoonacular(let spoonId) = recipe.source {
+                        Task { await fetchStepsThenCook(spoonId: spoonId) }
+                    } else {
+                        showGathering = true   // new session — show ingredients first
+                    }
                 }
             } label: {
                 HStack(spacing: 8) {
-                    Image(systemName: existingSession != nil ? "arrow.counterclockwise" : "play.fill")
-                        .font(.title3)
+                    if isFetchingSteps {
+                        ProgressView()
+                            .tint(.white)
+                    } else {
+                        Image(systemName: existingSession != nil ? "arrow.counterclockwise" : "play.fill")
+                            .font(.title3)
+                    }
                     if let session = existingSession {
                         Text("Resume Cooking (step \(session.currentStepIndex + 1)/\(session.totalSteps))")
                             .font(.headline)
                     } else {
-                        Text("Start Cooking")
+                        Text(isFetchingSteps ? "Loading Steps…" : "Start Cooking")
                             .font(.headline)
                     }
                 }
@@ -228,6 +347,7 @@ struct RecipeDetailView: View {
                 .background(existingSession != nil ? AppColors.warmOrange : AppColors.primaryGreen)
                 .clipShape(RoundedRectangle(cornerRadius: 14))
             }
+            .disabled(isFetchingSteps)
 
             HStack(spacing: 12) {
                 ActionButton(icon: "cart", title: "What to Buy", color: AppColors.warmOrange) {

@@ -7,6 +7,9 @@ struct ContentView: View {
     /// Recipe resolved from a deep-link notification tap.
     @State private var deepLinkRecipe: Recipe?
 
+    /// When true, the Recipes tab should activate "Can Make" filter on appear.
+    @State private var activateCanMakeFilter = false
+
     enum Tab: String, CaseIterable {
         case home = "Home"
         case pantry = "Pantry"
@@ -32,6 +35,9 @@ struct ContentView: View {
                     selectedTab = .shop
                 }, onSwitchToPlan: {
                     selectedTab = .plan
+                }, onSwitchToRecipesCanMake: {
+                    activateCanMakeFilter = true
+                    selectedTab = .recipes
                 })
                     .tabItem {
                         Label(Tab.home.rawValue, systemImage: Tab.home.icon)
@@ -44,7 +50,7 @@ struct ContentView: View {
                     }
                     .tag(Tab.pantry)
 
-                RecipeListView(appState: appState)
+                RecipeListView(appState: appState, activateCanMakeFilter: $activateCanMakeFilter)
                     .tabItem {
                         Label(Tab.recipes.rawValue, systemImage: Tab.recipes.icon)
                     }

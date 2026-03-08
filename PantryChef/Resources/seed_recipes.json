@@ -1,0 +1,680 @@
+[
+  {
+    "title": "Classic Margherita Pizza",
+    "description": "Simple Italian pizza with fresh tomatoes, mozzarella, and basil.",
+    "cuisine": "Italian",
+    "mealType": "Dinner",
+    "difficulty": 2,
+    "servings": 4,
+    "prepTimeMinutes": 20,
+    "cookTimeMinutes": 15,
+    "dietaryTags": ["Vegetarian"],
+    "ingredients": [
+      {"name": "Pizza Dough", "quantity": 1, "unit": "lb", "category": "Grains & Cereals"},
+      {"name": "Tomato Sauce", "quantity": 0.5, "unit": "cup", "category": "Condiments & Sauces"},
+      {"name": "Mozzarella", "quantity": 200, "unit": "g", "category": "Dairy"},
+      {"name": "Basil", "quantity": 6, "unit": "piece", "category": "Spices & Herbs"},
+      {"name": "Olive Oil", "quantity": 2, "unit": "tbsp", "category": "Oils & Fats"},
+      {"name": "Salt", "quantity": 1, "unit": "pinch", "category": "Spices & Herbs", "isOptional": true}
+    ],
+    "steps": [
+      {"stepNumber": 1, "instruction": "Preheat oven to 475°F (245°C). If using a pizza stone, place it in the oven.", "estimatedDurationSeconds": 600},
+      {"stepNumber": 2, "instruction": "Roll out the dough on a floured surface into a 12-inch circle.", "estimatedDurationSeconds": 120},
+      {"stepNumber": 3, "instruction": "Spread tomato sauce evenly, leaving a 1-inch border.", "estimatedDurationSeconds": 60},
+      {"stepNumber": 4, "instruction": "Tear mozzarella and distribute over the sauce. Drizzle with olive oil.", "estimatedDurationSeconds": 60},
+      {"stepNumber": 5, "instruction": "Bake for 12-15 minutes until crust is golden and cheese is bubbly.", "timerMinutes": 14, "estimatedDurationSeconds": 840},
+      {"stepNumber": 6, "instruction": "Top with fresh basil leaves and serve immediately.", "estimatedDurationSeconds": 30}
+    ],
+    "nutrition": {"calories": 320, "protein": 14, "carbohydrates": 38, "fat": 12, "fiber": 2, "sugar": 4, "sodium": 580}
+  },
+  {
+    "title": "Chicken Tacos",
+    "description": "Quick and flavorful Mexican-style chicken tacos with fresh toppings.",
+    "cuisine": "Mexican",
+    "mealType": "Dinner",
+    "difficulty": 2,
+    "servings": 4,
+    "prepTimeMinutes": 15,
+    "cookTimeMinutes": 15,
+    "dietaryTags": [],
+    "ingredients": [
+      {"name": "Chicken Breast", "quantity": 500, "unit": "g", "category": "Protein"},
+      {"name": "Tortilla", "quantity": 8, "unit": "piece", "category": "Grains & Cereals"},
+      {"name": "Lime", "quantity": 2, "unit": "whole", "category": "Produce"},
+      {"name": "Cumin", "quantity": 1, "unit": "tsp", "category": "Spices & Herbs"},
+      {"name": "Chili Powder", "quantity": 1, "unit": "tsp", "category": "Spices & Herbs"},
+      {"name": "Onion", "quantity": 1, "unit": "whole", "category": "Produce"},
+      {"name": "Cilantro", "quantity": 1, "unit": "bunch", "category": "Spices & Herbs", "isOptional": true},
+      {"name": "Sour Cream", "quantity": 0.5, "unit": "cup", "category": "Dairy", "isOptional": true}
+    ],
+    "steps": [
+      {"stepNumber": 1, "instruction": "Season chicken with cumin, chili powder, and salt.", "estimatedDurationSeconds": 60},
+      {"stepNumber": 2, "instruction": "Grill or pan-fry chicken for 6-7 minutes per side until cooked through.", "timerMinutes": 14, "estimatedDurationSeconds": 840},
+      {"stepNumber": 3, "instruction": "Dice onion and chop cilantro while chicken rests.", "estimatedDurationSeconds": 120},
+      {"stepNumber": 4, "instruction": "Slice chicken into strips. Warm tortillas.", "estimatedDurationSeconds": 120},
+      {"stepNumber": 5, "instruction": "Assemble tacos with chicken, onion, cilantro, lime juice, and sour cream.", "estimatedDurationSeconds": 120}
+    ],
+    "nutrition": {"calories": 380, "protein": 32, "carbohydrates": 35, "fat": 12, "fiber": 3, "sugar": 2, "sodium": 420}
+  },
+  {
+    "title": "Pad Thai",
+    "description": "Classic Thai stir-fried rice noodles with shrimp, peanuts, and tamarind sauce.",
+    "cuisine": "Thai",
+    "mealType": "Dinner",
+    "difficulty": 3,
+    "servings": 4,
+    "prepTimeMinutes": 20,
+    "cookTimeMinutes": 15,
+    "dietaryTags": ["Dairy-Free"],
+    "ingredients": [
+      {"name": "Rice Noodles", "quantity": 250, "unit": "g", "category": "Pasta & Noodles"},
+      {"name": "Shrimp", "quantity": 300, "unit": "g", "category": "Protein"},
+      {"name": "Eggs", "quantity": 2, "unit": "piece", "category": "Dairy"},
+      {"name": "Bean Sprouts", "quantity": 1, "unit": "cup", "category": "Produce"},
+      {"name": "Peanuts", "quantity": 0.25, "unit": "cup", "category": "Nuts & Seeds"},
+      {"name": "Green Onion", "quantity": 3, "unit": "piece", "category": "Produce"},
+      {"name": "Garlic", "quantity": 3, "unit": "clove", "category": "Produce"},
+      {"name": "Fish Sauce", "quantity": 3, "unit": "tbsp", "category": "Condiments & Sauces"},
+      {"name": "Sugar", "quantity": 2, "unit": "tbsp", "category": "Baking Supplies"},
+      {"name": "Lime", "quantity": 1, "unit": "whole", "category": "Produce"},
+      {"name": "Vegetable Oil", "quantity": 2, "unit": "tbsp", "category": "Oils & Fats"}
+    ],
+    "steps": [
+      {"stepNumber": 1, "instruction": "Soak rice noodles in warm water for 20 minutes, then drain.", "timerMinutes": 20, "estimatedDurationSeconds": 1200},
+      {"stepNumber": 2, "instruction": "Mix fish sauce, sugar, and a splash of water for the sauce.", "estimatedDurationSeconds": 60},
+      {"stepNumber": 3, "instruction": "Heat oil in a wok over high heat. Cook shrimp until pink, about 2 minutes per side.", "estimatedDurationSeconds": 240},
+      {"stepNumber": 4, "instruction": "Push shrimp aside, scramble eggs in the wok.", "estimatedDurationSeconds": 60},
+      {"stepNumber": 5, "instruction": "Add noodles and sauce. Toss everything together for 2-3 minutes.", "estimatedDurationSeconds": 180},
+      {"stepNumber": 6, "instruction": "Add bean sprouts, green onions, and peanuts. Toss and serve with lime wedges.", "estimatedDurationSeconds": 60}
+    ],
+    "nutrition": {"calories": 420, "protein": 28, "carbohydrates": 52, "fat": 14, "fiber": 2, "sugar": 10, "sodium": 890}
+  },
+  {
+    "title": "Japanese Miso Soup",
+    "description": "Comforting traditional miso soup with tofu, wakame, and green onions.",
+    "cuisine": "Japanese",
+    "mealType": "Lunch",
+    "difficulty": 1,
+    "servings": 4,
+    "prepTimeMinutes": 5,
+    "cookTimeMinutes": 10,
+    "dietaryTags": ["Vegan", "Dairy-Free", "Gluten-Free"],
+    "ingredients": [
+      {"name": "Miso Paste", "quantity": 3, "unit": "tbsp", "category": "Condiments & Sauces"},
+      {"name": "Tofu", "quantity": 200, "unit": "g", "category": "Protein"},
+      {"name": "Green Onion", "quantity": 2, "unit": "piece", "category": "Produce"},
+      {"name": "Water", "quantity": 4, "unit": "cup", "category": "Other"},
+      {"name": "Soy Sauce", "quantity": 1, "unit": "tsp", "category": "Condiments & Sauces", "isOptional": true}
+    ],
+    "steps": [
+      {"stepNumber": 1, "instruction": "Bring water to a gentle simmer. Do not boil.", "estimatedDurationSeconds": 300},
+      {"stepNumber": 2, "instruction": "Cut tofu into small cubes. Slice green onions thinly.", "estimatedDurationSeconds": 120},
+      {"stepNumber": 3, "instruction": "Dissolve miso paste in a ladle of warm water, then stir into the pot.", "estimatedDurationSeconds": 60},
+      {"stepNumber": 4, "instruction": "Add tofu cubes and heat through for 2 minutes.", "timerMinutes": 2, "estimatedDurationSeconds": 120},
+      {"stepNumber": 5, "instruction": "Ladle into bowls and garnish with green onions.", "estimatedDurationSeconds": 30}
+    ],
+    "nutrition": {"calories": 85, "protein": 7, "carbohydrates": 6, "fat": 4, "fiber": 1, "sugar": 2, "sodium": 680}
+  },
+  {
+    "title": "Butter Chicken",
+    "description": "Rich and creamy Indian curry with tender chicken in a tomato-based sauce.",
+    "cuisine": "Indian",
+    "mealType": "Dinner",
+    "difficulty": 3,
+    "servings": 4,
+    "prepTimeMinutes": 20,
+    "cookTimeMinutes": 30,
+    "dietaryTags": ["Gluten-Free"],
+    "ingredients": [
+      {"name": "Chicken Thigh", "quantity": 600, "unit": "g", "category": "Protein"},
+      {"name": "Butter", "quantity": 3, "unit": "tbsp", "category": "Dairy"},
+      {"name": "Onion", "quantity": 1, "unit": "whole", "category": "Produce"},
+      {"name": "Garlic", "quantity": 4, "unit": "clove", "category": "Produce"},
+      {"name": "Ginger", "quantity": 1, "unit": "tbsp", "category": "Produce"},
+      {"name": "Tomato Paste", "quantity": 2, "unit": "tbsp", "category": "Condiments & Sauces"},
+      {"name": "Heavy Cream", "quantity": 0.5, "unit": "cup", "category": "Dairy"},
+      {"name": "Garam Masala", "quantity": 2, "unit": "tsp", "category": "Spices & Herbs"},
+      {"name": "Cumin", "quantity": 1, "unit": "tsp", "category": "Spices & Herbs"},
+      {"name": "Turmeric", "quantity": 0.5, "unit": "tsp", "category": "Spices & Herbs"},
+      {"name": "Rice", "quantity": 2, "unit": "cup", "category": "Grains & Cereals"}
+    ],
+    "steps": [
+      {"stepNumber": 1, "instruction": "Cut chicken into bite-sized pieces. Season with garam masala, cumin, and turmeric.", "estimatedDurationSeconds": 180},
+      {"stepNumber": 2, "instruction": "Melt butter in a large pan. Cook chicken until browned, about 5 minutes.", "timerMinutes": 5, "estimatedDurationSeconds": 300},
+      {"stepNumber": 3, "instruction": "Add diced onion, garlic, and ginger. Cook until softened.", "estimatedDurationSeconds": 180},
+      {"stepNumber": 4, "instruction": "Stir in tomato paste and cook for 1 minute.", "estimatedDurationSeconds": 60},
+      {"stepNumber": 5, "instruction": "Add cream, reduce heat, and simmer for 20 minutes.", "timerMinutes": 20, "estimatedDurationSeconds": 1200},
+      {"stepNumber": 6, "instruction": "Serve over steamed rice.", "estimatedDurationSeconds": 30}
+    ],
+    "nutrition": {"calories": 520, "protein": 38, "carbohydrates": 42, "fat": 22, "fiber": 2, "sugar": 4, "sodium": 460}
+  },
+  {
+    "title": "Korean Bibimbap",
+    "description": "Colorful Korean rice bowl with vegetables, egg, and gochujang sauce.",
+    "cuisine": "Korean",
+    "mealType": "Dinner",
+    "difficulty": 3,
+    "servings": 4,
+    "prepTimeMinutes": 25,
+    "cookTimeMinutes": 20,
+    "dietaryTags": ["Dairy-Free"],
+    "ingredients": [
+      {"name": "Rice", "quantity": 2, "unit": "cup", "category": "Grains & Cereals"},
+      {"name": "Ground Beef", "quantity": 300, "unit": "g", "category": "Protein"},
+      {"name": "Eggs", "quantity": 4, "unit": "piece", "category": "Dairy"},
+      {"name": "Spinach", "quantity": 200, "unit": "g", "category": "Produce"},
+      {"name": "Carrot", "quantity": 2, "unit": "whole", "category": "Produce"},
+      {"name": "Zucchini", "quantity": 1, "unit": "whole", "category": "Produce"},
+      {"name": "Soy Sauce", "quantity": 2, "unit": "tbsp", "category": "Condiments & Sauces"},
+      {"name": "Sesame Oil", "quantity": 2, "unit": "tbsp", "category": "Oils & Fats"},
+      {"name": "Garlic", "quantity": 3, "unit": "clove", "category": "Produce"}
+    ],
+    "steps": [
+      {"stepNumber": 1, "instruction": "Cook rice according to package directions.", "timerMinutes": 15, "estimatedDurationSeconds": 900},
+      {"stepNumber": 2, "instruction": "Season beef with soy sauce, sesame oil, and garlic. Cook until browned.", "estimatedDurationSeconds": 300},
+      {"stepNumber": 3, "instruction": "Blanch spinach, julienne carrots and zucchini. Sauté vegetables separately.", "estimatedDurationSeconds": 600},
+      {"stepNumber": 4, "instruction": "Fry eggs sunny-side up.", "estimatedDurationSeconds": 180},
+      {"stepNumber": 5, "instruction": "Assemble bowls: rice on bottom, arrange vegetables and beef on top, finish with egg.", "estimatedDurationSeconds": 120}
+    ],
+    "nutrition": {"calories": 480, "protein": 28, "carbohydrates": 52, "fat": 18, "fiber": 4, "sugar": 4, "sodium": 620}
+  },
+  {
+    "title": "French Onion Soup",
+    "description": "Rich caramelized onion soup topped with crusty bread and melted Gruyère.",
+    "cuisine": "French",
+    "mealType": "Lunch",
+    "difficulty": 3,
+    "servings": 4,
+    "prepTimeMinutes": 15,
+    "cookTimeMinutes": 50,
+    "dietaryTags": ["Vegetarian"],
+    "ingredients": [
+      {"name": "Onion", "quantity": 6, "unit": "whole", "category": "Produce"},
+      {"name": "Butter", "quantity": 3, "unit": "tbsp", "category": "Dairy"},
+      {"name": "Beef Broth", "quantity": 4, "unit": "cup", "category": "Canned & Jarred"},
+      {"name": "Bread", "quantity": 4, "unit": "slice", "category": "Grains & Cereals"},
+      {"name": "Garlic", "quantity": 2, "unit": "clove", "category": "Produce"},
+      {"name": "Thyme", "quantity": 1, "unit": "tsp", "category": "Spices & Herbs"}
+    ],
+    "steps": [
+      {"stepNumber": 1, "instruction": "Thinly slice all onions. Melt butter in a large pot over medium heat.", "estimatedDurationSeconds": 300},
+      {"stepNumber": 2, "instruction": "Cook onions, stirring occasionally, until deeply caramelized, about 35-40 minutes.", "timerMinutes": 40, "estimatedDurationSeconds": 2400},
+      {"stepNumber": 3, "instruction": "Add garlic and thyme. Cook 1 minute.", "estimatedDurationSeconds": 60},
+      {"stepNumber": 4, "instruction": "Add broth and simmer for 10 minutes.", "timerMinutes": 10, "estimatedDurationSeconds": 600},
+      {"stepNumber": 5, "instruction": "Ladle into oven-safe bowls, top with bread. Broil until golden.", "estimatedDurationSeconds": 300}
+    ],
+    "nutrition": {"calories": 280, "protein": 12, "carbohydrates": 32, "fat": 12, "fiber": 3, "sugar": 10, "sodium": 720}
+  },
+  {
+    "title": "Greek Salad",
+    "description": "Fresh and vibrant Mediterranean salad with feta, olives, and cucumber.",
+    "cuisine": "Greek",
+    "mealType": "Lunch",
+    "difficulty": 1,
+    "servings": 4,
+    "prepTimeMinutes": 15,
+    "cookTimeMinutes": 0,
+    "dietaryTags": ["Vegetarian", "Gluten-Free"],
+    "ingredients": [
+      {"name": "Cucumber", "quantity": 1, "unit": "whole", "category": "Produce"},
+      {"name": "Tomato", "quantity": 3, "unit": "whole", "category": "Produce"},
+      {"name": "Red Onion", "quantity": 0.5, "unit": "whole", "category": "Produce"},
+      {"name": "Olive Oil", "quantity": 3, "unit": "tbsp", "category": "Oils & Fats"},
+      {"name": "Lemon Juice", "quantity": 2, "unit": "tbsp", "category": "Produce"},
+      {"name": "Oregano", "quantity": 1, "unit": "tsp", "category": "Spices & Herbs"},
+      {"name": "Salt", "quantity": 1, "unit": "pinch", "category": "Spices & Herbs"}
+    ],
+    "steps": [
+      {"stepNumber": 1, "instruction": "Cut cucumbers into half-moons, tomatoes into wedges, and thinly slice red onion.", "estimatedDurationSeconds": 180},
+      {"stepNumber": 2, "instruction": "Combine vegetables in a large bowl.", "estimatedDurationSeconds": 30},
+      {"stepNumber": 3, "instruction": "Whisk olive oil, lemon juice, oregano, and salt for dressing.", "estimatedDurationSeconds": 60},
+      {"stepNumber": 4, "instruction": "Pour dressing over salad and toss gently. Serve immediately.", "estimatedDurationSeconds": 30}
+    ],
+    "nutrition": {"calories": 180, "protein": 6, "carbohydrates": 12, "fat": 14, "fiber": 3, "sugar": 6, "sodium": 520}
+  },
+  {
+    "title": "Vietnamese Pho",
+    "description": "Aromatic beef noodle soup with fresh herbs, bean sprouts, and lime.",
+    "cuisine": "Vietnamese",
+    "mealType": "Dinner",
+    "difficulty": 3,
+    "servings": 4,
+    "prepTimeMinutes": 15,
+    "cookTimeMinutes": 30,
+    "dietaryTags": ["Dairy-Free"],
+    "ingredients": [
+      {"name": "Rice Noodles", "quantity": 300, "unit": "g", "category": "Pasta & Noodles"},
+      {"name": "Beef Broth", "quantity": 6, "unit": "cup", "category": "Canned & Jarred"},
+      {"name": "Ginger", "quantity": 2, "unit": "tbsp", "category": "Produce"},
+      {"name": "Onion", "quantity": 1, "unit": "whole", "category": "Produce"},
+      {"name": "Fish Sauce", "quantity": 2, "unit": "tbsp", "category": "Condiments & Sauces"},
+      {"name": "Bean Sprouts", "quantity": 1, "unit": "cup", "category": "Produce"},
+      {"name": "Lime", "quantity": 2, "unit": "whole", "category": "Produce"},
+      {"name": "Basil", "quantity": 1, "unit": "bunch", "category": "Spices & Herbs", "isOptional": true},
+      {"name": "Green Onion", "quantity": 3, "unit": "piece", "category": "Produce"}
+    ],
+    "steps": [
+      {"stepNumber": 1, "instruction": "Char onion and ginger under the broiler until blackened, about 5 minutes.", "estimatedDurationSeconds": 300},
+      {"stepNumber": 2, "instruction": "Bring broth to a boil. Add charred aromatics and fish sauce. Simmer 25 minutes.", "timerMinutes": 25, "estimatedDurationSeconds": 1500},
+      {"stepNumber": 3, "instruction": "Cook rice noodles according to package directions. Drain.", "estimatedDurationSeconds": 300},
+      {"stepNumber": 4, "instruction": "Divide noodles among bowls. Strain broth and ladle over noodles.", "estimatedDurationSeconds": 120},
+      {"stepNumber": 5, "instruction": "Serve with bean sprouts, lime wedges, basil, and sliced green onions.", "estimatedDurationSeconds": 60}
+    ],
+    "nutrition": {"calories": 350, "protein": 18, "carbohydrates": 52, "fat": 8, "fiber": 2, "sugar": 4, "sodium": 920}
+  },
+  {
+    "title": "Mediterranean Hummus Bowl",
+    "description": "Healthy lunch bowl with creamy hummus, fresh veggies, and warm pita.",
+    "cuisine": "Mediterranean",
+    "mealType": "Lunch",
+    "difficulty": 1,
+    "servings": 2,
+    "prepTimeMinutes": 10,
+    "cookTimeMinutes": 0,
+    "dietaryTags": ["Vegan", "Dairy-Free"],
+    "ingredients": [
+      {"name": "Hummus", "quantity": 1, "unit": "cup", "category": "Condiments & Sauces"},
+      {"name": "Cucumber", "quantity": 1, "unit": "whole", "category": "Produce"},
+      {"name": "Tomato", "quantity": 2, "unit": "whole", "category": "Produce"},
+      {"name": "Olive Oil", "quantity": 2, "unit": "tbsp", "category": "Oils & Fats"},
+      {"name": "Pita", "quantity": 2, "unit": "piece", "category": "Grains & Cereals"},
+      {"name": "Lemon Juice", "quantity": 1, "unit": "tbsp", "category": "Produce"}
+    ],
+    "steps": [
+      {"stepNumber": 1, "instruction": "Dice cucumber and tomatoes into small cubes.", "estimatedDurationSeconds": 120},
+      {"stepNumber": 2, "instruction": "Spread hummus in bowls, arrange vegetables on top.", "estimatedDurationSeconds": 60},
+      {"stepNumber": 3, "instruction": "Drizzle with olive oil and lemon juice. Serve with warm pita.", "estimatedDurationSeconds": 60}
+    ],
+    "nutrition": {"calories": 380, "protein": 12, "carbohydrates": 42, "fat": 20, "fiber": 8, "sugar": 4, "sodium": 480}
+  },
+  {
+    "title": "Classic American Burger",
+    "description": "Juicy beef burger with lettuce, tomato, and all the fixings.",
+    "cuisine": "American",
+    "mealType": "Dinner",
+    "difficulty": 2,
+    "servings": 4,
+    "prepTimeMinutes": 10,
+    "cookTimeMinutes": 12,
+    "dietaryTags": [],
+    "ingredients": [
+      {"name": "Ground Beef", "quantity": 500, "unit": "g", "category": "Protein"},
+      {"name": "Bread", "quantity": 4, "unit": "piece", "category": "Grains & Cereals"},
+      {"name": "Tomato", "quantity": 1, "unit": "whole", "category": "Produce"},
+      {"name": "Onion", "quantity": 1, "unit": "whole", "category": "Produce"},
+      {"name": "Salt", "quantity": 1, "unit": "tsp", "category": "Spices & Herbs"},
+      {"name": "Black Pepper", "quantity": 0.5, "unit": "tsp", "category": "Spices & Herbs"},
+      {"name": "Olive Oil", "quantity": 1, "unit": "tbsp", "category": "Oils & Fats"}
+    ],
+    "steps": [
+      {"stepNumber": 1, "instruction": "Season ground beef with salt and pepper. Form into 4 patties.", "estimatedDurationSeconds": 120},
+      {"stepNumber": 2, "instruction": "Heat a grill or pan to high. Cook patties 4-5 minutes per side for medium.", "timerMinutes": 10, "estimatedDurationSeconds": 600},
+      {"stepNumber": 3, "instruction": "Slice tomato and onion while burgers cook.", "estimatedDurationSeconds": 60},
+      {"stepNumber": 4, "instruction": "Toast buns, assemble burgers with toppings.", "estimatedDurationSeconds": 120}
+    ],
+    "nutrition": {"calories": 450, "protein": 32, "carbohydrates": 28, "fat": 24, "fiber": 2, "sugar": 4, "sodium": 520}
+  },
+  {
+    "title": "Shakshuka",
+    "description": "Middle Eastern eggs poached in spiced tomato sauce with peppers and onions.",
+    "cuisine": "Middle Eastern",
+    "mealType": "Breakfast",
+    "difficulty": 2,
+    "servings": 4,
+    "prepTimeMinutes": 10,
+    "cookTimeMinutes": 20,
+    "dietaryTags": ["Vegetarian", "Gluten-Free", "Dairy-Free"],
+    "ingredients": [
+      {"name": "Eggs", "quantity": 6, "unit": "piece", "category": "Dairy"},
+      {"name": "Tomato", "quantity": 4, "unit": "whole", "category": "Produce"},
+      {"name": "Bell Pepper", "quantity": 1, "unit": "whole", "category": "Produce"},
+      {"name": "Onion", "quantity": 1, "unit": "whole", "category": "Produce"},
+      {"name": "Garlic", "quantity": 3, "unit": "clove", "category": "Produce"},
+      {"name": "Cumin", "quantity": 1, "unit": "tsp", "category": "Spices & Herbs"},
+      {"name": "Paprika", "quantity": 1, "unit": "tsp", "category": "Spices & Herbs"},
+      {"name": "Olive Oil", "quantity": 2, "unit": "tbsp", "category": "Oils & Fats"},
+      {"name": "Salt", "quantity": 1, "unit": "pinch", "category": "Spices & Herbs"}
+    ],
+    "steps": [
+      {"stepNumber": 1, "instruction": "Dice onion, bell pepper, and garlic. Chop tomatoes.", "estimatedDurationSeconds": 180},
+      {"stepNumber": 2, "instruction": "Heat olive oil. Sauté onion and pepper until soft, about 5 minutes.", "timerMinutes": 5, "estimatedDurationSeconds": 300},
+      {"stepNumber": 3, "instruction": "Add garlic, cumin, and paprika. Cook 1 minute.", "estimatedDurationSeconds": 60},
+      {"stepNumber": 4, "instruction": "Add tomatoes and simmer 10 minutes until thickened.", "timerMinutes": 10, "estimatedDurationSeconds": 600},
+      {"stepNumber": 5, "instruction": "Make 6 wells in the sauce. Crack an egg into each well.", "estimatedDurationSeconds": 60},
+      {"stepNumber": 6, "instruction": "Cover and cook 5-7 minutes until eggs are set.", "timerMinutes": 6, "estimatedDurationSeconds": 360}
+    ],
+    "nutrition": {"calories": 220, "protein": 14, "carbohydrates": 14, "fat": 13, "fiber": 3, "sugar": 8, "sodium": 380}
+  },
+  {
+    "title": "Spaghetti Aglio e Olio",
+    "description": "Simple Italian pasta with garlic, olive oil, and red pepper flakes.",
+    "cuisine": "Italian",
+    "mealType": "Dinner",
+    "difficulty": 1,
+    "servings": 4,
+    "prepTimeMinutes": 5,
+    "cookTimeMinutes": 15,
+    "dietaryTags": ["Vegan", "Dairy-Free"],
+    "ingredients": [
+      {"name": "Pasta", "quantity": 400, "unit": "g", "category": "Pasta & Noodles"},
+      {"name": "Garlic", "quantity": 6, "unit": "clove", "category": "Produce"},
+      {"name": "Olive Oil", "quantity": 0.33, "unit": "cup", "category": "Oils & Fats"},
+      {"name": "Red Pepper Flakes", "quantity": 0.5, "unit": "tsp", "category": "Spices & Herbs"},
+      {"name": "Parsley", "quantity": 0.25, "unit": "cup", "category": "Spices & Herbs"},
+      {"name": "Salt", "quantity": 1, "unit": "tsp", "category": "Spices & Herbs"}
+    ],
+    "steps": [
+      {"stepNumber": 1, "instruction": "Cook pasta in salted boiling water until al dente. Reserve 1 cup pasta water.", "timerMinutes": 10, "estimatedDurationSeconds": 600},
+      {"stepNumber": 2, "instruction": "Meanwhile, thinly slice garlic. Heat olive oil over medium heat.", "estimatedDurationSeconds": 120},
+      {"stepNumber": 3, "instruction": "Sauté garlic until golden, not brown. Add red pepper flakes.", "estimatedDurationSeconds": 120},
+      {"stepNumber": 4, "instruction": "Toss drained pasta with the garlic oil. Add pasta water as needed.", "estimatedDurationSeconds": 60},
+      {"stepNumber": 5, "instruction": "Garnish with chopped parsley and serve.", "estimatedDurationSeconds": 30}
+    ],
+    "nutrition": {"calories": 380, "protein": 10, "carbohydrates": 54, "fat": 14, "fiber": 2, "sugar": 2, "sodium": 320}
+  },
+  {
+    "title": "Chicken Teriyaki",
+    "description": "Sweet and savory Japanese glazed chicken served over steamed rice.",
+    "cuisine": "Japanese",
+    "mealType": "Dinner",
+    "difficulty": 2,
+    "servings": 4,
+    "prepTimeMinutes": 10,
+    "cookTimeMinutes": 15,
+    "dietaryTags": ["Dairy-Free"],
+    "ingredients": [
+      {"name": "Chicken Thigh", "quantity": 600, "unit": "g", "category": "Protein"},
+      {"name": "Soy Sauce", "quantity": 3, "unit": "tbsp", "category": "Condiments & Sauces"},
+      {"name": "Honey", "quantity": 2, "unit": "tbsp", "category": "Condiments & Sauces"},
+      {"name": "Ginger", "quantity": 1, "unit": "tsp", "category": "Produce"},
+      {"name": "Garlic", "quantity": 2, "unit": "clove", "category": "Produce"},
+      {"name": "Rice", "quantity": 2, "unit": "cup", "category": "Grains & Cereals"},
+      {"name": "Vegetable Oil", "quantity": 1, "unit": "tbsp", "category": "Oils & Fats"},
+      {"name": "Green Onion", "quantity": 2, "unit": "piece", "category": "Produce", "isOptional": true}
+    ],
+    "steps": [
+      {"stepNumber": 1, "instruction": "Mix soy sauce, honey, ginger, and garlic for the teriyaki sauce.", "estimatedDurationSeconds": 60},
+      {"stepNumber": 2, "instruction": "Cook rice according to package directions.", "timerMinutes": 15, "estimatedDurationSeconds": 900},
+      {"stepNumber": 3, "instruction": "Heat oil in a pan. Cook chicken thighs skin-side down for 5 minutes.", "timerMinutes": 5, "estimatedDurationSeconds": 300},
+      {"stepNumber": 4, "instruction": "Flip chicken, pour sauce over, and cook 7-8 minutes until glazed.", "timerMinutes": 8, "estimatedDurationSeconds": 480},
+      {"stepNumber": 5, "instruction": "Slice chicken. Serve over rice, drizzle with pan sauce.", "estimatedDurationSeconds": 60}
+    ],
+    "nutrition": {"calories": 460, "protein": 34, "carbohydrates": 48, "fat": 14, "fiber": 1, "sugar": 10, "sodium": 780}
+  },
+  {
+    "title": "Caprese Salad",
+    "description": "Classic Italian salad with fresh mozzarella, tomatoes, and basil.",
+    "cuisine": "Italian",
+    "mealType": "Lunch",
+    "difficulty": 1,
+    "servings": 2,
+    "prepTimeMinutes": 10,
+    "cookTimeMinutes": 0,
+    "dietaryTags": ["Vegetarian", "Gluten-Free"],
+    "ingredients": [
+      {"name": "Mozzarella", "quantity": 250, "unit": "g", "category": "Dairy"},
+      {"name": "Tomato", "quantity": 3, "unit": "whole", "category": "Produce"},
+      {"name": "Basil", "quantity": 8, "unit": "piece", "category": "Spices & Herbs"},
+      {"name": "Olive Oil", "quantity": 2, "unit": "tbsp", "category": "Oils & Fats"},
+      {"name": "Salt", "quantity": 1, "unit": "pinch", "category": "Spices & Herbs"},
+      {"name": "Black Pepper", "quantity": 1, "unit": "pinch", "category": "Spices & Herbs"}
+    ],
+    "steps": [
+      {"stepNumber": 1, "instruction": "Slice tomatoes and mozzarella into 1/4 inch rounds.", "estimatedDurationSeconds": 120},
+      {"stepNumber": 2, "instruction": "Arrange alternating slices of tomato and mozzarella on a plate.", "estimatedDurationSeconds": 60},
+      {"stepNumber": 3, "instruction": "Tuck basil leaves between slices. Drizzle with olive oil, season with salt and pepper.", "estimatedDurationSeconds": 60}
+    ],
+    "nutrition": {"calories": 320, "protein": 18, "carbohydrates": 8, "fat": 24, "fiber": 2, "sugar": 5, "sodium": 420}
+  },
+  {
+    "title": "Chicken Quesadilla",
+    "description": "Crispy tortilla filled with seasoned chicken, cheese, and peppers.",
+    "cuisine": "Mexican",
+    "mealType": "Lunch",
+    "difficulty": 1,
+    "servings": 2,
+    "prepTimeMinutes": 10,
+    "cookTimeMinutes": 10,
+    "dietaryTags": [],
+    "ingredients": [
+      {"name": "Chicken Breast", "quantity": 250, "unit": "g", "category": "Protein"},
+      {"name": "Tortilla", "quantity": 4, "unit": "piece", "category": "Grains & Cereals"},
+      {"name": "Cheddar", "quantity": 100, "unit": "g", "category": "Dairy"},
+      {"name": "Bell Pepper", "quantity": 1, "unit": "whole", "category": "Produce"},
+      {"name": "Onion", "quantity": 0.5, "unit": "whole", "category": "Produce"},
+      {"name": "Olive Oil", "quantity": 1, "unit": "tbsp", "category": "Oils & Fats"},
+      {"name": "Cumin", "quantity": 0.5, "unit": "tsp", "category": "Spices & Herbs"}
+    ],
+    "steps": [
+      {"stepNumber": 1, "instruction": "Season and cook chicken. Slice into thin strips.", "estimatedDurationSeconds": 360},
+      {"stepNumber": 2, "instruction": "Sauté sliced bell pepper and onion until soft.", "estimatedDurationSeconds": 180},
+      {"stepNumber": 3, "instruction": "Layer chicken, veggies, and cheese on half of each tortilla. Fold.", "estimatedDurationSeconds": 60},
+      {"stepNumber": 4, "instruction": "Cook quesadillas in a pan over medium heat, 2-3 minutes per side until golden.", "estimatedDurationSeconds": 300},
+      {"stepNumber": 5, "instruction": "Cut into wedges and serve.", "estimatedDurationSeconds": 30}
+    ],
+    "nutrition": {"calories": 420, "protein": 32, "carbohydrates": 34, "fat": 18, "fiber": 2, "sugar": 3, "sodium": 560}
+  },
+  {
+    "title": "Banana Pancakes",
+    "description": "Fluffy, naturally sweet pancakes made with ripe bananas.",
+    "cuisine": "American",
+    "mealType": "Breakfast",
+    "difficulty": 1,
+    "servings": 2,
+    "prepTimeMinutes": 5,
+    "cookTimeMinutes": 10,
+    "dietaryTags": ["Vegetarian"],
+    "ingredients": [
+      {"name": "Banana", "quantity": 2, "unit": "whole", "category": "Produce"},
+      {"name": "Eggs", "quantity": 2, "unit": "piece", "category": "Dairy"},
+      {"name": "All Purpose Flour", "quantity": 0.5, "unit": "cup", "category": "Baking Supplies"},
+      {"name": "Butter", "quantity": 1, "unit": "tbsp", "category": "Dairy"},
+      {"name": "Baking Powder", "quantity": 0.5, "unit": "tsp", "category": "Baking Supplies"}
+    ],
+    "steps": [
+      {"stepNumber": 1, "instruction": "Mash bananas in a bowl. Whisk in eggs.", "estimatedDurationSeconds": 60},
+      {"stepNumber": 2, "instruction": "Add flour and baking powder. Stir until just combined.", "estimatedDurationSeconds": 30},
+      {"stepNumber": 3, "instruction": "Melt butter in a pan over medium heat. Pour 1/4 cup batter per pancake.", "estimatedDurationSeconds": 60},
+      {"stepNumber": 4, "instruction": "Cook 2-3 minutes per side until golden. Repeat with remaining batter.", "estimatedDurationSeconds": 480},
+      {"stepNumber": 5, "instruction": "Stack and serve with your choice of toppings.", "estimatedDurationSeconds": 30}
+    ],
+    "nutrition": {"calories": 280, "protein": 10, "carbohydrates": 40, "fat": 10, "fiber": 3, "sugar": 14, "sodium": 220}
+  },
+  {
+    "title": "Thai Green Curry",
+    "description": "Fragrant coconut curry with vegetables and your choice of protein.",
+    "cuisine": "Thai",
+    "mealType": "Dinner",
+    "difficulty": 2,
+    "servings": 4,
+    "prepTimeMinutes": 15,
+    "cookTimeMinutes": 20,
+    "dietaryTags": ["Gluten-Free", "Dairy-Free"],
+    "ingredients": [
+      {"name": "Chicken Breast", "quantity": 400, "unit": "g", "category": "Protein"},
+      {"name": "Coconut Milk", "quantity": 1, "unit": "can", "category": "Canned & Jarred"},
+      {"name": "Bell Pepper", "quantity": 1, "unit": "whole", "category": "Produce"},
+      {"name": "Broccoli", "quantity": 1, "unit": "cup", "category": "Produce"},
+      {"name": "Fish Sauce", "quantity": 2, "unit": "tbsp", "category": "Condiments & Sauces"},
+      {"name": "Sugar", "quantity": 1, "unit": "tsp", "category": "Baking Supplies"},
+      {"name": "Rice", "quantity": 2, "unit": "cup", "category": "Grains & Cereals"},
+      {"name": "Basil", "quantity": 0.5, "unit": "cup", "category": "Spices & Herbs"}
+    ],
+    "steps": [
+      {"stepNumber": 1, "instruction": "Cook rice according to package directions.", "timerMinutes": 15, "estimatedDurationSeconds": 900},
+      {"stepNumber": 2, "instruction": "Slice chicken into bite-sized pieces. Cut vegetables.", "estimatedDurationSeconds": 180},
+      {"stepNumber": 3, "instruction": "Simmer half the coconut milk in a pan until oil separates.", "estimatedDurationSeconds": 180},
+      {"stepNumber": 4, "instruction": "Add chicken and cook until opaque, about 5 minutes.", "timerMinutes": 5, "estimatedDurationSeconds": 300},
+      {"stepNumber": 5, "instruction": "Add remaining coconut milk, vegetables, fish sauce, and sugar. Simmer 10 minutes.", "timerMinutes": 10, "estimatedDurationSeconds": 600},
+      {"stepNumber": 6, "instruction": "Stir in basil. Serve over rice.", "estimatedDurationSeconds": 30}
+    ],
+    "nutrition": {"calories": 440, "protein": 30, "carbohydrates": 42, "fat": 18, "fiber": 3, "sugar": 4, "sodium": 680}
+  },
+  {
+    "title": "Ethiopian Lentil Stew",
+    "description": "Hearty spiced red lentil stew, a comforting Ethiopian classic.",
+    "cuisine": "Ethiopian",
+    "mealType": "Dinner",
+    "difficulty": 2,
+    "servings": 4,
+    "prepTimeMinutes": 10,
+    "cookTimeMinutes": 30,
+    "dietaryTags": ["Vegan", "Gluten-Free", "Dairy-Free"],
+    "ingredients": [
+      {"name": "Red Lentils", "quantity": 1.5, "unit": "cup", "category": "Grains & Cereals"},
+      {"name": "Onion", "quantity": 2, "unit": "whole", "category": "Produce"},
+      {"name": "Garlic", "quantity": 4, "unit": "clove", "category": "Produce"},
+      {"name": "Ginger", "quantity": 1, "unit": "tbsp", "category": "Produce"},
+      {"name": "Tomato Paste", "quantity": 2, "unit": "tbsp", "category": "Condiments & Sauces"},
+      {"name": "Turmeric", "quantity": 1, "unit": "tsp", "category": "Spices & Herbs"},
+      {"name": "Cumin", "quantity": 1, "unit": "tsp", "category": "Spices & Herbs"},
+      {"name": "Olive Oil", "quantity": 2, "unit": "tbsp", "category": "Oils & Fats"},
+      {"name": "Salt", "quantity": 1, "unit": "tsp", "category": "Spices & Herbs"}
+    ],
+    "steps": [
+      {"stepNumber": 1, "instruction": "Dice onions, mince garlic and ginger.", "estimatedDurationSeconds": 180},
+      {"stepNumber": 2, "instruction": "Heat oil. Sauté onions until golden, about 8 minutes.", "timerMinutes": 8, "estimatedDurationSeconds": 480},
+      {"stepNumber": 3, "instruction": "Add garlic, ginger, turmeric, and cumin. Cook 1 minute.", "estimatedDurationSeconds": 60},
+      {"stepNumber": 4, "instruction": "Add tomato paste, lentils, and 4 cups water. Bring to a boil.", "estimatedDurationSeconds": 120},
+      {"stepNumber": 5, "instruction": "Reduce heat and simmer 25 minutes until lentils are soft.", "timerMinutes": 25, "estimatedDurationSeconds": 1500},
+      {"stepNumber": 6, "instruction": "Season with salt. Serve with bread or rice.", "estimatedDurationSeconds": 30}
+    ],
+    "nutrition": {"calories": 320, "protein": 20, "carbohydrates": 48, "fat": 6, "fiber": 10, "sugar": 4, "sodium": 380}
+  },
+  {
+    "title": "Caribbean Jerk Chicken",
+    "description": "Spicy and aromatic grilled chicken with classic Caribbean jerk seasoning.",
+    "cuisine": "Caribbean",
+    "mealType": "Dinner",
+    "difficulty": 2,
+    "servings": 4,
+    "prepTimeMinutes": 15,
+    "cookTimeMinutes": 25,
+    "dietaryTags": ["Gluten-Free", "Dairy-Free"],
+    "ingredients": [
+      {"name": "Chicken Thigh", "quantity": 800, "unit": "g", "category": "Protein"},
+      {"name": "Lime", "quantity": 2, "unit": "whole", "category": "Produce"},
+      {"name": "Garlic", "quantity": 4, "unit": "clove", "category": "Produce"},
+      {"name": "Ginger", "quantity": 1, "unit": "tbsp", "category": "Produce"},
+      {"name": "Soy Sauce", "quantity": 2, "unit": "tbsp", "category": "Condiments & Sauces"},
+      {"name": "Brown Sugar", "quantity": 2, "unit": "tbsp", "category": "Baking Supplies"},
+      {"name": "Olive Oil", "quantity": 2, "unit": "tbsp", "category": "Oils & Fats"},
+      {"name": "Thyme", "quantity": 1, "unit": "tsp", "category": "Spices & Herbs"},
+      {"name": "Rice", "quantity": 2, "unit": "cup", "category": "Grains & Cereals"}
+    ],
+    "steps": [
+      {"stepNumber": 1, "instruction": "Blend garlic, ginger, soy sauce, brown sugar, lime juice, thyme, and oil for the jerk marinade.", "estimatedDurationSeconds": 120},
+      {"stepNumber": 2, "instruction": "Score chicken and coat with marinade. Rest 15 minutes (or overnight).", "estimatedDurationSeconds": 120},
+      {"stepNumber": 3, "instruction": "Cook rice according to package directions.", "timerMinutes": 15, "estimatedDurationSeconds": 900},
+      {"stepNumber": 4, "instruction": "Grill or pan-fry chicken over medium-high heat, 6-7 minutes per side.", "timerMinutes": 14, "estimatedDurationSeconds": 840},
+      {"stepNumber": 5, "instruction": "Let chicken rest 5 minutes. Serve with rice and lime wedges.", "estimatedDurationSeconds": 300}
+    ],
+    "nutrition": {"calories": 480, "protein": 38, "carbohydrates": 44, "fat": 16, "fiber": 1, "sugar": 8, "sodium": 580}
+  },
+  {
+    "title": "Overnight Oats",
+    "description": "No-cook breakfast prepared the night before with oats, milk, and toppings.",
+    "cuisine": "American",
+    "mealType": "Breakfast",
+    "difficulty": 1,
+    "servings": 1,
+    "prepTimeMinutes": 5,
+    "cookTimeMinutes": 0,
+    "dietaryTags": ["Vegetarian"],
+    "ingredients": [
+      {"name": "Oats", "quantity": 0.5, "unit": "cup", "category": "Grains & Cereals"},
+      {"name": "Milk", "quantity": 0.5, "unit": "cup", "category": "Dairy"},
+      {"name": "Greek Yogurt", "quantity": 0.25, "unit": "cup", "category": "Dairy"},
+      {"name": "Honey", "quantity": 1, "unit": "tbsp", "category": "Condiments & Sauces"},
+      {"name": "Banana", "quantity": 0.5, "unit": "whole", "category": "Produce", "isOptional": true}
+    ],
+    "steps": [
+      {"stepNumber": 1, "instruction": "Combine oats, milk, yogurt, and honey in a jar.", "estimatedDurationSeconds": 60},
+      {"stepNumber": 2, "instruction": "Stir well, cover, and refrigerate overnight (or at least 4 hours).", "estimatedDurationSeconds": 30},
+      {"stepNumber": 3, "instruction": "In the morning, stir and top with sliced banana or other fruit.", "estimatedDurationSeconds": 60}
+    ],
+    "nutrition": {"calories": 310, "protein": 14, "carbohydrates": 48, "fat": 8, "fiber": 5, "sugar": 18, "sodium": 80}
+  },
+  {
+    "title": "Fried Rice with Vegetables",
+    "description": "Quick and versatile Chinese-style fried rice with whatever veggies you have.",
+    "cuisine": "Chinese",
+    "mealType": "Dinner",
+    "difficulty": 1,
+    "servings": 4,
+    "prepTimeMinutes": 10,
+    "cookTimeMinutes": 10,
+    "dietaryTags": ["Dairy-Free"],
+    "ingredients": [
+      {"name": "Rice", "quantity": 3, "unit": "cup", "category": "Grains & Cereals"},
+      {"name": "Eggs", "quantity": 2, "unit": "piece", "category": "Dairy"},
+      {"name": "Carrot", "quantity": 1, "unit": "whole", "category": "Produce"},
+      {"name": "Green Onion", "quantity": 3, "unit": "piece", "category": "Produce"},
+      {"name": "Soy Sauce", "quantity": 2, "unit": "tbsp", "category": "Condiments & Sauces"},
+      {"name": "Sesame Oil", "quantity": 1, "unit": "tsp", "category": "Oils & Fats"},
+      {"name": "Vegetable Oil", "quantity": 2, "unit": "tbsp", "category": "Oils & Fats"},
+      {"name": "Garlic", "quantity": 2, "unit": "clove", "category": "Produce"}
+    ],
+    "steps": [
+      {"stepNumber": 1, "instruction": "Dice carrot and slice green onions. Mince garlic.", "estimatedDurationSeconds": 120},
+      {"stepNumber": 2, "instruction": "Heat oil in a wok over high heat. Scramble eggs, set aside.", "estimatedDurationSeconds": 90},
+      {"stepNumber": 3, "instruction": "Stir-fry carrot and garlic for 2 minutes.", "estimatedDurationSeconds": 120},
+      {"stepNumber": 4, "instruction": "Add rice and stir-fry 3-4 minutes. Add soy sauce and sesame oil.", "estimatedDurationSeconds": 240},
+      {"stepNumber": 5, "instruction": "Return eggs to wok, add green onions, toss and serve.", "estimatedDurationSeconds": 60}
+    ],
+    "nutrition": {"calories": 340, "protein": 10, "carbohydrates": 52, "fat": 10, "fiber": 2, "sugar": 2, "sodium": 580}
+  },
+  {
+    "title": "Smoothie Bowl",
+    "description": "Thick, creamy fruit smoothie bowl topped with granola, fruit, and seeds.",
+    "cuisine": "American",
+    "mealType": "Breakfast",
+    "difficulty": 1,
+    "servings": 1,
+    "prepTimeMinutes": 5,
+    "cookTimeMinutes": 0,
+    "dietaryTags": ["Vegan", "Dairy-Free", "Gluten-Free"],
+    "ingredients": [
+      {"name": "Banana", "quantity": 1, "unit": "whole", "category": "Produce"},
+      {"name": "Milk", "quantity": 0.5, "unit": "cup", "category": "Dairy"},
+      {"name": "Honey", "quantity": 1, "unit": "tbsp", "category": "Condiments & Sauces", "isOptional": true}
+    ],
+    "steps": [
+      {"stepNumber": 1, "instruction": "Blend frozen banana and milk until thick and creamy.", "estimatedDurationSeconds": 60},
+      {"stepNumber": 2, "instruction": "Pour into a bowl.", "estimatedDurationSeconds": 15},
+      {"stepNumber": 3, "instruction": "Add toppings and drizzle with honey if desired.", "estimatedDurationSeconds": 60}
+    ],
+    "nutrition": {"calories": 220, "protein": 5, "carbohydrates": 46, "fat": 3, "fiber": 4, "sugar": 26, "sodium": 60}
+  },
+  {
+    "title": "Chinese Mapo Tofu",
+    "description": "Spicy and numbing Sichuan tofu dish with ground pork.",
+    "cuisine": "Chinese",
+    "mealType": "Dinner",
+    "difficulty": 3,
+    "servings": 4,
+    "prepTimeMinutes": 10,
+    "cookTimeMinutes": 15,
+    "dietaryTags": ["Dairy-Free"],
+    "ingredients": [
+      {"name": "Tofu", "quantity": 400, "unit": "g", "category": "Protein"},
+      {"name": "Ground Beef", "quantity": 200, "unit": "g", "category": "Protein"},
+      {"name": "Garlic", "quantity": 3, "unit": "clove", "category": "Produce"},
+      {"name": "Ginger", "quantity": 1, "unit": "tbsp", "category": "Produce"},
+      {"name": "Green Onion", "quantity": 3, "unit": "piece", "category": "Produce"},
+      {"name": "Soy Sauce", "quantity": 2, "unit": "tbsp", "category": "Condiments & Sauces"},
+      {"name": "Cornstarch", "quantity": 1, "unit": "tbsp", "category": "Baking Supplies"},
+      {"name": "Vegetable Oil", "quantity": 2, "unit": "tbsp", "category": "Oils & Fats"},
+      {"name": "Rice", "quantity": 2, "unit": "cup", "category": "Grains & Cereals"}
+    ],
+    "steps": [
+      {"stepNumber": 1, "instruction": "Cut tofu into 1-inch cubes. Mince garlic and ginger.", "estimatedDurationSeconds": 120},
+      {"stepNumber": 2, "instruction": "Cook rice according to package directions.", "timerMinutes": 15, "estimatedDurationSeconds": 900},
+      {"stepNumber": 3, "instruction": "Brown ground pork in oil over high heat, breaking into small pieces.", "estimatedDurationSeconds": 240},
+      {"stepNumber": 4, "instruction": "Add garlic, ginger, and soy sauce. Stir 1 minute.", "estimatedDurationSeconds": 60},
+      {"stepNumber": 5, "instruction": "Gently add tofu. Simmer 5 minutes.", "timerMinutes": 5, "estimatedDurationSeconds": 300},
+      {"stepNumber": 6, "instruction": "Mix cornstarch with water, stir in to thicken. Garnish with green onions.", "estimatedDurationSeconds": 60}
+    ],
+    "nutrition": {"calories": 420, "protein": 26, "carbohydrates": 40, "fat": 18, "fiber": 2, "sugar": 2, "sodium": 680}
+  }
+]

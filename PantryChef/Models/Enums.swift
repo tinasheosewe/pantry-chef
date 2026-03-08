@@ -185,6 +185,95 @@ enum MealType: String, Codable, CaseIterable, Identifiable {
     }
 }
 
+// MARK: - Cuisine Type
+enum CuisineType: String, Codable, CaseIterable, Identifiable {
+    case italian = "Italian"
+    case mexican = "Mexican"
+    case chinese = "Chinese"
+    case japanese = "Japanese"
+    case indian = "Indian"
+    case thai = "Thai"
+    case french = "French"
+    case mediterranean = "Mediterranean"
+    case american = "American"
+    case korean = "Korean"
+    case vietnamese = "Vietnamese"
+    case greek = "Greek"
+    case middleEastern = "Middle Eastern"
+    case ethiopian = "Ethiopian"
+    case caribbean = "Caribbean"
+    case other = "Other"
+
+    var id: String { rawValue }
+
+    var icon: String {
+        switch self {
+        case .italian: return "🇮🇹"
+        case .mexican: return "🇲🇽"
+        case .chinese: return "🇨🇳"
+        case .japanese: return "🇯🇵"
+        case .indian: return "🇮🇳"
+        case .thai: return "🇹🇭"
+        case .french: return "🇫🇷"
+        case .mediterranean: return "🫒"
+        case .american: return "🇺🇸"
+        case .korean: return "🇰🇷"
+        case .vietnamese: return "🇻🇳"
+        case .greek: return "🇬🇷"
+        case .middleEastern: return "🧆"
+        case .ethiopian: return "🇪🇹"
+        case .caribbean: return "🌴"
+        case .other: return "🍽️"
+        }
+    }
+}
+
+// MARK: - Recipe Source
+enum RecipeSource: Codable, Hashable {
+    case user
+    case bundled
+    case spoonacular(id: Int)
+
+    var label: String {
+        switch self {
+        case .user: return "My Recipe"
+        case .bundled: return "Featured"
+        case .spoonacular: return "Discover"
+        }
+    }
+
+    var isUserRecipe: Bool { if case .user = self { return true } else { return false } }
+}
+
+// MARK: - Substitution Impact
+enum SubstitutionImpact: String, Codable, CaseIterable, Identifiable {
+    case none = "None"
+    case slight = "Slight"
+    case moderate = "Moderate"
+    case significant = "Significant"
+
+    var id: String { rawValue }
+
+    var color: Color {
+        switch self {
+        case .none: return Color(red: 0.30, green: 0.69, blue: 0.31)
+        case .slight: return Color(red: 0.60, green: 0.76, blue: 0.25)
+        case .moderate: return Color(red: 0.96, green: 0.65, blue: 0.14)
+        case .significant: return Color(red: 0.90, green: 0.30, blue: 0.24)
+        }
+    }
+
+    /// Numeric severity for comparisons (0 = none … 3 = significant).
+    var ordinal: Int {
+        switch self {
+        case .none: return 0
+        case .slight: return 1
+        case .moderate: return 2
+        case .significant: return 3
+        }
+    }
+}
+
 // MARK: - Expiry Status
 enum ExpiryStatus {
     case fresh
