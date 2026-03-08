@@ -3,13 +3,17 @@
 Preprocess MISKG data into a compact, high-quality substitution JSON for PantryChef.
 
 Strategy:
-1. Keep hand-curated entries (45 ingredients) as gold standard with full metadata
-2. Use MISKG to expand coverage — but only for ingredients where BOTH the
-   ingredient AND substitute are recognized food items in Edamam nutrition DB
-3. Filter aggressively: remove self-links, same-category noise, modifier variants
-4. Rank substitutes by nutrition similarity
-5. Cap at 5 substitutes per ingredient
+1. Normalise every raw MISKG name to a canonical form (canonical_name())
+   — strips useless descriptors, collapses "or" combos, merges brand/format noise
+2. Keep hand-curated entries as gold standard with full metadata
+3. Use MISKG to expand coverage via bidirectionality gate
+   (only pairs where A→B AND B→A exist in the dataset)
+4. Remove self-links (exact-dup pairs after normalization)
+5. Rank substitutes by nutrition similarity; cap at 5 per ingredient
 6. Tag each entry as "enriched" (hand-curated) or not
+
+Ingredient IDs from MISKG (original_id, processed_id) are intentionally ignored —
+the app looks up substitutions by ingredient name string, not by ontology ID.
 """
 import json
 import csv
@@ -19,6 +23,260 @@ from pathlib import Path
 
 DATA_DIR = Path("Scripts/miskg_data/Competition-Dataset")
 OUTPUT = Path("PantryChef/Resources/substitutions.json")
+
+# ─────────────────────────────────────────────────────────────────
+# CANONICAL NAME NORMALISATION
+# Applied to EVERY raw MISKG name before the bidirectionality gate,
+# so fragmented variants are treated as the same node.
+# ─────────────────────────────────────────────────────────────────
+
+# "X or Y" combos → single canonical name (None = drop the pair entirely)
+OR_CANON = {
+    "beer or ale":                              "beer",
+    "bell pepper red or yellow":               "bell pepper",
+    "black or red rice":                        None,          # too ambiguous
+    "broth beef or chicken":                   "broth",
+    "butter or margarine":                     "butter",
+    "buttermilk or yogurt":                    None,
+    "cake flour or pastry":                    "cake flour",
+    "celery good raw or cooked":               "celery",
+    "cheddar or vermont sage":                 None,
+    "chicken breast or turkey breast":         None,
+    "conch or other clam":                     "clam",
+    "dark brown sugar or molass":              "dark brown sugar",
+    "dill plant fresh or dried":               "dill",
+    "extracts such ash lemon or peppermint":   None,
+    "gelatin leaf or sheet":                   "gelatin sheets",
+    "gelatin powdered plain or unflavored":    "unflavored gelatin",
+    "grand marnier or orange flavored liqueur":"orange liqueur",
+    "honey or maple syrup":                    None,
+    "impatiens or other edible flower":        None,
+    "lemon juice or vinegar":                  "lemon juice",
+    "lemon juice or white vinegar":            "lemon juice",
+    "lime juice or lemon juice":               "lime juice",
+    "milk 35 or buttermilk":                   "milk",
+    "milk 35 or soy milk":                     "milk",
+    "milk buttermilk or sour":                 None,
+    "milk evaporated whole or skim":           "evaporated milk",
+    "nuts chopped ground or whole":            "mixed nuts",
+    "parsley or chervil":                      None,
+    "pinto bean bacon drippings or butter":    None,
+    "port wine sweet sherry or fruit flavored liqueur": "port wine",
+    "rum light or dark":                       "rum",
+    "salt or soy":                             None,
+    "sherry or bourbon":                       None,
+    "soft or fresh bread":                     "bread",
+    "sour cream or two":                       "sour cream",
+    "sugar brown light or dark":               "brown sugar",
+    "sugar or honey":                          None,
+    "sugar or to taste":                       None,
+    "tapioca instant or quick cooking":        "tapioca",
+    "vinegar regular white or cider":          "white vinegar",
+    "vodka light run or bandy":                "vodka",
+    "water or milk":                           None,
+    "white wine vinegar or champagne vinegar": "white wine vinegar",
+}
+
+# Explicit full-name → canonical remap (applied after prefix stripping)
+NAME_REMAP = {
+    # ── Broth/stock/bouillon consolidation ──────────────────────
+    # base / reconstituted forms → stock
+    "chicken base":                         "chicken stock",
+    "chicken base reconstituted":           "chicken stock",
+    "chicken soup base":                    "chicken stock",
+    "chicken stock base instant":           "chicken stock",
+    "beef base":                            "beef stock",
+    "beef base reconstituted":              "beef stock",
+    "ham soup base":                        "ham stock",
+    "clam base":                            "clam broth",
+    "lobster base":                         "lobster stock",
+    # garlic-flavoured broth → plain broth
+    "chicken broth with roasted garlic":    "chicken broth",
+    # brand names → generic
+    "swanson chicken broth":                "chicken broth",
+    "knorr chicken bouillon":               "chicken bouillon",
+    # bouillon cube/granule/powder forms → canonical bouillon
+    "beef bouillon cube":                   "beef bouillon",
+    "beef bouillon cubes reconstituted":    "beef bouillon",
+    "beef bouillon granule":                "beef bouillon",
+    "beef bouillon powder":                 "beef bouillon",
+    "beef stock cube":                      "beef bouillon",
+    "beef stock granule":                   "beef bouillon",
+    "beef stock powder":                    "beef bouillon",
+    "chicken bouillon cube":                "chicken bouillon",
+    "chicken bouillon granule":             "chicken bouillon",
+    "chicken bouillon powder":              "chicken bouillon",
+    "chicken stock cube":                   "chicken bouillon",
+    "chicken stock powder":                 "chicken bouillon",
+    "chicken flavor instant bouillon":      "chicken bouillon",
+    "instant bouillon granule":             "bouillon",
+    "instant beef bouillon":                "beef bouillon",
+    "instant chicken bouillon":             "chicken bouillon",
+    "instant chicken bouillon granule":     "chicken bouillon",
+    "instant dashi stock":                  "dashi stock",
+    "low sodium beef bouillon cube":        "beef bouillon",
+    "low sodium beef bouillon granule":     "beef bouillon",
+    "low sodium instant chicken bouillon granule": "chicken bouillon",
+    "stock cube":                           "bouillon",
+    "vegetable bouillon cube":              "vegetable bouillon",
+    "vegetable bouillon cubes reconstituted": "vegetable bouillon",
+    "vegetable bouillon granule":           "vegetable bouillon",
+    "vegetable stock cube":                 "vegetable bouillon",
+    "vegetable stock powder":               "vegetable bouillon",
+
+    # ── Canadian milk fat-percentage notation ───────────────────
+    "milk 35":                              "heavy cream",
+    "milk 35 hot":                          "heavy cream",
+    "35 cream":                             "heavy cream",
+    "10 cream":                             "light cream",
+    "18 table cream":                       "table cream",
+    "cream heavy 36 to 40 fat":             "heavy cream",
+    "cream heavy36 to 40 fat":              "heavy cream",
+    "cream light 18 to 20 fat":             "light cream",
+    "cream light18 to 20 fat":              "light cream",
+    "double cream 42 fat":                  "double cream",
+    "2 milk":                               "2% milk",
+    "milk 2 low fat":                       "2% milk",
+    "2 low fat milk":                       "2% milk",
+    "2 fat cottage cheese":                 "cottage cheese",
+    "1 fat cottage cheese":                 "cottage cheese",
+    "1 fat buttermilk":                     "buttermilk",
+    "evaporated 2 milk":                    "evaporated milk",
+    "milk 05 nonfat":                       "skim milk",
+
+    # ── Lean-percentage ground beef ─────────────────────────────
+    "90 lean ground beef":                  "ground beef",
+    "93 lean ground beef":                  "ground beef",
+    "95 lean ground beef":                  "ground beef",
+    "96 lean ground beef":                  "ground beef",
+
+    # ── Fat-free soup variants ───────────────────────────────────
+    "98 fat free condensed cream of celery soup":   "cream of celery soup",
+    "98 fat free cream of chicken soup":            "cream of chicken soup",
+    "98 fat free cream of mushroom soup":           "cream of mushroom soup",
+    "fat free half and half":               "half and half",
+    "powdered milk low fat and reconstituted": "powdered milk",
+
+    # ── Tortilla sizes → generic ────────────────────────────────
+    "10 inch flour tortilla":               "flour tortilla",
+    "6 inch flour tortilla":                "flour tortilla",
+    "12 inch pizza crust":                  "pizza crust",
+
+    # ── Brand names → generic ───────────────────────────────────
+    "betty crocker fudge brownie mix":      "brownie mix",
+    "bisquick baking mix":                  "baking mix",
+    "bisquick reduced fat baking mix":      "baking mix",
+    "eagle brand condensed milk":           "condensed milk",
+    "kraft macaroni and cheese":            "macaroni and cheese",
+    "mccormick s montreal brand steak seasoning": "steak seasoning",
+    "kamut® brand berry":                   "kamut",
+    "kamut® brand flake":                   "kamut",
+    "kamut® brand wheat":                   "kamut",
+    "heinz 57 steak sauce":                 "steak sauce",
+    "diet 7 up":                            "diet soda",
+    "v 8 juice":                            "vegetable juice",
+    "licor 43":                             None,
+
+    # ── Misc noise / junk ───────────────────────────────────────
+    "bottled fresh":                        None,
+    "ground turkey chicken broth greek yoghurt": None,
+    "mayonnaise for use in salads and salad dressings": "mayonnaise",
+    "celery good raw or cooked":            "celery",
+    "kaffir lime leaf for 1 tablespoon zest": "kaffir lime leaves",
+    "diced fresh tomatoes simmered 10 minute": "tomato",
+    "long grain and wild rice blend":       "wild rice blend",
+    "pork tenderloin 34 cube":             "pork tenderloin",
+    "cuttlefish under 8":                   "cuttlefish",
+
+    # ── Kitchen equipment ───────────────────────────────────────
+    "apple peeler and corer":               None,
+    "mortar and pestle":                    None,
+
+    # ── Stemming/truncation artifacts in raw MISKG data ────────
+    "asparagu":                             "asparagus",
+    "baby octopu":                          "baby octopus",
+    "octopu":                               "octopus",
+    "watercres":                            "watercress",
+    "beaujolai":                            "beaujolais",
+    "black sea bas":                        "black sea bass",
+    "sea bas":                              "sea bass",
+    "striped bas":                          "striped bass",
+    "cape capensi":                         "cape capensis",
+    "molass":                               "molasses",
+    "blackstrap molass":                    "blackstrap molasses",
+    "pomegranate molass":                   "pomegranate molasses",
+    "saccarin":                             "saccharin",
+    "dianthu":                              "dianthus",
+    "pickled asparagu":                     "pickled asparagus",
+    "white asparagu":                       "white asparagus",
+    "peppermint schnapp":                   "peppermint schnapps",
+    "egg roll wraper":                      "egg roll wrapper",
+    "basmati":                              "basmati rice",
+    "couscou":                              "couscous",
+}
+
+# Descriptor prefixes to unconditionally strip
+# Order matters — longer prefixes first to avoid partial matches
+_STRIP_PREFIXES = [
+    "homemade ",
+    "bottled ",
+    "canned ",
+    "frozen ",
+]
+
+# Qualifier prefixes to strip ONLY from broth/stock/bouillon names
+_BROTH_QUALIFIERS = [
+    "fat free low sodium ",
+    "fat free ",
+    "low fat ",
+    "nonfat ",
+    "reduced fat ",
+    "low sodium ",
+    "reduced sodium ",
+    "no salt added ",
+    "hot ",
+    "rich ",
+    "gluten free ",
+    "vegetarian ",
+    "unsalted ",
+    "condensed ",
+    "instant ",
+]
+
+_BROTH_WORDS = {"broth", "stock", "bouillon"}
+
+
+def canonical_name(raw: str):
+    """Return canonical ingredient name, or None to drop this pair entirely."""
+    name = raw.lower().strip()
+
+    # 1. Explicit OR-combo table (before anything else)
+    if name in OR_CANON:
+        return OR_CANON[name]
+
+    # 2. Explicit full-name remap
+    if name in NAME_REMAP:
+        return NAME_REMAP[name]
+
+    # 3. Strip generic descriptor prefixes
+    for prefix in _STRIP_PREFIXES:
+        if name.startswith(prefix) and len(name) > len(prefix) + 2:
+            name = name[len(prefix):]
+            break  # only one prefix per name
+
+    # 4. Re-check explicit remap after prefix stripping
+    if name in NAME_REMAP:
+        return NAME_REMAP[name]
+
+    # 5. Strip qualifiers from broth/stock/bouillon names
+    words = set(name.split())
+    if words & _BROTH_WORDS:
+        for qp in _BROTH_QUALIFIERS:
+            if name.startswith(qp):
+                name = name[len(qp):]
+                break
+
+    return name if name else None
 
 
 def normalize(name):
@@ -106,33 +364,48 @@ def main():
 
     with open("PantryChef/Resources/substitutions.json") as f:
         old = json.load(f)
-    curated = old.get("substitutions", old)
+    # Load ONLY hand-curated (enriched=True) entries as the gold standard.
+    # Filtering by the enriched flag means this script is idempotent — re-running
+    # it won't accidentally promote MISKG entries to curated status.
+    all_subs = old.get("substitutions", old)
+    curated = {
+        k: [e for e in v if e.get("enriched")]
+        for k, v in all_subs.items()
+    }
+    curated = {k: v for k, v in curated.items() if v}
     print("  {} hand-curated ingredients".format(len(curated)))
 
-    # Phase 1: Build filtered MISKG index
-    print("\nPhase 1: Building bidirectionality index...")
-    # Index which pairs appear in both directions in MISKG.
-    # True substitutions are symmetric (butter↔coconut oil). Co-ingredient noise
-    # is asymmetric (green chili appears with ham in a casserole, but ham recipes
-    # don't list green chili as their substitute). Requiring both directions is the
-    # most principled gate — no domain-specific blocklists needed.
+    # Phase 1: Normalise names and build bidirectionality index
+    print("\nPhase 1: Normalising names + building bidirectionality index...")
+    # canonical_name() strips descriptor noise (frozen/canned/homemade/bottled),
+    # collapses "X or Y" combos, merges brand/format variants, and maps specific
+    # problem names to clean canonical forms — all BEFORE the bidirectionality
+    # gate so that e.g. "low sodium chicken broth" and "canned chicken broth" and
+    # "chicken broth" are treated as the same graph node.
+    # Note: ingredient IDs in the raw file (original_id, processed_id) are ignored
+    # — the app looks up substitutions by ingredient name string, not by ID.
     forward = defaultdict(set)
+    dropped_norm = 0
     for p in pairs:
-        forward[p["ingredient"].lower().strip()].add(p["substitution"].lower().strip())
+        a = canonical_name(p["ingredient"])
+        b = canonical_name(p["substitution"])
+        if a is None or b is None:
+            dropped_norm += 1
+            continue
+        forward[a].add(b)
+    print(f"  Dropped {dropped_norm} pairs (non-food / OR-combo drop / junk)")
 
     bidirectional = set()
     for ingr, subs in forward.items():
         for sub in subs:
             if ingr in forward.get(sub, set()):
                 bidirectional.add((min(ingr, sub), max(ingr, sub)))
-    print(f"  {len(bidirectional)} bidirectional pairs (out of {len(pairs)} total)")
+    print(f"  {len(bidirectional)} bidirectional pairs from {len(forward)} canonical ingredients")
 
     print("\nPhase 1b: Filtering self-links...")
     # Only filter exact duplicates (after normalization). Edamam is used for
     # ranking only — not as a gate — since its 11K coverage would silently drop
-    # thousands of valid bidirectional pairs (acorn squash↔butternut squash,
-    # agar agar↔gelatin, agave nectar↔maple syrup, etc.).
-    known_foods = set(nutrition.keys())
+    # thousands of valid bidirectional pairs.
     miskg = defaultdict(set)
     kept = 0
     dropped_same = 0
