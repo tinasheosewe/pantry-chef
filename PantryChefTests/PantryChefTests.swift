@@ -144,6 +144,15 @@ final class MockAIService: AIServiceProtocol {
     func estimateStepDurations(for steps: [RecipeStep], recipeTitle: String) async -> [RecipeStep] {
         return steps
     }
+    func generateRecipe(query: String, preferences: RecipeGenerationPreferences) async -> Recipe? {
+        return recipesToReturn.first
+    }
+    func generateStatusMessages(query: String, preferences: RecipeGenerationPreferences) async -> [String] {
+        return ["Cooking..."]
+    }
+    func modifyRecipe(_ recipe: Recipe, feedback: String, pantryIngredients: [String]) async -> Recipe? {
+        return recipesToReturn.first
+    }
 }
 
 enum TestError: Error {
@@ -1419,16 +1428,7 @@ final class RecipeViewModelTests: XCTestCase {
         XCTAssertTrue(appState.recipes.isEmpty)
     }
 
-    func testWhatCanIMake() async {
-        let (vm, appState, _, _) = makeSUT()
-        await appState.addPantryItem(makePantryItem(name: "Chicken"))
-        await appState.addRecipe(makeRecipe(title: "Chicken Soup", ingredients: [
-            Ingredient(name: "Chicken", quantity: 1),
-        ]))
-        vm.whatCanIMake()
-        XCTAssertTrue(vm.showWhatCanIMake)
-        XCTAssertFalse(vm.whatCanIMakeResults.isEmpty)
-    }
+    // testWhatCanIMake removed — feature was replaced by pantry match filtering
 
     func testClearFilters() async {
         let (vm, _, _, _) = makeSUT()

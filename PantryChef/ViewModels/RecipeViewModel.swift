@@ -166,9 +166,12 @@ final class RecipeViewModel {
             sorted.sort { $0.timesCooked > $1.timesCooked }
         case .matchPercent:
             let pantry = appState.pantryItems
+            // Pre-compute match percentages once, then sort by the cached values
+            let percentages = Dictionary(uniqueKeysWithValues:
+                sorted.map { ($0.id, $0.pantryMatch(pantry: pantry).effectiveMatchPercentage) }
+            )
             sorted.sort {
-                $0.pantryMatch(pantry: pantry).effectiveMatchPercentage >
-                $1.pantryMatch(pantry: pantry).effectiveMatchPercentage
+                (percentages[$0.id] ?? 0) > (percentages[$1.id] ?? 0)
             }
         }
         return sorted

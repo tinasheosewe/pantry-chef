@@ -132,3 +132,143 @@ struct RecipeImportResult: Codable {
         )
     }
 }
+
+// MARK: - Raw Import Types (matched to LLM structured output schema)
+// These mirror the JSON shape the LLM returns, using simple types only.
+// They are converted to app model types via toRecipeImportResult().
+
+struct RawImportResult: Decodable {
+    let title: String
+    let description: String?
+    let ingredients: [RawIngredient]
+    let steps: [RawStep]
+    let servings: Int?
+    let prepTimeMinutes: Int?
+    let cookTimeMinutes: Int?
+    let dietaryTags: [String]?
+
+    func toRecipeImportResult() -> RecipeImportResult {
+        // Build a taskIndex→UUID lookup so we can wire dependsOn correctly
+        var indexToUUID: [Int: UUID] = [:]
+        // First pass: assign UUIDs
+        for step in steps {
+            for task in step.tasks {
+                indexToUUID[task.taskIndex] = UUID()
+            }
+        }
+
+        let convertedIngredients = ingredients.map { raw in
+            Ingredient(
+                name: raw.name,
+                quantity: raw.quantity,
+                unit: MeasurementUnit(rawValue: raw.unit),
+                category: FoodCategory(rawValue: raw.category) ?? .other
+            )
+        }
+
+        let convertedSteps = steps.map { raw in
+            let tasks = raw.tasks.map { rawTask in
+                let taskID = indexToUUID[rawTask.taskIndex] ?? UUID()
+                let deps = rawTask.dependsOn.compactMap { indexToUUID[$0] }
+                return StepTask(
+                    id: taskID,
+                    action: CookingAction.from(string: rawTask.action),
+                    ingredient: rawTask.ingredient,
+                    durationSeconds: rawTask.durationSeconds,
+                    type: rawTask.type == "passive" ? .passive : .active,
+                    requiresEquipment: rawTask.requiresEquipment,
+                    effort: EffortLevel(from: rawTask.effort),
+                    dependsOn: deps
+                )
+            }
+            return RecipeStep(
+                stepNumber: raw.stepNumber,
+                instruction: raw.instruction,
+                timerMinutes: raw.timerMinutes,
+                estimatedDurationSeconds: raw.estimatedDurationSeconds,
+                tasks: tasks
+            )
+        }
+
+        let convertedTags = dietaryTags?.compactMap { DietaryTag(rawValue: $0) }
+
+        return RecipeImportResult(
+            title: title,
+            description: description,
+            ingredients: convertedIngredients,
+            steps: convertedSteps,
+            servings: servings,
+            prepTimeMinutes: prepTimeMinutes,
+            cookTimeMinutes: cookTimeMinutes,
+            imageURL: nil,
+            dietaryTags: convertedTags
+        )
+    }
+}
+
+struct RawIngredient: Decodable {
+    let name: String
+    let quantity: Double
+    let unit: String
+    let category: String
+}
+
+struct RawStep: Decodable {
+    let stepNumber: Int
+    let instruction: String
+    let timerMinutes: Int?
+    let estimatedDurationSeconds: Int?
+    let tasks: [RawTask]
+}
+
+struct RawTask: Decodable {
+    let taskIndex: Int
+    let action: String
+    let ingredient: String?
+    let durationSeconds: Int
+    let type: String
+    let effort: String
+    let requiresEquipment: String?
+    let dependsOn: [Int]
+}
+
+// MARK: - CookingAction string parser
+
+extension CookingAction {
+    /// Parse a free-form action string from the LLM into a CookingAction.
+    static func from(string: String) -> CookingAction {
+        switch string.lowercased().trimmingCharacters(in: .whitespaces) {
+        case "dice":                                return .cut(.dice)
+        case "mince":                               return .cut(.mince)
+        case "julienne":                            return .cut(.julienne)
+        case "slice":                               return .cut(.slice)
+        case "chop", "cut":                         return .cut(.chop)
+        case "rough chop", "roughly chop":          return .cut(.rough)
+        case "halve":                               return .cut(.halve)
+        case "peel":                                return .peel
+        case "measure":                             return .measure
+        case "mix", "combine", "whisk", "fold", "stir": return .mix
+        case "marinate":                            return .marinate
+        case "season":                              return .season
+        case "heat", "preheat", "warm":             return .heat
+        case "saute", "sauté":                      return .saute
+        case "boil":                                return .boil
+        case "simmer":                              return .simmer
+        case "pan fry", "pan-fry":                  return .fry(.pan)
+        case "deep fry", "deep-fry":                return .fry(.deep)
+        case "stir fry", "stir-fry", "wok":         return .fry(.stir)
+        case "fry":                                 return .fry(.pan)
+        case "bake":                                return .bake
+        case "roast":                               return .roast
+        case "grill", "broil", "char":              return .grill
+        case "steam":                               return .steam
+        case "scramble":                            return .scramble
+        case "plate":                               return .plate
+        case "garnish", "top", "sprinkle":          return .garnish
+        case "rest", "cool":                        return .rest
+        case "serve":                               return .serve
+        case "toss", "shake":                       return .toss
+        default:                                    return .other(string)
+        }
+    }
+}

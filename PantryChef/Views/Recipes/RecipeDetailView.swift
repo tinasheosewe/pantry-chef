@@ -12,8 +12,8 @@ struct RecipeDetailView: View {
     @State private var substitutions: [SubstitutionSuggestion] = []
     @State private var healthierSuggestion: HealthierSuggestion?
     @State private var shoppingList: [ShoppingItem] = []
-    @State private var isLoadingAI = false
-    @State private var aiErrorMessage: String?
+    @State private var isLoadingAction = false
+    @State private var actionErrorMessage: String?
     @State private var existingSession: CookingSession?
     @State private var showModify = false
     @State private var modifyText = ""
@@ -58,6 +58,7 @@ struct RecipeDetailView: View {
                 .padding(.horizontal)
             }
         }
+        .scrollDismissesKeyboard(.interactively)
         .background(AppColors.background)
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {
@@ -98,13 +99,13 @@ struct RecipeDetailView: View {
         .sheet(isPresented: $showShoppingList) {
             ShoppingPreviewView(items: shoppingList)
         }
-        .alert("AI Error", isPresented: Binding(
-            get: { aiErrorMessage != nil },
-            set: { if !$0 { aiErrorMessage = nil } }
+        .alert("Error", isPresented: Binding(
+            get: { actionErrorMessage != nil },
+            set: { if !$0 { actionErrorMessage = nil } }
         )) {
             Button("OK", role: .cancel) { }
         } message: {
-            Text(aiErrorMessage ?? "Something went wrong. Please try again.")
+            Text(actionErrorMessage ?? "Something went wrong. Please try again.")
         }
     }
 
@@ -356,11 +357,11 @@ struct RecipeDetailView: View {
             HStack(spacing: 12) {
                 ActionButton(icon: "cart", title: "What to Buy", color: AppColors.warmOrange) {
                 Task {
-                    isLoadingAI = true
+                    isLoadingAction = true
                     let result = await appState.getShoppingList(for: recipe)
-                    isLoadingAI = false
+                    isLoadingAction = false
                     if result.isEmpty {
-                        aiErrorMessage = "Couldn't generate shopping list. Please check your internet connection and try again."
+                        actionErrorMessage = "Couldn't generate shopping list. Please check your internet connection and try again."
                     } else {
                         shoppingList = result
                         showShoppingList = true
@@ -370,11 +371,11 @@ struct RecipeDetailView: View {
 
             ActionButton(icon: "arrow.triangle.2.circlepath", title: "Substitutes", color: AppColors.accentTeal) {
                 Task {
-                    isLoadingAI = true
+                    isLoadingAction = true
                     let result = await appState.getSubstitutions(for: recipe)
-                    isLoadingAI = false
+                    isLoadingAction = false
                     if result.isEmpty {
-                        aiErrorMessage = "Couldn't find substitutions. Please check your internet connection and try again."
+                        actionErrorMessage = "Couldn't find substitutions. Please check your internet connection and try again."
                     } else {
                         substitutions = result
                         showSubstitutions = true
@@ -384,20 +385,20 @@ struct RecipeDetailView: View {
 
             ActionButton(icon: "heart.circle", title: "Healthier", color: AppColors.primaryGreen) {
                 Task {
-                    isLoadingAI = true
+                    isLoadingAction = true
                     let result = await appState.getHealthierVersion(of: recipe)
-                    isLoadingAI = false
+                    isLoadingAction = false
                     if let result {
                         healthierSuggestion = result
                     } else {
-                        aiErrorMessage = "Couldn't generate healthier suggestions. Please check your internet connection and try again."
+                        actionErrorMessage = "Couldn't generate healthier suggestions. Please check your internet connection and try again."
                     }
                 }
             }
             }
         }
         .overlay {
-            if isLoadingAI {
+            if isLoadingAction {
                 RoundedRectangle(cornerRadius: 12)
                     .fill(.ultraThinMaterial)
                     .overlay(ProgressView())
@@ -567,6 +568,7 @@ struct RecipeDetailView: View {
     }
 
     private func performModify() async {
+        hideKeyboard()
         isModifying = true
         let pantryNames = appState.pantryItems.map(\.name)
         if let modified = await appState.aiService.modifyRecipe(recipe, feedback: modifyText, pantryIngredients: pantryNames) {
@@ -581,7 +583,7 @@ struct RecipeDetailView: View {
                 await appState.updateRecipe(recipe)
             }
         } else {
-            aiErrorMessage = "Couldn't modify the recipe. Please try again."
+            actionErrorMessage = "Couldn't modify the recipe. Please try again."
         }
         isModifying = false
     }
@@ -920,136 +922,29 @@ struct ShoppingPreviewView: View {
 // MARK: - Add Recipe View
 struct AddRecipeView: View {
     @Environment(\.dismiss) private var dismiss
-    @State private var title = ""
-    @State private var description = ""
-    @State private var servings = 4
-    @State private var prepTime = ""
-    @State private var cookTime = ""
-    @State private var difficulty: DifficultyLevel = .easy
-    @State private var mealType: MealType = .dinner
-    @State private var ingredients: [Ingredient] = []
-    @State private var steps: [RecipeStep] = []
-    @State private var dietaryTags: Set<DietaryTag> = []
-
-    @State private var newIngredientName = ""
-    @State private var newIngredientQty = ""
-    @State private var newIngredientUnit: MeasurementUnit = .piece
-
-    @State private var newStepText = ""
+    @Environment(AppState.self) private var appState
+    @State private var inputText = ""
+    @State private var isParsing = false
+    @State private var parsedRecipe: Recipe?
+    @State private var errorMessage: String?
 
     let onSave: (Recipe) -> Void
 
+    private var isURL: Bool {
+        inputText.trimmed.isValidURL
+    }
+
     var body: some View {
         NavigationStack {
-            Form {
-                Section("Basic Info") {
-                    TextField("Recipe Title", text: $title)
-                    TextField("Description (optional)", text: $description, axis: .vertical)
-                        .lineLimit(3)
-
-                    Stepper("Servings: \(servings)", value: $servings, in: 1...20)
-
-                    HStack {
-                        TextField("Prep (min)", text: $prepTime)
-                            .keyboardType(.numberPad)
-                        TextField("Cook (min)", text: $cookTime)
-                            .keyboardType(.numberPad)
-                    }
-
-                    Picker("Difficulty", selection: $difficulty) {
-                        ForEach(DifficultyLevel.allCases) { level in
-                            Text(level.label).tag(level)
-                        }
-                    }
-
-                    Picker("Meal Type", selection: $mealType) {
-                        ForEach(MealType.allCases) { type in
-                            Label(type.rawValue, systemImage: type.icon).tag(type)
-                        }
-                    }
-                }
-
-                Section("Ingredients (\(ingredients.count))") {
-                    ForEach(ingredients) { ingredient in
-                        Text(ingredient.displayText)
-                    }
-                    .onDelete { indexSet in
-                        ingredients.remove(atOffsets: indexSet)
-                    }
-
-                    HStack {
-                        TextField("Name", text: $newIngredientName)
-                        TextField("Qty", text: $newIngredientQty)
-                            .keyboardType(.decimalPad)
-                            .frame(width: 50)
-                        Picker("", selection: $newIngredientUnit) {
-                            ForEach(MeasurementUnit.allCases) { u in
-                                Text(u.rawValue).tag(u)
-                            }
-                        }
-                        .frame(width: 80)
-
-                        Button {
-                            let qty = Double(newIngredientQty) ?? 1
-                            ingredients.append(Ingredient(
-                                name: newIngredientName,
-                                quantity: qty,
-                                unit: newIngredientUnit
-                            ))
-                            newIngredientName = ""
-                            newIngredientQty = ""
-                        } label: {
-                            Image(systemName: "plus.circle.fill")
-                                .foregroundStyle(AppColors.primaryGreen)
-                        }
-                        .disabled(newIngredientName.isEmpty)
-                    }
-                }
-
-                Section("Steps (\(steps.count))") {
-                    ForEach(steps) { step in
-                        HStack(alignment: .top) {
-                            Text("\(step.stepNumber).")
-                                .fontWeight(.bold)
-                            Text(step.instruction)
-                        }
-                    }
-                    .onDelete { indexSet in
-                        steps.remove(atOffsets: indexSet)
-                    }
-
-                    HStack {
-                        TextField("Add step...", text: $newStepText, axis: .vertical)
-                        Button {
-                            steps.append(RecipeStep(
-                                stepNumber: steps.count + 1,
-                                instruction: newStepText
-                            ))
-                            newStepText = ""
-                        } label: {
-                            Image(systemName: "plus.circle.fill")
-                                .foregroundStyle(AppColors.primaryGreen)
-                        }
-                        .disabled(newStepText.isEmpty)
-                    }
-                }
-
-                Section("Dietary Tags") {
-                    FlowLayout(spacing: 8) {
-                        ForEach(DietaryTag.allCases) { tag in
-                            Button {
-                                if dietaryTags.contains(tag) {
-                                    dietaryTags.remove(tag)
-                                } else {
-                                    dietaryTags.insert(tag)
-                                }
-                            } label: {
-                                DietaryTagChip(tag: tag, isSelected: dietaryTags.contains(tag))
-                            }
-                        }
-                    }
+            VStack(spacing: 0) {
+                if let recipe = parsedRecipe {
+                    // Preview parsed recipe — user reviews and saves
+                    parsedRecipePreview(recipe)
+                } else {
+                    inputForm
                 }
             }
+            .background(AppColors.background)
             .navigationTitle("Add Recipe")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -1057,25 +952,253 @@ struct AddRecipeView: View {
                     Button("Cancel") { dismiss() }
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Save") {
-                        let recipe = Recipe(
-                            title: title,
-                            description: description.isEmpty ? nil : description,
-                            ingredients: ingredients,
-                            steps: steps,
-                            servings: servings,
-                            prepTimeMinutes: Int(prepTime),
-                            cookTimeMinutes: Int(cookTime),
-                            difficulty: difficulty,
-                            dietaryTags: Array(dietaryTags),
-                            mealType: mealType
-                        )
-                        onSave(recipe)
-                        dismiss()
+                    if let recipe = parsedRecipe {
+                        Button("Save") {
+                            onSave(recipe)
+                            dismiss()
+                        }
                     }
-                    .disabled(title.isEmpty || ingredients.isEmpty || steps.isEmpty)
                 }
             }
+        }
+    }
+
+    // MARK: - Input Form
+
+    private var inputForm: some View {
+        ScrollView {
+            VStack(spacing: 20) {
+                VStack(spacing: 8) {
+                    Image(systemName: "doc.text.magnifyingglass")
+                        .font(.system(size: 44))
+                        .foregroundStyle(AppColors.primaryGreen)
+
+                    Text("Paste a recipe")
+                        .font(.title3)
+                        .fontWeight(.semibold)
+
+                    Text("Paste a recipe URL, or type / paste the full recipe text and we'll turn it into a structured recipe for you.")
+                        .font(.subheadline)
+                        .foregroundStyle(AppColors.subtleText)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, 24)
+                }
+                .padding(.top, 20)
+
+                // Hint chips
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("Works with:")
+                        .font(.caption)
+                        .foregroundStyle(AppColors.subtleText)
+                    HStack(spacing: 6) {
+                        ForEach(["Recipe URLs", "Copy-paste text", "Free-form notes"], id: \.self) { hint in
+                            Text(hint)
+                                .font(.caption2)
+                                .foregroundStyle(AppColors.primaryGreen)
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 4)
+                                .background(AppColors.primaryGreen.opacity(0.1))
+                                .clipShape(Capsule())
+                        }
+                    }
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.horizontal)
+
+                // Text input area
+                VStack(alignment: .leading, spacing: 6) {
+                    ZStack(alignment: .topLeading) {
+                        if inputText.isEmpty {
+                            Text("https://example.com/recipe\n\nor paste recipe text here...\n\ne.g.\nChicken Stir Fry\n2 chicken breasts, sliced\n1 bell pepper, diced\n3 tbsp soy sauce\n\n1. Heat oil in a wok...\n2. Cook chicken until golden...")
+                                .font(.subheadline)
+                                .foregroundStyle(AppColors.mediumGray)
+                                .padding(.horizontal, 12)
+                                .padding(.vertical, 12)
+                        }
+                        TextEditor(text: $inputText)
+                            .font(.subheadline)
+                            .scrollContentBackground(.hidden)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 8)
+                    }
+                    .frame(minHeight: 220)
+                    .background(AppColors.lightGray)
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+
+                    if isURL {
+                        HStack(spacing: 4) {
+                            Image(systemName: "link")
+                                .font(.caption2)
+                            Text("URL detected — will fetch and parse")
+                                .font(.caption)
+                        }
+                        .foregroundStyle(AppColors.primaryGreen)
+                    }
+                }
+                .padding(.horizontal)
+
+                if let errorMessage {
+                    HStack(spacing: 6) {
+                        Image(systemName: "exclamationmark.triangle.fill")
+                            .font(.caption)
+                        Text(errorMessage)
+                            .font(.caption)
+                    }
+                    .foregroundStyle(AppColors.softRed)
+                    .padding(.horizontal)
+                }
+
+                // Parse button
+                Button {
+                    Task { await parseInput() }
+                } label: {
+                    Group {
+                        if isParsing {
+                            HStack(spacing: 8) {
+                                ProgressView()
+                                    .tint(.white)
+                                Text("Parsing recipe...")
+                            }
+                        } else {
+                            HStack(spacing: 6) {
+                                Image(systemName: "sparkles")
+                                Text("Parse Recipe")
+                            }
+                        }
+                    }
+                    .fontWeight(.semibold)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 14)
+                    .foregroundStyle(.white)
+                    .background(inputText.trimmed.isEmpty || isParsing ? AppColors.mediumGray : AppColors.primaryGreen)
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                }
+                .disabled(inputText.trimmed.isEmpty || isParsing)
+                .padding(.horizontal)
+            }
+            .padding(.bottom, 20)
+        }
+        .scrollDismissesKeyboard(.interactively)
+    }
+
+    // MARK: - Parse Input
+
+    private func parseInput() async {
+        isParsing = true
+        errorMessage = nil
+
+        let text = inputText.trimmed
+
+        if text.isValidURL {
+            if let result = await appState.aiService.parseRecipeFromURL(text) {
+                parsedRecipe = result.toRecipe()
+            } else {
+                errorMessage = "Couldn't parse recipe from that URL. Try pasting the recipe text instead."
+            }
+        } else {
+            if let result = await appState.aiService.parseRecipeFromText(text) {
+                parsedRecipe = result.toRecipe()
+            } else {
+                errorMessage = "Couldn't parse the text into a recipe. Try including a title, ingredients, and steps."
+            }
+        }
+
+        isParsing = false
+    }
+
+    // MARK: - Parsed Recipe Preview
+
+    private func parsedRecipePreview(_ recipe: Recipe) -> some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 16) {
+                HStack {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(recipe.title)
+                            .font(.title3)
+                            .fontWeight(.bold)
+                            .foregroundStyle(AppColors.darkText)
+                        if let desc = recipe.description {
+                            Text(desc)
+                                .font(.caption)
+                                .foregroundStyle(AppColors.subtleText)
+                                .lineLimit(3)
+                        }
+                    }
+                    Spacer()
+                    Image(systemName: "checkmark.seal.fill")
+                        .font(.title2)
+                        .foregroundStyle(AppColors.primaryGreen)
+                }
+                .padding()
+                .cardStyle()
+
+                // Quick info
+                HStack(spacing: 12) {
+                    if let time = recipe.totalTimeDisplay as String? {
+                        Label(time, systemImage: "clock")
+                            .font(.caption)
+                    }
+                    Label("\(recipe.servings) servings", systemImage: "person.2")
+                        .font(.caption)
+                    DifficultyBadge(difficulty: recipe.difficulty)
+                }
+                .foregroundStyle(AppColors.subtleText)
+                .padding(.horizontal)
+
+                // Ingredients
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Ingredients (\(recipe.ingredients.count))")
+                        .font(.subheadline)
+                        .fontWeight(.semibold)
+                    ForEach(recipe.ingredients) { ing in
+                        HStack(spacing: 6) {
+                            Circle()
+                                .fill(AppColors.primaryGreen)
+                                .frame(width: 5, height: 5)
+                            Text(ing.displayText)
+                                .font(.caption)
+                        }
+                    }
+                }
+                .padding()
+                .cardStyle()
+
+                // Steps
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Steps (\(recipe.steps.count))")
+                        .font(.subheadline)
+                        .fontWeight(.semibold)
+                    ForEach(recipe.steps) { step in
+                        HStack(alignment: .top, spacing: 8) {
+                            Text("\(step.stepNumber)")
+                                .font(.caption)
+                                .fontWeight(.bold)
+                                .foregroundStyle(.white)
+                                .frame(width: 20, height: 20)
+                                .background(AppColors.primaryGreen)
+                                .clipShape(Circle())
+                            Text(step.instruction)
+                                .font(.caption)
+                        }
+                    }
+                }
+                .padding()
+                .cardStyle()
+
+                // Edit option
+                Button {
+                    parsedRecipe = nil
+                } label: {
+                    HStack(spacing: 4) {
+                        Image(systemName: "arrow.uturn.backward")
+                        Text("Back to edit")
+                    }
+                    .font(.caption)
+                    .foregroundStyle(AppColors.accentTeal)
+                }
+                .padding(.horizontal)
+            }
+            .padding()
         }
     }
 }
@@ -1097,7 +1220,7 @@ struct ImportRecipeURLView: View {
                     .font(.title3)
                     .fontWeight(.semibold)
 
-                Text("Paste a recipe URL and we'll extract the recipe details using AI.")
+                Text("Paste a recipe URL and we'll extract the recipe details for you.")
                     .font(.subheadline)
                     .foregroundStyle(AppColors.subtleText)
                     .multilineTextAlignment(.center)
@@ -1214,7 +1337,7 @@ struct RecipePhotoImportView: View {
                         .font(.title3)
                         .fontWeight(.semibold)
 
-                    Text("Take a photo of a recipe from a cookbook, magazine, or recipe card. We'll extract and parse it using AI.")
+                    Text("Take a photo of a recipe from a cookbook, magazine, or recipe card and we'll turn it into a structured recipe.")
                         .font(.subheadline)
                         .foregroundStyle(AppColors.subtleText)
                         .multilineTextAlignment(.center)
@@ -1233,7 +1356,7 @@ struct RecipePhotoImportView: View {
                     Spacer()
                 } else if isParsing {
                     Spacer()
-                    ProgressView("Parsing recipe with AI...")
+                    ProgressView("Parsing recipe...")
                     Spacer()
                 } else if let errorText {
                     Spacer()

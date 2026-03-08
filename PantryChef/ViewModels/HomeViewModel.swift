@@ -46,9 +46,22 @@ final class HomeViewModel {
     }
 
     private func loadSuggestedRecipe() {
-        // Find the recipe with the best pantry match
-        let matches = appState.recipes.map { $0.pantryMatch(pantry: appState.pantryItems) }
-        suggestedRecipe = matches.max(by: { $0.matchPercentage < $1.matchPercentage })?.recipe
+        // Find the recipe with the best pantry match — pre-compute once, pick best
+        let pantry = appState.pantryItems
+        guard !pantry.isEmpty, !appState.recipes.isEmpty else {
+            suggestedRecipe = nil
+            return
+        }
+        var bestRecipe: Recipe?
+        var bestPct: Double = -1
+        for recipe in appState.recipes {
+            let pct = recipe.pantryMatch(pantry: pantry).matchPercentage
+            if pct > bestPct {
+                bestPct = pct
+                bestRecipe = recipe
+            }
+        }
+        suggestedRecipe = bestRecipe
     }
 
     private func calculateWeeklyNutrition() {

@@ -39,10 +39,7 @@ struct RecipeListView: View {
                 ToolbarItem(placement: .primaryAction) {
                     Menu {
                         Button { viewModel.showAddRecipe = true } label: {
-                            Label("Add Manually", systemImage: "square.and.pencil")
-                        }
-                        Button { viewModel.showImportURL = true } label: {
-                            Label("Import from URL", systemImage: "link")
+                            Label("Add Recipe", systemImage: "square.and.pencil")
                         }
                         Button { viewModel.showPhotoImport = true } label: {
                             Label("Photo of Recipe", systemImage: "camera")
@@ -85,9 +82,7 @@ struct RecipeListView: View {
                 AddRecipeView { recipe in
                     Task { await viewModel.addRecipe(recipe) }
                 }
-            }
-            .sheet(isPresented: $viewModel.showImportURL) {
-                ImportRecipeURLView(viewModel: viewModel)
+                .environment(viewModel.appState)
             }
             .sheet(isPresented: $viewModel.showPhotoImport) {
                 RecipePhotoImportView(viewModel: viewModel)
@@ -158,7 +153,7 @@ struct RecipeListView: View {
                                 .font(.subheadline)
                                 .fontWeight(selectedSection == section ? .semibold : .regular)
 
-                            if section == .discover {
+                            if section == .discover && selectedSection == .discover {
                                 let count = viewModel.filteredDiscoverRecipes.count
                                 if count > 0 {
                                     Text("\(count)")
@@ -426,7 +421,12 @@ struct RecipeListView: View {
     // MARK: - Recipe Grid
 
     private func recipeGrid(recipes: [Recipe], isUserSection: Bool) -> some View {
-        ScrollView {
+        let pantry = viewModel.appState.pantryItems
+        // Pre-compute matches once per grid render instead of per-card per-access
+        let matchCache: [UUID: PantryMatchResult] = Dictionary(
+            uniqueKeysWithValues: recipes.map { ($0.id, $0.pantryMatch(pantry: pantry)) }
+        )
+        return ScrollView {
             LazyVGrid(columns: [
                 GridItem(.flexible(), spacing: 16),
                 GridItem(.flexible(), spacing: 16),
@@ -443,7 +443,7 @@ struct RecipeListView: View {
 
                 ForEach(recipes) { recipe in
                     NavigationLink(destination: RecipeDetailView(recipe: recipe)) {
-                        RecipeCardView(recipe: recipe, pantry: viewModel.appState.pantryItems)
+                        RecipeCardView(recipe: recipe, pantry: pantry, match: matchCache[recipe.id])
                     }
                     .contextMenu {
                         if isUserSection {
@@ -516,9 +516,13 @@ struct FilterPill: View {
 struct RecipeCardView: View {
     let recipe: Recipe
     let pantry: [PantryItem]
+    /// Pre-computed match result — avoids re-running pantryMatch() multiple times per frame.
+    private let match: PantryMatchResult
 
-    private var match: PantryMatchResult {
-        recipe.pantryMatch(pantry: pantry)
+    init(recipe: Recipe, pantry: [PantryItem], match: PantryMatchResult? = nil) {
+        self.recipe = recipe
+        self.pantry = pantry
+        self.match = match ?? recipe.pantryMatch(pantry: pantry)
     }
 
     var body: some View {

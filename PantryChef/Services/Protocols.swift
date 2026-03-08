@@ -54,6 +54,7 @@ struct RecipeGenerationPreferences: Sendable {
     var pantryIngredients: [String] = []
 
     enum SpiceLevel: String, CaseIterable, Sendable {
+        case none = "No Spice"
         case mild = "Mild"
         case medium = "Medium"
         case spicy = "Spicy"
@@ -61,6 +62,7 @@ struct RecipeGenerationPreferences: Sendable {
 
         var icon: String {
             switch self {
+            case .none: return "🚫"
             case .mild: return "🌶️"
             case .medium: return "🌶️🌶️"
             case .spicy: return "🌶️🌶️🌶️"

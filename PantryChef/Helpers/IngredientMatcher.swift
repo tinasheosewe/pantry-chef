@@ -100,9 +100,9 @@ enum IngredientMatcher {
         var s = name.lowercased()
             .trimmingCharacters(in: .whitespacesAndNewlines)
 
-        // Remove common adjectives/modifiers
-        for word in stripWords {
-            s = s.replacingOccurrences(of: "\\b\(word)\\b", with: "", options: .regularExpression)
+        // Remove common adjectives/modifiers using pre-compiled regex
+        for regex in stripRegexes {
+            s = regex.stringByReplacingMatches(in: s, range: NSRange(s.startIndex..., in: s), withTemplate: "")
         }
 
         // Collapse whitespace
@@ -169,6 +169,13 @@ enum IngredientMatcher {
         "packed", "plain", "all-purpose", "self-rising", "unbleached",
         "fine", "coarse", "baby", "ripe", "firm", "soft", "thin", "thick",
     ]
+
+    /// Pre-compiled NSRegularExpression objects for each strip word — avoids re-compiling ~40 regex patterns on every normalize() call.
+    private static let stripRegexes: [NSRegularExpression] = {
+        stripWords.compactMap { word in
+            try? NSRegularExpression(pattern: "\\b\(NSRegularExpression.escapedPattern(for: word))\\b", options: [.caseInsensitive])
+        }
+    }()
 
     /// Synonym groups — sets of interchangeable ingredient names (normalized).
     private static let synonymGroups: [Set<String>] = [

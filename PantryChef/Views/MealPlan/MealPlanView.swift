@@ -2,6 +2,7 @@ import SwiftUI
 
 struct MealPlanView: View {
     @State private var viewModel: MealPlanViewModel
+    @State private var selectedMealEntry: MealPlanEntry?
 
     init(appState: AppState) {
         _viewModel = State(initialValue: MealPlanViewModel(appState: appState))
@@ -43,6 +44,14 @@ struct MealPlanView: View {
                         }
                     }
                 )
+            }
+            .sheet(item: $selectedMealEntry) { entry in
+                if let recipe = entry.recipe {
+                    NavigationStack {
+                        RecipeDetailView(recipe: recipe)
+                    }
+                    .environment(viewModel.appState)
+                }
             }
         }
     }
@@ -135,7 +144,11 @@ struct MealPlanView: View {
         let entry = viewModel.entriesFor(date: date, mealType: mealType)
 
         return Button {
-            viewModel.selectSlot(date: date, mealType: mealType)
+            if let entry, entry.isPlanned, entry.recipe != nil {
+                selectedMealEntry = entry
+            } else {
+                viewModel.selectSlot(date: date, mealType: mealType)
+            }
         } label: {
             VStack(spacing: 6) {
                 Image(systemName: mealType.icon)
@@ -164,6 +177,27 @@ struct MealPlanView: View {
             .padding(.horizontal, 4)
             .background(entry?.isPlanned == true ? AppColors.primaryGreen.opacity(0.08) : AppColors.lightGray)
             .clipShape(RoundedRectangle(cornerRadius: 10))
+        }
+        .contextMenu {
+            if let entry, entry.isPlanned {
+                if entry.recipe != nil {
+                    Button {
+                        selectedMealEntry = entry
+                    } label: {
+                        Label("View Recipe", systemImage: "book")
+                    }
+                }
+                Button {
+                    viewModel.selectSlot(date: date, mealType: mealType)
+                } label: {
+                    Label("Change Recipe", systemImage: "arrow.triangle.swap")
+                }
+                Button(role: .destructive) {
+                    Task { await viewModel.removeEntry(entry) }
+                } label: {
+                    Label("Remove", systemImage: "trash")
+                }
+            }
         }
     }
 }
