@@ -39,15 +39,11 @@ def normalize(name):
 
 
 def is_same(a, b):
-    na, nb = normalize(a), normalize(b)
-    if na == nb:
-        return True
-    if len(na) > 3 and len(nb) > 3:
-        if na in nb and len(nb) - len(na) < 8:
-            return True
-        if nb in na and len(na) - len(nb) < 8:
-            return True
-    return False
+    """Return True only for genuinely identical ingredients (after normalization).
+    Deliberately narrow — we don't want to drop valid subs like basil/thai basil
+    or blood orange/orange. Just catches exact duplicates and trivial plurals.
+    """
+    return normalize(a) == normalize(b)
 
 
 def nutrition_similarity(a_nutr, b_nutr):
@@ -88,20 +84,8 @@ def nutrition_impact_str(orig, sub):
     return ", ".join(diffs[:3]) if diffs else "Similar"
 
 
-MODIFIER_WORDS = {
-    "fresh", "dried", "ground", "chopped", "minced", "whole", "large", "small",
-    "medium", "raw", "cooked", "frozen", "canned", "organic", "sliced", "diced",
-    "crushed", "powdered", "grated", "shredded", "toasted", "roasted",
-    "blanched", "smoked", "pickled", "salted", "unsalted", "sweetened",
-    "unsweetened", "low", "fat", "nonfat", "reduced", "light", "extra", "virgin",
-    "unbleached", "enriched", "instant", "quick", "old", "fashioned",
-}
-
-
-def is_modifier_variant(a, b):
-    wa = set(a.lower().split()) - MODIFIER_WORDS
-    wb = set(b.lower().split()) - MODIFIER_WORDS
-    return wa == wb and len(wa) > 0
+# (is_modifier_variant removed — pairs like old-fashioned oat↔quick oat and
+#  fresh yeast↔instant yeast are valid substitutions, not noise to drop)
 
 
 def main():
@@ -143,24 +127,24 @@ def main():
                 bidirectional.add((min(ingr, sub), max(ingr, sub)))
     print(f"  {len(bidirectional)} bidirectional pairs (out of {len(pairs)} total)")
 
-    print("\nPhase 1b: Applying food/modifier/Edamam filters...")
+    print("\nPhase 1b: Filtering self-links...")
+    # Only filter exact duplicates (after normalization). Edamam is used for
+    # ranking only — not as a gate — since its 11K coverage would silently drop
+    # thousands of valid bidirectional pairs (acorn squash↔butternut squash,
+    # agar agar↔gelatin, agave nectar↔maple syrup, etc.).
     known_foods = set(nutrition.keys())
     miskg = defaultdict(set)
     kept = 0
-    dropped_not_food = 0
     dropped_same = 0
     for a, b in bidirectional:
-        if is_same(a, b) or is_modifier_variant(a, b):
+        if is_same(a, b):
             dropped_same += 1
-            continue
-        if a not in known_foods or b not in known_foods:
-            dropped_not_food += 1
             continue
         miskg[a].add(b)
         miskg[b].add(a)
         kept += 1
     print(f"  Kept {kept} pairs -> {len(miskg)} ingredients")
-    print(f"  Dropped {dropped_same} self/modifier pairs, {dropped_not_food} unknown-food pairs")
+    print(f"  Dropped {dropped_same} exact-duplicate pairs")
 
     # Phase 2: Rank MISKG substitutes by nutrition similarity
     print("\nPhase 2: Ranking...")
