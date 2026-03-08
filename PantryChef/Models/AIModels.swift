@@ -148,25 +148,185 @@ struct RawImportResult: Decodable {
     let dietaryTags: [String]?
 
     func toRecipeImportResult() -> RecipeImportResult {
-        // Build a taskIndex→UUID lookup so we can wire dependsOn correctly
+        let convertedIngredients = RecipeConversion.convertIngredients(ingredients)
+        let convertedSteps = RecipeConversion.convertSteps(steps)
+        let convertedTags = dietaryTags?.compactMap { DietaryTag(rawValue: $0) }
+
+        return RecipeImportResult(
+            title: title,
+            description: description,
+            ingredients: convertedIngredients,
+            steps: convertedSteps,
+            servings: servings,
+            prepTimeMinutes: prepTimeMinutes,
+            cookTimeMinutes: cookTimeMinutes,
+            imageURL: nil,
+            dietaryTags: convertedTags
+        )
+    }
+}
+
+// MARK: - Raw Full Recipe (for generation, modification, suggestions)
+
+struct RawFullRecipe: Decodable {
+    let title: String
+    let description: String?
+    let ingredients: [RawIngredient]
+    let steps: [RawStep]
+    let servings: Int?
+    let prepTimeMinutes: Int?
+    let cookTimeMinutes: Int?
+    let dietaryTags: [String]?
+    let difficulty: Int?
+    let mealType: String?
+    let cuisine: String?
+    let calories: Int?
+    let protein: Double?
+    let carbohydrates: Double?
+    let fat: Double?
+    let fiber: Double?
+    let sugar: Double?
+    let sodium: Double?
+
+    func toRecipe(source: RecipeSource = .aiGenerated, preserving original: Recipe? = nil) -> Recipe {
+        let convertedIngredients = RecipeConversion.convertIngredients(ingredients)
+        let convertedSteps = RecipeConversion.convertSteps(steps)
+        let convertedTags = dietaryTags?.compactMap { DietaryTag(rawValue: $0) } ?? []
+        let diff = DifficultyLevel(rawValue: difficulty ?? 2) ?? .easy
+        let mt = mealType.flatMap { MealType(rawValue: $0) }
+        let cu = cuisine.flatMap { CuisineType(rawValue: $0) }
+        let nutrition: NutritionInfo? = calories.map { cal in
+            NutritionInfo(
+                calories: cal,
+                protein: protein ?? 0,
+                carbohydrates: carbohydrates ?? 0,
+                fat: fat ?? 0,
+                fiber: fiber,
+                sugar: sugar,
+                sodium: sodium
+            )
+        }
+
+        return Recipe(
+            id: original?.id ?? UUID(),
+            title: title,
+            description: description,
+            ingredients: convertedIngredients,
+            steps: convertedSteps,
+            servings: servings ?? original?.servings ?? 4,
+            prepTimeMinutes: prepTimeMinutes,
+            cookTimeMinutes: cookTimeMinutes,
+            difficulty: diff,
+            dietaryTags: convertedTags,
+            mealType: mt ?? original?.mealType,
+            cuisine: cu ?? original?.cuisine,
+            source: source,
+            nutrition: nutrition ?? original?.nutrition,
+            imageURL: original?.imageURL,
+            sourceURL: original?.sourceURL,
+            isFavorite: original?.isFavorite ?? false,
+            dateAdded: original?.dateAdded ?? Date(),
+            timesCooked: original?.timesCooked ?? 0,
+            rating: original?.rating
+        )
+    }
+}
+
+// MARK: - Raw Wrapper Types (structured output requires top-level objects)
+
+struct RawRecipeArray: Decodable { let recipes: [RawFullRecipe] }
+struct RawShoppingList: Decodable { let items: [RawShoppingItem] }
+struct RawSubstitutionList: Decodable { let substitutions: [RawSubstitution] }
+struct RawDurationList: Decodable { let durations: [RawStepDuration] }
+struct RawStatusMessages: Decodable { let messages: [String] }
+
+// MARK: - Raw Simple Types
+
+struct RawShoppingItem: Decodable {
+    let name: String
+    let quantity: Double?
+    let unit: String?
+    let category: String
+
+    func toShoppingItem() -> ShoppingItem {
+        let parsedUnit = unit.flatMap { MeasurementUnit(rawValue: $0) }
+        let parsedCategory = FoodCategory(rawValue: category) ?? .other
+        return ShoppingItem(name: name, quantity: quantity, unit: parsedUnit, category: parsedCategory)
+    }
+}
+
+struct RawSubstitution: Decodable {
+    let originalIngredient: String
+    let substituteName: String
+    let ratio: String
+    let tasteImpact: String
+    let textureImpact: String
+    let nutritionImpact: String
+    let confidence: Double
+
+    func toSubstitutionSuggestion() -> SubstitutionSuggestion {
+        SubstitutionSuggestion(
+            originalIngredient: originalIngredient,
+            substituteName: substituteName,
+            ratio: ratio,
+            tasteImpact: tasteImpact,
+            textureImpact: textureImpact,
+            nutritionImpact: nutritionImpact,
+            confidence: confidence
+        )
+    }
+}
+
+struct RawHealthierResult: Decodable {
+    let suggestions: [RawHealthTweakItem]
+    let estimatedCalorieReduction: Int?
+    let overallImpact: String
+
+    func toHealthierSuggestion(recipeTitle: String) -> HealthierSuggestion {
+        HealthierSuggestion(
+            originalRecipeTitle: recipeTitle,
+            suggestions: suggestions.map { HealthTweak(change: $0.change, benefit: $0.benefit) },
+            estimatedCalorieReduction: estimatedCalorieReduction,
+            overallImpact: overallImpact
+        )
+    }
+}
+
+struct RawHealthTweakItem: Decodable {
+    let change: String
+    let benefit: String
+}
+
+struct RawStepDuration: Decodable {
+    let stepNumber: Int
+    let estimatedDurationSeconds: Int
+}
+
+// MARK: - Shared Conversion Helpers
+
+enum RecipeConversion {
+    /// Convert RawIngredient array → Ingredient array.
+    static func convertIngredients(_ raw: [RawIngredient]) -> [Ingredient] {
+        raw.map { r in
+            Ingredient(
+                name: r.name,
+                quantity: r.quantity,
+                unit: MeasurementUnit(rawValue: r.unit),
+                category: FoodCategory(rawValue: r.category) ?? .other
+            )
+        }
+    }
+
+    /// Convert RawStep array → RecipeStep array with proper task dependency resolution.
+    static func convertSteps(_ rawSteps: [RawStep]) -> [RecipeStep] {
         var indexToUUID: [Int: UUID] = [:]
-        // First pass: assign UUIDs
-        for step in steps {
+        for step in rawSteps {
             for task in step.tasks {
                 indexToUUID[task.taskIndex] = UUID()
             }
         }
 
-        let convertedIngredients = ingredients.map { raw in
-            Ingredient(
-                name: raw.name,
-                quantity: raw.quantity,
-                unit: MeasurementUnit(rawValue: raw.unit),
-                category: FoodCategory(rawValue: raw.category) ?? .other
-            )
-        }
-
-        let convertedSteps = steps.map { raw in
+        return rawSteps.map { raw in
             let tasks = raw.tasks.map { rawTask in
                 let taskID = indexToUUID[rawTask.taskIndex] ?? UUID()
                 let deps = rawTask.dependsOn.compactMap { indexToUUID[$0] }
@@ -189,20 +349,6 @@ struct RawImportResult: Decodable {
                 tasks: tasks
             )
         }
-
-        let convertedTags = dietaryTags?.compactMap { DietaryTag(rawValue: $0) }
-
-        return RecipeImportResult(
-            title: title,
-            description: description,
-            ingredients: convertedIngredients,
-            steps: convertedSteps,
-            servings: servings,
-            prepTimeMinutes: prepTimeMinutes,
-            cookTimeMinutes: cookTimeMinutes,
-            imageURL: nil,
-            dietaryTags: convertedTags
-        )
     }
 }
 

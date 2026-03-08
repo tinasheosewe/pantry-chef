@@ -18,6 +18,7 @@ struct RecipeDetailView: View {
     @State private var showModify = false
     @State private var modifyText = ""
     @State private var isModifying = false
+    @State private var showEditor = false
 
     init(recipe: Recipe) {
         _recipe = State(initialValue: recipe)
@@ -66,14 +67,22 @@ struct RecipeDetailView: View {
         }
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
-                Button {
-                    recipe.isFavorite.toggle()
-                    Task {
-                        await appState.toggleFavoriteWithSave(recipe)
+                HStack(spacing: 16) {
+                    Button {
+                        showEditor = true
+                    } label: {
+                        Image(systemName: "pencil")
+                            .foregroundStyle(AppColors.accentTeal)
                     }
-                } label: {
-                    Image(systemName: recipe.isFavorite ? "heart.fill" : "heart")
-                        .foregroundStyle(recipe.isFavorite ? .red : AppColors.mediumGray)
+                    Button {
+                        recipe.isFavorite.toggle()
+                        Task {
+                            await appState.toggleFavoriteWithSave(recipe)
+                        }
+                    } label: {
+                        Image(systemName: recipe.isFavorite ? "heart.fill" : "heart")
+                            .foregroundStyle(recipe.isFavorite ? .red : AppColors.mediumGray)
+                    }
                 }
             }
         }
@@ -98,6 +107,31 @@ struct RecipeDetailView: View {
         }
         .sheet(isPresented: $showShoppingList) {
             ShoppingPreviewView(items: shoppingList)
+        }
+        .sheet(isPresented: $showEditor) {
+            NavigationStack {
+                RecipeEditorView(
+                    recipe: recipe,
+                    isNewRecipe: false,
+                    onSave: { saved in
+                        recipe = saved
+                        servings = saved.servings
+                        Task { await appState.updateRecipe(saved) }
+                        showEditor = false
+                    },
+                    onSaveAsNew: { newRecipe in
+                        Task { await appState.addRecipe(newRecipe) }
+                        showEditor = false
+                    }
+                )
+                .navigationTitle("Edit Recipe")
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .cancellationAction) {
+                        Button("Cancel") { showEditor = false }
+                    }
+                }
+            }
         }
         .alert("Error", isPresented: Binding(
             get: { actionErrorMessage != nil },
@@ -938,24 +972,32 @@ struct AddRecipeView: View {
         NavigationStack {
             VStack(spacing: 0) {
                 if let recipe = parsedRecipe {
-                    // Preview parsed recipe — user reviews and saves
-                    parsedRecipePreview(recipe)
+                    // Structured editor for parsed recipe
+                    RecipeEditorView(recipe: recipe, isNewRecipe: true) { saved in
+                        onSave(saved)
+                        dismiss()
+                    }
                 } else {
                     inputForm
                 }
             }
             .background(AppColors.background)
-            .navigationTitle("Add Recipe")
+            .navigationTitle(parsedRecipe != nil ? "Review Recipe" : "Add Recipe")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") { dismiss() }
                 }
-                ToolbarItem(placement: .confirmationAction) {
-                    if let recipe = parsedRecipe {
-                        Button("Save") {
-                            onSave(recipe)
-                            dismiss()
+                if parsedRecipe != nil {
+                    ToolbarItem(placement: .primaryAction) {
+                        Button {
+                            parsedRecipe = nil
+                        } label: {
+                            HStack(spacing: 4) {
+                                Image(systemName: "arrow.uturn.backward")
+                                Text("Re-parse")
+                            }
+                            .font(.caption)
                         }
                     }
                 }
@@ -1106,101 +1148,6 @@ struct AddRecipeView: View {
         isParsing = false
     }
 
-    // MARK: - Parsed Recipe Preview
-
-    private func parsedRecipePreview(_ recipe: Recipe) -> some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 16) {
-                HStack {
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(recipe.title)
-                            .font(.title3)
-                            .fontWeight(.bold)
-                            .foregroundStyle(AppColors.darkText)
-                        if let desc = recipe.description {
-                            Text(desc)
-                                .font(.caption)
-                                .foregroundStyle(AppColors.subtleText)
-                                .lineLimit(3)
-                        }
-                    }
-                    Spacer()
-                    Image(systemName: "checkmark.seal.fill")
-                        .font(.title2)
-                        .foregroundStyle(AppColors.primaryGreen)
-                }
-                .padding()
-                .cardStyle()
-
-                // Quick info
-                HStack(spacing: 12) {
-                    if let time = recipe.totalTimeDisplay as String? {
-                        Label(time, systemImage: "clock")
-                            .font(.caption)
-                    }
-                    Label("\(recipe.servings) servings", systemImage: "person.2")
-                        .font(.caption)
-                    DifficultyBadge(difficulty: recipe.difficulty)
-                }
-                .foregroundStyle(AppColors.subtleText)
-                .padding(.horizontal)
-
-                // Ingredients
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Ingredients (\(recipe.ingredients.count))")
-                        .font(.subheadline)
-                        .fontWeight(.semibold)
-                    ForEach(recipe.ingredients) { ing in
-                        HStack(spacing: 6) {
-                            Circle()
-                                .fill(AppColors.primaryGreen)
-                                .frame(width: 5, height: 5)
-                            Text(ing.displayText)
-                                .font(.caption)
-                        }
-                    }
-                }
-                .padding()
-                .cardStyle()
-
-                // Steps
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Steps (\(recipe.steps.count))")
-                        .font(.subheadline)
-                        .fontWeight(.semibold)
-                    ForEach(recipe.steps) { step in
-                        HStack(alignment: .top, spacing: 8) {
-                            Text("\(step.stepNumber)")
-                                .font(.caption)
-                                .fontWeight(.bold)
-                                .foregroundStyle(.white)
-                                .frame(width: 20, height: 20)
-                                .background(AppColors.primaryGreen)
-                                .clipShape(Circle())
-                            Text(step.instruction)
-                                .font(.caption)
-                        }
-                    }
-                }
-                .padding()
-                .cardStyle()
-
-                // Edit option
-                Button {
-                    parsedRecipe = nil
-                } label: {
-                    HStack(spacing: 4) {
-                        Image(systemName: "arrow.uturn.backward")
-                        Text("Back to edit")
-                    }
-                    .font(.caption)
-                    .foregroundStyle(AppColors.accentTeal)
-                }
-                .padding(.horizontal)
-            }
-            .padding()
-        }
-    }
 }
 
 // MARK: - Import Recipe URL View

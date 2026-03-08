@@ -2603,8 +2603,13 @@ final class CookModeConversationTests: XCTestCase {
     func testSyncDetectsDisconnect() {
         let vm = makeSUT()
         vm.isConversationActive = true
-        vm.realtimeService.isConnected = false
 
+        // Simulate a prior successful connection so wasEverConnected is set
+        vm.realtimeService.isConnected = true
+        vm.syncRealtimeState()
+
+        // Now simulate the disconnect
+        vm.realtimeService.isConnected = false
         vm.syncRealtimeState()
 
         XCTAssertFalse(vm.isConversationActive, "Should exit conversation mode when disconnected")
@@ -3226,11 +3231,14 @@ final class CookModeInteractionTests: XCTestCase {
     func testSyncDetectsDisconnectAfterPreparation() {
         let (vm, mock) = makeSUT()
 
-        // After preparation is done and connection drops
+        // Simulate a prior successful connection so wasEverConnected is set
         vm.isConversationActive = true
+        mock.isConnected = true
+        vm.syncRealtimeState()
+
+        // Now simulate the disconnect after preparation is done
         vm.isPreparing = false
         mock.isConnected = false
-
         vm.syncRealtimeState()
 
         XCTAssertFalse(vm.isConversationActive,
@@ -3522,8 +3530,10 @@ final class CookModeInteractionTests: XCTestCase {
         vm.handleRealtimeFunctionCall(name: "next_step", args: [:])
 
         XCTAssertEqual(vm.currentStepIndex, 1)
-        // nextStep → notifyStepChanged → sendUserMessage
-        XCTAssertEqual(mock.sentMessages.count, 1)
+        // Function calls no longer send a redundant message back to the
+        // model — the model already knows the step since it initiated
+        // the function call.
+        XCTAssertEqual(mock.sentMessages.count, 0)
     }
 
     func testFunctionCallGoToStepNavigatesAndNotifies() {
@@ -3533,8 +3543,9 @@ final class CookModeInteractionTests: XCTestCase {
         vm.handleRealtimeFunctionCall(name: "go_to_step", args: ["step_number": 3])
 
         XCTAssertEqual(vm.currentStepIndex, 2)
-        XCTAssertEqual(mock.sentMessages.count, 1)
-        XCTAssertTrue(mock.sentMessages[0].contains("Cook pasta"))
+        // Function calls no longer send a message — the model initiated
+        // the navigation so it already knows the target step.
+        XCTAssertEqual(mock.sentMessages.count, 0)
     }
 
     func testFunctionCallStartTimerWithMinutes() {

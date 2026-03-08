@@ -30,11 +30,22 @@ final class AIService: AIServiceProtocol {
         - "unit": string (optional)
         - "category": string (one of: Dairy, Produce, Protein, Grains & Cereals, Spices & Herbs, Condiments & Sauces, Baking Supplies, Frozen Foods, Canned & Jarred, Beverages, Oils & Fats, Pasta & Noodles, Nuts & Seeds, Other)
 
-        Only include items I genuinely need to buy. If I have an ingredient, skip it. Return ONLY the JSON array, no other text.
+        Only include items I genuinely need to buy. If I have an ingredient, skip it.
         """
 
-        guard let response = await sendChatRequest(prompt: prompt) else { return [] }
-        return parseShoppingItems(from: response)
+        guard let response = await sendChatRequest(
+            prompt: prompt,
+            responseFormat: ["type": "json_schema", "json_schema": Self.shoppingListSchema]
+        ) else { return [] }
+
+        guard let data = response.data(using: .utf8) else { return [] }
+        do {
+            let raw = try JSONDecoder().decode(RawShoppingList.self, from: data)
+            return raw.items.map { $0.toShoppingItem() }
+        } catch {
+            print("[AIService] Failed to decode shopping list: \(error)")
+            return []
+        }
     }
 
     // MARK: - Core Feature 2: What Can I Make
@@ -88,11 +99,22 @@ final class AIService: AIServiceProtocol {
         - "carbohydrates": number (grams per serving)
         - "fat": number (grams per serving)
 
-        Return ONLY the JSON array, no other text.
+        Return ONLY the JSON object with a "recipes" array.
         """
 
-        guard let response = await sendChatRequest(prompt: prompt) else { return [] }
-        return parseRecipes(from: response)
+        guard let response = await sendChatRequest(
+            prompt: prompt,
+            responseFormat: ["type": "json_schema", "json_schema": Self.recipeArraySchema]
+        ) else { return [] }
+
+        guard let data = response.data(using: .utf8) else { return [] }
+        do {
+            let raw = try JSONDecoder().decode(RawRecipeArray.self, from: data)
+            return raw.recipes.map { $0.toRecipe(source: .aiGenerated) }
+        } catch {
+            print("[AIService] Failed to decode suggested recipes: \(error)")
+            return []
+        }
     }
 
     // MARK: - Core Feature 3: Substitutions
@@ -149,12 +171,21 @@ final class AIService: AIServiceProtocol {
         - "confidence": number (0.0 to 1.0, how good this substitution is)
 
         If no good substitution exists for an ingredient, still include it with confidence 0.0 and substituteName "No good substitute available".
-
-        Return ONLY the JSON array, no other text.
         """
 
-        guard let response = await sendChatRequest(prompt: prompt) else { return localSuggestions }
-        return localSuggestions + parseSubstitutions(from: response)
+        guard let response = await sendChatRequest(
+            prompt: prompt,
+            responseFormat: ["type": "json_schema", "json_schema": Self.substitutionsSchema]
+        ) else { return localSuggestions }
+
+        guard let data = response.data(using: .utf8) else { return localSuggestions }
+        do {
+            let raw = try JSONDecoder().decode(RawSubstitutionList.self, from: data)
+            return localSuggestions + raw.substitutions.map { $0.toSubstitutionSuggestion() }
+        } catch {
+            print("[AIService] Failed to decode substitutions: \(error)")
+            return localSuggestions
+        }
     }
 
     // MARK: - Make It Healthier
@@ -173,12 +204,21 @@ final class AIService: AIServiceProtocol {
         - "suggestions": [{"change": string, "benefit": string}]
         - "estimatedCalorieReduction": number (estimated calories saved per serving)
         - "overallImpact": string (one sentence summary of health impact)
-
-        Return ONLY the JSON object, no other text.
         """
 
-        guard let response = await sendChatRequest(prompt: prompt) else { return nil }
-        return parseHealthierSuggestion(from: response, recipeTitle: recipe.title)
+        guard let response = await sendChatRequest(
+            prompt: prompt,
+            responseFormat: ["type": "json_schema", "json_schema": Self.healthierSchema]
+        ) else { return nil }
+
+        guard let data = response.data(using: .utf8) else { return nil }
+        do {
+            let raw = try JSONDecoder().decode(RawHealthierResult.self, from: data)
+            return raw.toHealthierSuggestion(recipeTitle: recipe.title)
+        } catch {
+            print("[AIService] Failed to decode healthier suggestion: \(error)")
+            return nil
+        }
     }
 
     // MARK: - Leftover Transformer
@@ -211,11 +251,22 @@ final class AIService: AIServiceProtocol {
         Valid actions: "cut_dice", "cut_mince", "cut_slice", "cut_chop", "peel", "measure", "mix", "season", "heat", "saute", "boil", "simmer", "fry_pan", "fry_stir", "bake", "roast", "grill", "steam", "scramble", "plate", "garnish", "rest", "serve", "toss", or a custom string.
         For estimatedDurationSeconds, provide the realistic wall-clock time for each step in seconds (including active work, waiting, and cooking).
 
-        Return ONLY the JSON array, no other text.
+        Return ONLY the JSON object with a "recipes" array.
         """
 
-        guard let response = await sendChatRequest(prompt: prompt) else { return [] }
-        return parseRecipes(from: response)
+        guard let response = await sendChatRequest(
+            prompt: prompt,
+            responseFormat: ["type": "json_schema", "json_schema": Self.recipeArraySchema]
+        ) else { return [] }
+
+        guard let data = response.data(using: .utf8) else { return [] }
+        do {
+            let raw = try JSONDecoder().decode(RawRecipeArray.self, from: data)
+            return raw.recipes.map { $0.toRecipe(source: .aiGenerated) }
+        } catch {
+            print("[AIService] Failed to decode leftover recipes: \(error)")
+            return []
+        }
     }
 
     // MARK: - Recipe URL Import
@@ -436,75 +487,239 @@ final class AIService: AIServiceProtocol {
 
     // MARK: - Recipe from Text / Photo / URL text
 
-    /// JSON schema for OpenAI structured output — guarantees the response shape.
+    // MARK: - Shared Schema Components
+
+    private static let ingredientItemSchema: [String: Any] = [
+        "type": "object",
+        "properties": [
+            "name": ["type": "string"],
+            "quantity": ["type": "number"],
+            "unit": ["type": "string"],
+            "category": ["type": "string"]
+        ] as [String: Any],
+        "required": ["name", "quantity", "unit", "category"],
+        "additionalProperties": false
+    ]
+
+    private static let taskItemSchema: [String: Any] = [
+        "type": "object",
+        "properties": [
+            "taskIndex": ["type": "integer"],
+            "action": ["type": "string"],
+            "ingredient": ["type": ["string", "null"]],
+            "durationSeconds": ["type": "integer"],
+            "type": ["type": "string", "enum": ["active", "passive"]],
+            "effort": ["type": "string", "enum": ["easy", "medium", "hard"]],
+            "requiresEquipment": ["type": ["string", "null"]],
+            "dependsOn": ["type": "array", "items": ["type": "integer"]]
+        ] as [String: Any],
+        "required": ["taskIndex", "action", "ingredient", "durationSeconds", "type", "effort", "requiresEquipment", "dependsOn"],
+        "additionalProperties": false
+    ]
+
+    private static let stepItemSchema: [String: Any] = [
+        "type": "object",
+        "properties": [
+            "stepNumber": ["type": "integer"],
+            "instruction": ["type": "string"],
+            "timerMinutes": ["type": ["integer", "null"]],
+            "estimatedDurationSeconds": ["type": ["integer", "null"]],
+            "tasks": ["type": "array", "items": taskItemSchema]
+        ] as [String: Any],
+        "required": ["stepNumber", "instruction", "timerMinutes", "estimatedDurationSeconds", "tasks"],
+        "additionalProperties": false
+    ]
+
+    /// Build recipe object schema properties and required keys.
+    private static func recipeSchemaBody(includeFullDetails: Bool) -> [String: Any] {
+        var properties: [String: Any] = [
+            "title": ["type": "string"],
+            "description": ["type": ["string", "null"]],
+            "ingredients": ["type": "array", "items": ingredientItemSchema],
+            "steps": ["type": "array", "items": stepItemSchema],
+            "servings": ["type": ["integer", "null"]],
+            "prepTimeMinutes": ["type": ["integer", "null"]],
+            "cookTimeMinutes": ["type": ["integer", "null"]],
+            "dietaryTags": ["type": "array", "items": ["type": "string"]]
+        ]
+        var required = ["title", "description", "ingredients", "steps", "servings", "prepTimeMinutes", "cookTimeMinutes", "dietaryTags"]
+
+        if includeFullDetails {
+            let extras: [String: Any] = [
+                "difficulty": ["type": ["integer", "null"]],
+                "mealType": ["type": ["string", "null"]],
+                "cuisine": ["type": ["string", "null"]],
+                "calories": ["type": ["integer", "null"]],
+                "protein": ["type": ["number", "null"]],
+                "carbohydrates": ["type": ["number", "null"]],
+                "fat": ["type": ["number", "null"]],
+                "fiber": ["type": ["number", "null"]],
+                "sugar": ["type": ["number", "null"]],
+                "sodium": ["type": ["number", "null"]]
+            ]
+            for (key, value) in extras { properties[key] = value }
+            required += ["difficulty", "mealType", "cuisine", "calories", "protein", "carbohydrates", "fat", "fiber", "sugar", "sodium"]
+        }
+
+        return [
+            "type": "object",
+            "properties": properties,
+            "required": required,
+            "additionalProperties": false
+        ]
+    }
+
+    // MARK: - JSON Schemas for Structured Output
+
+    /// Recipe import — basic fields only.
     private static let recipeImportSchema: [String: Any] = [
         "name": "recipe_import",
+        "strict": true,
+        "schema": recipeSchemaBody(includeFullDetails: false)
+    ]
+
+    /// Full recipe — includes difficulty, meal type, cuisine, nutrition.
+    private static let fullRecipeSchema: [String: Any] = [
+        "name": "full_recipe",
+        "strict": true,
+        "schema": recipeSchemaBody(includeFullDetails: true)
+    ]
+
+    /// Array of full recipes — for suggestRecipes, leftoverTransformer.
+    private static let recipeArraySchema: [String: Any] = [
+        "name": "recipe_array",
         "strict": true,
         "schema": [
             "type": "object",
             "properties": [
-                "title": ["type": "string"],
-                "description": ["type": ["string", "null"]],
-                "ingredients": [
+                "recipes": ["type": "array", "items": recipeSchemaBody(includeFullDetails: true)] as [String: Any]
+            ],
+            "required": ["recipes"],
+            "additionalProperties": false
+        ] as [String: Any]
+    ]
+
+    /// Shopping list items.
+    private static let shoppingListSchema: [String: Any] = [
+        "name": "shopping_list",
+        "strict": true,
+        "schema": [
+            "type": "object",
+            "properties": [
+                "items": [
                     "type": "array",
                     "items": [
                         "type": "object",
                         "properties": [
                             "name": ["type": "string"],
-                            "quantity": ["type": "number"],
-                            "unit": ["type": "string"],
+                            "quantity": ["type": ["number", "null"]],
+                            "unit": ["type": ["string", "null"]],
                             "category": ["type": "string"]
-                        ],
+                        ] as [String: Any],
                         "required": ["name", "quantity", "unit", "category"],
                         "additionalProperties": false
-                    ]
-                ],
-                "steps": [
+                    ] as [String: Any]
+                ] as [String: Any]
+            ],
+            "required": ["items"],
+            "additionalProperties": false
+        ] as [String: Any]
+    ]
+
+    /// Substitution suggestions.
+    private static let substitutionsSchema: [String: Any] = [
+        "name": "substitutions",
+        "strict": true,
+        "schema": [
+            "type": "object",
+            "properties": [
+                "substitutions": [
+                    "type": "array",
+                    "items": [
+                        "type": "object",
+                        "properties": [
+                            "originalIngredient": ["type": "string"],
+                            "substituteName": ["type": "string"],
+                            "ratio": ["type": "string"],
+                            "tasteImpact": ["type": "string"],
+                            "textureImpact": ["type": "string"],
+                            "nutritionImpact": ["type": "string"],
+                            "confidence": ["type": "number"]
+                        ] as [String: Any],
+                        "required": ["originalIngredient", "substituteName", "ratio", "tasteImpact", "textureImpact", "nutritionImpact", "confidence"],
+                        "additionalProperties": false
+                    ] as [String: Any]
+                ] as [String: Any]
+            ],
+            "required": ["substitutions"],
+            "additionalProperties": false
+        ] as [String: Any]
+    ]
+
+    /// Healthier recipe suggestions.
+    private static let healthierSchema: [String: Any] = [
+        "name": "healthier_suggestion",
+        "strict": true,
+        "schema": [
+            "type": "object",
+            "properties": [
+                "suggestions": [
+                    "type": "array",
+                    "items": [
+                        "type": "object",
+                        "properties": [
+                            "change": ["type": "string"],
+                            "benefit": ["type": "string"]
+                        ] as [String: Any],
+                        "required": ["change", "benefit"],
+                        "additionalProperties": false
+                    ] as [String: Any]
+                ] as [String: Any],
+                "estimatedCalorieReduction": ["type": ["integer", "null"]],
+                "overallImpact": ["type": "string"]
+            ] as [String: Any],
+            "required": ["suggestions", "estimatedCalorieReduction", "overallImpact"],
+            "additionalProperties": false
+        ] as [String: Any]
+    ]
+
+    /// Step duration estimates.
+    private static let stepDurationsSchema: [String: Any] = [
+        "name": "step_durations",
+        "strict": true,
+        "schema": [
+            "type": "object",
+            "properties": [
+                "durations": [
                     "type": "array",
                     "items": [
                         "type": "object",
                         "properties": [
                             "stepNumber": ["type": "integer"],
-                            "instruction": ["type": "string"],
-                            "timerMinutes": ["type": ["integer", "null"]],
-                            "estimatedDurationSeconds": ["type": ["integer", "null"]],
-                            "tasks": [
-                                "type": "array",
-                                "items": [
-                                    "type": "object",
-                                    "properties": [
-                                        "taskIndex": ["type": "integer"],
-                                        "action": ["type": "string"],
-                                        "ingredient": ["type": ["string", "null"]],
-                                        "durationSeconds": ["type": "integer"],
-                                        "type": ["type": "string", "enum": ["active", "passive"]],
-                                        "effort": ["type": "string", "enum": ["easy", "medium", "hard"]],
-                                        "requiresEquipment": ["type": ["string", "null"]],
-                                        "dependsOn": [
-                                            "type": "array",
-                                            "items": ["type": "integer"]
-                                        ]
-                                    ],
-                                    "required": ["taskIndex", "action", "ingredient", "durationSeconds", "type", "effort", "requiresEquipment", "dependsOn"],
-                                    "additionalProperties": false
-                                ]
-                            ]
-                        ],
-                        "required": ["stepNumber", "instruction", "timerMinutes", "estimatedDurationSeconds", "tasks"],
+                            "estimatedDurationSeconds": ["type": "integer"]
+                        ] as [String: Any],
+                        "required": ["stepNumber", "estimatedDurationSeconds"],
                         "additionalProperties": false
-                    ]
-                ],
-                "servings": ["type": ["integer", "null"]],
-                "prepTimeMinutes": ["type": ["integer", "null"]],
-                "cookTimeMinutes": ["type": ["integer", "null"]],
-                "dietaryTags": [
-                    "type": "array",
-                    "items": ["type": "string"]
-                ]
+                    ] as [String: Any]
+                ] as [String: Any]
             ],
-            "required": ["title", "description", "ingredients", "steps", "servings", "prepTimeMinutes", "cookTimeMinutes", "dietaryTags"],
+            "required": ["durations"],
             "additionalProperties": false
-        ] as [String : Any]
+        ] as [String: Any]
+    ]
+
+    /// Status messages array.
+    private static let statusMessagesSchema: [String: Any] = [
+        "name": "status_messages",
+        "strict": true,
+        "schema": [
+            "type": "object",
+            "properties": [
+                "messages": ["type": "array", "items": ["type": "string"]]
+            ] as [String: Any],
+            "required": ["messages"],
+            "additionalProperties": false
+        ] as [String: Any]
     ]
 
     func parseRecipeFromText(_ extractedText: String) async -> RecipeImportResult? {
@@ -578,20 +793,26 @@ final class AIService: AIServiceProtocol {
         - If there are dietary/spice/time constraints, weave 1-2 of them in naturally
         - Use standard sentence capitalization (capitalize first word only, not every word)
 
-        Return ONLY a JSON array of 8 strings. No explanation.
+        Return ONLY a JSON object with a "messages" array of 8 strings. No explanation.
         """
 
-        guard let response = await sendChatRequest(prompt: prompt, maxTokens: 300) else {
+        guard let response = await sendChatRequest(
+            prompt: prompt,
+            maxTokens: 300,
+            responseFormat: ["type": "json_schema", "json_schema": Self.statusMessagesSchema]
+        ) else {
             return Self.fallbackMessages(dish: query)
         }
 
-        if let data = extractJSON(from: response),
-           let messages = try? JSONDecoder().decode([String].self, from: data),
-           messages.count >= 4 {
-            return messages
+        guard let data = response.data(using: .utf8) else {
+            return Self.fallbackMessages(dish: query)
         }
-
-        return Self.fallbackMessages(dish: query)
+        do {
+            let raw = try JSONDecoder().decode(RawStatusMessages.self, from: data)
+            return raw.messages.count >= 4 ? raw.messages : Self.fallbackMessages(dish: query)
+        } catch {
+            return Self.fallbackMessages(dish: query)
+        }
     }
 
     private static func fallbackMessages(dish: String) -> [String] {
@@ -678,100 +899,15 @@ final class AIService: AIServiceProtocol {
         Return ONLY the JSON object, no other text.
         """
 
-        guard let response = await sendChatRequest(prompt: prompt) else { return nil }
+        guard let response = await sendChatRequest(
+            prompt: prompt,
+            responseFormat: ["type": "json_schema", "json_schema": Self.fullRecipeSchema]
+        ) else { return nil }
 
-        // Parse the single recipe from the response
-        guard let data = extractJSON(from: response) else { return nil }
+        guard let data = response.data(using: .utf8) else { return nil }
         do {
-            let dict = try JSONDecoder().decode([String: AnyCodable].self, from: data)
-            guard let title = dict["title"]?.value as? String else { return nil }
-            let description = dict["description"]?.value as? String
-            let servings = dict["servings"]?.value as? Int ?? preferences.servings
-            let prepTime = dict["prepTimeMinutes"]?.value as? Int
-            let cookTime = dict["cookTimeMinutes"]?.value as? Int
-            let difficultyRaw = dict["difficulty"]?.value as? Int ?? 2
-            let difficulty = DifficultyLevel(rawValue: difficultyRaw) ?? .easy
-
-            let ingredients: [Ingredient] = (dict["ingredients"]?.value as? [[String: Any]])?.compactMap { ing in
-                guard let name = ing["name"] as? String else { return nil }
-                let qty = (ing["quantity"] as? Double) ?? (ing["quantity"] as? Int).map { Double($0) } ?? 1
-                let unitStr = ing["unit"] as? String
-                let unit = MeasurementUnit.allCases.first { $0.rawValue == unitStr }
-                let categoryStr = ing["category"] as? String
-                let category = FoodCategory.allCases.first { $0.rawValue == categoryStr }
-                return Ingredient(name: name, quantity: qty, unit: unit, category: category ?? .other)
-            } ?? []
-
-            // Parse steps with tasks (same two-pass approach as parseRecipes)
-            var indexToUUID: [Int: UUID] = [:]
-            var rawDepsMap: [UUID: [Int]] = [:]
-
-            var parsedSteps: [(instruction: String, num: Int, timer: Int?, estDuration: Int?, taskDicts: [[String: Any]])] = []
-            if let stepDicts = dict["steps"]?.value as? [[String: Any]] {
-                for step in stepDicts {
-                    guard let instruction = step["instruction"] as? String else { continue }
-                    let num = (step["stepNumber"] as? Int) ?? 1
-                    let timer = step["timerMinutes"] as? Int
-                    let estDuration = step["estimatedDurationSeconds"] as? Int
-                    let taskDicts = (step["tasks"] as? [[String: Any]]) ?? []
-                    parsedSteps.append((instruction, num, timer, estDuration, taskDicts))
-                    for taskDict in taskDicts {
-                        let idx = taskDict["taskIndex"] as? Int
-                        let taskId = UUID()
-                        if let idx { indexToUUID[idx] = taskId }
-                        rawDepsMap[taskId] = (taskDict["dependsOn"] as? [Int]) ?? []
-                    }
-                }
-            }
-
-            let steps: [RecipeStep] = parsedSteps.map { info in
-                let tasks: [StepTask] = info.taskDicts.compactMap { taskDict in
-                    guard let actionStr = taskDict["action"] as? String else { return nil }
-                    let action = Self.parseAction(actionStr)
-                    let ingredient = taskDict["ingredient"] as? String
-                    let duration = (taskDict["durationSeconds"] as? Int) ?? 60
-                    let typeStr = taskDict["type"] as? String ?? "active"
-                    let type: TaskType = typeStr == "passive" ? .passive : .active
-                    let effortStr = taskDict["effort"] as? String ?? "medium"
-                    let effort = EffortLevel(from: effortStr)
-                    let equipment = taskDict["requiresEquipment"] as? String
-                    let idx = taskDict["taskIndex"] as? Int
-                    let taskId = idx.flatMap { indexToUUID[$0] } ?? UUID()
-                    let rawDeps = rawDepsMap[taskId] ?? []
-                    let resolvedDeps = rawDeps.compactMap { indexToUUID[$0] }
-                    return StepTask(id: taskId, action: action, ingredient: ingredient, durationSeconds: duration, type: type, requiresEquipment: equipment, effort: effort, dependsOn: resolvedDeps)
-                }
-                return RecipeStep(stepNumber: info.num, instruction: info.instruction, timerMinutes: info.timer, estimatedDurationSeconds: info.estDuration, tasks: tasks)
-            }
-
-            // Dietary tags
-            let tagStrings = dict["dietaryTags"]?.value as? [String] ?? []
-            let dietaryTags = tagStrings.compactMap { DietaryTag(rawValue: $0) }
-
-            // Meal type & cuisine
-            let mealTypeStr = dict["mealType"]?.value as? String
-            let mealType = mealTypeStr.flatMap { MealType(rawValue: $0) }
-            let cuisineStr = dict["cuisine"]?.value as? String
-            let cuisine = cuisineStr.flatMap { CuisineType(rawValue: $0) }
-
-            // Nutrition
-            let nutrition = parseNutrition(from: dict)
-
-            return Recipe(
-                title: title,
-                description: description,
-                ingredients: ingredients,
-                steps: steps,
-                servings: servings,
-                prepTimeMinutes: prepTime,
-                cookTimeMinutes: cookTime,
-                difficulty: difficulty,
-                dietaryTags: dietaryTags,
-                mealType: mealType,
-                cuisine: cuisine,
-                source: .aiGenerated,
-                nutrition: nutrition
-            )
+            let raw = try JSONDecoder().decode(RawFullRecipe.self, from: data)
+            return raw.toRecipe(source: .aiGenerated)
         } catch {
             print("[AIService] Failed to parse generated recipe: \(error)")
             return nil
@@ -850,101 +986,15 @@ final class AIService: AIServiceProtocol {
         Return ONLY the JSON object, no other text.
         """
 
-        guard let response = await sendChatRequest(prompt: prompt) else { return nil }
-        guard let data = extractJSON(from: response) else { return nil }
+        guard let response = await sendChatRequest(
+            prompt: prompt,
+            responseFormat: ["type": "json_schema", "json_schema": Self.fullRecipeSchema]
+        ) else { return nil }
 
+        guard let data = response.data(using: .utf8) else { return nil }
         do {
-            let dict = try JSONDecoder().decode([String: AnyCodable].self, from: data)
-            guard let title = dict["title"]?.value as? String else { return nil }
-            let description = dict["description"]?.value as? String
-            let servings = dict["servings"]?.value as? Int ?? recipe.servings
-            let prepTime = dict["prepTimeMinutes"]?.value as? Int
-            let cookTime = dict["cookTimeMinutes"]?.value as? Int
-            let difficultyRaw = dict["difficulty"]?.value as? Int ?? 2
-            let difficulty = DifficultyLevel(rawValue: difficultyRaw) ?? .easy
-
-            let ingredients: [Ingredient] = (dict["ingredients"]?.value as? [[String: Any]])?.compactMap { ing in
-                guard let name = ing["name"] as? String else { return nil }
-                let qty = (ing["quantity"] as? Double) ?? (ing["quantity"] as? Int).map { Double($0) } ?? 1
-                let unitStr = ing["unit"] as? String
-                let unit = MeasurementUnit.allCases.first { $0.rawValue == unitStr }
-                let categoryStr = ing["category"] as? String
-                let category = FoodCategory.allCases.first { $0.rawValue == categoryStr }
-                return Ingredient(name: name, quantity: qty, unit: unit, category: category ?? .other)
-            } ?? []
-
-            var indexToUUID: [Int: UUID] = [:]
-            var rawDepsMap: [UUID: [Int]] = [:]
-            var parsedSteps: [(instruction: String, num: Int, timer: Int?, estDuration: Int?, taskDicts: [[String: Any]])] = []
-            if let stepDicts = dict["steps"]?.value as? [[String: Any]] {
-                for step in stepDicts {
-                    guard let instruction = step["instruction"] as? String else { continue }
-                    let num = (step["stepNumber"] as? Int) ?? 1
-                    let timer = step["timerMinutes"] as? Int
-                    let estDuration = step["estimatedDurationSeconds"] as? Int
-                    let taskDicts = (step["tasks"] as? [[String: Any]]) ?? []
-                    parsedSteps.append((instruction, num, timer, estDuration, taskDicts))
-                    for taskDict in taskDicts {
-                        let idx = taskDict["taskIndex"] as? Int
-                        let taskId = UUID()
-                        if let idx { indexToUUID[idx] = taskId }
-                        rawDepsMap[taskId] = (taskDict["dependsOn"] as? [Int]) ?? []
-                    }
-                }
-            }
-
-            let steps: [RecipeStep] = parsedSteps.map { info in
-                let tasks: [StepTask] = info.taskDicts.compactMap { taskDict in
-                    guard let actionStr = taskDict["action"] as? String else { return nil }
-                    let action = Self.parseAction(actionStr)
-                    let ingredient = taskDict["ingredient"] as? String
-                    let duration = (taskDict["durationSeconds"] as? Int) ?? 60
-                    let typeStr = taskDict["type"] as? String ?? "active"
-                    let type: TaskType = typeStr == "passive" ? .passive : .active
-                    let effortStr = taskDict["effort"] as? String ?? "medium"
-                    let effort = EffortLevel(from: effortStr)
-                    let equipment = taskDict["requiresEquipment"] as? String
-                    let idx = taskDict["taskIndex"] as? Int
-                    let taskId = idx.flatMap { indexToUUID[$0] } ?? UUID()
-                    let rawDeps = rawDepsMap[taskId] ?? []
-                    let resolvedDeps = rawDeps.compactMap { indexToUUID[$0] }
-                    return StepTask(id: taskId, action: action, ingredient: ingredient, durationSeconds: duration, type: type, requiresEquipment: equipment, effort: effort, dependsOn: resolvedDeps)
-                }
-                return RecipeStep(stepNumber: info.num, instruction: info.instruction, timerMinutes: info.timer, estimatedDurationSeconds: info.estDuration, tasks: tasks)
-            }
-
-            let tagStrings = dict["dietaryTags"]?.value as? [String] ?? []
-            let dietaryTags = tagStrings.compactMap { DietaryTag(rawValue: $0) }
-            let mealTypeStr = dict["mealType"]?.value as? String
-            let mealType = mealTypeStr.flatMap { MealType(rawValue: $0) }
-            let cuisineStr = dict["cuisine"]?.value as? String
-            let cuisine = cuisineStr.flatMap { CuisineType(rawValue: $0) }
-
-            let nutrition = parseNutrition(from: dict)
-
-            // Preserve original recipe's identity
-            return Recipe(
-                id: recipe.id,
-                title: title,
-                description: description,
-                ingredients: ingredients,
-                steps: steps,
-                servings: servings,
-                prepTimeMinutes: prepTime,
-                cookTimeMinutes: cookTime,
-                difficulty: difficulty,
-                dietaryTags: dietaryTags,
-                mealType: mealType,
-                cuisine: cuisine,
-                source: recipe.source,
-                nutrition: nutrition,
-                imageURL: recipe.imageURL,
-                sourceURL: recipe.sourceURL,
-                isFavorite: recipe.isFavorite,
-                dateAdded: recipe.dateAdded,
-                timesCooked: recipe.timesCooked,
-                rating: recipe.rating
-            )
+            let raw = try JSONDecoder().decode(RawFullRecipe.self, from: data)
+            return raw.toRecipe(source: recipe.source, preserving: recipe)
         } catch {
             print("[AIService] Failed to parse modified recipe: \(error)")
             return nil
@@ -968,22 +1018,21 @@ final class AIService: AIServiceProtocol {
         Steps:
         \(stepDescriptions)
 
-        Return a JSON array where each element is:
+        Return a JSON object with a "durations" array where each element is:
         {"stepNumber": number, "estimatedDurationSeconds": number}
-
-        Return ONLY the JSON array, no other text.
         """
 
-        guard let response = await sendChatRequest(prompt: prompt) else { return steps }
-        guard let data = extractJSON(from: response) else { return steps }
+        guard let response = await sendChatRequest(
+            prompt: prompt,
+            responseFormat: ["type": "json_schema", "json_schema": Self.stepDurationsSchema]
+        ) else { return steps }
 
+        guard let data = response.data(using: .utf8) else { return steps }
         do {
-            let items = try JSONDecoder().decode([[String: Int]].self, from: data)
+            let raw = try JSONDecoder().decode(RawDurationList.self, from: data)
             var lookup: [Int: Int] = [:]
-            for item in items {
-                if let num = item["stepNumber"], let dur = item["estimatedDurationSeconds"] {
-                    lookup[num] = dur
-                }
+            for item in raw.durations {
+                lookup[item.stepNumber] = item.estimatedDurationSeconds
             }
             return steps.map { step in
                 var updated = step
@@ -1075,161 +1124,10 @@ final class AIService: AIServiceProtocol {
         return nil
     }
 
-    // MARK: - Response Parsing
-
-    private func parseShoppingItems(from response: String) -> [ShoppingItem] {
-        guard let data = extractJSON(from: response) else { return [] }
-        do {
-            let items = try JSONDecoder().decode([[String: AnyCodable]].self, from: data)
-            return items.compactMap { dict in
-                guard let name = dict["name"]?.value as? String else { return nil }
-                let quantity = dict["quantity"]?.value as? Double
-                let unitStr = dict["unit"]?.value as? String
-                let categoryStr = dict["category"]?.value as? String
-                let unit = MeasurementUnit.allCases.first { $0.rawValue == unitStr }
-                let category = FoodCategory.allCases.first { $0.rawValue == categoryStr } ?? .other
-                return ShoppingItem(name: name, quantity: quantity, unit: unit, category: category)
-            }
-        } catch {
-            return []
-        }
-    }
-
-    private func parseRecipes(from response: String) -> [Recipe] {
-        guard let data = extractJSON(from: response) else { return [] }
-        do {
-            let items = try JSONDecoder().decode([[String: AnyCodable]].self, from: data)
-            return items.compactMap { dict -> Recipe? in
-                guard let title = dict["title"]?.value as? String else { return nil }
-                let description = dict["description"]?.value as? String
-                let servings = dict["servings"]?.value as? Int ?? 4
-                let prepTime = dict["prepTimeMinutes"]?.value as? Int
-                let cookTime = dict["cookTimeMinutes"]?.value as? Int
-                let difficultyRaw = dict["difficulty"]?.value as? Int ?? 2
-                let difficulty = DifficultyLevel(rawValue: difficultyRaw) ?? .easy
-
-                let ingredients: [Ingredient] = (dict["ingredients"]?.value as? [[String: Any]])?.compactMap { ing in
-                    guard let name = ing["name"] as? String else { return nil }
-                    let qty = (ing["quantity"] as? Double) ?? (ing["quantity"] as? Int).map { Double($0) } ?? 1
-                    let unitStr = ing["unit"] as? String
-                    let unit = MeasurementUnit.allCases.first { $0.rawValue == unitStr }
-                    return Ingredient(name: name, quantity: qty, unit: unit)
-                } ?? []
-
-                // --- Two-pass task parsing: create tasks, then resolve dependsOn indices → UUIDs ---
-                // Pass 1: parse all tasks across all steps, assign stable UUIDs, record taskIndex → UUID
-                var indexToUUID: [Int: UUID] = [:]
-                var rawDepsMap: [UUID: [Int]] = [:]   // taskId → raw dependsOn indices
-
-                var parsedSteps: [(instruction: String, num: Int, timer: Int?, estDuration: Int?, taskDicts: [[String: Any]])] = []
-                if let stepDicts = dict["steps"]?.value as? [[String: Any]] {
-                    for step in stepDicts {
-                        guard let instruction = step["instruction"] as? String else { continue }
-                        let num = (step["stepNumber"] as? Int) ?? 1
-                        let timer = step["timerMinutes"] as? Int
-                        let estDuration = step["estimatedDurationSeconds"] as? Int
-                        let taskDicts = (step["tasks"] as? [[String: Any]]) ?? []
-                        parsedSteps.append((instruction, num, timer, estDuration, taskDicts))
-
-                        for taskDict in taskDicts {
-                            let idx = taskDict["taskIndex"] as? Int
-                            let taskId = UUID()
-                            if let idx { indexToUUID[idx] = taskId }
-                            let rawDeps = (taskDict["dependsOn"] as? [Int]) ?? []
-                            rawDepsMap[taskId] = rawDeps
-                        }
-                    }
-                }
-
-                // Pass 2: build RecipeSteps with resolved dependsOn UUIDs
-                var taskDictCursor = 0
-                let allTaskDicts = parsedSteps.flatMap(\.taskDicts)
-                let sortedIndices = allTaskDicts.compactMap { $0["taskIndex"] as? Int }.sorted()
-
-                let steps: [RecipeStep] = parsedSteps.map { info in
-                    let tasks: [StepTask] = info.taskDicts.compactMap { taskDict in
-                        guard let actionStr = taskDict["action"] as? String else { return nil }
-                        let action = Self.parseAction(actionStr)
-                        let ingredient = taskDict["ingredient"] as? String
-                        let duration = (taskDict["durationSeconds"] as? Int) ?? 60
-                        let typeStr = taskDict["type"] as? String ?? "active"
-                        let type: TaskType = typeStr == "passive" ? .passive : .active
-                        let effortStr = taskDict["effort"] as? String ?? "medium"
-                        let effort = EffortLevel(from: effortStr)
-                        let equipment = taskDict["requiresEquipment"] as? String
-
-                        let idx = taskDict["taskIndex"] as? Int
-                        let taskId = idx.flatMap { indexToUUID[$0] } ?? UUID()
-                        let rawDeps = rawDepsMap[taskId] ?? []
-                        let resolvedDeps = rawDeps.compactMap { indexToUUID[$0] }
-
-                        return StepTask(id: taskId, action: action, ingredient: ingredient, durationSeconds: duration, type: type, requiresEquipment: equipment, effort: effort, dependsOn: resolvedDeps)
-                    }
-                    return RecipeStep(stepNumber: info.num, instruction: info.instruction, timerMinutes: info.timer, estimatedDurationSeconds: info.estDuration, tasks: tasks)
-                }
-
-                let nutrition = parseNutrition(from: dict)
-
-                return Recipe(
-                    title: title,
-                    description: description,
-                    ingredients: ingredients,
-                    steps: steps,
-                    servings: servings,
-                    prepTimeMinutes: prepTime,
-                    cookTimeMinutes: cookTime,
-                    difficulty: difficulty,
-                    nutrition: nutrition
-                )
-            }
-        } catch {
-            return []
-        }
-    }
-
-    private func parseSubstitutions(from response: String) -> [SubstitutionSuggestion] {
-        guard let data = extractJSON(from: response) else { return [] }
-        do {
-            return try JSONDecoder().decode([SubstitutionSuggestion].self, from: data)
-        } catch {
-            return []
-        }
-    }
-
-    private func parseHealthierSuggestion(from response: String, recipeTitle: String) -> HealthierSuggestion? {
-        guard let data = extractJSON(from: response) else { return nil }
-        do {
-            struct ParsedResponse: Codable {
-                let suggestions: [HealthTweak]
-                let estimatedCalorieReduction: Int?
-                let overallImpact: String
-            }
-            let parsed = try JSONDecoder().decode(ParsedResponse.self, from: data)
-            return HealthierSuggestion(
-                originalRecipeTitle: recipeTitle,
-                suggestions: parsed.suggestions,
-                estimatedCalorieReduction: parsed.estimatedCalorieReduction,
-                overallImpact: parsed.overallImpact
-            )
-        } catch {
-            return nil
-        }
-    }
-
-    private func parseImportResult(from response: String) -> RecipeImportResult? {
-        guard let data = extractJSON(from: response) else { return nil }
-        do {
-            return try JSONDecoder().decode(RecipeImportResult.self, from: data)
-        } catch {
-            return nil
-        }
-    }
+    // MARK: - Response Parsing (legacy — kept for edge cases)
 
     private func extractJSON(from text: String) -> Data? {
-        // Try to extract JSON from markdown code blocks or raw JSON
         var jsonString = text.trimmingCharacters(in: .whitespacesAndNewlines)
-
-        // Remove markdown code block markers
         if jsonString.hasPrefix("```json") {
             jsonString = String(jsonString.dropFirst(7))
         } else if jsonString.hasPrefix("```") {
@@ -1239,78 +1137,7 @@ final class AIService: AIServiceProtocol {
             jsonString = String(jsonString.dropLast(3))
         }
         jsonString = jsonString.trimmingCharacters(in: .whitespacesAndNewlines)
-
         return jsonString.data(using: .utf8)
-    }
-
-    /// Safely extract a Double from an AnyCodable value that might be Int or Double.
-    private func asDouble(_ anyCodable: AnyCodable?) -> Double? {
-        guard let val = anyCodable?.value else { return nil }
-        if let d = val as? Double { return d }
-        if let i = val as? Int { return Double(i) }
-        return nil
-    }
-
-    /// Safely extract an Int from an AnyCodable value that might be Int or Double.
-    private func asInt(_ anyCodable: AnyCodable?) -> Int? {
-        guard let val = anyCodable?.value else { return nil }
-        if let i = val as? Int { return i }
-        if let d = val as? Double { return Int(d) }
-        return nil
-    }
-
-    /// Parse nutrition info from a decoded response dictionary.
-    private func parseNutrition(from dict: [String: AnyCodable]) -> NutritionInfo? {
-        guard let cal = asInt(dict["calories"]) else { return nil }
-        return NutritionInfo(
-            calories: cal,
-            protein: asDouble(dict["protein"]) ?? 0,
-            carbohydrates: asDouble(dict["carbohydrates"]) ?? 0,
-            fat: asDouble(dict["fat"]) ?? 0,
-            fiber: asDouble(dict["fiber"]),
-            sugar: asDouble(dict["sugar"]),
-            sodium: asDouble(dict["sodium"])
-        )
-    }
-}
-
-// MARK: - AnyCodable Helper
-
-struct AnyCodable: Codable {
-    let value: Any
-
-    init(_ value: Any) {
-        self.value = value
-    }
-
-    init(from decoder: Decoder) throws {
-        let container = try decoder.singleValueContainer()
-        if let intValue = try? container.decode(Int.self) {
-            value = intValue
-        } else if let doubleValue = try? container.decode(Double.self) {
-            value = doubleValue
-        } else if let stringValue = try? container.decode(String.self) {
-            value = stringValue
-        } else if let boolValue = try? container.decode(Bool.self) {
-            value = boolValue
-        } else if let arrayValue = try? container.decode([AnyCodable].self) {
-            value = arrayValue.map { $0.value }
-        } else if let dictValue = try? container.decode([String: AnyCodable].self) {
-            value = dictValue.mapValues { $0.value }
-        } else {
-            value = NSNull()
-        }
-    }
-
-    func encode(to encoder: Encoder) throws {
-        var container = encoder.singleValueContainer()
-        switch value {
-        case let intValue as Int: try container.encode(intValue)
-        case let doubleValue as Double: try container.encode(doubleValue)
-        case let stringValue as String: try container.encode(stringValue)
-        case let boolValue as Bool: try container.encode(boolValue)
-        default: try container.encodeNil()
-        }
     }
 }
 
