@@ -83,6 +83,12 @@ Perform a comprehensive, deep audit of the entire codebase. Scan every file meth
 - Excessive or noisy logging that drowns out meaningful signals
 - Inconsistent log levels (errors logged as info, debug noise in production)
 
+### AI Prompts
+- Prompts overfitted to specific bugs, errors, or edge cases instead of expressing generic principles
+- Prompts that list hardcoded case-by-case handling where a broader instruction would suffice
+- Fragile prompts that would break or need updating whenever the data, schema, or requirements change slightly
+- Prompts missing clear output format specifications or constraint definitions
+
 ### Consistency & Incomplete Changes
 - Partial migrations — new patterns introduced alongside old ones without completing the transition
 - Orphaned code left behind from refactors (unused functions, stale references, dead imports)

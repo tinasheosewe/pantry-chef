@@ -79,6 +79,12 @@
 - When fixing a bug, find the root cause first. Never patch symptoms — understand why it broke, then fix it at the source.
 - Before adding new code, check if existing code already handles or nearly handles the case. Extend before you create.
 
+## AI Prompt Authoring
+- When writing prompts for AI/LLM services, keep them generic and principle-driven. Describe the desired behavior, constraints, and output format — not specific cases.
+- Do not overfit prompts to a particular bug, error, or edge case. If the prompt needs to handle a scenario, express it as a general rule, not a hardcoded exception.
+- Avoid listing specific case handling in prompts where a broader instruction would cover it. "Always validate input" beats "check if the name is empty, check if the email has an @, check if the age is negative."
+- Prompts should be durable — they should not need to change every time the data, schema, or requirements shift slightly.
+
 ## Ripple-Through Changes
 - When making a change, trace its impact across the entire codebase. Update every caller, every test, every related component. Do not leave stale references or orphaned code.
 - Do not add backward-compatibility shims, adapters, or deprecation wrappers. If something needs to change, change it everywhere — rewrite, refactor, and overhaul as necessary.
