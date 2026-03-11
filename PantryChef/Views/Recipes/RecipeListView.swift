@@ -582,11 +582,9 @@ struct RecipeCardView: View {
             }
 
             HStack(spacing: 8) {
-                if let time = recipe.totalTimeDisplay as String? {
-                    Label(time, systemImage: "clock")
-                        .font(.caption2)
-                        .foregroundStyle(AppColors.subtleText)
-                }
+                Label(recipe.totalTimeDisplay, systemImage: "clock")
+                    .font(.caption2)
+                    .foregroundStyle(AppColors.subtleText)
                 DifficultyBadge(difficulty: recipe.difficulty)
             }
 

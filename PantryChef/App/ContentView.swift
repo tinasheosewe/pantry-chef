@@ -81,10 +81,10 @@ struct ContentView: View {
             // Clear immediately so it doesn't re-trigger
             appState.deepLinkCookModeRecipeId = nil
 
-            if let recipe = appState.recipes.first(where: { $0.id.uuidString == recipeId }) {
+            if let recipe = appState.recipeByIdString(recipeId) {
                 deepLinkRecipe = recipe
             } else {
-                print("[ContentView] ⚠️ Deep-link recipe \(recipeId.prefix(8))… not found in appState.recipes")
+                print("[ContentView] ⚠️ Deep-link recipe \(recipeId.prefix(8))… not found in known recipes")
             }
         }
     }

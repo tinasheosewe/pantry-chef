@@ -359,9 +359,10 @@ struct MultiCookModeView: View {
 
     private func startTickTimer() {
         tickTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { _ in
-            Task { @MainActor in
-                tickPassiveTimers()
-            }
+            tickPassiveTimers()
+        }
+        if let tickTimer {
+            RunLoop.main.add(tickTimer, forMode: .common)
         }
     }
 

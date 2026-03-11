@@ -12,6 +12,7 @@ struct MultiCookSelectionView: View {
     @State private var selectedRecipeIds: Set<UUID> = []
     @State private var showGathering = false
     @State private var showMultiCookMode = false
+    @State private var scheduleSummary: ScheduleSummary?
 
     var body: some View {
         NavigationStack {
@@ -49,11 +50,9 @@ struct MultiCookSelectionView: View {
                                             .foregroundStyle(AppColors.darkText)
 
                                         HStack(spacing: 8) {
-                                            if let time = recipe.totalTimeDisplay as String? {
-                                                Label(time, systemImage: "clock")
-                                                    .font(.caption)
-                                                    .foregroundStyle(AppColors.subtleText)
-                                            }
+                                            Label(recipe.totalTimeDisplay, systemImage: "clock")
+                                                .font(.caption)
+                                                .foregroundStyle(AppColors.subtleText)
                                             Text("\(recipe.steps.count) steps")
                                                 .font(.caption)
                                                 .foregroundStyle(AppColors.subtleText)
@@ -118,11 +117,7 @@ struct MultiCookSelectionView: View {
     // MARK: - Schedule Preview
 
     private var schedulePreview: some View {
-        let selectedRecipes = appState.recipes.filter { selectedRecipeIds.contains($0.id) }
-        let blocks = MultiRecipeScheduler.schedule(recipes: selectedRecipes)
-        let sequential = MultiRecipeScheduler.sequentialTime(recipes: selectedRecipes)
-        let interleaved = MultiRecipeScheduler.estimatedTotalTime(blocks: blocks)
-        let saved = max(0, sequential - interleaved)
+        let summary = scheduleSummary ?? ScheduleSummary.empty
 
         return VStack(spacing: 8) {
             HStack(spacing: 20) {
@@ -137,7 +132,7 @@ struct MultiCookSelectionView: View {
                 }
 
                 VStack(spacing: 2) {
-                    Text("\(blocks.count)")
+                    Text("\(summary.blockCount)")
                         .font(.title2)
                         .fontWeight(.bold)
                         .foregroundStyle(AppColors.accentBlue)
@@ -147,7 +142,7 @@ struct MultiCookSelectionView: View {
                 }
 
                 VStack(spacing: 2) {
-                    Text(formatDuration(interleaved))
+                    Text(formatDuration(summary.interleavedSeconds))
                         .font(.title2)
                         .fontWeight(.bold)
                         .foregroundStyle(AppColors.darkText)
@@ -156,9 +151,9 @@ struct MultiCookSelectionView: View {
                         .foregroundStyle(AppColors.subtleText)
                 }
 
-                if saved > 0 {
+                if summary.savedSeconds > 0 {
                     VStack(spacing: 2) {
-                        Text("-\(formatDuration(saved))")
+                        Text("-\(formatDuration(summary.savedSeconds))")
                             .font(.title2)
                             .fontWeight(.bold)
                             .foregroundStyle(AppColors.primaryGreen)
@@ -180,6 +175,24 @@ struct MultiCookSelectionView: View {
         } else {
             selectedRecipeIds.insert(id)
         }
+        recalculateScheduleSummary()
+    }
+
+    private func recalculateScheduleSummary() {
+        let selectedRecipes = appState.recipes.filter { selectedRecipeIds.contains($0.id) }
+        guard selectedRecipes.count >= 2 else {
+            scheduleSummary = nil
+            return
+        }
+
+        let blocks = MultiRecipeScheduler.schedule(recipes: selectedRecipes)
+        let sequential = MultiRecipeScheduler.sequentialTime(recipes: selectedRecipes)
+        let interleaved = MultiRecipeScheduler.estimatedTotalTime(blocks: blocks)
+        scheduleSummary = ScheduleSummary(
+            blockCount: blocks.count,
+            interleavedSeconds: interleaved,
+            savedSeconds: max(0, sequential - interleaved)
+        )
     }
 
     private func formatDuration(_ seconds: Int) -> String {
@@ -189,4 +202,12 @@ struct MultiCookSelectionView: View {
         let rm = m % 60
         return rm > 0 ? "\(h)h\(rm)m" : "\(h)h"
     }
+}
+
+private struct ScheduleSummary {
+    let blockCount: Int
+    let interleavedSeconds: Int
+    let savedSeconds: Int
+
+    static let empty = ScheduleSummary(blockCount: 0, interleavedSeconds: 0, savedSeconds: 0)
 }

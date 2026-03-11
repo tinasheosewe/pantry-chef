@@ -70,13 +70,19 @@ final class SubstitutionRepository: @unchecked Sendable {
     private func loadBundledData() {
         guard let url = Bundle.main.url(forResource: "substitutions", withExtension: "json"),
               let data = try? Data(contentsOf: url) else {
+            assertionFailure("Missing bundled substitutions.json; loading fallback substitutions")
             loadFallbackData()
             return
         }
-        parseJSON(data)
+        do {
+            try parseJSON(data)
+        } catch {
+            assertionFailure("Invalid bundled substitutions.json: \(error); loading fallback substitutions")
+            loadFallbackData()
+        }
     }
 
-    private func parseJSON(_ data: Data) {
+    private func parseJSON(_ data: Data) throws {
         struct JSONRoot: Decodable {
             let substitutions: [String: [JSONSub]]
         }
@@ -92,7 +98,7 @@ final class SubstitutionRepository: @unchecked Sendable {
             let enriched: Bool?
         }
 
-        guard let root = try? JSONDecoder().decode(JSONRoot.self, from: data) else { return }
+        let root = try JSONDecoder().decode(JSONRoot.self, from: data)
 
         for (ingredient, subs) in root.substitutions {
             let normalized = IngredientMatcher.normalize(ingredient)
@@ -109,16 +115,6 @@ final class SubstitutionRepository: @unchecked Sendable {
                     enriched: sub.enriched ?? true
                 )
             }
-        }
-    }
-
-    private func parseImpact(_ string: String) -> SubstitutionImpact {
-        switch string.lowercased() {
-        case "none": return .none
-        case "slight": return .slight
-        case "moderate": return .moderate
-        case "significant": return .significant
-        default: return .moderate
         }
     }
 
@@ -143,4 +139,15 @@ final class SubstitutionRepository: @unchecked Sendable {
             ],
         ]
     }
+
+    private func parseImpact(_ string: String) -> SubstitutionImpact {
+        switch string.lowercased() {
+        case "none": return .none
+        case "slight": return .slight
+        case "moderate": return .moderate
+        case "significant": return .significant
+        default: return .moderate
+        }
+    }
+
 }

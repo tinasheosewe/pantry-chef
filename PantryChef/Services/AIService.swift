@@ -1104,11 +1104,14 @@ final class AIService: AIServiceProtocol {
                            let content = message["content"] as? String {
                             return content
                         }
+                        print("[AIService] Received HTTP 200 with unexpected response shape")
                         return nil // valid 200 but unexpected shape — don't retry
                     }
 
                     // Rate limited or server error — retryable
                     if httpResponse.statusCode == 429 || httpResponse.statusCode >= 500 {
+                        let body = String(data: data, encoding: .utf8) ?? "<non-utf8 body>"
+                        print("[AIService] Retryable HTTP \(httpResponse.statusCode), attempt \(attempt)/\(maxRetries): \(body)")
                         if attempt < maxRetries {
                             let delay = Double(attempt) * 1.5 // 1.5s, 3s
                             try await Task.sleep(for: .seconds(delay))
@@ -1118,6 +1121,8 @@ final class AIService: AIServiceProtocol {
                     }
 
                     // 4xx client error (bad key, etc.) — not retryable
+                    let body = String(data: data, encoding: .utf8) ?? "<non-utf8 body>"
+                    print("[AIService] Non-retryable HTTP \(httpResponse.statusCode): \(body)")
                     return nil
                 }
             } catch {
@@ -1135,20 +1140,6 @@ final class AIService: AIServiceProtocol {
     }
 
     // MARK: - Response Parsing (legacy — kept for edge cases)
-
-    private func extractJSON(from text: String) -> Data? {
-        var jsonString = text.trimmingCharacters(in: .whitespacesAndNewlines)
-        if jsonString.hasPrefix("```json") {
-            jsonString = String(jsonString.dropFirst(7))
-        } else if jsonString.hasPrefix("```") {
-            jsonString = String(jsonString.dropFirst(3))
-        }
-        if jsonString.hasSuffix("```") {
-            jsonString = String(jsonString.dropLast(3))
-        }
-        jsonString = jsonString.trimmingCharacters(in: .whitespacesAndNewlines)
-        return jsonString.data(using: .utf8)
-    }
 }
 
 // MARK: - Action String Parsing Helper

@@ -138,8 +138,8 @@ struct HomeView: View {
 
                         Spacer()
 
-                        if let recipe = entry.recipe, let time = recipe.totalTimeDisplay as String? {
-                            Text(time)
+                        if let recipe = entry.recipe {
+                            Text(recipe.totalTimeDisplay)
                                 .font(.caption)
                                 .foregroundStyle(AppColors.subtleText)
                         }
@@ -239,11 +239,9 @@ struct HomeView: View {
 
                         HStack(spacing: 12) {
                             DifficultyBadge(difficulty: recipe.difficulty)
-                            if let time = recipe.totalTimeDisplay as String? {
-                                Label(time, systemImage: "clock")
-                                    .font(.caption)
-                                    .foregroundStyle(AppColors.subtleText)
-                            }
+                            Label(recipe.totalTimeDisplay, systemImage: "clock")
+                                .font(.caption)
+                                .foregroundStyle(AppColors.subtleText)
                         }
                     }
 
@@ -319,7 +317,7 @@ struct HomeView: View {
 
             ForEach(viewModel.appState.activeCooks.activeSessions) { session in
                 Button {
-                    if let recipe = viewModel.appState.recipes.first(where: { $0.id == session.recipeId }) {
+                    if let recipe = viewModel.appState.allRecipes.first(where: { $0.id == session.recipeId }) {
                         resumeRecipe = recipe
                     }
                 } label: {

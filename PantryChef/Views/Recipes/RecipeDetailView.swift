@@ -19,6 +19,7 @@ struct RecipeDetailView: View {
     @State private var modifyText = ""
     @State private var isModifying = false
     @State private var showEditor = false
+    private let maxServings = 100
 
     init(recipe: Recipe) {
         _recipe = State(initialValue: recipe)
@@ -219,11 +220,9 @@ struct RecipeDetailView: View {
             HStack(spacing: 16) {
                 DifficultyBadge(difficulty: recipe.difficulty)
 
-                if let time = recipe.totalTimeDisplay as String? {
-                    Label(time, systemImage: "clock")
-                        .font(.caption)
-                        .foregroundStyle(AppColors.subtleText)
-                }
+                Label(recipe.totalTimeDisplay, systemImage: "clock")
+                    .font(.caption)
+                    .foregroundStyle(AppColors.subtleText)
 
                 if let prep = recipe.prepTimeMinutes {
                     Label("\(prep)m prep", systemImage: "hand.raised")
@@ -478,12 +477,15 @@ struct RecipeDetailView: View {
                     .frame(width: 40)
 
                 Button {
-                    servings += 1
+                    if servings < maxServings {
+                        servings += 1
+                    }
                 } label: {
                     Image(systemName: "plus.circle.fill")
                         .font(.title3)
-                        .foregroundStyle(AppColors.primaryGreen)
+                        .foregroundStyle(servings < maxServings ? AppColors.primaryGreen : AppColors.mediumGray)
                 }
+                .disabled(servings >= maxServings)
             }
         }
         .padding()
@@ -643,9 +645,7 @@ struct RecipeDetailView: View {
             ForEach(scaledRecipe.ingredients) { ingredient in
                 HStack(spacing: 12) {
                     let isAvailable = appState.pantryItems.contains {
-                        let pName = $0.name.lowercased()
-                        let iName = ingredient.name.lowercased()
-                        return pName.contains(iName) || iName.contains(pName)
+                        IngredientMatcher.namesMatch($0.name, ingredient.name)
                     }
 
                     Image(systemName: isAvailable ? "checkmark.circle.fill" : "circle")
@@ -1267,6 +1267,8 @@ struct ImportRecipeURLView: View {
 }
 
 // MARK: - Flow Layout
+/// Simple wrapping horizontal layout used for chip-like content.
+/// Subviews are laid out left-to-right and wrapped to the next line when needed.
 struct FlowLayout: Layout {
     var spacing: CGFloat = 8
 

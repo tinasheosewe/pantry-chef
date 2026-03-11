@@ -46,21 +46,25 @@ final class AppState {
         recipes + discoverRecipes
     }
 
+    /// Resolve a recipe by UUID string across all known sources.
+    func recipeByIdString(_ id: String) -> Recipe? {
+        allRecipes.first { $0.id.uuidString == id }
+    }
+
     /// Reload discover recipes from the repository (call after caching new recipes)
     func refreshDiscoverRecipes() {
-        discoverRecipes = recipeRepository.discoverRecipes
+        discoverRecipes = mergedDiscoverRecipes(withPersisted: discoverRecipes.filter { !$0.source.isUserRecipe })
     }
 
     // MARK: - Init (DI-friendly)
     init() {
         self.storageService = StorageService()
         self.aiService = AIService()
-        // Seed in-memory data synchronously — zero async overhead
+        // Start with sample defaults and then hydrate from durable storage.
         pantryItems = PantryItem.samples
         recipes = Recipe.samples
-        let discover = recipeRepository.discoverRecipes
-        print("[AppState] init — recipeRepository.discoverRecipes.count = \(discover.count)")
-        discoverRecipes = discover
+        discoverRecipes = recipeRepository.seedRecipes
+        Task { await loadAllData() }
     }
 
     init(storageService: StorageServiceProtocol, aiService: AIServiceProtocol) {
@@ -68,9 +72,8 @@ final class AppState {
         self.aiService = aiService
         pantryItems = PantryItem.samples
         recipes = Recipe.samples
-        let discover = recipeRepository.discoverRecipes
-        print("[AppState] init(DI) — recipeRepository.discoverRecipes.count = \(discover.count)")
-        discoverRecipes = discover
+        discoverRecipes = recipeRepository.seedRecipes
+        Task { await loadAllData() }
     }
 
     // MARK: - Data Loading (for refresh / future network-backed store)
@@ -88,7 +91,9 @@ final class AppState {
 
             let (fetchedItems, fetchedRecipes, fetchedPlan, fetchedShopping) = try await (items, recipeList, plan, shopping)
             pantryItems = fetchedItems
-            recipes = fetchedRecipes
+            recipes = fetchedRecipes.filter { $0.source.isUserRecipe }
+            let persistedDiscover = fetchedRecipes.filter { !$0.source.isUserRecipe }
+            discoverRecipes = mergedDiscoverRecipes(withPersisted: persistedDiscover)
             mealPlan = fetchedPlan
             shoppingItems = fetchedShopping
         } catch {
@@ -130,7 +135,11 @@ final class AppState {
     func addRecipe(_ recipe: Recipe) async {
         do {
             let saved = try await storageService.addRecipe(recipe)
-            recipes.append(saved)
+            if saved.source.isUserRecipe {
+                recipes.append(saved)
+            } else {
+                discoverRecipes = mergedDiscoverRecipes(withPersisted: discoverRecipes.filter { !$0.source.isUserRecipe } + [saved])
+            }
         } catch {
             errorMessage = error.localizedDescription
         }
@@ -141,6 +150,8 @@ final class AppState {
             let updated = try await storageService.updateRecipe(recipe)
             if let index = recipes.firstIndex(where: { $0.id == recipe.id }) {
                 recipes[index] = updated
+            } else if let index = discoverRecipes.firstIndex(where: { $0.id == recipe.id }) {
+                discoverRecipes[index] = updated
             }
         } catch {
             errorMessage = error.localizedDescription
@@ -171,13 +182,24 @@ final class AppState {
         if let idx = discoverRecipes.firstIndex(where: { $0.id == recipe.id }) {
             discoverRecipes[idx].isFavorite = updated.isFavorite
         }
-        recipeRepository.updateFavoriteState(id: recipe.id, isFavorite: updated.isFavorite)
     }
 
     func deleteRecipe(_ recipe: Recipe) async {
         do {
             try await storageService.deleteRecipe(recipe)
             recipes.removeAll { $0.id == recipe.id }
+            discoverRecipes.removeAll { $0.id == recipe.id }
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+    }
+
+    func cacheDiscoverRecipe(_ recipe: Recipe) async {
+        guard !recipe.source.isUserRecipe else { return }
+        do {
+            _ = try await storageService.updateRecipe(recipe)
+            let persistedDiscover = discoverRecipes.filter { !$0.source.isUserRecipe && $0.source != .bundled }
+            discoverRecipes = mergedDiscoverRecipes(withPersisted: persistedDiscover + [recipe])
         } catch {
             errorMessage = error.localizedDescription
         }
@@ -229,10 +251,8 @@ final class AppState {
         let allIngredients = recipes.flatMap { $0.ingredients }
         let missing = allIngredients.filter { ingredient in
             !pantryItems.contains { pantryItem in
-                let pName = pantryItem.name.lowercased()
-                let iName = ingredient.name.lowercased()
-                return (pName.contains(iName) || iName.contains(pName)) &&
-                    (pantryItem.quantity ?? 0) >= ingredient.quantity
+                IngredientMatcher.namesMatch(pantryItem.name, ingredient.name) &&
+                IngredientMatcher.hasEnoughQuantity(pantryItem: pantryItem, ingredient: ingredient)
             }
         }
         shoppingItems = missing.map { ingredient in
@@ -247,12 +267,34 @@ final class AppState {
         // Deduplicate
         var seen = Set<String>()
         shoppingItems = shoppingItems.filter { seen.insert($0.name.lowercased()).inserted }
+        await persistShoppingItems()
     }
 
     func toggleShoppingItem(_ item: ShoppingItem) {
         if let index = shoppingItems.firstIndex(where: { $0.id == item.id }) {
             shoppingItems[index].isChecked.toggle()
+            Task { await persistShoppingItems() }
         }
+    }
+
+    func setShoppingItems(_ items: [ShoppingItem]) async {
+        shoppingItems = items
+        await persistShoppingItems()
+    }
+
+    func addShoppingItem(_ item: ShoppingItem) async {
+        shoppingItems.append(item)
+        await persistShoppingItems()
+    }
+
+    func removeShoppingItem(_ item: ShoppingItem) async {
+        shoppingItems.removeAll { $0.id == item.id }
+        await persistShoppingItems()
+    }
+
+    func removeCheckedShoppingItems() async {
+        shoppingItems.removeAll { $0.isChecked }
+        await persistShoppingItems()
     }
 
     // MARK: - Cook Mode
@@ -260,9 +302,7 @@ final class AppState {
         // Deduct ingredients from pantry
         for ingredient in recipe.ingredients {
             if let index = pantryItems.firstIndex(where: {
-                let pName = $0.name.lowercased()
-                let iName = ingredient.name.lowercased()
-                return pName.contains(iName) || iName.contains(pName)
+                IngredientMatcher.namesMatch($0.name, ingredient.name)
             }) {
                 var item = pantryItems[index]
                 let remaining = (item.quantity ?? 0) - ingredient.quantity
@@ -274,5 +314,26 @@ final class AppState {
                 }
             }
         }
+    }
+
+    private func persistShoppingItems() async {
+        do {
+            try await storageService.saveShoppingItems(shoppingItems)
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+    }
+
+    private func mergedDiscoverRecipes(withPersisted persisted: [Recipe]) -> [Recipe] {
+        let seed = recipeRepository.seedRecipes
+        var result: [Recipe] = []
+        var seen = Set<UUID>()
+
+        for recipe in seed + persisted {
+            if seen.insert(recipe.id).inserted {
+                result.append(recipe)
+            }
+        }
+        return result
     }
 }

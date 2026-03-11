@@ -23,33 +23,6 @@ struct AppColors {
     static let accentTeal  = Color(red: 0.06, green: 0.73, blue: 0.70)    // #0FBAB3 — teal pop
     static let accentBlue  = Color(red: 0.24, green: 0.51, blue: 0.96)    // #3D82F5 — vibrant blue
 
-    static func categoryColor(_ category: FoodCategory) -> Color {
-        switch category {
-        case .dairy:          return Color(red: 0.38, green: 0.65, blue: 0.96) // sky blue
-        case .produce:        return primaryGreen
-        case .protein:        return Color(red: 0.94, green: 0.44, blue: 0.44) // salmon
-        case .grains:         return Color(red: 0.96, green: 0.72, blue: 0.26) // golden
-        case .spices:         return warmOrange
-        case .condiments:     return Color(red: 0.62, green: 0.44, blue: 0.87) // lavender
-        case .bakingSupplies: return Color(red: 0.94, green: 0.53, blue: 0.68) // rose
-        case .frozenFoods:    return Color(red: 0.35, green: 0.78, blue: 0.88) // ice blue
-        case .canned:         return Color(red: 0.73, green: 0.56, blue: 0.41) // warm brown
-        case .beverages:      return accentTeal
-        case .snacks:         return Color(red: 0.96, green: 0.80, blue: 0.22) // bright yellow
-        case .oils:           return Color(red: 0.88, green: 0.70, blue: 0.18) // golden oil
-        case .pasta:          return Color(red: 0.48, green: 0.40, blue: 0.82) // soft indigo
-        case .nuts:           return Color(red: 0.78, green: 0.66, blue: 0.48) // warm tan
-        case .other:          return Color(red: 0.62, green: 0.65, blue: 0.70) // cool gray
-        }
-    }
-
-    static func expiryColor(_ status: ExpiryStatus) -> Color {
-        switch status {
-        case .fresh: return primaryGreen
-        case .expiringSoon: return warmOrange
-        case .expired: return softRed
-        }
-    }
 }
 
 // MARK: - Card Style Modifier
@@ -76,17 +49,17 @@ struct ExpiryBadge: View {
     var body: some View {
         HStack(spacing: 4) {
             Circle()
-                .fill(AppColors.expiryColor(status))
+                .fill(status.color)
                 .frame(width: 8, height: 8)
 
             Text(badgeText)
                 .font(.caption2)
                 .fontWeight(.medium)
-                .foregroundStyle(AppColors.expiryColor(status))
+                .foregroundStyle(status.color)
         }
         .padding(.horizontal, 8)
         .padding(.vertical, 4)
-        .background(AppColors.expiryColor(status).opacity(0.12))
+            .background(status.color.opacity(0.12))
         .clipShape(Capsule())
     }
 
@@ -117,7 +90,7 @@ struct CategoryIcon: View {
             .font(.system(size: size * 0.5))
             .foregroundStyle(.white)
             .frame(width: size, height: size)
-            .background(AppColors.categoryColor(category))
+            .background(category.color)
             .clipShape(RoundedRectangle(cornerRadius: size * 0.25))
     }
 }

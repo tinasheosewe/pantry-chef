@@ -3,7 +3,6 @@ import Foundation
 // MARK: - Storage Service Protocol (SOLID: Dependency Inversion)
 /// Defines the contract for data persistence.
 /// Swap between InMemoryStorageService and SupabaseStorageService without changing consumers.
-@MainActor
 protocol StorageServiceProtocol: AnyObject {
     // Pantry
     func fetchPantryItems() async throws -> [PantryItem]

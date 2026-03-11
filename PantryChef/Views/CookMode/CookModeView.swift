@@ -8,7 +8,7 @@ struct CookModeView: View {
     /// Created lazily on first appear — no heavy AV objects at app launch.
     @State private var realtimeService: RealtimeService?
     @State private var viewModel: CookModeViewModel?
-    @State private var syncTimer: Timer?
+    @State private var syncTask: Task<Void, Never>?
     @State private var showEndConfirm = false
 
     private let recipe: Recipe
@@ -40,16 +40,19 @@ struct CookModeView: View {
                 // Auto-start conversational cook mode
                 vm.startConversation()
             }
-            // Poll realtime state at ~15 fps
-            syncTimer = Timer.scheduledTimer(withTimeInterval: 0.066, repeats: true) { _ in
-                Task { @MainActor in
-                    viewModel?.syncRealtimeState()
+            if syncTask == nil {
+                // Poll realtime state at ~15 fps with lifecycle-aware cancellation.
+                syncTask = Task { @MainActor in
+                    while !Task.isCancelled {
+                        viewModel?.syncRealtimeState()
+                        try? await Task.sleep(for: .milliseconds(66))
+                    }
                 }
             }
         }
         .onDisappear {
-            syncTimer?.invalidate()
-            syncTimer = nil
+            syncTask?.cancel()
+            syncTask = nil
             // Auto-background on any dismiss (unless explicitly ending)
             if let vm = viewModel, !vm.isEndingSession, !vm.didContinueInBackground {
                 vm.continueInBackground()

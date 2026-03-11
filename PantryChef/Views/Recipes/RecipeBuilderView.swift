@@ -329,7 +329,7 @@ struct RecipeBuilderView: View {
         // Wait for the recipe
         if let recipe = await recipeFetch {
             tickerTask.cancel()
-            appState.recipeRepository.cacheRecipe(recipe)
+            await appState.cacheDiscoverRecipe(recipe)
             appState.refreshDiscoverRecipes()
             dismiss()
             onGenerated(recipe)

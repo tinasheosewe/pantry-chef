@@ -9,7 +9,7 @@ import UserNotifications
 // from) and deep-link back to cook mode on tap.
 
 @MainActor
-final class NotificationService: NSObject, @unchecked Sendable {
+final class NotificationService: NSObject {
 
     static let shared = NotificationService()
 

@@ -60,9 +60,6 @@ struct PantryView: View {
                 InputMethodButton(icon: "doc.text.viewfinder", title: "Receipt", color: AppColors.warmOrange) {
                     viewModel.showReceiptScanner = true
                 }
-                InputMethodButton(icon: "mic.fill", title: "Voice", color: AppColors.accentTeal) {
-                    viewModel.showVoiceInput = true
-                }
             }
             .padding(.horizontal)
             .padding(.vertical, 8)
@@ -227,6 +224,19 @@ struct AddPantryItemView: View {
 
     let onSave: (PantryItem) -> Void
 
+    private var trimmedName: String {
+        name.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    private var parsedQuantity: Double? {
+        guard !quantity.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return nil }
+        return Double(quantity)
+    }
+
+    private var quantityIsInvalid: Bool {
+        !quantity.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && parsedQuantity == nil
+    }
+
     var body: some View {
         NavigationStack {
             Form {
@@ -249,6 +259,11 @@ struct AddPantryItemView: View {
                                 Text(u.rawValue).tag(u)
                             }
                         }
+                    }
+                    if quantityIsInvalid {
+                        Text("Enter a valid number for quantity")
+                            .font(.caption)
+                            .foregroundStyle(AppColors.softRed)
                     }
                 }
 
@@ -273,9 +288,9 @@ struct AddPantryItemView: View {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Add") {
                         let item = PantryItem(
-                            name: name,
+                            name: trimmedName,
                             category: category,
-                            quantity: Double(quantity),
+                            quantity: parsedQuantity,
                             unit: unit,
                             expiryDate: hasExpiry ? expiryDate : nil,
                             notes: notes.isEmpty ? nil : notes
@@ -283,7 +298,7 @@ struct AddPantryItemView: View {
                         onSave(item)
                         dismiss()
                     }
-                    .disabled(name.isEmpty)
+                    .disabled(trimmedName.isEmpty || quantityIsInvalid)
                 }
             }
         }

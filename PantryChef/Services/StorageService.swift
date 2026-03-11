@@ -1,89 +1,267 @@
 import Foundation
+import SwiftData
 
-/// In-memory storage service conforming to StorageServiceProtocol.
-/// Swap to a Supabase-backed implementation when you're ready to go cloud.
-@MainActor
-final class StorageService: StorageServiceProtocol {
+actor StorageService: StorageServiceProtocol {
+    enum StorageError: LocalizedError {
+        case containerInitializationFailed(Error)
+        case corruptedRecipeRecord(UUID)
+        case recipeEncodingFailed(UUID)
 
-    // MARK: - In-Memory Stores
-    private var pantryStore: [PantryItem] = PantryItem.samples
-    private var recipeStore: [Recipe] = Recipe.samples
-    private var mealPlanStore: [MealPlanEntry] = []
-    private var shoppingStore: [ShoppingItem] = []
+        var errorDescription: String? {
+            switch self {
+            case .containerInitializationFailed(let error):
+                return "Failed to initialize persistent store: \(error.localizedDescription)"
+            case .corruptedRecipeRecord(let id):
+                return "Corrupted recipe record: \(id.uuidString)"
+            case .recipeEncodingFailed(let id):
+                return "Failed to encode recipe for persistence: \(id.uuidString)"
+            }
+        }
+    }
 
-    // MARK: - Pantry Items
+    private let container: ModelContainer
+    private let shouldBootstrap: Bool
+    private var didBootstrap = false
+
+    private lazy var context: ModelContext = {
+        ModelContext(container)
+    }()
+
+    init() {
+        self.init(isStoredInMemoryOnly: false, shouldBootstrap: true)
+    }
+
+    init(isStoredInMemoryOnly: Bool, shouldBootstrap: Bool) {
+        do {
+            let schema = Schema([
+                PantryItemRecord.self,
+                RecipeRecord.self,
+                IngredientRecord.self,
+                RecipeStepRecord.self,
+                StepTaskRecord.self,
+                StepTaskDependencyRecord.self,
+                MealPlanRecord.self,
+                ShoppingItemRecord.self,
+            ])
+            let configuration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: isStoredInMemoryOnly)
+            self.container = try ModelContainer(for: schema, configurations: [configuration])
+            self.shouldBootstrap = shouldBootstrap
+        } catch {
+            preconditionFailure(StorageError.containerInitializationFailed(error).localizedDescription)
+        }
+    }
 
     func fetchPantryItems() async throws -> [PantryItem] {
-        pantryStore.sorted { ($0.expiryDate ?? .distantFuture) < ($1.expiryDate ?? .distantFuture) }
+        try ensureBootstrapIfNeeded()
+        let records = try context.fetch(FetchDescriptor<PantryItemRecord>())
+        return records
+            .map { $0.toDomain() }
+            .sorted { ($0.expiryDate ?? .distantFuture) < ($1.expiryDate ?? .distantFuture) }
     }
 
     func addPantryItem(_ item: PantryItem) async throws -> PantryItem {
-        pantryStore.append(item)
+        try ensureBootstrapIfNeeded()
+        context.insert(PantryItemRecord(from: item))
+        try saveContext()
         return item
     }
 
     func updatePantryItem(_ item: PantryItem) async throws -> PantryItem {
-        if let idx = pantryStore.firstIndex(where: { $0.id == item.id }) {
-            pantryStore[idx] = item
+        try ensureBootstrapIfNeeded()
+        if let record = try fetchPantryRecord(id: item.id) {
+            record.update(from: item)
+            try saveContext()
         }
         return item
     }
 
     func deletePantryItem(_ item: PantryItem) async throws {
-        pantryStore.removeAll { $0.id == item.id }
+        try ensureBootstrapIfNeeded()
+        if let record = try fetchPantryRecord(id: item.id) {
+            context.delete(record)
+            try saveContext()
+        }
     }
 
-    // MARK: - Recipes
-
     func fetchRecipes() async throws -> [Recipe] {
-        recipeStore.sorted { $0.dateAdded > $1.dateAdded }
+        try ensureBootstrapIfNeeded()
+        let records = try context.fetch(FetchDescriptor<RecipeRecord>())
+        var recipes: [Recipe] = []
+        recipes.reserveCapacity(records.count)
+
+        for record in records {
+            do {
+                recipes.append(try record.toDomain())
+            } catch {
+                throw StorageError.corruptedRecipeRecord(record.id)
+            }
+        }
+
+        return recipes.sorted { $0.dateAdded > $1.dateAdded }
     }
 
     func addRecipe(_ recipe: Recipe) async throws -> Recipe {
-        recipeStore.append(recipe)
+        try ensureBootstrapIfNeeded()
+        do {
+            context.insert(try RecipeRecord(from: recipe))
+        } catch {
+            throw StorageError.recipeEncodingFailed(recipe.id)
+        }
+        try saveContext()
         return recipe
     }
 
     func updateRecipe(_ recipe: Recipe) async throws -> Recipe {
-        if let idx = recipeStore.firstIndex(where: { $0.id == recipe.id }) {
-            recipeStore[idx] = recipe
+        try ensureBootstrapIfNeeded()
+        if let record = try fetchRecipeRecord(id: recipe.id) {
+            do {
+                try record.update(from: recipe)
+            } catch {
+                throw StorageError.recipeEncodingFailed(recipe.id)
+            }
+        } else {
+            do {
+                context.insert(try RecipeRecord(from: recipe))
+            } catch {
+                throw StorageError.recipeEncodingFailed(recipe.id)
+            }
         }
+        try saveContext()
         return recipe
     }
 
     func deleteRecipe(_ recipe: Recipe) async throws {
-        recipeStore.removeAll { $0.id == recipe.id }
+        try ensureBootstrapIfNeeded()
+        if let record = try fetchRecipeRecord(id: recipe.id) {
+            context.delete(record)
+            try saveContext()
+        }
     }
 
-    // MARK: - Meal Plan
-
     func fetchMealPlan() async throws -> [MealPlanEntry] {
-        mealPlanStore.sorted { $0.date < $1.date }
+        try ensureBootstrapIfNeeded()
+        let records = try context.fetch(FetchDescriptor<MealPlanRecord>())
+        let recipeRecords = try context.fetch(FetchDescriptor<RecipeRecord>())
+
+        var recipeById: [UUID: Recipe] = [:]
+        recipeById.reserveCapacity(recipeRecords.count)
+
+        for record in recipeRecords {
+            do {
+                recipeById[record.id] = try record.toDomain()
+            } catch {
+                throw StorageError.corruptedRecipeRecord(record.id)
+            }
+        }
+
+        return records
+            .map { record in
+                record.toDomain(recipe: record.recipeId.flatMap { recipeById[$0] })
+            }
+            .sorted { $0.date < $1.date }
     }
 
     func addMealPlanEntry(_ entry: MealPlanEntry) async throws -> MealPlanEntry {
-        mealPlanStore.append(entry)
+        try ensureBootstrapIfNeeded()
+        context.insert(MealPlanRecord(from: entry))
+        try saveContext()
         return entry
     }
 
     func updateMealPlanEntry(_ entry: MealPlanEntry) async throws -> MealPlanEntry {
-        if let idx = mealPlanStore.firstIndex(where: { $0.id == entry.id }) {
-            mealPlanStore[idx] = entry
+        try ensureBootstrapIfNeeded()
+        if let record = try fetchMealPlanRecord(id: entry.id) {
+            record.update(from: entry)
+            try saveContext()
         }
         return entry
     }
 
     func deleteMealPlanEntry(_ entry: MealPlanEntry) async throws {
-        mealPlanStore.removeAll { $0.id == entry.id }
+        try ensureBootstrapIfNeeded()
+        if let record = try fetchMealPlanRecord(id: entry.id) {
+            context.delete(record)
+            try saveContext()
+        }
     }
 
-    // MARK: - Shopping Items
-
     func fetchShoppingItems() async throws -> [ShoppingItem] {
-        shoppingStore.sorted { $0.category.rawValue < $1.category.rawValue }
+        try ensureBootstrapIfNeeded()
+        let records = try context.fetch(FetchDescriptor<ShoppingItemRecord>())
+        return records
+            .map { $0.toDomain() }
+            .sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
     }
 
     func saveShoppingItems(_ items: [ShoppingItem]) async throws {
-        shoppingStore = items
+        try ensureBootstrapIfNeeded()
+        let existing = try context.fetch(FetchDescriptor<ShoppingItemRecord>())
+        let existingById = Dictionary(uniqueKeysWithValues: existing.map { ($0.id, $0) })
+        let incomingIds = Set(items.map { $0.id })
+
+        for item in items {
+            if let record = existingById[item.id] {
+                record.update(from: item)
+            } else {
+                context.insert(ShoppingItemRecord(from: item))
+            }
+        }
+
+        for record in existing where !incomingIds.contains(record.id) {
+            context.delete(record)
+        }
+
+        try saveContext()
+    }
+
+    private func ensureBootstrapIfNeeded() throws {
+        guard shouldBootstrap, !didBootstrap else { return }
+        try bootstrapIfNeeded()
+        didBootstrap = true
+    }
+
+    private func bootstrapIfNeeded() throws {
+        let pantryCount = try context.fetchCount(FetchDescriptor<PantryItemRecord>())
+        let recipeCount = try context.fetchCount(FetchDescriptor<RecipeRecord>())
+
+        if pantryCount > 0 || recipeCount > 0 {
+            return
+        }
+
+        for item in PantryItem.samples {
+            context.insert(PantryItemRecord(from: item))
+        }
+
+        for recipe in Recipe.samples {
+            context.insert(try RecipeRecord(from: recipe))
+        }
+
+        if context.hasChanges {
+            try context.save()
+        }
+    }
+
+    private func fetchPantryRecord(id: UUID) throws -> PantryItemRecord? {
+        var descriptor = FetchDescriptor<PantryItemRecord>(predicate: #Predicate { $0.id == id })
+        descriptor.fetchLimit = 1
+        return try context.fetch(descriptor).first
+    }
+
+    private func fetchRecipeRecord(id: UUID) throws -> RecipeRecord? {
+        var descriptor = FetchDescriptor<RecipeRecord>(predicate: #Predicate { $0.id == id })
+        descriptor.fetchLimit = 1
+        return try context.fetch(descriptor).first
+    }
+
+    private func fetchMealPlanRecord(id: UUID) throws -> MealPlanRecord? {
+        var descriptor = FetchDescriptor<MealPlanRecord>(predicate: #Predicate { $0.id == id })
+        descriptor.fetchLimit = 1
+        return try context.fetch(descriptor).first
+    }
+
+    private func saveContext() throws {
+        if context.hasChanges {
+            try context.save()
+        }
     }
 }

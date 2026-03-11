@@ -587,6 +587,58 @@ final class RecipeModelTests: XCTestCase {
     }
 }
 
+// MARK: - Ingredient Matching Tests
+
+final class IngredientMatcherTests: XCTestCase {
+    func testNamesMatchRecognizesSynonyms() {
+        XCTAssertTrue(IngredientMatcher.namesMatch("scallion", "green onion"))
+        XCTAssertTrue(IngredientMatcher.namesMatch("courgette", "zucchini"))
+    }
+
+    func testNamesMatchAvoidsUnrelatedIngredients() {
+        XCTAssertFalse(IngredientMatcher.namesMatch("rice", "pasta"))
+        XCTAssertFalse(IngredientMatcher.namesMatch("olive oil", "apple cider vinegar"))
+    }
+
+    func testHasEnoughQuantityRespectsConvertibleUnits() {
+        let pantryItem = PantryItem(name: "milk", category: .dairy, quantity: 1, unit: .liter)
+        let ingredient = Ingredient(name: "milk", quantity: 500, unit: .milliliter)
+        XCTAssertTrue(IngredientMatcher.hasEnoughQuantity(pantryItem: pantryItem, ingredient: ingredient))
+    }
+}
+
+// MARK: - Shopping Generation Tests
+
+@MainActor
+final class ShoppingGenerationTests: XCTestCase {
+    func testGenerateShoppingListFromMealPlanUsesMatcherAndQuantity() async {
+        let (appState, storage, _) = makeTestAppState()
+
+        let pantryMilk = PantryItem(name: "whole milk", category: .dairy, quantity: 1, unit: .liter)
+        storage.pantryStore = [pantryMilk]
+
+        let recipe = Recipe(
+            title: "Pancakes",
+            ingredients: [
+                Ingredient(name: "milk", quantity: 250, unit: .milliliter, category: .dairy),
+                Ingredient(name: "all purpose flour", quantity: 200, unit: .gram, category: .grains)
+            ],
+            steps: [RecipeStep(stepNumber: 1, instruction: "Mix ingredients")],
+            servings: 2,
+            source: .user
+        )
+
+        let entry = MealPlanEntry(date: Date(), mealType: .breakfast, recipe: recipe)
+        storage.mealPlanStore = [entry]
+
+        await appState.loadAllData()
+        await appState.generateShoppingListFromMealPlan()
+
+        XCTAssertEqual(appState.shoppingItems.count, 1)
+        XCTAssertEqual(appState.shoppingItems.first?.name, "all purpose flour")
+    }
+}
+
 // MARK: - Ingredient Model Tests
 
 final class IngredientModelTests: XCTestCase {
@@ -1795,7 +1847,7 @@ final class ShoppingViewModelTests: XCTestCase {
 
     // MARK: - Remove Checked
 
-    func testRemoveCheckedItems() {
+    func testRemoveCheckedItems() async {
         let (vm, appState) = makeSUT()
         appState.shoppingItems = [
             ShoppingItem(name: "A", isChecked: true),
@@ -1803,23 +1855,26 @@ final class ShoppingViewModelTests: XCTestCase {
             ShoppingItem(name: "C", isChecked: true),
         ]
         vm.removeCheckedItems()
+        await Task.yield()
         XCTAssertEqual(appState.shoppingItems.count, 1)
         XCTAssertEqual(appState.shoppingItems[0].name, "B")
     }
 
     // MARK: - Add & Remove
 
-    func testAddItem() {
+    func testAddItem() async {
         let (vm, appState) = makeSUT()
         vm.addItem(ShoppingItem(name: "NewItem"))
+        await Task.yield()
         XCTAssertEqual(appState.shoppingItems.count, 1)
     }
 
-    func testRemoveItem() {
+    func testRemoveItem() async {
         let (vm, appState) = makeSUT()
         let item = ShoppingItem(name: "Remove")
         appState.shoppingItems = [item]
         vm.removeItem(item)
+        await Task.yield()
         XCTAssertTrue(appState.shoppingItems.isEmpty)
     }
 

@@ -42,15 +42,15 @@ final class ShoppingViewModel {
     }
 
     func removeCheckedItems() {
-        appState.shoppingItems.removeAll { $0.isChecked }
+        Task { await appState.removeCheckedShoppingItems() }
     }
 
     func addItem(_ item: ShoppingItem) {
-        appState.shoppingItems.append(item)
+        Task { await appState.addShoppingItem(item) }
     }
 
     func removeItem(_ item: ShoppingItem) {
-        appState.shoppingItems.removeAll { $0.id == item.id }
+        Task { await appState.removeShoppingItem(item) }
     }
 
     func addCheckedToPantry() async {
@@ -64,6 +64,6 @@ final class ShoppingViewModel {
             )
             await appState.addPantryItem(pantryItem)
         }
-        removeCheckedItems()
+        await appState.removeCheckedShoppingItems()
     }
 }

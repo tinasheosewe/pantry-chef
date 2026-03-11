@@ -26,7 +26,7 @@ final class BarcodeScannerService: NSObject, ObservableObject {
 
             // Infer category from Open Food Facts categories
             let categories = (product["categories"] as? String)?.lowercased() ?? ""
-            let category = inferCategory(from: categories)
+            let category = FoodCategory.infer(from: categories)
 
             return BarcodeLookupResult(
                 barcode: barcode,
@@ -41,38 +41,6 @@ final class BarcodeScannerService: NSObject, ObservableObject {
         }
     }
 
-    private func inferCategory(from categories: String) -> FoodCategory {
-        if categories.contains("dairy") || categories.contains("milk") || categories.contains("cheese") || categories.contains("yogurt") {
-            return .dairy
-        } else if categories.contains("meat") || categories.contains("chicken") || categories.contains("fish") || categories.contains("protein") {
-            return .protein
-        } else if categories.contains("fruit") || categories.contains("vegetable") || categories.contains("produce") {
-            return .produce
-        } else if categories.contains("grain") || categories.contains("cereal") || categories.contains("bread") || categories.contains("rice") {
-            return .grains
-        } else if categories.contains("spice") || categories.contains("herb") || categories.contains("seasoning") {
-            return .spices
-        } else if categories.contains("sauce") || categories.contains("condiment") || categories.contains("ketchup") || categories.contains("mustard") {
-            return .condiments
-        } else if categories.contains("oil") || categories.contains("butter") || categories.contains("margarine") {
-            return .oils
-        } else if categories.contains("frozen") {
-            return .frozenFoods
-        } else if categories.contains("canned") || categories.contains("preserved") {
-            return .canned
-        } else if categories.contains("beverage") || categories.contains("drink") || categories.contains("juice") {
-            return .beverages
-        } else if categories.contains("snack") || categories.contains("chip") || categories.contains("cracker") {
-            return .snacks
-        } else if categories.contains("pasta") || categories.contains("noodle") {
-            return .pasta
-        } else if categories.contains("nut") || categories.contains("seed") {
-            return .nuts
-        } else if categories.contains("baking") || categories.contains("flour") || categories.contains("sugar") {
-            return .bakingSupplies
-        }
-        return .other
-    }
 }
 
 // MARK: - Receipt Scanner (Vision OCR)

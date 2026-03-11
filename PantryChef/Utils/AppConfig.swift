@@ -3,13 +3,29 @@ import Foundation
 // MARK: - App Configuration
 enum AppConfig {
     // OpenAI
-    static let openAIAPIKey = "REDACTED_OPENAI_API_KEY"
+    static let openAIAPIKey = requiredConfigValue("OPENAI_API_KEY")
 
     // Spoonacular
-    static let spoonacularAPIKey = "REDACTED_SPOONACULAR_API_KEY" // Add your key at https://spoonacular.com/food-api
+    static let spoonacularAPIKey = requiredConfigValue("SPOONACULAR_API_KEY")
 
     // App Settings
     static let expiryWarningDays = 3
     static let maxRecipeSuggestions = 5
     static let defaultServings = 4
+
+    private static func requiredConfigValue(_ key: String) -> String {
+        if let env = ProcessInfo.processInfo.environment[key], !env.isEmpty {
+            return env
+        }
+
+        if let plist = Bundle.main.object(forInfoDictionaryKey: key) as? String {
+            let trimmed = plist.trimmingCharacters(in: .whitespacesAndNewlines)
+            if !trimmed.isEmpty && !trimmed.hasPrefix("$(") {
+                return trimmed
+            }
+        }
+
+        print("[AppConfig] Missing required config value: \(key)")
+        return ""
+    }
 }

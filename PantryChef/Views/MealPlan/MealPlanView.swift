@@ -37,7 +37,7 @@ struct MealPlanView: View {
             }
             .sheet(isPresented: $viewModel.showRecipePicker) {
                 RecipePickerView(
-                    recipes: viewModel.appState.recipes,
+                    recipes: viewModel.appState.allRecipes,
                     onSelect: { recipe in
                         if let slot = viewModel.selectedSlot {
                             Task { await viewModel.assignRecipe(recipe, to: slot) }
@@ -238,11 +238,9 @@ struct RecipePickerView: View {
 
                                 HStack {
                                     DifficultyBadge(difficulty: recipe.difficulty)
-                                    if let time = recipe.totalTimeDisplay as String? {
-                                        Text(time)
-                                            .font(.caption2)
-                                            .foregroundStyle(AppColors.subtleText)
-                                    }
+                                    Text(recipe.totalTimeDisplay)
+                                        .font(.caption2)
+                                        .foregroundStyle(AppColors.subtleText)
                                 }
                             }
                         }

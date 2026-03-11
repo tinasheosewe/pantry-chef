@@ -13,6 +13,8 @@ struct RecipeEditorView: View {
     let onSave: (Recipe) -> Void
     let onSaveAsNew: ((Recipe) -> Void)?
 
+    private let maxServings = 100
+
     private enum Field: Hashable {
         case title
         case description
@@ -119,11 +121,14 @@ struct RecipeEditorView: View {
                         .fontWeight(.semibold)
                         .frame(width: 30)
 
-                    Button { recipe.servings += 1 } label: {
+                    Button {
+                        if recipe.servings < maxServings { recipe.servings += 1 }
+                    } label: {
                         Image(systemName: "plus.circle.fill")
                             .font(.title3)
-                            .foregroundStyle(AppColors.primaryGreen)
+                            .foregroundStyle(recipe.servings < maxServings ? AppColors.primaryGreen : AppColors.mediumGray)
                     }
+                    .disabled(recipe.servings >= maxServings)
                 }
             }
 
@@ -635,10 +640,10 @@ struct RecipeEditorView: View {
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 14)
                     .foregroundStyle(.white)
-                    .background(recipe.title.trimmingCharacters(in: .whitespaces).isEmpty ? AppColors.mediumGray : AppColors.primaryGreen)
+                        .background(canSave ? AppColors.primaryGreen : AppColors.mediumGray)
                     .clipShape(RoundedRectangle(cornerRadius: 12))
             }
-            .disabled(recipe.title.trimmingCharacters(in: .whitespaces).isEmpty)
+                    .disabled(!canSave)
 
             if !isNewRecipe, let onSaveAsNew {
                 Button {
@@ -675,5 +680,12 @@ struct RecipeEditorView: View {
         if let n = recipe.nutrition, n.calories == 0 && n.protein == 0 && n.carbohydrates == 0 && n.fat == 0 {
             recipe.nutrition = nil
         }
+    }
+
+    private var canSave: Bool {
+        let hasTitle = !recipe.title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+        let hasIngredients = recipe.ingredients.contains { !$0.name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
+        let hasSteps = recipe.steps.contains { !$0.instruction.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
+        return hasTitle && hasIngredients && hasSteps
     }
 }

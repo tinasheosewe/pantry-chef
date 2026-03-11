@@ -259,7 +259,7 @@ final class RecipeViewModel {
             currentSearchOffset = recipes.count
 
             for recipe in recipes {
-                appState.recipeRepository.cacheRecipe(recipe)
+                await appState.cacheDiscoverRecipe(recipe)
             }
             appState.refreshDiscoverRecipes()
         } catch {
@@ -292,7 +292,7 @@ final class RecipeViewModel {
             currentSearchOffset += recipes.count
 
             for recipe in recipes {
-                appState.recipeRepository.cacheRecipe(recipe)
+                await appState.cacheDiscoverRecipe(recipe)
             }
             appState.refreshDiscoverRecipes()
         } catch {

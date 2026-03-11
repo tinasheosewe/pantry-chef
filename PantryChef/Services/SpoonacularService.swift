@@ -326,46 +326,11 @@ actor SpoonacularService {
     }
 
     private func parseSpoonUnit(_ str: String?) -> MeasurementUnit? {
-        guard let s = str?.lowercased().trimmingCharacters(in: .whitespaces), !s.isEmpty else { return nil }
-        switch s {
-        case "tsp", "teaspoon", "teaspoons": return .teaspoon
-        case "tbsp", "tbs", "tablespoon", "tablespoons": return .tablespoon
-        case "cup", "cups", "c": return .cup
-        case "ml", "milliliter", "milliliters": return .milliliter
-        case "l", "liter", "liters": return .liter
-        case "g", "gram", "grams": return .gram
-        case "kg", "kilogram", "kilograms": return .kilogram
-        case "oz", "ounce", "ounces": return .ounce
-        case "lb", "lbs", "pound", "pounds": return .pound
-        case "piece", "pieces", "pcs": return .piece
-        case "whole": return .whole
-        case "slice", "slices": return .slice
-        case "clove", "cloves": return .clove
-        case "pinch": return .pinch
-        case "bunch": return .bunch
-        case "can", "cans": return .can
-        case "splash", "dash": return .splash
-        case "": return nil
-        default: return nil
-        }
+        MeasurementUnit.parse(str)
     }
 
     private func mapAisle(_ aisle: String?) -> FoodCategory {
-        guard let a = aisle?.lowercased() else { return .other }
-        if a.contains("spice") || a.contains("seasoning") { return .spices }
-        if a.contains("produce") || a.contains("vegetable") || a.contains("fruit") { return .produce }
-        if a.contains("dairy") || a.contains("cheese") || a.contains("milk") { return .dairy }
-        if a.contains("meat") || a.contains("seafood") || a.contains("poultry") { return .protein }
-        if a.contains("bread") || a.contains("bakery") || a.contains("cereal") { return .grains }
-        if a.contains("pasta") || a.contains("noodle") { return .pasta }
-        if a.contains("oil") || a.contains("vinegar") { return .oils }
-        if a.contains("condiment") || a.contains("sauce") { return .condiments }
-        if a.contains("canned") { return .canned }
-        if a.contains("frozen") { return .frozenFoods }
-        if a.contains("nut") || a.contains("seed") { return .nuts }
-        if a.contains("baking") { return .bakingSupplies }
-        if a.contains("beverage") { return .beverages }
-        return .other
+        FoodCategory.infer(from: aisle)
     }
 
     private func mapMealType(_ type: MealType) -> String {
@@ -439,15 +404,7 @@ enum SpoonacularError: LocalizedError {
 
 private extension String {
     func strippingHTML() -> String {
-        guard let data = self.data(using: .utf8) else { return self }
-        let options: [NSAttributedString.DocumentReadingOptionKey: Any] = [
-            .documentType: NSAttributedString.DocumentType.html,
-            .characterEncoding: String.Encoding.utf8.rawValue
-        ]
-        if let attr = try? NSAttributedString(data: data, options: options, documentAttributes: nil) {
-            return attr.string
-        }
-        // Fallback: strip tags with regex
+        // Use regex-only stripping to avoid UIKit/WebKit HTML parsing on background threads.
         return self.replacingOccurrences(of: "<[^>]+>", with: "", options: .regularExpression)
     }
 }

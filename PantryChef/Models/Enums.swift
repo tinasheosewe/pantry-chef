@@ -98,6 +98,64 @@ enum MeasurementUnit: String, Codable, CaseIterable, Identifiable {
         default: return false
         }
     }
+
+    static func parse(_ string: String?) -> MeasurementUnit? {
+        guard let raw = string?.lowercased().trimmingCharacters(in: .whitespacesAndNewlines), !raw.isEmpty else {
+            return nil
+        }
+        switch raw {
+        case "tsp", "teaspoon", "teaspoons": return .teaspoon
+        case "tbsp", "tbs", "tablespoon", "tablespoons": return .tablespoon
+        case "cup", "cups", "c": return .cup
+        case "fl oz", "fluid ounce", "fluid ounces": return .fluidOunce
+        case "ml", "milliliter", "milliliters": return .milliliter
+        case "l", "liter", "liters": return .liter
+        case "g", "gram", "grams": return .gram
+        case "kg", "kilogram", "kilograms": return .kilogram
+        case "oz", "ounce", "ounces": return .ounce
+        case "lb", "lbs", "pound", "pounds": return .pound
+        case "piece", "pieces", "pcs": return .piece
+        case "whole": return .whole
+        case "slice", "slices": return .slice
+        case "clove", "cloves": return .clove
+        case "bunch": return .bunch
+        case "can", "cans": return .can
+        case "pkg", "package", "packages": return .package
+        case "pinch": return .pinch
+        case "splash", "dash": return .splash
+        case "to taste": return .toTaste
+        default: return MeasurementUnit(rawValue: raw)
+        }
+    }
+}
+
+extension FoodCategory {
+    static func infer(from string: String?) -> FoodCategory {
+        guard let s = string?.lowercased().trimmingCharacters(in: .whitespacesAndNewlines), !s.isEmpty else {
+            return .other
+        }
+        if let direct = FoodCategory.allCases.first(where: { $0.rawValue.lowercased() == s }) {
+            return direct
+        }
+
+        switch s {
+        case let x where x.contains("dairy") || x.contains("cheese") || x.contains("milk"): return .dairy
+        case let x where x.contains("produce") || x.contains("vegetable") || x.contains("fruit"): return .produce
+        case let x where x.contains("protein") || x.contains("meat") || x.contains("seafood") || x.contains("poultry"): return .protein
+        case let x where x.contains("grain") || x.contains("cereal") || x.contains("bread") || x.contains("bakery"): return .grains
+        case let x where x.contains("spice") || x.contains("herb") || x.contains("seasoning"): return .spices
+        case let x where x.contains("condiment") || x.contains("sauce"): return .condiments
+        case let x where x.contains("baking"): return .bakingSupplies
+        case let x where x.contains("frozen"): return .frozenFoods
+        case let x where x.contains("canned") || x.contains("jarred"): return .canned
+        case let x where x.contains("beverage"): return .beverages
+        case let x where x.contains("snack"): return .snacks
+        case let x where x.contains("oil") || x.contains("fat") || x.contains("vinegar"): return .oils
+        case let x where x.contains("pasta") || x.contains("noodle"): return .pasta
+        case let x where x.contains("nut") || x.contains("seed"): return .nuts
+        default: return .other
+        }
+    }
 }
 
 // MARK: - Dietary Tag

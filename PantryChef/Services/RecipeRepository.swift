@@ -190,8 +190,8 @@ final class RecipeRepository {
                     Ingredient(
                         name: ing.name,
                         quantity: ing.quantity,
-                        unit: parseMeasurementUnit(ing.unit),
-                        category: parseFoodCategory(ing.category),
+                        unit: MeasurementUnit.parse(ing.unit),
+                        category: FoodCategory.infer(from: ing.category),
                         isOptional: ing.isOptional ?? false
                     )
                 },
@@ -242,54 +242,4 @@ final class RecipeRepository {
         try? data.write(to: cacheURL, options: .atomic)
     }
 
-    // MARK: - Parsing Helpers
-
-    private func parseMeasurementUnit(_ string: String?) -> MeasurementUnit? {
-        guard let s = string else { return nil }
-        // Try direct rawValue match
-        if let unit = MeasurementUnit(rawValue: s) { return unit }
-        // Try common aliases
-        switch s.lowercased() {
-        case "tsp", "teaspoon": return .teaspoon
-        case "tbsp", "tablespoon": return .tablespoon
-        case "cup", "cups": return .cup
-        case "ml", "milliliter": return .milliliter
-        case "l", "liter": return .liter
-        case "g", "gram", "grams": return .gram
-        case "kg", "kilogram": return .kilogram
-        case "oz", "ounce": return .ounce
-        case "lb", "pound": return .pound
-        case "piece", "pieces", "pcs": return .piece
-        case "whole": return .whole
-        case "slice", "slices": return .slice
-        case "clove", "cloves": return .clove
-        case "bunch": return .bunch
-        case "can", "cans": return .can
-        case "pkg", "package": return .package
-        case "pinch": return .pinch
-        case "splash": return .splash
-        default: return nil
-        }
-    }
-
-    private func parseFoodCategory(_ string: String?) -> FoodCategory {
-        guard let s = string else { return .other }
-        if let cat = FoodCategory(rawValue: s) { return cat }
-        // Fuzzy match
-        switch s.lowercased() {
-        case let x where x.contains("dairy"): return .dairy
-        case let x where x.contains("produce"), let x where x.contains("vegetable"), let x where x.contains("fruit"): return .produce
-        case let x where x.contains("protein"), let x where x.contains("meat"): return .protein
-        case let x where x.contains("grain"), let x where x.contains("cereal"): return .grains
-        case let x where x.contains("spice"), let x where x.contains("herb"): return .spices
-        case let x where x.contains("condiment"), let x where x.contains("sauce"): return .condiments
-        case let x where x.contains("baking"): return .bakingSupplies
-        case let x where x.contains("frozen"): return .frozenFoods
-        case let x where x.contains("canned"), let x where x.contains("jarred"): return .canned
-        case let x where x.contains("oil"), let x where x.contains("fat"): return .oils
-        case let x where x.contains("pasta"), let x where x.contains("noodle"): return .pasta
-        case let x where x.contains("nut"), let x where x.contains("seed"): return .nuts
-        default: return .other
-        }
-    }
 }

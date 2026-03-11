@@ -26,6 +26,10 @@
 	<string>Pantry Chef needs photo library access to import recipe photos</string>
 	<key>NSSpeechRecognitionUsageDescription</key>
 	<string>Pantry Chef uses speech recognition for voice commands in cook mode</string>
+	<key>OPENAI_API_KEY</key>
+	<string>$(OPENAI_API_KEY)</string>
+	<key>SPOONACULAR_API_KEY</key>
+	<string>$(SPOONACULAR_API_KEY)</string>
 	<key>UILaunchScreen</key>
 	<dict>
 		<key>BackgroundColor</key>
