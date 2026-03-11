@@ -36,7 +36,7 @@ final class BarcodeScannerService: NSObject, ObservableObject {
                 imageURL: imageURL
             )
         } catch {
-            print("Barcode lookup error: \(error.localizedDescription)")
+            AppLog.error("Barcode lookup error: \(error.localizedDescription)")
             return nil
         }
     }
@@ -92,7 +92,7 @@ final class ReceiptScannerService: ObservableObject {
             do {
                 try handler.perform([request])
             } catch {
-                print("[ReceiptScannerService] OCR failed: \(error)")
+                AppLog.error("[ReceiptScannerService] OCR failed: \(error)")
                 continuation.resume(returning: [])
             }
         }
@@ -128,7 +128,7 @@ final class RecipePhotoScannerService: ObservableObject {
             do {
                 try handler.perform([request])
             } catch {
-                print("[RecipePhotoScannerService] OCR failed: \(error)")
+                AppLog.error("[RecipePhotoScannerService] OCR failed: \(error)")
                 continuation.resume(returning: nil)
             }
         }

@@ -37,10 +37,14 @@ final class NotificationService: NSObject {
         registerCategories()
         do {
             let granted = try await center.requestAuthorization(options: [.alert, .sound, .badge])
-            print("[NotificationService] Permission \(granted ? "granted" : "denied")")
+            if granted {
+                AppLog.info("[NotificationService] Permission granted")
+            } else {
+                AppLog.warn("[NotificationService] Permission denied")
+            }
             return granted
         } catch {
-            print("[NotificationService] ❌ Permission error: \(error)")
+            AppLog.error("[NotificationService] ❌ Permission error: \(error)")
             return false
         }
     }
@@ -98,7 +102,7 @@ final class NotificationService: NSObject {
         delaySeconds: TimeInterval
     ) {
         guard delaySeconds >= 0 else {
-            print("[NotificationService] Skipping step \(stepIndex + 1) — delay < 0")
+            AppLog.warn("[NotificationService] Skipping step \(stepIndex + 1) — delay < 0")
             return
         }
 
@@ -130,11 +134,11 @@ final class NotificationService: NSObject {
 
         center.add(request) { error in
             if let error {
-                print("[NotificationService] ❌ Schedule failed for step \(stepIndex + 1): \(error)")
+                AppLog.error("[NotificationService] ❌ Schedule failed for step \(stepIndex + 1): \(error)")
             } else {
                 let minutes = Int(delaySeconds) / 60
                 let seconds = Int(delaySeconds) % 60
-                print("[NotificationService] Scheduled step \(stepIndex + 1) in \(minutes)m \(seconds)s")
+                AppLog.info("[NotificationService] Scheduled step \(stepIndex + 1) in \(minutes)m \(seconds)s")
             }
         }
     }
@@ -159,7 +163,7 @@ final class NotificationService: NSObject {
         let request = UNNotificationRequest(identifier: identifier, content: content, trigger: trigger)
         center.add(request) { error in
             if let error {
-                print("[NotificationService] ❌ Failed to schedule session expiry: \(error)")
+                AppLog.error("[NotificationService] ❌ Failed to schedule session expiry: \(error)")
             }
         }
     }
@@ -174,7 +178,7 @@ final class NotificationService: NSObject {
                 .map(\.identifier)
                 .filter { $0.hasPrefix(prefix) }
             UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: ids)
-            print("[NotificationService] Cancelled \(ids.count) notifications for recipe \(recipeId.prefix(8))…")
+            AppLog.info("[NotificationService] Cancelled \(ids.count) notifications for recipe \(recipeId.prefix(8))…")
         }
     }
 
@@ -186,7 +190,7 @@ final class NotificationService: NSObject {
                 .map(\.identifier)
                 .filter { $0.hasPrefix(identifierPrefix) }
             UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: ids)
-            print("[NotificationService] Cancelled all \(ids.count) cook-mode notifications")
+            AppLog.info("[NotificationService] Cancelled all \(ids.count) cook-mode notifications")
         }
     }
 
@@ -214,7 +218,7 @@ extension NotificationService: UNUserNotificationCenterDelegate {
         }
         let stepIndex = userInfo["stepIndex"] as? Int ?? 0
 
-        print("[NotificationService] Action: \(response.actionIdentifier) for step \(stepIndex + 1)")
+        AppLog.info("[NotificationService] Action: \(response.actionIdentifier) for step \(stepIndex + 1)")
 
         // Post a notification so the app can handle deep-linking
         NotificationCenter.default.post(

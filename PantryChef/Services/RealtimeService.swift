@@ -1,6 +1,5 @@
 import AVFoundation
 import Foundation
-import OSLog
 import RealtimeAPI
 
 // MARK: - Realtime API Service (SDK-backed)
@@ -44,7 +43,6 @@ final class RealtimeService: RealtimeServiceProtocol {
 
     private let apiKey: String
     private let urlSession: URLSession
-    private let logger = Logger(subsystem: "PantryChef", category: "RealtimeService")
     private var conversation: Conversation?
 
     /// Ephemeral key fetched from OpenAI REST API for WebRTC auth.
@@ -88,18 +86,18 @@ final class RealtimeService: RealtimeServiceProtocol {
                 options: [.defaultToSpeaker, .allowBluetoothA2DP]
             )
             try session.setActive(true)
-            logger.debug("Audio session configured for WebRTC")
+            AppLog.debug("Audio session configured for WebRTC")
         } catch {
-            logger.warning("Audio session setup warning: \(error.localizedDescription)")
+            AppLog.warn("Audio session setup warning: \(error.localizedDescription)")
         }
 
         do {
             ephemeralKey = try await fetchEphemeralKey()
             statusMessage = "Ready"
-            logger.info("Ephemeral key obtained")
+            AppLog.info("Ephemeral key obtained")
         } catch {
             errorMessage = "Audio setup failed: \(error.localizedDescription)"
-            logger.error("Ephemeral key fetch failed: \(error.localizedDescription)")
+            AppLog.error("Ephemeral key fetch failed: \(error.localizedDescription)")
         }
     }
 
@@ -142,7 +140,7 @@ final class RealtimeService: RealtimeServiceProtocol {
             guard let self, let conv = self.conversation else { return }
             do {
                 try await conv.connect(ephemeralKey: key, model: .custom(realtimeModel))
-                logger.info("Connected via WebRTC")
+                AppLog.info("Connected via WebRTC")
                 self.isConnected = true
                 self.statusMessage = "Connected"
 
@@ -162,16 +160,16 @@ final class RealtimeService: RealtimeServiceProtocol {
                     waited += 1
                 }
                 if waited >= 50 {
-                    logger.warning("Session update timed out, sending greeting anyway")
+                    AppLog.warn("Session update timed out, sending greeting anyway")
                 } else {
-                    logger.debug("Session updated after \(waited * 100)ms")
+                    AppLog.debug("Session updated after \(waited * 100)ms")
                 }
 
                 // Send any message that was queued before connection completed
                 if let msg = self.pendingMessage {
                     self.pendingMessage = nil
                     try conv.send(from: .user, text: msg)
-                    logger.debug("Sent queued message")
+                    AppLog.debug("Sent queued message")
                 }
 
                 self.startSyncLoop()
@@ -179,7 +177,7 @@ final class RealtimeService: RealtimeServiceProtocol {
             } catch {
                 self.errorMessage = "Connection failed: \(error.localizedDescription)"
                 self.statusMessage = "Disconnected"
-                logger.error("WebRTC connect failed: \(error.localizedDescription)")
+                AppLog.error("WebRTC connect failed: \(error.localizedDescription)")
             }
         }
     }
@@ -187,7 +185,7 @@ final class RealtimeService: RealtimeServiceProtocol {
     // MARK: - Disconnect
 
     func disconnect() {
-        logger.debug("disconnect()")
+        AppLog.debug("disconnect()")
 
         // Mute mic and stop audio session BEFORE tearing down the
         // conversation. The SDK's Conversation has an internal retain
@@ -199,9 +197,9 @@ final class RealtimeService: RealtimeServiceProtocol {
 
         do {
             try AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
-            logger.debug("Audio session deactivated")
+            AppLog.debug("Audio session deactivated")
         } catch {
-            logger.warning("Audio session deactivation warning: \(error.localizedDescription)")
+            AppLog.warn("Audio session deactivation warning: \(error.localizedDescription)")
         }
 
         isConnected = false
@@ -222,13 +220,13 @@ final class RealtimeService: RealtimeServiceProtocol {
         if isConnected {
             statusMessage = "Listening…"
         }
-        logger.debug("startCapture (unmuted)")
+        AppLog.debug("startCapture (unmuted)")
     }
 
     /// Mutes the microphone (SDK keeps running, just silences input).
     func stopCapture() {
         conversation?.muted = true
-        logger.debug("stopCapture (muted)")
+        AppLog.debug("stopCapture (muted)")
     }
 
     // MARK: - Send User Message
@@ -237,14 +235,14 @@ final class RealtimeService: RealtimeServiceProtocol {
         guard let conv = conversation, conv.status == .connected else {
             // Connection not ready yet — queue for delivery after connect
             pendingMessage = text
-            logger.debug("Queued message (not connected yet)")
+            AppLog.debug("Queued message (not connected yet)")
             return
         }
         do {
             try conv.send(from: .user, text: text)
-            logger.debug("Sent user message")
+            AppLog.debug("Sent user message")
         } catch {
-            logger.error("sendUserMessage failed: \(error.localizedDescription)")
+            AppLog.error("sendUserMessage failed: \(error.localizedDescription)")
         }
     }
 
@@ -253,7 +251,20 @@ final class RealtimeService: RealtimeServiceProtocol {
     /// Calls OpenAI's GA Realtime API to create a short-lived client secret
     /// for WebRTC authentication.
     private func fetchEphemeralKey() async throws -> String {
-        guard let url = URL(string: "https://api.openai.com/v1/realtime/client_secrets") else {
+        let useProxy = AppConfig.isBackendProxyConfigured
+        let endpoint = useProxy
+            ? "\(AppConfig.backendBaseURL)/openai-realtime-token"
+            : "https://api.openai.com/v1/realtime/client_secrets"
+
+        if !useProxy,
+           (apiKey.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || AppConfig.isMissing(apiKey)) {
+            throw NSError(
+                domain: "RealtimeService", code: -1,
+                userInfo: [NSLocalizedDescriptionKey: "Missing OpenAI API key"]
+            )
+        }
+
+        guard let url = URL(string: endpoint) else {
             throw NSError(
                 domain: "RealtimeService", code: -1,
                 userInfo: [NSLocalizedDescriptionKey: "Invalid client secrets endpoint URL"]
@@ -261,8 +272,14 @@ final class RealtimeService: RealtimeServiceProtocol {
         }
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
-        request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        if useProxy {
+            request.setValue("Bearer \(AppConfig.supabaseAnonKey)", forHTTPHeaderField: "Authorization")
+            request.setValue(AppConfig.supabaseAnonKey, forHTTPHeaderField: "apikey")
+            request.setValue(AppConfig.clientRateLimitID, forHTTPHeaderField: "x-client-id")
+        } else {
+            request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
+        }
 
         // GA endpoint takes no model param — model is set on the connect URL
         request.httpBody = "{}".data(using: .utf8)
@@ -273,7 +290,7 @@ final class RealtimeService: RealtimeServiceProtocol {
               httpResponse.statusCode == 200 else {
             let code = (response as? HTTPURLResponse)?.statusCode ?? -1
             let bodyStr = String(data: data, encoding: .utf8) ?? ""
-            logger.error("Ephemeral key request failed (\(code)): \(bodyStr)")
+            AppLog.error("Ephemeral key request failed (\(code)): \(bodyStr)")
             throw NSError(
                 domain: "RealtimeService", code: code,
                 userInfo: [NSLocalizedDescriptionKey:
@@ -288,7 +305,7 @@ final class RealtimeService: RealtimeServiceProtocol {
             )
         }
 
-        logger.debug("Client secret response parsed")
+        AppLog.debug("Client secret response parsed")
 
         // GA endpoint returns { "value": "ek_...", "expires_at": ..., "session": {...} }
         if let key = json["value"] as? String { return key }
@@ -300,7 +317,7 @@ final class RealtimeService: RealtimeServiceProtocol {
         }
 
         let bodyStr = String(data: data, encoding: .utf8) ?? ""
-        logger.error("Could not parse key from response: \(bodyStr)")
+        AppLog.error("Could not parse key from response: \(bodyStr)")
         throw NSError(
             domain: "RealtimeService", code: -1,
             userInfo: [NSLocalizedDescriptionKey: "Invalid ephemeral key response"]
@@ -379,14 +396,14 @@ final class RealtimeService: RealtimeServiceProtocol {
                        let transcript = audio.transcript {
                         processedUserTranscriptIds.insert(msg.id)
                         if Self.isGarbageTranscription(transcript) {
-                            logger.debug("Garbage transcription detected; cancelling response")
+                            AppLog.debug("Garbage transcription detected; cancelling response")
                             do {
                                 try conv.send(event: .cancelResponse(eventId: nil, responseId: nil))
                                 try conv.send(event: .outputAudioBufferClear(eventId: nil))
                                 try conv.send(event: .deleteConversationItem(eventId: nil, itemId: msg.id))
-                                logger.debug("Cancelled response and removed noise item")
+                                AppLog.debug("Cancelled response and removed noise item")
                             } catch {
-                                logger.warning("Failed to cancel garbage response: \(error.localizedDescription)")
+                                AppLog.warn("Failed to cancel garbage response: \(error.localizedDescription)")
                             }
                         }
                     }
@@ -432,7 +449,7 @@ final class RealtimeService: RealtimeServiceProtocol {
             args = [:]
         }
 
-        logger.debug("Function call: \(fc.name)")
+        AppLog.debug("Function call: \(fc.name)")
 
         // 1. Send function output FIRST so the API knows the call succeeded
         do {
@@ -444,7 +461,7 @@ final class RealtimeService: RealtimeServiceProtocol {
                 output: "{\"status\":\"done\"}"
             ))
         } catch {
-            logger.error("Function output send failed: \(error.localizedDescription)")
+            AppLog.error("Function output send failed: \(error.localizedDescription)")
         }
 
         // 2. Notify the view model (this may update currentStepIndex etc.)
@@ -454,7 +471,7 @@ final class RealtimeService: RealtimeServiceProtocol {
         do {
             try conv.send(event: .createResponse())
         } catch {
-            logger.error("createResponse failed: \(error.localizedDescription)")
+            AppLog.error("createResponse failed: \(error.localizedDescription)")
         }
     }
 
@@ -466,7 +483,7 @@ final class RealtimeService: RealtimeServiceProtocol {
         errorTask = Task { [weak self] in
             for await error in conv.errors {
                 guard let self else { break }
-                logger.error("API error: \(error.message)")
+                AppLog.error("API error: \(error.message)")
                 let benign = [
                     "no active response",
                     "cancellation failed",

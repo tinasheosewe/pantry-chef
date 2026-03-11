@@ -174,7 +174,7 @@ struct RecipeDetailView: View {
                 )
             }
         } catch {
-            print("[RecipeDetailView] Failed to fetch steps: \(error)")
+            AppLog.warn("[RecipeDetailView] Failed to fetch steps: \(error)")
         }
         // Proceed to cook even if fetch failed — user can still see the recipe
         showGathering = true

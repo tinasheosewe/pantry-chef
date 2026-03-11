@@ -128,7 +128,7 @@ final class SpeechService: NSObject, SpeechServiceProtocol, AVSpeechSynthesizerD
             }
             try session.setActive(true)
         } catch {
-            print("Audio session config error: \(error)")
+            AppLog.error("Audio session config error: \(error)")
         }
     }
 
@@ -180,7 +180,7 @@ final class SpeechService: NSObject, SpeechServiceProtocol, AVSpeechSynthesizerD
 
         // Guard against invalid format (0 Hz sample rate on Simulator)
         guard recordingFormat.sampleRate > 0, recordingFormat.channelCount > 0 else {
-            print("SpeechService: audio input format invalid (sampleRate=\(recordingFormat.sampleRate)), cannot start listening")
+            AppLog.warn("SpeechService: audio input format invalid (sampleRate=\(recordingFormat.sampleRate)), cannot start listening")
             stopListeningSession()
             return
         }
@@ -228,7 +228,7 @@ final class SpeechService: NSObject, SpeechServiceProtocol, AVSpeechSynthesizerD
             try audioEngine.start()
             isListening = true
         } catch {
-            print("Audio engine start error: \(error)")
+            AppLog.error("Audio engine start error: \(error)")
             stopListeningSession()
         }
     }

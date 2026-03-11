@@ -44,7 +44,7 @@ struct PantryChefApp: App {
                var session = CookingSession.load(recipeId: uuid) {
                 session.currentStepIndex = min(stepIndex + 1, session.totalSteps - 1)
                 session.save()
-                print("[PantryChefApp] Step \(stepIndex + 1) marked done via notification")
+                AppLog.info("[PantryChefApp] Step \(stepIndex + 1) marked done via notification")
             }
         } else {
             // Default tap or "Open Cook Mode" — update persisted session step and deep-link
@@ -54,7 +54,7 @@ struct PantryChefApp: App {
                 session.save()
             }
             appState.deepLinkCookModeRecipeId = recipeId
-            print("[PantryChefApp] Deep-link to cook mode for recipe \(recipeId.prefix(8))… step \(stepIndex + 1)")
+            AppLog.info("[PantryChefApp] Deep-link to cook mode for recipe \(recipeId.prefix(8))… step \(stepIndex + 1)")
         }
     }
 
@@ -62,7 +62,7 @@ struct PantryChefApp: App {
         let sessions = CookingSession.loadAll()
         if !sessions.isEmpty {
             for session in sessions {
-                print("[PantryChefApp] Active cooking session: \(session.recipeName) (step \(session.currentStepIndex + 1)/\(session.totalSteps))")
+                AppLog.info("[PantryChefApp] Active cooking session: \(session.recipeName) (step \(session.currentStepIndex + 1)/\(session.totalSteps))")
             }
         }
         appState.activeCooks.refresh()

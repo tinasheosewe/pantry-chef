@@ -114,7 +114,7 @@ struct CookingSession: Codable, Identifiable {
             sessions.append(self)
         }
         Self.saveAll(sessions)
-        print("[CookingSession] Saved session for \(recipeName) (step \(currentStepIndex + 1)/\(totalSteps)) — \(sessions.count) active")
+        AppLog.info("[CookingSession] Saved session for \(recipeName) (step \(currentStepIndex + 1)/\(totalSteps)) — \(sessions.count) active")
     }
 
     /// Load all active sessions, clearing expired ones.
@@ -129,7 +129,7 @@ struct CookingSession: Codable, Identifiable {
             sessions = try JSONDecoder().decode([CookingSession].self, from: data)
         } catch {
             // Array-level decode failed — try per-element recovery
-            print("[CookingSession] ⚠️ Array decode failed: \(error.localizedDescription)")
+            AppLog.warn("[CookingSession] ⚠️ Array decode failed: \(error.localizedDescription)")
             if let raw = try? JSONDecoder().decode([AnyCodable].self, from: data) {
                 // Re-encode each element individually and decode
                 sessions = raw.compactMap { wrapper -> CookingSession? in
@@ -139,7 +139,7 @@ struct CookingSession: Codable, Identifiable {
             } else {
                 // Data is completely unrecoverable — clear it
                 UserDefaults.standard.removeObject(forKey: storageKey)
-                print("[CookingSession] ❌ Cleared unrecoverable session data")
+                AppLog.error("[CookingSession] ❌ Cleared unrecoverable session data")
                 return []
             }
         }
@@ -224,13 +224,13 @@ struct CookingSession: Codable, Identifiable {
         var sessions = loadAll()
         sessions.removeAll { $0.recipeId == recipeId }
         saveAll(sessions)
-        print("[CookingSession] Cleared session for recipe \(recipeId.uuidString.prefix(8))… — \(sessions.count) remaining")
+        AppLog.info("[CookingSession] Cleared session for recipe \(recipeId.uuidString.prefix(8))… — \(sessions.count) remaining")
     }
 
     /// Clear all sessions.
     static func clearAll() {
         UserDefaults.standard.removeObject(forKey: storageKey)
-        print("[CookingSession] Cleared all sessions")
+        AppLog.info("[CookingSession] Cleared all sessions")
     }
 
     /// Backward-compatible clear (clears all).

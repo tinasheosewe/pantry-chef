@@ -171,22 +171,22 @@ final class CookModeViewModel {
 
             // Prepare audio first — VPIO enable is slow (5-15s).
             // This awaits off the main thread so the UI stays responsive.
-            print("[CookMode] Preparing audio engine…")
+            AppLog.info("[CookMode] Preparing audio engine…")
             await realtimeService.prepareAudio()
-            print("[CookMode] Audio engine ready, isRunning=\(realtimeService.isAudioReady)")
+            AppLog.info("[CookMode] Audio engine ready, isRunning=\(realtimeService.isAudioReady)")
 
             // Connect WebSocket (audio engine is ready for playback now)
             let instructions = buildConversationInstructions()
             let tools = buildConversationTools()
             realtimeService.connect(withInstructions: instructions, tools: tools)
-            print("[CookMode] WebSocket connected=\(realtimeService.isConnected)")
+            AppLog.info("[CookMode] WebSocket connected=\(realtimeService.isConnected)")
 
             // Now it's safe for the sync timer to check connection state
             isPreparing = false
 
             // Start mic capture (installs tap — engine is already running)
             realtimeService.startCapture()
-            print("[CookMode] Mic capture started")
+            AppLog.info("[CookMode] Mic capture started")
 
             // Greet the user or resume at the right step
             let greeting: String
@@ -200,7 +200,7 @@ final class CookModeViewModel {
                     + "\(currentStep?.instruction ?? ""). Keep it concise."
             }
             realtimeService.sendUserMessage(greeting)
-            print("[CookMode] Greeting sent (resume=\(isResuming), step=\(currentStepIndex + 1))")
+            AppLog.info("[CookMode] Greeting sent (resume=\(isResuming), step=\(currentStepIndex + 1))")
         }
     }
 
@@ -567,7 +567,7 @@ final class CookModeViewModel {
             }
 
             if !authorized {
-                print("[CookMode] ⚠️ Notification permission denied — background mode will not work")
+                AppLog.warn("[CookMode] ⚠️ Notification permission denied — background mode will not work")
                 conversationError = "Please enable notifications in Settings to use background cook mode."
                 isSchedulingBackground = false
                 return
@@ -586,7 +586,7 @@ final class CookModeViewModel {
         isResuming = true
 
         NotificationService.shared.cancelAllNotifications(recipeId: recipe.id.uuidString)
-        print("[CookMode] Resuming from background — cancelled pending notifications")
+        AppLog.info("[CookMode] Resuming from background — cancelled pending notifications")
 
         // Reconnect voice
         startConversation()
@@ -663,7 +663,7 @@ final class CookModeViewModel {
         )
         session.save()
 
-        print("[CookMode] ✅ Background notifications scheduled deterministically (\(remaining.count) steps, total \(Int(cumulativeDelay))s)")
+        AppLog.info("[CookMode] ✅ Background notifications scheduled deterministically (\(remaining.count) steps, total \(Int(cumulativeDelay))s)")
 
         // Complete the background transition
         isSchedulingBackground = false

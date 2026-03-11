@@ -172,3 +172,68 @@ enum DebounceDurations {
     static let quickSearch: UInt64 = 150_000_000
     static let apiSearch: UInt64 = 400_000_000
 }
+
+// MARK: - Logging
+
+enum AppLogLevel: String {
+    case debug = "DEBUG"
+    case info = "INFO"
+    case warning = "WARN"
+    case error = "ERROR"
+}
+
+enum AppLog {
+    private static let formatterLock = NSLock()
+
+    private static let formatter: DateFormatter = {
+        let f = DateFormatter()
+        f.locale = Locale(identifier: "en_US_POSIX")
+        f.timeZone = TimeZone.current
+        f.dateFormat = "yyyy-MM-dd HH:mm:ss.SSS"
+        return f
+    }()
+
+    static func debug(
+        _ message: @autoclosure () -> String,
+        file: String = #fileID,
+        line: Int = #line,
+        function: String = #function
+    ) {
+        log(level: .debug, message: message(), file: file, line: line, function: function)
+    }
+
+    static func info(
+        _ message: @autoclosure () -> String,
+        file: String = #fileID,
+        line: Int = #line,
+        function: String = #function
+    ) {
+        log(level: .info, message: message(), file: file, line: line, function: function)
+    }
+
+    static func warn(
+        _ message: @autoclosure () -> String,
+        file: String = #fileID,
+        line: Int = #line,
+        function: String = #function
+    ) {
+        log(level: .warning, message: message(), file: file, line: line, function: function)
+    }
+
+    static func error(
+        _ message: @autoclosure () -> String,
+        file: String = #fileID,
+        line: Int = #line,
+        function: String = #function
+    ) {
+        log(level: .error, message: message(), file: file, line: line, function: function)
+    }
+
+    private static func log(level: AppLogLevel, message: String, file: String, line: Int, function: String) {
+        formatterLock.lock()
+        let timestamp = formatter.string(from: Date())
+        formatterLock.unlock()
+        let fileName = file.split(separator: "/").last.map(String.init) ?? file
+        Swift.print("\(timestamp) [\(level.rawValue)] \(fileName):\(line) \(function) | \(message)")
+    }
+}

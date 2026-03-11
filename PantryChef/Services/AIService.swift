@@ -43,7 +43,7 @@ final class AIService: AIServiceProtocol {
             let raw = try JSONDecoder().decode(RawShoppingList.self, from: data)
             return raw.items.map { $0.toShoppingItem() }
         } catch {
-            print("[AIService] Failed to decode shopping list: \(error)")
+            AppLog.warn("[AIService] Failed to decode shopping list: \(error)")
             return []
         }
     }
@@ -112,7 +112,7 @@ final class AIService: AIServiceProtocol {
             let raw = try JSONDecoder().decode(RawRecipeArray.self, from: data)
             return raw.recipes.map { $0.toRecipe(source: .aiGenerated) }
         } catch {
-            print("[AIService] Failed to decode suggested recipes: \(error)")
+            AppLog.warn("[AIService] Failed to decode suggested recipes: \(error)")
             return []
         }
     }
@@ -193,7 +193,7 @@ final class AIService: AIServiceProtocol {
             let raw = try JSONDecoder().decode(RawSubstitutionList.self, from: data)
             return localSuggestions + raw.substitutions.map { $0.toSubstitutionSuggestion() }
         } catch {
-            print("[AIService] Failed to decode substitutions: \(error)")
+            AppLog.warn("[AIService] Failed to decode substitutions: \(error)")
             return localSuggestions
         }
     }
@@ -226,7 +226,7 @@ final class AIService: AIServiceProtocol {
             let raw = try JSONDecoder().decode(RawHealthierResult.self, from: data)
             return raw.toHealthierSuggestion(recipeTitle: recipe.title)
         } catch {
-            print("[AIService] Failed to decode healthier suggestion: \(error)")
+            AppLog.warn("[AIService] Failed to decode healthier suggestion: \(error)")
             return nil
         }
     }
@@ -274,7 +274,7 @@ final class AIService: AIServiceProtocol {
             let raw = try JSONDecoder().decode(RawRecipeArray.self, from: data)
             return raw.recipes.map { $0.toRecipe(source: .aiGenerated) }
         } catch {
-            print("[AIService] Failed to decode leftover recipes: \(error)")
+            AppLog.warn("[AIService] Failed to decode leftover recipes: \(error)")
             return []
         }
     }
@@ -760,7 +760,7 @@ final class AIService: AIServiceProtocol {
             let raw = try JSONDecoder().decode(RawImportResult.self, from: data)
             return raw.toRecipeImportResult()
         } catch {
-            print("[AIService] Failed to decode structured recipe: \(error)")
+            AppLog.warn("[AIService] Failed to decode structured recipe: \(error)")
             return nil
         }
     }
@@ -919,7 +919,7 @@ final class AIService: AIServiceProtocol {
             let raw = try JSONDecoder().decode(RawFullRecipe.self, from: data)
             return raw.toRecipe(source: .aiGenerated)
         } catch {
-            print("[AIService] Failed to parse generated recipe: \(error)")
+            AppLog.warn("[AIService] Failed to parse generated recipe: \(error)")
             return nil
         }
     }
@@ -1006,7 +1006,7 @@ final class AIService: AIServiceProtocol {
             let raw = try JSONDecoder().decode(RawFullRecipe.self, from: data)
             return raw.toRecipe(source: recipe.source, preserving: recipe)
         } catch {
-            print("[AIService] Failed to parse modified recipe: \(error)")
+            AppLog.warn("[AIService] Failed to parse modified recipe: \(error)")
             return nil
         }
     }
@@ -1052,7 +1052,7 @@ final class AIService: AIServiceProtocol {
                 return updated
             }
         } catch {
-            print("[AIService] Failed to parse step durations: \(error)")
+            AppLog.warn("[AIService] Failed to parse step durations: \(error)")
             return steps
         }
     }
@@ -1066,19 +1066,31 @@ final class AIService: AIServiceProtocol {
     /// Retries on network errors and 5xx / 429 responses. Gives up on 4xx client errors.
     /// Pass `responseFormat` to enable structured output (e.g. json_schema).
     private func sendChatRequest(prompt: String, maxTokens: Int = 4096, responseFormat: [String: Any]? = nil) async -> String? {
-        guard !apiKey.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
-              !AppConfig.isMissing(apiKey) else {
-            print("[AIService] Missing OpenAI API key")
-            return nil
+        let useProxy = AppConfig.isBackendProxyConfigured
+        if !useProxy {
+            guard !apiKey.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
+                  !AppConfig.isMissing(apiKey) else {
+                AppLog.info("[AIService] Missing OpenAI API key")
+                return nil
+            }
         }
 
-        guard let url = URL(string: baseURL) else { return nil }
+        let endpoint = useProxy
+            ? "\(AppConfig.backendBaseURL)/openai-proxy"
+            : baseURL
+        guard let url = URL(string: endpoint) else { return nil }
 
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.timeoutInterval = 30
-        request.addValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        if useProxy {
+            request.addValue("Bearer \(AppConfig.supabaseAnonKey)", forHTTPHeaderField: "Authorization")
+            request.addValue(AppConfig.supabaseAnonKey, forHTTPHeaderField: "apikey")
+            request.addValue(AppConfig.clientRateLimitID, forHTTPHeaderField: "x-client-id")
+        } else {
+            request.addValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
+        }
 
         var body: [String: Any] = [
             "model": model,
@@ -1110,14 +1122,14 @@ final class AIService: AIServiceProtocol {
                            let content = message["content"] as? String {
                             return content
                         }
-                        print("[AIService] Received HTTP 200 with unexpected response shape")
+                        AppLog.warn("[AIService] Received HTTP 200 with unexpected response shape")
                         return nil // valid 200 but unexpected shape — don't retry
                     }
 
                     // Rate limited or server error — retryable
                     if httpResponse.statusCode == 429 || httpResponse.statusCode >= 500 {
                         let body = String(data: data, encoding: .utf8) ?? "<non-utf8 body>"
-                        print("[AIService] Retryable HTTP \(httpResponse.statusCode), attempt \(attempt)/\(maxRetries): \(body)")
+                        AppLog.warn("[AIService] Retryable HTTP \(httpResponse.statusCode), attempt \(attempt)/\(maxRetries): \(body)")
                         if attempt < maxRetries {
                             let delay = Double(attempt) * 1.5 // 1.5s, 3s
                             try await Task.sleep(for: .seconds(delay))
@@ -1128,7 +1140,7 @@ final class AIService: AIServiceProtocol {
 
                     // 4xx client error (bad key, etc.) — not retryable
                     let body = String(data: data, encoding: .utf8) ?? "<non-utf8 body>"
-                    print("[AIService] Non-retryable HTTP \(httpResponse.statusCode): \(body)")
+                    AppLog.error("[AIService] Non-retryable HTTP \(httpResponse.statusCode): \(body)")
                     return nil
                 }
             } catch {
@@ -1138,7 +1150,7 @@ final class AIService: AIServiceProtocol {
                     try? await Task.sleep(for: .seconds(delay))
                     continue
                 }
-                print("AI Service Error after \(maxRetries) attempts: \(error.localizedDescription)")
+                AppLog.error("AI Service Error after \(maxRetries) attempts: \(error.localizedDescription)")
             }
         }
 

@@ -89,7 +89,7 @@ struct ContentView: View {
                     }
                     try await Task.sleep(for: .milliseconds(200))
                 }
-                print("[ContentView] ⚠️ Deep-link recipe \(recipeId.prefix(8))… not found in known recipes")
+                AppLog.warn("[ContentView] ⚠️ Deep-link recipe \(recipeId.prefix(8))… not found in known recipes")
             }
         }
     }
