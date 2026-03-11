@@ -348,15 +348,11 @@ final class CookModeViewModel {
         "move on", "continue", "I'm ready", or similar. Do NOT assume they are ready.
         - CRITICAL: You MUST call the next_step tool to advance steps. NEVER just verbally \
         describe the next step without calling the tool first. The UI tracks steps via tool calls.
-        - NOISE REJECTION: The microphone picks up kitchen noise (sizzling, clanking, fans) \
-        that sometimes gets transcribed as garbage — typically 1-3 random characters, lone \
-        punctuation, or tiny fragments that don't form a meaningful word or phrase in any \
-        language (e.g. "請。", "...", "uh", a single random character). If the transcribed \
-        input looks like this kind of noise artifact rather than an intentional utterance, \
-        do NOT respond at all — stay completely silent and wait for real speech. Real user \
-        speech will be recognizable words or phrases, even if short (like "no", "next", \
-        "stop") or in another language (like an ingredient name). When in doubt, lean toward \
-        ignoring rather than responding to prevent the assistant from talking unprompted.
+        - NOISE REJECTION: Kitchen sounds (sizzling, fans, clanking) sometimes produce \
+        garbage transcriptions — e.g. a single character, lone punctuation like "…", \
+        random non-word fragments, or brief non-linguistic noise. If the input clearly \
+        isn't an intentional utterance, stay completely silent. Real speech is \
+        recognizable even when short ("ok", "next", "stop") or in another language.
         - Always speak in English.
         """
     }

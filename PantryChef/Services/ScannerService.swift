@@ -89,7 +89,12 @@ final class ReceiptScannerService: ObservableObject {
             request.usesLanguageCorrection = true
 
             let handler = VNImageRequestHandler(cgImage: cgImage, options: [:])
-            try? handler.perform([request])
+            do {
+                try handler.perform([request])
+            } catch {
+                print("[ReceiptScannerService] OCR failed: \(error)")
+                continuation.resume(returning: [])
+            }
         }
     }
 }
@@ -120,7 +125,12 @@ final class RecipePhotoScannerService: ObservableObject {
             request.usesLanguageCorrection = true
 
             let handler = VNImageRequestHandler(cgImage: cgImage, options: [:])
-            try? handler.perform([request])
+            do {
+                try handler.perform([request])
+            } catch {
+                print("[RecipePhotoScannerService] OCR failed: \(error)")
+                continuation.resume(returning: nil)
+            }
         }
     }
 }

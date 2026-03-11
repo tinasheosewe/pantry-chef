@@ -293,7 +293,7 @@ actor SpoonacularService {
 
     private func buildURL(path: String, query: String) throws -> URL {
         let key = AppConfig.spoonacularAPIKey
-        guard !key.isEmpty else {
+        guard !AppConfig.isMissing(key) else {
             throw SpoonacularError.missingAPIKey
         }
         let urlString = "\(baseURL)\(path)?\(query)&apiKey=\(key)"

@@ -1066,6 +1066,12 @@ final class AIService: AIServiceProtocol {
     /// Retries on network errors and 5xx / 429 responses. Gives up on 4xx client errors.
     /// Pass `responseFormat` to enable structured output (e.g. json_schema).
     private func sendChatRequest(prompt: String, maxTokens: Int = 4096, responseFormat: [String: Any]? = nil) async -> String? {
+        guard !apiKey.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
+              !AppConfig.isMissing(apiKey) else {
+            print("[AIService] Missing OpenAI API key")
+            return nil
+        }
+
         guard let url = URL(string: baseURL) else { return nil }
 
         var request = URLRequest(url: url)
@@ -1140,44 +1146,4 @@ final class AIService: AIServiceProtocol {
     }
 
     // MARK: - Response Parsing (legacy — kept for edge cases)
-}
-
-// MARK: - Action String Parsing Helper
-extension AIService {
-    /// Parse an action string from AI response into a CookingAction.
-    static func parseAction(_ str: String) -> CookingAction {
-        let lower = str.lowercased().trimmingCharacters(in: .whitespaces)
-        switch lower {
-        case "cut_dice": return .cut(.dice)
-        case "cut_mince": return .cut(.mince)
-        case "cut_slice": return .cut(.slice)
-        case "cut_chop": return .cut(.chop)
-        case "cut_julienne": return .cut(.julienne)
-        case "cut_halve": return .cut(.halve)
-        case "cut_rough": return .cut(.rough)
-        case "peel": return .peel
-        case "measure": return .measure
-        case "mix": return .mix
-        case "marinate": return .marinate
-        case "season": return .season
-        case "heat": return .heat
-        case "saute", "sauté": return .saute
-        case "boil": return .boil
-        case "simmer": return .simmer
-        case "fry_pan": return .fry(.pan)
-        case "fry_deep": return .fry(.deep)
-        case "fry_stir": return .fry(.stir)
-        case "bake": return .bake
-        case "roast": return .roast
-        case "grill": return .grill
-        case "steam": return .steam
-        case "scramble": return .scramble
-        case "plate": return .plate
-        case "garnish": return .garnish
-        case "rest": return .rest
-        case "serve": return .serve
-        case "toss": return .toss
-        default: return .other(str)
-        }
-    }
 }

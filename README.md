@@ -39,7 +39,7 @@ A personal iOS kitchen management app powered by AI. Tells you what to buy, what
 
 - **Platform**: iOS 17.0+, Swift 5.9, SwiftUI
 - **Architecture**: MVVM with centralized AppState
-- **Storage**: In-memory (with sample data preloaded). Supabase-ready service layer included for future cloud migration.
+- **Storage**: SwiftData local persistence with bootstrap seed data on first launch.
 - **AI**: OpenAI GPT-4o
 - **Speech**: Apple AVSpeechSynthesizer + SFSpeechRecognizer
 - **OCR**: Apple Vision framework
@@ -60,10 +60,11 @@ open PantryChef.xcodeproj
 ```
 
 ### 2. Configure API Keys (optional)
-Edit `PantryChef/Utils/AppConfig.swift` and replace the placeholder OpenAI key to enable AI features:
-```swift
-static let openAIAPIKey = "YOUR-OPENAI-API-KEY"
-```
+Set these values in your environment or app Info.plist:
+- `OPENAI_API_KEY`
+- `SPOONACULAR_API_KEY`
+
+`AppConfig` reads from environment first, then Info.plist.
 
 ### 3. Build & Run
 Select your target device/simulator in Xcode and hit ⌘R. The app launches with sample pantry items and recipes preloaded — no backend setup required.
@@ -93,7 +94,7 @@ PantryChef/
 │   │   ├── ShoppingItem.swift     # Shopping list item model
 │   │   └── AIModels.swift         # AI response models
 │   ├── Services/
-│   │   ├── StorageService.swift   # In-memory storage (Supabase-ready)
+│   │   ├── StorageService.swift   # SwiftData persistence
 │   │   ├── AIService.swift        # OpenAI API integration
 │   │   ├── SpeechService.swift    # TTS + voice recognition
 │   │   └── ScannerService.swift   # Barcode + receipt OCR
@@ -104,7 +105,7 @@ PantryChef/
 │   │   ├── CookModeViewModel.swift
 │   │   ├── MealPlanViewModel.swift
 │   │   ├── ShoppingViewModel.swift
-│   │   └── AIAssistantViewModel.swift
+│   │   └── (AI state handled via AppState + feature view models)
 │   ├── Views/
 │   │   ├── Common/Components.swift
 │   │   ├── Home/HomeView.swift
@@ -125,7 +126,7 @@ PantryChef/
 
 ## Notes
 
-- **In-Memory Storage** — Data resets on app relaunch. Supabase migration path included in `Supabase/migrations/`.
+- **Local Persistence** — Data is persisted with SwiftData and seeded once on first launch.
 - **No Authentication** — Designed for personal use. Add Supabase Auth + RLS policies before sharing.
 - **Light Mode Only** — Dark mode support planned for v2.
 - **Barcode Scanner** — Uses the camera; requires a physical device (not simulator).

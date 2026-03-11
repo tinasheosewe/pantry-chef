@@ -26,12 +26,18 @@ final class AppState {
     var expiringItems: [PantryItem] {
         let threeDaysFromNow = Calendar.current.date(byAdding: .day, value: 3, to: Date()) ?? Date()
         return pantryItems
-            .filter { $0.expiryDate != nil && $0.expiryDate! <= threeDaysFromNow }
+            .filter {
+                guard let expiryDate = $0.expiryDate else { return false }
+                return expiryDate <= threeDaysFromNow
+            }
             .sorted { ($0.expiryDate ?? .distantFuture) < ($1.expiryDate ?? .distantFuture) }
     }
 
     var expiredItems: [PantryItem] {
-        pantryItems.filter { $0.expiryDate != nil && $0.expiryDate! < Date() }
+        pantryItems.filter {
+            guard let expiryDate = $0.expiryDate else { return false }
+            return expiryDate < Date()
+        }
     }
 
     var pantryByCategory: [FoodCategory: [PantryItem]] {
@@ -169,10 +175,12 @@ final class AppState {
 
         if updated.isFavorite && !isAlreadyInMyRecipes {
             // Save to My Recipes
-            await addRecipe(updated)
+            var savedCopy = updated
+            savedCopy.source = .user
+            await addRecipe(savedCopy)
         } else if !updated.isFavorite && isAlreadyInMyRecipes && !recipe.source.isUserRecipe {
             // Remove non-user recipes from My Recipes when un-hearted
-            await deleteRecipe(updated)
+            await removeFromMyRecipes(id: recipe.id)
         } else {
             // Normal update for user-created recipes
             await updateRecipe(updated)
@@ -188,7 +196,9 @@ final class AppState {
         do {
             try await storageService.deleteRecipe(recipe)
             recipes.removeAll { $0.id == recipe.id }
-            discoverRecipes.removeAll { $0.id == recipe.id }
+            if !recipe.source.isUserRecipe {
+                discoverRecipes.removeAll { $0.id == recipe.id }
+            }
         } catch {
             errorMessage = error.localizedDescription
         }
@@ -270,10 +280,10 @@ final class AppState {
         await persistShoppingItems()
     }
 
-    func toggleShoppingItem(_ item: ShoppingItem) {
+    func toggleShoppingItem(_ item: ShoppingItem) async {
         if let index = shoppingItems.firstIndex(where: { $0.id == item.id }) {
             shoppingItems[index].isChecked.toggle()
-            Task { await persistShoppingItems() }
+            await persistShoppingItems()
         }
     }
 
@@ -335,5 +345,15 @@ final class AppState {
             }
         }
         return result
+    }
+
+    private func removeFromMyRecipes(id: UUID) async {
+        guard let saved = recipes.first(where: { $0.id == id }) else { return }
+        do {
+            try await storageService.deleteRecipe(saved)
+            recipes.removeAll { $0.id == id }
+        } catch {
+            errorMessage = error.localizedDescription
+        }
     }
 }

@@ -32,17 +32,18 @@ actor StorageService: StorageServiceProtocol {
     }
 
     init(isStoredInMemoryOnly: Bool, shouldBootstrap: Bool) {
+        let schema = Schema([
+            PantryItemRecord.self,
+            RecipeRecord.self,
+            IngredientRecord.self,
+            RecipeStepRecord.self,
+            StepTaskRecord.self,
+            StepTaskDependencyRecord.self,
+            MealPlanRecord.self,
+            ShoppingItemRecord.self,
+        ])
+
         do {
-            let schema = Schema([
-                PantryItemRecord.self,
-                RecipeRecord.self,
-                IngredientRecord.self,
-                RecipeStepRecord.self,
-                StepTaskRecord.self,
-                StepTaskDependencyRecord.self,
-                MealPlanRecord.self,
-                ShoppingItemRecord.self,
-            ])
             let configuration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: isStoredInMemoryOnly)
             self.container = try ModelContainer(for: schema, configurations: [configuration])
             self.shouldBootstrap = shouldBootstrap

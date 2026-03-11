@@ -185,6 +185,7 @@ struct Recipe: Identifiable, Codable, Hashable {
     }
 
     func scaled(to newServings: Int) -> Recipe {
+        guard servings > 0, newServings > 0 else { return self }
         let factor = Double(newServings) / Double(servings)
         var scaled = self
         scaled.servings = newServings

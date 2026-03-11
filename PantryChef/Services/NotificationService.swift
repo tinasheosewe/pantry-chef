@@ -97,8 +97,8 @@ final class NotificationService: NSObject {
         nextStepPreview: String?,
         delaySeconds: TimeInterval
     ) {
-        guard delaySeconds > 0 else {
-            print("[NotificationService] Skipping step \(stepIndex + 1) — delay ≤ 0")
+        guard delaySeconds >= 0 else {
+            print("[NotificationService] Skipping step \(stepIndex + 1) — delay < 0")
             return
         }
 
@@ -157,7 +157,11 @@ final class NotificationService: NSObject {
 
         let identifier = "\(Self.identifierPrefix)-\(recipeId)-expiry"
         let request = UNNotificationRequest(identifier: identifier, content: content, trigger: trigger)
-        center.add(request)
+        center.add(request) { error in
+            if let error {
+                print("[NotificationService] ❌ Failed to schedule session expiry: \(error)")
+            }
+        }
     }
 
     // MARK: - Cancel

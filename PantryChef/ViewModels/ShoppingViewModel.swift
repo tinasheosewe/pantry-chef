@@ -38,7 +38,7 @@ final class ShoppingViewModel {
     }
 
     func toggleItem(_ item: ShoppingItem) {
-        appState.toggleShoppingItem(item)
+        Task { await appState.toggleShoppingItem(item) }
     }
 
     func removeCheckedItems() {

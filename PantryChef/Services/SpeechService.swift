@@ -15,12 +15,13 @@ final class SpeechService: NSObject, SpeechServiceProtocol, AVSpeechSynthesizerD
     @ObservationIgnored private var _audioEngine: AVAudioEngine?
 
     private var synthesizer: AVSpeechSynthesizer {
-        if _synthesizer == nil {
-            let synth = AVSpeechSynthesizer()
-            synth.delegate = self
-            _synthesizer = synth
+        if let synthesizer = _synthesizer {
+            return synthesizer
         }
-        return _synthesizer!
+        let synth = AVSpeechSynthesizer()
+        synth.delegate = self
+        _synthesizer = synth
+        return synth
     }
 
     private var speechRecognizer: SFSpeechRecognizer? {
@@ -31,8 +32,12 @@ final class SpeechService: NSObject, SpeechServiceProtocol, AVSpeechSynthesizerD
     }
 
     private var audioEngine: AVAudioEngine {
-        if _audioEngine == nil { _audioEngine = AVAudioEngine() }
-        return _audioEngine!
+        if let audioEngine = _audioEngine {
+            return audioEngine
+        }
+        let engine = AVAudioEngine()
+        _audioEngine = engine
+        return engine
     }
 
     var isSpeaking = false

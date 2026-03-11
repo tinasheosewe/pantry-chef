@@ -229,17 +229,27 @@ final class RecipeRepository {
     // MARK: - Cache Persistence
 
     private func loadCachedRecipes() {
-        guard let data = try? Data(contentsOf: cacheURL),
-              let recipes = try? JSONDecoder().decode([Recipe].self, from: data) else {
+        guard FileManager.default.fileExists(atPath: cacheURL.path) else {
             cachedRecipes = []
             return
         }
-        cachedRecipes = recipes
+
+        do {
+            let data = try Data(contentsOf: cacheURL)
+            cachedRecipes = try JSONDecoder().decode([Recipe].self, from: data)
+        } catch {
+            print("[RecipeRepository] ⚠️ Failed to load cache: \(error)")
+            cachedRecipes = []
+        }
     }
 
     private func saveCachedRecipes() {
-        guard let data = try? JSONEncoder().encode(cachedRecipes) else { return }
-        try? data.write(to: cacheURL, options: .atomic)
+        do {
+            let data = try JSONEncoder().encode(cachedRecipes)
+            try data.write(to: cacheURL, options: .atomic)
+        } catch {
+            print("[RecipeRepository] ⚠️ Failed to save cache: \(error)")
+        }
     }
 
 }

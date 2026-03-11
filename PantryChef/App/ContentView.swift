@@ -81,9 +81,14 @@ struct ContentView: View {
             // Clear immediately so it doesn't re-trigger
             appState.deepLinkCookModeRecipeId = nil
 
-            if let recipe = appState.recipeByIdString(recipeId) {
-                deepLinkRecipe = recipe
-            } else {
+            Task { @MainActor in
+                for _ in 0..<20 {
+                    if let recipe = appState.recipeByIdString(recipeId) {
+                        deepLinkRecipe = recipe
+                        return
+                    }
+                    try await Task.sleep(for: .milliseconds(200))
+                }
                 print("[ContentView] ⚠️ Deep-link recipe \(recipeId.prefix(8))… not found in known recipes")
             }
         }

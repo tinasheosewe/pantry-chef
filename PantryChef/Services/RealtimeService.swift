@@ -1,5 +1,6 @@
 import AVFoundation
 import Foundation
+import OSLog
 import RealtimeAPI
 
 // MARK: - Realtime API Service (SDK-backed)
@@ -43,6 +44,7 @@ final class RealtimeService: RealtimeServiceProtocol {
 
     private let apiKey: String
     private let urlSession: URLSession
+    private let logger = Logger(subsystem: "PantryChef", category: "RealtimeService")
     private var conversation: Conversation?
 
     /// Ephemeral key fetched from OpenAI REST API for WebRTC auth.
@@ -86,18 +88,18 @@ final class RealtimeService: RealtimeServiceProtocol {
                 options: [.defaultToSpeaker, .allowBluetoothA2DP]
             )
             try session.setActive(true)
-            print("[RealtimeService] Audio session configured for WebRTC")
+            logger.debug("Audio session configured for WebRTC")
         } catch {
-            print("[RealtimeService] ⚠️ Audio session setup warning: \(error)")
+            logger.warning("Audio session setup warning: \(error.localizedDescription)")
         }
 
         do {
             ephemeralKey = try await fetchEphemeralKey()
             statusMessage = "Ready"
-            print("[RealtimeService] Ephemeral key obtained")
+            logger.info("Ephemeral key obtained")
         } catch {
             errorMessage = "Audio setup failed: \(error.localizedDescription)"
-            print("[RealtimeService] ❌ Ephemeral key fetch failed: \(error)")
+            logger.error("Ephemeral key fetch failed: \(error.localizedDescription)")
         }
     }
 
@@ -140,7 +142,7 @@ final class RealtimeService: RealtimeServiceProtocol {
             guard let self, let conv = self.conversation else { return }
             do {
                 try await conv.connect(ephemeralKey: key, model: .custom(realtimeModel))
-                print("[RealtimeService] Connected via WebRTC")
+                logger.info("Connected via WebRTC")
                 self.isConnected = true
                 self.statusMessage = "Connected"
 
@@ -160,16 +162,16 @@ final class RealtimeService: RealtimeServiceProtocol {
                     waited += 1
                 }
                 if waited >= 50 {
-                    print("[RealtimeService] ⚠️ Session update timed out, sending greeting anyway")
+                    logger.warning("Session update timed out, sending greeting anyway")
                 } else {
-                    print("[RealtimeService] Session updated after \(waited * 100)ms")
+                    logger.debug("Session updated after \(waited * 100)ms")
                 }
 
                 // Send any message that was queued before connection completed
                 if let msg = self.pendingMessage {
                     self.pendingMessage = nil
                     try conv.send(from: .user, text: msg)
-                    print("[RealtimeService] Sent queued message")
+                    logger.debug("Sent queued message")
                 }
 
                 self.startSyncLoop()
@@ -177,7 +179,7 @@ final class RealtimeService: RealtimeServiceProtocol {
             } catch {
                 self.errorMessage = "Connection failed: \(error.localizedDescription)"
                 self.statusMessage = "Disconnected"
-                print("[RealtimeService] ❌ WebRTC connect failed: \(error)")
+                logger.error("WebRTC connect failed: \(error.localizedDescription)")
             }
         }
     }
@@ -185,7 +187,7 @@ final class RealtimeService: RealtimeServiceProtocol {
     // MARK: - Disconnect
 
     func disconnect() {
-        print("[RealtimeService] disconnect()")
+        logger.debug("disconnect()")
 
         // Mute mic and stop audio session BEFORE tearing down the
         // conversation. The SDK's Conversation has an internal retain
@@ -197,9 +199,9 @@ final class RealtimeService: RealtimeServiceProtocol {
 
         do {
             try AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
-            print("[RealtimeService] Audio session deactivated")
+            logger.debug("Audio session deactivated")
         } catch {
-            print("[RealtimeService] ⚠️ Audio session deactivation: \(error)")
+            logger.warning("Audio session deactivation warning: \(error.localizedDescription)")
         }
 
         isConnected = false
@@ -220,13 +222,13 @@ final class RealtimeService: RealtimeServiceProtocol {
         if isConnected {
             statusMessage = "Listening…"
         }
-        print("[RealtimeService] startCapture (unmuted)")
+        logger.debug("startCapture (unmuted)")
     }
 
     /// Mutes the microphone (SDK keeps running, just silences input).
     func stopCapture() {
         conversation?.muted = true
-        print("[RealtimeService] stopCapture (muted)")
+        logger.debug("stopCapture (muted)")
     }
 
     // MARK: - Send User Message
@@ -235,14 +237,14 @@ final class RealtimeService: RealtimeServiceProtocol {
         guard let conv = conversation, conv.status == .connected else {
             // Connection not ready yet — queue for delivery after connect
             pendingMessage = text
-            print("[RealtimeService] Queued message (not connected yet)")
+            logger.debug("Queued message (not connected yet)")
             return
         }
         do {
             try conv.send(from: .user, text: text)
-            print("[RealtimeService] Sent user message: \(text.prefix(60))…")
+            logger.debug("Sent user message")
         } catch {
-            print("[RealtimeService] ❌ sendUserMessage error: \(error)")
+            logger.error("sendUserMessage failed: \(error.localizedDescription)")
         }
     }
 
@@ -251,7 +253,12 @@ final class RealtimeService: RealtimeServiceProtocol {
     /// Calls OpenAI's GA Realtime API to create a short-lived client secret
     /// for WebRTC authentication.
     private func fetchEphemeralKey() async throws -> String {
-        let url = URL(string: "https://api.openai.com/v1/realtime/client_secrets")!
+        guard let url = URL(string: "https://api.openai.com/v1/realtime/client_secrets") else {
+            throw NSError(
+                domain: "RealtimeService", code: -1,
+                userInfo: [NSLocalizedDescriptionKey: "Invalid client secrets endpoint URL"]
+            )
+        }
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
@@ -266,7 +273,7 @@ final class RealtimeService: RealtimeServiceProtocol {
               httpResponse.statusCode == 200 else {
             let code = (response as? HTTPURLResponse)?.statusCode ?? -1
             let bodyStr = String(data: data, encoding: .utf8) ?? ""
-            print("[RealtimeService] Ephemeral key request failed (\(code)): \(bodyStr)")
+            logger.error("Ephemeral key request failed (\(code)): \(bodyStr)")
             throw NSError(
                 domain: "RealtimeService", code: code,
                 userInfo: [NSLocalizedDescriptionKey:
@@ -281,7 +288,7 @@ final class RealtimeService: RealtimeServiceProtocol {
             )
         }
 
-        print("[RealtimeService] Client secret response keys: \(json.keys.sorted())")
+        logger.debug("Client secret response parsed")
 
         // GA endpoint returns { "value": "ek_...", "expires_at": ..., "session": {...} }
         if let key = json["value"] as? String { return key }
@@ -293,7 +300,7 @@ final class RealtimeService: RealtimeServiceProtocol {
         }
 
         let bodyStr = String(data: data, encoding: .utf8) ?? ""
-        print("[RealtimeService] ❌ Could not parse key from: \(bodyStr)")
+        logger.error("Could not parse key from response: \(bodyStr)")
         throw NSError(
             domain: "RealtimeService", code: -1,
             userInfo: [NSLocalizedDescriptionKey: "Invalid ephemeral key response"]
@@ -372,14 +379,14 @@ final class RealtimeService: RealtimeServiceProtocol {
                        let transcript = audio.transcript {
                         processedUserTranscriptIds.insert(msg.id)
                         if Self.isGarbageTranscription(transcript) {
-                            print("[RealtimeService] 🗑️ Garbage transcription detected: \"\(transcript)\" — cancelling response")
+                            logger.debug("Garbage transcription detected; cancelling response")
                             do {
                                 try conv.send(event: .cancelResponse(eventId: nil, responseId: nil))
                                 try conv.send(event: .outputAudioBufferClear(eventId: nil))
                                 try conv.send(event: .deleteConversationItem(eventId: nil, itemId: msg.id))
-                                print("[RealtimeService] 🗑️ Cancelled response and removed noise item")
+                                logger.debug("Cancelled response and removed noise item")
                             } catch {
-                                print("[RealtimeService] ⚠️ Failed to cancel garbage response: \(error)")
+                                logger.warning("Failed to cancel garbage response: \(error.localizedDescription)")
                             }
                         }
                     }
@@ -425,7 +432,7 @@ final class RealtimeService: RealtimeServiceProtocol {
             args = [:]
         }
 
-        print("[RealtimeService] Function call: \(fc.name)(\(fc.arguments))")
+        logger.debug("Function call: \(fc.name)")
 
         // 1. Send function output FIRST so the API knows the call succeeded
         do {
@@ -437,7 +444,7 @@ final class RealtimeService: RealtimeServiceProtocol {
                 output: "{\"status\":\"done\"}"
             ))
         } catch {
-            print("[RealtimeService] ❌ Function output error: \(error)")
+            logger.error("Function output send failed: \(error.localizedDescription)")
         }
 
         // 2. Notify the view model (this may update currentStepIndex etc.)
@@ -447,7 +454,7 @@ final class RealtimeService: RealtimeServiceProtocol {
         do {
             try conv.send(event: .createResponse())
         } catch {
-            print("[RealtimeService] ❌ createResponse error: \(error)")
+            logger.error("createResponse failed: \(error.localizedDescription)")
         }
     }
 
@@ -459,7 +466,7 @@ final class RealtimeService: RealtimeServiceProtocol {
         errorTask = Task { [weak self] in
             for await error in conv.errors {
                 guard let self else { break }
-                print("[RealtimeService] API error: \(error.message)")
+                logger.error("API error: \(error.message)")
                 let benign = [
                     "no active response",
                     "cancellation failed",
@@ -545,10 +552,9 @@ final class RealtimeService: RealtimeServiceProtocol {
         // Nothing left after stripping punctuation (e.g. "…", "。", "...")
         if letterContent.isEmpty { return true }
 
-        // Very short (1-2 characters) AND entirely non-Latin script
-        // Real commands like "no", "ok" are Latin. Noise like "請" is not.
-        // But "mirin" (5 chars) or "五香粉" (3 chars worth of meaning) are real.
-        if letterContent.count <= 2 {
+        // Single-character non-Latin transcriptions are usually noise.
+        // Keep two-character utterances to avoid rejecting short multilingual words.
+        if letterContent.count <= 1 {
             let latinRange = letterContent.range(
                 of: "[a-zA-Z]",
                 options: .regularExpression
