@@ -21,10 +21,10 @@ final class NotificationService: NSObject {
     static let actionOpen = "COOK_MODE_OPEN"
 
     /// Notification identifier prefix for cook-mode steps.
-    static let identifierPrefix = "cookmode"
+    nonisolated static let identifierPrefix = "cookmode"
 
     /// Posted when a notification action is tapped. Payload: ["recipeId": String, "stepIndex": Int]
-    static let didReceiveActionNotification = Notification.Name("NotificationService.didReceiveAction")
+    nonisolated static let didReceiveActionNotification = Notification.Name("NotificationService.didReceiveAction")
 
     private let center = UNUserNotificationCenter.current()
     private var isRegistered = false
@@ -168,25 +168,24 @@ final class NotificationService: NSObject {
 
     /// Cancel all cook-mode notifications for a specific recipe.
     func cancelAllNotifications(recipeId: String) {
-        center.getPendingNotificationRequests { [weak self] requests in
-            guard let self else { return }
-            let prefix = "\(Self.identifierPrefix)-\(recipeId)"
+        let prefix = "\(Self.identifierPrefix)-\(recipeId)"
+        center.getPendingNotificationRequests { requests in
             let ids = requests
                 .map(\.identifier)
                 .filter { $0.hasPrefix(prefix) }
-            self.center.removePendingNotificationRequests(withIdentifiers: ids)
+            UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: ids)
             print("[NotificationService] Cancelled \(ids.count) notifications for recipe \(recipeId.prefix(8))…")
         }
     }
 
     /// Cancel all cook-mode notifications across all recipes.
     func cancelAllCookModeNotifications() {
-        center.getPendingNotificationRequests { [weak self] requests in
-            guard let self else { return }
+        let identifierPrefix = Self.identifierPrefix
+        center.getPendingNotificationRequests { requests in
             let ids = requests
                 .map(\.identifier)
-                .filter { $0.hasPrefix(Self.identifierPrefix) }
-            self.center.removePendingNotificationRequests(withIdentifiers: ids)
+                .filter { $0.hasPrefix(identifierPrefix) }
+            UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: ids)
             print("[NotificationService] Cancelled all \(ids.count) cook-mode notifications")
         }
     }

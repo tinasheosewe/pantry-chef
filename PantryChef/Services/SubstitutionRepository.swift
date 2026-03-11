@@ -132,7 +132,7 @@ final class SubstitutionRepository: @unchecked Sendable {
                 SubstitutionEntry(original: "milk", substitute: "oat milk", ratio: "1:1", tasteImpact: .slight, textureImpact: .slight, nutritionImpact: "Similar", notes: "Creamy alternative", dietary: [.vegan, .dairyFree], enriched: true),
             ],
             "soy sauce": [
-                SubstitutionEntry(original: "soy sauce", substitute: "coconut aminos", ratio: "1:1", tasteImpact: .slight, textureImpact: .none, nutritionImpact: "Lower sodium", notes: "Less sodium", dietary: [.glutenFree], enriched: true),
+                SubstitutionEntry(original: "soy sauce", substitute: "coconut aminos", ratio: "1:1", tasteImpact: .slight, textureImpact: SubstitutionImpact.none, nutritionImpact: "Lower sodium", notes: "Less sodium", dietary: [.glutenFree], enriched: true),
             ],
             "chicken breast": [
                 SubstitutionEntry(original: "chicken breast", substitute: "tofu", ratio: "1:1 by weight", tasteImpact: .significant, textureImpact: .moderate, nutritionImpact: "Lower fat, higher fiber", notes: "Press well, extra firm", dietary: [.vegan, .vegetarian], enriched: true),

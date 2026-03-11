@@ -131,7 +131,7 @@ struct MultiRecipeScheduler {
             for step in recipe.steps.sorted(by: { $0.stepNumber < $1.stepNumber }) {
                 if step.tasks.isEmpty {
                     // Wrap the step instruction as a single generic task
-                    var task = StepTask(
+                    let task = StepTask(
                         action: .other(step.instruction),
                         durationSeconds: step.effectiveDurationSeconds,
                         type: step.timerMinutes != nil ? .passive : .active,
