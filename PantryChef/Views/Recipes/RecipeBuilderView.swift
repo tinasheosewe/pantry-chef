@@ -313,7 +313,8 @@ struct RecipeBuilderView: View {
         let messages = await statusFetch
         statusMessage = messages.first ?? statusMessage
 
-        let interval: UInt64 = UInt64(max(3.0, 28.0 / Double(messages.count)) * 1_000_000_000)
+        let messageCount = max(messages.count, 1)
+        let interval: UInt64 = UInt64(max(3.0, 28.0 / Double(messageCount)) * 1_000_000_000)
         let tickerTask = Task {
             for msg in messages.dropFirst() {
                 try? await Task.sleep(nanoseconds: interval)

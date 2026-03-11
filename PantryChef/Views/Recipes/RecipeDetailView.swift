@@ -259,7 +259,7 @@ struct RecipeDetailView: View {
                         .fill(AppColors.lightGray)
                     RoundedRectangle(cornerRadius: 4)
                         .fill(pantryMatch.canMake ? AppColors.primaryGreen : AppColors.warmOrange)
-                        .frame(width: geo.size.width * pantryMatch.matchPercentage / 100)
+                        .frame(width: geo.size.width * (pantryMatch.matchPercentage.isFinite ? max(0, min(pantryMatch.matchPercentage / 100, 1)) : 0))
                 }
             }
             .frame(height: 8)

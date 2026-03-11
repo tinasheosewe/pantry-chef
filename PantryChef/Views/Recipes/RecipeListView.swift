@@ -4,10 +4,16 @@ struct RecipeListView: View {
     @State private var viewModel: RecipeViewModel
     @State private var showMultiCookSelection = false
     @State private var selectedSection: RecipeSection = .myRecipes
+    @State private var discoverVisibleCount = 12
+    @State private var lastLoadMoreTriggerID: UUID?
+    @State private var discoverTapStartedAt: CFAbsoluteTime?
+    @State private var discoverSwitchStartedAt: CFAbsoluteTime?
+    @State private var loggedDiscoverFirstCellForCurrentSwitch = false
     @State private var showCuisinePicker = false
     @State private var showRecipeBuilder = false
     @State private var generatedRecipe: Recipe?
     @Binding var activateCanMakeFilter: Bool
+    @FocusState private var isSearchFocused: Bool
 
     enum RecipeSection: String, CaseIterable {
         case myRecipes = "My Recipes"
@@ -21,16 +27,21 @@ struct RecipeListView: View {
 
     var body: some View {
         @Bindable var viewModel = viewModel
+        let trimmedQuery = viewModel.effectiveSearchQuery
+        let hasQuery = trimmedQuery.count >= 3
+        let filteredUserRecipes = selectedSection == .myRecipes ? viewModel.filteredUserRecipes : []
+        let filteredDiscoverRecipes = selectedSection == .discover ? viewModel.filteredDiscoverRecipes : []
+
         NavigationStack {
             VStack(spacing: 0) {
                 searchBar
-                sectionPicker
+                sectionPicker(discoverCount: selectedSection == .discover ? filteredDiscoverRecipes.count : nil)
                 filterPills
 
                 if selectedSection == .myRecipes {
-                    userRecipesContent
+                    userRecipesContent(recipes: filteredUserRecipes)
                 } else {
-                    discoverContent
+                    discoverContent(recipes: filteredDiscoverRecipes, hasQuery: hasQuery, trimmedQuery: trimmedQuery)
                 }
             }
             .background(AppColors.background)
@@ -102,6 +113,19 @@ struct RecipeListView: View {
             .navigationDestination(item: $generatedRecipe) { recipe in
                 RecipeDetailView(recipe: recipe)
             }
+            .navigationDestination(for: UUID.self) { recipeID in
+                if let recipe = viewModel.recipeForNavigation(id: recipeID) {
+                    RecipeDetailView(recipe: recipe)
+                } else {
+                    EmptyStateView(
+                        icon: "exclamationmark.triangle",
+                        title: "Recipe unavailable",
+                        message: "This recipe could not be loaded.",
+                        actionTitle: "Back"
+                    ) {
+                    }
+                }
+            }
             .sheet(item: Binding(
                 get: { viewModel.importedRecipe },
                 set: { viewModel.importedRecipe = $0 }
@@ -124,13 +148,51 @@ struct RecipeListView: View {
                     activateCanMakeFilter = false
                 }
             }
+            .onChange(of: selectedSection) { _, newValue in
+                if newValue == .discover {
+                    if let tappedAt = discoverTapStartedAt {
+                        let tapDeltaMs = Int((CFAbsoluteTimeGetCurrent() - tappedAt) * 1000)
+                        PerfLog.event("Discover tap->state change: \(tapDeltaMs)ms")
+                    }
+                    discoverVisibleCount = 12
+                    lastLoadMoreTriggerID = nil
+                    discoverSwitchStartedAt = CFAbsoluteTimeGetCurrent()
+                    loggedDiscoverFirstCellForCurrentSwitch = false
+                    PerfLog.event("Discover tab selected")
+                    viewModel.scheduleBackgroundMatchPrewarm(visibleDiscoverCount: discoverVisibleCount)
+                    viewModel.scheduleFullMetricsCoverage(reason: "discover-tab")
+                }
+            }
+            .onChange(of: viewModel.appState.pantryItems) {
+                viewModel.scheduleBackgroundMatchPrewarm(visibleDiscoverCount: discoverVisibleCount)
+                viewModel.scheduleFullMetricsCoverage(reason: "pantry-change")
+            }
+            .onChange(of: viewModel.appState.recipes) {
+                viewModel.scheduleFullMetricsCoverage(reason: "user-recipes-change")
+            }
+            .onChange(of: viewModel.appState.discoverRecipes) {
+                viewModel.scheduleFullMetricsCoverage(reason: "discover-recipes-change")
+            }
+            .onChange(of: viewModel.discoverSearchResults) {
+                viewModel.scheduleFullMetricsCoverage(reason: "discover-search-change")
+            }
+            .onChange(of: viewModel.effectiveSearchQuery) {
+                discoverVisibleCount = 12
+                lastLoadMoreTriggerID = nil
+                PerfLog.event("effectiveSearchQuery='\(viewModel.effectiveSearchQuery)'")
+            }
             .onAppear {
+                // Prewarm discover data path so first switch is instant.
+                Task { @MainActor in
+                    viewModel.prewarmDiscover(visibleCount: discoverVisibleCount)
+                    viewModel.scheduleBackgroundMatchPrewarm(visibleDiscoverCount: discoverVisibleCount)
+                    viewModel.scheduleFullMetricsCoverage(reason: "list-appear")
+                }
+
                 // Safety net: ensure discover recipes are loaded even if init timing was off
                 if viewModel.appState.discoverRecipes.isEmpty {
-                    print("[RecipeListView] discoverRecipes empty on appear — refreshing")
+                    PerfLog.event("[RecipeListView] discoverRecipes empty on appear — refreshing")
                     viewModel.appState.refreshDiscoverRecipes()
-                } else {
-                    print("[RecipeListView] discoverRecipes has \(viewModel.appState.discoverRecipes.count) recipes on appear")
                 }
             }
         }
@@ -138,13 +200,15 @@ struct RecipeListView: View {
 
     // MARK: - Section Picker
 
-    private var sectionPicker: some View {
+    private func sectionPicker(discoverCount: Int?) -> some View {
         HStack(spacing: 0) {
             ForEach(RecipeSection.allCases, id: \.self) { section in
                 Button {
-                    withAnimation(.easeInOut(duration: 0.2)) {
-                        selectedSection = section
+                    if section == .discover {
+                        discoverTapStartedAt = CFAbsoluteTimeGetCurrent()
+                        PerfLog.event("Discover tab tapped")
                     }
+                    selectedSection = section
                     // No-op on section switch — state is preserved
                 } label: {
                     VStack(spacing: 6) {
@@ -154,7 +218,7 @@ struct RecipeListView: View {
                                 .fontWeight(selectedSection == section ? .semibold : .regular)
 
                             if section == .discover && selectedSection == .discover {
-                                let count = viewModel.filteredDiscoverRecipes.count
+                                let count = discoverCount ?? 0
                                 if count > 0 {
                                     Text("\(count)")
                                         .font(.caption2)
@@ -189,9 +253,11 @@ struct RecipeListView: View {
                 .foregroundStyle(AppColors.mediumGray)
             TextField("Search recipes...", text: $viewModel.searchText)
                 .font(.subheadline)
+                .focused($isSearchFocused)
                 .onChange(of: viewModel.searchText) {
                     viewModel.onSearchTextChanged(isDiscoverTab: selectedSection == .discover)
                 }
+            
 
             if !viewModel.searchText.isEmpty {
                 Button { viewModel.searchText = "" } label: {
@@ -205,6 +271,11 @@ struct RecipeListView: View {
         .clipShape(RoundedRectangle(cornerRadius: 10))
         .padding(.horizontal)
         .padding(.top, 8)
+        .onChange(of: isSearchFocused) { _, focused in
+            if focused {
+                PerfLog.event("Search field focused in \(selectedSection.rawValue)")
+            }
+        }
     }
 
     // MARK: - Filter Pills
@@ -334,9 +405,9 @@ struct RecipeListView: View {
 
     // MARK: - User Recipes Content
 
-    private var userRecipesContent: some View {
+    private func userRecipesContent(recipes: [Recipe]) -> some View {
         Group {
-            if viewModel.filteredUserRecipes.isEmpty && viewModel.appState.recipes.isEmpty {
+            if recipes.isEmpty && viewModel.appState.recipes.isEmpty {
                 centeredEmptyState {
                     EmptyStateView(
                         icon: "book.closed",
@@ -347,7 +418,7 @@ struct RecipeListView: View {
                         viewModel.showAddRecipe = true
                     }
                 }
-            } else if viewModel.filteredUserRecipes.isEmpty {
+            } else if recipes.isEmpty {
                 centeredEmptyState {
                     EmptyStateView(
                         icon: "magnifyingglass",
@@ -359,32 +430,31 @@ struct RecipeListView: View {
                     }
                 }
             } else {
-                recipeGrid(recipes: viewModel.filteredUserRecipes, isUserSection: true)
+                recipeGrid(recipes: recipes, isUserSection: true, trimmedQuery: nil)
             }
         }
     }
 
     // MARK: - Discover Content
 
-    private var discoverContent: some View {
+    private func discoverContent(recipes: [Recipe], hasQuery: Bool, trimmedQuery: String) -> some View {
         Group {
-            let hasQuery = viewModel.searchText.trimmingCharacters(in: .whitespaces).count >= 3
             if viewModel.isSearchingAPI {
                 if hasQuery {
                     // Show grid with AI tile + loading indicator while API results load
-                    recipeGrid(recipes: viewModel.filteredDiscoverRecipes, isUserSection: false)
+                    recipeGrid(recipes: recipes, isUserSection: false, trimmedQuery: trimmedQuery)
                 } else {
                     centeredEmptyState {
                         ProgressView("Searching...")
                     }
                 }
-            } else if viewModel.filteredDiscoverRecipes.isEmpty && !hasQuery {
+            } else if recipes.isEmpty && !hasQuery {
                 centeredEmptyState {
-                    if !viewModel.searchText.isEmpty {
+                    if !trimmedQuery.isEmpty {
                         EmptyStateView(
                             icon: "magnifyingglass",
                             title: "No results",
-                            message: "No recipes match \"\(viewModel.searchText)\". Try a different search term.",
+                            message: "No recipes match \"\(trimmedQuery)\". Try a different search term.",
                             actionTitle: "Clear Search"
                         ) {
                             viewModel.searchText = ""
@@ -402,7 +472,7 @@ struct RecipeListView: View {
                     }
                 }
             } else {
-                recipeGrid(recipes: viewModel.filteredDiscoverRecipes, isUserSection: false)
+                recipeGrid(recipes: recipes, isUserSection: false, trimmedQuery: trimmedQuery)
             }
         }
     }
@@ -420,30 +490,30 @@ struct RecipeListView: View {
 
     // MARK: - Recipe Grid
 
-    private func recipeGrid(recipes: [Recipe], isUserSection: Bool) -> some View {
+    private func recipeGrid(recipes: [Recipe], isUserSection: Bool, trimmedQuery: String?) -> some View {
         let pantry = viewModel.appState.pantryItems
-        // Pre-compute matches once per grid render instead of per-card per-access
-        let matchCache: [UUID: PantryMatchResult] = Dictionary(
-            uniqueKeysWithValues: recipes.map { ($0.id, $0.pantryMatch(pantry: pantry)) }
-        )
+        let query = trimmedQuery ?? ""
+        let showAIGenerateTile = !isUserSection && query.count >= 3
+        let displayedRecipes = isUserSection ? recipes : Array(recipes.prefix(discoverVisibleCount))
+        let matchMetrics = viewModel.matchMetricsMap(for: displayedRecipes)
         return ScrollView {
             LazyVGrid(columns: [
                 GridItem(.flexible(), spacing: 16),
                 GridItem(.flexible(), spacing: 16),
             ], spacing: 16) {
                 // AI Generate tile — first card in Discover when query is 3+ chars
-                if !isUserSection && viewModel.searchText.trimmingCharacters(in: .whitespaces).count >= 3 {
+                if showAIGenerateTile {
                     Button {
                         showRecipeBuilder = true
                     } label: {
-                        AIGenerateTileView(query: viewModel.searchText.trimmingCharacters(in: .whitespaces))
+                        AIGenerateTileView(query: query)
                     }
                     .buttonStyle(.plain)
                 }
 
-                ForEach(recipes) { recipe in
-                    NavigationLink(destination: RecipeDetailView(recipe: recipe)) {
-                        RecipeCardView(recipe: recipe, pantry: pantry, match: matchCache[recipe.id])
+                ForEach(displayedRecipes) { recipe in
+                    NavigationLink(value: recipe.id) {
+                        RecipeCardView(recipe: recipe, pantry: pantry, metrics: matchMetrics[recipe.id])
                     }
                     .contextMenu {
                         if isUserSection {
@@ -456,20 +526,30 @@ struct RecipeListView: View {
                             } label: {
                                 Label("Delete", systemImage: "trash")
                             }
-                        } else {
-                            Button {
-                                Task { await viewModel.addRecipe(recipe) }
-                            } label: {
-                                Label("Save to My Recipes", systemImage: "square.and.arrow.down")
-                            }
                         }
                     }
                     // Infinite scroll: trigger next page when last few items appear
                     .onAppear {
                         if !isUserSection,
-                           recipe.id == recipes.last?.id,
-                           viewModel.hasMorePages {
-                            Task { await viewModel.loadMoreDiscoverRecipes() }
+                           !loggedDiscoverFirstCellForCurrentSwitch,
+                           let started = discoverSwitchStartedAt {
+                            let elapsedMs = Int((CFAbsoluteTimeGetCurrent() - started) * 1000)
+                            loggedDiscoverFirstCellForCurrentSwitch = true
+                            PerfLog.event("Discover first cell appeared in \(elapsedMs)ms (displayed=\(displayedRecipes.count), total=\(recipes.count))")
+                        }
+
+                        if !isUserSection,
+                           recipe.id == displayedRecipes.last?.id {
+                            if displayedRecipes.count < recipes.count {
+                                discoverVisibleCount = min(discoverVisibleCount + 24, recipes.count)
+                                return
+                            }
+                            if recipe.id == recipes.last?.id,
+                               lastLoadMoreTriggerID != recipe.id,
+                               viewModel.hasMorePages {
+                                lastLoadMoreTriggerID = recipe.id
+                                Task { await viewModel.loadMoreDiscoverRecipes() }
+                            }
                         }
                     }
                 }
@@ -516,13 +596,12 @@ struct FilterPill: View {
 struct RecipeCardView: View {
     let recipe: Recipe
     let pantry: [PantryItem]
-    /// Pre-computed match result — avoids re-running pantryMatch() multiple times per frame.
-    private let match: PantryMatchResult
+    private let metrics: RecipeMatchMetrics
 
-    init(recipe: Recipe, pantry: [PantryItem], match: PantryMatchResult? = nil) {
+    init(recipe: Recipe, pantry: [PantryItem], metrics: RecipeMatchMetrics? = nil) {
         self.recipe = recipe
         self.pantry = pantry
-        self.match = match ?? recipe.pantryMatch(pantry: pantry)
+        self.metrics = metrics ?? RecipeMatchMetrics(from: recipe.pantryMatch(pantry: pantry))
     }
 
     var body: some View {
@@ -599,7 +678,7 @@ struct RecipeCardView: View {
     }
 
     private var matchBadge: some View {
-        let pct = Int(match.effectiveMatchPercentage)
+        let pct = Int(metrics.effectiveMatchPercentage)
         return Text("\(pct)%")
             .font(.system(size: 11, weight: .bold, design: .rounded))
             .foregroundStyle(.white)
@@ -618,14 +697,14 @@ struct RecipeCardView: View {
 
     private var pantryMatchStatus: some View {
         HStack(spacing: 4) {
-            if match.canMake {
+            if metrics.canMake {
                 Circle()
                     .fill(AppColors.primaryGreen)
                     .frame(width: 6, height: 6)
                 Text("Ready to cook")
                     .font(.caption2)
                     .foregroundStyle(AppColors.primaryGreen)
-            } else if match.canMakeWithSubstitutions {
+            } else if metrics.canMakeWithSubstitutions {
                 Circle()
                     .fill(Color(red: 0.60, green: 0.76, blue: 0.25))
                     .frame(width: 6, height: 6)
@@ -639,7 +718,7 @@ struct RecipeCardView: View {
                 Circle()
                     .fill(AppColors.warmOrange)
                     .frame(width: 6, height: 6)
-                Text("Need \(match.missingIngredients.count) item\(match.missingIngredients.count == 1 ? "" : "s")")
+                Text("Need \(metrics.missingIngredientCount) item\(metrics.missingIngredientCount == 1 ? "" : "s")")
                     .font(.caption2)
                     .foregroundStyle(AppColors.warmOrange)
             }
@@ -825,7 +904,7 @@ struct WhatCanIMakeView: View {
                         .fill(AppColors.lightGray)
                     RoundedRectangle(cornerRadius: 3)
                         .fill(result.canMake ? AppColors.primaryGreen : AppColors.warmOrange)
-                        .frame(width: geo.size.width * result.matchPercentage / 100)
+                        .frame(width: geo.size.width * (result.matchPercentage.isFinite ? max(0, min(result.matchPercentage / 100, 1)) : 0))
                 }
             }
             .frame(height: 4)

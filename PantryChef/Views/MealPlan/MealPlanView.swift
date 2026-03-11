@@ -208,10 +208,12 @@ struct RecipePickerView: View {
     let recipes: [Recipe]
     let onSelect: (Recipe) -> Void
     @State private var searchText = ""
+    @State private var debouncedSearchText = ""
+    @State private var searchDebouncer = TaskDebouncer()
 
     var filteredRecipes: [Recipe] {
-        if searchText.isEmpty { return recipes }
-        return recipes.filter { $0.title.localizedCaseInsensitiveContains(searchText) }
+        if debouncedSearchText.isEmpty { return recipes }
+        return recipes.filter { $0.title.localizedCaseInsensitiveContains(debouncedSearchText) }
     }
 
     var body: some View {
@@ -248,6 +250,12 @@ struct RecipePickerView: View {
                 }
             }
             .searchable(text: $searchText, prompt: "Search recipes")
+            .onChange(of: searchText) {
+                let normalized = searchText.trimmingCharacters(in: .whitespaces)
+                searchDebouncer.schedule(after: DebounceDurations.quickSearch) {
+                    debouncedSearchText = normalized
+                }
+            }
             .navigationTitle("Choose Recipe")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

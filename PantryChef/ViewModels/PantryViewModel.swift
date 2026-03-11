@@ -4,6 +4,7 @@ import SwiftUI
 @MainActor
 final class PantryViewModel {
     var searchText = ""
+    private(set) var debouncedSearchText = ""
     var selectedCategory: FoodCategory?
     var showAddItem = false
     var showBarcodeScanner = false
@@ -11,6 +12,7 @@ final class PantryViewModel {
     var showVoiceInput = false
     var sortOrder: SortOrder = .category
     var isLoading = false
+    @ObservationIgnored private let searchDebouncer = TaskDebouncer()
 
     enum SortOrder: String, CaseIterable {
         case category = "Category"
@@ -25,13 +27,14 @@ final class PantryViewModel {
 
     init(appState: AppState) {
         self.appState = appState
+        self.debouncedSearchText = ""
     }
 
     var filteredItems: [PantryItem] {
         var items = appState.pantryItems
 
-        if !searchText.isEmpty {
-            items = items.filter { $0.name.localizedCaseInsensitiveContains(searchText) }
+        if !debouncedSearchText.isEmpty {
+            items = items.filter { $0.name.localizedCaseInsensitiveContains(debouncedSearchText) }
         }
 
         if let category = selectedCategory {
@@ -94,6 +97,14 @@ final class PantryViewModel {
         for itemName in items {
             let item = PantryItem(name: itemName, category: .other)
             await addItem(item)
+        }
+    }
+
+    func onSearchTextChanged() {
+        searchDebouncer.cancel()
+        let normalized = searchText.trimmingCharacters(in: .whitespaces)
+        searchDebouncer.schedule(after: DebounceDurations.quickSearch) {
+            self.debouncedSearchText = normalized
         }
     }
 }

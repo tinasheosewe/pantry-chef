@@ -14,6 +14,10 @@ enum AppConfig {
     static let expiryWarningDays = 3
     static let maxRecipeSuggestions = 5
     static let defaultServings = 4
+    static let enablePerformanceLogging: Bool = {
+        let value = ProcessInfo.processInfo.environment["PANTRYCHEF_PERF_LOGS"]?.lowercased()
+        return value == "1" || value == "true" || value == "yes"
+    }()
 
     static func isMissing(_ value: String) -> Bool {
         value.hasPrefix(missingPrefix)
@@ -31,7 +35,7 @@ enum AppConfig {
             }
         }
 
-        print("[AppConfig] Missing required config value: \(key)")
+        PerfLog.event("[AppConfig] Missing required config value: \(key)")
         return "\(missingPrefix):\(key)"
     }
 }

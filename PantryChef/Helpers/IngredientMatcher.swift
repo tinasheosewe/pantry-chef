@@ -5,6 +5,13 @@ import Foundation
 /// category-aware fallback, quantity checking, and substitution integration.
 enum IngredientMatcher {
 
+    private struct PantryIndex {
+        let normalizedNames: [String]
+        let normalizedSet: Set<String>
+        let synonymUniverse: Set<String>
+        let tokenizedNames: [(name: String, tokens: Set<String>)]
+    }
+
     // MARK: - Public API
 
     /// Full pantry match including substitution lookup.
@@ -12,9 +19,11 @@ enum IngredientMatcher {
         let required = recipe.ingredients.filter { !$0.isOptional }
         var matched: [Ingredient] = []
         var missing: [Ingredient] = []
+        let pantryIndex = buildPantryIndex(pantry)
 
         for ingredient in required {
-            if pantryContains(ingredient: ingredient, pantry: pantry) {
+            let normalizedIngredient = normalize(ingredient.name)
+            if pantryContainsNormalized(normalizedIngredient, index: pantryIndex) {
                 matched.append(ingredient)
             } else {
                 missing.append(ingredient)
@@ -31,9 +40,7 @@ enum IngredientMatcher {
             let subs = subRepo.substitutions(for: ingredient.name)
             // Only include subs the user actually has in their pantry
             let availableSubs = subs.filter { sub in
-                pantry.contains { pantryItem in
-                    namesMatch(pantryItem.name, sub.substitute)
-                }
+                pantryContainsNormalized(normalize(sub.substitute), index: pantryIndex)
             }
             if !availableSubs.isEmpty {
                 substitutable.append((ingredient: ingredient, substitutions: availableSubs))
@@ -58,9 +65,62 @@ enum IngredientMatcher {
 
     /// Quick check: does the pantry contain something matching this ingredient?
     static func pantryContains(ingredient: Ingredient, pantry: [PantryItem]) -> Bool {
-        pantry.contains { item in
-            namesMatch(item.name, ingredient.name)
+        let index = buildPantryIndex(pantry)
+        return pantryContainsNormalized(normalize(ingredient.name), index: index)
+    }
+
+    private static func buildPantryIndex(_ pantry: [PantryItem]) -> PantryIndex {
+        let normalizedNames = pantry.map { normalize($0.name) }
+        let normalizedSet = Set(normalizedNames)
+
+        var synonymUniverse: Set<String> = []
+        synonymUniverse.reserveCapacity(normalizedNames.count * 2)
+        for name in normalizedNames {
+            synonymUniverse.insert(name)
+            let group = synonymGroup(for: name)
+            if !group.isEmpty {
+                synonymUniverse.formUnion(group)
+            }
         }
+
+        let tokenizedNames = normalizedNames.map { name in
+            (name: name, tokens: Set(name.split(separator: " ").map(String.init)))
+        }
+
+        return PantryIndex(
+            normalizedNames: normalizedNames,
+            normalizedSet: normalizedSet,
+            synonymUniverse: synonymUniverse,
+            tokenizedNames: tokenizedNames
+        )
+    }
+
+    private static func pantryContainsNormalized(_ normalizedIngredient: String, index: PantryIndex) -> Bool {
+        if index.normalizedSet.contains(normalizedIngredient) { return true }
+
+        for pantryName in index.normalizedNames {
+            if pantryName.contains(normalizedIngredient) || normalizedIngredient.contains(pantryName) {
+                return true
+            }
+        }
+
+        let group = synonymGroup(for: normalizedIngredient)
+        if !group.isEmpty && !group.isDisjoint(with: index.synonymUniverse) {
+            return true
+        }
+
+        let ingredientTokens = Set(normalizedIngredient.split(separator: " ").map(String.init))
+        if !ingredientTokens.isEmpty {
+            for (_, pantryTokens) in index.tokenizedNames {
+                let overlap = ingredientTokens.intersection(pantryTokens)
+                let shorter = ingredientTokens.count <= pantryTokens.count ? ingredientTokens : pantryTokens
+                if !shorter.isEmpty && overlap == shorter {
+                    return true
+                }
+            }
+        }
+
+        return false
     }
 
     /// Normalized name comparison with synonym awareness.

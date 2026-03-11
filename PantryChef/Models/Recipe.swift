@@ -448,11 +448,13 @@ struct PantryMatchResult: Identifiable {
     var canMake: Bool { missingIngredients.isEmpty }
 
     var displayPercentage: String {
-        "\(Int(matchPercentage))%"
+        let safe = matchPercentage.isFinite ? max(0, min(matchPercentage, 100)) : 0
+        return "\(Int(safe))%"
     }
 
     var effectiveDisplayPercentage: String {
-        "\(Int(effectiveMatchPercentage))%"
+        let safe = effectiveMatchPercentage.isFinite ? max(0, min(effectiveMatchPercentage, 100)) : 0
+        return "\(Int(safe))%"
     }
 
     /// Convenience init for backward compat (no substitution data)

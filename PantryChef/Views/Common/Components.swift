@@ -253,10 +253,15 @@ struct NutritionBar: View {
 
                     RoundedRectangle(cornerRadius: 4)
                         .fill(color)
-                        .frame(width: min(geometry.size.width * (value / maxValue), geometry.size.width), height: 6)
+                        .frame(width: geometry.size.width * safeRatio, height: 6)
                 }
             }
             .frame(height: 6)
         }
+    }
+
+    private var safeRatio: Double {
+        guard maxValue > 0, value.isFinite, maxValue.isFinite else { return 0 }
+        return max(0, min(value / maxValue, 1))
     }
 }

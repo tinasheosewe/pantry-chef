@@ -76,6 +76,9 @@ struct PantryView: View {
                     .foregroundStyle(AppColors.mediumGray)
                 TextField("Search pantry...", text: $viewModel.searchText)
                     .font(.subheadline)
+                    .onChange(of: viewModel.searchText) {
+                        viewModel.onSearchTextChanged()
+                    }
 
                 if !viewModel.searchText.isEmpty {
                     Button { viewModel.searchText = "" } label: {
