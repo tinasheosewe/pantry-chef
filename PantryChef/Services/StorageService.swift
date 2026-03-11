@@ -86,17 +86,7 @@ actor StorageService: StorageServiceProtocol {
     func fetchRecipes() async throws -> [Recipe] {
         try ensureBootstrapIfNeeded()
         let records = try context.fetch(FetchDescriptor<RecipeRecord>())
-        var recipes: [Recipe] = []
-        recipes.reserveCapacity(records.count)
-
-        for record in records {
-            do {
-                recipes.append(try record.toDomain())
-            } catch {
-                throw StorageError.corruptedRecipeRecord(record.id)
-            }
-        }
-
+        let recipes = try decodeRecipes(from: records)
         return recipes.sorted { $0.dateAdded > $1.dateAdded }
     }
 
@@ -142,16 +132,12 @@ actor StorageService: StorageServiceProtocol {
         try ensureBootstrapIfNeeded()
         let records = try context.fetch(FetchDescriptor<MealPlanRecord>())
         let recipeRecords = try context.fetch(FetchDescriptor<RecipeRecord>())
+        let decodedRecipes = try decodeRecipes(from: recipeRecords)
 
         var recipeById: [UUID: Recipe] = [:]
-        recipeById.reserveCapacity(recipeRecords.count)
-
-        for record in recipeRecords {
-            do {
-                recipeById[record.id] = try record.toDomain()
-            } catch {
-                throw StorageError.corruptedRecipeRecord(record.id)
-            }
+        recipeById.reserveCapacity(decodedRecipes.count)
+        for recipe in decodedRecipes {
+            recipeById[recipe.id] = recipe
         }
 
         return records
@@ -257,6 +243,20 @@ actor StorageService: StorageServiceProtocol {
         var descriptor = FetchDescriptor<MealPlanRecord>(predicate: #Predicate { $0.id == id })
         descriptor.fetchLimit = 1
         return try context.fetch(descriptor).first
+    }
+
+    private func decodeRecipes(from records: [RecipeRecord]) throws -> [Recipe] {
+        var recipes: [Recipe] = []
+        recipes.reserveCapacity(records.count)
+
+        for record in records {
+            do {
+                recipes.append(try record.toDomain())
+            } catch {
+                throw StorageError.corruptedRecipeRecord(record.id)
+            }
+        }
+        return recipes
     }
 
     private func saveContext() throws {
