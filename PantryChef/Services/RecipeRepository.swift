@@ -118,16 +118,13 @@ final class RecipeRepository {
 
     private func loadSeedRecipes() {
         guard let url = Bundle.main.url(forResource: "seed_recipes", withExtension: "json") else {
-            PerfLog.event("[RecipeRepository] seed_recipes.json NOT FOUND in bundle")
             seedRecipes = []
             return
         }
         do {
             let data = try Data(contentsOf: url)
-            PerfLog.event("[RecipeRepository] Loaded seed_recipes.json (\(data.count) bytes)")
             parseSeedJSON(data)
         } catch {
-            PerfLog.event("[RecipeRepository] Failed to read seed_recipes.json: \(error)")
             seedRecipes = []
         }
     }
@@ -176,9 +173,7 @@ final class RecipeRepository {
         let seedList: [SeedRecipe]
         do {
             seedList = try JSONDecoder().decode([SeedRecipe].self, from: data)
-            PerfLog.event("[RecipeRepository] Decoded \(seedList.count) seed recipes")
         } catch {
-            PerfLog.event("[RecipeRepository] JSON decode FAILED: \(error)")
             return
         }
 
@@ -238,7 +233,6 @@ final class RecipeRepository {
             let data = try Data(contentsOf: cacheURL)
             cachedRecipes = try JSONDecoder().decode([Recipe].self, from: data)
         } catch {
-            PerfLog.event("[RecipeRepository] Failed to load cache: \(error)")
             cachedRecipes = []
         }
     }
@@ -247,9 +241,7 @@ final class RecipeRepository {
         do {
             let data = try JSONEncoder().encode(cachedRecipes)
             try data.write(to: cacheURL, options: .atomic)
-        } catch {
-            PerfLog.event("[RecipeRepository] Failed to save cache: \(error)")
-        }
+        } catch { }
     }
 
 }

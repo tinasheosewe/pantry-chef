@@ -111,7 +111,6 @@ final class RecipeViewModel {
     // MARK: - Filtered Discover Recipes (bundled + cached + API search results)
 
     var filteredDiscoverRecipes: [Recipe] {
-        let started = CFAbsoluteTimeGetCurrent()
         let key = DiscoverFilterCacheKey(
             discoverSearchSource: collectionSignature(discoverSearchResults),
             discoverPoolSource: collectionSignature(appState.discoverRecipes),
@@ -126,10 +125,8 @@ final class RecipeViewModel {
             showWithSubstitutions: showWithSubstitutions
         )
         if cachedDiscoverFilterKey == key {
-            PerfLog.event("Discover filter cache hit, count=\(cachedDiscoverFilterResult.count)")
             return cachedDiscoverFilterResult
         }
-        PerfLog.event("Discover filter cache miss; api=\(discoverSearchResults.count), pool=\(appState.discoverRecipes.count), query='\(localFilterQuery)'")
 
         // When API search results are present, treat them as the authoritative
         // list to keep Discover rendering fast and pagination stable.
@@ -141,18 +138,12 @@ final class RecipeViewModel {
             recipes = appState.discoverRecipes
         }
 
-        let pantryMatchCache = PerfLog.timed("Discover pantryMatchCache") {
-            pantryMatchCacheIfNeeded(for: recipes)
-        }
+        let pantryMatchCache = pantryMatchCacheIfNeeded(for: recipes)
 
-        recipes = PerfLog.timed("Discover applyCommonFilters") {
-            applyCommonFilters(recipes)
-        }
+        recipes = applyCommonFilters(recipes)
 
         if showCanMakeOnly {
-            recipes = PerfLog.timed("Discover applyMakeabilityFilter") {
-                applyMakeabilityFilter(recipes, matchCache: pantryMatchCache)
-            }
+            recipes = applyMakeabilityFilter(recipes, matchCache: pantryMatchCache)
         }
 
         // Only apply local sort when browsing seed recipes (no API results).
@@ -160,15 +151,11 @@ final class RecipeViewModel {
         // (by relevance or popularity) and re-sorting would break
         // pagination order and scroll position.
         if discoverSearchResults.isEmpty {
-            recipes = PerfLog.timed("Discover applySortOrder") {
-                applySortOrder(recipes, matchCache: pantryMatchCache)
-            }
+            recipes = applySortOrder(recipes, matchCache: pantryMatchCache)
         }
 
         cachedDiscoverFilterKey = key
         cachedDiscoverFilterResult = recipes
-        let elapsedMs = Int((CFAbsoluteTimeGetCurrent() - started) * 1000)
-        PerfLog.event("Discover total filter pass: \(elapsedMs)ms (out=\(recipes.count))")
         return recipes
     }
 
@@ -263,14 +250,11 @@ final class RecipeViewModel {
             // Keep hot keys near the end (simple LRU behavior)
             matchMapCacheOrder.removeAll { $0 == key }
             matchMapCacheOrder.append(key)
-            PerfLog.event("matchMap cache hit, recipes=\(recipes.count)")
             return cached
         }
 
         let pantry = appState.pantryItems
-        let map = PerfLog.timed("matchMap compute recipes=\(recipes.count)") {
-            Dictionary(uniqueKeysWithValues: recipes.map { ($0.id, $0.pantryMatch(pantry: pantry)) })
-        }
+        let map = Dictionary(uniqueKeysWithValues: recipes.map { ($0.id, $0.pantryMatch(pantry: pantry)) })
 
         insertMatchMapCache(key: key, map: map)
 
@@ -518,7 +502,6 @@ final class RecipeViewModel {
         let recipes = filteredDiscoverRecipes
         let visible = Array(recipes.prefix(max(visibleCount, 1)))
         _ = matchMap(for: visible)
-        PerfLog.event("Discover prewarm completed: visible=\(visible.count), total=\(recipes.count)")
     }
 
     func scheduleBackgroundMatchPrewarm(visibleDiscoverCount: Int) {
@@ -566,7 +549,6 @@ final class RecipeViewModel {
                     let discoverMetrics = Dictionary(uniqueKeysWithValues: discoverMap.map { ($0.key, RecipeMatchMetrics(from: $0.value)) })
                     self.insertMetricsCache(pantrySignature: pantrySig, metrics: discoverMetrics)
                 }
-                PerfLog.event("Background prewarm complete: user=\(userMap.count), discover=\(discoverMap.count)")
             }
         }
     }
@@ -593,10 +575,7 @@ final class RecipeViewModel {
         hydratePersistedMetricsIfNeeded(for: pantrySig)
         let alreadyCached = persistedMetrics[pantrySig] ?? [:]
         let missing = allRecipes.filter { alreadyCached[$0.id] == nil }
-        guard !missing.isEmpty else {
-            PerfLog.event("Full metrics coverage already complete: total=\(allRecipes.count)")
-            return
-        }
+        guard !missing.isEmpty else { return }
 
         fullCoverageTask?.cancel()
         fullCoverageTask = Task.detached(priority: .utility) {
@@ -625,7 +604,6 @@ final class RecipeViewModel {
                 merged.merge(accumulated) { _, new in new }
                 self.persistedMetrics[pantrySig] = merged
                 self.persistMetrics(pantrySignature: pantrySig, metrics: merged)
-                PerfLog.event("Full metrics coverage complete (\(reason)): computed=\(accumulated.count), total=\(allRecipes.count)")
             }
         }
     }
@@ -692,7 +670,6 @@ final class RecipeViewModel {
             return
         }
         persistedMetrics[pantrySignature] = loaded.metrics
-        PerfLog.event("Loaded persisted match metrics: \(loaded.metrics.count)")
     }
 
     private func loadPersistedMetrics() -> PersistedMatchMetricsPayload? {
@@ -712,9 +689,7 @@ final class RecipeViewModel {
                 attributes: nil
             )
             try data.write(to: fileURL, options: .atomic)
-        } catch {
-            PerfLog.event("Failed to persist metrics cache: \(error.localizedDescription)")
-        }
+        } catch { }
     }
 
     private var matchMetricsCacheFileURL: URL? {

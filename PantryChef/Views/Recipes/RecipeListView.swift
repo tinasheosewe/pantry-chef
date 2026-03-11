@@ -150,15 +150,10 @@ struct RecipeListView: View {
             }
             .onChange(of: selectedSection) { _, newValue in
                 if newValue == .discover {
-                    if let tappedAt = discoverTapStartedAt {
-                        let tapDeltaMs = Int((CFAbsoluteTimeGetCurrent() - tappedAt) * 1000)
-                        PerfLog.event("Discover tap->state change: \(tapDeltaMs)ms")
-                    }
                     discoverVisibleCount = 12
                     lastLoadMoreTriggerID = nil
                     discoverSwitchStartedAt = CFAbsoluteTimeGetCurrent()
                     loggedDiscoverFirstCellForCurrentSwitch = false
-                    PerfLog.event("Discover tab selected")
                     viewModel.scheduleBackgroundMatchPrewarm(visibleDiscoverCount: discoverVisibleCount)
                     viewModel.scheduleFullMetricsCoverage(reason: "discover-tab")
                 }
@@ -179,7 +174,6 @@ struct RecipeListView: View {
             .onChange(of: viewModel.effectiveSearchQuery) {
                 discoverVisibleCount = 12
                 lastLoadMoreTriggerID = nil
-                PerfLog.event("effectiveSearchQuery='\(viewModel.effectiveSearchQuery)'")
             }
             .onAppear {
                 // Prewarm discover data path so first switch is instant.
@@ -191,7 +185,6 @@ struct RecipeListView: View {
 
                 // Safety net: ensure discover recipes are loaded even if init timing was off
                 if viewModel.appState.discoverRecipes.isEmpty {
-                    PerfLog.event("[RecipeListView] discoverRecipes empty on appear — refreshing")
                     viewModel.appState.refreshDiscoverRecipes()
                 }
             }
@@ -204,10 +197,7 @@ struct RecipeListView: View {
         HStack(spacing: 0) {
             ForEach(RecipeSection.allCases, id: \.self) { section in
                 Button {
-                    if section == .discover {
-                        discoverTapStartedAt = CFAbsoluteTimeGetCurrent()
-                        PerfLog.event("Discover tab tapped")
-                    }
+                    if section == .discover { discoverTapStartedAt = CFAbsoluteTimeGetCurrent() }
                     selectedSection = section
                     // No-op on section switch — state is preserved
                 } label: {
@@ -271,11 +261,6 @@ struct RecipeListView: View {
         .clipShape(RoundedRectangle(cornerRadius: 10))
         .padding(.horizontal)
         .padding(.top, 8)
-        .onChange(of: isSearchFocused) { _, focused in
-            if focused {
-                PerfLog.event("Search field focused in \(selectedSection.rawValue)")
-            }
-        }
     }
 
     // MARK: - Filter Pills
@@ -532,10 +517,8 @@ struct RecipeListView: View {
                     .onAppear {
                         if !isUserSection,
                            !loggedDiscoverFirstCellForCurrentSwitch,
-                           let started = discoverSwitchStartedAt {
-                            let elapsedMs = Int((CFAbsoluteTimeGetCurrent() - started) * 1000)
+                           discoverSwitchStartedAt != nil {
                             loggedDiscoverFirstCellForCurrentSwitch = true
-                            PerfLog.event("Discover first cell appeared in \(elapsedMs)ms (displayed=\(displayedRecipes.count), total=\(recipes.count))")
                         }
 
                         if !isUserSection,

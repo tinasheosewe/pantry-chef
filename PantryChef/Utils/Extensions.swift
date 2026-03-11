@@ -172,27 +172,3 @@ enum DebounceDurations {
     static let quickSearch: UInt64 = 150_000_000
     static let apiSearch: UInt64 = 400_000_000
 }
-
-// MARK: - Performance Logging
-
-enum PerfLog {
-    static func event(_ message: String) {
-#if DEBUG
-        guard AppConfig.enablePerformanceLogging else { return }
-        print("[Perf] \(message)")
-#endif
-    }
-
-    static func timed<T>(_ label: String, _ block: () -> T) -> T {
-#if DEBUG
-        guard AppConfig.enablePerformanceLogging else { return block() }
-        let started = CFAbsoluteTimeGetCurrent()
-        let value = block()
-        let elapsedMs = Int((CFAbsoluteTimeGetCurrent() - started) * 1000)
-        print("[Perf] \(label): \(elapsedMs)ms")
-        return value
-#else
-        return block()
-#endif
-    }
-}
