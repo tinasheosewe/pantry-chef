@@ -1066,31 +1066,19 @@ final class AIService: AIServiceProtocol {
     /// Retries on network errors and 5xx / 429 responses. Gives up on 4xx client errors.
     /// Pass `responseFormat` to enable structured output (e.g. json_schema).
     private func sendChatRequest(prompt: String, maxTokens: Int = 4096, responseFormat: [String: Any]? = nil) async -> String? {
-        let useProxy = AppConfig.isBackendProxyConfigured
-        if !useProxy {
-            guard !apiKey.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
-                  !AppConfig.isMissing(apiKey) else {
-                AppLog.info("[AIService] Missing OpenAI API key")
-                return nil
-            }
+        guard !apiKey.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
+              !AppConfig.isMissing(apiKey) else {
+            AppLog.info("[AIService] Missing OpenAI API key")
+            return nil
         }
 
-        let endpoint = useProxy
-            ? "\(AppConfig.backendBaseURL)/openai-proxy"
-            : baseURL
-        guard let url = URL(string: endpoint) else { return nil }
+        guard let url = URL(string: baseURL) else { return nil }
 
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.timeoutInterval = 30
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        if useProxy {
-            request.addValue("Bearer \(AppConfig.supabaseAnonKey)", forHTTPHeaderField: "Authorization")
-            request.addValue(AppConfig.supabaseAnonKey, forHTTPHeaderField: "apikey")
-            request.addValue(AppConfig.clientRateLimitID, forHTTPHeaderField: "x-client-id")
-        } else {
-            request.addValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
-        }
+        request.addValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
 
         var body: [String: Any] = [
             "model": model,

@@ -251,20 +251,15 @@ final class RealtimeService: RealtimeServiceProtocol {
     /// Calls OpenAI's GA Realtime API to create a short-lived client secret
     /// for WebRTC authentication.
     private func fetchEphemeralKey() async throws -> String {
-        let useProxy = AppConfig.isBackendProxyConfigured
-        let endpoint = useProxy
-            ? "\(AppConfig.backendBaseURL)/openai-realtime-token"
-            : "https://api.openai.com/v1/realtime/client_secrets"
-
-        if !useProxy,
-           (apiKey.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || AppConfig.isMissing(apiKey)) {
+        guard !apiKey.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
+              !AppConfig.isMissing(apiKey) else {
             throw NSError(
                 domain: "RealtimeService", code: -1,
                 userInfo: [NSLocalizedDescriptionKey: "Missing OpenAI API key"]
             )
         }
 
-        guard let url = URL(string: endpoint) else {
+        guard let url = URL(string: "https://api.openai.com/v1/realtime/client_secrets") else {
             throw NSError(
                 domain: "RealtimeService", code: -1,
                 userInfo: [NSLocalizedDescriptionKey: "Invalid client secrets endpoint URL"]
@@ -273,13 +268,7 @@ final class RealtimeService: RealtimeServiceProtocol {
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        if useProxy {
-            request.setValue("Bearer \(AppConfig.supabaseAnonKey)", forHTTPHeaderField: "Authorization")
-            request.setValue(AppConfig.supabaseAnonKey, forHTTPHeaderField: "apikey")
-            request.setValue(AppConfig.clientRateLimitID, forHTTPHeaderField: "x-client-id")
-        } else {
-            request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
-        }
+        request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
 
         // GA endpoint takes no model param — model is set on the connect URL
         request.httpBody = "{}".data(using: .utf8)
