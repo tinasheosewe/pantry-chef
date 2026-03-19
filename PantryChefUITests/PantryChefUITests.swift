@@ -45,10 +45,65 @@ final class PantryChefUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["Your pantry is empty"].waitForExistence(timeout: 2))
     }
 
+    func testPantryItemCanBeEdited() {
+        let app = makeApp()
+        app.launch()
+
+        app.tabBars.buttons["Pantry"].tap()
+
+        let milkRow = app.staticTexts["Milk"]
+        XCTAssertTrue(milkRow.waitForExistence(timeout: 5))
+        milkRow.tap()
+
+        let quantityField = app.textFields["pantry.form.quantityField"]
+        XCTAssertTrue(quantityField.waitForExistence(timeout: 5))
+        replaceText(in: quantityField, with: "2")
+
+        let saveButton = app.buttons["pantry.form.saveButton"]
+        XCTAssertTrue(saveButton.waitForExistence(timeout: 2))
+        saveButton.tap()
+
+        XCTAssertTrue(app.staticTexts["2 L"].waitForExistence(timeout: 5))
+    }
+
+    func testRecipeDetailShowsDirectTopBarActions() {
+        let app = makeApp()
+        app.launch()
+
+        app.tabBars.buttons["Recipes"].tap()
+
+        let recipeCell = app.staticTexts["Simple Chicken Stir Fry"]
+        XCTAssertTrue(recipeCell.waitForExistence(timeout: 5))
+        recipeCell.tap()
+
+        XCTAssertTrue(element(in: app, id: "recipe.detail.editButton").waitForExistence(timeout: 5))
+        XCTAssertTrue(element(in: app, id: "recipe.detail.favoriteButton").waitForExistence(timeout: 5))
+    }
+
+    func testRecipesScreenShowsDirectSortButton() {
+        let app = makeApp()
+        app.launch()
+
+        app.tabBars.buttons["Recipes"].tap()
+
+        XCTAssertTrue(element(in: app, id: "recipes.toolbar.sortMenu").waitForExistence(timeout: 5))
+    }
+
     private func makeApp(additionalArguments: [String] = []) -> XCUIApplication {
         let app = XCUIApplication()
         app.launchArguments = ["UITEST_MODE"] + additionalArguments
         return app
+    }
+
+    private func replaceText(in element: XCUIElement, with text: String) {
+        element.tap()
+
+        if let existingValue = element.value as? String {
+            let deleteSequence = String(repeating: XCUIKeyboardKey.delete.rawValue, count: existingValue.count)
+            element.typeText(deleteSequence)
+        }
+
+        element.typeText(text)
     }
 
     private func element(in app: XCUIApplication, id: String) -> XCUIElement {

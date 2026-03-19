@@ -48,7 +48,7 @@ struct RecipeListView: View {
             .background(AppColors.background)
             .navigationTitle("Recipes")
             .toolbar {
-                ToolbarItem(placement: .primaryAction) {
+                ToolbarItem(placement: .topBarTrailing) {
                     Menu {
                         Button { viewModel.showAddRecipe = true } label: {
                             Label("Add Recipe", systemImage: "square.and.pencil")
@@ -69,9 +69,10 @@ struct RecipeListView: View {
                         Image(systemName: "plus.circle.fill")
                             .font(.title3)
                     }
+                    .accessibilityIdentifier("recipes.toolbar.addMenu")
                 }
 
-                ToolbarItem(placement: .secondaryAction) {
+                ToolbarItem(placement: .topBarTrailing) {
                     Menu {
                         ForEach(RecipeViewModel.SortOrder.allCases, id: \.self) { order in
                             Button {
@@ -88,6 +89,7 @@ struct RecipeListView: View {
                     } label: {
                         Image(systemName: "arrow.up.arrow.down.circle")
                     }
+                    .accessibilityIdentifier("recipes.toolbar.sortMenu")
                 }
             }
             .sheet(isPresented: $viewModel.showAddRecipe) {

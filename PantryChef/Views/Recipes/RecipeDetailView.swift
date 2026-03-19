@@ -67,24 +67,26 @@ struct RecipeDetailView: View {
             existingSession = CookingSession.load(recipeId: recipe.id)
         }
         .toolbar {
-            ToolbarItem(placement: .primaryAction) {
-                HStack(spacing: 16) {
-                    Button {
-                        showEditor = true
-                    } label: {
-                        Image(systemName: "pencil")
-                            .foregroundStyle(AppColors.accentTeal)
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    recipe.isFavorite.toggle()
+                    Task {
+                        await appState.toggleFavoriteWithSave(recipe)
                     }
-                    Button {
-                        recipe.isFavorite.toggle()
-                        Task {
-                            await appState.toggleFavoriteWithSave(recipe)
-                        }
-                    } label: {
-                        Image(systemName: recipe.isFavorite ? "heart.fill" : "heart")
-                            .foregroundStyle(recipe.isFavorite ? .red : AppColors.mediumGray)
-                    }
+                } label: {
+                    Image(systemName: recipe.isFavorite ? "heart.fill" : "heart")
+                        .foregroundStyle(recipe.isFavorite ? .red : AppColors.mediumGray)
                 }
+                .accessibilityIdentifier("recipe.detail.favoriteButton")
+            }
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    showEditor = true
+                } label: {
+                    Image(systemName: "pencil")
+                        .foregroundStyle(AppColors.accentTeal)
+                }
+                .accessibilityIdentifier("recipe.detail.editButton")
             }
         }
         .sheet(isPresented: $showGathering) {

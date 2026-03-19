@@ -2,6 +2,7 @@ import SwiftUI
 
 struct PantryView: View {
     @State private var viewModel: PantryViewModel
+    @State private var editingItem: PantryItem?
 
     init(appState: AppState) {
         _viewModel = State(initialValue: PantryViewModel(appState: appState))
@@ -35,6 +36,11 @@ struct PantryView: View {
             .sheet(isPresented: $viewModel.showAddItem) {
                 AddPantryItemView { item in
                     Task { await viewModel.addItem(item) }
+                }
+            }
+            .sheet(item: $editingItem) { item in
+                AddPantryItemView(item: item) { updatedItem in
+                    Task { await viewModel.updateItem(updatedItem) }
                 }
             }
             .sheet(isPresented: $viewModel.showBarcodeScanner) {
@@ -123,7 +129,21 @@ struct PantryView: View {
             ForEach(viewModel.groupedByCategory, id: \.0) { category, items in
                 Section {
                     ForEach(items) { item in
-                        PantryItemRow(item: item)
+                        Button {
+                            editingItem = item
+                        } label: {
+                            PantryItemRow(item: item)
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityIdentifier("pantry.item.\(item.id.uuidString)")
+                        .swipeActions(edge: .leading, allowsFullSwipe: false) {
+                            Button {
+                                editingItem = item
+                            } label: {
+                                Label("Edit", systemImage: "pencil")
+                            }
+                            .tint(AppColors.accentBlue)
+                        }
                             .swipeActions(edge: .trailing) {
                                 Button(role: .destructive) {
                                     Task { await viewModel.deleteItem(item) }
@@ -230,10 +250,28 @@ struct AddPantryItemView: View {
     @State private var hasExpiry = false
     @State private var notes = ""
 
+    private let existingItem: PantryItem?
     let onSave: (PantryItem) -> Void
+
+    init(item: PantryItem? = nil, onSave: @escaping (PantryItem) -> Void) {
+        self.existingItem = item
+        self.onSave = onSave
+        _name = State(initialValue: item?.name ?? "")
+        _category = State(initialValue: item?.category ?? .other)
+        _quantity = State(initialValue: item?.quantity.map(Self.quantityString) ?? "")
+        _unit = State(initialValue: item?.unit ?? .piece)
+        _expiryDate = State(initialValue: item?.expiryDate ?? Date())
+        _hasExpiry = State(initialValue: item?.expiryDate != nil)
+        _notes = State(initialValue: item?.notes ?? "")
+    }
 
     private var trimmedName: String {
         name.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    private var trimmedNotes: String? {
+        let value = notes.trimmingCharacters(in: .whitespacesAndNewlines)
+        return value.isEmpty ? nil : value
     }
 
     private var parsedQuantity: Double? {
@@ -245,11 +283,23 @@ struct AddPantryItemView: View {
         !quantity.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && parsedQuantity == nil
     }
 
+    private var isEditing: Bool {
+        existingItem != nil
+    }
+
+    private static func quantityString(_ value: Double) -> String {
+        if value == value.rounded() {
+            return String(Int(value))
+        }
+        return String(value)
+    }
+
     var body: some View {
         NavigationStack {
             Form {
                 Section("Item Details") {
                     TextField("Name", text: $name)
+                        .accessibilityIdentifier("pantry.form.nameField")
                     Picker("Category", selection: $category) {
                         ForEach(FoodCategory.allCases) { cat in
                             Label(cat.rawValue, systemImage: cat.icon)
@@ -262,6 +312,7 @@ struct AddPantryItemView: View {
                     HStack {
                         TextField("Amount", text: $quantity)
                             .keyboardType(.decimalPad)
+                            .accessibilityIdentifier("pantry.form.quantityField")
                         Picker("Unit", selection: $unit) {
                             ForEach(MeasurementUnit.allCases) { u in
                                 Text(u.rawValue).tag(u)
@@ -285,27 +336,34 @@ struct AddPantryItemView: View {
                 Section("Notes") {
                     TextField("Optional notes", text: $notes, axis: .vertical)
                         .lineLimit(3)
+                        .accessibilityIdentifier("pantry.form.notesField")
                 }
             }
-            .navigationTitle("Add Item")
+            .navigationTitle(isEditing ? "Edit Item" : "Add Item")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") { dismiss() }
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Add") {
+                    Button(isEditing ? "Save" : "Add") {
+                        let normalizedQuantity = parsedQuantity
                         let item = PantryItem(
+                            id: existingItem?.id ?? UUID(),
                             name: trimmedName,
                             category: category,
-                            quantity: parsedQuantity,
-                            unit: unit,
+                            quantity: normalizedQuantity,
+                            unit: normalizedQuantity == nil ? nil : unit,
                             expiryDate: hasExpiry ? expiryDate : nil,
-                            notes: notes.isEmpty ? nil : notes
+                            dateAdded: existingItem?.dateAdded ?? Date(),
+                            barcode: existingItem?.barcode,
+                            notes: trimmedNotes,
+                            imageURL: existingItem?.imageURL
                         )
                         onSave(item)
                         dismiss()
                     }
+                    .accessibilityIdentifier("pantry.form.saveButton")
                     .disabled(trimmedName.isEmpty || quantityIsInvalid)
                 }
             }
