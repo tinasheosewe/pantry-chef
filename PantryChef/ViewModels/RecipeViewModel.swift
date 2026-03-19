@@ -604,9 +604,11 @@ final class RecipeViewModel {
                 chunkStart = next
             }
 
+            let completedMetrics = accumulated
+
             await MainActor.run {
                 var merged = self.persistedMetrics[pantrySig] ?? [:]
-                merged.merge(accumulated) { _, new in new }
+                merged.merge(completedMetrics) { _, new in new }
                 self.persistedMetrics[pantrySig] = merged
                 self.persistMetrics(pantrySignature: pantrySig, metrics: merged)
             }
