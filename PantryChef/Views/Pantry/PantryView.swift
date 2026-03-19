@@ -133,24 +133,19 @@ struct PantryView: View {
                             editingItem = item
                         } label: {
                             PantryItemRow(item: item)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .contentShape(Rectangle())
                         }
                         .buttonStyle(.plain)
                         .accessibilityIdentifier("pantry.item.\(item.id.uuidString)")
-                        .swipeActions(edge: .leading, allowsFullSwipe: false) {
-                            Button {
-                                editingItem = item
+                        .swipeActions(edge: .trailing) {
+                            Button(role: .destructive) {
+                                Task { await viewModel.deleteItem(item) }
                             } label: {
-                                Label("Edit", systemImage: "pencil")
+                                Label("Delete", systemImage: "trash")
                             }
-                            .tint(AppColors.accentBlue)
+                            .tint(.red)
                         }
-                            .swipeActions(edge: .trailing) {
-                                Button(role: .destructive) {
-                                    Task { await viewModel.deleteItem(item) }
-                                } label: {
-                                    Label("Delete", systemImage: "trash")
-                                }
-                            }
                     }
                 } header: {
                     HStack(spacing: 8) {
@@ -235,6 +230,7 @@ struct PantryItemRow: View {
                 ExpiryBadge(status: item.expiryStatus, daysLeft: item.daysUntilExpiry)
             }
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.vertical, 4)
     }
 }
