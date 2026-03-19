@@ -44,6 +44,7 @@ struct RecipeListView: View {
                     discoverContent(recipes: filteredDiscoverRecipes, hasQuery: hasQuery, trimmedQuery: trimmedQuery)
                 }
             }
+            .accessibilityIdentifier("recipes.screen")
             .background(AppColors.background)
             .navigationTitle("Recipes")
             .toolbar {
@@ -244,6 +245,7 @@ struct RecipeListView: View {
             TextField("Search recipes...", text: $viewModel.searchText)
                 .font(.subheadline)
                 .focused($isSearchFocused)
+                .accessibilityIdentifier("recipes.searchField")
                 .onChange(of: viewModel.searchText) {
                     viewModel.onSearchTextChanged(isDiscoverTab: selectedSection == .discover)
                 }

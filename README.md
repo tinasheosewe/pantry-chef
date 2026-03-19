@@ -69,6 +69,15 @@ Set these values in your environment or app Info.plist:
 ### 3. Build & Run
 Select your target device/simulator in Xcode and hit ⌘R. The app launches with sample pantry items and recipes preloaded — no backend setup required.
 
+### 4. Run The Quality Gates
+The stable quality command runs unit tests and UI smoke tests separately, then enforces the current coverage gate.
+
+```bash
+bash Scripts/ci/run_quality.sh
+```
+
+See [TESTING.md](TESTING.md) for the full testing playbook, current performance budgets, exploratory checkpoints, and snapshot update procedure.
+
 ### Future: Migrating to Supabase
 The service layer (`StorageService.swift`) is designed for a seamless swap to cloud storage:
 1. Add the `supabase-swift` package dependency back to `project.yml`

@@ -1,0 +1,85 @@
+import XCTest
+@testable import PantryChef
+
+final class AIOutputValidatorTests: XCTestCase {
+    func testValidRecipePassesValidation() {
+        let recipe = Recipe(
+            title: "Chicken soup",
+            description: "A simple, comforting chicken soup for weeknights.",
+            ingredients: [Ingredient(name: "chicken broth", quantity: 500, unit: .milliliter, category: .other)],
+            steps: [
+                RecipeStep(stepNumber: 1, instruction: "Heat the broth in a pot until steaming.", estimatedDurationSeconds: 300),
+                RecipeStep(stepNumber: 2, instruction: "Serve the soup warm with cracked pepper.", estimatedDurationSeconds: 60),
+            ]
+        )
+
+        XCTAssertTrue(AIOutputValidator.validate(recipe: recipe).isEmpty)
+    }
+
+    func testWrongLanguageIsFlagged() {
+        let recipe = Recipe(
+            title: "Sopa de pollo",
+            description: "Una sopa reconfortante con pollo y verduras para la cena.",
+            ingredients: [Ingredient(name: "pollo", quantity: 500, unit: .gram, category: .protein)],
+            steps: [
+                RecipeStep(stepNumber: 1, instruction: "Calienta el caldo en una olla grande.", estimatedDurationSeconds: 300),
+                RecipeStep(stepNumber: 2, instruction: "Sirve la sopa caliente con hierbas frescas.", estimatedDurationSeconds: 60),
+            ]
+        )
+
+        XCTAssertTrue(AIOutputValidator.validate(recipe: recipe).contains {
+            if case .wrongLanguage = $0 { return true }
+            return false
+        })
+    }
+
+    func testNonSequentialStepsAreRejected() {
+        let recipe = Recipe(
+            title: "Soup",
+            ingredients: [Ingredient(name: "water", quantity: 1, unit: .liter)],
+            steps: [
+                RecipeStep(stepNumber: 1, instruction: "Boil water.", estimatedDurationSeconds: 300),
+                RecipeStep(stepNumber: 3, instruction: "Serve.", estimatedDurationSeconds: 60),
+            ]
+        )
+
+        XCTAssertTrue(AIOutputValidator.validate(recipe: recipe).contains {
+            if case .nonSequentialStepNumbers = $0 { return true }
+            return false
+        })
+    }
+
+    func testNegativeTimersAreRejected() {
+        let recipe = Recipe(
+            title: "Soup",
+            ingredients: [Ingredient(name: "water", quantity: 1, unit: .liter)],
+            steps: [
+                RecipeStep(stepNumber: 1, instruction: "Boil water.", timerMinutes: -2, estimatedDurationSeconds: 120),
+            ]
+        )
+
+        XCTAssertTrue(AIOutputValidator.validate(recipe: recipe).contains {
+            if case .invalidTimer = $0 { return true }
+            return false
+        })
+    }
+
+    func testInvalidImportResultIsRejected() {
+        let result = RecipeImportResult(
+            title: "",
+            description: nil,
+            ingredients: [],
+            steps: [],
+            servings: nil,
+            prepTimeMinutes: nil,
+            cookTimeMinutes: nil,
+            imageURL: nil,
+            dietaryTags: nil
+        )
+
+        let issues = AIOutputValidator.validate(importResult: result)
+        XCTAssertTrue(issues.contains(.emptyTitle))
+        XCTAssertTrue(issues.contains(.missingIngredients))
+        XCTAssertTrue(issues.contains(.missingSteps))
+    }
+}

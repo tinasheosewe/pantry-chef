@@ -110,7 +110,7 @@ final class AIService: AIServiceProtocol {
         guard let data = response.data(using: .utf8) else { return [] }
         do {
             let raw = try JSONDecoder().decode(RawRecipeArray.self, from: data)
-            return raw.recipes.map { $0.toRecipe(source: .aiGenerated) }
+            return validatedRecipes(raw.recipes.map { $0.toRecipe(source: .aiGenerated) }, source: "suggestRecipes")
         } catch {
             AppLog.warn("[AIService] Failed to decode suggested recipes: \(error)")
             return []
@@ -272,7 +272,7 @@ final class AIService: AIServiceProtocol {
         guard let data = response.data(using: .utf8) else { return [] }
         do {
             let raw = try JSONDecoder().decode(RawRecipeArray.self, from: data)
-            return raw.recipes.map { $0.toRecipe(source: .aiGenerated) }
+            return validatedRecipes(raw.recipes.map { $0.toRecipe(source: .aiGenerated) }, source: "leftoverTransformer")
         } catch {
             AppLog.warn("[AIService] Failed to decode leftover recipes: \(error)")
             return []
@@ -758,7 +758,7 @@ final class AIService: AIServiceProtocol {
         guard let data = response.data(using: .utf8) else { return nil }
         do {
             let raw = try JSONDecoder().decode(RawImportResult.self, from: data)
-            return raw.toRecipeImportResult()
+            return validatedImportResult(raw.toRecipeImportResult(), source: "parseRecipeFromText")
         } catch {
             AppLog.warn("[AIService] Failed to decode structured recipe: \(error)")
             return nil
@@ -917,7 +917,7 @@ final class AIService: AIServiceProtocol {
         guard let data = response.data(using: .utf8) else { return nil }
         do {
             let raw = try JSONDecoder().decode(RawFullRecipe.self, from: data)
-            return raw.toRecipe(source: .aiGenerated)
+            return validatedRecipe(raw.toRecipe(source: .aiGenerated), source: "generateRecipe")
         } catch {
             AppLog.warn("[AIService] Failed to parse generated recipe: \(error)")
             return nil
@@ -1004,7 +1004,7 @@ final class AIService: AIServiceProtocol {
         guard let data = response.data(using: .utf8) else { return nil }
         do {
             let raw = try JSONDecoder().decode(RawFullRecipe.self, from: data)
-            return raw.toRecipe(source: recipe.source, preserving: recipe)
+            return validatedRecipe(raw.toRecipe(source: recipe.source, preserving: recipe), source: "modifyRecipe")
         } catch {
             AppLog.warn("[AIService] Failed to parse modified recipe: \(error)")
             return nil
@@ -1143,6 +1143,28 @@ final class AIService: AIServiceProtocol {
         }
 
         return nil
+    }
+
+    private func validatedRecipes(_ recipes: [Recipe], source: String) -> [Recipe] {
+        recipes.compactMap { validatedRecipe($0, source: source) }
+    }
+
+    private func validatedRecipe(_ recipe: Recipe, source: String) -> Recipe? {
+        let issues = AIOutputValidator.validate(recipe: recipe)
+        guard issues.isEmpty else {
+            AppLog.warn("[AIService] Dropping invalid AI recipe from \(source): \(issues.map(\.description).joined(separator: ", "))")
+            return nil
+        }
+        return recipe
+    }
+
+    private func validatedImportResult(_ result: RecipeImportResult, source: String) -> RecipeImportResult? {
+        let issues = AIOutputValidator.validate(importResult: result)
+        guard issues.isEmpty else {
+            AppLog.warn("[AIService] Dropping invalid AI import from \(source): \(issues.map(\.description).joined(separator: ", "))")
+            return nil
+        }
+        return result
     }
 
     // MARK: - Response Parsing (legacy — kept for edge cases)

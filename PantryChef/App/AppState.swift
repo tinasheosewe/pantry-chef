@@ -52,6 +52,8 @@ final class AppState {
         recipes + discoverRecipes
     }
 
+    private static let launchOptions = AppLaunchOptions.current
+
     /// Resolve a recipe by UUID string across all known sources.
     func recipeByIdString(_ id: String) -> Recipe? {
         allRecipes.first { $0.id.uuidString == id }
@@ -64,12 +66,15 @@ final class AppState {
 
     // MARK: - Init (DI-friendly)
     init() {
-        self.storageService = StorageService()
+        let launchOptions = Self.launchOptions
+        self.storageService = StorageService(
+            isStoredInMemoryOnly: launchOptions.useInMemoryStorage,
+            shouldBootstrap: launchOptions.shouldBootstrapStorage
+        )
         self.aiService = AIService()
-        // Start with sample defaults and then hydrate from durable storage.
-        pantryItems = PantryItem.samples
-        recipes = Recipe.samples
-        discoverRecipes = recipeRepository.seedRecipes
+        pantryItems = launchOptions.seedPantryItems ? PantryItem.samples : []
+        recipes = launchOptions.seedRecipes ? Recipe.samples : []
+        discoverRecipes = launchOptions.seedDiscoverRecipes ? recipeRepository.seedRecipes : []
         Task { await loadAllData() }
     }
 

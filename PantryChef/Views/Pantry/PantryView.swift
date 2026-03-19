@@ -27,6 +27,7 @@ struct PantryView: View {
                     pantryList
                 }
             }
+            .accessibilityIdentifier("pantry.screen")
             .background(AppColors.background)
             .navigationTitle("Pantry")
             .sheet(isPresented: $viewModel.showAddItem) {
@@ -76,6 +77,7 @@ struct PantryView: View {
                     .foregroundStyle(AppColors.mediumGray)
                 TextField("Search pantry...", text: $viewModel.searchText)
                     .font(.subheadline)
+                    .accessibilityIdentifier("pantry.searchField")
                     .onChange(of: viewModel.searchText) {
                         viewModel.onSearchTextChanged()
                     }
@@ -138,6 +140,7 @@ struct PantryView: View {
                 }
             }
         }
+        .accessibilityIdentifier("pantry.list")
         .listStyle(.insetGrouped)
     }
 }

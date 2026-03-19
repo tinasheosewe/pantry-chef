@@ -49,6 +49,7 @@ struct HomeView: View {
                 }
                 .padding()
             }
+            .accessibilityIdentifier("home.screen")
             .background(AppColors.background)
             .navigationBarTitleDisplayMode(.inline)
             .refreshable {
@@ -195,15 +196,18 @@ struct HomeView: View {
                 QuickActionButton(icon: "fork.knife", title: "What can\nI make?", color: AppColors.primaryGreen) {
                     onSwitchToRecipesCanMake?()
                 }
+                .accessibilityIdentifier("home.quickAction.canMake")
                 QuickActionButton(icon: "cart.fill", title: "What to\nbuy?", color: AppColors.warmOrange) {
                     Task {
                         await viewModel.appState.generateShoppingListFromMealPlan()
                     }
                     onSwitchToShopping?()
                 }
+                .accessibilityIdentifier("home.quickAction.shopping")
                 QuickActionButton(icon: "camera.fill", title: "Scan\nreceipt", color: AppColors.accentBlue) {
                     showReceiptScanner = true
                 }
+                .accessibilityIdentifier("home.quickAction.receipt")
             }
         }
     }

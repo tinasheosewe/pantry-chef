@@ -68,6 +68,7 @@ struct ContentView: View {
                     }
                     .tag(Tab.shop)
             }
+            .accessibilityIdentifier("root.tabView")
             .tint(AppColors.primary)
         }
         .fullScreenCover(item: $deepLinkRecipe) { recipe in

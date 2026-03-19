@@ -53,3 +53,14 @@ targets:
         GENERATE_INFOPLIST_FILE: YES
     dependencies:
       - target: PantryChef
+
+  PantryChefUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - PantryChefUITests
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+    dependencies:
+      - target: PantryChef

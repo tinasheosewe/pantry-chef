@@ -107,4 +107,8 @@ final class PantryViewModel {
             self.debouncedSearchText = normalized
         }
     }
+
+    func applySearchTextImmediately() {
+        debouncedSearchText = searchText.trimmingCharacters(in: .whitespaces)
+    }
 }

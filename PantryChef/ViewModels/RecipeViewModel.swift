@@ -350,6 +350,11 @@ final class RecipeViewModel {
         }
     }
 
+    func applySearchTextImmediately() {
+        localFilterDebouncer.cancel()
+        localFilterQuery = searchText.trimmingCharacters(in: .whitespaces)
+    }
+
     /// Activate "What Can I Make" mode — pre-applies the can-make filter
     func activateWhatCanIMake() {
         showCanMakeOnly = true

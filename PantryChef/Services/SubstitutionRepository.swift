@@ -70,14 +70,14 @@ final class SubstitutionRepository: @unchecked Sendable {
     private func loadBundledData() {
         guard let url = Bundle.main.url(forResource: "substitutions", withExtension: "json"),
               let data = try? Data(contentsOf: url) else {
-            assertionFailure("Missing bundled substitutions.json; loading fallback substitutions")
+            AppLog.warn("[SubstitutionRepository] Missing bundled substitutions.json; loading fallback substitutions")
             loadFallbackData()
             return
         }
         do {
             try parseJSON(data)
         } catch {
-            assertionFailure("Invalid bundled substitutions.json: \(error); loading fallback substitutions")
+            AppLog.warn("[SubstitutionRepository] Invalid bundled substitutions.json: \(error); loading fallback substitutions")
             loadFallbackData()
         }
     }

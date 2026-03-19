@@ -29,6 +29,7 @@ struct ShoppingListView: View {
                     shoppingList
                 }
             }
+            .accessibilityIdentifier("shopping.screen")
             .background(AppColors.background)
             .navigationTitle("Shopping List")
             .toolbar {

@@ -24,6 +24,7 @@ struct MealPlanView: View {
                     }
                 }
             }
+            .accessibilityIdentifier("mealplan.screen")
             .background(AppColors.background)
             .navigationTitle("Meal Plan")
             .toolbar {
@@ -33,6 +34,7 @@ struct MealPlanView: View {
                     } label: {
                         Label("Shopping List", systemImage: "cart")
                     }
+                    .accessibilityIdentifier("mealplan.shoppingListButton")
                 }
             }
             .sheet(isPresented: $viewModel.showRecipePicker) {

@@ -1371,6 +1371,7 @@ final class RecipeViewModelTests: XCTestCase {
         await appState.addRecipe(makeRecipe(title: "Chicken Soup"))
         await appState.addRecipe(makeRecipe(title: "Beef Stew"))
         vm.searchText = "chicken"
+        vm.applySearchTextImmediately()
         XCTAssertEqual(vm.filteredRecipes.count, 1)
         XCTAssertEqual(vm.filteredRecipes[0].title, "Chicken Soup")
     }
@@ -1380,6 +1381,7 @@ final class RecipeViewModelTests: XCTestCase {
         let recipe = Recipe(title: "Mystery", description: "A creamy pasta dish")
         await appState.addRecipe(recipe)
         vm.searchText = "pasta"
+        vm.applySearchTextImmediately()
         XCTAssertEqual(vm.filteredRecipes.count, 1)
     }
 
@@ -1582,6 +1584,7 @@ final class PantryViewModelTests: XCTestCase {
         await appState.addPantryItem(makePantryItem(name: "Milk", category: .dairy))
         await appState.addPantryItem(makePantryItem(name: "Chicken", category: .protein))
         vm.searchText = "Milk"
+        vm.applySearchTextImmediately()
         XCTAssertEqual(vm.filteredItems.count, 1)
         XCTAssertEqual(vm.filteredItems[0].name, "Milk")
     }
