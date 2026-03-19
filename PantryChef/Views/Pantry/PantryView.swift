@@ -23,10 +23,12 @@ struct PantryView: View {
                     ) {
                         viewModel.showAddItem = true
                     }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
                 } else {
                     pantryList
                 }
             }
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             .accessibilityIdentifier("pantry.screen")
             .background(AppColors.background)
             .navigationTitle("Pantry")

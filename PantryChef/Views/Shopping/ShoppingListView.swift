@@ -25,10 +25,12 @@ struct ShoppingListView: View {
                     ) {
                         showAddItem = true
                     }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
                 } else {
                     shoppingList
                 }
             }
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             .accessibilityIdentifier("shopping.screen")
             .background(AppColors.background)
             .navigationTitle("Shopping List")

@@ -118,12 +118,14 @@ struct RecipeListView: View {
                 if let recipe = viewModel.recipeForNavigation(id: recipeID) {
                     RecipeDetailView(recipe: recipe)
                 } else {
-                    EmptyStateView(
-                        icon: "exclamationmark.triangle",
-                        title: "Recipe unavailable",
-                        message: "This recipe could not be loaded.",
-                        actionTitle: "Back"
-                    ) {
+                    centeredEmptyState {
+                        EmptyStateView(
+                            icon: "exclamationmark.triangle",
+                            title: "Recipe unavailable",
+                            message: "This recipe could not be loaded.",
+                            actionTitle: "Back"
+                        ) {
+                        }
                     }
                 }
             }
