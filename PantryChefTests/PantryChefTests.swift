@@ -5,6 +5,23 @@ import XCTest
 
 @MainActor
 final class MockStorageService: StorageServiceProtocol {
+    enum Operation: Hashable {
+        case fetchPantryItems
+        case fetchRecipes
+        case fetchMealPlan
+        case fetchShoppingItems
+        case addPantryItem
+        case updatePantryItem
+        case deletePantryItem
+        case addRecipe
+        case updateRecipe
+        case deleteRecipe
+        case addMealPlanEntry
+        case updateMealPlanEntry
+        case deleteMealPlanEntry
+        case saveShoppingItems
+    }
+
     var pantryStore: [PantryItem] = []
     var recipeStore: [Recipe] = []
     var mealPlanStore: [MealPlanEntry] = []
@@ -20,19 +37,24 @@ final class MockStorageService: StorageServiceProtocol {
     var deleteMealPlanCallCount = 0
 
     var shouldThrowError = false
+    var failingOperations: Set<Operation> = []
+
+    private func shouldFail(_ operation: Operation) -> Bool {
+        shouldThrowError || failingOperations.contains(operation)
+    }
 
     func fetchPantryItems() async throws -> [PantryItem] {
-        if shouldThrowError { throw TestError.mock }
+        if shouldFail(.fetchPantryItems) { throw TestError.mock }
         return pantryStore
     }
     func addPantryItem(_ item: PantryItem) async throws -> PantryItem {
-        if shouldThrowError { throw TestError.mock }
+        if shouldFail(.addPantryItem) { throw TestError.mock }
         addPantryItemCallCount += 1
         pantryStore.append(item)
         return item
     }
     func updatePantryItem(_ item: PantryItem) async throws -> PantryItem {
-        if shouldThrowError { throw TestError.mock }
+        if shouldFail(.updatePantryItem) { throw TestError.mock }
         updatePantryItemCallCount += 1
         if let idx = pantryStore.firstIndex(where: { $0.id == item.id }) {
             pantryStore[idx] = item
@@ -40,23 +62,23 @@ final class MockStorageService: StorageServiceProtocol {
         return item
     }
     func deletePantryItem(_ item: PantryItem) async throws {
-        if shouldThrowError { throw TestError.mock }
+        if shouldFail(.deletePantryItem) { throw TestError.mock }
         deletePantryItemCallCount += 1
         pantryStore.removeAll { $0.id == item.id }
     }
 
     func fetchRecipes() async throws -> [Recipe] {
-        if shouldThrowError { throw TestError.mock }
+        if shouldFail(.fetchRecipes) { throw TestError.mock }
         return recipeStore
     }
     func addRecipe(_ recipe: Recipe) async throws -> Recipe {
-        if shouldThrowError { throw TestError.mock }
+        if shouldFail(.addRecipe) { throw TestError.mock }
         addRecipeCallCount += 1
         recipeStore.append(recipe)
         return recipe
     }
     func updateRecipe(_ recipe: Recipe) async throws -> Recipe {
-        if shouldThrowError { throw TestError.mock }
+        if shouldFail(.updateRecipe) { throw TestError.mock }
         updateRecipeCallCount += 1
         if let idx = recipeStore.firstIndex(where: { $0.id == recipe.id }) {
             recipeStore[idx] = recipe
@@ -64,40 +86,40 @@ final class MockStorageService: StorageServiceProtocol {
         return recipe
     }
     func deleteRecipe(_ recipe: Recipe) async throws {
-        if shouldThrowError { throw TestError.mock }
+        if shouldFail(.deleteRecipe) { throw TestError.mock }
         deleteRecipeCallCount += 1
         recipeStore.removeAll { $0.id == recipe.id }
     }
 
     func fetchMealPlan() async throws -> [MealPlanEntry] {
-        if shouldThrowError { throw TestError.mock }
+        if shouldFail(.fetchMealPlan) { throw TestError.mock }
         return mealPlanStore
     }
     func addMealPlanEntry(_ entry: MealPlanEntry) async throws -> MealPlanEntry {
-        if shouldThrowError { throw TestError.mock }
+        if shouldFail(.addMealPlanEntry) { throw TestError.mock }
         addMealPlanCallCount += 1
         mealPlanStore.append(entry)
         return entry
     }
     func updateMealPlanEntry(_ entry: MealPlanEntry) async throws -> MealPlanEntry {
-        if shouldThrowError { throw TestError.mock }
+        if shouldFail(.updateMealPlanEntry) { throw TestError.mock }
         if let idx = mealPlanStore.firstIndex(where: { $0.id == entry.id }) {
             mealPlanStore[idx] = entry
         }
         return entry
     }
     func deleteMealPlanEntry(_ entry: MealPlanEntry) async throws {
-        if shouldThrowError { throw TestError.mock }
+        if shouldFail(.deleteMealPlanEntry) { throw TestError.mock }
         deleteMealPlanCallCount += 1
         mealPlanStore.removeAll { $0.id == entry.id }
     }
 
     func fetchShoppingItems() async throws -> [ShoppingItem] {
-        if shouldThrowError { throw TestError.mock }
+        if shouldFail(.fetchShoppingItems) { throw TestError.mock }
         return shoppingStore
     }
     func saveShoppingItems(_ items: [ShoppingItem]) async throws {
-        if shouldThrowError { throw TestError.mock }
+        if shouldFail(.saveShoppingItems) { throw TestError.mock }
         shoppingStore = items
     }
 }
@@ -165,7 +187,7 @@ enum TestError: Error {
 func makeTestAppState() -> (AppState, MockStorageService, MockAIService) {
     let storage = MockStorageService()
     let ai = MockAIService()
-    let appState = AppState(storageService: storage, aiService: ai)
+    let appState = AppState(storageService: storage, aiService: ai, shouldLoadOnInit: false)
     // Clear seeded data so tests start clean
     appState.pantryItems = []
     appState.recipes = []
@@ -1264,6 +1286,43 @@ final class AppStateTests: XCTestCase {
         XCTAssertTrue(appState.recipes[0].source.isUserRecipe)
     }
 
+    func testToggleFavoriteWithSaveRemovesLinkedDiscoverCopyWhenUnfavorited() async {
+        let (appState, storage, _) = makeTestAppState()
+        var discoverRecipe = makeRecipe(title: "Discover Dish")
+        discoverRecipe.source = .spoonacular(id: 42)
+        discoverRecipe.isFavorite = true
+        appState.discoverRecipes = [discoverRecipe]
+        appState.recipes = [Recipe(
+            id: discoverRecipe.id,
+            title: discoverRecipe.title,
+            description: discoverRecipe.description,
+            ingredients: discoverRecipe.ingredients,
+            steps: discoverRecipe.steps,
+            servings: discoverRecipe.servings,
+            prepTimeMinutes: discoverRecipe.prepTimeMinutes,
+            cookTimeMinutes: discoverRecipe.cookTimeMinutes,
+            difficulty: discoverRecipe.difficulty,
+            dietaryTags: discoverRecipe.dietaryTags,
+            mealType: discoverRecipe.mealType,
+            cuisine: discoverRecipe.cuisine,
+            source: .user,
+            nutrition: discoverRecipe.nutrition,
+            imageURL: discoverRecipe.imageURL,
+            sourceURL: discoverRecipe.sourceURL,
+            isFavorite: true,
+            dateAdded: discoverRecipe.dateAdded,
+            timesCooked: discoverRecipe.timesCooked,
+            rating: discoverRecipe.rating
+        )]
+        storage.recipeStore = appState.recipes
+
+        await appState.toggleFavoriteWithSave(appState.recipes[0])
+
+        XCTAssertEqual(storage.deleteRecipeCallCount, 1)
+        XCTAssertTrue(appState.recipes.isEmpty)
+        XCTAssertFalse(appState.discoverRecipes[0].isFavorite)
+    }
+
     // MARK: - Cook Deduction (fuzzy matching)
 
     func testMarkRecipeAsCookedDeductsIngredients() async {
@@ -1320,6 +1379,33 @@ final class AppStateTests: XCTestCase {
         storage.shouldThrowError = true
         await appState.loadAllData()
         XCTAssertNotNil(appState.errorMessage)
+    }
+
+    func testLoadAllDataPartialFailureKeepsSuccessfulCollections() async {
+        let (appState, storage, _) = makeTestAppState()
+        storage.pantryStore = [makePantryItem(name: "Loaded")]
+        storage.recipeStore = [makeRecipe(title: "Loaded Recipe")]
+        storage.shoppingStore = [ShoppingItem(name: "Loaded Shopping")]
+        storage.failingOperations = [.fetchMealPlan]
+        appState.mealPlan = [MealPlanEntry(date: Date(), mealType: .breakfast, customMealName: "Existing Meal")]
+
+        await appState.loadAllData()
+
+        XCTAssertEqual(appState.pantryItems.map(\.name), ["Loaded"])
+        XCTAssertEqual(appState.recipes.map(\.title), ["Loaded Recipe"])
+        XCTAssertEqual(appState.shoppingItems.map(\.name), ["Loaded Shopping"])
+        XCTAssertEqual(appState.mealPlan.map(\.displayName), ["Existing Meal"])
+        XCTAssertEqual(appState.errorMessage, TestError.mock.localizedDescription)
+    }
+
+    func testLoadAllDataSuccessClearsPreviousError() async {
+        let (appState, storage, _) = makeTestAppState()
+        storage.pantryStore = [makePantryItem(name: "Loaded")]
+        appState.errorMessage = "Previous failure"
+
+        await appState.loadAllData()
+
+        XCTAssertNil(appState.errorMessage)
     }
 
     // MARK: - AI Actions

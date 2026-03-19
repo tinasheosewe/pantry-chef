@@ -78,13 +78,15 @@ final class AppState {
         Task { await loadAllData() }
     }
 
-    init(storageService: StorageServiceProtocol, aiService: AIServiceProtocol) {
+    init(storageService: StorageServiceProtocol, aiService: AIServiceProtocol, shouldLoadOnInit: Bool = true) {
         self.storageService = storageService
         self.aiService = aiService
         pantryItems = PantryItem.samples
         recipes = Recipe.samples
         discoverRecipes = recipeRepository.seedRecipes
-        Task { await loadAllData() }
+        if shouldLoadOnInit {
+            Task { await loadAllData() }
+        }
     }
 
     // MARK: - Data Loading (for refresh / future network-backed store)
@@ -94,22 +96,39 @@ final class AppState {
             isLoading = false
         }
 
-        do {
-            async let items = storageService.fetchPantryItems()
-            async let recipeList = storageService.fetchRecipes()
-            async let plan = storageService.fetchMealPlan()
-            async let shopping = storageService.fetchShoppingItems()
+        var failures: [String] = []
 
-            let (fetchedItems, fetchedRecipes, fetchedPlan, fetchedShopping) = try await (items, recipeList, plan, shopping)
+        do {
+            let fetchedItems = try await storageService.fetchPantryItems()
             pantryItems = fetchedItems
+        } catch {
+            failures.append(error.localizedDescription)
+        }
+
+        do {
+            let fetchedRecipes = try await storageService.fetchRecipes()
             recipes = fetchedRecipes.filter { $0.source.isUserRecipe }
             let persistedDiscover = fetchedRecipes.filter { !$0.source.isUserRecipe }
             discoverRecipes = mergedDiscoverRecipes(withPersisted: persistedDiscover)
+        } catch {
+            failures.append(error.localizedDescription)
+        }
+
+        do {
+            let fetchedPlan = try await storageService.fetchMealPlan()
             mealPlan = fetchedPlan
+        } catch {
+            failures.append(error.localizedDescription)
+        }
+
+        do {
+            let fetchedShopping = try await storageService.fetchShoppingItems()
             shoppingItems = fetchedShopping
         } catch {
-            errorMessage = error.localizedDescription
+            failures.append(error.localizedDescription)
         }
+
+        errorMessage = failures.isEmpty ? nil : failures.joined(separator: "\n")
     }
 
     // MARK: - Pantry Actions
@@ -177,13 +196,14 @@ final class AppState {
         updated.isFavorite.toggle()
 
         let isAlreadyInMyRecipes = recipes.contains { $0.id == recipe.id }
+        let hasLinkedDiscoverRecipe = discoverRecipes.contains { $0.id == recipe.id && !$0.source.isUserRecipe }
 
         if updated.isFavorite && !isAlreadyInMyRecipes {
             // Save to My Recipes
             var savedCopy = updated
             savedCopy.source = .user
             await addRecipe(savedCopy)
-        } else if !updated.isFavorite && isAlreadyInMyRecipes && !recipe.source.isUserRecipe {
+        } else if !updated.isFavorite && isAlreadyInMyRecipes && (!recipe.source.isUserRecipe || hasLinkedDiscoverRecipe) {
             // Remove non-user recipes from My Recipes when un-hearted
             await removeFromMyRecipes(id: recipe.id)
         } else {

@@ -4,15 +4,12 @@ import SwiftData
 actor StorageService: StorageServiceProtocol {
     enum StorageError: LocalizedError {
         case containerInitializationFailed(Error)
-        case corruptedRecipeRecord(UUID)
         case recipeEncodingFailed(UUID)
 
         var errorDescription: String? {
             switch self {
             case .containerInitializationFailed(let error):
                 return "Failed to initialize persistent store: \(error.localizedDescription)"
-            case .corruptedRecipeRecord(let id):
-                return "Corrupted recipe record: \(id.uuidString)"
             case .recipeEncodingFailed(let id):
                 return "Failed to encode recipe for persistence: \(id.uuidString)"
             }
@@ -87,7 +84,7 @@ actor StorageService: StorageServiceProtocol {
     func fetchRecipes() async throws -> [Recipe] {
         try ensureBootstrapIfNeeded()
         let records = try context.fetch(FetchDescriptor<RecipeRecord>())
-        let recipes = try decodeRecipes(from: records)
+        let recipes = decodeRecipes(from: records)
         return recipes.sorted { $0.dateAdded > $1.dateAdded }
     }
 
@@ -133,7 +130,7 @@ actor StorageService: StorageServiceProtocol {
         try ensureBootstrapIfNeeded()
         let records = try context.fetch(FetchDescriptor<MealPlanRecord>())
         let recipeRecords = try context.fetch(FetchDescriptor<RecipeRecord>())
-        let decodedRecipes = try decodeRecipes(from: recipeRecords)
+        let decodedRecipes = decodeRecipes(from: recipeRecords)
 
         var recipeById: [UUID: Recipe] = [:]
         recipeById.reserveCapacity(decodedRecipes.count)
@@ -246,7 +243,7 @@ actor StorageService: StorageServiceProtocol {
         return try context.fetch(descriptor).first
     }
 
-    private func decodeRecipes(from records: [RecipeRecord]) throws -> [Recipe] {
+    private func decodeRecipes(from records: [RecipeRecord]) -> [Recipe] {
         var recipes: [Recipe] = []
         recipes.reserveCapacity(records.count)
 
@@ -254,7 +251,7 @@ actor StorageService: StorageServiceProtocol {
             do {
                 recipes.append(try record.toDomain())
             } catch {
-                throw StorageError.corruptedRecipeRecord(record.id)
+                AppLog.warn("[StorageService] Skipping corrupted recipe record \(record.id.uuidString): \(error.localizedDescription)")
             }
         }
         return recipes
