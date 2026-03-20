@@ -443,21 +443,11 @@ struct CookModeView: View {
                 Spacer()
             }
 
-            // Show what the AI is saying (or last said)
             if !vm.conversationTranscript.isEmpty {
                 Text(vm.conversationTranscript)
                     .font(.caption)
                     .foregroundStyle(AppColors.darkText)
                     .lineLimit(3)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-            }
-
-            // Show what the user said
-            if !vm.userTranscript.isEmpty {
-                Text("You: \"\(vm.userTranscript)\"")
-                    .font(.caption2)
-                    .foregroundStyle(AppColors.subtleText)
-                    .lineLimit(1)
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
         }

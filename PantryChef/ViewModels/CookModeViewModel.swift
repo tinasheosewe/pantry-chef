@@ -19,7 +19,6 @@ final class CookModeViewModel {
     /// Internal for testability.
     var isPreparing = false
     var conversationTranscript = ""   // what the AI is currently saying
-    var userTranscript = ""           // what the user said
     var isModelSpeaking = false
     var isUserSpeaking = false
     var conversationStatus = ""
@@ -209,7 +208,6 @@ final class CookModeViewModel {
         wasEverConnected = false
         realtimeService.disconnect()
         conversationTranscript = ""
-        userTranscript = ""
         conversationStatus = ""
         conversationError = nil
         isModelSpeaking = false
@@ -239,7 +237,6 @@ final class CookModeViewModel {
     func syncRealtimeState() {
         guard isConversationActive else { return }
         conversationTranscript = realtimeService.transcript
-        userTranscript = realtimeService.userTranscript
         isModelSpeaking = realtimeService.isModelSpeaking
         isUserSpeaking = realtimeService.isUserSpeaking
         conversationStatus = realtimeService.statusMessage

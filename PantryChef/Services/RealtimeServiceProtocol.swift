@@ -13,7 +13,6 @@ protocol RealtimeServiceProtocol: AnyObject {
     var isModelSpeaking: Bool { get set }
     var isUserSpeaking: Bool { get set }
     var transcript: String { get set }
-    var userTranscript: String { get set }
     var statusMessage: String { get set }
     var errorMessage: String? { get set }
     var isAudioReady: Bool { get }

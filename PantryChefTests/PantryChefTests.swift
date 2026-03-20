@@ -1,5 +1,6 @@
 import XCTest
 @testable import PantryChef
+import RealtimeAPI
 
 // MARK: - Mock Services
 
@@ -2316,7 +2317,6 @@ final class RealtimeServiceTests: XCTestCase {
         XCTAssertFalse(sut.isModelSpeaking)
         XCTAssertFalse(sut.isUserSpeaking)
         XCTAssertTrue(sut.transcript.isEmpty)
-        XCTAssertTrue(sut.userTranscript.isEmpty)
         XCTAssertTrue(sut.statusMessage.isEmpty)
         XCTAssertNil(sut.errorMessage)
     }
@@ -2361,6 +2361,99 @@ final class RealtimeServiceTests: XCTestCase {
         sut.onFunctionCall = { _, _ in called = true }
         sut.onFunctionCall?("test", [:])
         XCTAssertTrue(called)
+    }
+
+    func testAssistantDisplayTranscriptPrefersAudioTranscript() {
+        let message = Item.Message(
+            id: "assistant_1",
+            status: .inProgress,
+            role: .assistant,
+            content: [
+                .text("This text arrived ahead of playback."),
+                .audio(.init(audio: Optional<Data>.none, transcript: "This is being spoken now."))
+            ]
+        )
+
+        XCTAssertEqual(
+            RealtimeService.assistantDisplayTranscript(from: message),
+            "This is being spoken now."
+        )
+    }
+
+    func testAssistantDisplayTranscriptFallsBackToTextWhenNoAudioTranscriptExists() {
+        let message = Item.Message(
+            id: "assistant_2",
+            status: .inProgress,
+            role: .assistant,
+            content: [
+                .text("Fallback text transcript")
+            ]
+        )
+
+        XCTAssertEqual(
+            RealtimeService.assistantDisplayTranscript(from: message),
+            "Fallback text transcript"
+        )
+    }
+
+    func testAssistantTranscriptWaitsForAudioWhenMessageIsStillInProgress() {
+        let message = Item.Message(
+            id: "assistant_3",
+            status: .inProgress,
+            role: .assistant,
+            content: [
+                .audio(.init(audio: Optional<Data>.none, transcript: "Spoken words arriving early"))
+            ]
+        )
+
+        XCTAssertFalse(
+            RealtimeService.shouldDisplayAssistantTranscript(
+                from: message,
+                isAudioPlaying: false
+            )
+        )
+        XCTAssertTrue(
+            RealtimeService.shouldDisplayAssistantTranscript(
+                from: message,
+                isAudioPlaying: true
+            )
+        )
+    }
+
+    func testAssistantTranscriptAllowsCompletedMessageWithoutActiveAudio() {
+        let message = Item.Message(
+            id: "assistant_4",
+            status: .completed,
+            role: .assistant,
+            content: [
+                .audio(.init(audio: Optional<Data>.none, transcript: "Finished sentence"))
+            ]
+        )
+
+        XCTAssertTrue(
+            RealtimeService.shouldDisplayAssistantTranscript(
+                from: message,
+                isAudioPlaying: false
+            )
+        )
+    }
+
+    func testAssistantTranscriptShowsCompletedMessageWithoutUserLane() {
+        let message = Item.Message(
+            id: "assistant_5",
+            status: .completed,
+            role: .assistant,
+            content: [
+                .audio(.init(audio: Optional<Data>.none, transcript: "Completed assistant reply"))
+            ]
+        )
+
+        XCTAssertTrue(
+            RealtimeService.shouldDisplayAssistantTranscript(
+                from: message,
+                isAudioPlaying: false
+            )
+        )
     }
 }
 
@@ -2560,7 +2653,6 @@ final class CookModeConversationTests: XCTestCase {
         let vm = makeSUT()
         XCTAssertFalse(vm.isConversationActive)
         XCTAssertTrue(vm.conversationTranscript.isEmpty)
-        XCTAssertTrue(vm.userTranscript.isEmpty)
         XCTAssertFalse(vm.isModelSpeaking)
         XCTAssertFalse(vm.isUserSpeaking)
         XCTAssertTrue(vm.conversationStatus.isEmpty)
@@ -2713,7 +2805,6 @@ final class CookModeConversationTests: XCTestCase {
         let vm = makeSUT()
         vm.isConversationActive = true
         vm.conversationTranscript = "Hello"
-        vm.userTranscript = "go next"
         vm.isModelSpeaking = true
         vm.isUserSpeaking = true
         vm.conversationStatus = "Listening..."
@@ -2723,7 +2814,6 @@ final class CookModeConversationTests: XCTestCase {
 
         XCTAssertFalse(vm.isConversationActive)
         XCTAssertTrue(vm.conversationTranscript.isEmpty)
-        XCTAssertTrue(vm.userTranscript.isEmpty)
         XCTAssertFalse(vm.isModelSpeaking)
         XCTAssertFalse(vm.isUserSpeaking)
         XCTAssertTrue(vm.conversationStatus.isEmpty)
@@ -2746,7 +2836,6 @@ final class CookModeConversationTests: XCTestCase {
         let vm = makeSUT()
         vm.isConversationActive = true
         vm.realtimeService.transcript = "Step 1..."
-        vm.realtimeService.userTranscript = "next"
         vm.realtimeService.isModelSpeaking = true
         vm.realtimeService.isUserSpeaking = false
         vm.realtimeService.statusMessage = "Listening..."
@@ -2756,7 +2845,6 @@ final class CookModeConversationTests: XCTestCase {
         vm.syncRealtimeState()
 
         XCTAssertEqual(vm.conversationTranscript, "Step 1...")
-        XCTAssertEqual(vm.userTranscript, "next")
         XCTAssertTrue(vm.isModelSpeaking)
         XCTAssertFalse(vm.isUserSpeaking)
         XCTAssertEqual(vm.conversationStatus, "Listening...")
@@ -3174,7 +3262,6 @@ final class MockRealtimeService: RealtimeServiceProtocol {
     var isModelSpeaking = false
     var isUserSpeaking = false
     var transcript = ""
-    var userTranscript = ""
     var statusMessage = ""
     var errorMessage: String?
     var isAudioReady: Bool { _isAudioReady }
@@ -3244,7 +3331,6 @@ final class MockRealtimeService: RealtimeServiceProtocol {
         isModelSpeaking = false
         isUserSpeaking = false
         transcript = ""
-        userTranscript = ""
         statusMessage = ""
         errorMessage = nil
         _isAudioReady = false
@@ -3498,7 +3584,6 @@ final class CookModeInteractionTests: XCTestCase {
         vm.isPreparing = false
         mock.isConnected = true
         mock.transcript = "Step 1: Dice the onion"
-        mock.userTranscript = "what does dice mean"
         mock.isModelSpeaking = true
         mock.isUserSpeaking = false
         mock.statusMessage = "Speaking…"
@@ -3507,7 +3592,6 @@ final class CookModeInteractionTests: XCTestCase {
         vm.syncRealtimeState()
 
         XCTAssertEqual(vm.conversationTranscript, "Step 1: Dice the onion")
-        XCTAssertEqual(vm.userTranscript, "what does dice mean")
         XCTAssertTrue(vm.isModelSpeaking)
         XCTAssertFalse(vm.isUserSpeaking)
         XCTAssertEqual(vm.conversationStatus, "Speaking…")
@@ -3714,7 +3798,6 @@ final class CookModeInteractionTests: XCTestCase {
         let (vm, mock) = makeSUT()
         vm.isConversationActive = true
         vm.conversationTranscript = "Hello there"
-        vm.userTranscript = "go next"
         vm.isModelSpeaking = true
         vm.isUserSpeaking = true
         vm.conversationStatus = "Listening..."
@@ -3725,7 +3808,6 @@ final class CookModeInteractionTests: XCTestCase {
 
         XCTAssertFalse(vm.isConversationActive)
         XCTAssertTrue(vm.conversationTranscript.isEmpty)
-        XCTAssertTrue(vm.userTranscript.isEmpty)
         XCTAssertFalse(vm.isModelSpeaking)
         XCTAssertFalse(vm.isUserSpeaking)
         XCTAssertTrue(vm.conversationStatus.isEmpty)

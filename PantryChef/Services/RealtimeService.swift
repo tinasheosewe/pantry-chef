@@ -32,7 +32,6 @@ final class RealtimeService: RealtimeServiceProtocol {
     var isModelSpeaking = false
     var isUserSpeaking = false
     var transcript = ""          // rolling text of what the model is saying
-    var userTranscript = ""      // rolling text of what the user said
     var statusMessage = ""       // e.g. "Connecting…", "Listening…"
     var errorMessage: String?
 
@@ -217,7 +216,6 @@ final class RealtimeService: RealtimeServiceProtocol {
         isModelSpeaking = false
         isUserSpeaking = false
         transcript = ""
-        userTranscript = ""
         statusMessage = ""
         pendingMessage = nil
     }
@@ -343,17 +341,20 @@ final class RealtimeService: RealtimeServiceProtocol {
 
         let sdkModelSpeaking = conv.isModelSpeaking
         let sdkUserSpeaking = conv.isUserSpeaking
-        let userMessages = conv.messages.filter { $0.role == .user }
-        let assistantMessages = conv.messages.filter { $0.role == .assistant }
-        let latestUserMessage = userMessages.last
-        let latestAssistantMessage = assistantMessages.last
+        let latestConversationMessage = Self.latestMessage(in: conv.entries)
+        let latestAssistantMessage = Self.latestMessage(in: conv.entries, role: .assistant)
+        let userMessageCount = conv.entries.reduce(into: 0) { count, entry in
+            guard case let .message(message) = entry, message.role == .user else { return }
+            count += 1
+        }
 
         if sdkUserSpeaking && !previousSDKUserSpeaking {
-            userMessageCountAtSpeechStart = userMessages.count
+            userMessageCountAtSpeechStart = userMessageCount
+            transcript = ""
         }
         previousSDKUserSpeaking = sdkUserSpeaking
 
-        let userTurnCommitted = userMessages.count > userMessageCountAtSpeechStart
+        let userTurnCommitted = userMessageCount > userMessageCountAtSpeechStart
         isUserSpeaking = sdkUserSpeaking && !userTurnCommitted
 
         // Connection monitoring
@@ -364,27 +365,30 @@ final class RealtimeService: RealtimeServiceProtocol {
         }
 
         // ── Transcript: latest assistant message ──
-        if let latestAssistantMessage,
-           latestAssistantMessage.status == .inProgress,
-           latestAssistantMessage.id != currentAssistantMessageId {
+          if sdkUserSpeaking {
+                transcript = ""
+          }
+
+          if let latestAssistantMessage,
+              latestAssistantMessage.status == .inProgress,
+              latestAssistantMessage.id != currentAssistantMessageId {
             transcript = ""
             currentAssistantMessageId = latestAssistantMessage.id
         }
-        if let latestAssistantMessage {
-            let text = extractTranscript(from: latestAssistantMessage)
-            if !text.isEmpty {
+          if !sdkUserSpeaking,
+              let latestAssistantMessage,
+              latestConversationMessage?.role == .assistant {
+            let text = Self.assistantDisplayTranscript(from: latestAssistantMessage)
+            if !text.isEmpty,
+               Self.shouldDisplayAssistantTranscript(
+                from: latestAssistantMessage,
+                isAudioPlaying: sdkModelSpeaking
+               ) {
                 transcript = text
             }
         }
 
-        let assistantTurnInProgress = latestAssistantMessage?.status == .inProgress
-        isModelSpeaking = !isUserSpeaking && (assistantTurnInProgress || (sdkModelSpeaking && latestAssistantMessage?.id == currentAssistantMessageId))
-
-        // ── User transcript ──
-        if let lastUserMsg = userMessages.last {
-            let text = extractTranscript(from: lastUserMsg)
-            if !text.isEmpty { userTranscript = text }
-        }
+        isModelSpeaking = !isUserSpeaking && sdkModelSpeaking
 
         // ── Function calls ──
         // Scan entries for completed function calls not yet dispatched.
@@ -441,23 +445,46 @@ final class RealtimeService: RealtimeServiceProtocol {
             sdkUserSpeaking: sdkUserSpeaking,
             sdkModelSpeaking: sdkModelSpeaking,
             userTurnCommitted: userTurnCommitted,
-            latestUserMessage: latestUserMessage,
             latestAssistantMessage: latestAssistantMessage
         )
     }
 
     // MARK: - Helpers
 
-    /// Extracts display text from a message's content parts.
-    private func extractTranscript(from message: Item.Message) -> String {
-        message.content.compactMap { content -> String? in
-            switch content {
-            case .text(let t): return t
-            case .audio(let a): return a.transcript
-            case .inputText(let t): return t
-            case .inputAudio(let a): return a.transcript
-            }
+    static func assistantDisplayTranscript(from message: Item.Message) -> String {
+        let audioTranscript = message.content.compactMap { content -> String? in
+            guard case let .audio(audio) = content else { return nil }
+            return audio.transcript
         }.joined()
+
+        if !audioTranscript.isEmpty {
+            return audioTranscript
+        }
+
+        return message.content.compactMap { content -> String? in
+            guard case let .text(text) = content else { return nil }
+            return text
+        }.joined()
+    }
+    static func shouldDisplayAssistantTranscript(
+        from message: Item.Message,
+        isAudioPlaying: Bool
+    ) -> Bool {
+        isAudioPlaying || message.status != .inProgress
+    }
+
+    private static func latestMessage(in entries: [Item], role: Item.Message.Role) -> Item.Message? {
+        entries.reversed().compactMap { entry -> Item.Message? in
+            guard case let .message(message) = entry, message.role == role else { return nil }
+            return message
+        }.first
+    }
+
+    private static func latestMessage(in entries: [Item]) -> Item.Message? {
+        entries.reversed().compactMap { entry -> Item.Message? in
+            guard case let .message(message) = entry else { return nil }
+            return message
+        }.first
     }
 
     private func logStateTransitionIfNeeded(
@@ -465,7 +492,6 @@ final class RealtimeService: RealtimeServiceProtocol {
         sdkUserSpeaking: Bool,
         sdkModelSpeaking: Bool,
         userTurnCommitted: Bool,
-        latestUserMessage: Item.Message?,
         latestAssistantMessage: Item.Message?
     ) {
         let signature = [
@@ -476,7 +502,6 @@ final class RealtimeService: RealtimeServiceProtocol {
             "model=\(isModelSpeaking)",
             "ui=\(statusMessage)",
             "muted=\(conv.muted)",
-            "userMsgs=\(describe(message: latestUserMessage, transcriptSource: userTranscript))",
             "assistantMsgs=\(describe(message: latestAssistantMessage, transcriptSource: transcript))",
             "speechStartCount=\(userMessageCountAtSpeechStart)",
             "userTurnCommitted=\(userTurnCommitted)",

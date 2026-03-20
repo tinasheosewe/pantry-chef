@@ -177,7 +177,13 @@ private extension Conversation {
 			case let .sessionUpdated(_, session):
 				self.session = session
 			case let .conversationItemCreated(_, item, _):
-				entries.append(item)
+				upsertEntry(item)
+			case let .conversationItemAdded(_, item, _):
+				upsertEntry(item)
+			case let .conversationItemDone(_, item, _):
+				upsertEntry(item)
+			case let .conversationItemRetrieved(_, item):
+				upsertEntry(item)
 			case let .conversationItemDeleted(_, itemId):
 				entries.removeAll { $0.id == itemId }
 			case let .conversationItemInputAudioTranscriptionCompleted(_, itemId, contentIndex, transcript, _, _):
@@ -185,6 +191,14 @@ private extension Conversation {
 					guard case let .inputAudio(audio) = message.content[contentIndex] else { return }
 
 					message.content[contentIndex] = .inputAudio(.init(audio: audio.audio, transcript: transcript))
+				}
+			case let .conversationItemInputAudioTranscriptionDelta(_, itemId, contentIndex, delta, _):
+				updateEvent(id: itemId) { message in
+					guard case let .inputAudio(audio) = message.content[contentIndex] else { return }
+
+					message.content[contentIndex] = .inputAudio(
+						.init(audio: audio.audio, transcript: (audio.transcript ?? "") + delta)
+					)
 				}
 			case let .conversationItemInputAudioTranscriptionFailed(_, _, _, error):
 				errorStream.yield(error)

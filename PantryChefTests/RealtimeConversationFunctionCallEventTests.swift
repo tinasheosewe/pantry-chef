@@ -4,6 +4,88 @@ import RealtimeAPI
 @MainActor
 final class RealtimeConversationFunctionCallEventTests: XCTestCase {
 
+    func testInputAudioTranscriptionDeltaAppendsLiveUserTranscript() throws {
+        let conversation = Conversation()
+
+        try conversation._applyServerEventForTesting(
+            .conversationItemAdded(
+                eventId: "event_user_1",
+                item: .message(
+                    .init(
+                        id: "user_item_1",
+                        status: .inProgress,
+                        role: .user,
+                        content: [
+                            .inputAudio(
+                                .init(
+                                    audio: Optional<Data>.none,
+                                    transcript: Optional<String>.none
+                                )
+                            )
+                        ]
+                    )
+                ),
+                previousItemId: nil
+            )
+        )
+
+        try conversation._applyServerEventForTesting(
+            .conversationItemInputAudioTranscriptionDelta(
+                eventId: "event_user_2",
+                itemId: "user_item_1",
+                contentIndex: 0,
+                delta: "hel",
+                logprobs: nil
+            )
+        )
+
+        try conversation._applyServerEventForTesting(
+            .conversationItemInputAudioTranscriptionDelta(
+                eventId: "event_user_3",
+                itemId: "user_item_1",
+                contentIndex: 0,
+                delta: "lo",
+                logprobs: nil
+            )
+        )
+
+        guard case let .message(message)? = conversation._entriesForTesting.first,
+              case let .inputAudio(audio) = message.content[0] else {
+            return XCTFail("Expected a user message with input audio content")
+        }
+
+        XCTAssertEqual(audio.transcript, "hello")
+    }
+
+    func testConversationItemAddedUpsertsExistingAssistantMessage() throws {
+        let conversation = Conversation()
+        let assistantMessage = Item.Message(
+            id: "assistant_item_1",
+            status: .inProgress,
+            role: .assistant,
+            content: []
+        )
+
+        try conversation._applyServerEventForTesting(
+            .responseOutputItemAdded(
+                eventId: "event_assistant_1",
+                responseId: "response_1",
+                outputIndex: 0,
+                item: .message(assistantMessage)
+            )
+        )
+
+        try conversation._applyServerEventForTesting(
+            .conversationItemAdded(
+                eventId: "event_assistant_2",
+                item: .message(assistantMessage),
+                previousItemId: nil
+            )
+        )
+
+        XCTAssertEqual(conversation._entriesForTesting.count, 1)
+    }
+
     func testResponseOutputItemAddedStoresFunctionCallEntry() throws {
         let conversation = Conversation()
         let functionCall = Item.FunctionCall(

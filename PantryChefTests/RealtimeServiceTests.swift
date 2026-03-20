@@ -234,7 +234,6 @@ final class RealtimeServiceEndpointTests: XCTestCase {
         sut.isModelSpeaking = true
         sut.isUserSpeaking = true
         sut.transcript = "Hello"
-        sut.userTranscript = "Hi"
         sut.statusMessage = "Speaking…"
 
         sut.disconnect()
@@ -243,7 +242,6 @@ final class RealtimeServiceEndpointTests: XCTestCase {
         XCTAssertFalse(sut.isModelSpeaking)
         XCTAssertFalse(sut.isUserSpeaking)
         XCTAssertEqual(sut.transcript, "")
-        XCTAssertEqual(sut.userTranscript, "")
         XCTAssertEqual(sut.statusMessage, "")
     }
 
