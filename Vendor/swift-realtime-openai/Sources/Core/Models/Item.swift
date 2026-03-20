@@ -1,7 +1,7 @@
 import Foundation
 import MetaCodable
 
-@Codable @CodedAt("type") public enum Item: Identifiable, Equatable, Hashable, Sendable {
+public enum Item: Identifiable, Equatable, Hashable, Sendable {
 	public enum Status: String, Equatable, Hashable, Codable, Sendable {
 		case completed, incomplete, inProgress = "in_progress"
 	}
@@ -321,27 +321,21 @@ import MetaCodable
 	case message(Message)
 
 	/// A function call item in a Realtime conversation.
-	@CodedAs("function_call")
 	case functionCall(FunctionCall)
 
 	/// A function call output item in a Realtime conversation.
-	@CodedAs("function_call_output")
 	case functionCallOutput(FunctionCallOutput)
 
 	/// A Realtime item representing an invocation of a tool on an MCP server.
-	@CodedAs("mcp_tool_call")
 	case mcpToolCall(MCPToolCall)
 
 	/// A Realtime item requesting human approval of a tool invocation.
-	@CodedAs("mcp_approval_request")
 	case mcpApprovalRequest(MCPApprovalRequest)
 
 	/// A Realtime item responding to an MCP approval request.
-	@CodedAs("mcp_approval_response")
 	case mcpApprovalResponse(MCPApprovalResponse)
 
 	/// A Realtime item listing tools available on an MCP server.
-	@CodedAs("mcp_list_tools")
 	case mcpListTools(MCPListTools)
 
 	public var id: String {
@@ -353,6 +347,105 @@ import MetaCodable
 			case let .functionCallOutput(functionCallOutput): functionCallOutput.id
 			case let .mcpApprovalRequest(mcpApprovalRequest): mcpApprovalRequest.id
 			case let .mcpApprovalResponse(mcpApprovalResponse): mcpApprovalResponse.id
+		}
+	}
+}
+
+extension Item: Codable {
+	private enum CodingKeys: String, CodingKey {
+		case type
+		case id
+		case status
+		case role
+		case content
+		case callId = "call_id"
+		case name
+		case arguments
+		case output
+		case error
+		case serverLabel = "server_label"
+		case approvalRequestId = "approval_request_id"
+		case approve
+		case reason
+		case tools
+	}
+
+	public init(from decoder: any Decoder) throws {
+		let container = try decoder.container(keyedBy: CodingKeys.self)
+		let type = try container.decode(String.self, forKey: .type)
+
+		switch type {
+			case "message":
+				self = .message(try Message(from: decoder))
+			case "function_call":
+				self = .functionCall(try FunctionCall(from: decoder))
+			case "function_call_output":
+				self = .functionCallOutput(try FunctionCallOutput(from: decoder))
+			case "mcp_tool_call":
+				self = .mcpToolCall(try MCPToolCall(from: decoder))
+			case "mcp_approval_request":
+				self = .mcpApprovalRequest(try MCPApprovalRequest(from: decoder))
+			case "mcp_approval_response":
+				self = .mcpApprovalResponse(try MCPApprovalResponse(from: decoder))
+			case "mcp_list_tools":
+				self = .mcpListTools(try MCPListTools(from: decoder))
+			default:
+				throw DecodingError.dataCorruptedError(
+					forKey: .type,
+					in: container,
+					debugDescription: "Invalid item type: \(type)"
+				)
+		}
+	}
+
+	public func encode(to encoder: any Encoder) throws {
+		var container = encoder.container(keyedBy: CodingKeys.self)
+
+		switch self {
+			case let .message(message):
+				try container.encode("message", forKey: .type)
+				try container.encode(message.id, forKey: .id)
+				try container.encode(message.status, forKey: .status)
+				try container.encode(message.role, forKey: .role)
+				try container.encode(message.content, forKey: .content)
+			case let .functionCall(functionCall):
+				try container.encode("function_call", forKey: .type)
+				try container.encode(functionCall.id, forKey: .id)
+				try container.encode(functionCall.status, forKey: .status)
+				try container.encode(functionCall.callId, forKey: .callId)
+				try container.encode(functionCall.name, forKey: .name)
+				try container.encode(functionCall.arguments, forKey: .arguments)
+			case let .functionCallOutput(functionCallOutput):
+				try container.encode("function_call_output", forKey: .type)
+				try container.encode(functionCallOutput.id, forKey: .id)
+				try container.encode(functionCallOutput.callId, forKey: .callId)
+				try container.encode(functionCallOutput.output, forKey: .output)
+			case let .mcpToolCall(toolCall):
+				try container.encode("mcp_tool_call", forKey: .type)
+				try container.encode(toolCall.id, forKey: .id)
+				try container.encode(toolCall.server, forKey: .serverLabel)
+				try container.encode(toolCall.tool, forKey: .name)
+				try container.encode(toolCall.arguments, forKey: .arguments)
+				try container.encodeIfPresent(toolCall.output, forKey: .output)
+				try container.encodeIfPresent(toolCall.error, forKey: .error)
+				try container.encodeIfPresent(toolCall.approvalRequestId, forKey: .approvalRequestId)
+			case let .mcpApprovalRequest(request):
+				try container.encode("mcp_approval_request", forKey: .type)
+				try container.encode(request.id, forKey: .id)
+				try container.encode(request.server, forKey: .serverLabel)
+				try container.encode(request.tool, forKey: .name)
+				try container.encode(request.arguments, forKey: .arguments)
+			case let .mcpApprovalResponse(response):
+				try container.encode("mcp_approval_response", forKey: .type)
+				try container.encode(response.id, forKey: .id)
+				try container.encode(response.approvalRequestId, forKey: .approvalRequestId)
+				try container.encode(response.approve, forKey: .approve)
+				try container.encodeIfPresent(response.reason, forKey: .reason)
+			case let .mcpListTools(listTools):
+				try container.encode("mcp_list_tools", forKey: .type)
+				try container.encode(listTools.id, forKey: .id)
+				try container.encode(listTools.server, forKey: .serverLabel)
+				try container.encode(listTools.tools, forKey: .tools)
 		}
 	}
 }

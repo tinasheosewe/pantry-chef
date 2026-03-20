@@ -306,7 +306,7 @@ final class CookModeViewModel {
         }
     }
 
-    private func buildConversationInstructions() -> String {
+    func buildConversationInstructions() -> String {
         let stepsText = steps.map { step in
             var s = "Step \(step.stepNumber): \(step.instruction)"
             if let timer = step.timerMinutes { s += " [Timer: \(timer) min]" }
@@ -333,11 +333,13 @@ final class CookModeViewModel {
         when the onions are done?"), answer helpfully using your cooking knowledge.
         - Use the provided function tools for navigation: call next_step, previous_step, \
         go_to_step, start_timer, etc. when the user asks.
+        - If the user asks for a specific numbered step, call go_to_step directly with that \
+        step number. Do NOT chain next_step or previous_step multiple times to get there.
         - After calling a navigation function, briefly acknowledge it (e.g. "Moving to step 3…") \
         then read the new step.
         - Keep responses SHORT — 1-3 sentences normally. Only elaborate when the user asks \
         a specific question.
-        - If the user says they're done or finished, call finish_cooking.
+        - If the user says they're done or finished, call finish_cooking to end the cooking session.
         - You can be interrupted — that's fine, just respond to the new input.
         - IMPORTANT: If the user says "stop", "pause", "wait", "hold on", or "quiet" — even \
         if they interrupt you mid-sentence — you MUST stop talking immediately. Do NOT continue \
@@ -357,7 +359,7 @@ final class CookModeViewModel {
         """
     }
 
-    private func buildConversationTools() -> [[String: Any]] {
+    func buildConversationTools() -> [[String: Any]] {
         return [
             [
                 "type": "function",
@@ -442,7 +444,7 @@ final class CookModeViewModel {
             [
                 "type": "function",
                 "name": "finish_cooking",
-                "description": "The user has finished cooking. Show the completion screen.",
+                "description": "End the cooking session and show the completion screen when the user says they are done.",
                 "parameters": [
                     "type": "object",
                     "properties": [:] as [String: Any],

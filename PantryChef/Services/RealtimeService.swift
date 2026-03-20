@@ -21,8 +21,9 @@ import RealtimeAPI
 final class RealtimeService: RealtimeServiceProtocol {
 
     private enum AudioTuning {
-        static let vadSilenceDurationMs = 1200
-        static let vadThreshold = 0.92
+        static let inputNoiseReduction: Session.Audio.Input.NoiseReduction = .farField
+        static let vadSilenceDurationMs = 1000
+        static let vadThreshold = 0.88
     }
 
     // MARK: - Public state (observed by CookModeViewModel)
@@ -131,6 +132,7 @@ final class RealtimeService: RealtimeServiceProtocol {
             session.instructions = instructions
             session.audio.output.voice = .sage
             session.audio.input.transcription = .init(model: .gpt4oMini)
+            session.audio.input.noiseReduction = AudioTuning.inputNoiseReduction
             session.audio.input.turnDetection = .serverVad(
                 createResponse: true,
                 prefixPaddingMs: 500,

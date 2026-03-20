@@ -3302,7 +3302,7 @@ final class CookModeInteractionTests: XCTestCase {
         await mock.prepareAudio()
 
         let instructions = "test_instructions"
-        mock.connect(withInstructions: instructions, tools: [])
+        mock.connect(withInstructions: instructions, tools: vm.buildConversationTools())
 
         vm.isPreparing = false
         mock.startCapture()
@@ -3324,6 +3324,76 @@ final class CookModeInteractionTests: XCTestCase {
         XCTAssertTrue(mock.isConnected, "Should be connected after startup")
         XCTAssertTrue(vm.isConversationActive, "Conversation should be active")
         XCTAssertFalse(vm.isPreparing, "Should not still be preparing")
+    }
+
+    func testStartupRegistersFinishCookingTool() async {
+        let (vm, mock) = makeSUT()
+
+        await simulateStartConversation(vm, mock)
+
+        let finishCookingTool = mock.lastConnectTools?.first {
+            ($0["name"] as? String) == "finish_cooking"
+        }
+
+        XCTAssertNotNil(finishCookingTool, "Conversation should expose finish_cooking to the model")
+
+        let parameters = finishCookingTool?["parameters"] as? [String: Any]
+        XCTAssertEqual(parameters?["type"] as? String, "object")
+    }
+
+    func testStartupRegistersGoToStepRequiredArgument() async {
+        let (vm, mock) = makeSUT()
+
+        await simulateStartConversation(vm, mock)
+
+        let goToStepTool = mock.lastConnectTools?.first {
+            ($0["name"] as? String) == "go_to_step"
+        }
+
+        XCTAssertNotNil(goToStepTool, "Conversation should expose go_to_step to the model")
+
+        let parameters = goToStepTool?["parameters"] as? [String: Any]
+        let required = parameters?["required"] as? [String]
+        XCTAssertEqual(required, ["step_number"], "go_to_step should require step_number")
+    }
+
+    func testStartupRegistersNextStepTool() async {
+        let (vm, mock) = makeSUT()
+
+        await simulateStartConversation(vm, mock)
+
+        let nextStepTool = mock.lastConnectTools?.first {
+            ($0["name"] as? String) == "next_step"
+        }
+
+        XCTAssertNotNil(nextStepTool, "Conversation should expose next_step to the model")
+    }
+
+    func testStartupRegistersPreviousStepTool() async {
+        let (vm, mock) = makeSUT()
+
+        await simulateStartConversation(vm, mock)
+
+        let previousStepTool = mock.lastConnectTools?.first {
+            ($0["name"] as? String) == "previous_step"
+        }
+
+        XCTAssertNotNil(previousStepTool, "Conversation should expose previous_step to the model")
+    }
+
+    func testInstructionsDirectModelToUseGoToStepForSpecificStepNumbers() {
+        let (vm, _) = makeSUT()
+
+        let instructions = vm.buildConversationInstructions()
+
+        XCTAssertTrue(
+            instructions.contains("call go_to_step directly with that step number"),
+            "Instructions should tell the model to use go_to_step directly for numbered jumps"
+        )
+        XCTAssertTrue(
+            instructions.contains("Do NOT chain next_step or previous_step multiple times"),
+            "Instructions should explicitly forbid repeated next/previous chaining for specific step requests"
+        )
     }
 
     func testStartupSetsConversationStatus() async {
@@ -3721,12 +3791,15 @@ final class CookModeInteractionTests: XCTestCase {
         vm.stopTimer()
     }
 
-    func testFunctionCallFinishCooking() {
-        let (vm, _) = makeSUT()
+    func testFunctionCallFinishCookingEndsSession() {
+        let (vm, mock) = makeSUT()
+        vm.isConversationActive = true
 
         vm.handleRealtimeFunctionCall(name: "finish_cooking", args: [:])
 
         XCTAssertTrue(vm.showCompletionScreen)
+        XCTAssertFalse(vm.isConversationActive)
+        XCTAssertEqual(mock.disconnectCallCount, 1)
     }
 
     func testFunctionCallRepeatStepDoesNotNavigate() {

@@ -193,6 +193,8 @@ private extension Conversation {
 				if id == nil {
 					id = response.conversationId
 				}
+			case let .responseOutputItemAdded(_, _, _, item):
+				upsertEntry(item)
 			case let .responseContentPartAdded(_, _, itemId, _, contentIndex, part):
 				updateEvent(id: itemId) { message in
 					message.content.insert(.init(from: part), at: contentIndex)
@@ -245,12 +247,16 @@ private extension Conversation {
 			case .outputAudioBufferStopped:
 				isModelSpeaking = false
 			case let .responseOutputItemDone(_, _, _, item):
-				updateEvent(id: item.id) { message in
-					guard case let .message(newMessage) = item else { return }
-
-					message = newMessage
-				}
+				upsertEntry(item)
 			default: break
+		}
+	}
+
+	func upsertEntry(_ item: Item) {
+		if let index = entries.firstIndex(where: { $0.id == item.id }) {
+			entries[index] = item
+		} else {
+			entries.append(item)
 		}
 	}
 
@@ -272,5 +278,16 @@ private extension Conversation {
 		closure(&functionCall)
 
 		entries[index] = .functionCall(functionCall)
+	}
+
+}
+
+extension Conversation {
+	public func _applyServerEventForTesting(_ event: ServerEvent) throws {
+		try handleEvent(event)
+	}
+
+	public var _entriesForTesting: [Item] {
+		entries
 	}
 }
