@@ -406,7 +406,17 @@ struct CookModeView: View {
         VStack(spacing: 8) {
             // Status bar with animated waveform
             HStack(spacing: 10) {
-                if vm.isModelSpeaking {
+                if vm.isUserSpeaking {
+                    // User is speaking
+                    Circle()
+                        .fill(AppColors.accentBlue)
+                        .frame(width: 10, height: 10)
+                        .modifier(PulseAnimation())
+                    Text("Listening to you…")
+                        .font(.caption)
+                        .fontWeight(.medium)
+                        .foregroundStyle(AppColors.accentBlue)
+                } else if vm.isModelSpeaking {
                     // AI is speaking — show waveform
                     HStack(spacing: 3) {
                         ForEach(0..<5, id: \.self) { i in
@@ -420,16 +430,6 @@ struct CookModeView: View {
                         .font(.caption)
                         .fontWeight(.medium)
                         .foregroundStyle(AppColors.primaryGreen)
-                } else if vm.isUserSpeaking {
-                    // User is speaking
-                    Circle()
-                        .fill(AppColors.accentBlue)
-                        .frame(width: 10, height: 10)
-                        .modifier(PulseAnimation())
-                    Text("Listening to you…")
-                        .font(.caption)
-                        .fontWeight(.medium)
-                        .foregroundStyle(AppColors.accentBlue)
                 } else {
                     Circle()
                         .fill(AppColors.primaryGreen)

@@ -1,5 +1,6 @@
 import XCTest
 @testable import PantryChef
+import RealtimeAPI
 
 // MARK: - URLProtocol Stub
 
@@ -322,6 +323,74 @@ final class RealtimeServiceEndpointTests: XCTestCase {
             sut.statusMessage == "Connecting…" || sut.statusMessage == "Disconnected",
             "Should have attempted connection, got: \(sut.statusMessage)")
     }
+}
+
+// MARK: - Realtime SDK Regression Tests
+
+final class RealtimeSDKCompatibilityTests: XCTestCase {
+
+    private func fixtureData(named name: String) throws -> Data {
+        let bundle = Bundle(for: type(of: self))
+        let url = bundle.url(
+            forResource: name,
+            withExtension: "json",
+            subdirectory: "Fixtures/RealtimeSDK"
+        ) ?? bundle.url(
+            forResource: name,
+            withExtension: "json"
+        )
+
+        guard let url else {
+            XCTFail("Missing fixture: \(name).json")
+            throw NSError(domain: "RealtimeSDKCompatibilityTests", code: 1)
+        }
+
+        return try Data(contentsOf: url)
+    }
+
+        func testServerEvent_decodesOutputAudioBufferClearedWithResponseID() throws {
+        let event = try ServerEventDecoder.decode(from: fixtureData(named: "output_audio_buffer_cleared"))
+
+                switch event {
+                case let .inputAudioBufferCleared(eventId, responseId):
+                        XCTAssertEqual(eventId, "event_test_1")
+                        XCTAssertEqual(responseId, "resp_test_1")
+                default:
+                        XCTFail("Decoded wrong event case: \(event)")
+                }
+        }
+
+        func testServerEvent_decodesInputAudioTranscriptionCompletedWithSparseUsage() throws {
+                let event = try ServerEventDecoder.decode(from: fixtureData(named: "input_audio_transcription_completed_sparse_usage"))
+
+                switch event {
+                case let .conversationItemInputAudioTranscriptionCompleted(eventId, itemId, contentIndex, transcript, _, usage):
+                        XCTAssertEqual(eventId, "compat-transcription:item_test_2:0")
+                        XCTAssertEqual(itemId, "item_test_2")
+                        XCTAssertEqual(contentIndex, 0)
+                        XCTAssertEqual(transcript, "Continue.")
+                        XCTAssertEqual(usage.totalTokens, 25)
+                        XCTAssertEqual(usage.inputTokens, 21)
+                        XCTAssertEqual(usage.outputTokens, 4)
+                        XCTAssertEqual(usage.inputTokenDetails?.audioTokens, 21)
+                        XCTAssertNil(usage.inputTokenDetails?.cachedTokens)
+                        XCTAssertNil(usage.outputTokenDetails)
+                default:
+                        XCTFail("Decoded wrong event case: \(event)")
+                }
+        }
+
+        func testServerEvent_decodesInputAudioTranscriptionCompletedForMultilingualTranscript() throws {
+        let event = try ServerEventDecoder.decode(from: fixtureData(named: "input_audio_transcription_completed_multilingual"))
+
+                switch event {
+        case let .conversationItemInputAudioTranscriptionCompleted(eventId, _, _, transcript, _, _):
+            XCTAssertEqual(eventId, "compat-transcription:item_test_3:0")
+                        XCTAssertEqual(transcript, "Kontynuuj.")
+                default:
+                        XCTFail("Decoded wrong event case: \(event)")
+                }
+        }
 }
 
 // MARK: - InputStream helper

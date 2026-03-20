@@ -1,0 +1,16 @@
+{
+  "type": "conversation.item.input_audio_transcription.completed",
+  "item_id": "item_test_3",
+  "content_index": 0,
+  "transcript": "Kontynuuj.",
+  "usage": {
+    "type": "tokens",
+    "total_tokens": 27,
+    "input_tokens": 21,
+    "input_token_details": {
+      "text_tokens": 0,
+      "audio_tokens": 21
+    },
+    "output_tokens": 6
+  }
+}

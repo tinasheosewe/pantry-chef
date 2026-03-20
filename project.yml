@@ -16,8 +16,7 @@ settings:
 
 packages:
   swift-realtime-openai:
-    url: https://github.com/m1guelpf/swift-realtime-openai.git
-    branch: main
+    path: Vendor/swift-realtime-openai
 
 targets:
   PantryChef:
@@ -48,6 +47,8 @@ targets:
     platform: iOS
     sources:
       - PantryChefTests
+    resources:
+      - path: PantryChefTests/Fixtures
     settings:
       base:
         GENERATE_INFOPLIST_FILE: YES
