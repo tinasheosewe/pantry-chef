@@ -11,7 +11,7 @@ enum PantryIntakeWarningKind: String, Hashable {
     case unsupportedInput = "unsupported-input"
     case invalidFacetCombination = "invalid-facet-combination"
     case missingRequiredState = "missing-required-state"
-    case estimatedFreshness = "estimated-freshness"
+    case missingQuantity = "missing-quantity"
 }
 
 enum PantryIntakeRowState: String, Hashable {
@@ -37,21 +37,26 @@ struct PantryIntakeRowDraft {
     var selectedFacetValues: [PantryFacetKey: String] = [:]
     var storage: PantryStorage?
     var quantityText: String = ""
+    var quantityWasEdited = false
     var unit: MeasurementUnit?
-    var usesEstimatedExpiry = true
-    var manualExpiryDate = Date()
+    var unitWasEdited = false
+    var manualExpiryDate: Date? = Date()
+    var expiryDateWasEdited = false
     var notes: String = ""
 
     init(item: PantryItem? = nil) {
+        manualExpiryDate = Date()
         guard let item else { return }
         searchText = item.name
         selectedItemID = item.catalogItemID
         selectedFacetValues = Dictionary(uniqueKeysWithValues: item.facets.map { ($0.key, $0.value) })
         storage = item.storage
         quantityText = item.quantity.map { PantryIntakeRowDraft.quantityString($0) } ?? ""
+        quantityWasEdited = item.quantity != nil
         unit = item.unit
-        usesEstimatedExpiry = item.freshnessSource != .userProvided
-        manualExpiryDate = item.expiryDate ?? Date()
+        unitWasEdited = false
+        manualExpiryDate = item.expiryDate
+        expiryDateWasEdited = item.freshnessSource == .userProvided
         notes = item.notes ?? ""
 
         if selectedItemID == nil, let resolved = PantryCatalog.resolveExact(name: item.name) {
@@ -59,9 +64,12 @@ struct PantryIntakeRowDraft {
             if storage == nil {
                 storage = resolved.defaultStorage
             }
+            applyCatalogDefaults(for: resolved)
             if unit == nil {
-                unit = resolved.defaultUnit
+                unit = resolved.suggestedUnit(for: selectedFacets)
             }
+            refreshSuggestedUnit(for: resolved)
+            refreshSuggestedQuantity(for: resolved)
         }
     }
 
@@ -70,7 +78,13 @@ struct PantryIntakeRowDraft {
     }
 
     var matchingItems: [PantryCatalogItemDefinition] {
-        PantryCatalog.search(searchText)
+        guard !searchText.trimmed.isEmpty else { return [] }
+        return PantryCatalog.search(searchText)
+    }
+
+    var estimatedExpiryDate: Date? {
+        guard let window = estimatedFreshnessWindow else { return nil }
+        return Calendar.current.date(byAdding: .day, value: window.upperBound, to: Date())
     }
 
     var facetDefinitions: [PantryFacetDefinition] {
@@ -101,9 +115,8 @@ struct PantryIntakeRowDraft {
     }
 
     var resolvedExpiryDate: Date? {
-        if usesEstimatedExpiry {
-            guard let window = estimatedFreshnessWindow else { return nil }
-            return Calendar.current.date(byAdding: .day, value: window.upperBound, to: Date())
+        if !expiryDateWasEdited {
+            return estimatedExpiryDate
         }
         return manualExpiryDate
     }
@@ -125,14 +138,14 @@ struct PantryIntakeRowDraft {
             warnings.append(PantryIntakeWarning(kind: .missingRequiredState, severity: .blocking, message: "Choose where this item will be stored."))
         }
 
+        if quantityText.trimmed.isEmpty {
+            warnings.append(PantryIntakeWarning(kind: .missingQuantity, severity: .blocking, message: "Enter a quantity before adding this item."))
+        }
+
         for definition in facetDefinitions {
             if let value = selectedFacetValues[definition.key], !definition.options.contains(value) {
                 warnings.append(PantryIntakeWarning(kind: .invalidFacetCombination, severity: .blocking, message: "\(value) is not a valid \(definition.key.title.lowercased()) for \(selectedItem.name)."))
             }
-        }
-
-        if usesEstimatedExpiry, let window = estimatedFreshnessWindow {
-            warnings.append(PantryIntakeWarning(kind: .estimatedFreshness, severity: .informational, message: "Freshness will be estimated at \(window.lowerBound)-\(window.upperBound) days for this storage state."))
         }
 
         if quantityIsInvalid {
@@ -158,9 +171,16 @@ struct PantryIntakeRowDraft {
     mutating func selectItem(_ item: PantryCatalogItemDefinition) {
         selectedItemID = item.id
         searchText = item.name
-        storage = item.defaultStorage
-        unit = item.defaultUnit ?? unit
+        if storage == nil {
+            storage = item.defaultStorage
+        }
+        quantityWasEdited = false
+        unitWasEdited = false
         pruneInvalidFacetSelections(for: item)
+        applyCatalogDefaults(for: item)
+        refreshSuggestedUnit(for: item)
+        refreshSuggestedQuantity(for: item)
+        refreshPrefilledExpiryDate()
     }
 
     mutating func updateSearchText(_ text: String) {
@@ -175,7 +195,11 @@ struct PantryIntakeRowDraft {
         selectedItemID = nil
         selectedFacetValues = [:]
         storage = nil
+        quantityWasEdited = false
         unit = nil
+        unitWasEdited = false
+        manualExpiryDate = Date()
+        expiryDateWasEdited = false
         if keepingSearchText {
             searchText = currentSearchText
         } else {
@@ -183,11 +207,47 @@ struct PantryIntakeRowDraft {
         }
     }
 
+    mutating func setStorage(_ storage: PantryStorage) {
+        self.storage = storage
+        refreshPrefilledExpiryDate()
+    }
+
+    mutating func clearStorage() {
+        storage = nil
+        if !expiryDateWasEdited {
+            manualExpiryDate = Date()
+        }
+    }
+
+    mutating func setExpiryDate(_ date: Date) {
+        manualExpiryDate = date
+        expiryDateWasEdited = true
+    }
+
+    mutating func setUnit(_ unit: MeasurementUnit) {
+        self.unit = unit
+        unitWasEdited = true
+
+        if let selectedItem {
+            refreshSuggestedQuantity(for: selectedItem)
+        }
+    }
+
+    mutating func setQuantityText(_ value: String) {
+        quantityText = value
+        quantityWasEdited = true
+    }
+
     mutating func setFacet(_ key: PantryFacetKey, value: String?) {
         if let value, !value.isEmpty {
             selectedFacetValues[key] = value
         } else {
             selectedFacetValues.removeValue(forKey: key)
+        }
+
+        if let selectedItem {
+            refreshSuggestedUnit(for: selectedItem)
+            refreshSuggestedQuantity(for: selectedItem)
         }
     }
 
@@ -199,7 +259,7 @@ struct PantryIntakeRowDraft {
             name: selectedItem.displayName(for: selectedFacets),
             category: selectedItem.category,
             quantity: parsedQuantity,
-            unit: parsedQuantity == nil ? nil : (unit ?? selectedItem.defaultUnit),
+            unit: parsedQuantity == nil ? nil : (unit ?? selectedItem.suggestedUnit(for: selectedFacets)),
             expiryDate: resolvedExpiryDate,
             dateAdded: existingDateAdded ?? Date(),
             notes: notesValue,
@@ -207,7 +267,7 @@ struct PantryIntakeRowDraft {
             catalogItemID: selectedItem.id,
             facets: selectedFacets,
             storage: storage,
-            freshnessSource: usesEstimatedExpiry ? .estimated : .userProvided
+            freshnessSource: expiryDateWasEdited ? .userProvided : .estimated
         )
     }
 
@@ -224,6 +284,30 @@ struct PantryIntakeRowDraft {
                 selectedFacetValues.removeValue(forKey: definition.key)
             }
         }
+    }
+
+    private mutating func applyCatalogDefaults(for item: PantryCatalogItemDefinition) {
+        for selection in item.defaultSelections {
+            guard selectedFacetValues[selection.key] == nil else { continue }
+            guard item.options(for: selection.key).contains(selection.value) else { continue }
+            selectedFacetValues[selection.key] = selection.value
+        }
+    }
+
+    private mutating func refreshPrefilledExpiryDate() {
+        guard !expiryDateWasEdited else { return }
+        manualExpiryDate = estimatedExpiryDate
+    }
+
+    private mutating func refreshSuggestedUnit(for item: PantryCatalogItemDefinition) {
+        guard !unitWasEdited else { return }
+        unit = item.suggestedUnit(for: selectedFacets)
+    }
+
+    private mutating func refreshSuggestedQuantity(for item: PantryCatalogItemDefinition) {
+        guard !quantityWasEdited else { return }
+        guard let suggestedQuantity = item.suggestedQuantity() else { return }
+        quantityText = Self.quantityString(suggestedQuantity)
     }
 
     private static func quantityString(_ value: Double) -> String {

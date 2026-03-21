@@ -4,7 +4,7 @@ import XCTest
 
 final class StorageServiceIntegrationTests: XCTestCase {
     func testColdStartBootstrapSeedsInitialData() async throws {
-        let sut = StorageService(isStoredInMemoryOnly: true, shouldBootstrap: true)
+        let sut = StorageService(isStoredInMemoryOnly: true, shouldBootstrap: true, resetPersistentStore: false)
 
         let pantry = try await sut.fetchPantryItems()
         let recipes = try await sut.fetchRecipes()
@@ -14,7 +14,7 @@ final class StorageServiceIntegrationTests: XCTestCase {
     }
 
     func testColdStartWithoutBootstrapStartsEmpty() async throws {
-        let sut = StorageService(isStoredInMemoryOnly: true, shouldBootstrap: false)
+        let sut = StorageService(isStoredInMemoryOnly: true, shouldBootstrap: false, resetPersistentStore: false)
 
         let pantry = try await sut.fetchPantryItems()
         let recipes = try await sut.fetchRecipes()
@@ -28,7 +28,7 @@ final class StorageServiceIntegrationTests: XCTestCase {
     }
 
     func testCrudSmokeAcrossPantryRecipeMealPlanAndShopping() async throws {
-        let sut = StorageService(isStoredInMemoryOnly: true, shouldBootstrap: false)
+        let sut = StorageService(isStoredInMemoryOnly: true, shouldBootstrap: false, resetPersistentStore: false)
 
         let pantryItem = PantryItem(
             name: "Integration Tomatoes",

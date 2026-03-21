@@ -738,7 +738,7 @@ final class AIService: AIServiceProtocol {
         a photo of a cookbook page, or pasted by the user. Extract the recipe details as accurately as possible.
 
         RULES:
-        - "unit" must be one of: tsp, tbsp, cup, fl oz, ml, L, g, kg, oz, lb, piece, whole, slice, clove, bunch, can, pkg, pinch, splash, to taste
+        - "unit" must be one of: tsp, tbsp, cup, fl oz, ml, L, g, kg, oz, lb, piece, whole, loaf, slice, clove, bunch, can, pkg, pinch, splash, to taste
         - "category" must be one of: Dairy, Produce, Protein, Grains & Cereals, Spices & Herbs, Condiments & Sauces, Baking Supplies, Frozen Foods, Canned & Jarred, Beverages, Snacks, Oils & Fats, Pasta & Noodles, Nuts & Seeds, Other
         - "dietaryTags" values must be from: Vegetarian, Vegan, Gluten-Free, Dairy-Free, Nut-Free, Low Carb, High Protein, Keto, Paleo, Halal, Kosher
         - "taskIndex" must be a unique integer starting at 0, incrementing across ALL steps
@@ -897,7 +897,7 @@ final class AIService: AIServiceProtocol {
         - "sugar": number (grams per serving)
         - "sodium": number (mg per serving)
 
-        For unit, use: tsp, tbsp, cup, ml, L, g, kg, oz, lb, piece, whole, slice, clove, bunch, can, pinch, to taste.
+        For unit, use: tsp, tbsp, cup, ml, L, g, kg, oz, lb, piece, whole, loaf, slice, clove, bunch, can, pinch, to taste.
         For category, use: Dairy, Produce, Protein, Grains & Cereals, Spices & Herbs, Condiments & Sauces, Baking Supplies, Oils & Fats, Other.
 
         Each task object: {"taskIndex": number, "action": string, "ingredient": string or null, "durationSeconds": number, "type": "active" or "passive", "effort": "easy" or "medium" or "hard", "requiresEquipment": string or null, "dependsOn": [number]}
@@ -989,7 +989,7 @@ final class AIService: AIServiceProtocol {
         - "sugar": number (grams per serving)
         - "sodium": number (mg per serving)
 
-        For unit, use: tsp, tbsp, cup, ml, L, g, kg, oz, lb, piece, whole, slice, clove, bunch, can, pinch, to taste.
+        For unit, use: tsp, tbsp, cup, ml, L, g, kg, oz, lb, piece, whole, loaf, slice, clove, bunch, can, pinch, to taste.
         For category, use: Dairy, Produce, Protein, Grains & Cereals, Spices & Herbs, Condiments & Sauces, Baking Supplies, Oils & Fats, Other.
         Each task object: {"taskIndex": number, "action": string, "ingredient": string or null, "durationSeconds": number, "type": "active" or "passive", "effort": "easy" or "medium" or "hard", "requiresEquipment": string or null, "dependsOn": [number]}
 

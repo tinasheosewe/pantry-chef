@@ -81,6 +81,7 @@ enum MeasurementUnit: String, Codable, CaseIterable, Identifiable {
     // Count
     case piece = "piece"
     case whole = "whole"
+    case loaf = "loaf"
     case slice = "slice"
     case clove = "clove"
     case bunch = "bunch"
@@ -116,6 +117,7 @@ enum MeasurementUnit: String, Codable, CaseIterable, Identifiable {
         case "lb", "lbs", "pound", "pounds": return .pound
         case "piece", "pieces", "pcs": return .piece
         case "whole": return .whole
+        case "loaf", "loaves": return .loaf
         case "slice", "slices": return .slice
         case "clove", "cloves": return .clove
         case "bunch": return .bunch

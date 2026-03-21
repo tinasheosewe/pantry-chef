@@ -37,7 +37,7 @@ struct PantryItem: Identifiable, Codable, Hashable {
         self.name = catalogItem?.displayName(for: effectiveFacets) ?? name
         self.category = catalogItem?.category ?? category
         self.quantity = quantity
-        self.unit = quantity == nil ? nil : (unit ?? catalogItem?.defaultUnit)
+        self.unit = quantity == nil ? nil : (unit ?? catalogItem?.suggestedUnit(for: effectiveFacets))
         self.expiryDate = expiryDate
         self.dateAdded = dateAdded
         self.notes = notes?.trimmed.nilIfEmpty

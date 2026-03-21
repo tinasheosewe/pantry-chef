@@ -417,9 +417,20 @@ final class PantryIntakeRowDraftTests: XCTestCase {
 
         XCTAssertEqual(draft.selectedItemID, "milk")
         XCTAssertEqual(draft.storage, .refrigerated)
+        XCTAssertEqual(draft.selectedFacetValues[.variant], "whole")
         XCTAssertEqual(draft.unit, .liter)
+        XCTAssertEqual(draft.quantityText, "1")
         XCTAssertEqual(draft.estimatedFreshnessWindow, 5...10)
+        XCTAssertFalse(draft.expiryDateWasEdited)
+        XCTAssertEqual(try XCTUnwrap(draft.manualExpiryDate).timeIntervalSince1970, try XCTUnwrap(draft.estimatedExpiryDate).timeIntervalSince1970, accuracy: 1)
         XCTAssertEqual(draft.rowState, .valid)
+    }
+
+    func testEmptySearchHasNoMatchingItems() {
+        let draft = PantryIntakeRowDraft()
+
+        XCTAssertTrue(draft.matchingItems.isEmpty)
+        XCTAssertNotNil(draft.manualExpiryDate)
     }
 
     func testStorageChangeRecomputesFreshnessWindow() throws {
@@ -443,6 +454,7 @@ final class PantryIntakeRowDraftTests: XCTestCase {
         XCTAssertNil(draft.selectedItemID)
         XCTAssertNil(draft.storage)
         XCTAssertNil(draft.unit)
+        XCTAssertNotNil(draft.manualExpiryDate)
         XCTAssertEqual(draft.searchText, "Mil")
         XCTAssertEqual(draft.rowState, .incomplete)
     }
@@ -455,14 +467,72 @@ final class PantryIntakeRowDraftTests: XCTestCase {
         XCTAssertEqual(draft.unit, .piece)
     }
 
+    func testBreadFormUpdatesSuggestedUnit() throws {
+        var draft = PantryIntakeRowDraft()
+        draft.selectItem(try XCTUnwrap(PantryCatalog.item(id: "bread")))
+
+        XCTAssertEqual(draft.selectedFacetValues[.form], "loaf")
+        XCTAssertEqual(draft.unit, .loaf)
+
+        draft.setFacet(.form, value: "loaf")
+
+        XCTAssertEqual(draft.unit, .loaf)
+    }
+
+    func testManualUnitSelectionIsPreservedAcrossFacetChanges() throws {
+        var draft = PantryIntakeRowDraft()
+        draft.selectItem(try XCTUnwrap(PantryCatalog.item(id: "bread")))
+        draft.setUnit(.piece)
+
+        draft.setFacet(.form, value: "loaf")
+
+        XCTAssertEqual(draft.unit, .piece)
+    }
+
+    func testSelectingItemAutoSelectsSingleFacetOption() throws {
+        var draft = PantryIntakeRowDraft()
+        draft.selectItem(try XCTUnwrap(PantryCatalog.item(id: "egg")))
+
+        XCTAssertEqual(draft.quantityText, "12")
+        XCTAssertEqual(draft.selectedFacetValues[.form], "whole")
+        XCTAssertEqual(draft.selectedFacets, [PantryFacetSelection(key: .form, value: "whole")])
+    }
+
+    func testMissingQuantityBlocksRowValidationAndBuild() throws {
+        var draft = PantryIntakeRowDraft()
+        draft.selectItem(try XCTUnwrap(PantryCatalog.item(id: "milk")))
+        draft.setQuantityText("")
+
+        XCTAssertEqual(draft.rowState, .invalid)
+        XCTAssertTrue(draft.warnings.contains { $0.kind == .missingQuantity })
+        XCTAssertNil(draft.buildItem())
+    }
+
+    func testGroundBeefGetsWeightBasedQuantityDefault() throws {
+        var draft = PantryIntakeRowDraft()
+        draft.selectItem(try XCTUnwrap(PantryCatalog.item(id: "ground-beef")))
+
+        XCTAssertEqual(draft.unit, .gram)
+        XCTAssertEqual(draft.quantityText, "500")
+    }
+
+    func testManualQuantityIsPreservedAcrossFacetChanges() throws {
+        var draft = PantryIntakeRowDraft()
+        draft.selectItem(try XCTUnwrap(PantryCatalog.item(id: "bread")))
+        draft.setQuantityText("2")
+
+        draft.setFacet(.form, value: "sliced")
+
+        XCTAssertEqual(draft.quantityText, "2")
+    }
+
     func testBuildItemProducesCatalogBackedStructuredPantryItem() throws {
         var draft = PantryIntakeRowDraft()
         draft.selectItem(try XCTUnwrap(PantryCatalog.item(id: "flour")))
         draft.setFacet(.variant, value: "all-purpose")
         draft.quantityText = "2"
         draft.unit = .kilogram
-        draft.usesEstimatedExpiry = false
-        draft.manualExpiryDate = Date().addingTimeInterval(86_400)
+        draft.setExpiryDate(Date().addingTimeInterval(86_400))
         draft.notes = "Keep sealed"
 
         let item = try XCTUnwrap(draft.buildItem())
@@ -475,6 +545,41 @@ final class PantryIntakeRowDraftTests: XCTestCase {
         XCTAssertEqual(item.quantity, 2)
         XCTAssertEqual(item.unit, .kilogram)
         XCTAssertEqual(item.notes, "Keep sealed")
+    }
+
+    func testSelectingCatalogItemSeedsExpiryDateFromEstimate() throws {
+        var draft = PantryIntakeRowDraft()
+        draft.selectItem(try XCTUnwrap(PantryCatalog.item(id: "milk")))
+
+        let estimatedExpiry = try XCTUnwrap(draft.estimatedExpiryDate)
+
+        XCTAssertEqual(try XCTUnwrap(draft.manualExpiryDate).timeIntervalSince1970, estimatedExpiry.timeIntervalSince1970, accuracy: 1)
+    }
+
+    func testStorageChangeUpdatesPrefilledExpiryUntilUserEditsDate() throws {
+        var draft = PantryIntakeRowDraft()
+        draft.selectItem(try XCTUnwrap(PantryCatalog.item(id: "milk")))
+
+        let refrigeratedExpiry = try XCTUnwrap(draft.estimatedExpiryDate)
+        draft.setStorage(.frozen)
+        let frozenExpiry = try XCTUnwrap(draft.estimatedExpiryDate)
+
+        XCTAssertNotEqual(refrigeratedExpiry.timeIntervalSince1970, frozenExpiry.timeIntervalSince1970, accuracy: 1)
+        XCTAssertEqual(try XCTUnwrap(draft.manualExpiryDate).timeIntervalSince1970, frozenExpiry.timeIntervalSince1970, accuracy: 1)
+
+        let customDate = Date().addingTimeInterval(172_800)
+        draft.setExpiryDate(customDate)
+        draft.setStorage(.pantry)
+
+        XCTAssertTrue(draft.expiryDateWasEdited)
+        XCTAssertEqual(try XCTUnwrap(draft.manualExpiryDate).timeIntervalSince1970, customDate.timeIntervalSince1970, accuracy: 1)
+    }
+
+    func testWarningsDoNotIncludeEstimatedFreshnessReviewMessage() throws {
+        var draft = PantryIntakeRowDraft()
+        draft.selectItem(try XCTUnwrap(PantryCatalog.item(id: "milk")))
+
+        XCTAssertFalse(draft.warnings.contains { $0.message.contains("Freshness will be estimated") })
     }
 
     func testUnsupportedSearchRemainsUnresolved() {
@@ -940,7 +1045,12 @@ final class EnumTests: XCTestCase {
     // MARK: - MeasurementUnit
 
     func testMeasurementUnitAllCases() {
-        XCTAssertTrue(MeasurementUnit.allCases.count >= 19)
+        XCTAssertTrue(MeasurementUnit.allCases.count >= 20)
+    }
+
+    func testMeasurementUnitParseSupportsLoaf() {
+        XCTAssertEqual(MeasurementUnit.parse("loaf"), .loaf)
+        XCTAssertEqual(MeasurementUnit.parse("loaves"), .loaf)
     }
 
     func testMetricUnits() {

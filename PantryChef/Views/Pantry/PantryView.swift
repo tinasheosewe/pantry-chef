@@ -271,33 +271,31 @@ struct AddPantryItemView: View {
                         }
                     }
 
-                    ForEach(Array(draft.matchingItems.prefix(8))) { item in
-                        Button {
-                            draft.selectItem(item)
-                        } label: {
-                            HStack(spacing: 10) {
-                                CategoryIcon(category: item.category, size: 28)
-                                VStack(alignment: .leading, spacing: 2) {
-                                    Text(item.name)
-                                        .foregroundStyle(AppColors.darkText)
-                                    Text(item.category.rawValue)
-                                        .font(.caption)
-                                        .foregroundStyle(AppColors.subtleText)
-                                }
-                                Spacer()
-                                if draft.selectedItemID == item.id {
-                                    Image(systemName: "checkmark.circle.fill")
-                                        .foregroundStyle(AppColors.primaryGreen)
+                    if draft.selectedItem == nil {
+                        ForEach(Array(draft.matchingItems.prefix(8))) { item in
+                            Button {
+                                draft.selectItem(item)
+                            } label: {
+                                HStack(spacing: 10) {
+                                    CategoryIcon(category: item.category, size: 28)
+                                    VStack(alignment: .leading, spacing: 2) {
+                                        Text(item.name)
+                                            .foregroundStyle(AppColors.darkText)
+                                        Text(item.category.rawValue)
+                                            .font(.caption)
+                                            .foregroundStyle(AppColors.subtleText)
+                                    }
+                                    Spacer()
                                 }
                             }
+                            .buttonStyle(.plain)
                         }
-                        .buttonStyle(.plain)
-                    }
 
-                    if draft.matchingItems.isEmpty && !draft.searchText.trimmed.isEmpty {
-                        Text("No exact catalog items match this search. Pick from the supported ontology only.")
-                            .font(.caption)
-                            .foregroundStyle(AppColors.softRed)
+                        if draft.matchingItems.isEmpty && !draft.searchText.trimmed.isEmpty {
+                            Text("No exact catalog items match this search. Pick from the supported ontology only.")
+                                .font(.caption)
+                                .foregroundStyle(AppColors.softRed)
+                        }
                     }
                 }
 
@@ -320,44 +318,58 @@ struct AddPantryItemView: View {
                 }
 
                 Section("Storage & Freshness") {
-                    if let selectedItem = draft.selectedItem {
-                        Picker("Storage", selection: Binding(
-                            get: { draft.storage ?? selectedItem.defaultStorage },
-                            set: { draft.storage = $0 }
-                        )) {
-                            ForEach(PantryStorage.allCases) { storage in
-                                Label(storage.rawValue, systemImage: storage.icon)
-                                    .tag(storage)
+                    Picker("Storage", selection: Binding(
+                        get: { draft.storage },
+                        set: { newValue in
+                            if let newValue {
+                                draft.setStorage(newValue)
+                            } else {
+                                draft.clearStorage()
                             }
+                        }
+                    )) {
+                        Text("Select storage").tag(Optional<PantryStorage>.none)
+                        ForEach(PantryStorage.allCases) { storage in
+                            Label(storage.rawValue, systemImage: storage.icon)
+                                .tag(Optional(storage))
                         }
                     }
 
-                    Toggle("Use estimated freshness", isOn: $draft.usesEstimatedExpiry)
-
-                    if draft.usesEstimatedExpiry {
-                        if let summary = draft.freshnessSummaryText() {
-                            Text(summary)
-                                .font(.caption)
-                                .foregroundStyle(AppColors.subtleText)
-                        }
-                        if let expiryDate = draft.resolvedExpiryDate {
-                            Text("Estimated expiry: \(expiryDate.shortDisplay)")
-                                .font(.caption)
-                                .foregroundStyle(AppColors.subtleText)
-                        }
+                    if let expiryDate = draft.manualExpiryDate {
+                        DatePicker("Expires on", selection: Binding(
+                            get: { expiryDate },
+                            set: { draft.setExpiryDate($0) }
+                        ), displayedComponents: .date)
                     } else {
-                        DatePicker("Expires on", selection: $draft.manualExpiryDate, displayedComponents: .date)
+                        LabeledContent("Expires on") {
+                            Text(" ")
+                                .foregroundStyle(AppColors.subtleText)
+                        }
+                    }
+
+                    if let summary = draft.freshnessSummaryText() {
+                        Text(summary)
+                            .font(.caption)
+                            .foregroundStyle(AppColors.subtleText)
+                    }
+                    if let expiryDate = draft.estimatedExpiryDate {
+                        Text("Estimated expiry: \(expiryDate.shortDisplay)")
+                            .font(.caption)
+                            .foregroundStyle(AppColors.subtleText)
                     }
                 }
 
                 Section("Quantity") {
                     HStack {
-                        TextField("Amount", text: $draft.quantityText)
+                        TextField("Amount", text: Binding(
+                            get: { draft.quantityText },
+                            set: { draft.setQuantityText($0) }
+                        ))
                             .keyboardType(.decimalPad)
                             .accessibilityIdentifier("pantry.form.quantityField")
                         Picker("Unit", selection: Binding(
-                            get: { draft.unit ?? draft.selectedItem?.defaultUnit ?? .piece },
-                            set: { draft.unit = $0 }
+                            get: { draft.unit ?? draft.selectedItem?.suggestedUnit(for: draft.selectedFacets) ?? .piece },
+                            set: { draft.setUnit($0) }
                         )) {
                             ForEach(MeasurementUnit.allCases) { u in
                                 Text(u.rawValue).tag(u)
