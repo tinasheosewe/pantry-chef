@@ -7,11 +7,8 @@ final class PantryViewModel {
     private(set) var debouncedSearchText = ""
     var selectedCategory: FoodCategory?
     var showAddItem = false
-    var showBarcodeScanner = false
-    var showReceiptScanner = false
     var showVoiceInput = false
     var sortOrder: SortOrder = .category
-    var isLoading = false
     @ObservationIgnored private let searchDebouncer = TaskDebouncer()
 
     enum SortOrder: String, CaseIterable {
@@ -22,8 +19,6 @@ final class PantryViewModel {
     }
 
     let appState: AppState
-    let barcodeScanner = BarcodeScannerService()
-    let receiptScanner = ReceiptScannerService()
 
     init(appState: AppState) {
         self.appState = appState
@@ -75,29 +70,6 @@ final class PantryViewModel {
 
     func updateItem(_ item: PantryItem) async {
         await appState.updatePantryItem(item)
-    }
-
-    func handleBarcodeScanned(_ barcode: String) async {
-        isLoading = true
-        defer { isLoading = false }
-
-        let result = await barcodeScanner.lookupBarcode(barcode)
-        let item = PantryItem(
-            name: result?.productName ?? "Scanned Item",
-            category: result?.category ?? .other,
-            quantity: 1,
-            unit: .piece,
-            barcode: barcode,
-            imageURL: result?.imageURL
-        )
-        await addItem(item)
-    }
-
-    func handleReceiptScanned(items: [String]) async {
-        for itemName in items {
-            let item = PantryItem(name: itemName, category: .other)
-            await addItem(item)
-        }
     }
 
     func onSearchTextChanged() {

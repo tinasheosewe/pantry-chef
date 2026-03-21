@@ -2,7 +2,7 @@ import Foundation
 import SwiftData
 
 enum StorageSchema {
-    static let currentVersion = 2
+    static let currentVersion = 4
 }
 
 @Model
@@ -15,9 +15,14 @@ final class PantryItemRecord {
     var unitRawValue: String?
     var expiryDate: Date?
     var dateAdded: Date
-    var barcode: String?
     var notes: String?
     var imageURL: String?
+    var catalogItemID: String?
+    var storageRawValue: String
+    var freshnessSourceRawValue: String
+
+    @Relationship(deleteRule: .cascade, inverse: \PantryFacetRecord.pantryItem)
+    var facetRecords: [PantryFacetRecord] = []
 
     init(from item: PantryItem) {
         id = item.id
@@ -28,12 +33,15 @@ final class PantryItemRecord {
         unitRawValue = item.unit?.rawValue
         expiryDate = item.expiryDate
         dateAdded = item.dateAdded
-        barcode = item.barcode
         notes = item.notes
         imageURL = item.imageURL
+        catalogItemID = item.catalogItemID
+        storageRawValue = item.storage.rawValue
+        freshnessSourceRawValue = item.freshnessSource.rawValue
+        facetRecords = Self.makeFacetRecords(from: item.facets)
     }
 
-    func update(from item: PantryItem) {
+    func update(from item: PantryItem, in context: ModelContext) {
         schemaVersion = StorageSchema.currentVersion
         name = item.name
         categoryRawValue = item.category.rawValue
@@ -41,9 +49,12 @@ final class PantryItemRecord {
         unitRawValue = item.unit?.rawValue
         expiryDate = item.expiryDate
         dateAdded = item.dateAdded
-        barcode = item.barcode
         notes = item.notes
         imageURL = item.imageURL
+        catalogItemID = item.catalogItemID
+        storageRawValue = item.storage.rawValue
+        freshnessSourceRawValue = item.freshnessSource.rawValue
+        replaceFacetRecords(with: item.facets, in: context)
     }
 
     func toDomain() -> PantryItem {
@@ -55,10 +66,54 @@ final class PantryItemRecord {
             unit: unitRawValue.flatMap { MeasurementUnit(rawValue: $0) },
             expiryDate: expiryDate,
             dateAdded: dateAdded,
-            barcode: barcode,
             notes: notes,
-            imageURL: imageURL
+            imageURL: imageURL,
+            catalogItemID: catalogItemID,
+            facets: facetRecords
+                .sorted { $0.sortIndex < $1.sortIndex }
+                .compactMap { $0.toDomain() },
+            storage: PantryStorage(rawValue: storageRawValue) ?? .pantry,
+            freshnessSource: PantryFreshnessSource(rawValue: freshnessSourceRawValue) ?? PantryFreshnessSource.none
         )
+    }
+
+    private func replaceFacetRecords(with facets: [PantryFacetSelection], in context: ModelContext) {
+        let existingRecords = facetRecords
+        facetRecords = []
+        for record in existingRecords {
+            context.delete(record)
+        }
+        facetRecords = Self.makeFacetRecords(from: facets)
+    }
+
+    private static func makeFacetRecords(from facets: [PantryFacetSelection]) -> [PantryFacetRecord] {
+        facets.enumerated().map { index, selection in
+            PantryFacetRecord(selection: selection, sortIndex: index)
+        }
+    }
+}
+
+@Model
+final class PantryFacetRecord {
+    var id: UUID
+    var schemaVersion: Int
+    var sortIndex: Int
+    var keyRawValue: String
+    var value: String
+
+    var pantryItem: PantryItemRecord?
+
+    init(selection: PantryFacetSelection, sortIndex: Int) {
+        id = UUID()
+        schemaVersion = StorageSchema.currentVersion
+        self.sortIndex = sortIndex
+        keyRawValue = selection.key.rawValue
+        value = selection.value
+    }
+
+    func toDomain() -> PantryFacetSelection? {
+        guard let key = PantryFacetKey(rawValue: keyRawValue) else { return nil }
+        return PantryFacetSelection(key: key, value: value)
     }
 }
 

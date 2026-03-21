@@ -47,6 +47,10 @@ extension String {
         trimmingCharacters(in: .whitespacesAndNewlines)
     }
 
+    var nilIfEmpty: String? {
+        isEmpty ? nil : self
+    }
+
     var isValidURL: Bool {
         guard let url = URL(string: self) else { return false }
         return url.scheme == "http" || url.scheme == "https"

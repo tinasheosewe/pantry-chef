@@ -146,4 +146,30 @@ final class StorageServiceIntegrationTests: XCTestCase {
         let shoppingRecord = ShoppingItemRecord(from: shopping)
         XCTAssertEqual(shoppingRecord.schemaVersion, StorageSchema.currentVersion)
     }
+
+    func testPantryRecordRoundTripsStructuredFacetRecords() throws {
+        let item = PantryItem(
+            name: "All-purpose Flour",
+            category: .bakingSupplies,
+            quantity: 2,
+            unit: .kilogram,
+            expiryDate: Date().addingTimeInterval(86_400),
+            notes: "Keep sealed",
+            catalogItemID: "flour",
+            facets: [PantryFacetSelection(key: .variant, value: "all-purpose")],
+            storage: .pantry,
+            freshnessSource: .userProvided
+        )
+
+        let record = PantryItemRecord(from: item)
+        let roundTripped = record.toDomain()
+
+        XCTAssertEqual(record.facetRecords.count, 1)
+        XCTAssertEqual(record.facetRecords.first?.keyRawValue, PantryFacetKey.variant.rawValue)
+        XCTAssertEqual(record.facetRecords.first?.value, "all-purpose")
+        XCTAssertEqual(roundTripped.catalogItemID, "flour")
+        XCTAssertEqual(roundTripped.facets, [PantryFacetSelection(key: .variant, value: "all-purpose")])
+        XCTAssertEqual(roundTripped.storage, .pantry)
+        XCTAssertEqual(roundTripped.freshnessSource, .userProvided)
+    }
 }

@@ -10,13 +10,13 @@ A personal iOS kitchen management app powered by AI. Tells you what to buy, what
 - **Smart Substitutions** — AI-powered ingredient substitution suggestions with confidence ratings
 
 ### Pantry Management
-- Add items manually, by barcode scan (Open Food Facts), or receipt OCR
+- Add items manually with structured pantry fields
 - Expiry date tracking with visual warnings
 - Organized by food category with search & filters
 
 ### Recipes
 - Full recipe management with difficulty ratings, nutrition, and dietary tags
-- Import recipes from URLs or cookbook photos (OCR)
+- Import recipes from URLs
 - Recipe scaling (adjust servings)
 - Pantry match percentage on every recipe
 
@@ -42,8 +42,6 @@ A personal iOS kitchen management app powered by AI. Tells you what to buy, what
 - **Storage**: SwiftData local persistence with bootstrap seed data on first launch.
 - **AI**: OpenAI GPT-4o
 - **Speech**: Apple AVSpeechSynthesizer + SFSpeechRecognizer
-- **OCR**: Apple Vision framework
-- **Barcode**: Open Food Facts API
 
 ## Setup
 
@@ -106,7 +104,6 @@ PantryChef/
 │   │   ├── StorageService.swift   # SwiftData persistence
 │   │   ├── AIService.swift        # OpenAI API integration
 │   │   ├── SpeechService.swift    # TTS + voice recognition
-│   │   └── ScannerService.swift   # Barcode + receipt OCR
 │   ├── ViewModels/
 │   │   ├── HomeViewModel.swift
 │   │   ├── PantryViewModel.swift
@@ -138,7 +135,6 @@ PantryChef/
 - **Local Persistence** — Data is persisted with SwiftData and seeded once on first launch.
 - **No Authentication** — Designed for personal use. Add Supabase Auth + RLS policies before sharing.
 - **Light Mode Only** — Dark mode support planned for v2.
-- **Barcode Scanner** — Uses the camera; requires a physical device (not simulator).
 - **Voice Commands** — Requires microphone permission; works best in quiet environments.
 
 ## License

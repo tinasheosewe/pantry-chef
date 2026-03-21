@@ -69,7 +69,8 @@ final class AppState {
         let launchOptions = Self.launchOptions
         self.storageService = StorageService(
             isStoredInMemoryOnly: launchOptions.useInMemoryStorage,
-            shouldBootstrap: launchOptions.shouldBootstrapStorage
+            shouldBootstrap: launchOptions.shouldBootstrapStorage,
+            resetPersistentStore: launchOptions.resetPersistentStore
         )
         self.aiService = AIService()
         pantryItems = launchOptions.seedPantryItems ? PantryItem.samples : []

@@ -37,10 +37,8 @@ targets:
           - UIInterfaceOrientationPortraitUpsideDown
         UILaunchScreen:
           BackgroundColor: LaunchBG
-        NSCameraUsageDescription: "Pantry Chef needs camera access to scan barcodes and receipts"
         NSSpeechRecognitionUsageDescription: "Pantry Chef uses speech recognition for voice commands in cook mode"
         NSMicrophoneUsageDescription: "Pantry Chef needs microphone access for voice input"
-        NSPhotoLibraryUsageDescription: "Pantry Chef needs photo library access to import recipe photos"
 
   PantryChefTests:
     type: bundle.unit-test

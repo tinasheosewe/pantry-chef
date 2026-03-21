@@ -19,7 +19,7 @@ struct PantryView: View {
                     EmptyStateView(
                         icon: "refrigerator",
                         title: "Your pantry is empty",
-                        message: "Add items by scanning barcodes, photographing receipts, or entering them manually.",
+                        message: "Add items manually while the structured pantry intake flow is being built.",
                         actionTitle: "Add First Item"
                     ) {
                         viewModel.showAddItem = true
@@ -43,16 +43,6 @@ struct PantryView: View {
                     Task { await viewModel.updateItem(updatedItem) }
                 }
             }
-            .sheet(isPresented: $viewModel.showBarcodeScanner) {
-                BarcodeScannerView { item in
-                    Task { await viewModel.addItem(item) }
-                }
-            }
-            .sheet(isPresented: $viewModel.showReceiptScanner) {
-                ReceiptScannerView { items in
-                    Task { await viewModel.handleReceiptScanned(items: items) }
-                }
-            }
         }
     }
 
@@ -62,12 +52,6 @@ struct PantryView: View {
             HStack(spacing: 12) {
                 InputMethodButton(icon: "plus.circle.fill", title: "Add", color: AppColors.primaryGreen) {
                     viewModel.showAddItem = true
-                }
-                InputMethodButton(icon: "barcode.viewfinder", title: "Barcode", color: AppColors.accentBlue) {
-                    viewModel.showBarcodeScanner = true
-                }
-                InputMethodButton(icon: "doc.text.viewfinder", title: "Receipt", color: AppColors.warmOrange) {
-                    viewModel.showReceiptScanner = true
                 }
             }
             .padding(.horizontal)
@@ -217,8 +201,12 @@ struct PantryItemRow: View {
                     .font(.subheadline)
                     .fontWeight(.medium)
 
-                if !item.displayQuantity.isEmpty {
-                    Text(item.displayQuantity)
+                HStack(spacing: 8) {
+                    if !item.displayQuantity.isEmpty {
+                        Text(item.displayQuantity)
+                    }
+
+                    Label(item.storage.rawValue, systemImage: item.storage.icon)
                         .font(.caption)
                         .foregroundStyle(AppColors.subtleText)
                 }
@@ -238,13 +226,7 @@ struct PantryItemRow: View {
 // MARK: - Add Pantry Item View
 struct AddPantryItemView: View {
     @Environment(\.dismiss) private var dismiss
-    @State private var name = ""
-    @State private var category: FoodCategory = .other
-    @State private var quantity: String = ""
-    @State private var unit: MeasurementUnit = .piece
-    @State private var expiryDate = Date()
-    @State private var hasExpiry = false
-    @State private var notes = ""
+    @State private var draft: PantryIntakeRowDraft
 
     private let existingItem: PantryItem?
     let onSave: (PantryItem) -> Void
@@ -252,87 +234,161 @@ struct AddPantryItemView: View {
     init(item: PantryItem? = nil, onSave: @escaping (PantryItem) -> Void) {
         self.existingItem = item
         self.onSave = onSave
-        _name = State(initialValue: item?.name ?? "")
-        _category = State(initialValue: item?.category ?? .other)
-        _quantity = State(initialValue: item?.quantity.map(Self.quantityString) ?? "")
-        _unit = State(initialValue: item?.unit ?? .piece)
-        _expiryDate = State(initialValue: item?.expiryDate ?? Date())
-        _hasExpiry = State(initialValue: item?.expiryDate != nil)
-        _notes = State(initialValue: item?.notes ?? "")
-    }
-
-    private var trimmedName: String {
-        name.trimmingCharacters(in: .whitespacesAndNewlines)
-    }
-
-    private var trimmedNotes: String? {
-        let value = notes.trimmingCharacters(in: .whitespacesAndNewlines)
-        return value.isEmpty ? nil : value
-    }
-
-    private var parsedQuantity: Double? {
-        guard !quantity.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return nil }
-        return Double(quantity)
-    }
-
-    private var quantityIsInvalid: Bool {
-        !quantity.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && parsedQuantity == nil
+        _draft = State(initialValue: PantryIntakeRowDraft(item: item))
     }
 
     private var isEditing: Bool {
         existingItem != nil
     }
 
-    private static func quantityString(_ value: Double) -> String {
-        if value == value.rounded() {
-            return String(Int(value))
-        }
-        return String(value)
-    }
-
     var body: some View {
         NavigationStack {
             Form {
-                Section("Item Details") {
-                    TextField("Name", text: $name)
+                Section("Catalog Item") {
+                    TextField("Search pantry catalog", text: Binding(
+                        get: { draft.searchText },
+                        set: { draft.updateSearchText($0) }
+                    ))
+                        .textInputAutocapitalization(.words)
                         .accessibilityIdentifier("pantry.form.nameField")
-                    Picker("Category", selection: $category) {
-                        ForEach(FoodCategory.allCases) { cat in
-                            Label(cat.rawValue, systemImage: cat.icon)
-                                .tag(cat)
+
+                    if let selectedItem = draft.selectedItem {
+                        HStack(spacing: 12) {
+                            CategoryIcon(category: selectedItem.category, size: 32)
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text(selectedItem.displayName(for: draft.selectedFacets))
+                                    .font(.subheadline)
+                                    .fontWeight(.semibold)
+                                Text(selectedItem.category.rawValue)
+                                    .font(.caption)
+                                    .foregroundStyle(AppColors.subtleText)
+                            }
+                            Spacer()
+                            Button("Clear") {
+                                draft.clearSelection(keepingSearchText: true)
+                            }
+                            .font(.caption)
                         }
+                    }
+
+                    ForEach(Array(draft.matchingItems.prefix(8))) { item in
+                        Button {
+                            draft.selectItem(item)
+                        } label: {
+                            HStack(spacing: 10) {
+                                CategoryIcon(category: item.category, size: 28)
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text(item.name)
+                                        .foregroundStyle(AppColors.darkText)
+                                    Text(item.category.rawValue)
+                                        .font(.caption)
+                                        .foregroundStyle(AppColors.subtleText)
+                                }
+                                Spacer()
+                                if draft.selectedItemID == item.id {
+                                    Image(systemName: "checkmark.circle.fill")
+                                        .foregroundStyle(AppColors.primaryGreen)
+                                }
+                            }
+                        }
+                        .buttonStyle(.plain)
+                    }
+
+                    if draft.matchingItems.isEmpty && !draft.searchText.trimmed.isEmpty {
+                        Text("No exact catalog items match this search. Pick from the supported ontology only.")
+                            .font(.caption)
+                            .foregroundStyle(AppColors.softRed)
+                    }
+                }
+
+                if !draft.facetDefinitions.isEmpty {
+                    Section("Facets") {
+                        ForEach(draft.facetDefinitions, id: \.key) { definition in
+                            Picker(definition.key.title, selection: Binding(
+                                get: { draft.selectedFacetValues[definition.key] ?? "" },
+                                set: { newValue in
+                                    draft.setFacet(definition.key, value: newValue.isEmpty ? nil : newValue)
+                                }
+                            )) {
+                                Text("None").tag("")
+                                ForEach(definition.options, id: \.self) { option in
+                                    Text(option.capitalized).tag(option)
+                                }
+                            }
+                        }
+                    }
+                }
+
+                Section("Storage & Freshness") {
+                    if let selectedItem = draft.selectedItem {
+                        Picker("Storage", selection: Binding(
+                            get: { draft.storage ?? selectedItem.defaultStorage },
+                            set: { draft.storage = $0 }
+                        )) {
+                            ForEach(PantryStorage.allCases) { storage in
+                                Label(storage.rawValue, systemImage: storage.icon)
+                                    .tag(storage)
+                            }
+                        }
+                    }
+
+                    Toggle("Use estimated freshness", isOn: $draft.usesEstimatedExpiry)
+
+                    if draft.usesEstimatedExpiry {
+                        if let summary = draft.freshnessSummaryText() {
+                            Text(summary)
+                                .font(.caption)
+                                .foregroundStyle(AppColors.subtleText)
+                        }
+                        if let expiryDate = draft.resolvedExpiryDate {
+                            Text("Estimated expiry: \(expiryDate.shortDisplay)")
+                                .font(.caption)
+                                .foregroundStyle(AppColors.subtleText)
+                        }
+                    } else {
+                        DatePicker("Expires on", selection: $draft.manualExpiryDate, displayedComponents: .date)
                     }
                 }
 
                 Section("Quantity") {
                     HStack {
-                        TextField("Amount", text: $quantity)
+                        TextField("Amount", text: $draft.quantityText)
                             .keyboardType(.decimalPad)
                             .accessibilityIdentifier("pantry.form.quantityField")
-                        Picker("Unit", selection: $unit) {
+                        Picker("Unit", selection: Binding(
+                            get: { draft.unit ?? draft.selectedItem?.defaultUnit ?? .piece },
+                            set: { draft.unit = $0 }
+                        )) {
                             ForEach(MeasurementUnit.allCases) { u in
                                 Text(u.rawValue).tag(u)
                             }
                         }
                     }
-                    if quantityIsInvalid {
+                    if draft.quantityIsInvalid {
                         Text("Enter a valid number for quantity")
                             .font(.caption)
                             .foregroundStyle(AppColors.softRed)
                     }
                 }
 
-                Section("Expiry") {
-                    Toggle("Has expiry date", isOn: $hasExpiry)
-                    if hasExpiry {
-                        DatePicker("Expires on", selection: $expiryDate, displayedComponents: .date)
-                    }
-                }
-
                 Section("Notes") {
-                    TextField("Optional notes", text: $notes, axis: .vertical)
+                    TextField("Optional notes", text: $draft.notes, axis: .vertical)
                         .lineLimit(3)
                         .accessibilityIdentifier("pantry.form.notesField")
+                }
+
+                if !draft.warnings.isEmpty {
+                    Section("Review") {
+                        ForEach(draft.warnings) { warning in
+                            HStack(alignment: .top, spacing: 10) {
+                                Image(systemName: icon(for: warning.severity))
+                                    .foregroundStyle(color(for: warning.severity))
+                                Text(warning.message)
+                                    .font(.caption)
+                                    .foregroundStyle(AppColors.subtleText)
+                            }
+                        }
+                    }
                 }
             }
             .navigationTitle(isEditing ? "Edit Item" : "Add Item")
@@ -343,544 +399,31 @@ struct AddPantryItemView: View {
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button(isEditing ? "Save" : "Add") {
-                        let normalizedQuantity = parsedQuantity
-                        let item = PantryItem(
-                            id: existingItem?.id ?? UUID(),
-                            name: trimmedName,
-                            category: category,
-                            quantity: normalizedQuantity,
-                            unit: normalizedQuantity == nil ? nil : unit,
-                            expiryDate: hasExpiry ? expiryDate : nil,
-                            dateAdded: existingItem?.dateAdded ?? Date(),
-                            barcode: existingItem?.barcode,
-                            notes: trimmedNotes,
-                            imageURL: existingItem?.imageURL
-                        )
-                        onSave(item)
-                        dismiss()
+                        if let item = draft.buildItem(existingID: existingItem?.id, existingDateAdded: existingItem?.dateAdded, existingImageURL: existingItem?.imageURL) {
+                            onSave(item)
+                            dismiss()
+                        }
                     }
                     .accessibilityIdentifier("pantry.form.saveButton")
-                    .disabled(trimmedName.isEmpty || quantityIsInvalid)
-                }
-            }
-        }
-    }
-}
-
-// MARK: - Barcode Scanner View
-struct BarcodeScannerView: View {
-    @Environment(\.dismiss) private var dismiss
-    @State private var scannedCode: String?
-    @State private var permissionGranted = false
-    @State private var permissionDenied = false
-    @State private var isLookingUp = false
-    @State private var lookupResult: BarcodeLookupResult?
-    @State private var lookupDone = false
-    @State private var manualName = ""
-    @State private var selectedCategory: FoodCategory = .other
-
-    private let barcodeService = BarcodeScannerService()
-    let onItemScanned: (PantryItem) -> Void
-
-    var body: some View {
-        NavigationStack {
-            ZStack {
-                if permissionDenied {
-                    VStack(spacing: 16) {
-                        Image(systemName: "camera.fill")
-                            .font(.system(size: 48))
-                            .foregroundStyle(AppColors.mediumGray)
-                        Text("Camera Access Required")
-                            .font(.headline)
-                        Text("Go to Settings → Pantry Chef and enable Camera access to scan barcodes.")
-                            .font(.subheadline)
-                            .foregroundStyle(AppColors.subtleText)
-                            .multilineTextAlignment(.center)
-                            .padding(.horizontal, 40)
-                        Button("Open Settings") {
-                            if let url = URL(string: UIApplication.openSettingsURLString) {
-                                UIApplication.shared.open(url)
-                            }
-                        }
-                        .buttonStyle(.borderedProminent)
-                        .tint(AppColors.primaryGreen)
-                    }
-                } else if permissionGranted {
-                    // Live camera feed
-                    BarcodeCameraView { code in
-                        guard scannedCode == nil else { return }
-                        scannedCode = code
-                        Task { await performLookup(code) }
-                    }
-                    .ignoresSafeArea()
-
-                    // Overlay
-                    VStack {
-                        Spacer()
-
-                        if scannedCode == nil {
-                            // Viewfinder guide
-                            RoundedRectangle(cornerRadius: 16)
-                                .strokeBorder(.white.opacity(0.6), lineWidth: 2)
-                                .frame(width: 280, height: 160)
-                                .overlay(
-                                    Text("Point at barcode")
-                                        .font(.caption)
-                                        .foregroundStyle(.white.opacity(0.7))
-                                        .offset(y: 90)
-                                )
-                        }
-
-                        Spacer()
-
-                        // Result overlay
-                        if scannedCode != nil {
-                            resultOverlay
-                        }
-                    }
-                } else {
-                    ProgressView("Requesting camera access...")
-                }
-            }
-            .background(.black)
-            .navigationTitle("Scan Barcode")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbarBackground(.hidden, for: .navigationBar)
-            .toolbarColorScheme(.dark, for: .navigationBar)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") { dismiss() }
-                        .foregroundStyle(.white)
-                }
-            }
-            .task {
-                await checkCameraPermission()
-            }
-        }
-    }
-
-    // MARK: - Result Overlay
-    @ViewBuilder
-    private var resultOverlay: some View {
-        VStack(spacing: 12) {
-            if isLookingUp {
-                ProgressView()
-                    .tint(.white)
-                Text("Looking up product...")
-                    .font(.subheadline)
-                    .foregroundStyle(.white)
-            } else if lookupDone {
-                if let result = lookupResult {
-                    // Product found
-                    HStack(spacing: 8) {
-                        Image(systemName: "checkmark.circle.fill")
-                            .foregroundStyle(AppColors.primaryGreen)
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(result.productName)
-                                .font(.headline)
-                                .foregroundStyle(.white)
-                            if let brand = result.brand {
-                                Text(brand)
-                                    .font(.caption)
-                                    .foregroundStyle(.white.opacity(0.7))
-                            }
-                            Text(result.category?.rawValue ?? "Other")
-                                .font(.caption2)
-                                .foregroundStyle(.white.opacity(0.5))
-                        }
-                    }
-                } else {
-                    // Product not found — manual entry
-                    VStack(spacing: 8) {
-                        HStack(spacing: 8) {
-                            Image(systemName: "questionmark.circle.fill")
-                                .foregroundStyle(.orange)
-                            Text("Product not found")
-                                .font(.subheadline)
-                                .foregroundStyle(.white)
-                        }
-                        TextField("Enter product name", text: $manualName)
-                            .textFieldStyle(.roundedBorder)
-                            .padding(.horizontal)
-                        Picker("Category", selection: $selectedCategory) {
-                            ForEach(FoodCategory.allCases, id: \.self) { cat in
-                                Text(cat.rawValue).tag(cat)
-                            }
-                        }
-                        .pickerStyle(.menu)
-                        .tint(.white)
-                    }
-                }
-
-                // Action buttons
-                HStack(spacing: 16) {
-                    Button("Scan Again") {
-                        resetScan()
-                    }
-                    .font(.subheadline)
-                    .foregroundStyle(.white)
-                    .padding(.horizontal, 20)
-                    .padding(.vertical, 10)
-                    .background(.white.opacity(0.2))
-                    .clipShape(Capsule())
-
-                    Button("Add to Pantry") {
-                        addToPantry()
-                    }
-                    .font(.subheadline)
-                    .fontWeight(.semibold)
-                    .foregroundStyle(.white)
-                    .padding(.horizontal, 20)
-                    .padding(.vertical, 10)
-                    .background(addButtonDisabled ? AppColors.mediumGray : AppColors.primaryGreen)
-                    .clipShape(Capsule())
-                    .disabled(addButtonDisabled)
-                }
-            }
-        }
-        .padding()
-        .background(.ultraThinMaterial.opacity(0.9))
-        .clipShape(RoundedRectangle(cornerRadius: 16))
-        .padding()
-    }
-
-    private var addButtonDisabled: Bool {
-        lookupResult == nil && manualName.trimmingCharacters(in: .whitespaces).isEmpty
-    }
-
-    // MARK: - Actions
-    private func performLookup(_ code: String) async {
-        isLookingUp = true
-        lookupResult = await barcodeService.lookupBarcode(code)
-        isLookingUp = false
-        lookupDone = true
-    }
-
-    private func resetScan() {
-        scannedCode = nil
-        lookupResult = nil
-        lookupDone = false
-        isLookingUp = false
-        manualName = ""
-        selectedCategory = .other
-    }
-
-    private func addToPantry() {
-        guard let code = scannedCode else { return }
-        let name: String
-        let category: FoodCategory
-        let imageURL: String?
-
-        if let result = lookupResult {
-            name = result.productName
-            category = result.category ?? .other
-            imageURL = result.imageURL
-        } else {
-            name = manualName.trimmingCharacters(in: .whitespaces)
-            category = selectedCategory
-            imageURL = nil
-        }
-        guard !name.isEmpty else { return }
-
-        let item = PantryItem(
-            name: name,
-            category: category,
-            quantity: 1,
-            unit: .piece,
-            barcode: code,
-            imageURL: imageURL
-        )
-        onItemScanned(item)
-        dismiss()
-    }
-
-    private func checkCameraPermission() async {
-        switch AVCaptureDevice.authorizationStatus(for: .video) {
-        case .authorized:
-            permissionGranted = true
-        case .notDetermined:
-            let granted = await AVCaptureDevice.requestAccess(for: .video)
-            permissionGranted = granted
-            permissionDenied = !granted
-        default:
-            permissionDenied = true
-        }
-    }
-}
-
-// MARK: - Camera UIViewControllerRepresentable
-import AVFoundation
-
-struct BarcodeCameraView: UIViewControllerRepresentable {
-    let onCodeScanned: (String) -> Void
-
-    func makeUIViewController(context: Context) -> BarcodeScannerViewController {
-        let vc = BarcodeScannerViewController()
-        vc.onCodeScanned = onCodeScanned
-        return vc
-    }
-
-    func updateUIViewController(_ uiViewController: BarcodeScannerViewController, context: Context) {}
-}
-
-final class BarcodeScannerViewController: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
-    var onCodeScanned: ((String) -> Void)?
-
-    private let captureSession = AVCaptureSession()
-    private var previewLayer: AVCaptureVideoPreviewLayer?
-    private let feedbackGenerator = UINotificationFeedbackGenerator()
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        view.backgroundColor = .black
-        setupCamera()
-    }
-
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        previewLayer?.frame = view.bounds
-    }
-
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        if !captureSession.isRunning {
-            DispatchQueue.global(qos: .userInitiated).async { [weak self] in
-                self?.captureSession.startRunning()
-            }
-        }
-    }
-
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        if captureSession.isRunning {
-            DispatchQueue.global(qos: .userInitiated).async { [weak self] in
-                self?.captureSession.stopRunning()
-            }
-        }
-    }
-
-    private func setupCamera() {
-        guard let device = AVCaptureDevice.default(for: .video),
-              let input = try? AVCaptureDeviceInput(device: device) else { return }
-
-        if captureSession.canAddInput(input) {
-            captureSession.addInput(input)
-        }
-
-        let metadataOutput = AVCaptureMetadataOutput()
-        if captureSession.canAddOutput(metadataOutput) {
-            captureSession.addOutput(metadataOutput)
-            metadataOutput.setMetadataObjectsDelegate(self, queue: .main)
-            metadataOutput.metadataObjectTypes = [
-                .ean8, .ean13, .upce, .code128, .code39,
-                .code93, .itf14, .pdf417, .qr, .dataMatrix
-            ]
-        }
-
-        previewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
-        previewLayer?.videoGravity = .resizeAspectFill
-        previewLayer?.frame = view.bounds
-        if let previewLayer {
-            view.layer.addSublayer(previewLayer)
-        }
-
-        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
-            self?.captureSession.startRunning()
-        }
-    }
-
-    // MARK: - AVCaptureMetadataOutputObjectsDelegate
-    func metadataOutput(_ output: AVCaptureMetadataOutput,
-                        didOutput metadataObjects: [AVMetadataObject],
-                        from connection: AVCaptureConnection) {
-        guard let object = metadataObjects.first as? AVMetadataMachineReadableCodeObject,
-              let code = object.stringValue else { return }
-
-        // Stop scanning after first hit
-        captureSession.stopRunning()
-        feedbackGenerator.notificationOccurred(.success)
-        onCodeScanned?(code)
-    }
-}
-
-// MARK: - Receipt Scanner View
-struct ReceiptScannerView: View {
-    @Environment(\.dismiss) private var dismiss
-    @State private var extractedItems: [String] = []
-    @State private var selectedItems: Set<String> = []
-    @State private var hasScanned = false
-    @State private var isProcessing = false
-    @State private var showImagePicker = false
-    @State private var capturedImage: UIImage?
-    @State private var errorText: String?
-
-    private let receiptService = ReceiptScannerService()
-    let onSave: ([String]) -> Void
-
-    var body: some View {
-        NavigationStack {
-            VStack(spacing: 16) {
-                if !hasScanned {
-                    VStack(spacing: 16) {
-                        Image(systemName: "doc.text.viewfinder")
-                            .font(.system(size: 64))
-                            .foregroundStyle(AppColors.warmOrange)
-
-                        Text("Take a photo of your receipt")
-                            .font(.headline)
-
-                        Text("We'll use OCR to extract the grocery items")
-                            .font(.subheadline)
-                            .foregroundStyle(AppColors.subtleText)
-
-                        if isProcessing {
-                            ProgressView("Scanning receipt...")
-                                .padding()
-                        } else {
-                            Button("Take Photo") {
-                                showImagePicker = true
-                            }
-                            .buttonStyle(.borderedProminent)
-                            .tint(AppColors.warmOrange)
-                        }
-
-                        if let errorText {
-                            Text(errorText)
-                                .font(.caption)
-                                .foregroundStyle(AppColors.softRed)
-                                .padding(.horizontal)
-                        }
-                    }
-                    .padding()
-                } else {
-                    if extractedItems.isEmpty {
-                        VStack(spacing: 12) {
-                            Image(systemName: "doc.text.magnifyingglass")
-                                .font(.system(size: 48))
-                                .foregroundStyle(AppColors.mediumGray)
-                            Text("No items found")
-                                .font(.headline)
-                            Text("Try taking a clearer photo of the receipt.")
-                                .font(.subheadline)
-                                .foregroundStyle(AppColors.subtleText)
-                            Button("Try Again") {
-                                hasScanned = false
-                                capturedImage = nil
-                                extractedItems = []
-                            }
-                            .buttonStyle(.borderedProminent)
-                            .tint(AppColors.warmOrange)
-                        }
-                        .padding()
-                    } else {
-                        List {
-                            Section("Found Items (\(extractedItems.count))") {
-                                ForEach(extractedItems, id: \.self) { item in
-                                    HStack {
-                                        Image(systemName: selectedItems.contains(item) ? "checkmark.circle.fill" : "circle")
-                                            .foregroundStyle(selectedItems.contains(item) ? AppColors.primaryGreen : AppColors.mediumGray)
-                                        Text(item)
-                                    }
-                                    .contentShape(Rectangle())
-                                    .onTapGesture {
-                                        if selectedItems.contains(item) {
-                                            selectedItems.remove(item)
-                                        } else {
-                                            selectedItems.insert(item)
-                                        }
-                                    }
-                                }
-                            }
-                        }
-
-                        HStack(spacing: 12) {
-                            Button("Scan Again") {
-                                hasScanned = false
-                                capturedImage = nil
-                                extractedItems = []
-                                selectedItems = []
-                            }
-                            .buttonStyle(.bordered)
-
-                            Button("Add \(selectedItems.count) Items to Pantry") {
-                                onSave(Array(selectedItems))
-                                dismiss()
-                            }
-                            .buttonStyle(.borderedProminent)
-                            .tint(AppColors.primaryGreen)
-                            .disabled(selectedItems.isEmpty)
-                        }
-                        .padding()
-                    }
-                }
-            }
-            .navigationTitle("Scan Receipt")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") { dismiss() }
-                }
-            }
-            .sheet(isPresented: $showImagePicker) {
-                ImagePicker(image: $capturedImage)
-            }
-            .onChange(of: capturedImage) { _, newImage in
-                guard let image = newImage else { return }
-                Task {
-                    await processReceipt(image: image)
+                    .disabled(draft.rowState != .valid)
                 }
             }
         }
     }
 
-    private func processReceipt(image: UIImage) async {
-        isProcessing = true
-        errorText = nil
-        let items = await receiptService.scanReceipt(image: image)
-        isProcessing = false
-        if items.isEmpty {
-            errorText = "Could not find any grocery items. Try a clearer photo."
-            hasScanned = true
-        } else {
-            extractedItems = items
-            selectedItems = Set(items)
-            hasScanned = true
+    private func icon(for severity: PantryIntakeWarningSeverity) -> String {
+        switch severity {
+        case .blocking: return "xmark.octagon.fill"
+        case .warning: return "exclamationmark.triangle.fill"
+        case .informational: return "info.circle.fill"
         }
     }
-}
 
-// MARK: - Image Picker (Camera + Photo Library)
-struct ImagePicker: UIViewControllerRepresentable {
-    @Binding var image: UIImage?
-    @Environment(\.dismiss) private var dismiss
-
-    func makeUIViewController(context: Context) -> UIImagePickerController {
-        let picker = UIImagePickerController()
-        picker.delegate = context.coordinator
-        // Use camera if available, otherwise photo library
-        if UIImagePickerController.isSourceTypeAvailable(.camera) {
-            picker.sourceType = .camera
-        } else {
-            picker.sourceType = .photoLibrary
-        }
-        return picker
-    }
-
-    func updateUIViewController(_ uiViewController: UIImagePickerController, context: Context) {}
-
-    func makeCoordinator() -> Coordinator { Coordinator(self) }
-
-    class Coordinator: NSObject, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
-        let parent: ImagePicker
-        init(_ parent: ImagePicker) { self.parent = parent }
-
-        func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
-            parent.image = info[.originalImage] as? UIImage
-            parent.dismiss()
-        }
-
-        func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
-            parent.dismiss()
+    private func color(for severity: PantryIntakeWarningSeverity) -> Color {
+        switch severity {
+        case .blocking: return AppColors.softRed
+        case .warning: return AppColors.warmOrange
+        case .informational: return AppColors.accentBlue
         }
     }
 }

@@ -53,9 +53,6 @@ struct RecipeListView: View {
                         Button { viewModel.showAddRecipe = true } label: {
                             Label("Add Recipe", systemImage: "square.and.pencil")
                         }
-                        Button { viewModel.showPhotoImport = true } label: {
-                            Label("Photo of Recipe", systemImage: "camera")
-                        }
                         Divider()
                         Button {
                             viewModel.activateWhatCanIMake()
@@ -97,9 +94,6 @@ struct RecipeListView: View {
                     Task { await viewModel.addRecipe(recipe) }
                 }
                 .environment(viewModel.appState)
-            }
-            .sheet(isPresented: $viewModel.showPhotoImport) {
-                RecipePhotoImportView(viewModel: viewModel)
             }
             .sheet(isPresented: $showMultiCookSelection) {
                 MultiCookSelectionView()

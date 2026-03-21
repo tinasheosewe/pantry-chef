@@ -3,6 +3,7 @@ import Foundation
 struct AppLaunchOptions {
     let useInMemoryStorage: Bool
     let shouldBootstrapStorage: Bool
+    let resetPersistentStore: Bool
     let seedPantryItems: Bool
     let seedRecipes: Bool
     let seedDiscoverRecipes: Bool
@@ -13,6 +14,7 @@ struct AppLaunchOptions {
             return AppLaunchOptions(
                 useInMemoryStorage: false,
                 shouldBootstrapStorage: true,
+                resetPersistentStore: args.contains("RESET_PERSISTENT_STORE"),
                 seedPantryItems: true,
                 seedRecipes: true,
                 seedDiscoverRecipes: true
@@ -23,6 +25,7 @@ struct AppLaunchOptions {
         return AppLaunchOptions(
             useInMemoryStorage: true,
             shouldBootstrapStorage: !emptyState,
+            resetPersistentStore: args.contains("RESET_PERSISTENT_STORE"),
             seedPantryItems: !emptyState,
             seedRecipes: !emptyState,
             seedDiscoverRecipes: !emptyState

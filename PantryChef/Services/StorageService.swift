@@ -2,6 +2,8 @@ import Foundation
 import SwiftData
 
 actor StorageService: StorageServiceProtocol {
+    private static let storeFileName = "default.store"
+
     enum StorageError: LocalizedError {
         case containerInitializationFailed(Error)
         case recipeEncodingFailed(UUID)
@@ -25,12 +27,13 @@ actor StorageService: StorageServiceProtocol {
     }()
 
     init() {
-        self.init(isStoredInMemoryOnly: false, shouldBootstrap: true)
+        self.init(isStoredInMemoryOnly: false, shouldBootstrap: true, resetPersistentStore: false)
     }
 
-    init(isStoredInMemoryOnly: Bool, shouldBootstrap: Bool) {
+    init(isStoredInMemoryOnly: Bool, shouldBootstrap: Bool, resetPersistentStore: Bool) {
         let schema = Schema([
             PantryItemRecord.self,
+            PantryFacetRecord.self,
             RecipeRecord.self,
             IngredientRecord.self,
             RecipeStepRecord.self,
@@ -39,13 +42,54 @@ actor StorageService: StorageServiceProtocol {
             MealPlanRecord.self,
             ShoppingItemRecord.self,
         ])
+        self.shouldBootstrap = shouldBootstrap
 
         do {
-            let configuration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: isStoredInMemoryOnly)
-            self.container = try ModelContainer(for: schema, configurations: [configuration])
-            self.shouldBootstrap = shouldBootstrap
+            self.container = try Self.makeContainer(
+                schema: schema,
+                isStoredInMemoryOnly: isStoredInMemoryOnly,
+                resetPersistentStore: resetPersistentStore
+            )
         } catch {
             preconditionFailure(StorageError.containerInitializationFailed(error).localizedDescription)
+        }
+    }
+
+    private static func makeContainer(schema: Schema, isStoredInMemoryOnly: Bool, resetPersistentStore: Bool) throws -> ModelContainer {
+        if isStoredInMemoryOnly {
+            let configuration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
+            return try ModelContainer(for: schema, configurations: [configuration])
+        }
+
+        let storeURL = try persistentStoreURL()
+        if resetPersistentStore {
+            AppLog.warn("[StorageService] Resetting persistent store at launch because RESET_PERSISTENT_STORE was supplied")
+            try destroyPersistentStore(at: storeURL)
+        }
+        let configuration = ModelConfiguration(schema: schema, url: storeURL, cloudKitDatabase: .none)
+        return try ModelContainer(for: schema, configurations: [configuration])
+    }
+
+    private static func persistentStoreURL() throws -> URL {
+        let appSupportDirectory = try FileManager.default.url(
+            for: .applicationSupportDirectory,
+            in: .userDomainMask,
+            appropriateFor: nil,
+            create: true
+        )
+        return appSupportDirectory.appendingPathComponent(storeFileName)
+    }
+
+    private static func destroyPersistentStore(at storeURL: URL) throws {
+        let fileManager = FileManager.default
+        let urlsToRemove = [
+            storeURL,
+            storeURL.appendingPathExtension("shm"),
+            storeURL.appendingPathExtension("wal"),
+        ]
+
+        for url in urlsToRemove where fileManager.fileExists(atPath: url.path) {
+            try fileManager.removeItem(at: url)
         }
     }
 
@@ -67,7 +111,7 @@ actor StorageService: StorageServiceProtocol {
     func updatePantryItem(_ item: PantryItem) async throws -> PantryItem {
         try ensureBootstrapIfNeeded()
         if let record = try fetchPantryRecord(id: item.id) {
-            record.update(from: item)
+            record.update(from: item, in: context)
             try saveContext()
         }
         return item

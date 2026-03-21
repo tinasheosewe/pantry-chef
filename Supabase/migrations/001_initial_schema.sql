@@ -12,7 +12,6 @@ CREATE TABLE IF NOT EXISTS pantry_items (
     unit TEXT NOT NULL DEFAULT 'piece',
     expiry_date TIMESTAMPTZ,
     date_added TIMESTAMPTZ NOT NULL DEFAULT now(),
-    barcode TEXT,
     notes TEXT,
     image_url TEXT,
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),

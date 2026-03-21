@@ -103,15 +103,6 @@ struct HealthTweak: Identifiable, Codable {
     }
 }
 
-// MARK: - Barcode Lookup Result
-struct BarcodeLookupResult: Codable {
-    let barcode: String
-    let productName: String
-    let brand: String?
-    let category: FoodCategory?
-    let imageURL: String?
-}
-
 // MARK: - Recipe Import Result
 struct RecipeImportResult: Codable {
     let title: String

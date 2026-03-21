@@ -2,7 +2,6 @@ import SwiftUI
 
 struct HomeView: View {
     @State private var viewModel: HomeViewModel
-    @State private var showReceiptScanner = false
     @State private var resumeRecipe: Recipe?
 
     var onSwitchToShopping: (() -> Void)?
@@ -59,16 +58,6 @@ struct HomeView: View {
             .onAppear {
                 viewModel.refresh()
                 viewModel.appState.activeCooks.refresh()
-            }
-            .sheet(isPresented: $showReceiptScanner) {
-                ReceiptScannerView { items in
-                    Task {
-                        for itemName in items {
-                            let item = PantryItem(name: itemName, category: .other)
-                            await viewModel.appState.addPantryItem(item)
-                        }
-                    }
-                }
             }
             .fullScreenCover(item: $resumeRecipe) { recipe in
                 let session = CookingSession.load(recipeId: recipe.id)
@@ -204,10 +193,10 @@ struct HomeView: View {
                     onSwitchToShopping?()
                 }
                 .accessibilityIdentifier("home.quickAction.shopping")
-                QuickActionButton(icon: "camera.fill", title: "Scan\nreceipt", color: AppColors.accentBlue) {
-                    showReceiptScanner = true
+                QuickActionButton(icon: "calendar", title: "Plan\nmeals", color: AppColors.accentBlue) {
+                    onSwitchToPlan?()
                 }
-                .accessibilityIdentifier("home.quickAction.receipt")
+                .accessibilityIdentifier("home.quickAction.plan")
             }
         }
     }

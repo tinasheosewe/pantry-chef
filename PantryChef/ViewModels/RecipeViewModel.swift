@@ -10,7 +10,6 @@ final class RecipeViewModel {
     var selectedDietaryTags: Set<DietaryTag> = []
     var showAddRecipe = false
     var showImportURL = false
-    var showPhotoImport = false
     var sortOrder: SortOrder = .recent
     var showOnlyFavorites = false
     var showCanMakeOnly = false          // Filter to recipes user can make
@@ -456,15 +455,6 @@ final class RecipeViewModel {
         defer { isLoading = false }
 
         if let result = await appState.aiService.parseRecipeFromURL(urlString) {
-            importedRecipe = result.toRecipe()
-        }
-    }
-
-    func importFromPhoto(extractedText: String) async {
-        isLoading = true
-        defer { isLoading = false }
-
-        if let result = await appState.aiService.parseRecipeFromText(extractedText) {
             importedRecipe = result.toRecipe()
         }
     }

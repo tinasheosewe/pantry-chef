@@ -248,7 +248,6 @@ final class PantryItemModelTests: XCTestCase {
         XCTAssertNil(item.quantity)
         XCTAssertNil(item.unit)
         XCTAssertNil(item.expiryDate)
-        XCTAssertNil(item.barcode)
         XCTAssertNil(item.notes)
         XCTAssertNil(item.imageURL)
         XCTAssertNotNil(item.id)
@@ -262,16 +261,40 @@ final class PantryItemModelTests: XCTestCase {
             quantity: 12,
             unit: .piece,
             expiryDate: expiry,
-            barcode: "123456",
             notes: "Free range",
             imageURL: "https://example.com/eggs.jpg"
         )
-        XCTAssertEqual(item.name, "Eggs")
-        XCTAssertEqual(item.category, .dairy)
+        XCTAssertEqual(item.name, "Egg")
+        XCTAssertEqual(item.category, .protein)
         XCTAssertEqual(item.quantity, 12)
         XCTAssertEqual(item.unit, .piece)
-        XCTAssertEqual(item.barcode, "123456")
         XCTAssertEqual(item.notes, "Free range")
+    }
+
+    func testCatalogBackedInitializationResolvesStructuredFields() {
+        let item = PantryItem(name: "Milk", category: .other)
+
+        XCTAssertEqual(item.catalogItemID, "milk")
+        XCTAssertEqual(item.category, .dairy)
+        XCTAssertEqual(item.storage, .refrigerated)
+        XCTAssertTrue(item.isCatalogBacked)
+        XCTAssertEqual(item.freshnessSource, .none)
+    }
+
+    func testCatalogBackedInitializationNormalizesFacetSet() {
+        let item = PantryItem(
+            name: "Flour",
+            category: .other,
+            catalogItemID: "flour",
+            facets: [
+                PantryFacetSelection(key: .variant, value: "all-purpose"),
+                PantryFacetSelection(key: .variant, value: "bread"),
+                PantryFacetSelection(key: .base, value: "wheat"),
+            ]
+        )
+
+        XCTAssertEqual(item.facets, [PantryFacetSelection(key: .variant, value: "all-purpose")])
+        XCTAssertEqual(item.name, "All-purpose Flour")
     }
 
     // MARK: - Expiry Status
@@ -382,6 +405,85 @@ final class PantryItemModelTests: XCTestCase {
         XCTAssertEqual(decoded.quantity, 200)
         XCTAssertEqual(decoded.unit, .gram)
         XCTAssertEqual(decoded.id, item.id)
+    }
+}
+
+final class PantryIntakeRowDraftTests: XCTestCase {
+
+    func testSelectingCatalogItemSetsDeterministicDefaults() throws {
+        var draft = PantryIntakeRowDraft()
+
+        draft.selectItem(try XCTUnwrap(PantryCatalog.item(id: "milk")))
+
+        XCTAssertEqual(draft.selectedItemID, "milk")
+        XCTAssertEqual(draft.storage, .refrigerated)
+        XCTAssertEqual(draft.unit, .liter)
+        XCTAssertEqual(draft.estimatedFreshnessWindow, 5...10)
+        XCTAssertEqual(draft.rowState, .valid)
+    }
+
+    func testStorageChangeRecomputesFreshnessWindow() throws {
+        var draft = PantryIntakeRowDraft()
+        draft.selectItem(try XCTUnwrap(PantryCatalog.item(id: "muffin")))
+
+        let pantryWindow = try XCTUnwrap(draft.estimatedFreshnessWindow)
+        draft.storage = .frozen
+        let frozenWindow = try XCTUnwrap(draft.estimatedFreshnessWindow)
+
+        XCTAssertEqual(pantryWindow, 2...5)
+        XCTAssertEqual(frozenWindow, 30...90)
+    }
+
+    func testTypingAfterSelectionClearsSelectedCatalogItem() throws {
+        var draft = PantryIntakeRowDraft()
+        draft.selectItem(try XCTUnwrap(PantryCatalog.item(id: "milk")))
+
+        draft.updateSearchText("Mil")
+
+        XCTAssertNil(draft.selectedItemID)
+        XCTAssertNil(draft.storage)
+        XCTAssertNil(draft.unit)
+        XCTAssertEqual(draft.searchText, "Mil")
+        XCTAssertEqual(draft.rowState, .incomplete)
+    }
+
+    func testSelectingNewItemResetsDefaultUnit() throws {
+        var draft = PantryIntakeRowDraft()
+        draft.selectItem(try XCTUnwrap(PantryCatalog.item(id: "milk")))
+        draft.selectItem(try XCTUnwrap(PantryCatalog.item(id: "egg")))
+
+        XCTAssertEqual(draft.unit, .piece)
+    }
+
+    func testBuildItemProducesCatalogBackedStructuredPantryItem() throws {
+        var draft = PantryIntakeRowDraft()
+        draft.selectItem(try XCTUnwrap(PantryCatalog.item(id: "flour")))
+        draft.setFacet(.variant, value: "all-purpose")
+        draft.quantityText = "2"
+        draft.unit = .kilogram
+        draft.usesEstimatedExpiry = false
+        draft.manualExpiryDate = Date().addingTimeInterval(86_400)
+        draft.notes = "Keep sealed"
+
+        let item = try XCTUnwrap(draft.buildItem())
+
+        XCTAssertEqual(item.catalogItemID, "flour")
+        XCTAssertEqual(item.name, "All-purpose Flour")
+        XCTAssertEqual(item.storage, .pantry)
+        XCTAssertEqual(item.freshnessSource, .userProvided)
+        XCTAssertEqual(item.facets, [PantryFacetSelection(key: .variant, value: "all-purpose")])
+        XCTAssertEqual(item.quantity, 2)
+        XCTAssertEqual(item.unit, .kilogram)
+        XCTAssertEqual(item.notes, "Keep sealed")
+    }
+
+    func testUnsupportedSearchRemainsUnresolved() {
+        var draft = PantryIntakeRowDraft()
+        draft.searchText = "Beer"
+
+        XCTAssertEqual(draft.rowState, PantryIntakeRowState.incomplete)
+        XCTAssertTrue(draft.warnings.contains { $0.kind == PantryIntakeWarningKind.unsupportedInput })
+        XCTAssertNil(draft.buildItem())
     }
 }
 
@@ -1634,23 +1736,6 @@ final class RecipeViewModelTests: XCTestCase {
         XCTAssertNil(vm.importedRecipe)
     }
 
-    func testImportFromPhoto() async {
-        let (vm, _, _, ai) = makeSUT()
-        ai.importResultToReturn = RecipeImportResult(
-            title: "Photo Recipe",
-            description: nil,
-            ingredients: [],
-            steps: [],
-            servings: 2,
-            prepTimeMinutes: nil,
-            cookTimeMinutes: nil,
-            imageURL: nil,
-            dietaryTags: nil
-        )
-        await vm.importFromPhoto(extractedText: "Some recipe text")
-        XCTAssertNotNil(vm.importedRecipe)
-        XCTAssertEqual(ai.parseRecipeFromTextCallCount, 1)
-    }
 }
 
 // MARK: - PantryViewModel Tests
@@ -1763,24 +1848,6 @@ final class PantryViewModelTests: XCTestCase {
         item.quantity = 5
         await vm.updateItem(item)
         XCTAssertEqual(appState.pantryItems[0].quantity, 5)
-    }
-
-    // MARK: - Handle Receipt Scanned
-
-    func testHandleReceiptScannedAddsItems() async {
-        let (vm, appState) = makeSUT()
-        await vm.handleReceiptScanned(items: ["Milk", "Eggs", "Bread"])
-        XCTAssertEqual(appState.pantryItems.count, 3)
-        let names = appState.pantryItems.map { $0.name }
-        XCTAssertTrue(names.contains("Milk"))
-        XCTAssertTrue(names.contains("Eggs"))
-        XCTAssertTrue(names.contains("Bread"))
-    }
-
-    func testHandleReceiptScannedDefaultsToOtherCategory() async {
-        let (vm, appState) = makeSUT()
-        await vm.handleReceiptScanned(items: ["Unknown Item"])
-        XCTAssertEqual(appState.pantryItems[0].category, .other)
     }
 }
 
