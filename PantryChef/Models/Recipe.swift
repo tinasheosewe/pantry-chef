@@ -395,24 +395,27 @@ struct Recipe: Identifiable, Codable, Hashable {
 
 // MARK: - Substitution Entry (local repository result)
 struct SubstitutionEntry: Codable, Hashable, Identifiable {
-    var id: String { "\(original)-\(substitute)" }
-    let original: String
-    let substitute: String
-    let ratio: String?                      // nil for unenriched MISKG entries
-    let tasteImpact: SubstitutionImpact?    // nil for unenriched
-    let textureImpact: SubstitutionImpact?  // nil for unenriched
-    let nutritionImpact: String?            // e.g. "Higher protein, Lower fat"
+    var id: String { "\(originalItemID)-\(substituteItemID)-\(substituteName)" }
+    let originalItemID: String
+    let substituteItemID: String
+    let substituteName: String
+    let substituteFacets: [PantryFacetSelection]
+    let ratio: String
+    let tasteImpact: SubstitutionImpact
+    let textureImpact: SubstitutionImpact
+    let cookingImpact: CookingImpact
+    let nutritionImpact: String?
     let notes: String?
     let dietary: [DietaryTag]?
-    let enriched: Bool                      // true = hand-curated with full metadata
 
     /// Whether this substitute is currently in the user's pantry (set at query time, not persisted).
     var inPantry: Bool = false
 
     // Coding keys to exclude transient properties
     enum CodingKeys: String, CodingKey {
-        case original, substitute, ratio, tasteImpact, textureImpact
-        case nutritionImpact, notes, dietary, enriched
+        case originalItemID, substituteItemID, substituteName, substituteFacets
+        case ratio, tasteImpact, textureImpact, cookingImpact
+        case nutritionImpact, notes, dietary
     }
 }
 

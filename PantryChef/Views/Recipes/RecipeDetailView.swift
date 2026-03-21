@@ -318,12 +318,12 @@ struct RecipeDetailView: View {
             }
 
             if !subs.isEmpty {
-                ForEach(subs.prefix(3), id: \.substitute) { sub in
+                ForEach(subs.prefix(3)) { sub in
                     HStack(spacing: 4) {
                         Image(systemName: sub.inPantry ? "checkmark.circle.fill" : "arrow.turn.down.right")
                             .font(.system(size: 8))
                             .foregroundStyle(sub.inPantry ? AppColors.primaryGreen : Color(red: 0.60, green: 0.76, blue: 0.25))
-                        Text(sub.substitute)
+                        Text(sub.substituteName)
                             .font(.caption2)
                             .fontWeight(.medium)
                             .foregroundStyle(sub.inPantry ? AppColors.primaryGreen : Color(red: 0.60, green: 0.76, blue: 0.25))
@@ -336,22 +336,17 @@ struct RecipeDetailView: View {
                                 .foregroundStyle(AppColors.primaryGreen)
                                 .clipShape(Capsule())
                         }
-                        if let ratio = sub.ratio {
-                            Text("(\(ratio))")
-                                .font(.system(size: 9))
-                                .foregroundStyle(AppColors.subtleText)
-                        }
-                        if let taste = sub.tasteImpact, let texture = sub.textureImpact {
-                            let worst = taste.ordinal >= texture.ordinal ? taste : texture
-                            if worst != .none {
-                                Text(worst.rawValue.lowercased())
-                                    .font(.system(size: 8))
-                                    .padding(.horizontal, 4)
-                                    .padding(.vertical, 1)
-                                    .background(worst.color.opacity(0.15))
-                                    .foregroundStyle(worst.color)
-                                    .clipShape(Capsule())
-                            }
+                        Text("(\(sub.ratio))")
+                            .font(.system(size: 9))
+                            .foregroundStyle(AppColors.subtleText)
+                        if sub.cookingImpact != .none {
+                            Text(sub.cookingImpact.rawValue.lowercased())
+                                .font(.system(size: 8))
+                                .padding(.horizontal, 4)
+                                .padding(.vertical, 1)
+                                .background(sub.cookingImpact.color.opacity(0.15))
+                                .foregroundStyle(sub.cookingImpact.color)
+                                .clipShape(Capsule())
                         }
                     }
                     .padding(.leading, 16)
@@ -423,7 +418,7 @@ struct RecipeDetailView: View {
                     let result = await appState.getSubstitutions(for: recipe)
                     isLoadingAction = false
                     if result.isEmpty {
-                        actionErrorMessage = "Couldn't find substitutions. Please check your internet connection and try again."
+                        actionErrorMessage = "No local substitutions are available for the missing ingredients in this recipe."
                     } else {
                         substitutions = result
                         showSubstitutions = true
@@ -843,20 +838,19 @@ struct SubstitutionsView: View {
                 Spacer()
             }
 
-            if sub.ratio != "Ratio not available" {
-                Text("Ratio: \(sub.ratio)")
-                    .font(.caption)
-                    .foregroundStyle(AppColors.subtleText)
-            }
+            Text("Ratio: \(sub.ratio)")
+                .font(.caption)
+                .foregroundStyle(AppColors.subtleText)
 
-            if sub.enriched {
-                HStack(spacing: 16) {
-                    if sub.tasteImpact != "Unknown" {
-                        DetailChip(icon: "mouth", text: sub.tasteImpact)
-                    }
-                    if sub.textureImpact != "Unknown" {
-                        DetailChip(icon: "hand.point.up", text: sub.textureImpact)
-                    }
+            HStack(spacing: 16) {
+                if sub.tasteImpact != "None" {
+                    DetailChip(icon: "mouth", text: sub.tasteImpact)
+                }
+                if sub.textureImpact != "None" {
+                    DetailChip(icon: "hand.point.up", text: sub.textureImpact)
+                }
+                if sub.cookingImpact != "None" {
+                    DetailChip(icon: "flame", text: sub.cookingImpact)
                 }
             }
 
@@ -864,12 +858,10 @@ struct SubstitutionsView: View {
                 .font(.caption)
                 .foregroundStyle(AppColors.primaryGreen)
 
-            HStack {
-                Text("Confidence: \(sub.confidenceLabel)")
+            if let notes = sub.notes, !notes.isEmpty {
+                Text(notes)
                     .font(.caption2)
                     .foregroundStyle(AppColors.subtleText)
-                Spacer()
-                ConfidenceBar(confidence: sub.confidence)
             }
         }
         .padding(.vertical, 4)
@@ -889,21 +881,6 @@ struct DetailChip: View {
                 .font(.caption2)
         }
         .foregroundStyle(AppColors.subtleText)
-    }
-}
-
-// MARK: - Confidence Bar
-struct ConfidenceBar: View {
-    let confidence: Double
-
-    var body: some View {
-        HStack(spacing: 2) {
-            ForEach(0..<5) { index in
-                RoundedRectangle(cornerRadius: 2)
-                    .fill(Double(index) / 5.0 < confidence ? AppColors.primaryGreen : AppColors.lightGray)
-                    .frame(width: 12, height: 6)
-            }
-        }
     }
 }
 

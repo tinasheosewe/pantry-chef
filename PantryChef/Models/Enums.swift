@@ -336,6 +336,24 @@ enum SubstitutionImpact: String, Codable, CaseIterable, Identifiable {
     }
 }
 
+enum CookingImpact: String, Codable, CaseIterable, Identifiable, Sendable {
+    case none = "None"
+    case slightAdjustment = "Slight Adjustment"
+    case moderateAdjustment = "Moderate Adjustment"
+    case majorAdjustment = "Major Adjustment"
+
+    var id: String { rawValue }
+
+    var color: Color {
+        switch self {
+        case .none: return Color(red: 0.30, green: 0.69, blue: 0.31)
+        case .slightAdjustment: return Color(red: 0.60, green: 0.76, blue: 0.25)
+        case .moderateAdjustment: return Color(red: 0.96, green: 0.65, blue: 0.14)
+        case .majorAdjustment: return Color(red: 0.90, green: 0.30, blue: 0.24)
+        }
+    }
+}
+
 // MARK: - Expiry Status
 enum ExpiryStatus {
     case fresh

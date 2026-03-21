@@ -62,6 +62,18 @@ struct PantryFacetDefinition: Hashable, Sendable {
     let options: [String]
 }
 
+struct PantrySubstitutionDefinition: Hashable, Sendable {
+    let substituteItemID: String
+    let substituteFacets: [PantryFacetSelection]
+    let ratio: String
+    let tasteImpact: SubstitutionImpact
+    let textureImpact: SubstitutionImpact
+    let cookingImpact: CookingImpact
+    let nutritionImpact: String?
+    let notes: String?
+    let dietary: [DietaryTag]?
+}
+
 struct PantryCatalogItemDefinition: Identifiable, Hashable, Sendable {
     let id: String
     let name: String
@@ -72,6 +84,7 @@ struct PantryCatalogItemDefinition: Identifiable, Hashable, Sendable {
     let aliases: [String]
     let facets: [PantryFacetDefinition]
     let defaultSelections: [PantryFacetSelection]
+    let substitutions: [PantrySubstitutionDefinition]
     let unitOverrides: [PantryFacetKey: [String: MeasurementUnit]]
     let freshnessByStorage: [PantryStorage: ClosedRange<Int>]
 
@@ -154,6 +167,19 @@ enum PantryCatalog {
             aliases: ["pasta", "noodles"],
             facets: [.form(["spaghetti", "penne", "fusilli"]), .base(["wheat", "chickpea"])],
             defaultSelections: [.init(key: .form, value: "spaghetti")],
+            substitutions: [
+                substitution(
+                    itemID: "pasta",
+                    facets: [.init(key: .base, value: "chickpea")],
+                    ratio: "1:1",
+                    tasteImpact: .moderate,
+                    textureImpact: .slight,
+                    cookingImpact: .slightAdjustment,
+                    nutritionImpact: "Higher protein and fiber",
+                    notes: "Works best when shape stays similar.",
+                    dietary: [.glutenFree]
+                )
+            ],
             freshnessByStorage: [.pantry: 180...365, .refrigerated: 240...365, .frozen: 365...540]
         ),
         item(
@@ -178,6 +204,30 @@ enum PantryCatalog {
             aliases: ["milk", "whole milk", "skim milk"],
             facets: [.variant(["whole", "semi-skimmed", "skim"]), .preservation(["fresh", "shelf-stable"]), .base(["dairy", "oat", "almond", "soy"])],
             defaultSelections: [.init(key: .variant, value: "whole")],
+            substitutions: [
+                substitution(
+                    itemID: "milk",
+                    facets: [.init(key: .base, value: "oat")],
+                    ratio: "1:1",
+                    tasteImpact: .slight,
+                    textureImpact: .slight,
+                    cookingImpact: .slightAdjustment,
+                    nutritionImpact: "Usually lower protein than dairy milk",
+                    notes: "Reliable in porridge, sauces, and baking.",
+                    dietary: [.vegan, .dairyFree]
+                ),
+                substitution(
+                    itemID: "milk",
+                    facets: [.init(key: .base, value: "almond")],
+                    ratio: "1:1",
+                    tasteImpact: .moderate,
+                    textureImpact: .slight,
+                    cookingImpact: .slightAdjustment,
+                    nutritionImpact: "Lower calories, lower protein",
+                    notes: "Best where a lighter body is acceptable.",
+                    dietary: [.vegan, .dairyFree]
+                )
+            ],
             freshnessByStorage: [.pantry: 30...120, .refrigerated: 5...10, .frozen: 30...90]
         ),
         item(
@@ -190,6 +240,30 @@ enum PantryCatalog {
             aliases: ["yogurt", "yoghurt", "greek yogurt"],
             facets: [.variant(["plain", "greek"]), .base(["dairy", "coconut"]), .preservation(["fresh"])],
             defaultSelections: [.init(key: .variant, value: "plain")],
+            substitutions: [
+                substitution(
+                    itemID: "yogurt",
+                    facets: [.init(key: .variant, value: "greek")],
+                    ratio: "1:1",
+                    tasteImpact: .slight,
+                    textureImpact: .moderate,
+                    cookingImpact: .slightAdjustment,
+                    nutritionImpact: "Higher protein, thicker texture",
+                    notes: "Thin with a little water if the recipe expects a looser yogurt.",
+                    dietary: nil
+                ),
+                substitution(
+                    itemID: "yogurt",
+                    facets: [.init(key: .base, value: "coconut")],
+                    ratio: "1:1",
+                    tasteImpact: .moderate,
+                    textureImpact: .slight,
+                    cookingImpact: .slightAdjustment,
+                    nutritionImpact: "Dairy-free with lower protein",
+                    notes: "Adds some sweetness depending on brand.",
+                    dietary: [.vegan, .dairyFree]
+                )
+            ],
             freshnessByStorage: [.refrigerated: 5...14, .frozen: 30...60]
         ),
         item(
@@ -199,9 +273,33 @@ enum PantryCatalog {
             defaultUnit: .gram,
             defaultQuantity: 200,
             defaultStorage: .refrigerated,
-            aliases: ["cheese", "cheddar", "mozzarella"],
+            aliases: ["cheese", "cheddar", "cheddar cheese", "mozzarella", "mozzarella cheese", "parmesan", "parmesan cheese"],
             facets: [.variant(["cheddar", "mozzarella", "parmesan"]), .form(["block", "shredded", "sliced"])],
             defaultSelections: [.init(key: .variant, value: "cheddar"), .init(key: .form, value: "block")],
+            substitutions: [
+                substitution(
+                    itemID: "cheese",
+                    facets: [.init(key: .variant, value: "mozzarella"), .init(key: .form, value: "shredded")],
+                    ratio: "1:1",
+                    tasteImpact: .slight,
+                    textureImpact: .slight,
+                    cookingImpact: .slightAdjustment,
+                    nutritionImpact: "Usually milder and slightly lower sodium",
+                    notes: "Best for melts and bakes.",
+                    dietary: [.vegetarian]
+                ),
+                substitution(
+                    itemID: "cheese",
+                    facets: [.init(key: .variant, value: "parmesan")],
+                    ratio: "1/2:1",
+                    tasteImpact: .moderate,
+                    textureImpact: .slight,
+                    cookingImpact: .slightAdjustment,
+                    nutritionImpact: "More intense flavor per gram",
+                    notes: "Use less because parmesan is saltier and sharper.",
+                    dietary: [.vegetarian]
+                )
+            ],
             freshnessByStorage: [.refrigerated: 7...30, .frozen: 60...180]
         ),
         item(
@@ -211,9 +309,33 @@ enum PantryCatalog {
             defaultUnit: .milliliter,
             defaultQuantity: 300,
             defaultStorage: .refrigerated,
-            aliases: ["cream", "double cream", "heavy cream"],
+            aliases: ["cream", "double cream", "heavy cream", "heavy whipping cream"],
             facets: [.variant(["single", "double", "heavy"])],
             defaultSelections: [.init(key: .variant, value: "double")],
+            substitutions: [
+                substitution(
+                    itemID: "yogurt",
+                    facets: [.init(key: .variant, value: "greek")],
+                    ratio: "1:1",
+                    tasteImpact: .moderate,
+                    textureImpact: .slight,
+                    cookingImpact: .moderateAdjustment,
+                    nutritionImpact: "Lower fat and more protein",
+                    notes: "Whisk in off heat to reduce curdling.",
+                    dietary: [.vegetarian]
+                ),
+                substitution(
+                    itemID: "milk",
+                    facets: [.init(key: .variant, value: "whole"), .init(key: .base, value: "dairy")],
+                    ratio: "1:1",
+                    tasteImpact: .slight,
+                    textureImpact: .significant,
+                    cookingImpact: .moderateAdjustment,
+                    nutritionImpact: "Much lower fat",
+                    notes: "Sauces will be thinner unless reduced or thickened.",
+                    dietary: [.vegetarian]
+                )
+            ],
             freshnessByStorage: [.refrigerated: 5...10, .frozen: 30...60]
         ),
         item(
@@ -226,6 +348,28 @@ enum PantryCatalog {
             aliases: ["butter", "salted butter", "unsalted butter"],
             facets: [.variant(["salted", "unsalted"])],
             defaultSelections: [.init(key: .variant, value: "unsalted")],
+            substitutions: [
+                substitution(
+                    itemID: "olive-oil",
+                    ratio: "3/4:1",
+                    tasteImpact: .slight,
+                    textureImpact: .moderate,
+                    cookingImpact: .moderateAdjustment,
+                    nutritionImpact: "Higher unsaturated fat",
+                    notes: "Best in savory cooking and many baked goods, but not where solid fat is essential.",
+                    dietary: [.vegan, .dairyFree]
+                ),
+                substitution(
+                    itemID: "vegetable-oil",
+                    ratio: "3/4:1",
+                    tasteImpact: .slight,
+                    textureImpact: .moderate,
+                    cookingImpact: .moderateAdjustment,
+                    nutritionImpact: "Similar calories with less saturated fat",
+                    notes: "Neutral option for cakes, muffins, and sauteing.",
+                    dietary: [.vegan, .dairyFree]
+                )
+            ],
             freshnessByStorage: [.refrigerated: 14...30, .frozen: 90...180]
         ),
         item(
@@ -261,6 +405,30 @@ enum PantryCatalog {
             defaultStorage: .pantry,
             aliases: ["tomato", "tomatoes"],
             facets: [.variant(["cherry", "plum"])],
+            substitutions: [
+                substitution(
+                    itemID: "canned-tomato",
+                    facets: [.init(key: .form, value: "diced")],
+                    ratio: "1 can for 3 to 4 tomatoes",
+                    tasteImpact: .slight,
+                    textureImpact: .moderate,
+                    cookingImpact: .slightAdjustment,
+                    nutritionImpact: "Similar overall nutrition",
+                    notes: "Best in soups, sauces, and other cooked dishes.",
+                    dietary: [.vegan, .vegetarian, .glutenFree, .dairyFree]
+                ),
+                substitution(
+                    itemID: "tomato-paste",
+                    facets: [.init(key: .concentration, value: "double")],
+                    ratio: "1 tbsp paste plus 3 tbsp water per tomato",
+                    tasteImpact: .significant,
+                    textureImpact: .moderate,
+                    cookingImpact: .moderateAdjustment,
+                    nutritionImpact: "More concentrated flavor and sugars",
+                    notes: "Use only in cooked recipes where a deeper tomato base is acceptable.",
+                    dietary: [.vegan, .vegetarian, .glutenFree, .dairyFree]
+                )
+            ],
             freshnessByStorage: [.pantry: 3...7, .refrigerated: 5...10]
         ),
         item(
@@ -330,6 +498,19 @@ enum PantryCatalog {
             aliases: ["egg", "eggs"],
             facets: [.form(["whole"])],
             defaultSelections: [.init(key: .form, value: "whole")],
+            substitutions: [
+                substitution(
+                    itemID: "yogurt",
+                    facets: [.init(key: .variant, value: "plain")],
+                    ratio: "1/4 cup per egg",
+                    tasteImpact: .slight,
+                    textureImpact: .moderate,
+                    cookingImpact: .moderateAdjustment,
+                    nutritionImpact: "Lower protein and cholesterol",
+                    notes: "Useful mainly for cakes, muffins, and quick breads, not for egg-forward dishes.",
+                    dietary: [.vegetarian]
+                )
+            ],
             freshnessByStorage: [.refrigerated: 14...28]
         ),
         item(
@@ -339,9 +520,33 @@ enum PantryCatalog {
             defaultUnit: .gram,
             defaultQuantity: 500,
             defaultStorage: .refrigerated,
-            aliases: ["chicken", "chicken breast"],
+            aliases: ["chicken", "chicken breast", "chicken breasts", "chicken thigh", "chicken thighs", "boneless skinless chicken breast", "boneless skinless chicken thighs"],
             facets: [.preservation(["fresh", "frozen"])],
             defaultSelections: [.init(key: .preservation, value: "fresh")],
+            substitutions: [
+                substitution(
+                    itemID: "tofu",
+                    facets: [.init(key: .variant, value: "extra firm")],
+                    ratio: "1:1 by weight",
+                    tasteImpact: .significant,
+                    textureImpact: .moderate,
+                    cookingImpact: .moderateAdjustment,
+                    nutritionImpact: "Lower saturated fat, lower protein density",
+                    notes: "Best in stir-fries, curries, and saucy dishes.",
+                    dietary: [.vegan, .vegetarian, .dairyFree]
+                ),
+                substitution(
+                    itemID: "canned-beans",
+                    facets: [.init(key: .base, value: "chickpea")],
+                    ratio: "1 can for 400 to 450 g chicken",
+                    tasteImpact: .significant,
+                    textureImpact: .significant,
+                    cookingImpact: .slightAdjustment,
+                    nutritionImpact: "More fiber, less protein per serving",
+                    notes: "Best in salads, stews, soups, and curries.",
+                    dietary: [.vegan, .vegetarian, .glutenFree, .dairyFree]
+                )
+            ],
             freshnessByStorage: [.refrigerated: 1...3, .frozen: 60...180]
         ),
         item(
@@ -354,6 +559,30 @@ enum PantryCatalog {
             aliases: ["ground beef", "mince"],
             facets: [.preservation(["fresh", "frozen"])],
             defaultSelections: [.init(key: .preservation, value: "fresh")],
+            substitutions: [
+                substitution(
+                    itemID: "tofu",
+                    facets: [.init(key: .variant, value: "firm")],
+                    ratio: "1:1 by weight",
+                    tasteImpact: .significant,
+                    textureImpact: .moderate,
+                    cookingImpact: .moderateAdjustment,
+                    nutritionImpact: "Lower saturated fat and more calcium",
+                    notes: "Crumble and brown well before seasoning.",
+                    dietary: [.vegan, .vegetarian, .dairyFree]
+                ),
+                substitution(
+                    itemID: "canned-beans",
+                    facets: [.init(key: .base, value: "black bean")],
+                    ratio: "1 can for 400 to 450 g beef",
+                    tasteImpact: .significant,
+                    textureImpact: .significant,
+                    cookingImpact: .slightAdjustment,
+                    nutritionImpact: "More fiber, less fat",
+                    notes: "Best in tacos, chilis, and heavily seasoned sauces.",
+                    dietary: [.vegan, .vegetarian, .glutenFree, .dairyFree]
+                )
+            ],
             freshnessByStorage: [.refrigerated: 1...2, .frozen: 60...120]
         ),
         item(
@@ -423,9 +652,33 @@ enum PantryCatalog {
             defaultUnit: .liter,
             defaultQuantity: 1,
             defaultStorage: .pantry,
-            aliases: ["broth", "stock"],
+            aliases: ["broth", "stock", "beef broth", "chicken broth", "vegetable broth", "beef stock", "chicken stock", "vegetable stock"],
             facets: [.base(["chicken", "beef", "vegetable"])],
             defaultSelections: [.init(key: .base, value: "chicken")],
+            substitutions: [
+                substitution(
+                    itemID: "broth",
+                    facets: [.init(key: .base, value: "vegetable")],
+                    ratio: "1:1",
+                    tasteImpact: .slight,
+                    textureImpact: .none,
+                    cookingImpact: .none,
+                    nutritionImpact: "Usually slightly lower protein",
+                    notes: "Neutral option for soups, grains, and pan sauces.",
+                    dietary: [.vegan, .vegetarian, .dairyFree, .glutenFree]
+                ),
+                substitution(
+                    itemID: "broth",
+                    facets: [.init(key: .base, value: "beef")],
+                    ratio: "1:1",
+                    tasteImpact: .moderate,
+                    textureImpact: .none,
+                    cookingImpact: .none,
+                    nutritionImpact: "Similar overall nutrition",
+                    notes: "Best in braises and darker sauces, less suitable for delicate dishes.",
+                    dietary: [.dairyFree, .glutenFree]
+                )
+            ],
             freshnessByStorage: [.pantry: 120...365, .refrigerated: 4...7, .frozen: 30...90]
         ),
         item(
@@ -531,6 +784,19 @@ enum PantryCatalog {
             aliases: ["bread", "loaf"],
             facets: [.variant(["white", "wholemeal", "sourdough"]), .form(["loaf", "sliced"])],
             defaultSelections: [.init(key: .variant, value: "white"), .init(key: .form, value: "loaf")],
+            substitutions: [
+                substitution(
+                    itemID: "tortilla",
+                    facets: [.init(key: .base, value: "wheat")],
+                    ratio: "1 tortilla per 2 slices",
+                    tasteImpact: .moderate,
+                    textureImpact: .moderate,
+                    cookingImpact: .slightAdjustment,
+                    nutritionImpact: "Usually similar calories with less thickness",
+                    notes: "Best for wraps, quesadillas, and quick sandwiches.",
+                    dietary: nil
+                )
+            ],
             unitOverrides: [.form: ["loaf": .loaf, "sliced": .slice]],
             freshnessByStorage: [.pantry: 3...7, .refrigerated: 5...10, .frozen: 30...90]
         ),
@@ -616,6 +882,7 @@ enum PantryCatalog {
         aliases: [String],
         facets: [PantryFacetDefinition],
         defaultSelections: [PantryFacetSelection] = [],
+        substitutions: [PantrySubstitutionDefinition] = [],
         unitOverrides: [PantryFacetKey: [String: MeasurementUnit]] = [:],
         freshnessByStorage: [PantryStorage: ClosedRange<Int>]
     ) -> PantryCatalogItemDefinition {
@@ -629,8 +896,33 @@ enum PantryCatalog {
             aliases: aliases,
             facets: facets,
             defaultSelections: defaultSelections,
+            substitutions: substitutions,
             unitOverrides: unitOverrides,
             freshnessByStorage: freshnessByStorage
+        )
+    }
+
+    private static func substitution(
+        itemID: String,
+        facets: [PantryFacetSelection] = [],
+        ratio: String,
+        tasteImpact: SubstitutionImpact,
+        textureImpact: SubstitutionImpact,
+        cookingImpact: CookingImpact,
+        nutritionImpact: String? = nil,
+        notes: String? = nil,
+        dietary: [DietaryTag]? = nil
+    ) -> PantrySubstitutionDefinition {
+        PantrySubstitutionDefinition(
+            substituteItemID: itemID,
+            substituteFacets: facets,
+            ratio: ratio,
+            tasteImpact: tasteImpact,
+            textureImpact: textureImpact,
+            cookingImpact: cookingImpact,
+            nutritionImpact: nutritionImpact,
+            notes: notes,
+            dietary: dietary
         )
     }
 }

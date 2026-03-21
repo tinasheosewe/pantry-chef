@@ -123,79 +123,27 @@ final class AIService: AIServiceProtocol {
         let matchResult = recipe.pantryMatch(pantry: pantry)
         guard !matchResult.missingIngredients.isEmpty else { return [] }
 
-        // Try local SubstitutionRepository first (pantry-aware ranking, top 3)
         var localSuggestions: [SubstitutionSuggestion] = []
-        var unresolvedIngredients: [Ingredient] = []
 
         for ingredient in matchResult.missingIngredients {
             let subs = SubstitutionRepository.shared.substitutions(for: ingredient.name, pantry: pantry)
             let top3 = Array(subs.prefix(3))
-            if top3.isEmpty {
-                unresolvedIngredients.append(ingredient)
-            } else {
-                for sub in top3 {
-                    let worstOrdinal: Int
-                    if let taste = sub.tasteImpact, let texture = sub.textureImpact {
-                        worstOrdinal = max(taste.ordinal, texture.ordinal)
-                    } else {
-                        worstOrdinal = 1 // default for unenriched
-                    }
-                    localSuggestions.append(SubstitutionSuggestion(
-                        originalIngredient: ingredient.name,
-                        substituteName: sub.substitute,
-                        ratio: sub.ratio ?? "Ratio not available",
-                        tasteImpact: sub.tasteImpact?.rawValue ?? "Unknown",
-                        textureImpact: sub.textureImpact?.rawValue ?? "Unknown",
-                        nutritionImpact: sub.nutritionImpact ?? "Similar",
-                        confidence: sub.inPantry ? 0.95 : (sub.enriched ? (worstOrdinal == 0 ? 0.9 : worstOrdinal == 1 ? 0.75 : 0.55) : 0.5),
-                        inPantry: sub.inPantry,
-                        enriched: sub.enriched
-                    ))
-                }
+            for sub in top3 {
+                localSuggestions.append(SubstitutionSuggestion(
+                    originalIngredient: ingredient.name,
+                    substituteName: sub.substituteName,
+                    ratio: sub.ratio,
+                    tasteImpact: sub.tasteImpact.rawValue,
+                    textureImpact: sub.textureImpact.rawValue,
+                    cookingImpact: sub.cookingImpact.rawValue,
+                    nutritionImpact: sub.nutritionImpact ?? "Similar overall nutrition",
+                    notes: sub.notes,
+                    inPantry: sub.inPantry
+                ))
             }
         }
 
-        // If all resolved locally, skip AI
-        if unresolvedIngredients.isEmpty {
-            return localSuggestions
-        }
-
-        // AI fallback for unresolved ingredients only
-        let missingList = unresolvedIngredients.map { $0.displayText }.joined(separator: "\n")
-        let availableList = pantry.map { $0.name }.joined(separator: ", ")
-
-        let prompt = """
-        I'm making \(recipe.title) but I'm missing these ingredients:
-        \(missingList)
-
-        I have these ingredients available:
-        \(availableList)
-
-        Suggest substitutions using what I have. For each missing ingredient, return a JSON array of substitution objects:
-        - "originalIngredient": string
-        - "substituteName": string
-        - "ratio": string (e.g., "1:1", "use half the amount")
-        - "tasteImpact": string (how it changes the taste)
-        - "textureImpact": string (how it changes the texture)
-        - "nutritionImpact": string (calorie/macro differences)
-        - "confidence": number (0.0 to 1.0, how good this substitution is)
-
-        If no good substitution exists for an ingredient, still include it with confidence 0.0 and substituteName "No good substitute available".
-        """
-
-        guard let response = await sendChatRequest(
-            prompt: prompt,
-            responseFormat: ["type": "json_schema", "json_schema": Self.substitutionsSchema]
-        ) else { return localSuggestions }
-
-        guard let data = response.data(using: .utf8) else { return localSuggestions }
-        do {
-            let raw = try JSONDecoder().decode(RawSubstitutionList.self, from: data)
-            return localSuggestions + raw.substitutions.map { $0.toSubstitutionSuggestion() }
-        } catch {
-            AppLog.warn("[AIService] Failed to decode substitutions: \(error)")
-            return localSuggestions
-        }
+        return localSuggestions
     }
 
     // MARK: - Make It Healthier
@@ -632,36 +580,6 @@ final class AIService: AIServiceProtocol {
                 ] as [String: Any]
             ],
             "required": ["items"],
-            "additionalProperties": false
-        ] as [String: Any]
-    ]
-
-    /// Substitution suggestions.
-    private static let substitutionsSchema: [String: Any] = [
-        "name": "substitutions",
-        "strict": true,
-        "schema": [
-            "type": "object",
-            "properties": [
-                "substitutions": [
-                    "type": "array",
-                    "items": [
-                        "type": "object",
-                        "properties": [
-                            "originalIngredient": ["type": "string"],
-                            "substituteName": ["type": "string"],
-                            "ratio": ["type": "string"],
-                            "tasteImpact": ["type": "string"],
-                            "textureImpact": ["type": "string"],
-                            "nutritionImpact": ["type": "string"],
-                            "confidence": ["type": "number"]
-                        ] as [String: Any],
-                        "required": ["originalIngredient", "substituteName", "ratio", "tasteImpact", "textureImpact", "nutritionImpact", "confidence"],
-                        "additionalProperties": false
-                    ] as [String: Any]
-                ] as [String: Any]
-            ],
-            "required": ["substitutions"],
             "additionalProperties": false
         ] as [String: Any]
     ]

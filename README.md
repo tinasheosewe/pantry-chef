@@ -7,7 +7,7 @@ A personal iOS kitchen management app powered by AI. Tells you what to buy, what
 ### Core
 - **What to Buy** — Given a recipe + your pantry, generates a precise shopping list
 - **What Can I Make** — Suggests recipes based on what's in your pantry (ranked by match %)
-- **Smart Substitutions** — AI-powered ingredient substitution suggestions with confidence ratings
+- **Smart Substitutions** — Structured pantry-catalog substitutions with explicit taste, texture, and cooking impact data
 
 ### Pantry Management
 - Add items manually with structured pantry fields

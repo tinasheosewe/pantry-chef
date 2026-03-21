@@ -6,13 +6,13 @@ struct SubstitutionSuggestion: Identifiable, Codable {
     let id: UUID
     let originalIngredient: String
     let substituteName: String
-    let ratio: String // e.g., "1:1", "use half the amount"
+    let ratio: String
     let tasteImpact: String
     let textureImpact: String
+    let cookingImpact: String
     let nutritionImpact: String
-    let confidence: Double // 0-1
-    var inPantry: Bool     // true if substitute is in user's pantry
-    var enriched: Bool     // true if from hand-curated data with full metadata
+    let notes: String?
+    var inPantry: Bool
 
     init(
         id: UUID = UUID(),
@@ -21,10 +21,10 @@ struct SubstitutionSuggestion: Identifiable, Codable {
         ratio: String,
         tasteImpact: String,
         textureImpact: String,
+        cookingImpact: String,
         nutritionImpact: String,
-        confidence: Double,
-        inPantry: Bool = false,
-        enriched: Bool = true
+        notes: String? = nil,
+        inPantry: Bool = false
     ) {
         self.id = id
         self.originalIngredient = originalIngredient
@@ -32,19 +32,10 @@ struct SubstitutionSuggestion: Identifiable, Codable {
         self.ratio = ratio
         self.tasteImpact = tasteImpact
         self.textureImpact = textureImpact
+        self.cookingImpact = cookingImpact
         self.nutritionImpact = nutritionImpact
-        self.confidence = confidence
+        self.notes = notes
         self.inPantry = inPantry
-        self.enriched = enriched
-    }
-
-    var confidenceLabel: String {
-        switch confidence {
-        case 0.8...1.0: return "Excellent"
-        case 0.6..<0.8: return "Good"
-        case 0.4..<0.6: return "Decent"
-        default: return "Experimental"
-        }
     }
 
     static let sample = SubstitutionSuggestion(
@@ -53,8 +44,9 @@ struct SubstitutionSuggestion: Identifiable, Codable {
         ratio: "1:1",
         tasteImpact: "Slightly tangier",
         textureImpact: "Very similar, slightly thinner",
+        cookingImpact: "Slight Adjustment",
         nutritionImpact: "40% fewer calories, higher protein",
-        confidence: 0.92
+        notes: "Works best in dips and baked sauces."
     )
 }
 
@@ -233,7 +225,6 @@ struct RawFullRecipe: Decodable {
 
 struct RawRecipeArray: Decodable { let recipes: [RawFullRecipe] }
 struct RawShoppingList: Decodable { let items: [RawShoppingItem] }
-struct RawSubstitutionList: Decodable { let substitutions: [RawSubstitution] }
 struct RawDurationList: Decodable { let durations: [RawStepDuration] }
 struct RawStatusMessages: Decodable { let messages: [String] }
 
@@ -249,28 +240,6 @@ struct RawShoppingItem: Decodable {
         let parsedUnit = unit.flatMap { MeasurementUnit(rawValue: $0) }
         let parsedCategory = FoodCategory(rawValue: category) ?? .other
         return ShoppingItem(name: name, quantity: quantity, unit: parsedUnit, category: parsedCategory)
-    }
-}
-
-struct RawSubstitution: Decodable {
-    let originalIngredient: String
-    let substituteName: String
-    let ratio: String
-    let tasteImpact: String
-    let textureImpact: String
-    let nutritionImpact: String
-    let confidence: Double
-
-    func toSubstitutionSuggestion() -> SubstitutionSuggestion {
-        SubstitutionSuggestion(
-            originalIngredient: originalIngredient,
-            substituteName: substituteName,
-            ratio: ratio,
-            tasteImpact: tasteImpact,
-            textureImpact: textureImpact,
-            nutritionImpact: nutritionImpact,
-            confidence: confidence
-        )
     }
 }
 

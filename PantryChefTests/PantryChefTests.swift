@@ -835,6 +835,95 @@ final class IngredientMatcherTests: XCTestCase {
         let ingredient = Ingredient(name: "milk", quantity: 500, unit: .milliliter)
         XCTAssertTrue(IngredientMatcher.hasEnoughQuantity(pantryItem: pantryItem, ingredient: ingredient))
     }
+
+    func testPantryMatchUsesCatalogBackedSubstitutions() {
+        let recipe = makeRecipe(ingredients: [
+            Ingredient(name: "chicken breast", quantity: 400, unit: .gram, category: .protein)
+        ])
+        let pantry = [
+            PantryItem(
+                name: "Tofu",
+                category: .protein,
+                quantity: 400,
+                unit: .gram,
+                catalogItemID: "tofu",
+                facets: [.init(key: .variant, value: "extra firm")]
+            )
+        ]
+
+        let match = recipe.pantryMatch(pantry: pantry)
+
+        XCTAssertFalse(match.canMake)
+        XCTAssertTrue(match.canMakeWithSubstitutions)
+        XCTAssertEqual(match.substitutableIngredients.count, 1)
+        XCTAssertEqual(match.substitutableIngredients[0].ingredient.name, "chicken breast")
+        XCTAssertEqual(match.substitutableIngredients[0].substitutions.first?.substituteItemID, "tofu")
+        XCTAssertTrue(match.substitutableIngredients[0].substitutions.first?.inPantry == true)
+    }
+
+    func testSubstitutionRepositoryRequiresMatchingFacets() {
+        let pantry = [
+            PantryItem(
+                name: "Tofu",
+                category: .protein,
+                quantity: 400,
+                unit: .gram,
+                catalogItemID: "tofu"
+            )
+        ]
+
+        let substitutions = SubstitutionRepository.shared.substitutions(for: "chicken breast", pantry: pantry)
+        let tofuSubstitution = substitutions.first { $0.substituteItemID == "tofu" }
+
+        XCTAssertNotNil(tofuSubstitution)
+        XCTAssertEqual(tofuSubstitution?.substituteFacets, [.init(key: .variant, value: "extra firm")])
+        XCTAssertFalse(tofuSubstitution?.inPantry ?? true)
+    }
+
+    func testPantryMatchUsesChickenThighAliasForSubstitutions() {
+        let recipe = makeRecipe(ingredients: [
+            Ingredient(name: "chicken thigh", quantity: 400, unit: .gram, category: .protein)
+        ])
+        let pantry = [
+            PantryItem(
+                name: "Tofu",
+                category: .protein,
+                quantity: 400,
+                unit: .gram,
+                catalogItemID: "tofu",
+                facets: [.init(key: .variant, value: "extra firm")]
+            )
+        ]
+
+        let match = recipe.pantryMatch(pantry: pantry)
+
+        XCTAssertTrue(match.canMakeWithSubstitutions)
+        XCTAssertEqual(match.substitutableIngredients.first?.ingredient.name, "chicken thigh")
+        XCTAssertEqual(match.substitutableIngredients.first?.substitutions.first?.substituteName, "Extra Firm Tofu")
+    }
+
+    func testPantryMatchUsesBeefBrothAliasForSubstitutions() {
+        let recipe = makeRecipe(ingredients: [
+            Ingredient(name: "beef broth", quantity: 500, unit: .milliliter, category: .canned)
+        ])
+        let pantry = [
+            PantryItem(
+                name: "Vegetable Broth",
+                category: .canned,
+                quantity: 1,
+                unit: .liter,
+                catalogItemID: "broth",
+                facets: [.init(key: .base, value: "vegetable")]
+            )
+        ]
+
+        let match = recipe.pantryMatch(pantry: pantry)
+
+        XCTAssertTrue(match.canMakeWithSubstitutions)
+        XCTAssertEqual(match.substitutableIngredients.first?.ingredient.name, "beef broth")
+        XCTAssertEqual(match.substitutableIngredients.first?.substitutions.first?.substituteItemID, "broth")
+        XCTAssertTrue(match.substitutableIngredients.first?.substitutions.first?.inPantry == true)
+    }
 }
 
 // MARK: - Shopping Generation Tests
@@ -1125,31 +1214,24 @@ final class EnumTests: XCTestCase {
 
 final class AIModelTests: XCTestCase {
 
-    func testSubstitutionConfidenceLabel() {
-        XCTAssertEqual(
-            SubstitutionSuggestion(originalIngredient: "X", substituteName: "Y",
-                                   ratio: "1:1", tasteImpact: "", textureImpact: "",
-                                   nutritionImpact: "", confidence: 0.9).confidenceLabel,
-            "Excellent"
+    func testSubstitutionSuggestionPreservesStructuredFields() {
+        let suggestion = SubstitutionSuggestion(
+            originalIngredient: "Cream",
+            substituteName: "Greek Yogurt",
+            ratio: "1:1",
+            tasteImpact: "Moderate",
+            textureImpact: "Slight",
+            cookingImpact: "Moderate Adjustment",
+            nutritionImpact: "Lower fat and more protein",
+            notes: "Whisk in off heat to reduce curdling.",
+            inPantry: true
         )
-        XCTAssertEqual(
-            SubstitutionSuggestion(originalIngredient: "X", substituteName: "Y",
-                                   ratio: "1:1", tasteImpact: "", textureImpact: "",
-                                   nutritionImpact: "", confidence: 0.7).confidenceLabel,
-            "Good"
-        )
-        XCTAssertEqual(
-            SubstitutionSuggestion(originalIngredient: "X", substituteName: "Y",
-                                   ratio: "1:1", tasteImpact: "", textureImpact: "",
-                                   nutritionImpact: "", confidence: 0.5).confidenceLabel,
-            "Decent"
-        )
-        XCTAssertEqual(
-            SubstitutionSuggestion(originalIngredient: "X", substituteName: "Y",
-                                   ratio: "1:1", tasteImpact: "", textureImpact: "",
-                                   nutritionImpact: "", confidence: 0.2).confidenceLabel,
-            "Experimental"
-        )
+
+        XCTAssertEqual(suggestion.originalIngredient, "Cream")
+        XCTAssertEqual(suggestion.substituteName, "Greek Yogurt")
+        XCTAssertEqual(suggestion.cookingImpact, "Moderate Adjustment")
+        XCTAssertEqual(suggestion.notes, "Whisk in off heat to reduce curdling.")
+        XCTAssertTrue(suggestion.inPantry)
     }
 
     func testRecipeImportResultToRecipe() {
@@ -1185,6 +1267,47 @@ final class AIModelTests: XCTestCase {
         )
         let recipe = result.toRecipe()
         XCTAssertEqual(recipe.servings, 4, "Should default to 4 servings")
+    }
+}
+
+final class AIServiceSubstitutionTests: XCTestCase {
+
+    func testSuggestSubstitutionsReturnsCatalogBackedStructuredSuggestions() async {
+        let service = AIService(apiKey: "")
+        let recipe = makeRecipe(ingredients: [
+            Ingredient(name: "chicken breast", quantity: 400, unit: .gram, category: .protein)
+        ])
+        let pantry = [
+            PantryItem(
+                name: "Tofu",
+                category: .protein,
+                quantity: 400,
+                unit: .gram,
+                catalogItemID: "tofu",
+                facets: [.init(key: .variant, value: "extra firm")]
+            )
+        ]
+
+        let suggestions = await service.suggestSubstitutions(recipe: recipe, pantry: pantry)
+
+        XCTAssertEqual(suggestions.count, 2)
+        XCTAssertEqual(suggestions.first?.originalIngredient, "chicken breast")
+        XCTAssertEqual(suggestions.first?.substituteName, "Extra Firm Tofu")
+        XCTAssertEqual(suggestions.first?.ratio, "1:1 by weight")
+        XCTAssertEqual(suggestions.first?.cookingImpact, "Moderate Adjustment")
+        XCTAssertEqual(suggestions.first?.notes, "Best in stir-fries, curries, and saucy dishes.")
+        XCTAssertTrue(suggestions.first?.inPantry == true)
+    }
+
+    func testSuggestSubstitutionsDoesNotFallbackForUnknownIngredients() async {
+        let service = AIService(apiKey: "")
+        let recipe = makeRecipe(ingredients: [
+            Ingredient(name: "gochujang", quantity: 1, unit: .tablespoon, category: .condiments)
+        ])
+
+        let suggestions = await service.suggestSubstitutions(recipe: recipe, pantry: [])
+
+        XCTAssertTrue(suggestions.isEmpty)
     }
 }
 
@@ -1425,14 +1548,14 @@ final class AppStateTests: XCTestCase {
         XCTAssertEqual(appState.expiredItems[0].name, "Bad")
     }
 
-    func testPantryByCategory() async {
+    func testPantryByCategoryUsesCatalogCategoriesForKnownItems() async {
         let (appState, _, _) = makeTestAppState()
         await appState.addPantryItem(makePantryItem(name: "Milk", category: .dairy))
         await appState.addPantryItem(makePantryItem(name: "Chicken", category: .protein))
         await appState.addPantryItem(makePantryItem(name: "Eggs", category: .dairy))
         let grouped = appState.pantryByCategory
-        XCTAssertEqual(grouped[.dairy]?.count, 2)
-        XCTAssertEqual(grouped[.protein]?.count, 1)
+        XCTAssertEqual(grouped[.dairy]?.count, 1)
+        XCTAssertEqual(grouped[.protein]?.count, 2)
     }
 
     // MARK: - Shopping List Generation (fuzzy matching)

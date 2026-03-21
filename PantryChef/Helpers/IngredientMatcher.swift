@@ -37,11 +37,8 @@ enum IngredientMatcher {
         var substitutable: [(ingredient: Ingredient, substitutions: [SubstitutionEntry])] = []
 
         for ingredient in missing {
-            let subs = subRepo.substitutions(for: ingredient.name)
-            // Only include subs the user actually has in their pantry
-            let availableSubs = subs.filter { sub in
-                pantryContainsNormalized(normalize(sub.substitute), index: pantryIndex)
-            }
+            let subs = subRepo.substitutions(for: ingredient.name, pantry: pantry)
+            let availableSubs = subs.filter(\.inPantry)
             if !availableSubs.isEmpty {
                 substitutable.append((ingredient: ingredient, substitutions: availableSubs))
             }
