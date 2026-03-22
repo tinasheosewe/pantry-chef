@@ -32,6 +32,7 @@ Pods/
 !default.perspectivev3
 *.DS_Store
 .env
+Config/LocalSecrets.xcconfig
 TestResults*
 *.xcresult
 
