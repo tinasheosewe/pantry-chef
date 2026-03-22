@@ -17,9 +17,7 @@ struct MultiCookSelectionView: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
-                if selectedRecipeIds.count >= 2 {
-                    schedulePreview
-                }
+                schedulePreview
 
                 List {
                     Section {
@@ -117,9 +115,9 @@ struct MultiCookSelectionView: View {
     // MARK: - Schedule Preview
 
     private var schedulePreview: some View {
-        let summary = scheduleSummary ?? ScheduleSummary.empty
+        let summary = previewSummary
 
-        return VStack(spacing: 8) {
+        return VStack(spacing: 10) {
             HStack(spacing: 20) {
                 VStack(spacing: 2) {
                     Text("\(selectedRecipeIds.count)")
@@ -151,21 +149,60 @@ struct MultiCookSelectionView: View {
                         .foregroundStyle(AppColors.subtleText)
                 }
 
-                if summary.savedSeconds > 0 {
-                    VStack(spacing: 2) {
-                        Text("-\(formatDuration(summary.savedSeconds))")
-                            .font(.title2)
-                            .fontWeight(.bold)
-                            .foregroundStyle(AppColors.primaryGreen)
-                        Text("Saved")
-                            .font(.caption)
-                            .foregroundStyle(AppColors.subtleText)
-                    }
+                VStack(spacing: 2) {
+                    Text(savedTimeText)
+                        .font(.title2)
+                        .fontWeight(.bold)
+                        .foregroundStyle(summary.savedSeconds > 0 ? AppColors.primaryGreen : AppColors.subtleText)
+                    Text("Saved")
+                        .font(.caption)
+                        .foregroundStyle(AppColors.subtleText)
                 }
             }
-            .padding()
-            .frame(maxWidth: .infinity)
-            .background(AppColors.primaryGreen.opacity(0.08))
+            Text(schedulePreviewMessage)
+                .font(.caption)
+                .foregroundStyle(AppColors.subtleText)
+                .lineLimit(1)
+                .minimumScaleFactor(0.85)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.horizontal)
+                .padding(.bottom, 12)
+        }
+        .padding()
+        .frame(maxWidth: .infinity)
+        .background(AppColors.primaryGreen.opacity(0.08))
+    }
+
+    private var selectedRecipes: [Recipe] {
+        appState.recipes.filter { selectedRecipeIds.contains($0.id) }
+    }
+
+    private var previewSummary: ScheduleSummary {
+        guard let scheduleSummary else {
+            return ScheduleSummary(
+                blockCount: selectedRecipes.reduce(0) { $0 + $1.steps.count },
+                interleavedSeconds: selectedRecipes.compactMap(\.totalTimeMinutes).reduce(0, +) * 60,
+                savedSeconds: 0
+            )
+        }
+
+        return scheduleSummary
+    }
+
+    private var savedTimeText: String {
+        previewSummary.savedSeconds > 0 ? "-\(formatDuration(previewSummary.savedSeconds))" : "0m"
+    }
+
+    private var schedulePreviewMessage: String {
+        switch selectedRecipeIds.count {
+        case 0:
+            return "Select recipes to preview overlap and time savings"
+        case 1:
+            return "Select 1 more recipe to compare overlap savings"
+        default:
+            return previewSummary.savedSeconds > 0
+                ? "Estimated overlap savings across selected recipes"
+                : "No overlap savings detected for this combination"
         }
     }
 
@@ -179,7 +216,6 @@ struct MultiCookSelectionView: View {
     }
 
     private func recalculateScheduleSummary() {
-        let selectedRecipes = appState.recipes.filter { selectedRecipeIds.contains($0.id) }
         guard selectedRecipes.count >= 2 else {
             scheduleSummary = nil
             return
