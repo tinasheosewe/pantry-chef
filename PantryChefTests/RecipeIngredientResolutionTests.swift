@@ -35,6 +35,29 @@ final class RecipeIngredientResolutionTests: XCTestCase {
         XCTAssertEqual(candidates.first?.displayName, "Greek Yogurt")
     }
 
+    func testCandidateParserUsesSharedSynonymExpansion() {
+        let parser = IngredientCandidateParser()
+        let ingredient = Ingredient(name: "plain flour")
+
+        let candidates = parser.candidates(for: ingredient)
+
+        XCTAssertEqual(candidates.first?.catalogItemID, "flour")
+        XCTAssertEqual(candidates.first?.facets, [.init(key: .variant, value: "all-purpose")])
+        XCTAssertEqual(candidates.first?.displayName, "All-purpose Flour")
+        XCTAssertTrue(candidates.first?.rationale.contains("Synonym expansion") == true)
+    }
+
+    func testCandidateParserUsesFacetTemplatesForVariantPhrases() {
+        let parser = IngredientCandidateParser()
+        let ingredient = Ingredient(name: "jasmine rice")
+
+        let candidates = parser.candidates(for: ingredient)
+
+        XCTAssertEqual(candidates.first?.catalogItemID, "rice")
+        XCTAssertEqual(candidates.first?.facets, [.init(key: .variant, value: "jasmine")])
+        XCTAssertEqual(candidates.first?.displayName, "Jasmine Rice")
+    }
+
     func testTrustedCanonicalizerUsesBestCandidateIdentity() {
         let recipe = makeRecipe(
             title: "Parfait",

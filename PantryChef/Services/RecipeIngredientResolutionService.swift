@@ -1,6 +1,22 @@
 import Foundation
 
 final class IngredientCandidateParser: IngredientCandidateParserProtocol {
+    private enum RetrievalStage: Int {
+        case exactName = 0
+        case exactAlias = 1
+        case exactTemplate = 2
+        case exactSynonym = 3
+        case lexical = 4
+        case fuzzy = 5
+    }
+
+    private struct ScoredCandidate {
+        let candidate: IngredientResolutionCandidate
+        let stage: RetrievalStage
+    }
+
+    private static let catalogPhrases = PantryCatalog.allItems.flatMap(IngredientLexicon.generatedCatalogPhrases(for:))
+
     private let maxCandidates: Int
 
     init(maxCandidates: Int = 4) {
@@ -22,161 +38,149 @@ final class IngredientCandidateParser: IngredientCandidateParserProtocol {
             ]
         }
 
-        let normalizedQuery = IngredientMatcher.normalize(ingredient.rawName)
-        guard !normalizedQuery.isEmpty else { return [] }
+        let query = IngredientLexicon.parse(ingredient.rawName)
+        guard !query.lookupKey.isEmpty else { return [] }
 
-        let queryTokens = Self.tokenize(normalizedQuery)
+        var candidatesByID: [String: ScoredCandidate] = [:]
 
-        let scored = PantryCatalog.allItems.flatMap { item -> [(PantryCatalogItemDefinition, [PantryFacetSelection], Double, String)] in
-            let forms = surfaceForms(for: item)
-            var results: [(PantryCatalogItemDefinition, [PantryFacetSelection], Double, String)] = []
-            var bestBaseScore = 0.0
-            var bestBaseReason = ""
+        register(
+            phrases: Self.catalogPhrases.filter { $0.source == .name && $0.lookupKey == query.lookupKey },
+            stage: .exactName,
+            score: 1,
+            rationale: { phrase in "Exact catalog name match for \(phrase.text)." },
+            into: &candidatesByID
+        )
 
-            for form in forms {
-                let normalizedForm = IngredientMatcher.normalize(form)
-                guard !normalizedForm.isEmpty else { continue }
+        register(
+            phrases: Self.catalogPhrases.filter { $0.source == .alias && $0.lookupKey == query.lookupKey },
+            stage: .exactAlias,
+            score: 0.995,
+            rationale: { phrase in "Exact alias match for \(phrase.text)." },
+            into: &candidatesByID
+        )
 
-                if normalizedForm == normalizedQuery {
-                    bestBaseScore = 1.0
-                    bestBaseReason = "Exact alias match for \(form)."
-                    break
-                }
+        register(
+            phrases: Self.catalogPhrases.filter { $0.source == .template && $0.lookupKey == query.lookupKey },
+            stage: .exactTemplate,
+            score: 0.99,
+            rationale: { phrase in "Exact facet template match for \(phrase.text)." },
+            into: &candidatesByID
+        )
 
-                let formTokens = Self.tokenize(normalizedForm)
-                let tokenScore = tokenOverlapScore(queryTokens: queryTokens, candidateTokens: formTokens)
-                let fuzzyScore = fuzzySimilarity(normalizedQuery, normalizedForm)
-                let containmentScore = containsScore(query: normalizedQuery, candidate: normalizedForm)
-                let combined = max(tokenScore * 0.65 + fuzzyScore * 0.35, containmentScore)
-
-                if combined > bestBaseScore {
-                    bestBaseScore = combined
-                    bestBaseReason = rationale(for: form, tokenScore: tokenScore, fuzzyScore: fuzzyScore, containmentScore: containmentScore)
-                }
-            }
-
-            if bestBaseScore >= 0.42 {
-                results.append((item, [], min(bestBaseScore, 0.99), bestBaseReason))
-            }
-
-            let facetHints = matchedFacetHints(for: item, queryTokens: queryTokens)
-            for hint in facetHints {
-                let score = min(max(bestBaseScore, 0.55) + 0.12, 0.99)
-                results.append((
-                    item,
-                    [hint],
-                    score,
-                    "Facet hint \(hint.value) suggests \(item.displayName(for: [hint]))."
-                ))
-            }
-
-            return results
+        let synonymLookups = IngredientLexicon.synonymLookupGroup(for: ingredient.rawName)
+            .subtracting([query.lookupKey])
+        if !synonymLookups.isEmpty {
+            register(
+                phrases: Self.catalogPhrases.filter { synonymLookups.contains($0.lookupKey) },
+                stage: .exactSynonym,
+                score: 0.96,
+                rationale: { phrase in "Synonym expansion linked \(ingredient.rawName) to \(phrase.text)." },
+                into: &candidatesByID
+            )
         }
 
-        return scored
-            .sorted {
-                if $0.2 == $1.2 {
-                    if $0.1.count != $1.1.count {
-                        return $0.1.count > $1.1.count
-                    }
-                    return $0.0.name < $1.0.name
+        if !query.tokens.isEmpty {
+            let synonymTokens = synonymLookups.flatMap(IngredientLexicon.tokenize)
+            let expandedQueryTokens = Array(Set(query.tokens + synonymTokens))
+
+            for phrase in Self.catalogPhrases {
+                let tokenScore = IngredientLexicon.weightedTokenScore(
+                    queryTokens: expandedQueryTokens,
+                    candidateTokens: phrase.tokens
+                )
+
+                let containmentScore: Double
+                if phrase.lookupKey.contains(query.lookupKey) || query.lookupKey.contains(phrase.lookupKey) {
+                    containmentScore = 0.9
+                } else {
+                    containmentScore = 0
                 }
-                return $0.2 > $1.2
-            }
-            .prefix(maxCandidates)
-            .map { item, facets, score, reason in
-                IngredientResolutionCandidate(
-                    id: candidateID(for: item.id, facets: facets),
-                    catalogItemID: item.id,
-                    facets: facets,
-                    displayName: item.displayName(for: facets),
-                    score: score,
-                    rationale: reason,
-                    supportedFacets: item.facets
+
+                let combinedScore = max(tokenScore, containmentScore)
+                guard combinedScore >= 0.48 else { continue }
+
+                register(
+                    phrase: phrase,
+                    stage: .lexical,
+                    score: min(0.94, combinedScore),
+                    rationale: containmentScore > 0
+                        ? "Strong lexical phrase overlap with \(phrase.text)."
+                        : "Weighted token retrieval suggests \(phrase.text).",
+                    into: &candidatesByID
                 )
             }
-    }
-
-    private func surfaceForms(for item: PantryCatalogItemDefinition) -> [String] {
-        var forms = Set<String>()
-        forms.insert(item.name)
-        item.aliases.forEach { forms.insert($0) }
-
-        for facet in item.facets {
-            for option in facet.options {
-                forms.insert("\(option) \(item.name)")
-            }
         }
 
-        return Array(forms)
-    }
+        for phrase in Self.catalogPhrases {
+            let fuzzyScore = IngredientLexicon.fuzzySimilarity(query.normalized, phrase.normalized)
+            guard fuzzyScore >= 0.78 else { continue }
 
-    private func matchedFacetHints(for item: PantryCatalogItemDefinition, queryTokens: Set<String>) -> [PantryFacetSelection] {
-        item.facets.compactMap { definition in
-            guard let matchedOption = definition.options.first(where: { queryTokens.contains(IngredientMatcher.normalize($0)) }) else {
-                return nil
-            }
-            return PantryFacetSelection(key: definition.key, value: matchedOption)
+            register(
+                phrase: phrase,
+                stage: .fuzzy,
+                score: min(0.82, fuzzyScore),
+                rationale: "Fuzzy retrieval kept \(phrase.text) in consideration.",
+                into: &candidatesByID
+            )
         }
-    }
 
-    private func tokenOverlapScore(queryTokens: Set<String>, candidateTokens: Set<String>) -> Double {
-        guard !queryTokens.isEmpty, !candidateTokens.isEmpty else { return 0 }
-        let overlap = queryTokens.intersection(candidateTokens)
-        let denominator = Double(max(queryTokens.count, candidateTokens.count))
-        return Double(overlap.count) / denominator
-    }
-
-    private func containsScore(query: String, candidate: String) -> Double {
-        if candidate.contains(query) || query.contains(candidate) {
-            return 0.88
-        }
-        return 0
-    }
-
-    private func rationale(for form: String, tokenScore: Double, fuzzyScore: Double, containmentScore: Double) -> String {
-        if containmentScore > 0 {
-            return "Strong phrase overlap with \(form)."
-        }
-        if tokenScore >= fuzzyScore {
-            return "Token overlap suggests \(form)."
-        }
-        return "Fuzzy match suggests \(form)."
-    }
-
-    private func fuzzySimilarity(_ lhs: String, _ rhs: String) -> Double {
-        let distance = levenshteinDistance(lhs, rhs)
-        let maxLength = max(lhs.count, rhs.count)
-        guard maxLength > 0 else { return 1 }
-        return 1 - Double(distance) / Double(maxLength)
-    }
-
-    private func levenshteinDistance(_ lhs: String, _ rhs: String) -> Int {
-        let lhsChars = Array(lhs)
-        let rhsChars = Array(rhs)
-        let lhsCount = lhsChars.count
-        let rhsCount = rhsChars.count
-
-        var distances = Array(0...rhsCount)
-        for lhsIndex in 1...lhsCount {
-            var previous = distances[0]
-            distances[0] = lhsIndex
-
-            for rhsIndex in 1...rhsCount {
-                let current = distances[rhsIndex]
-                if lhsChars[lhsIndex - 1] == rhsChars[rhsIndex - 1] {
-                    distances[rhsIndex] = previous
-                } else {
-                    distances[rhsIndex] = min(previous, distances[rhsIndex - 1], current) + 1
+        return candidatesByID.values
+            .sorted {
+                if $0.candidate.score == $1.candidate.score {
+                    if $0.stage.rawValue == $1.stage.rawValue {
+                        if $0.candidate.facets.count == $1.candidate.facets.count {
+                            return $0.candidate.displayName < $1.candidate.displayName
+                        }
+                        return $0.candidate.facets.count > $1.candidate.facets.count
+                    }
+                    return $0.stage.rawValue < $1.stage.rawValue
                 }
-                previous = current
+                return $0.candidate.score > $1.candidate.score
             }
-        }
-        return distances[rhsCount]
+            .prefix(maxCandidates)
+            .map(\.candidate)
     }
 
-    private static func tokenize(_ value: String) -> Set<String> {
-        Set(value.split(separator: " ").map(String.init))
+    private func register(
+        phrases: [IngredientLexicon.CatalogPhrase],
+        stage: RetrievalStage,
+        score: Double,
+        rationale: (IngredientLexicon.CatalogPhrase) -> String,
+        into candidatesByID: inout [String: ScoredCandidate]
+    ) {
+        for phrase in phrases {
+            register(phrase: phrase, stage: stage, score: score, rationale: rationale(phrase), into: &candidatesByID)
+        }
+    }
+
+    private func register(
+        phrase: IngredientLexicon.CatalogPhrase,
+        stage: RetrievalStage,
+        score: Double,
+        rationale: String,
+        into candidatesByID: inout [String: ScoredCandidate]
+    ) {
+        guard let item = PantryCatalog.item(id: phrase.itemID) else { return }
+
+        let candidate = IngredientResolutionCandidate(
+            id: candidateID(for: item.id, facets: phrase.facets),
+            catalogItemID: item.id,
+            facets: phrase.facets,
+            displayName: item.displayName(for: phrase.facets),
+            score: score,
+            rationale: rationale,
+            supportedFacets: item.facets
+        )
+
+        if let existing = candidatesByID[candidate.id] {
+            if candidate.score > existing.candidate.score ||
+                (candidate.score == existing.candidate.score && stage.rawValue < existing.stage.rawValue) {
+                candidatesByID[candidate.id] = ScoredCandidate(candidate: candidate, stage: stage)
+            }
+            return
+        }
+
+        candidatesByID[candidate.id] = ScoredCandidate(candidate: candidate, stage: stage)
     }
 
     private func candidateID(for catalogItemID: String, facets: [PantryFacetSelection]) -> String {

@@ -109,7 +109,7 @@ enum IngredientMatcher {
         }
 
         let tokenizedNames = normalizedNames.map { name in
-            (name: name, tokens: Set(name.split(separator: " ").map(String.init)))
+            (name: name, tokens: Set(IngredientLexicon.tokenize(name)))
         }
 
         var resolvedItemsByCatalogID: [String: [Set<PantryFacetSelection>]] = [:]
@@ -166,9 +166,7 @@ enum IngredientMatcher {
         let ingredientTokens = Set(normalizedIngredient.split(separator: " ").map(String.init))
         if !ingredientTokens.isEmpty {
             for (_, pantryTokens) in index.tokenizedNames {
-                let overlap = ingredientTokens.intersection(pantryTokens)
-                let shorter = ingredientTokens.count <= pantryTokens.count ? ingredientTokens : pantryTokens
-                if !shorter.isEmpty && overlap == shorter {
+                if IngredientLexicon.tokenSubsetMatch(ingredientTokens, pantryTokens) {
                     return true
                 }
             }
@@ -181,14 +179,23 @@ enum IngredientMatcher {
     static func namesMatch(_ a: String, _ b: String) -> Bool {
         let na = normalize(a)
         let nb = normalize(b)
+        let lookupA = IngredientLexicon.lookupKey(a)
+        let lookupB = IngredientLexicon.lookupKey(b)
 
         // Direct match
         if na == nb { return true }
+
+        if lookupA == lookupB { return true }
 
         // Containment (handles "chicken breast" matching "chicken")
         if na.contains(nb) || nb.contains(na) { return true }
 
         // Synonym check
+        let lookupSynsA = IngredientLexicon.synonymLookupGroup(for: a)
+        let lookupSynsB = IngredientLexicon.synonymLookupGroup(for: b)
+        if !lookupSynsA.isEmpty && lookupSynsA == lookupSynsB { return true }
+        if lookupSynsA.contains(lookupB) || lookupSynsB.contains(lookupA) { return true }
+
         let synsA = synonymGroup(for: na)
         let synsB = synonymGroup(for: nb)
         if !synsA.isEmpty && synsA == synsB { return true }
@@ -197,12 +204,9 @@ enum IngredientMatcher {
         if synsA.contains(nb) || synsB.contains(na) { return true }
 
         // Token overlap for compound names: "bell pepper" vs "red bell pepper"
-        let tokensA = Set(na.split(separator: " ").map(String.init))
-        let tokensB = Set(nb.split(separator: " ").map(String.init))
-        let overlap = tokensA.intersection(tokensB)
-        // If the shorter name's tokens are fully contained in the longer
-        let shorter = tokensA.count <= tokensB.count ? tokensA : tokensB
-        if shorter.count >= 1 && overlap == shorter { return true }
+        let tokensA = Set(IngredientLexicon.tokenize(na))
+        let tokensB = Set(IngredientLexicon.tokenize(nb))
+        if IngredientLexicon.tokenSubsetMatch(tokensA, tokensB) { return true }
 
         return false
     }
@@ -211,41 +215,14 @@ enum IngredientMatcher {
 
     /// Strips adjectives, plurals, and normalizes whitespace.
     static func normalize(_ name: String) -> String {
-        var s = name.lowercased()
-            .trimmingCharacters(in: .whitespacesAndNewlines)
-
-        // Remove common adjectives/modifiers using pre-compiled regex
-        for regex in stripRegexes {
-            s = regex.stringByReplacingMatches(in: s, range: NSRange(s.startIndex..., in: s), withTemplate: "")
-        }
-
-        // Collapse whitespace
-        s = s.components(separatedBy: .whitespaces)
-            .filter { !$0.isEmpty }
-            .joined(separator: " ")
-
-        // Simple depluralize (handles "onions" → "onion", "tomatoes" → "tomato")
-        if s.hasSuffix("ies") {
-            s = String(s.dropLast(3)) + "y"
-        } else if s.hasSuffix("oes") {
-            s = String(s.dropLast(2))
-        } else if s.hasSuffix("es") && !s.hasSuffix("ses") {
-            s = String(s.dropLast(2))
-        } else if s.hasSuffix("s") && !s.hasSuffix("ss") {
-            s = String(s.dropLast())
-        }
-
-        return s
+        IngredientLexicon.normalizeIngredient(name)
     }
 
     // MARK: - Synonym Dictionary
 
     /// Returns the canonical synonym group for a normalized name, or empty set.
     static func synonymGroup(for normalizedName: String) -> Set<String> {
-        if let group = synonymIndex[normalizedName] {
-            return group
-        }
-        return []
+        IngredientLexicon.synonymGroup(forNormalizedIngredient: normalizedName)
     }
 
     // MARK: - Quantity Check
@@ -272,86 +249,4 @@ enum IngredientMatcher {
         return true // Can't convert → assume yes
     }
 
-    // MARK: - Private Data
-
-    /// Common words to strip from ingredient names for matching.
-    private static let stripWords: [String] = [
-        "fresh", "dried", "frozen", "organic", "large", "small", "medium",
-        "whole", "chopped", "diced", "minced", "sliced", "ground", "raw",
-        "cooked", "boneless", "skinless", "extra", "virgin", "light",
-        "heavy", "low-fat", "fat-free", "unsalted", "salted", "canned",
-        "packed", "plain", "all-purpose", "self-rising", "unbleached",
-        "fine", "coarse", "baby", "ripe", "firm", "soft", "thin", "thick",
-    ]
-
-    /// Pre-compiled NSRegularExpression objects for each strip word — avoids re-compiling ~40 regex patterns on every normalize() call.
-    private static let stripRegexes: [NSRegularExpression] = {
-        stripWords.compactMap { word in
-            try? NSRegularExpression(pattern: "\\b\(NSRegularExpression.escapedPattern(for: word))\\b", options: [.caseInsensitive])
-        }
-    }()
-
-    /// Synonym groups — sets of interchangeable ingredient names (normalized).
-    private static let synonymGroups: [Set<String>] = [
-        // Alliums
-        ["green onion", "scallion", "spring onion"],
-        ["shallot", "french shallot"],
-        // Peppers
-        ["bell pepper", "capsicum", "sweet pepper"],
-        ["chili pepper", "chilli", "chile", "hot pepper"],
-        ["jalapeno", "jalapeño"],
-        // Herbs
-        ["cilantro", "coriander", "coriander leaf"],
-        ["parsley", "flat leaf parsley", "italian parsley"],
-        // Starches
-        ["cornstarch", "corn starch", "corn flour"],
-        ["potato starch", "potato flour"],
-        // Proteins
-        ["chicken breast", "chicken"],
-        ["ground beef", "beef mince", "minced beef"],
-        ["ground turkey", "turkey mince"],
-        ["shrimp", "prawn"],
-        // Dairy
-        ["heavy cream", "whipping cream", "double cream"],
-        ["sour cream", "crème fraîche"],
-        ["greek yogurt", "greek yoghurt", "strained yogurt"],
-        // Grains
-        ["all purpose flour", "plain flour", "ap flour", "flour"],
-        ["bread flour", "strong flour"],
-        // Oils
-        ["olive oil", "extra virgin olive oil", "evoo"],
-        ["vegetable oil", "canola oil", "neutral oil"],
-        // Sauces
-        ["soy sauce", "shoyu", "tamari"],
-        ["fish sauce", "nam pla"],
-        // Sweeteners
-        ["sugar", "granulated sugar", "white sugar"],
-        ["brown sugar", "dark brown sugar", "light brown sugar"],
-        ["powdered sugar", "confectioner sugar", "icing sugar"],
-        // Misc
-        ["garbanzo", "chickpea"],
-        ["eggplant", "aubergine"],
-        ["zucchini", "courgette"],
-        ["arugula", "rocket"],
-        ["beet", "beetroot"],
-        ["stock", "broth"],
-        ["chicken stock", "chicken broth"],
-        ["beef stock", "beef broth"],
-        ["vegetable stock", "vegetable broth"],
-        ["baking soda", "bicarbonate of soda", "bicarb"],
-        ["baking powder", "raising agent"],
-        ["cream cheese", "neufchatel"],
-        ["egg", "egg whole"],
-    ]
-
-    /// Precomputed index: normalized name → its synonym group.
-    private static let synonymIndex: [String: Set<String>] = {
-        var idx: [String: Set<String>] = [:]
-        for group in synonymGroups {
-            for name in group {
-                idx[name] = group
-            }
-        }
-        return idx
-    }()
 }

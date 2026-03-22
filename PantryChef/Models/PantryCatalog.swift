@@ -1297,12 +1297,7 @@ enum PantryCatalog {
     }
 
     private static func normalizeLookupKey(_ value: String) -> String {
-        value
-            .lowercased()
-            .replacingOccurrences(of: "-", with: " ")
-            .components(separatedBy: CharacterSet.alphanumerics.inverted)
-            .filter { !$0.isEmpty }
-            .joined(separator: " ")
+        IngredientLexicon.lookupKey(value)
     }
 
     private static func item(
