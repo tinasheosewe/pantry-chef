@@ -5,7 +5,7 @@ import SwiftUI
 final class PantryBulkAddViewModel {
     enum Tab: String, CaseIterable, Identifiable {
         case add = "Add"
-        case staging = "Staging"
+        case review = "Review"
 
         var id: String { rawValue }
     }
@@ -99,6 +99,18 @@ final class PantryBulkAddViewModel {
         stagedRows.append(PantryIntakeRowDraft(itemDefinition: item))
     }
 
+    func isCatalogItemSelected(_ item: PantryCatalogItemDefinition) -> Bool {
+        stagedRows.contains { $0.selectedItemID == item.id }
+    }
+
+    func toggleCatalogItemSelection(_ item: PantryCatalogItemDefinition) {
+        if isCatalogItemSelected(item) {
+            stagedRows.removeAll { $0.selectedItemID == item.id }
+        } else {
+            stageCatalogItem(item)
+        }
+    }
+
     @discardableResult
     func stageSearchEntries() -> Int {
         let tokens = tokenize(searchComposerText)
@@ -116,7 +128,7 @@ final class PantryBulkAddViewModel {
         }
 
         if addedCount > 0 {
-            selectedTab = .staging
+            selectedTab = .review
             searchComposerText = ""
         }
 
@@ -127,7 +139,7 @@ final class PantryBulkAddViewModel {
         stageCatalogItem(item)
         searchComposerText = ""
         unresolvedTokens = []
-        selectedTab = .staging
+        selectedTab = .review
     }
 
     func updateStagedRow(_ draft: PantryIntakeRowDraft) {

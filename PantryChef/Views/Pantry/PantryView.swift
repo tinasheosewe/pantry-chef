@@ -291,7 +291,7 @@ struct BulkAddPantryView: View {
                     switch viewModel.bulkAdd.selectedTab {
                     case .add:
                         addTab(viewModel: viewModel)
-                    case .staging:
+                    case .review:
                         bulkStagingTab(viewModel: viewModel)
                     }
                 }
@@ -306,7 +306,7 @@ struct BulkAddPantryView: View {
                 ToolbarItem(placement: .primaryAction) {
                     if viewModel.bulkAdd.hasStagedRows {
                         Button("Review") {
-                            viewModel.bulkAdd.selectedTab = .staging
+                            viewModel.bulkAdd.selectedTab = .review
                         }
                     }
                 }
@@ -361,9 +361,7 @@ struct BulkAddPantryView: View {
                         SectionHeader(title: "Common Staples", subtitle: "Fast picks for pantry setup")
                         VStack(spacing: 10) {
                             ForEach(viewModel.bulkAdd.commonItems) { item in
-                                catalogItemRow(item: item) {
-                                    viewModel.bulkAdd.stageCatalogItem(item)
-                                }
+                                catalogItemRow(item: item, viewModel: viewModel)
                             }
                         }
                     }
@@ -404,9 +402,7 @@ struct BulkAddPantryView: View {
                         }
                         VStack(spacing: 10) {
                             ForEach(viewModel.bulkAdd.filteredCatalogItems) { item in
-                                catalogItemRow(item: item) {
-                                    viewModel.bulkAdd.stageCatalogItem(item)
-                                }
+                                catalogItemRow(item: item, viewModel: viewModel)
                             }
                         }
                     }
@@ -446,38 +442,57 @@ struct BulkAddPantryView: View {
         .shadow(color: Color.black.opacity(0.04), radius: 8, x: 0, y: 3)
     }
 
-    private func catalogItemRow(item: PantryCatalogItemDefinition, addAction: @escaping () -> Void) -> some View {
-        HStack(spacing: 12) {
-            CategoryIcon(category: item.category, size: 40)
-            VStack(alignment: .leading, spacing: 4) {
-                Text(item.name)
-                    .font(.subheadline)
-                    .fontWeight(.semibold)
-                    .foregroundStyle(AppColors.darkText)
-                Text(item.category.rawValue)
-                    .font(.caption)
-                    .foregroundStyle(AppColors.subtleText)
-                if !item.aliases.isEmpty {
-                    Text(item.aliases.prefix(3).joined(separator: " • "))
-                        .font(.caption2)
+    private func catalogItemRow(item: PantryCatalogItemDefinition, viewModel: PantryViewModel) -> some View {
+        let isSelected = viewModel.bulkAdd.isCatalogItemSelected(item)
+
+        return Button {
+            viewModel.bulkAdd.toggleCatalogItemSelection(item)
+        } label: {
+            HStack(spacing: 12) {
+                CategoryIcon(category: item.category, size: 40)
+
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(item.name)
+                        .font(.subheadline)
+                        .fontWeight(.semibold)
+                        .foregroundStyle(AppColors.darkText)
+                    Text(item.category.rawValue)
+                        .font(.caption)
                         .foregroundStyle(AppColors.subtleText)
-                        .lineLimit(1)
+                    if !item.aliases.isEmpty {
+                        Text(item.aliases.prefix(3).joined(separator: " • "))
+                            .font(.caption2)
+                            .foregroundStyle(AppColors.subtleText)
+                            .lineLimit(1)
+                    }
                 }
-            }
-            Spacer()
-            Button("Stage", action: addAction)
-                .font(.caption)
-                .fontWeight(.semibold)
+
+                Spacer()
+
+                HStack(spacing: 6) {
+                    Image(systemName: isSelected ? "checkmark.circle.fill" : "plus.circle")
+                        .font(.subheadline)
+                    Text(isSelected ? "Added" : "Add")
+                        .font(.caption)
+                        .fontWeight(.semibold)
+                }
                 .padding(.horizontal, 12)
                 .padding(.vertical, 8)
-                .background(AppColors.primaryGreen)
-                .foregroundStyle(.white)
+                .background(isSelected ? AppColors.primaryGreen : AppColors.lightGray)
+                .foregroundStyle(isSelected ? Color.white : AppColors.darkText)
                 .clipShape(Capsule())
+            }
+            .padding(14)
+            .background(isSelected ? AppColors.primaryGreen.opacity(0.12) : AppColors.cardBackground)
+            .overlay(
+                RoundedRectangle(cornerRadius: 18)
+                    .stroke(isSelected ? AppColors.primaryGreen.opacity(0.55) : Color.clear, lineWidth: 1.5)
+            )
+            .clipShape(RoundedRectangle(cornerRadius: 18))
+            .shadow(color: Color.black.opacity(0.04), radius: 10, x: 0, y: 4)
+            .contentShape(RoundedRectangle(cornerRadius: 18))
         }
-        .padding(14)
-        .background(AppColors.cardBackground)
-        .clipShape(RoundedRectangle(cornerRadius: 18))
-        .shadow(color: Color.black.opacity(0.04), radius: 10, x: 0, y: 4)
+        .buttonStyle(.plain)
     }
 
     private func bulkStagingTab(viewModel: PantryViewModel) -> some View {
@@ -485,15 +500,15 @@ struct BulkAddPantryView: View {
             if viewModel.bulkAdd.stagedRows.isEmpty {
                 EmptyStateView(
                     icon: "square.stack.3d.up.slash",
-                    title: "Nothing staged yet",
-                    message: "Stage items from Catalog or Search, then review and edit defaults here."
+                    title: "Nothing selected yet",
+                    message: "Select items from the catalog, then review and edit them here."
                 )
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 12) {
                         SectionHeader(
-                            title: "Staging Area",
+                            title: "Review Items",
                             subtitle: "\(viewModel.bulkAdd.validRowCount) ready • \(viewModel.bulkAdd.invalidRowCount) need edits"
                         )
 
@@ -589,11 +604,11 @@ struct BulkAddPantryView: View {
             Divider()
             HStack(spacing: 12) {
                 VStack(alignment: .leading, spacing: 2) {
-                    Text(viewModel.bulkAdd.hasStagedRows ? "\(viewModel.bulkAdd.stagedRows.count) items staged" : "Stage items to build your batch")
+                    Text(viewModel.bulkAdd.hasStagedRows ? "\(viewModel.bulkAdd.stagedRows.count) items selected" : "Select items to build your batch")
                         .font(.subheadline)
                         .fontWeight(.semibold)
                         .foregroundStyle(AppColors.darkText)
-                        Text(viewModel.bulkAdd.hasStagedRows ? "\(viewModel.bulkAdd.validRowCount) ready to add now" : "Browse categories or search the catalog, then stage defaults")
+                    Text(summarySubtitle(viewModel: viewModel))
                         .font(.caption)
                         .foregroundStyle(AppColors.subtleText)
                 }
@@ -601,41 +616,83 @@ struct BulkAddPantryView: View {
                 Spacer()
 
                 Button {
-                    Task {
-                        isSaving = true
-                        let validRows = viewModel.bulkAdd.stagedRows.filter { $0.rowState == .valid }
-                        _ = await viewModel.addStagedItems(validRows)
-                        viewModel.bulkAdd.stagedRows.removeAll { $0.rowState == .valid }
-                        isSaving = false
+                    if viewModel.bulkAdd.selectedTab == .add {
+                        viewModel.bulkAdd.selectedTab = .review
+                    } else {
+                        Task {
+                            isSaving = true
+                            let validRows = viewModel.bulkAdd.stagedRows.filter { $0.rowState == .valid }
+                            _ = await viewModel.addStagedItems(validRows)
+                            viewModel.bulkAdd.stagedRows.removeAll { $0.rowState == .valid }
+                            isSaving = false
 
-                        if viewModel.bulkAdd.stagedRows.isEmpty {
-                            dismiss()
-                        } else {
-                            viewModel.bulkAdd.selectedTab = .staging
+                            if viewModel.bulkAdd.stagedRows.isEmpty {
+                                dismiss()
+                            } else {
+                                viewModel.bulkAdd.selectedTab = .review
+                            }
                         }
                     }
                 } label: {
                     HStack(spacing: 8) {
-                        if isSaving {
+                        if isSaving && viewModel.bulkAdd.selectedTab == .review {
                             ProgressView()
                                 .tint(.white)
                         }
-                        Text(viewModel.bulkAdd.validRowCount > 0 ? "Add Valid Items" : "Review Staging")
+                        Text(primaryButtonTitle(viewModel: viewModel))
                     }
                     .font(.subheadline)
                     .fontWeight(.semibold)
                     .padding(.horizontal, 16)
                     .padding(.vertical, 12)
-                    .background(viewModel.bulkAdd.validRowCount > 0 ? AppColors.primaryGreen : AppColors.mediumGray)
+                    .background(primaryButtonColor(viewModel: viewModel))
                     .foregroundStyle(.white)
                     .clipShape(Capsule())
                 }
-                .disabled(isSaving || (!viewModel.bulkAdd.hasStagedRows && viewModel.bulkAdd.validRowCount == 0))
+                .disabled(isPrimaryButtonDisabled(viewModel: viewModel))
             }
             .padding(.horizontal)
             .padding(.bottom, 8)
         }
         .background(.ultraThinMaterial)
+    }
+
+    private func summarySubtitle(viewModel: PantryViewModel) -> String {
+        if !viewModel.bulkAdd.hasStagedRows {
+            return "Browse categories or search the catalog, then review your selections"
+        }
+
+        if viewModel.bulkAdd.selectedTab == .add {
+            return "Review them before adding to your pantry"
+        }
+
+        return "\(viewModel.bulkAdd.validRowCount) ready to add now"
+    }
+
+    private func primaryButtonTitle(viewModel: PantryViewModel) -> String {
+        viewModel.bulkAdd.selectedTab == .add ? "Review" : "Add to Pantry"
+    }
+
+    private func primaryButtonColor(viewModel: PantryViewModel) -> Color {
+        switch viewModel.bulkAdd.selectedTab {
+        case .add:
+            return viewModel.bulkAdd.hasStagedRows ? AppColors.accentBlue : AppColors.mediumGray
+        case .review:
+            return viewModel.bulkAdd.validRowCount > 0 ? AppColors.primaryGreen : AppColors.mediumGray
+        }
+    }
+
+    private func isPrimaryButtonDisabled(viewModel: PantryViewModel) -> Bool {
+        if isSaving {
+            return true
+        }
+
+        switch viewModel.bulkAdd.selectedTab {
+        case .add:
+            return !viewModel.bulkAdd.hasStagedRows
+        case .review:
+            return viewModel.bulkAdd.validRowCount == 0
+        }
     }
 
     private func borderColor(for state: PantryIntakeRowState) -> Color {
@@ -719,7 +776,7 @@ struct PantryDraftEditorView: View {
             Form {
                 PantryIntakeFormSections(draft: $draft, accessibilityPrefix: "pantry.bulk.form")
             }
-            .navigationTitle("Edit Staged Item")
+            .navigationTitle("Edit Selected Item")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {

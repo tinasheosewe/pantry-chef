@@ -2111,6 +2111,19 @@ final class PantryBulkAddViewModelTests: XCTestCase {
         XCTAssertEqual(staged.unit, .liter)
     }
 
+    func testToggleCatalogItemSelectionAddsAndRemovesItem() throws {
+        let bulk = PantryBulkAddViewModel()
+        let item = try XCTUnwrap(PantryCatalog.item(id: "milk"))
+
+        bulk.toggleCatalogItemSelection(item)
+        XCTAssertTrue(bulk.isCatalogItemSelected(item))
+        XCTAssertEqual(bulk.stagedRows.count, 1)
+
+        bulk.toggleCatalogItemSelection(item)
+        XCTAssertFalse(bulk.isCatalogItemSelected(item))
+        XCTAssertTrue(bulk.stagedRows.isEmpty)
+    }
+
     func testStageSearchEntriesAddsRecognizedItemsAndTracksUnresolvedTerms() {
         let bulk = PantryBulkAddViewModel()
         bulk.searchComposerText = "milk, dragonfruit\ncheese"
@@ -2120,7 +2133,7 @@ final class PantryBulkAddViewModelTests: XCTestCase {
         XCTAssertEqual(addedCount, 2)
         XCTAssertEqual(bulk.stagedRows.count, 2)
         XCTAssertEqual(bulk.unresolvedTokens, ["dragonfruit"])
-        XCTAssertEqual(bulk.selectedTab, .staging)
+        XCTAssertEqual(bulk.selectedTab, .review)
         XCTAssertTrue(bulk.searchComposerText.isEmpty)
     }
 
