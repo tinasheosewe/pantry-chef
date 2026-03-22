@@ -30,7 +30,7 @@ struct PantryItem: Identifiable, Codable, Hashable {
         storage: PantryStorage? = nil,
         freshnessSource: PantryFreshnessSource? = nil
     ) {
-        let catalogItem = catalogItemID.flatMap { PantryCatalog.item(id: $0) } ?? PantryCatalog.resolveExact(name: name)
+        let catalogItem = IngredientMatcher.resolvedCatalogItem(for: name, catalogItemID: catalogItemID)
         let effectiveFacets = Self.normalizeFacets(facets, for: catalogItem)
 
         self.id = id

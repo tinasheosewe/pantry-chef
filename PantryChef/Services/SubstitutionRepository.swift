@@ -7,7 +7,7 @@ final class SubstitutionRepository: @unchecked Sendable {
     private init() {}
 
     func substitutions(for ingredientName: String) -> [SubstitutionEntry] {
-        guard let item = PantryCatalog.resolveExact(name: ingredientName) else {
+        guard let item = IngredientMatcher.resolvedCatalogItem(for: ingredientName) else {
             return []
         }
 
@@ -24,7 +24,7 @@ final class SubstitutionRepository: @unchecked Sendable {
             return substitutions(forItem: item)
         }
 
-        guard let item = PantryCatalog.resolveExact(name: ingredient.rawName) else {
+        guard let item = IngredientMatcher.resolvedCatalogItem(for: ingredient.rawName) else {
             return []
         }
 

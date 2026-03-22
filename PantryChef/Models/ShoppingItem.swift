@@ -20,7 +20,7 @@ struct ShoppingItem: Identifiable, Codable, Hashable {
         recipeSource: String? = nil,
         catalogItemID: String? = nil
     ) {
-        let resolvedCatalogItem = catalogItemID.flatMap { PantryCatalog.item(id: $0) } ?? PantryCatalog.resolveExact(name: name)
+        let resolvedCatalogItem = IngredientMatcher.resolvedCatalogItem(for: name, catalogItemID: catalogItemID)
 
         self.id = id
         self.name = name
@@ -39,12 +39,12 @@ struct ShoppingItem: Identifiable, Codable, Hashable {
             unit: ingredient.unit,
             category: ingredient.category,
             recipeSource: recipeSource,
-            catalogItemID: ingredient.catalogItemID ?? PantryCatalog.resolveExact(name: ingredient.name)?.id
+            catalogItemID: IngredientMatcher.resolvedCatalogItemID(for: ingredient.name, catalogItemID: ingredient.catalogItemID)
         )
     }
 
     var resolvedCatalogItem: PantryCatalogItemDefinition? {
-        catalogItemID.flatMap { PantryCatalog.item(id: $0) } ?? PantryCatalog.resolveExact(name: name)
+        IngredientMatcher.resolvedCatalogItem(for: name, catalogItemID: catalogItemID)
     }
 
     var identityKey: String {

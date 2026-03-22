@@ -286,7 +286,7 @@ struct RawShoppingItem: Decodable {
             quantity: quantity,
             unit: parsedUnit,
             category: parsedCategory,
-            catalogItemID: PantryCatalog.resolveExact(name: name)?.id
+            catalogItemID: IngredientMatcher.resolvedCatalogItemID(for: name)
         )
     }
 }

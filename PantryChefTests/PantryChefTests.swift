@@ -861,6 +861,13 @@ final class IngredientMatcherTests: XCTestCase {
         XCTAssertTrue(IngredientMatcher.hasEnoughQuantity(pantryItem: pantryItem, ingredient: ingredient))
     }
 
+    func testPantryItemMatchesIngredientPrefersCatalogIdentity() {
+        let pantryItem = PantryItem(name: "Carrots", category: .produce, quantity: 3, unit: .whole)
+        let ingredient = Ingredient(name: "Carrot", quantity: 1, unit: .whole, category: .produce)
+
+        XCTAssertTrue(IngredientMatcher.pantryItemMatchesIngredient(pantryItem, ingredient: ingredient))
+    }
+
     func testPantryMatchUsesCatalogBackedSubstitutions() {
         let recipe = makeRecipe(ingredients: [
             Ingredient(name: "chicken breast", quantity: 400, unit: .gram, category: .protein)
@@ -1637,6 +1644,31 @@ final class AppStateTests: XCTestCase {
         await appState.updateRecipe(recipe)
         XCTAssertEqual(appState.recipes[0].title, "Updated")
         XCTAssertEqual(storage.updateRecipeCallCount, 1)
+    }
+
+    func testAddRecipeCanonicalizesResolvableIngredientsBeforeSaving() async {
+        let (appState, storage, _) = makeTestAppState()
+        let recipe = makeRecipe(ingredients: [
+            Ingredient(name: "Carrots", quantity: 2, unit: .whole, category: .produce)
+        ])
+
+        await appState.addRecipe(recipe)
+
+        XCTAssertEqual(storage.recipeStore.count, 1)
+        XCTAssertEqual(storage.recipeStore[0].ingredients[0].catalogItemID, "carrot")
+    }
+
+    func testAddRecipePreservesUnresolvedIngredientsWhenNoSafeMatchExists() async {
+        let (appState, storage, _) = makeTestAppState()
+        let recipe = makeRecipe(ingredients: [
+            Ingredient(name: "mystery leaf", quantity: 1, unit: .whole, category: .produce)
+        ])
+
+        await appState.addRecipe(recipe)
+
+        XCTAssertEqual(storage.recipeStore.count, 1)
+        XCTAssertNil(storage.recipeStore[0].ingredients[0].catalogItemID)
+        XCTAssertEqual(storage.recipeStore[0].ingredients[0].name, "mystery leaf")
     }
 
     func testDeleteRecipe() async {

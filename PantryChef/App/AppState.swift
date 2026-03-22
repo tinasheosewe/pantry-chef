@@ -195,7 +195,8 @@ final class AppState {
     // MARK: - Recipe Actions
     func addRecipe(_ recipe: Recipe) async {
         do {
-            let saved = try await storageService.addRecipe(recipe)
+            let canonicalRecipe = await canonicalizedRecipeForPersistence(recipe)
+            let saved = try await storageService.addRecipe(canonicalRecipe)
             if saved.source.isUserRecipe {
                 recipes.append(saved)
             } else {
@@ -208,7 +209,8 @@ final class AppState {
 
     func updateRecipe(_ recipe: Recipe) async {
         do {
-            let updated = try await storageService.updateRecipe(recipe)
+            let canonicalRecipe = await canonicalizedRecipeForPersistence(recipe)
+            let updated = try await storageService.updateRecipe(canonicalRecipe)
             if let index = recipes.firstIndex(where: { $0.id == recipe.id }) {
                 recipes[index] = updated
             } else if let index = discoverRecipes.firstIndex(where: { $0.id == recipe.id }) {
@@ -263,9 +265,10 @@ final class AppState {
     func cacheDiscoverRecipe(_ recipe: Recipe) async {
         guard !recipe.source.isUserRecipe else { return }
         do {
-            _ = try await storageService.updateRecipe(recipe)
+            let canonicalRecipe = await canonicalizedRecipeForPersistence(recipe)
+            _ = try await storageService.updateRecipe(canonicalRecipe)
             let persistedDiscover = discoverRecipes.filter { !$0.source.isUserRecipe && $0.source != .bundled }
-            discoverRecipes = mergedDiscoverRecipes(withPersisted: persistedDiscover + [recipe])
+            discoverRecipes = mergedDiscoverRecipes(withPersisted: persistedDiscover + [canonicalRecipe])
         } catch {
             errorMessage = error.localizedDescription
         }
@@ -364,7 +367,7 @@ final class AppState {
         // Deduct ingredients from pantry
         for ingredient in recipe.ingredients {
             if let index = pantryItems.firstIndex(where: {
-                IngredientMatcher.namesMatch($0.name, ingredient.name)
+                IngredientMatcher.pantryItemMatchesIngredient($0, ingredient: ingredient)
             }) {
                 var item = pantryItems[index]
                 let remaining = (item.quantity ?? 0) - ingredient.quantity
@@ -386,13 +389,24 @@ final class AppState {
         }
     }
 
+    private func canonicalizedRecipeForPersistence(_ recipe: Recipe) async -> Recipe {
+        let canonicalRecipe = TrustedRecipeCanonicalizer.canonicalize(recipe)
+        let resolutionDraft = await recipeIngredientResolver.resolve(recipe: canonicalRecipe)
+
+        if resolutionDraft.isReadyToBuild {
+            return resolutionDraft.builtRecipe()
+        }
+
+        return canonicalRecipe
+    }
+
     private func shouldIncludeInShoppingList(_ ingredient: Ingredient) -> Bool {
         guard !isExcludedShoppingIngredient(named: ingredient.name) else {
             return false
         }
 
         return !pantryItems.contains { pantryItem in
-            IngredientMatcher.namesMatch(pantryItem.name, ingredient.name) &&
+            IngredientMatcher.pantryItemMatchesIngredient(pantryItem, ingredient: ingredient) &&
             IngredientMatcher.hasEnoughQuantity(pantryItem: pantryItem, ingredient: ingredient)
         }
     }

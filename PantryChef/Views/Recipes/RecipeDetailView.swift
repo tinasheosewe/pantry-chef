@@ -642,7 +642,7 @@ struct RecipeDetailView: View {
             ForEach(scaledRecipe.ingredients) { ingredient in
                 HStack(spacing: 12) {
                     let isAvailable = appState.pantryItems.contains {
-                        IngredientMatcher.namesMatch($0.name, ingredient.name)
+                        IngredientMatcher.pantryItemMatchesIngredient($0, ingredient: ingredient)
                     }
 
                     Image(systemName: isAvailable ? "checkmark.circle.fill" : "circle")

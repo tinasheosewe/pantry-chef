@@ -70,6 +70,33 @@ enum IngredientMatcher {
         return pantryContains(ingredient: ingredient, pantry: pantry, index: index)
     }
 
+    static func resolvedCatalogItem(
+        for name: String,
+        catalogItemID: String? = nil
+    ) -> PantryCatalogItemDefinition? {
+        if let catalogItemID,
+           let item = PantryCatalog.item(id: catalogItemID) {
+            return item
+        }
+
+        return PantryCatalog.resolveExact(name: name)
+    }
+
+    static func resolvedCatalogItemID(for name: String, catalogItemID: String? = nil) -> String? {
+        resolvedCatalogItem(for: name, catalogItemID: catalogItemID)?.id ?? catalogItemID
+    }
+
+    static func pantryItemMatchesIngredient(_ pantryItem: PantryItem, ingredient: Ingredient) -> Bool {
+        if let ingredientCatalogItemID = ingredient.catalogItemID,
+           let pantryCatalogItemID = resolvedCatalogItemID(for: pantryItem.name, catalogItemID: pantryItem.catalogItemID),
+           ingredientCatalogItemID == pantryCatalogItemID {
+            let requiredFacets = Set(ingredient.facets)
+            return pantryFacetsSatisfy(requiredFacets, pantryFacets: Set(pantryItem.facets))
+        }
+
+        return namesMatch(pantryItem.name, ingredient.name)
+    }
+
     private static func pantryContains(ingredient: Ingredient, pantry: [PantryItem], index: PantryIndex) -> Bool {
         if let catalogItemID = ingredient.catalogItemID {
             guard let pantryFacetSets = index.resolvedItemsByCatalogID[catalogItemID] else {

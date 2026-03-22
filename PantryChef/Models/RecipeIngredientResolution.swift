@@ -141,7 +141,7 @@ enum TrustedRecipeCanonicalizer {
             return ingredient.resolved(to: candidate.catalogItemID, facets: candidate.facets)
         }
 
-        guard let item = PantryCatalog.resolveExact(name: ingredient.rawName) else {
+        guard let item = IngredientMatcher.resolvedCatalogItem(for: ingredient.rawName) else {
             return ingredient
         }
 
