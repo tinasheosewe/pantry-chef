@@ -285,7 +285,6 @@ struct BulkAddPantryView: View {
                 .pickerStyle(.segmented)
                 .padding(.horizontal)
                 .padding(.top, 12)
-                .padding(.bottom, 8)
 
                 ZStack {
                     addTab(viewModel: viewModel)
@@ -516,20 +515,24 @@ struct BulkAddPantryView: View {
                 )
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
-                ScrollView {
-                    VStack(alignment: .leading, spacing: 12) {
+                List {
+                    Section {
+                        ForEach(viewModel.bulkAdd.stagedRows) { draft in
+                            stagedRowCard(draft: draft, viewModel: viewModel)
+                                .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
+                                .listRowSeparator(.visible)
+                        }
+                    } header: {
                         SectionHeader(
                             title: "Review Items",
                             subtitle: "\(viewModel.bulkAdd.validRowCount) ready • \(viewModel.bulkAdd.invalidRowCount) need edits"
                         )
-
-                        ForEach(viewModel.bulkAdd.stagedRows) { draft in
-                            stagedRowCard(draft: draft, viewModel: viewModel)
-                        }
+                        .padding(.top, 8)
                     }
-                    .padding(.horizontal)
-                    .padding(.vertical, 16)
                 }
+                .listStyle(.plain)
+                .scrollContentBackground(.hidden)
+                .background(AppColors.background)
             }
         }
     }
@@ -577,15 +580,10 @@ struct BulkAddPantryView: View {
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(14)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 14)
             .background(AppColors.cardBackground)
-            .overlay(
-                RoundedRectangle(cornerRadius: 18)
-                    .stroke(borderColor(for: draft.rowState), lineWidth: 1.25)
-            )
-            .clipShape(RoundedRectangle(cornerRadius: 18))
-            .shadow(color: Color.black.opacity(0.04), radius: 10, x: 0, y: 4)
-            .contentShape(RoundedRectangle(cornerRadius: 18))
+            .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
         .swipeActions(edge: .trailing) {
@@ -594,6 +592,7 @@ struct BulkAddPantryView: View {
             } label: {
                 Label("Remove", systemImage: "trash")
             }
+            .tint(.red)
         }
     }
 
