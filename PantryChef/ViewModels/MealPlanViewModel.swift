@@ -53,14 +53,14 @@ final class MealPlanViewModel: AsyncActionHandling {
     }
 
     func assignRecipe(_ recipe: Recipe, to slot: MealSlot) {
-        runTask {
-            await mealPlanActions.assignRecipe(recipe, to: slot)
+        runTask { [self] in
+            await self.mealPlanActions.assignRecipe(recipe, to: slot)
         }
     }
 
     func removeEntry(_ entry: MealPlanEntry) {
-        runTask {
-            await mealPlanActions.removeEntry(entry)
+        runTask { [self] in
+            await self.mealPlanActions.removeEntry(entry)
         }
     }
 
@@ -70,8 +70,8 @@ final class MealPlanViewModel: AsyncActionHandling {
     }
 
     func generateShoppingList() {
-        runTask {
-            await mealPlanActions.generateShoppingList()
+        runTask { [self] in
+            await self.mealPlanActions.generateShoppingList()
         }
     }
 
@@ -80,8 +80,8 @@ final class MealPlanViewModel: AsyncActionHandling {
     }
 
     func addShoppingItems(_ items: [ShoppingItem]) {
-        runTask {
-            await mealPlanActions.addShoppingItems(items)
+        runTask { [self] in
+            await self.mealPlanActions.addShoppingItems(items)
         }
     }
 

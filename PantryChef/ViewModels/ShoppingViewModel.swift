@@ -39,32 +39,32 @@ final class ShoppingViewModel: AsyncActionHandling {
     }
 
     func toggleItem(_ item: ShoppingItem) {
-        runTask {
-            await shoppingActions.toggleItem(item)
+        runTask { [self] in
+            await self.shoppingActions.toggleItem(item)
         }
     }
 
     func removeCheckedItems() {
-        runTask {
-            await shoppingActions.removeCheckedItems()
+        runTask { [self] in
+            await self.shoppingActions.removeCheckedItems()
         }
     }
 
     func addItem(_ item: ShoppingItem) {
-        runTask {
-            await shoppingActions.addItem(item)
+        runTask { [self] in
+            await self.shoppingActions.addItem(item)
         }
     }
 
     func removeItem(_ item: ShoppingItem) {
-        runTask {
-            await shoppingActions.removeItem(item)
+        runTask { [self] in
+            await self.shoppingActions.removeItem(item)
         }
     }
 
     func addCheckedToPantry() {
-        runLoadingTask {
-            await shoppingActions.addCheckedToPantry()
+        runLoadingTask { [self] in
+            await self.shoppingActions.addCheckedToPantry()
         }
     }
 }

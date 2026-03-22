@@ -324,20 +324,20 @@ final class RecipeViewModel: AsyncActionHandling {
     // MARK: - Actions
 
     func addRecipe(_ recipe: Recipe) {
-        runTask {
-            await recipeActions.addRecipe(recipe)
+        runTask { [self] in
+            await self.recipeActions.addRecipe(recipe)
         }
     }
 
     func deleteRecipe(_ recipe: Recipe) {
-        runTask {
-            await recipeActions.deleteRecipe(recipe)
+        runTask { [self] in
+            await self.recipeActions.deleteRecipe(recipe)
         }
     }
 
     func toggleFavorite(_ recipe: Recipe) {
-        runTask {
-            await recipeActions.toggleFavorite(recipe)
+        runTask { [self] in
+            await self.recipeActions.toggleFavorite(recipe)
         }
     }
 
@@ -430,8 +430,8 @@ final class RecipeViewModel: AsyncActionHandling {
 
     /// Load the next page of API results (called on scroll)
     func loadMoreDiscoverRecipes() {
-        runTask {
-            await performLoadMoreDiscoverRecipes()
+        runTask { [self] in
+            await self.performLoadMoreDiscoverRecipes()
         }
     }
 
@@ -470,9 +470,9 @@ final class RecipeViewModel: AsyncActionHandling {
     }
 
     func importFromURL(_ urlString: String, onComplete: (@MainActor () -> Void)? = nil) {
-        runLoadingTask {
+        runLoadingTask { [self] in
             if let result = await appState.aiService.parseRecipeFromURL(urlString) {
-                importedRecipe = result.toRecipe()
+                self.importedRecipe = result.toRecipe()
             }
             onComplete?()
         }
@@ -718,7 +718,7 @@ final class RecipeViewModel: AsyncActionHandling {
     }
 }
 
-private struct CollectionSignature: Hashable, Codable {
+struct CollectionSignature: Hashable, Codable {
     let count: Int
     let first: UUID?
     let last: UUID?

@@ -1,5 +1,6 @@
 import SwiftUI
 
+@MainActor
 enum SearchQuerySupport {
     static func normalized(_ text: String) -> String {
         text.trimmed
@@ -13,7 +14,7 @@ enum SearchQuerySupport {
     static func schedule(
         text: String,
         debouncer: TaskDebouncer,
-        after delay: TimeInterval = DebounceDurations.quickSearch,
+        after delay: UInt64 = DebounceDurations.quickSearch,
         update: @escaping @MainActor (String) -> Void
     ) {
         debouncer.cancel()

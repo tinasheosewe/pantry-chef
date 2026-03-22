@@ -215,6 +215,7 @@ final class PantryViewModel: AsyncActionHandling {
     var bulkAdd: PantryBulkAddViewModel
     var showVoiceInput = false
     var sortOrder: SortOrder = .category
+    var isLoading = false
     @ObservationIgnored private let searchDebouncer = TaskDebouncer()
     @ObservationIgnored private let pantryActions: PantryActions
 
@@ -274,20 +275,20 @@ final class PantryViewModel: AsyncActionHandling {
     }
 
     func addItem(_ item: PantryItem) {
-        runTask {
-            await pantryActions.addItem(item)
+        runTask { [self] in
+            await self.pantryActions.addItem(item)
         }
     }
 
     func deleteItem(_ item: PantryItem) {
-        runTask {
-            await pantryActions.deleteItem(item)
+        runTask { [self] in
+            await self.pantryActions.deleteItem(item)
         }
     }
 
     func updateItem(_ item: PantryItem) {
-        runTask {
-            await pantryActions.updateItem(item)
+        runTask { [self] in
+            await self.pantryActions.updateItem(item)
         }
     }
 
