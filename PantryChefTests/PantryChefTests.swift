@@ -2058,6 +2058,18 @@ final class PantryViewModelTests: XCTestCase {
         XCTAssertNil(vm.activeCategoryCount[.beverages])
     }
 
+    func testAddStagedItemsAddsOnlyValidRows() async throws {
+        let (vm, appState) = makeSUT()
+        let milkDraft = PantryIntakeRowDraft(itemDefinition: try XCTUnwrap(PantryCatalog.item(id: "milk")))
+        let invalidDraft = PantryIntakeRowDraft()
+
+        let addedCount = await vm.addStagedItems([milkDraft, invalidDraft])
+
+        XCTAssertEqual(addedCount, 1)
+        XCTAssertEqual(appState.pantryItems.count, 1)
+        XCTAssertEqual(appState.pantryItems.first?.catalogItemID, "milk")
+    }
+
     // MARK: - CRUD
 
     func testAddItem() async {
@@ -2081,6 +2093,44 @@ final class PantryViewModelTests: XCTestCase {
         item.quantity = 5
         await vm.updateItem(item)
         XCTAssertEqual(appState.pantryItems[0].quantity, 5)
+    }
+}
+
+@MainActor
+final class PantryBulkAddViewModelTests: XCTestCase {
+    func testStageCatalogItemUsesCatalogDefaults() throws {
+        let bulk = PantryBulkAddViewModel()
+        let item = try XCTUnwrap(PantryCatalog.item(id: "milk"))
+
+        bulk.stageCatalogItem(item)
+
+        let staged = try XCTUnwrap(bulk.stagedRows.first)
+        XCTAssertEqual(staged.selectedItemID, "milk")
+        XCTAssertEqual(staged.storage, .refrigerated)
+        XCTAssertEqual(staged.quantityText, "1")
+        XCTAssertEqual(staged.unit, .liter)
+    }
+
+    func testStageSearchEntriesAddsRecognizedItemsAndTracksUnresolvedTerms() {
+        let bulk = PantryBulkAddViewModel()
+        bulk.searchComposerText = "milk, dragonfruit\ncheese"
+
+        let addedCount = bulk.stageSearchEntries()
+
+        XCTAssertEqual(addedCount, 2)
+        XCTAssertEqual(bulk.stagedRows.count, 2)
+        XCTAssertEqual(bulk.unresolvedTokens, ["dragonfruit"])
+        XCTAssertEqual(bulk.selectedTab, .staging)
+        XCTAssertTrue(bulk.searchComposerText.isEmpty)
+    }
+
+    func testSearchPreviewResultsUsesTrailingToken() {
+        let bulk = PantryBulkAddViewModel()
+        bulk.searchComposerText = "milk\nchicken"
+
+        let resultIDs = bulk.searchPreviewResults.prefix(3).map(\.id)
+
+        XCTAssertTrue(resultIDs.contains("chicken-breast"))
     }
 }
 

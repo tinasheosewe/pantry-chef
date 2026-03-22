@@ -31,7 +31,8 @@ struct PantryIntakeWarning: Identifiable, Hashable {
     }
 }
 
-struct PantryIntakeRowDraft {
+struct PantryIntakeRowDraft: Identifiable {
+    let id: UUID
     var searchText: String = ""
     var selectedItemID: String?
     var selectedFacetValues: [PantryFacetKey: String] = [:]
@@ -44,7 +45,8 @@ struct PantryIntakeRowDraft {
     var expiryDateWasEdited = false
     var notes: String = ""
 
-    init(item: PantryItem? = nil) {
+    init(id: UUID = UUID(), item: PantryItem? = nil) {
+        self.id = id
         manualExpiryDate = Date()
         guard let item else { return }
         searchText = item.name
@@ -71,6 +73,11 @@ struct PantryIntakeRowDraft {
             refreshSuggestedUnit(for: resolved)
             refreshSuggestedQuantity(for: resolved)
         }
+    }
+
+    init(itemDefinition: PantryCatalogItemDefinition) {
+        self.init()
+        selectItem(itemDefinition)
     }
 
     var selectedItem: PantryCatalogItemDefinition? {
@@ -166,6 +173,14 @@ struct PantryIntakeRowDraft {
             return .incomplete
         }
         return .valid
+    }
+
+    var hasBlockingWarnings: Bool {
+        warnings.contains(where: { $0.severity == .blocking })
+    }
+
+    var displayName: String {
+        selectedItem?.displayName(for: selectedFacets) ?? searchText.trimmed
     }
 
     mutating func selectItem(_ item: PantryCatalogItemDefinition) {

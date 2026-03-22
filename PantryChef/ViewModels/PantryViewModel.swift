@@ -2,11 +2,167 @@ import SwiftUI
 
 @Observable
 @MainActor
+final class PantryBulkAddViewModel {
+    enum Tab: String, CaseIterable, Identifiable {
+        case add = "Add"
+        case staging = "Staging"
+
+        var id: String { rawValue }
+    }
+
+    var selectedTab: Tab = .add
+    var catalogSearchText = ""
+    private(set) var debouncedCatalogSearchText = ""
+    var selectedCatalogCategory: FoodCategory?
+    var searchComposerText = ""
+    var unresolvedTokens: [String] = []
+    var stagedRows: [PantryIntakeRowDraft] = []
+    @ObservationIgnored private let catalogSearchDebouncer = TaskDebouncer()
+
+    var categoryCounts: [(FoodCategory, Int)] {
+        FoodCategory.allCases.compactMap { category in
+            let count = PantryCatalog.allItems.filter { $0.category == category }.count
+            guard count > 0 else { return nil }
+            return (category, count)
+        }
+    }
+
+    var filteredCatalogItems: [PantryCatalogItemDefinition] {
+        let normalizedQuery = debouncedCatalogSearchText.trimmed
+        var items = normalizedQuery.isEmpty
+            ? PantryCatalog.allItems.sorted { $0.name < $1.name }
+            : PantryCatalog.search(normalizedQuery)
+
+        if let selectedCatalogCategory {
+            items = items.filter { $0.category == selectedCatalogCategory }
+        }
+
+        return items
+    }
+
+    var commonItems: [PantryCatalogItemDefinition] {
+        let featuredIDs = ["milk", "egg", "rice", "bread", "cheese", "butter", "chicken-breast", "yogurt", "onion", "tomato", "olive-oil", "broth"]
+        return featuredIDs.compactMap(PantryCatalog.item(id:)).filter { item in
+            selectedCatalogCategory == nil || item.category == selectedCatalogCategory
+        }
+    }
+
+    var searchPreviewResults: [PantryCatalogItemDefinition] {
+        let token = trailingSearchToken
+        guard !token.isEmpty else { return [] }
+        return Array(PantryCatalog.search(token).prefix(6))
+    }
+
+    var trailingSearchToken: String {
+        tokenize(searchComposerText).last ?? searchComposerText.trimmed
+    }
+
+    var validRowCount: Int {
+        stagedRows.filter { $0.rowState == .valid }.count
+    }
+
+    var invalidRowCount: Int {
+        stagedRows.filter { $0.rowState != .valid }.count
+    }
+
+    var hasStagedRows: Bool {
+        !stagedRows.isEmpty
+    }
+
+    var isShowingCategoryBrowser: Bool {
+        selectedCatalogCategory == nil && debouncedCatalogSearchText.isEmpty
+    }
+
+    func reset() {
+        selectedTab = .add
+        catalogSearchText = ""
+        debouncedCatalogSearchText = ""
+        selectedCatalogCategory = nil
+        searchComposerText = ""
+        unresolvedTokens = []
+        stagedRows = []
+    }
+
+    func onCatalogSearchTextChanged() {
+        catalogSearchDebouncer.cancel()
+        let normalized = catalogSearchText.trimmed
+        catalogSearchDebouncer.schedule(after: DebounceDurations.quickSearch) {
+            self.debouncedCatalogSearchText = normalized
+        }
+    }
+
+    func applyCatalogSearchImmediately() {
+        debouncedCatalogSearchText = catalogSearchText.trimmed
+    }
+
+    func stageCatalogItem(_ item: PantryCatalogItemDefinition) {
+        stagedRows.append(PantryIntakeRowDraft(itemDefinition: item))
+    }
+
+    @discardableResult
+    func stageSearchEntries() -> Int {
+        let tokens = tokenize(searchComposerText)
+        unresolvedTokens = []
+        guard !tokens.isEmpty else { return 0 }
+
+        var addedCount = 0
+        for token in tokens {
+            if let item = resolveSearchToken(token) {
+                stageCatalogItem(item)
+                addedCount += 1
+            } else {
+                unresolvedTokens.append(token)
+            }
+        }
+
+        if addedCount > 0 {
+            selectedTab = .staging
+            searchComposerText = ""
+        }
+
+        return addedCount
+    }
+
+    func stageSingleSearchMatch(_ item: PantryCatalogItemDefinition) {
+        stageCatalogItem(item)
+        searchComposerText = ""
+        unresolvedTokens = []
+        selectedTab = .staging
+    }
+
+    func updateStagedRow(_ draft: PantryIntakeRowDraft) {
+        stagedRows.update(draft)
+    }
+
+    func removeStagedRow(_ draft: PantryIntakeRowDraft) {
+        stagedRows.removeAll { $0.id == draft.id }
+    }
+
+    private func resolveSearchToken(_ token: String) -> PantryCatalogItemDefinition? {
+        if let exact = PantryCatalog.resolveExact(name: token) {
+            return exact
+        }
+
+        let results = PantryCatalog.search(token)
+        return results.count == 1 ? results[0] : nil
+    }
+
+    private func tokenize(_ input: String) -> [String] {
+        input
+            .components(separatedBy: CharacterSet(charactersIn: ",\n"))
+            .map(\.trimmed)
+            .filter { !$0.isEmpty }
+    }
+}
+
+@Observable
+@MainActor
 final class PantryViewModel {
     var searchText = ""
     private(set) var debouncedSearchText = ""
     var selectedCategory: FoodCategory?
     var showAddItem = false
+    var bulkAdd = PantryBulkAddViewModel()
     var showVoiceInput = false
     var sortOrder: SortOrder = .category
     @ObservationIgnored private let searchDebouncer = TaskDebouncer()
@@ -60,6 +216,11 @@ final class PantryViewModel {
             .mapValues { $0.count }
     }
 
+    func prepareBulkAdd() {
+        bulkAdd.reset()
+        showAddItem = true
+    }
+
     func addItem(_ item: PantryItem) async {
         await appState.addPantryItem(item)
     }
@@ -70,6 +231,17 @@ final class PantryViewModel {
 
     func updateItem(_ item: PantryItem) async {
         await appState.updatePantryItem(item)
+    }
+
+    @discardableResult
+    func addStagedItems(_ drafts: [PantryIntakeRowDraft]) async -> Int {
+        var addedCount = 0
+        for draft in drafts {
+            guard let item = draft.buildItem() else { continue }
+            await appState.addPantryItem(item)
+            addedCount += 1
+        }
+        return addedCount
     }
 
     func onSearchTextChanged() {
