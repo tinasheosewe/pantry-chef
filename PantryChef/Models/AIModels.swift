@@ -281,7 +281,13 @@ struct RawShoppingItem: Decodable {
     func toShoppingItem() -> ShoppingItem {
         let parsedUnit = unit.flatMap { MeasurementUnit(rawValue: $0) }
         let parsedCategory = FoodCategory(rawValue: category) ?? .other
-        return ShoppingItem(name: name, quantity: quantity, unit: parsedUnit, category: parsedCategory)
+        return ShoppingItem(
+            name: name,
+            quantity: quantity,
+            unit: parsedUnit,
+            category: parsedCategory,
+            catalogItemID: PantryCatalog.resolveExact(name: name)?.id
+        )
     }
 }
 

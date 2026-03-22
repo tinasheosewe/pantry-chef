@@ -81,6 +81,14 @@ final class MealPlanViewModel {
         await appState.generateShoppingListFromMealPlan()
     }
 
+    func previewShoppingList() -> [ShoppingItem] {
+        appState.previewShoppingListFromMealPlan()
+    }
+
+    func addShoppingItems(_ items: [ShoppingItem]) async {
+        await appState.addShoppingItems(items)
+    }
+
     var totalPlannedMeals: Int {
         entries.filter { $0.isPlanned }.count
     }

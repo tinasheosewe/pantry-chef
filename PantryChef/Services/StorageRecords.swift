@@ -2,7 +2,7 @@ import Foundation
 import SwiftData
 
 enum StorageSchema {
-    static let currentVersion = 5
+    static let currentVersion = 6
 }
 
 @Model
@@ -537,6 +537,7 @@ final class ShoppingItemRecord {
     var categoryRawValue: String
     var isChecked: Bool
     var recipeSource: String?
+    var catalogItemID: String?
 
     init(from item: ShoppingItem) {
         id = item.id
@@ -547,6 +548,7 @@ final class ShoppingItemRecord {
         categoryRawValue = item.category.rawValue
         isChecked = item.isChecked
         recipeSource = item.recipeSource
+        catalogItemID = item.catalogItemID
     }
 
     func update(from item: ShoppingItem) {
@@ -557,6 +559,7 @@ final class ShoppingItemRecord {
         categoryRawValue = item.category.rawValue
         isChecked = item.isChecked
         recipeSource = item.recipeSource
+        catalogItemID = item.catalogItemID
     }
 
     func toDomain() -> ShoppingItem {
@@ -567,7 +570,8 @@ final class ShoppingItemRecord {
             unit: unitRawValue.flatMap { MeasurementUnit(rawValue: $0) },
             category: FoodCategory(rawValue: categoryRawValue) ?? .other,
             isChecked: isChecked,
-            recipeSource: recipeSource
+            recipeSource: recipeSource,
+            catalogItemID: catalogItemID
         )
     }
 }

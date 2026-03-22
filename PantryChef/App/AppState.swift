@@ -312,27 +312,24 @@ final class AppState {
     }
 
     // MARK: - Shopping Actions
-    func generateShoppingListFromMealPlan() async {
-        let recipes = mealPlan.compactMap { $0.recipe }
-        let allIngredients = recipes.flatMap { $0.ingredients }
-        let missing = allIngredients.filter { ingredient in
-            !pantryItems.contains { pantryItem in
-                IngredientMatcher.namesMatch(pantryItem.name, ingredient.name) &&
-                IngredientMatcher.hasEnoughQuantity(pantryItem: pantryItem, ingredient: ingredient)
+    func previewShoppingListFromMealPlan() -> [ShoppingItem] {
+        let recipes = mealPlan.compactMap(\.recipe)
+        let candidates = recipes.flatMap { recipe in
+            recipe.ingredients.compactMap { ingredient -> ShoppingItem? in
+                guard shouldIncludeInShoppingList(ingredient) else { return nil }
+                return ShoppingItem(ingredient: ingredient, recipeSource: recipe.title)
             }
         }
-        shoppingItems = missing.map { ingredient in
-            ShoppingItem(
-                name: ingredient.name,
-                quantity: ingredient.quantity,
-                unit: ingredient.unit,
-                category: ingredient.category,
-                isChecked: false
-            )
-        }
-        // Deduplicate
-        var seen = Set<String>()
-        shoppingItems = shoppingItems.filter { seen.insert($0.name.lowercased()).inserted }
+
+        return mergeShoppingItems(existing: [], additions: candidates)
+    }
+
+    func generateShoppingListFromMealPlan() async {
+        await addShoppingItems(previewShoppingListFromMealPlan())
+    }
+
+    func addShoppingItems(_ items: [ShoppingItem]) async {
+        shoppingItems = mergeShoppingItems(existing: shoppingItems, additions: items)
         await persistShoppingItems()
     }
 
@@ -349,8 +346,7 @@ final class AppState {
     }
 
     func addShoppingItem(_ item: ShoppingItem) async {
-        shoppingItems.append(item)
-        await persistShoppingItems()
+        await addShoppingItems([item])
     }
 
     func removeShoppingItem(_ item: ShoppingItem) async {
@@ -390,6 +386,136 @@ final class AppState {
         }
     }
 
+    private func shouldIncludeInShoppingList(_ ingredient: Ingredient) -> Bool {
+        guard !isExcludedShoppingIngredient(named: ingredient.name) else {
+            return false
+        }
+
+        return !pantryItems.contains { pantryItem in
+            IngredientMatcher.namesMatch(pantryItem.name, ingredient.name) &&
+            IngredientMatcher.hasEnoughQuantity(pantryItem: pantryItem, ingredient: ingredient)
+        }
+    }
+
+    private func isExcludedShoppingIngredient(named name: String) -> Bool {
+        let normalized = IngredientMatcher.normalize(name)
+        let tokens = Set(normalized.split(separator: " ").map(String.init))
+        let waterModifiers: Set<String> = ["cold", "hot", "warm", "ice", "iced", "boiling", "filtered"]
+        let ignoredWaterTokens = waterModifiers.union(["water"])
+
+        if normalized == "water" {
+            return true
+        }
+
+        return !tokens.isEmpty
+            && tokens.contains("water")
+            && tokens.subtracting(ignoredWaterTokens).isEmpty
+    }
+
+    private func mergeShoppingItems(existing: [ShoppingItem], additions: [ShoppingItem]) -> [ShoppingItem] {
+        var merged = existing
+
+        for item in additions {
+            guard !isExcludedShoppingIngredient(named: item.name) else { continue }
+
+            if let index = merged.firstIndex(where: { $0.matchesIdentity(of: item) }) {
+                merged[index] = mergeShoppingItem(merged[index], with: item)
+            } else {
+                merged.append(item)
+            }
+        }
+
+        return merged
+    }
+
+    private func mergeShoppingItem(_ existing: ShoppingItem, with addition: ShoppingItem) -> ShoppingItem {
+        var merged = existing
+        merged.catalogItemID = existing.catalogItemID ?? addition.catalogItemID
+        merged.name = merged.resolvedCatalogItem?.name ?? (
+            existing.name.count <= addition.name.count ? existing.name : addition.name
+        )
+
+        if merged.category == .other {
+            merged.category = addition.category
+        }
+
+        merged.recipeSource = mergedRecipeSources(existing.recipeSource, addition.recipeSource)
+
+        switch combinedQuantity(
+            existingQuantity: existing.quantity,
+            existingUnit: existing.unit,
+            addedQuantity: addition.quantity,
+            addedUnit: addition.unit
+        ) {
+        case let (.merged(quantity, unit)):
+            merged.quantity = quantity
+            merged.unit = unit
+        case .keepExisting:
+            break
+        case let .replaceExisting(quantity, unit):
+            merged.quantity = quantity
+            merged.unit = unit
+        }
+
+        return merged
+    }
+
+    private func mergedRecipeSources(_ lhs: String?, _ rhs: String?) -> String? {
+        let combined = [lhs, rhs]
+            .compactMap { $0?.trimmed.nilIfEmpty }
+            .flatMap { $0.split(separator: ",").map { $0.trimmingCharacters(in: .whitespaces) } }
+
+        guard !combined.isEmpty else { return nil }
+
+        var seen = Set<String>()
+        let unique = combined.filter { seen.insert($0.lowercased()).inserted }
+        return unique.joined(separator: ", ")
+    }
+
+    private func combinedQuantity(
+        existingQuantity: Double?,
+        existingUnit: MeasurementUnit?,
+        addedQuantity: Double?,
+        addedUnit: MeasurementUnit?
+    ) -> QuantityMergeOutcome {
+        switch (existingQuantity, existingUnit, addedQuantity, addedUnit) {
+        case let (lhs?, lhsUnit?, rhs?, rhsUnit?):
+            if lhsUnit == rhsUnit {
+                return .merged(lhs + rhs, lhsUnit)
+            }
+
+            if let converted = UnitConverter.convert(rhs, from: rhsUnit, to: lhsUnit) {
+                return .merged(lhs + converted, lhsUnit)
+            }
+
+            if let converted = convertCountUnit(rhs, from: rhsUnit, to: lhsUnit) {
+                return .merged(lhs + converted, lhsUnit)
+            }
+
+            return .keepExisting
+        case let (nil, nil, rhs?, rhsUnit?):
+            return .replaceExisting(rhs, rhsUnit)
+        case let (lhs?, lhsUnit?, nil, _):
+            return .merged(lhs, lhsUnit)
+        case let (nil, _, rhs?, rhsUnit):
+            return .replaceExisting(rhs, rhsUnit)
+        default:
+            return .keepExisting
+        }
+    }
+
+    private func convertCountUnit(_ value: Double, from: MeasurementUnit, to: MeasurementUnit) -> Double? {
+        let countUnits: Set<MeasurementUnit> = [.piece, .whole]
+        guard countUnits.contains(from), countUnits.contains(to) else { return nil }
+        return value
+    }
+
+
+private enum QuantityMergeOutcome {
+    case merged(Double, MeasurementUnit?)
+    case replaceExisting(Double?, MeasurementUnit?)
+    case keepExisting
+}
     private func mergedDiscoverRecipes(withPersisted persisted: [Recipe]) -> [Recipe] {
         let seed = recipeRepository.seedRecipes
         var result: [Recipe] = []

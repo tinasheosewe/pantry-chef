@@ -3,6 +3,10 @@ import SwiftUI
 struct MealPlanView: View {
     @State private var viewModel: MealPlanViewModel
     @State private var selectedMealEntry: MealPlanEntry?
+    @State private var pendingShoppingItems: [ShoppingItem] = []
+    @State private var showShoppingConfirmation = false
+    @State private var shoppingAlertTitle = ""
+    @State private var shoppingAlertMessage = ""
 
     init(appState: AppState) {
         _viewModel = State(initialValue: MealPlanViewModel(appState: appState))
@@ -30,12 +34,25 @@ struct MealPlanView: View {
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
                     Button {
-                        Task { await viewModel.generateShoppingList() }
+                        prepareShoppingConfirmation()
                     } label: {
                         Label("Shopping List", systemImage: "cart")
                     }
                     .accessibilityIdentifier("mealplan.shoppingListButton")
                 }
+            }
+            .alert(shoppingAlertTitle, isPresented: $showShoppingConfirmation) {
+                if pendingShoppingItems.isEmpty {
+                    Button("OK", role: .cancel) {}
+                } else {
+                    Button("Cancel", role: .cancel) {}
+                    Button("Add Items") {
+                        let itemsToAdd = pendingShoppingItems
+                        Task { await viewModel.addShoppingItems(itemsToAdd) }
+                    }
+                }
+            } message: {
+                Text(shoppingAlertMessage)
             }
             .sheet(isPresented: $viewModel.showRecipePicker) {
                 RecipePickerView(
@@ -56,6 +73,21 @@ struct MealPlanView: View {
                 }
             }
         }
+    }
+
+    private func prepareShoppingConfirmation() {
+        let previewItems = viewModel.previewShoppingList()
+        pendingShoppingItems = previewItems
+
+        if previewItems.isEmpty {
+            shoppingAlertTitle = "Nothing to Add"
+            shoppingAlertMessage = "Everything needed is already in your pantry, already covered, or excluded from shopping like water."
+        } else {
+            shoppingAlertTitle = "Add \(previewItems.count) Item\(previewItems.count == 1 ? "" : "s")?"
+            shoppingAlertMessage = "This will merge into your current shopping list, add quantities for overlaps, skip pantry-covered ingredients, and exclude water."
+        }
+
+        showShoppingConfirmation = true
     }
 
     // MARK: - Week Navigation

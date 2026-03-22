@@ -1040,6 +1040,35 @@ final class ShoppingGenerationTests: XCTestCase {
         XCTAssertEqual(appState.shoppingItems.count, 1)
         XCTAssertEqual(appState.shoppingItems.first?.name, "all purpose flour")
     }
+
+    func testPreviewShoppingListFromMealPlanExcludesWaterAndAggregatesDuplicates() async {
+        let (appState, _, _) = makeTestAppState()
+
+        let recipeOne = makeRecipe(
+            title: "Soup",
+            ingredients: [
+                Ingredient(name: "Water", quantity: 2, unit: .cup, category: .other),
+                Ingredient(name: "Carrot", quantity: 2, unit: .whole, category: .produce)
+            ]
+        )
+        let recipeTwo = makeRecipe(
+            title: "Stew",
+            ingredients: [
+                Ingredient(name: "Warm Water", quantity: 1, unit: .cup, category: .other),
+                Ingredient(name: "Carrots", quantity: 1, unit: .whole, category: .produce)
+            ]
+        )
+
+        await appState.addToMealPlan(MealPlanEntry(date: Date(), mealType: .lunch, recipe: recipeOne))
+        await appState.addToMealPlan(MealPlanEntry(date: Date(), mealType: .dinner, recipe: recipeTwo))
+
+        let preview = appState.previewShoppingListFromMealPlan()
+
+        XCTAssertEqual(preview.count, 1)
+        XCTAssertEqual(preview.first?.name, "Carrot")
+        XCTAssertEqual(preview.first?.quantity, 3)
+        XCTAssertEqual(preview.first?.unit, .whole)
+    }
 }
 
 // MARK: - Ingredient Model Tests
@@ -1139,6 +1168,15 @@ final class ShoppingItemModelTests: XCTestCase {
     func testIsCheckedDefault() {
         let item = ShoppingItem(name: "Test")
         XCTAssertFalse(item.isChecked)
+    }
+
+    func testCatalogIdentityResolvesAliases() {
+        let singular = ShoppingItem(name: "Carrot")
+        let plural = ShoppingItem(name: "Carrots")
+
+        XCTAssertEqual(singular.catalogItemID, "carrot")
+        XCTAssertEqual(plural.catalogItemID, "carrot")
+        XCTAssertTrue(singular.matchesIdentity(of: plural))
     }
 
     func testSampleData() {
@@ -1703,6 +1741,44 @@ final class AppStateTests: XCTestCase {
         // "Chicken" should be matched by "Chicken Breast" (fuzzy), "Soy Sauce" should be missing
         XCTAssertEqual(appState.shoppingItems.count, 1)
         XCTAssertEqual(appState.shoppingItems[0].name, "Soy Sauce")
+    }
+
+    func testGenerateShoppingListFromMealPlanMergesAdditivelyIntoExistingCart() async {
+        let (appState, _, _) = makeTestAppState()
+
+        appState.shoppingItems = [
+            ShoppingItem(name: "Flour", quantity: 1, unit: .cup, category: .grains)
+        ]
+
+        let recipe = makeRecipe(ingredients: [
+            Ingredient(name: "Flour", quantity: 2, unit: .cup, category: .grains),
+            Ingredient(name: "Water", quantity: 1, unit: .cup, category: .other),
+            Ingredient(name: "Eggs", quantity: 2, unit: .piece, category: .dairy)
+        ])
+
+        await appState.addToMealPlan(MealPlanEntry(date: Date(), mealType: .dinner, recipe: recipe))
+        await appState.generateShoppingListFromMealPlan()
+
+        XCTAssertEqual(appState.shoppingItems.count, 2)
+        XCTAssertEqual(appState.shoppingItems.first(where: { $0.name == "Flour" })?.quantity, 3)
+        XCTAssertEqual(appState.shoppingItems.first(where: { $0.name == "Eggs" })?.quantity, 2)
+        XCTAssertNil(appState.shoppingItems.first(where: { $0.name == "Water" }))
+    }
+
+    func testAddShoppingItemsMergesUsingCatalogIdentity() async {
+        let (appState, _, _) = makeTestAppState()
+
+        await appState.addShoppingItems([
+            ShoppingItem(name: "Carrot", quantity: 1, unit: .whole, category: .produce)
+        ])
+
+        await appState.addShoppingItems([
+            ShoppingItem(name: "Carrots", quantity: 2, unit: .whole, category: .produce)
+        ])
+
+        XCTAssertEqual(appState.shoppingItems.count, 1)
+        XCTAssertEqual(appState.shoppingItems[0].catalogItemID, "carrot")
+        XCTAssertEqual(appState.shoppingItems[0].quantity, 3)
     }
 
     func testGenerateShoppingListDeduplicates() async {
@@ -2557,6 +2633,18 @@ final class ShoppingViewModelTests: XCTestCase {
         XCTAssertEqual(appState.shoppingItems.count, 1)
         XCTAssertEqual(appState.shoppingItems[0].name, "Bread")
     }
+
+    func testAddCheckedToPantryPreservesCatalogIdentity() async {
+        let (vm, appState) = makeSUT()
+        appState.shoppingItems = [
+            ShoppingItem(name: "Carrots", quantity: 2, unit: .whole, category: .produce, isChecked: true)
+        ]
+
+        await vm.addCheckedToPantry()
+
+        XCTAssertEqual(appState.pantryItems.count, 1)
+        XCTAssertEqual(appState.pantryItems[0].catalogItemID, "carrot")
+    }
 }
 
 // MARK: - MealPlanViewModel Tests
@@ -2642,6 +2730,21 @@ final class MealPlanViewModelTests: XCTestCase {
         await appState.addToMealPlan(MealPlanEntry(date: Date(), mealType: .dinner, recipe: recipe))
         await vm.generateShoppingList()
         XCTAssertFalse(appState.shoppingItems.isEmpty)
+    }
+
+    func testPreviewShoppingListReturnsFilteredItems() async {
+        let (vm, appState) = makeSUT()
+        await appState.addPantryItem(makePantryItem(name: "Milk", category: .dairy, quantity: 1, unit: .liter))
+        let recipe = makeRecipe(ingredients: [
+            Ingredient(name: "Milk", quantity: 250, unit: .milliliter, category: .dairy),
+            Ingredient(name: "Water", quantity: 1, unit: .cup, category: .other),
+            Ingredient(name: "Pasta", quantity: 1, unit: .package, category: .grains)
+        ])
+
+        await appState.addToMealPlan(MealPlanEntry(date: Date(), mealType: .dinner, recipe: recipe))
+
+        let preview = vm.previewShoppingList()
+        XCTAssertEqual(preview.map(\.name), ["Pasta"])
     }
 
     // MARK: - Computed Properties

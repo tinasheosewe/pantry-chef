@@ -3,6 +3,10 @@ import SwiftUI
 struct HomeView: View {
     @State private var viewModel: HomeViewModel
     @State private var resumeRecipe: Recipe?
+    @State private var pendingShoppingItems: [ShoppingItem] = []
+    @State private var showShoppingConfirmation = false
+    @State private var shoppingAlertTitle = ""
+    @State private var shoppingAlertMessage = ""
 
     var onSwitchToShopping: (() -> Void)?
     var onSwitchToPlan: (() -> Void)?
@@ -58,6 +62,22 @@ struct HomeView: View {
             .onAppear {
                 viewModel.refresh()
                 viewModel.appState.activeCooks.refresh()
+            }
+            .alert(shoppingAlertTitle, isPresented: $showShoppingConfirmation) {
+                if pendingShoppingItems.isEmpty {
+                    Button("OK", role: .cancel) {}
+                } else {
+                    Button("Cancel", role: .cancel) {}
+                    Button("Add Items") {
+                        let itemsToAdd = pendingShoppingItems
+                        Task {
+                            await viewModel.appState.addShoppingItems(itemsToAdd)
+                            onSwitchToShopping?()
+                        }
+                    }
+                }
+            } message: {
+                Text(shoppingAlertMessage)
             }
             .fullScreenCover(item: $resumeRecipe) { recipe in
                 let session = CookingSession.load(recipeId: recipe.id)
@@ -187,10 +207,7 @@ struct HomeView: View {
                 }
                 .accessibilityIdentifier("home.quickAction.canMake")
                 QuickActionButton(icon: "cart.fill", title: "What to\nbuy?", color: AppColors.warmOrange) {
-                    Task {
-                        await viewModel.appState.generateShoppingListFromMealPlan()
-                    }
-                    onSwitchToShopping?()
+                    prepareShoppingConfirmation()
                 }
                 .accessibilityIdentifier("home.quickAction.shopping")
                 QuickActionButton(icon: "calendar", title: "Plan\nmeals", color: AppColors.accentBlue) {
@@ -199,6 +216,21 @@ struct HomeView: View {
                 .accessibilityIdentifier("home.quickAction.plan")
             }
         }
+    }
+
+    private func prepareShoppingConfirmation() {
+        let previewItems = viewModel.appState.previewShoppingListFromMealPlan()
+        pendingShoppingItems = previewItems
+
+        if previewItems.isEmpty {
+            shoppingAlertTitle = "Nothing to Add"
+            shoppingAlertMessage = "Everything needed is already in your pantry, already covered, or excluded from shopping like water."
+        } else {
+            shoppingAlertTitle = "Add \(previewItems.count) Item\(previewItems.count == 1 ? "" : "s")?"
+            shoppingAlertMessage = "This will merge into your current shopping list, add quantities for overlaps, skip pantry-covered ingredients, and exclude water."
+        }
+
+        showShoppingConfirmation = true
     }
 
     // MARK: - Recipe Suggestion Card

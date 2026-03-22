@@ -969,14 +969,11 @@ struct ShoppingPreviewView: View {
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Add to Shopping List") {
-                        // Merge new items into existing shopping list, deduplicating by name
-                        var existingNames = Set(appState.shoppingItems.map { $0.name.lowercased() })
-                        for item in items {
-                            if existingNames.insert(item.name.lowercased()).inserted {
-                                appState.shoppingItems.append(item)
-                            }
+                        let itemsToAdd = items
+                        Task {
+                            await appState.addShoppingItems(itemsToAdd)
+                            dismiss()
                         }
-                        dismiss()
                     }
                 }
             }

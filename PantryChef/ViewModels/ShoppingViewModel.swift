@@ -60,7 +60,8 @@ final class ShoppingViewModel {
                 name: item.name,
                 category: item.category,
                 quantity: item.quantity,
-                unit: item.unit
+                unit: item.unit,
+                catalogItemID: item.catalogItemID
             )
             await appState.addPantryItem(pantryItem)
         }

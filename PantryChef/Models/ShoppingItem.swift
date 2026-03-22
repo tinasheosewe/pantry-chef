@@ -8,6 +8,7 @@ struct ShoppingItem: Identifiable, Codable, Hashable {
     var category: FoodCategory
     var isChecked: Bool
     var recipeSource: String? // Which recipe needed this
+    var catalogItemID: String?
 
     init(
         id: UUID = UUID(),
@@ -16,15 +17,46 @@ struct ShoppingItem: Identifiable, Codable, Hashable {
         unit: MeasurementUnit? = nil,
         category: FoodCategory = .other,
         isChecked: Bool = false,
-        recipeSource: String? = nil
+        recipeSource: String? = nil,
+        catalogItemID: String? = nil
     ) {
+        let resolvedCatalogItem = catalogItemID.flatMap { PantryCatalog.item(id: $0) } ?? PantryCatalog.resolveExact(name: name)
+
         self.id = id
         self.name = name
         self.quantity = quantity
         self.unit = unit
-        self.category = category
+        self.category = category == .other ? (resolvedCatalogItem?.category ?? category) : category
         self.isChecked = isChecked
         self.recipeSource = recipeSource
+        self.catalogItemID = resolvedCatalogItem?.id ?? catalogItemID
+    }
+
+    init(ingredient: Ingredient, recipeSource: String? = nil) {
+        self.init(
+            name: ingredient.name,
+            quantity: ingredient.quantity,
+            unit: ingredient.unit,
+            category: ingredient.category,
+            recipeSource: recipeSource,
+            catalogItemID: ingredient.catalogItemID ?? PantryCatalog.resolveExact(name: ingredient.name)?.id
+        )
+    }
+
+    var resolvedCatalogItem: PantryCatalogItemDefinition? {
+        catalogItemID.flatMap { PantryCatalog.item(id: $0) } ?? PantryCatalog.resolveExact(name: name)
+    }
+
+    var identityKey: String {
+        if let resolvedCatalogItem {
+            return "catalog:\(resolvedCatalogItem.id)"
+        }
+
+        return "name:\(IngredientMatcher.normalize(name))"
+    }
+
+    func matchesIdentity(of other: ShoppingItem) -> Bool {
+        identityKey == other.identityKey
     }
 
     var displayText: String {
