@@ -70,6 +70,8 @@ struct ContentView: View {
             }
             .accessibilityIdentifier("root.tabView")
             .tint(AppColors.primary)
+            .toolbarBackground(AppColors.cardBackground, for: .tabBar)
+            .toolbarBackground(.visible, for: .tabBar)
         }
         .fullScreenCover(item: $deepLinkRecipe) { recipe in
             let session = CookingSession.load(recipeId: recipe.id)
@@ -77,6 +79,7 @@ struct ContentView: View {
             CookModeView(recipe: recipe, resumeAtStep: stepIndex, isResuming: true)
                 .environment(appState)
         }
+        .dismissKeyboardOnBackgroundTap()
         .onChange(of: appState.deepLinkCookModeRecipeId) { _, newId in
             guard let recipeId = newId else { return }
             // Clear immediately so it doesn't re-trigger

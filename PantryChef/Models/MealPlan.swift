@@ -20,16 +20,20 @@ struct MealPlanEntry: Identifiable, Codable, Hashable {
         self.date = date
         self.mealType = mealType
         self.recipe = recipe
-        self.customMealName = customMealName
+        self.customMealName = customMealName?.trimmed.nilIfEmpty
         self.notes = notes
     }
 
     var displayName: String {
-        recipe?.title ?? customMealName ?? "Unplanned"
+        recipe?.title ?? normalizedCustomMealName ?? "Unplanned"
+    }
+
+    var normalizedCustomMealName: String? {
+        customMealName?.trimmed.nilIfEmpty
     }
 
     var isPlanned: Bool {
-        recipe != nil || customMealName != nil
+        recipe != nil || normalizedCustomMealName != nil
     }
 
     static func emptyWeek(from startDate: Date = Date()) -> [MealPlanEntry] {

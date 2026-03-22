@@ -4146,7 +4146,7 @@ final class ErrorHandlingTests: XCTestCase {
     func testAddMealPlanError() async {
         let (appState, storage, _) = makeTestAppState()
         storage.shouldThrowError = true
-        let entry = MealPlanEntry(date: Date(), mealType: .dinner)
+        let entry = MealPlanEntry(date: Date(), mealType: .dinner, recipe: makeRecipe(title: "Test"))
         await appState.addToMealPlan(entry)
         XCTAssertNotNil(appState.errorMessage)
         XCTAssertTrue(appState.mealPlan.isEmpty)
@@ -4160,6 +4160,37 @@ final class ErrorHandlingTests: XCTestCase {
         await appState.removeFromMealPlan(entry)
         XCTAssertNotNil(appState.errorMessage)
         XCTAssertEqual(appState.mealPlan.count, 1)
+    }
+
+    func testLoadAllDataFiltersOutUnplannedMealEntries() async {
+        let (appState, storage, _) = makeTestAppState()
+        let planned = MealPlanEntry(date: Date(), mealType: .dinner, recipe: makeRecipe(title: "Soup"))
+        let unplanned = MealPlanEntry(date: Date(), mealType: .lunch)
+        storage.mealPlanStore = [unplanned, planned]
+
+        await appState.loadAllData()
+
+        XCTAssertEqual(appState.mealPlan, [planned])
+        XCTAssertEqual(storage.deleteMealPlanCallCount, 1)
+        XCTAssertEqual(storage.mealPlanStore, [planned])
+    }
+
+    func testAddToMealPlanReplacesExistingEntryInSameSlot() async {
+        let (appState, storage, _) = makeTestAppState()
+        let date = Date()
+        let stale = MealPlanEntry(date: date, mealType: .dinner)
+        let replacement = MealPlanEntry(date: date, mealType: .dinner, recipe: makeRecipe(title: "Curry"))
+
+        appState.mealPlan = [stale]
+        storage.mealPlanStore = [stale]
+
+        await appState.addToMealPlan(replacement)
+
+        XCTAssertEqual(appState.mealPlan.count, 1)
+        XCTAssertEqual(appState.mealPlan.first?.recipe?.title, "Curry")
+        XCTAssertEqual(storage.deleteMealPlanCallCount, 1)
+        XCTAssertEqual(storage.addMealPlanCallCount, 1)
+        XCTAssertEqual(storage.mealPlanStore, [replacement])
     }
 }
 

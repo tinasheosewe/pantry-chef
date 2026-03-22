@@ -60,7 +60,7 @@ struct RecipeDetailView: View {
                 .padding(.horizontal)
             }
         }
-        .scrollDismissesKeyboard(.interactively)
+        .dismissKeyboardOnScroll()
         .background(AppColors.background)
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {
@@ -1148,7 +1148,7 @@ struct AddRecipeView: View {
             }
             .padding(.bottom, 20)
         }
-        .scrollDismissesKeyboard(.interactively)
+        .dismissKeyboardOnScroll()
     }
 
     // MARK: - Parse Input

@@ -53,7 +53,7 @@ struct RecipeEditorView: View {
             }
             .padding()
         }
-        .scrollDismissesKeyboard(.interactively)
+        .dismissKeyboardOnScroll()
         .background(AppColors.background)
         .sheet(item: $resolutionDraft) { draft in
             NavigationStack {

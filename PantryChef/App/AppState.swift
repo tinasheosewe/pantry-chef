@@ -81,8 +81,11 @@ final class AppState {
         self.recipeIngredientResolver = RecipeIngredientResolver(candidateParser: ingredientCandidateParser, aiService: aiService)
         pantryItems = launchOptions.seedPantryItems ? PantryItem.samples : []
         recipes = launchOptions.seedRecipes ? Recipe.samples : []
-        discoverRecipes = launchOptions.seedDiscoverRecipes ? recipeRepository.seedRecipes : []
-        Task { await loadAllData() }
+        discoverRecipes = []
+        Task {
+            await Task.yield()
+            await loadAllData()
+        }
     }
 
     init(
@@ -100,9 +103,12 @@ final class AppState {
         self.recipeIngredientResolver = recipeIngredientResolver ?? RecipeIngredientResolver(candidateParser: ingredientCandidateParser, aiService: aiService)
         pantryItems = PantryItem.samples
         recipes = Recipe.samples
-        discoverRecipes = recipeRepository.seedRecipes
+        discoverRecipes = []
         if shouldLoadOnInit {
-            Task { await loadAllData() }
+            Task {
+                await Task.yield()
+                await loadAllData()
+            }
         }
     }
 
@@ -147,7 +153,9 @@ final class AppState {
 
         do {
             let fetchedPlan = try await storageService.fetchMealPlan()
-            mealPlan = fetchedPlan
+            let sanitizedPlan = sanitizeMealPlanEntries(fetchedPlan)
+            mealPlan = sanitizedPlan.visibleEntries
+            await purgeMealPlanEntries(sanitizedPlan.removedEntries)
         } catch {
             failures.append(error.localizedDescription)
         }
@@ -297,9 +305,18 @@ final class AppState {
 
     // MARK: - Meal Plan Actions
     func addToMealPlan(_ entry: MealPlanEntry) async {
+        guard entry.isPlanned else { return }
+
         do {
+            let conflictingEntries = mealPlan.filter { isSameMealSlot($0, entry) }
+            for conflict in conflictingEntries {
+                try await storageService.deleteMealPlanEntry(conflict)
+            }
+
             let saved = try await storageService.addMealPlanEntry(entry)
+            mealPlan.removeAll { isSameMealSlot($0, saved) }
             mealPlan.append(saved)
+            mealPlan = sanitizeMealPlanEntries(mealPlan).visibleEntries
         } catch {
             errorMessage = error.localizedDescription
         }
@@ -524,12 +541,6 @@ final class AppState {
         return value
     }
 
-
-private enum QuantityMergeOutcome {
-    case merged(Double, MeasurementUnit?)
-    case replaceExisting(Double?, MeasurementUnit?)
-    case keepExisting
-}
     private func mergedDiscoverRecipes(withPersisted persisted: [Recipe]) -> [Recipe] {
         let seed = recipeRepository.seedRecipes
         var result: [Recipe] = []
@@ -543,6 +554,53 @@ private enum QuantityMergeOutcome {
         return result
     }
 
+    private func sanitizeMealPlanEntries(_ entries: [MealPlanEntry]) -> SanitizedMealPlan {
+        var latestEntryBySlot: [MealPlanSlotKey: MealPlanEntry] = [:]
+        var slotOrder: [MealPlanSlotKey] = []
+        var removedEntries: [MealPlanEntry] = []
+
+        for entry in entries.sorted(by: { $0.date < $1.date }) {
+            guard entry.isPlanned else {
+                removedEntries.append(entry)
+                continue
+            }
+
+            let slotKey = MealPlanSlotKey(entry)
+            if let replaced = latestEntryBySlot.updateValue(entry, forKey: slotKey) {
+                removedEntries.append(replaced)
+            } else {
+                slotOrder.append(slotKey)
+            }
+        }
+
+        let visibleEntries = slotOrder
+            .compactMap { latestEntryBySlot[$0] }
+            .sorted { lhs, rhs in
+                if Calendar.current.isDate(lhs.date, inSameDayAs: rhs.date) {
+                    return lhs.mealType.rawValue < rhs.mealType.rawValue
+                }
+                return lhs.date < rhs.date
+            }
+
+        return SanitizedMealPlan(visibleEntries: visibleEntries, removedEntries: removedEntries)
+    }
+
+    private func purgeMealPlanEntries(_ entries: [MealPlanEntry]) async {
+        guard !entries.isEmpty else { return }
+
+        for entry in entries {
+            do {
+                try await storageService.deleteMealPlanEntry(entry)
+            } catch {
+                AppLog.warn("[AppState] Failed to purge invalid meal plan entry \(entry.id.uuidString): \(error.localizedDescription)")
+            }
+        }
+    }
+
+    private func isSameMealSlot(_ lhs: MealPlanEntry, _ rhs: MealPlanEntry) -> Bool {
+        Calendar.current.isDate(lhs.date, inSameDayAs: rhs.date) && lhs.mealType == rhs.mealType
+    }
+
     private func removeFromMyRecipes(id: UUID) async {
         guard let saved = recipes.first(where: { $0.id == id }) else { return }
         do {
@@ -551,5 +609,26 @@ private enum QuantityMergeOutcome {
         } catch {
             errorMessage = error.localizedDescription
         }
+    }
+}
+
+private enum QuantityMergeOutcome {
+    case merged(Double, MeasurementUnit?)
+    case replaceExisting(Double?, MeasurementUnit?)
+    case keepExisting
+}
+
+private struct SanitizedMealPlan {
+    let visibleEntries: [MealPlanEntry]
+    let removedEntries: [MealPlanEntry]
+}
+
+private struct MealPlanSlotKey: Hashable {
+    let day: Date
+    let mealType: MealType
+
+    init(_ entry: MealPlanEntry) {
+        day = Calendar.current.startOfDay(for: entry.date)
+        mealType = entry.mealType
     }
 }

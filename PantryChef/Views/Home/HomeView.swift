@@ -52,6 +52,7 @@ struct HomeView: View {
                 }
                 .padding()
             }
+            .dismissKeyboardOnScroll()
             .accessibilityIdentifier("home.screen")
             .background(AppColors.background)
             .navigationBarTitleDisplayMode(.inline)
@@ -62,6 +63,18 @@ struct HomeView: View {
             .onAppear {
                 viewModel.refresh()
                 viewModel.appState.activeCooks.refresh()
+            }
+            .onChange(of: viewModel.appState.mealPlan) { _, _ in
+                viewModel.refresh()
+            }
+            .onChange(of: viewModel.appState.pantryItems) { _, _ in
+                viewModel.refresh()
+            }
+            .onChange(of: viewModel.appState.recipes) { _, _ in
+                viewModel.refresh()
+            }
+            .onChange(of: viewModel.appState.discoverRecipes) { _, _ in
+                viewModel.refresh()
             }
             .alert(shoppingAlertTitle, isPresented: $showShoppingConfirmation) {
                 if pendingShoppingItems.isEmpty {
@@ -111,7 +124,7 @@ struct HomeView: View {
                 onSwitchToPlan?()
             }
 
-            if viewModel.appState.mealPlan.isEmpty {
+            if viewModel.todaysMeals.isEmpty {
                 HStack {
                     Image(systemName: "calendar.badge.plus")
                         .font(.title2)
@@ -224,10 +237,10 @@ struct HomeView: View {
 
         if previewItems.isEmpty {
             shoppingAlertTitle = "Nothing to Add"
-            shoppingAlertMessage = "Everything needed is already in your pantry, already covered, or excluded from shopping like water."
+            shoppingAlertMessage = "Everything needed is already in your pantry."
         } else {
             shoppingAlertTitle = "Add \(previewItems.count) Item\(previewItems.count == 1 ? "" : "s")?"
-            shoppingAlertMessage = "This will merge into your current shopping list, add quantities for overlaps, skip pantry-covered ingredients, and exclude water."
+            shoppingAlertMessage = "This will add these items to your cart and exclude ingredients you already have in your pantry."
         }
 
         showShoppingConfirmation = true

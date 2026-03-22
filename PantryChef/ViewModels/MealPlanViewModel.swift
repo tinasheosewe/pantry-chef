@@ -21,7 +21,7 @@ final class MealPlanViewModel {
         self.appState = appState
         let calendar = Calendar.current
         self.weekStartDate = calendar.dateInterval(of: .weekOfYear, for: Date())?.start ?? Date()
-        loadEntries()
+        reloadEntries()
     }
 
     var weekDays: [Date] {
@@ -38,22 +38,22 @@ final class MealPlanViewModel {
 
     func previousWeek() {
         weekStartDate = Calendar.current.date(byAdding: .weekOfYear, value: -1, to: weekStartDate) ?? weekStartDate
-        loadEntries()
+        reloadEntries()
     }
 
     func nextWeek() {
         weekStartDate = Calendar.current.date(byAdding: .weekOfYear, value: 1, to: weekStartDate) ?? weekStartDate
-        loadEntries()
+        reloadEntries()
     }
 
     func goToCurrentWeek() {
         weekStartDate = Calendar.current.dateInterval(of: .weekOfYear, for: Date())?.start ?? Date()
-        loadEntries()
+        reloadEntries()
     }
 
-    private func loadEntries() {
+    func reloadEntries() {
         entries = appState.mealPlan.filter { entry in
-            weekDays.contains { Calendar.current.isDate(entry.date, inSameDayAs: $0) }
+            entry.isPlanned && weekDays.contains { Calendar.current.isDate(entry.date, inSameDayAs: $0) }
         }
     }
 
@@ -64,12 +64,12 @@ final class MealPlanViewModel {
             recipe: recipe
         )
         await appState.addToMealPlan(entry)
-        entries.append(entry)
+        reloadEntries()
     }
 
     func removeEntry(_ entry: MealPlanEntry) async {
         await appState.removeFromMealPlan(entry)
-        entries.removeAll { $0.id == entry.id }
+        reloadEntries()
     }
 
     func selectSlot(date: Date, mealType: MealType) {

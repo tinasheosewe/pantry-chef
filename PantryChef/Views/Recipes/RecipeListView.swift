@@ -248,11 +248,11 @@ struct RecipeListView: View {
             TextField("Search recipes...", text: $viewModel.searchText)
                 .font(.subheadline)
                 .focused($isSearchFocused)
+                .expandedTapTargetForTextInput()
                 .accessibilityIdentifier("recipes.searchField")
                 .onChange(of: viewModel.searchText) {
                     viewModel.onSearchTextChanged(isDiscoverTab: selectedSection == .discover)
                 }
-            
 
             if !viewModel.searchText.isEmpty {
                 Button { viewModel.searchText = "" } label: {
@@ -264,6 +264,10 @@ struct RecipeListView: View {
         .padding(10)
         .background(AppColors.lightGray)
         .clipShape(RoundedRectangle(cornerRadius: 10))
+        .contentShape(RoundedRectangle(cornerRadius: 10))
+        .onTapGesture {
+            isSearchFocused = true
+        }
         .padding(.horizontal)
         .padding(.top, 8)
     }
@@ -550,6 +554,7 @@ struct RecipeListView: View {
                     .padding()
             }
         }
+        .dismissKeyboardOnScroll()
     }
 }
 
@@ -844,6 +849,7 @@ struct WhatCanIMakeView: View {
                     )
                 }
             }
+            .dismissKeyboardOnScroll()
             .navigationTitle("What Can I Make?")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

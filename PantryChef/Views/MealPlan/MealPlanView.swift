@@ -27,6 +27,7 @@ struct MealPlanView: View {
                         }
                     }
                 }
+                .dismissKeyboardOnScroll()
             }
             .accessibilityIdentifier("mealplan.screen")
             .background(AppColors.background)
@@ -72,6 +73,9 @@ struct MealPlanView: View {
                     .environment(viewModel.appState)
                 }
             }
+            .onChange(of: viewModel.appState.mealPlan) { _, _ in
+                viewModel.reloadEntries()
+            }
         }
     }
 
@@ -81,10 +85,10 @@ struct MealPlanView: View {
 
         if previewItems.isEmpty {
             shoppingAlertTitle = "Nothing to Add"
-            shoppingAlertMessage = "Everything needed is already in your pantry, already covered, or excluded from shopping like water."
+            shoppingAlertMessage = "Everything needed is already in your pantry."
         } else {
             shoppingAlertTitle = "Add \(previewItems.count) Item\(previewItems.count == 1 ? "" : "s")?"
-            shoppingAlertMessage = "This will merge into your current shopping list, add quantities for overlaps, skip pantry-covered ingredients, and exclude water."
+            shoppingAlertMessage = "This will add these items to your cart and exclude ingredients you already have in your pantry."
         }
 
         showShoppingConfirmation = true

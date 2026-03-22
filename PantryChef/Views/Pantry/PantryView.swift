@@ -3,6 +3,7 @@ import SwiftUI
 struct PantryView: View {
     @State private var viewModel: PantryViewModel
     @State private var editingItem: PantryItem?
+    @FocusState private var isSearchFieldFocused: Bool
 
     init(appState: AppState) {
         _viewModel = State(initialValue: PantryViewModel(appState: appState))
@@ -72,6 +73,8 @@ struct PantryView: View {
                     .foregroundStyle(AppColors.mediumGray)
                 TextField("Search pantry...", text: $viewModel.searchText)
                     .font(.subheadline)
+                    .focused($isSearchFieldFocused)
+                    .expandedTapTargetForTextInput()
                     .accessibilityIdentifier("pantry.searchField")
                     .onChange(of: viewModel.searchText) {
                         viewModel.onSearchTextChanged()
@@ -87,6 +90,10 @@ struct PantryView: View {
             .padding(10)
             .background(AppColors.lightGray)
             .clipShape(RoundedRectangle(cornerRadius: 10))
+            .contentShape(RoundedRectangle(cornerRadius: 10))
+            .onTapGesture {
+                isSearchFieldFocused = true
+            }
 
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 8) {
@@ -144,6 +151,7 @@ struct PantryView: View {
                 }
             }
         }
+        .dismissKeyboardOnScroll()
         .accessibilityIdentifier("pantry.list")
         .listStyle(.insetGrouped)
     }
@@ -300,6 +308,8 @@ struct AddPantryItemView: View {
                     onResetDefault: handleResetDefault
                 )
             }
+            .dismissKeyboardOnScroll()
+            .dismissKeyboardOnBackgroundTap()
             .navigationTitle(isEditing ? "Edit Item" : "Add Item")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -329,6 +339,7 @@ struct BulkAddPantryView: View {
     let viewModel: PantryViewModel
     @State private var editingDraft: PantryIntakeRowDraft?
     @State private var isSaving = false
+    @FocusState private var isCatalogSearchFocused: Bool
 
     var body: some View {
         @Bindable var viewModel = viewModel
@@ -359,6 +370,7 @@ struct BulkAddPantryView: View {
                 }
             }
             .background(AppColors.background)
+            .dismissKeyboardOnBackgroundTap()
             .navigationTitle("Add To Pantry")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -399,27 +411,26 @@ struct BulkAddPantryView: View {
                         SectionHeader(title: "Browse Categories", subtitle: "Step into a pantry type instead of scrolling the whole ontology")
                         LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
                             ForEach(viewModel.bulkAdd.categoryCounts, id: \.0) { category, count in
-                                Button {
-                                    viewModel.bulkAdd.selectedCatalogCategory = category
-                                } label: {
-                                    VStack(alignment: .leading, spacing: 8) {
-                                        CategoryIcon(category: category, size: 34)
-                                        Text(category.rawValue)
-                                            .font(.subheadline)
-                                            .fontWeight(.semibold)
-                                            .foregroundStyle(AppColors.darkText)
-                                            .multilineTextAlignment(.leading)
-                                        Text("\(count) items")
-                                            .font(.caption)
-                                            .foregroundStyle(AppColors.subtleText)
-                                    }
-                                    .frame(maxWidth: .infinity, minHeight: 96, alignment: .leading)
-                                    .padding(14)
-                                    .background(AppColors.cardBackground)
-                                    .clipShape(RoundedRectangle(cornerRadius: 18))
-                                    .shadow(color: Color.black.opacity(0.04), radius: 10, x: 0, y: 4)
+                                VStack(alignment: .leading, spacing: 8) {
+                                    CategoryIcon(category: category, size: 34)
+                                    Text(category.rawValue)
+                                        .font(.subheadline)
+                                        .fontWeight(.semibold)
+                                        .foregroundStyle(AppColors.darkText)
+                                        .multilineTextAlignment(.leading)
+                                    Text("\(count) items")
+                                        .font(.caption)
+                                        .foregroundStyle(AppColors.subtleText)
                                 }
-                                .buttonStyle(.plain)
+                                .frame(maxWidth: .infinity, minHeight: 96, alignment: .leading)
+                                .padding(14)
+                                .background(AppColors.cardBackground)
+                                .clipShape(RoundedRectangle(cornerRadius: 18))
+                                .shadow(color: Color.black.opacity(0.04), radius: 10, x: 0, y: 4)
+                                .contentShape(RoundedRectangle(cornerRadius: 18))
+                                .onTapGesture {
+                                    viewModel.bulkAdd.selectedCatalogCategory = category
+                                }
                             }
                         }
                     }
@@ -494,6 +505,16 @@ struct BulkAddPantryView: View {
             .padding(.horizontal)
             .padding(.vertical, 16)
         }
+        .dismissKeyboardOnScroll()
+        .simultaneousGesture(
+            DragGesture(minimumDistance: 8)
+                .onChanged { _ in
+                    if isCatalogSearchFocused {
+                        isCatalogSearchFocused = false
+                        hideKeyboard()
+                    }
+                }
+        )
     }
 
     private func catalogSearchBar(viewModel: PantryViewModel) -> some View {
@@ -508,6 +529,8 @@ struct BulkAddPantryView: View {
                 }
             ))
             .textInputAutocapitalization(.words)
+            .focused($isCatalogSearchFocused)
+            .expandedTapTargetForTextInput()
 
             if !viewModel.bulkAdd.catalogSearchText.isEmpty {
                 Button {
@@ -523,6 +546,10 @@ struct BulkAddPantryView: View {
         .background(AppColors.cardBackground)
         .clipShape(RoundedRectangle(cornerRadius: 14))
         .shadow(color: Color.black.opacity(0.04), radius: 8, x: 0, y: 3)
+        .contentShape(RoundedRectangle(cornerRadius: 14))
+        .onTapGesture {
+            isCatalogSearchFocused = true
+        }
     }
 
     private func catalogItemRow(item: PantryCatalogItemDefinition, viewModel: PantryViewModel) -> some View {
@@ -530,62 +557,60 @@ struct BulkAddPantryView: View {
         let previewDraft = viewModel.bulkAdd.draft(for: item)
         let savedDefault = viewModel.bulkAdd.savedDefault(for: item.id)
 
-        return Button {
-            viewModel.bulkAdd.toggleCatalogItemSelection(item)
-        } label: {
-            HStack(spacing: 12) {
-                CategoryIcon(category: item.category, size: 40)
+        return HStack(spacing: 12) {
+            CategoryIcon(category: item.category, size: 40)
 
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(item.name)
-                        .font(.subheadline)
-                        .fontWeight(.semibold)
-                        .foregroundStyle(AppColors.darkText)
-                    Text(item.category.rawValue)
-                        .font(.caption)
+            VStack(alignment: .leading, spacing: 4) {
+                Text(item.name)
+                    .font(.subheadline)
+                    .fontWeight(.semibold)
+                    .foregroundStyle(AppColors.darkText)
+                Text(item.category.rawValue)
+                    .font(.caption)
+                    .foregroundStyle(AppColors.subtleText)
+
+                if let defaultLabel = catalogDefaultLabel(for: previewDraft, savedDefault: savedDefault) {
+                    Text(defaultLabel)
+                        .font(.caption2)
+                        .foregroundStyle(AppColors.accentBlue)
+                        .lineLimit(1)
+                }
+
+                ForEach(catalogFacetOptions(for: item), id: \.self) { facetLine in
+                    Text(facetLine)
+                        .font(.caption2)
                         .foregroundStyle(AppColors.subtleText)
-
-                    if let defaultLabel = catalogDefaultLabel(for: previewDraft, savedDefault: savedDefault) {
-                        Text(defaultLabel)
-                            .font(.caption2)
-                            .foregroundStyle(AppColors.accentBlue)
-                            .lineLimit(1)
-                    }
-
-                    ForEach(catalogFacetOptions(for: item), id: \.self) { facetLine in
-                        Text(facetLine)
-                            .font(.caption2)
-                            .foregroundStyle(AppColors.subtleText)
-                            .lineLimit(1)
-                    }
+                        .lineLimit(1)
                 }
-
-                Spacer()
-
-                HStack(spacing: 6) {
-                    Image(systemName: isSelected ? "checkmark.circle.fill" : "plus.circle")
-                        .font(.subheadline)
-                    Text(isSelected ? "Added" : "Add")
-                        .font(.caption)
-                        .fontWeight(.semibold)
-                }
-                .padding(.horizontal, 12)
-                .padding(.vertical, 8)
-                .background(isSelected ? AppColors.primaryGreen : AppColors.lightGray)
-                .foregroundStyle(isSelected ? Color.white : AppColors.darkText)
-                .clipShape(Capsule())
             }
-            .padding(14)
-            .background(isSelected ? AppColors.primaryGreen.opacity(0.12) : AppColors.cardBackground)
-            .overlay(
-                RoundedRectangle(cornerRadius: 18)
-                    .stroke(isSelected ? AppColors.primaryGreen.opacity(0.55) : Color.clear, lineWidth: 1.5)
-            )
-            .clipShape(RoundedRectangle(cornerRadius: 18))
-            .shadow(color: Color.black.opacity(0.04), radius: 10, x: 0, y: 4)
-            .contentShape(RoundedRectangle(cornerRadius: 18))
+
+            Spacer()
+
+            HStack(spacing: 6) {
+                Image(systemName: isSelected ? "checkmark.circle.fill" : "plus.circle")
+                    .font(.subheadline)
+                Text(isSelected ? "Added" : "Add")
+                    .font(.caption)
+                    .fontWeight(.semibold)
+            }
+            .padding(.horizontal, 12)
+            .padding(.vertical, 8)
+            .background(isSelected ? AppColors.primaryGreen : AppColors.lightGray)
+            .foregroundStyle(isSelected ? Color.white : AppColors.darkText)
+            .clipShape(Capsule())
         }
-        .buttonStyle(.plain)
+        .padding(14)
+        .background(isSelected ? AppColors.primaryGreen.opacity(0.12) : AppColors.cardBackground)
+        .overlay(
+            RoundedRectangle(cornerRadius: 18)
+                .stroke(isSelected ? AppColors.primaryGreen.opacity(0.55) : Color.clear, lineWidth: 1.5)
+        )
+        .clipShape(RoundedRectangle(cornerRadius: 18))
+        .shadow(color: Color.black.opacity(0.04), radius: 10, x: 0, y: 4)
+        .contentShape(RoundedRectangle(cornerRadius: 18))
+        .onTapGesture {
+            viewModel.bulkAdd.toggleCatalogItemSelection(item)
+        }
     }
 
     private func bulkStagingTab(viewModel: PantryViewModel) -> some View {
@@ -613,6 +638,7 @@ struct BulkAddPantryView: View {
                         .padding(.top, 8)
                     }
                 }
+                .dismissKeyboardOnScroll()
                 .listStyle(.plain)
                 .scrollContentBackground(.hidden)
                 .background(AppColors.background)
@@ -1031,6 +1057,7 @@ struct PantryIntakeFormSections: View {
                     set: { draft.updateSearchText($0) }
                 ))
                 .textInputAutocapitalization(.words)
+                .expandedTapTargetForTextInput()
                 .accessibilityIdentifier("\(accessibilityPrefix).nameField")
 
                 if draft.isCustomItem {
@@ -1153,6 +1180,7 @@ struct PantryIntakeFormSections: View {
                     set: { draft.setQuantityText($0) }
                 ))
                 .keyboardType(.decimalPad)
+                .expandedTapTargetForTextInput()
                 .accessibilityIdentifier("\(accessibilityPrefix).quantityField")
 
                 Picker("Unit", selection: Binding(
@@ -1175,6 +1203,7 @@ struct PantryIntakeFormSections: View {
         Section("Notes") {
             TextField("Optional notes", text: $draft.notes, axis: .vertical)
                 .lineLimit(3)
+                .expandedTapTargetForTextInput()
                 .accessibilityIdentifier("\(accessibilityPrefix).notesField")
         }
 

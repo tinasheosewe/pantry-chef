@@ -8,10 +8,12 @@ final class RecipeRepository {
     static let shared = RecipeRepository()
 
     /// Bundled seed recipes (shipped with app)
-    private(set) var seedRecipes: [Recipe] = []
+    private var seedRecipeStore: [Recipe] = []
 
     /// Cached API recipes (persisted to disk, 7-day TTL)
-    private(set) var cachedRecipes: [Recipe] = []
+    private var cachedRecipeStore: [Recipe] = []
+    private var hasLoadedSeedRecipes = false
+    private var hasLoadedCachedRecipes = false
 
     /// File URL for the disk cache
     private var cacheURL: URL {
@@ -19,19 +21,23 @@ final class RecipeRepository {
             .appendingPathComponent("cached_recipes.json")
     }
 
-    private init() {
-        loadSeedRecipes()
-        loadCachedRecipes()
+    private init() {}
+
+    var seedRecipes: [Recipe] {
+        ensureLoaded()
+        return seedRecipeStore
     }
 
     // MARK: - Public API
 
     /// All non-user recipes (seed + cached)
     var discoverRecipes: [Recipe] {
-        var all = seedRecipes
+        ensureLoaded()
+
+        var all = seedRecipeStore
         // Avoid duplicates by title
-        let seedTitles = Set(seedRecipes.map { $0.title.lowercased() })
-        let unique = cachedRecipes.filter { !seedTitles.contains($0.title.lowercased()) }
+        let seedTitles = Set(seedRecipeStore.map { $0.title.lowercased() })
+        let unique = cachedRecipeStore.filter { !seedTitles.contains($0.title.lowercased()) }
         all.append(contentsOf: unique)
         return all
     }
@@ -80,20 +86,22 @@ final class RecipeRepository {
 
     /// Cache an API recipe for future access
     func cacheRecipe(_ recipe: Recipe) {
+        ensureLoaded()
         let canonicalRecipe = TrustedRecipeCanonicalizer.canonicalize(recipe)
-        if !cachedRecipes.contains(where: { $0.id == canonicalRecipe.id }) {
-            cachedRecipes.append(canonicalRecipe)
+        if !cachedRecipeStore.contains(where: { $0.id == canonicalRecipe.id }) {
+            cachedRecipeStore.append(canonicalRecipe)
             saveCachedRecipes()
         }
     }
 
     /// Cache multiple recipes
     func cacheRecipes(_ recipes: [Recipe]) {
+        ensureLoaded()
         var changed = false
         for recipe in recipes {
             let canonicalRecipe = TrustedRecipeCanonicalizer.canonicalize(recipe)
-            if !cachedRecipes.contains(where: { $0.id == canonicalRecipe.id }) {
-                cachedRecipes.append(canonicalRecipe)
+            if !cachedRecipeStore.contains(where: { $0.id == canonicalRecipe.id }) {
+                cachedRecipeStore.append(canonicalRecipe)
                 changed = true
             }
         }
@@ -102,32 +110,45 @@ final class RecipeRepository {
 
     /// Update favorite state in cached recipe
     func updateFavoriteState(id: UUID, isFavorite: Bool) {
-        if let idx = cachedRecipes.firstIndex(where: { $0.id == id }) {
-            cachedRecipes[idx].isFavorite = isFavorite
+        ensureLoaded()
+        if let idx = cachedRecipeStore.firstIndex(where: { $0.id == id }) {
+            cachedRecipeStore[idx].isFavorite = isFavorite
             saveCachedRecipes()
         }
     }
 
     /// Clear old cache entries (older than 7 days)
     func pruneCache() {
+        ensureLoaded()
         let cutoff = Calendar.current.date(byAdding: .day, value: -7, to: Date()) ?? Date()
-        let before = cachedRecipes.count
-        cachedRecipes.removeAll { $0.dateAdded < cutoff }
-        if cachedRecipes.count != before { saveCachedRecipes() }
+        let before = cachedRecipeStore.count
+        cachedRecipeStore.removeAll { $0.dateAdded < cutoff }
+        if cachedRecipeStore.count != before { saveCachedRecipes() }
+    }
+
+    private func ensureLoaded() {
+        if !hasLoadedSeedRecipes {
+            loadSeedRecipes()
+        }
+        if !hasLoadedCachedRecipes {
+            loadCachedRecipes()
+        }
     }
 
     // MARK: - Seed Loading
 
     private func loadSeedRecipes() {
+        defer { hasLoadedSeedRecipes = true }
+
         guard let url = Bundle.main.url(forResource: "seed_recipes", withExtension: "json") else {
-            seedRecipes = []
+            seedRecipeStore = []
             return
         }
         do {
             let data = try Data(contentsOf: url)
             parseSeedJSON(data)
         } catch {
-            seedRecipes = []
+            seedRecipeStore = []
         }
     }
 
@@ -179,7 +200,7 @@ final class RecipeRepository {
             return
         }
 
-        seedRecipes = seedList.map { seed in
+        seedRecipeStore = seedList.map { seed in
             TrustedRecipeCanonicalizer.canonicalize(Recipe(
                 title: seed.title,
                 description: seed.description,
@@ -226,22 +247,24 @@ final class RecipeRepository {
     // MARK: - Cache Persistence
 
     private func loadCachedRecipes() {
+        defer { hasLoadedCachedRecipes = true }
+
         guard FileManager.default.fileExists(atPath: cacheURL.path) else {
-            cachedRecipes = []
+            cachedRecipeStore = []
             return
         }
 
         do {
             let data = try Data(contentsOf: cacheURL)
-            cachedRecipes = try JSONDecoder().decode([Recipe].self, from: data).map(TrustedRecipeCanonicalizer.canonicalize)
+            cachedRecipeStore = try JSONDecoder().decode([Recipe].self, from: data).map(TrustedRecipeCanonicalizer.canonicalize)
         } catch {
-            cachedRecipes = []
+            cachedRecipeStore = []
         }
     }
 
     private func saveCachedRecipes() {
         do {
-            let data = try JSONEncoder().encode(cachedRecipes)
+            let data = try JSONEncoder().encode(cachedRecipeStore)
             try data.write(to: cacheURL, options: .atomic)
         } catch { }
     }

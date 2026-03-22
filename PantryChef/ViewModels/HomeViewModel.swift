@@ -37,7 +37,7 @@ final class HomeViewModel {
     private func loadTodaysMeals() {
         let today = Calendar.current.startOfDay(for: Date())
         todaysMeals = appState.mealPlan.filter {
-            Calendar.current.isDate($0.date, inSameDayAs: today)
+            $0.isPlanned && Calendar.current.isDate($0.date, inSameDayAs: today)
         }
     }
 

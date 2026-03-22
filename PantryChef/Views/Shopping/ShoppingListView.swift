@@ -132,6 +132,7 @@ struct ShoppingListView: View {
                 }
             }
         }
+        .dismissKeyboardOnScroll()
         .listStyle(.insetGrouped)
     }
 }
@@ -154,6 +155,7 @@ private struct ShoppingAddItemView: View {
                     )
                     .textInputAutocapitalization(.words)
                     .disableAutocorrection(true)
+                    .expandedTapTargetForTextInput()
 
                     if viewModel.isCustomItem {
                         Button("Back to Catalog Search") {
@@ -224,6 +226,7 @@ private struct ShoppingAddItemView: View {
                             )
                         )
                         .keyboardType(.decimalPad)
+                        .expandedTapTargetForTextInput()
 
                         Picker(
                             "Unit",
@@ -291,6 +294,7 @@ private struct ShoppingAddItemView: View {
                         )
                     )
                     .keyboardType(.decimalPad)
+                    .expandedTapTargetForTextInput()
 
                     Picker(
                         "Unit",
@@ -313,6 +317,8 @@ private struct ShoppingAddItemView: View {
                 }
             }
         }
+        .dismissKeyboardOnScroll()
+        .dismissKeyboardOnBackgroundTap()
         .navigationTitle("Add Shopping Item")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {

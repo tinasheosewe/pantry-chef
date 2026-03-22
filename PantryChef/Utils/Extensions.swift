@@ -1,5 +1,6 @@
 import Foundation
 import SwiftUI
+import UIKit
 
 // MARK: - Date Extensions
 extension Date {
@@ -70,6 +71,25 @@ extension Array where Element: Identifiable {
 extension View {
     func hideKeyboard() {
         UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+    }
+
+    func dismissKeyboardOnScroll() -> some View {
+        scrollDismissesKeyboard(.interactively)
+            .simultaneousGesture(
+                DragGesture(minimumDistance: 8)
+                    .onChanged { _ in
+                        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+                    }
+            )
+    }
+
+    func dismissKeyboardOnBackgroundTap() -> some View {
+        background(KeyboardDismissTapRecognizer())
+    }
+
+    func expandedTapTargetForTextInput() -> some View {
+        frame(maxWidth: .infinity, alignment: .leading)
+            .contentShape(Rectangle())
     }
 
     @ViewBuilder
@@ -175,6 +195,120 @@ final class TaskDebouncer {
 enum DebounceDurations {
     static let quickSearch: UInt64 = 150_000_000
     static let apiSearch: UInt64 = 400_000_000
+}
+
+private struct KeyboardDismissTapRecognizer: UIViewRepresentable {
+    func makeCoordinator() -> Coordinator {
+        Coordinator()
+    }
+
+    func makeUIView(context: Context) -> UIView {
+        let view = KeyboardDismissAttachmentView()
+        view.onAttachmentChanged = { [weak coordinator = context.coordinator] attachmentView in
+            coordinator?.installRecognizerIfNeeded(from: attachmentView)
+        }
+        return view
+    }
+
+    func updateUIView(_ uiView: UIView, context: Context) {
+        guard let view = uiView as? KeyboardDismissAttachmentView else { return }
+        view.onAttachmentChanged = { [weak coordinator = context.coordinator] attachmentView in
+            coordinator?.installRecognizerIfNeeded(from: attachmentView)
+        }
+        DispatchQueue.main.async {
+            context.coordinator.installRecognizerIfNeeded(from: view)
+        }
+    }
+
+    final class Coordinator: NSObject, UIGestureRecognizerDelegate {
+        private weak var hostingView: UIView?
+        private weak var recognizer: UITapGestureRecognizer?
+
+        deinit {
+            if let recognizer, let hostingView {
+                hostingView.removeGestureRecognizer(recognizer)
+            }
+        }
+
+        func installRecognizerIfNeeded(from view: UIView) {
+            guard let hostingView = view.nearestViewController?.view ?? view.window else {
+                DispatchQueue.main.async { [weak self, weak view] in
+                    guard let view else { return }
+                    self?.installRecognizerIfNeeded(from: view)
+                }
+                return
+            }
+
+            if self.hostingView === hostingView, recognizer != nil {
+                return
+            }
+
+            if let recognizer, let oldHostingView = self.hostingView {
+                oldHostingView.removeGestureRecognizer(recognizer)
+            }
+
+            let recognizer = UITapGestureRecognizer(target: self, action: #selector(handleTap))
+            recognizer.cancelsTouchesInView = false
+            recognizer.delaysTouchesEnded = false
+            recognizer.delegate = self
+            hostingView.addGestureRecognizer(recognizer)
+
+            self.hostingView = hostingView
+            self.recognizer = recognizer
+        }
+
+        @objc private func handleTap() {
+            hostingView?.window?.endEditing(true)
+        }
+
+        func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
+            !(touch.view?.isWithinTextInput ?? false)
+        }
+
+        func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+            true
+        }
+    }
+}
+
+private final class KeyboardDismissAttachmentView: UIView {
+    var onAttachmentChanged: ((UIView) -> Void)?
+
+    override func didMoveToWindow() {
+        super.didMoveToWindow()
+        notifyAttachmentChanged()
+    }
+
+    override func didMoveToSuperview() {
+        super.didMoveToSuperview()
+        notifyAttachmentChanged()
+    }
+
+    private func notifyAttachmentChanged() {
+        DispatchQueue.main.async { [weak self] in
+            guard let self else { return }
+            self.onAttachmentChanged?(self)
+        }
+    }
+}
+
+private extension UIView {
+    var isWithinTextInput: Bool {
+        var current: UIView? = self
+
+        while let view = current {
+            if view is UITextField || view is UITextView || view is UISearchBar {
+                return true
+            }
+            current = view.superview
+        }
+
+        return false
+    }
+
+    var nearestViewController: UIViewController? {
+        sequence(first: self.next, next: { $0?.next }).first { $0 is UIViewController } as? UIViewController
+    }
 }
 
 // MARK: - Logging
