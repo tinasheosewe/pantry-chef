@@ -292,6 +292,7 @@ struct AddPantryItemView: View {
                 PantryIntakeFormSections(
                     draft: $draft,
                     accessibilityPrefix: "pantry.form",
+                    allowsIdentityEditing: !isEditing,
                     hasSavedDefault: showsSavedDefault,
                     saveDefaultButtonTitle: saveDefaultButtonTitle,
                     isSaveDefaultDisabled: draft.rowState != .valid || isCurrentDefault,
@@ -946,6 +947,7 @@ struct PantryDraftEditorView: View {
                 PantryIntakeFormSections(
                     draft: $draft,
                     accessibilityPrefix: "pantry.bulk.form",
+                    allowsIdentityEditing: false,
                     hasSavedDefault: showsSavedDefault,
                     saveDefaultButtonTitle: saveDefaultButtonTitle,
                     isSaveDefaultDisabled: draft.rowState != .valid || isCurrentDefault,
@@ -976,6 +978,7 @@ struct PantryDraftEditorView: View {
 struct PantryIntakeFormSections: View {
     @Binding var draft: PantryIntakeRowDraft
     let accessibilityPrefix: String
+    let allowsIdentityEditing: Bool
     let hasSavedDefault: Bool
     let saveDefaultButtonTitle: String
     let isSaveDefaultDisabled: Bool
@@ -985,6 +988,7 @@ struct PantryIntakeFormSections: View {
     init(
         draft: Binding<PantryIntakeRowDraft>,
         accessibilityPrefix: String,
+        allowsIdentityEditing: Bool = true,
         hasSavedDefault: Bool = false,
         saveDefaultButtonTitle: String = "Set as Default",
         isSaveDefaultDisabled: Bool = false,
@@ -993,6 +997,7 @@ struct PantryIntakeFormSections: View {
     ) {
         self._draft = draft
         self.accessibilityPrefix = accessibilityPrefix
+        self.allowsIdentityEditing = allowsIdentityEditing
         self.hasSavedDefault = hasSavedDefault
         self.saveDefaultButtonTitle = saveDefaultButtonTitle
         self.isSaveDefaultDisabled = isSaveDefaultDisabled
@@ -1002,33 +1007,16 @@ struct PantryIntakeFormSections: View {
 
     var body: some View {
         Section("Catalog Item") {
-            TextField("Search pantry catalog", text: Binding(
-                get: { draft.searchText },
-                set: { draft.updateSearchText($0) }
-            ))
-            .textInputAutocapitalization(.words)
-            .accessibilityIdentifier("\(accessibilityPrefix).nameField")
-
             if let selectedItem = draft.selectedItem {
-                HStack(spacing: 12) {
-                    CategoryIcon(category: selectedItem.category, size: 32)
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(selectedItem.displayName(for: draft.selectedFacets))
-                            .font(.subheadline)
-                            .fontWeight(.semibold)
-                        Text(selectedItem.category.rawValue)
-                            .font(.caption)
-                            .foregroundStyle(AppColors.subtleText)
-                    }
-                    Spacer()
-                    Button("Clear") {
-                        draft.clearSelection(keepingSearchText: true)
-                    }
-                    .font(.caption)
-                }
-            }
+                lockedCatalogItemRow(selectedItem)
+            } else if allowsIdentityEditing {
+                TextField("Search pantry catalog", text: Binding(
+                    get: { draft.searchText },
+                    set: { draft.updateSearchText($0) }
+                ))
+                .textInputAutocapitalization(.words)
+                .accessibilityIdentifier("\(accessibilityPrefix).nameField")
 
-            if draft.selectedItem == nil {
                 ForEach(Array(draft.matchingItems.prefix(8))) { item in
                     Button {
                         draft.selectItem(item)
@@ -1183,6 +1171,22 @@ struct PantryIntakeFormSections: View {
                     }
                 }
             }
+        }
+    }
+
+    @ViewBuilder
+    private func lockedCatalogItemRow(_ selectedItem: PantryCatalogItemDefinition) -> some View {
+        HStack(spacing: 12) {
+            CategoryIcon(category: selectedItem.category, size: 32)
+            VStack(alignment: .leading, spacing: 4) {
+                Text(selectedItem.displayName(for: draft.selectedFacets))
+                    .font(.subheadline)
+                    .fontWeight(.semibold)
+                Text(selectedItem.category.rawValue)
+                    .font(.caption)
+                    .foregroundStyle(AppColors.subtleText)
+            }
+            Spacer()
         }
     }
 
