@@ -529,11 +529,11 @@ final class AIService: AIServiceProtocol {
 
     // MARK: - JSON Schemas for Structured Output
 
-    /// Recipe import — basic fields only.
+    /// Recipe import — same metadata completeness as full recipes so onboarding stays populated.
     private static let recipeImportSchema: [String: Any] = [
         "name": "recipe_import",
         "strict": true,
-        "schema": recipeSchemaBody(includeFullDetails: false)
+        "schema": recipeSchemaBody(includeFullDetails: true)
     ]
 
     /// Full recipe — includes difficulty, meal type, cuisine, nutrition.
@@ -687,10 +687,12 @@ final class AIService: AIServiceProtocol {
         - "unit" must be one of: tsp, tbsp, cup, fl oz, ml, L, g, kg, oz, lb, piece, whole, loaf, slice, clove, bunch, can, pkg, pinch, splash, to taste
         - "category" must be one of: Dairy, Produce, Protein, Grains & Cereals, Spices & Herbs, Condiments & Sauces, Baking Supplies, Frozen Foods, Canned & Jarred, Beverages, Snacks, Oils & Fats, Pasta & Noodles, Nuts & Seeds, Other
         - "dietaryTags" values must be from: Vegetarian, Vegan, Gluten-Free, Dairy-Free, Nut-Free, Low Carb, High Protein, Keto, Paleo, Halal, Kosher
+        - "mealType" must be one of: Breakfast, Lunch, Dinner, Snack, Dessert
+        - "cuisine" must be one of: Italian, Mexican, Chinese, Japanese, Indian, Thai, French, Mediterranean, American, Korean, Vietnamese, Greek, Middle Eastern, Ethiopian, Caribbean, Other
         - "taskIndex" must be a unique integer starting at 0, incrementing across ALL steps
         - "dependsOn" contains taskIndex values of prerequisite tasks
         - "estimatedDurationSeconds" is the realistic wall-clock time for each step
-        - Estimate servings, prep/cook times if not stated
+        - Estimate servings, prep/cook times, mealType, cuisine, difficulty, and nutrition if not stated
 
         Text:
         \(extractedText)
@@ -1157,21 +1159,38 @@ final class AIService: AIServiceProtocol {
     }
 
     private func validatedRecipe(_ recipe: Recipe, source: String) -> Recipe? {
-        let issues = AIOutputValidator.validate(recipe: recipe)
+        let completedRecipe = recipe.completed()
+        let issues = AIOutputValidator.validate(recipe: completedRecipe)
         guard issues.isEmpty else {
             AppLog.warn("[AIService] Dropping invalid AI recipe from \(source): \(issues.map(\.description).joined(separator: ", "))")
             return nil
         }
-        return recipe
+        return completedRecipe
     }
 
     private func validatedImportResult(_ result: RecipeImportResult, source: String) -> RecipeImportResult? {
-        let issues = AIOutputValidator.validate(importResult: result)
+        let completedRecipe = result.toRecipe()
+        let completedResult = RecipeImportResult(
+            title: result.title,
+            description: result.description,
+            ingredients: result.ingredients,
+            steps: result.steps,
+            servings: completedRecipe.servings,
+            prepTimeMinutes: completedRecipe.prepTimeMinutes,
+            cookTimeMinutes: completedRecipe.cookTimeMinutes,
+            imageURL: result.imageURL,
+            dietaryTags: completedRecipe.dietaryTags,
+            difficulty: completedRecipe.difficulty,
+            mealType: completedRecipe.mealType,
+            cuisine: completedRecipe.cuisine,
+            nutrition: completedRecipe.nutrition
+        )
+        let issues = AIOutputValidator.validate(importResult: completedResult)
         guard issues.isEmpty else {
             AppLog.warn("[AIService] Dropping invalid AI import from \(source): \(issues.map(\.description).joined(separator: ", "))")
             return nil
         }
-        return result
+        return completedResult
     }
 
     // MARK: - Response Parsing (legacy — kept for edge cases)

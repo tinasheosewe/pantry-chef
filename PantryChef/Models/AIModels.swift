@@ -106,6 +106,10 @@ struct RecipeImportResult: Codable {
     let cookTimeMinutes: Int?
     let imageURL: String?
     let dietaryTags: [DietaryTag]?
+    let difficulty: DifficultyLevel?
+    let mealType: MealType?
+    let cuisine: CuisineType?
+    let nutrition: NutritionInfo?
 
     func toRecipe() -> Recipe {
         Recipe(
@@ -116,9 +120,14 @@ struct RecipeImportResult: Codable {
             servings: servings ?? 4,
             prepTimeMinutes: prepTimeMinutes,
             cookTimeMinutes: cookTimeMinutes,
+            difficulty: difficulty ?? .easy,
             dietaryTags: dietaryTags ?? [],
+            mealType: mealType,
+            cuisine: cuisine,
+            nutrition: nutrition,
             imageURL: imageURL
         )
+        .completed()
     }
 }
 
@@ -135,11 +144,25 @@ struct RawImportResult: Decodable {
     let prepTimeMinutes: Int?
     let cookTimeMinutes: Int?
     let dietaryTags: [String]?
+    let difficulty: Int?
+    let mealType: String?
+    let cuisine: String?
+    let calories: Int?
+    let protein: Double?
+    let carbohydrates: Double?
+    let fat: Double?
+    let fiber: Double?
+    let sugar: Double?
+    let sodium: Double?
 
     func toRecipeImportResult() -> RecipeImportResult {
         let convertedIngredients = RecipeConversion.convertIngredients(ingredients)
         let convertedSteps = RecipeConversion.convertSteps(steps)
         let convertedTags = dietaryTags?.compactMap { DietaryTag(rawValue: $0) }
+        let convertedDifficulty = difficulty.flatMap { DifficultyLevel(rawValue: $0) }
+        let convertedMealType = MealType.parse(mealType)
+        let convertedCuisine = CuisineType.parse(cuisine)
+        let nutrition = nutritionInfo()
 
         return RecipeImportResult(
             title: title,
@@ -150,7 +173,26 @@ struct RawImportResult: Decodable {
             prepTimeMinutes: prepTimeMinutes,
             cookTimeMinutes: cookTimeMinutes,
             imageURL: nil,
-            dietaryTags: convertedTags
+            dietaryTags: convertedTags,
+            difficulty: convertedDifficulty,
+            mealType: convertedMealType,
+            cuisine: convertedCuisine,
+            nutrition: nutrition
+        )
+    }
+
+    private func nutritionInfo() -> NutritionInfo? {
+        guard calories != nil || protein != nil || carbohydrates != nil || fat != nil || fiber != nil || sugar != nil || sodium != nil else {
+            return nil
+        }
+        return NutritionInfo(
+            calories: calories ?? 0,
+            protein: protein ?? 0,
+            carbohydrates: carbohydrates ?? 0,
+            fat: fat ?? 0,
+            fiber: fiber,
+            sugar: sugar,
+            sodium: sodium
         )
     }
 }
@@ -182,19 +224,17 @@ struct RawFullRecipe: Decodable {
         let convertedSteps = RecipeConversion.convertSteps(steps)
         let convertedTags = dietaryTags?.compactMap { DietaryTag(rawValue: $0) } ?? []
         let diff = DifficultyLevel(rawValue: difficulty ?? 2) ?? .easy
-        let mt = mealType.flatMap { MealType(rawValue: $0) }
-        let cu = cuisine.flatMap { CuisineType(rawValue: $0) }
-        let nutrition: NutritionInfo? = calories.map { cal in
-            NutritionInfo(
-                calories: cal,
-                protein: protein ?? 0,
-                carbohydrates: carbohydrates ?? 0,
-                fat: fat ?? 0,
-                fiber: fiber,
-                sugar: sugar,
-                sodium: sodium
-            )
-        }
+        let mt = MealType.parse(mealType)
+        let cu = CuisineType.parse(cuisine)
+        let nutrition: NutritionInfo? = (calories != nil || protein != nil || carbohydrates != nil || fat != nil || fiber != nil || sugar != nil || sodium != nil) ? NutritionInfo(
+            calories: calories ?? 0,
+            protein: protein ?? 0,
+            carbohydrates: carbohydrates ?? 0,
+            fat: fat ?? 0,
+            fiber: fiber,
+            sugar: sugar,
+            sodium: sodium
+        ) : nil
 
         return Recipe(
             id: original?.id ?? UUID(),
@@ -218,6 +258,7 @@ struct RawFullRecipe: Decodable {
             timesCooked: original?.timesCooked ?? 0,
             rating: original?.rating
         )
+        .completed()
     }
 }
 

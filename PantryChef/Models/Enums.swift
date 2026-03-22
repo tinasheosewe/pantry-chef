@@ -243,6 +243,29 @@ enum MealType: String, Codable, CaseIterable, Identifiable {
         case .dessert: return "birthday.cake.fill"
         }
     }
+
+    static func parse(_ string: String?) -> MealType? {
+        guard let string else { return nil }
+        let normalized = string
+            .lowercased()
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+            .replacingOccurrences(of: "-", with: " ")
+        guard !normalized.isEmpty else { return nil }
+
+        if let direct = MealType.allCases.first(where: { $0.rawValue.lowercased() == normalized }) {
+            return direct
+        }
+
+        switch normalized {
+        case let value where value.contains("breakfast"): return .breakfast
+        case let value where value.contains("lunch"): return .lunch
+        case let value where value.contains("dinner"): return .dinner
+        case let value where value.contains("snack"): return .snack
+        case let value where value.contains("dessert"),
+             let value where value.contains("sweet"): return .dessert
+        default: return nil
+        }
+    }
 }
 
 // MARK: - Cuisine Type
@@ -284,6 +307,56 @@ enum CuisineType: String, Codable, CaseIterable, Identifiable {
         case .ethiopian: return "🇪🇹"
         case .caribbean: return "🌴"
         case .other: return "🍽️"
+        }
+    }
+
+    static func parse(_ string: String?) -> CuisineType? {
+        guard let string else { return nil }
+        let normalized = string
+            .lowercased()
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+            .replacingOccurrences(of: "-", with: " ")
+        guard !normalized.isEmpty else { return nil }
+
+        if let direct = CuisineType.allCases.first(where: { $0.rawValue.lowercased() == normalized }) {
+            return direct
+        }
+
+        switch normalized {
+        case let value where value.contains("ital"):
+            return .italian
+        case let value where value.contains("mex"):
+            return .mexican
+        case let value where value.contains("chin"):
+            return .chinese
+        case let value where value.contains("japan"):
+            return .japanese
+        case let value where value.contains("indian") || value.contains("india"):
+            return .indian
+        case let value where value.contains("thai"):
+            return .thai
+        case let value where value.contains("french") || value.contains("france"):
+            return .french
+        case let value where value.contains("mediterranean"):
+            return .mediterranean
+        case let value where value.contains("american") || value.contains("usa"):
+            return .american
+        case let value where value.contains("korean") || value.contains("korea"):
+            return .korean
+        case let value where value.contains("vietnamese") || value.contains("vietnam"):
+            return .vietnamese
+        case let value where value.contains("greek") || value.contains("greece"):
+            return .greek
+        case let value where value.contains("middle eastern") || value.contains("middleeast") || value.contains("levant") || value.contains("arabic"):
+            return .middleEastern
+        case let value where value.contains("ethiopian") || value.contains("ethiopia"):
+            return .ethiopian
+        case let value where value.contains("caribbean"):
+            return .caribbean
+        case let value where value.contains("other"):
+            return .other
+        default:
+            return nil
         }
     }
 }

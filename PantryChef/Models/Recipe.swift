@@ -257,6 +257,10 @@ struct Recipe: Identifiable, Codable, Hashable {
         IngredientMatcher.match(recipe: self, pantry: pantry)
     }
 
+    func completed() -> Recipe {
+        RecipeCompletenessInferer.complete(self)
+    }
+
     // MARK: - Stable IDs for built-in recipes (survive app restarts for CookingSession matching)
     static let stirFryId  = UUID(uuidString: "A1B2C3D4-0001-0001-0001-AABBCCDDEEFF")!
     static let avocadoId  = UUID(uuidString: "A1B2C3D4-0002-0002-0002-AABBCCDDEEFF")!
@@ -435,6 +439,359 @@ struct Recipe: Identifiable, Codable, Hashable {
             nutrition: NutritionInfo(calories: 380, protein: 14, carbohydrates: 52, fat: 12, fiber: 2, sugar: 3, sodium: 700)
         )),
     ]
+}
+
+private enum RecipeCompletenessInferer {
+    static func complete(_ recipe: Recipe) -> Recipe {
+        var completed = recipe
+        completed.servings = max(1, recipe.servings)
+
+        let inferredMealType = recipe.mealType ?? inferMealType(for: recipe)
+        completed.mealType = inferredMealType
+        completed.cuisine = recipe.cuisine ?? inferCuisine(for: recipe)
+
+        let inferredTimes = inferTimes(for: recipe, mealType: inferredMealType)
+        if completed.prepTimeMinutes == nil {
+            completed.prepTimeMinutes = inferredTimes.prep
+        }
+        if completed.cookTimeMinutes == nil {
+            completed.cookTimeMinutes = inferredTimes.cook
+        }
+
+        completed.nutrition = completeNutrition(for: completed)
+        return completed
+    }
+
+    private static func inferMealType(for recipe: Recipe) -> MealType {
+        let corpus = searchableCorpus(for: recipe)
+
+        if matchesAny(in: corpus, keywords: [
+            "dessert", "cake", "cookie", "brownie", "pie", "ice cream", "pudding", "cupcake", "muffin", "tart"
+        ]) {
+            return .dessert
+        }
+
+        if matchesAny(in: corpus, keywords: [
+            "breakfast", "omelet", "omelette", "pancake", "waffle", "oatmeal", "granola", "french toast", "breakfast burrito"
+        ]) {
+            return .breakfast
+        }
+
+        if matchesAny(in: corpus, keywords: [
+            "snack", "dip", "chips", "popcorn", "energy bites", "protein bites", "smoothie", "trail mix", "granola bar"
+        ]) {
+            return .snack
+        }
+
+        if matchesAny(in: corpus, keywords: [
+            "lunch", "sandwich", "wrap", "salad", "grain bowl", "soup", "taco", "quesadilla"
+        ]) {
+            return .lunch
+        }
+
+        return .dinner
+    }
+
+    private static func inferCuisine(for recipe: Recipe) -> CuisineType {
+        let corpus = searchableCorpus(for: recipe)
+        let keywordMap: [(CuisineType, [String])] = [
+            (.italian, ["italian", "pasta", "risotto", "parmesan", "mozzarella", "marinara", "pesto", "lasagna", "gnocchi"]),
+            (.mexican, ["mexican", "taco", "salsa", "tortilla", "jalapeno", "burrito", "quesadilla", "enchilada", "guacamole"]),
+            (.chinese, ["chinese", "soy sauce", "stir fry", "fried rice", "bok choy", "hoisin", "dumpling", "scallion"]),
+            (.japanese, ["japanese", "miso", "mirin", "ramen", "udon", "teriyaki", "dashi", "panko", "sushi"]),
+            (.indian, ["indian", "curry", "masala", "garam", "turmeric", "paneer", "dal", "tikka", "basmati", "naan"]),
+            (.thai, ["thai", "coconut milk", "fish sauce", "lemongrass", "pad thai", "thai basil", "red curry", "green curry"]),
+            (.french, ["french", "beurre", "shallot", "gratin", "confit", "vinaigrette", "herbes de provence", "brie"]),
+            (.mediterranean, ["mediterranean", "olive", "chickpea", "cucumber", "orzo", "tabbouleh", "mezze"]),
+            (.american, ["american", "burger", "barbecue", "bbq", "meatloaf", "mac and cheese", "ranch"]),
+            (.korean, ["korean", "gochujang", "kimchi", "bulgogi", "bibimbap", "gochugaru"]),
+            (.vietnamese, ["vietnamese", "pho", "nuoc cham", "banh mi", "rice paper", "vermicelli"]),
+            (.greek, ["greek", "feta", "tzatziki", "gyro", "kalamata", "souvlaki"]),
+            (.middleEastern, ["middle eastern", "tahini", "shawarma", "zaatar", "sumac", "falafel", "hummus", "harissa"]),
+            (.ethiopian, ["ethiopian", "berbere", "injera", "wat"]),
+            (.caribbean, ["caribbean", "jerk", "plantain", "scotch bonnet", "allspice", "coconut rice"]),
+        ]
+
+        var bestMatch: (cuisine: CuisineType, score: Int)?
+        for (cuisine, keywords) in keywordMap {
+            let score = keywords.reduce(into: 0) { partialResult, keyword in
+                if corpus.contains(keyword) {
+                    partialResult += 1
+                }
+            }
+            guard score > 0 else { continue }
+            if bestMatch == nil || score > bestMatch?.score ?? 0 {
+                bestMatch = (cuisine, score)
+            }
+        }
+
+        return bestMatch?.cuisine ?? .other
+    }
+
+    private static func inferTimes(for recipe: Recipe, mealType: MealType?) -> (prep: Int, cook: Int) {
+        let stepMinutes = max(0, Int(ceil(Double(recipe.steps.map(\.effectiveDurationSeconds).reduce(0, +)) / 60.0)))
+        let ingredientCount = max(recipe.ingredients.count, 1)
+        let corpus = searchableCorpus(for: recipe)
+        let hasCooking = matchesAny(in: corpus, keywords: [
+            "bake", "roast", "simmer", "boil", "fry", "saute", "sauté", "grill", "steam", "preheat", "oven", "stovetop"
+        ])
+
+        if !hasCooking {
+            let prep = max(5, min(ingredientCount * 3, stepMinutes > 0 ? stepMinutes : defaultPrepTime(for: mealType)))
+            return (prep, 0)
+        }
+
+        if stepMinutes > 0 {
+            let prepTarget = max(5, min(max(stepMinutes / 3, ingredientCount * 2), 25))
+            let prep = min(prepTarget, max(stepMinutes - 5, 5))
+            let cook = max(stepMinutes - prep, 5)
+            return (prep, cook)
+        }
+
+        return (defaultPrepTime(for: mealType), defaultCookTime(for: mealType))
+    }
+
+    private static func defaultPrepTime(for mealType: MealType?) -> Int {
+        switch mealType {
+        case .breakfast: return 10
+        case .lunch: return 15
+        case .snack: return 8
+        case .dessert: return 20
+        case .dinner, .none: return 15
+        }
+    }
+
+    private static func defaultCookTime(for mealType: MealType?) -> Int {
+        switch mealType {
+        case .breakfast: return 10
+        case .lunch: return 15
+        case .snack: return 5
+        case .dessert: return 25
+        case .dinner, .none: return 25
+        }
+    }
+
+    private static func completeNutrition(for recipe: Recipe) -> NutritionInfo {
+        let estimated = estimateNutrition(for: recipe)
+        let existing = recipe.nutrition
+
+        let protein = pick(existing?.protein, fallback: estimated.protein)
+        let carbohydrates = pick(existing?.carbohydrates, fallback: estimated.carbohydrates)
+        let fat = pick(existing?.fat, fallback: estimated.fat)
+
+        let derivedCalories = Int(round((protein * 4) + (carbohydrates * 4) + (fat * 9)))
+        let calories = max(existing?.calories ?? 0, derivedCalories, estimated.calories)
+
+        return NutritionInfo(
+            calories: calories,
+            protein: protein,
+            carbohydrates: carbohydrates,
+            fat: fat,
+            fiber: pickOptional(existing?.fiber, fallback: estimated.fiber),
+            sugar: pickOptional(existing?.sugar, fallback: estimated.sugar),
+            sodium: pickOptional(existing?.sodium, fallback: estimated.sodium)
+        )
+    }
+
+    private static func estimateNutrition(for recipe: Recipe) -> NutritionInfo {
+        let servings = max(recipe.servings, 1)
+        let profiles: [FoodCategory: (calories: Double, protein: Double, carbs: Double, fat: Double, fiber: Double, sugar: Double, sodium: Double)] = [
+            .dairy: (120, 7, 6, 7, 0, 5, 90),
+            .produce: (35, 1.5, 7, 0.3, 2.5, 3.5, 20),
+            .protein: (180, 22, 0, 8, 0, 0, 85),
+            .grains: (180, 5, 35, 2, 2.5, 1, 10),
+            .spices: (260, 10, 50, 8, 25, 2, 30),
+            .condiments: (150, 2, 15, 8, 0.5, 8, 700),
+            .bakingSupplies: (360, 6, 70, 5, 1, 35, 120),
+            .frozenFoods: (110, 4, 14, 4, 2, 3, 180),
+            .canned: (95, 5, 14, 2, 3, 2, 260),
+            .beverages: (40, 0.5, 9, 0, 0, 8, 20),
+            .snacks: (480, 8, 55, 24, 4, 8, 280),
+            .oils: (884, 0, 0, 100, 0, 0, 0),
+            .pasta: (190, 6, 37, 1.5, 2, 1, 10),
+            .nuts: (600, 20, 18, 50, 9, 5, 5),
+            .other: (120, 4, 14, 4, 1.5, 3, 100),
+        ]
+
+        var totals = (calories: 0.0, protein: 0.0, carbs: 0.0, fat: 0.0, fiber: 0.0, sugar: 0.0, sodium: 0.0)
+
+        for ingredient in recipe.ingredients {
+            let profile = profiles[ingredient.resolvedCategory] ?? profiles[.other]!
+            let quantityFactor = normalizedQuantity(for: ingredient)
+            totals.calories += profile.calories * quantityFactor
+            totals.protein += profile.protein * quantityFactor
+            totals.carbs += profile.carbs * quantityFactor
+            totals.fat += profile.fat * quantityFactor
+            totals.fiber += profile.fiber * quantityFactor
+            totals.sugar += profile.sugar * quantityFactor
+            totals.sodium += profile.sodium * quantityFactor
+        }
+
+        if totals.calories == 0 {
+            let mealType = recipe.mealType ?? inferMealType(for: recipe)
+            let baseline = baselineNutrition(for: mealType)
+            totals = baseline
+        }
+
+        let perServing = (
+            calories: totals.calories / Double(servings),
+            protein: totals.protein / Double(servings),
+            carbs: totals.carbs / Double(servings),
+            fat: totals.fat / Double(servings),
+            fiber: totals.fiber / Double(servings),
+            sugar: totals.sugar / Double(servings),
+            sodium: totals.sodium / Double(servings)
+        )
+
+        let mealType = recipe.mealType ?? inferMealType(for: recipe)
+        return NutritionInfo(
+            calories: clamp(Int(round(perServing.calories)), min: baselineRanges(for: mealType).calories.0, max: baselineRanges(for: mealType).calories.1),
+            protein: Double(clamp(Int(round(perServing.protein)), min: baselineRanges(for: mealType).protein.0, max: baselineRanges(for: mealType).protein.1)),
+            carbohydrates: Double(clamp(Int(round(perServing.carbs)), min: baselineRanges(for: mealType).carbs.0, max: baselineRanges(for: mealType).carbs.1)),
+            fat: Double(clamp(Int(round(perServing.fat)), min: baselineRanges(for: mealType).fat.0, max: baselineRanges(for: mealType).fat.1)),
+            fiber: Double(clamp(Int(round(perServing.fiber)), min: baselineRanges(for: mealType).fiber.0, max: baselineRanges(for: mealType).fiber.1)),
+            sugar: Double(clamp(Int(round(perServing.sugar)), min: baselineRanges(for: mealType).sugar.0, max: baselineRanges(for: mealType).sugar.1)),
+            sodium: Double(clamp(Int(round(perServing.sodium)), min: baselineRanges(for: mealType).sodium.0, max: baselineRanges(for: mealType).sodium.1))
+        )
+    }
+
+    private static func baselineNutrition(for mealType: MealType) -> (calories: Double, protein: Double, carbs: Double, fat: Double, fiber: Double, sugar: Double, sodium: Double) {
+        switch mealType {
+        case .breakfast:
+            return (380, 18, 36, 16, 6, 10, 420)
+        case .lunch:
+            return (520, 28, 42, 22, 7, 9, 650)
+        case .dinner:
+            return (640, 34, 48, 28, 8, 8, 780)
+        case .snack:
+            return (220, 9, 20, 11, 4, 8, 260)
+        case .dessert:
+            return (340, 5, 42, 16, 2, 24, 220)
+        }
+    }
+
+    private static func baselineRanges(for mealType: MealType) -> (
+        calories: (Int, Int),
+        protein: (Int, Int),
+        carbs: (Int, Int),
+        fat: (Int, Int),
+        fiber: (Int, Int),
+        sugar: (Int, Int),
+        sodium: (Int, Int)
+    ) {
+        switch mealType {
+        case .breakfast:
+            return ((250, 700), (8, 40), (18, 80), (6, 35), (2, 14), (2, 28), (100, 900))
+        case .lunch:
+            return ((300, 850), (12, 55), (20, 95), (8, 40), (3, 16), (2, 24), (150, 1200))
+        case .dinner:
+            return ((350, 1000), (15, 65), (20, 110), (8, 45), (3, 18), (2, 24), (150, 1500))
+        case .snack:
+            return ((100, 450), (3, 25), (8, 45), (3, 25), (1, 10), (1, 20), (50, 700))
+        case .dessert:
+            return ((150, 700), (2, 15), (18, 90), (5, 35), (0, 8), (8, 55), (25, 600))
+        }
+    }
+
+    private static func normalizedQuantity(for ingredient: Ingredient) -> Double {
+        let quantity = max(ingredient.quantity, 0)
+        switch ingredient.unit {
+        case .gram:
+            return quantity / 100.0
+        case .kilogram:
+            return quantity * 10.0
+        case .ounce:
+            return quantity * 0.283
+        case .pound:
+            return quantity * 4.54
+        case .milliliter:
+            return quantity / 100.0
+        case .liter:
+            return quantity * 10.0
+        case .tablespoon:
+            return quantity * 0.15
+        case .teaspoon:
+            return quantity * 0.05
+        case .cup:
+            return quantity * 2.4
+        case .fluidOunce:
+            return quantity * 0.3
+        case .piece, .whole:
+            return quantity * defaultWeightFactor(for: ingredient, grams: 120)
+        case .slice:
+            return quantity * defaultWeightFactor(for: ingredient, grams: 30)
+        case .clove:
+            return quantity * 0.03
+        case .bunch:
+            return quantity * defaultWeightFactor(for: ingredient, grams: 75)
+        case .can:
+            return quantity * 4.0
+        case .package:
+            return quantity * 3.5
+        case .loaf:
+            return quantity * 4.5
+        case .pinch:
+            return quantity * 0.01
+        case .splash:
+            return quantity * 0.02
+        case .toTaste:
+            return max(quantity * 0.01, 0.01)
+        case .none:
+            return max(quantity * defaultWeightFactor(for: ingredient, grams: 80), 0.1)
+        }
+    }
+
+    private static func defaultWeightFactor(for ingredient: Ingredient, grams: Double) -> Double {
+        switch ingredient.resolvedCategory {
+        case .protein:
+            return 0.85
+        case .spices:
+            return 0.02
+        case .condiments:
+            return 0.15
+        case .oils:
+            return 0.14
+        case .grains, .pasta:
+            return 0.4
+        case .nuts:
+            return 0.3
+        case .produce:
+            return grams / 100.0
+        default:
+            return grams / 100.0
+        }
+    }
+
+    private static func searchableCorpus(for recipe: Recipe) -> String {
+        [
+            recipe.title,
+            recipe.description ?? "",
+            recipe.ingredients.map(\.displayName).joined(separator: " "),
+            recipe.steps.map(\.instruction).joined(separator: " ")
+        ]
+        .joined(separator: " ")
+        .lowercased()
+    }
+
+    private static func matchesAny(in corpus: String, keywords: [String]) -> Bool {
+        keywords.contains { corpus.contains($0) }
+    }
+
+    private static func pick(_ value: Double?, fallback: Double) -> Double {
+        guard let value, value > 0 else { return fallback }
+        return value
+    }
+
+    private static func pickOptional(_ value: Double?, fallback: Double?) -> Double? {
+        if let value, value > 0 {
+            return value
+        }
+        return fallback
+    }
+
+    private static func clamp(_ value: Int, min minValue: Int, max maxValue: Int) -> Int {
+        Swift.max(minValue, Swift.min(maxValue, value))
+    }
 }
 
 // MARK: - Substitution Entry (local repository result)

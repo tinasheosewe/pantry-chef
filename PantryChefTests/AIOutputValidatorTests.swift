@@ -74,7 +74,11 @@ final class AIOutputValidatorTests: XCTestCase {
             prepTimeMinutes: nil,
             cookTimeMinutes: nil,
             imageURL: nil,
-            dietaryTags: nil
+            dietaryTags: nil,
+            difficulty: nil,
+            mealType: nil,
+            cuisine: nil,
+            nutrition: nil
         )
 
         let issues = AIOutputValidator.validate(importResult: result)

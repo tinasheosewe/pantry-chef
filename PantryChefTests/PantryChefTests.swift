@@ -238,6 +238,7 @@ func makeRecipe(
     difficulty: DifficultyLevel = .easy,
     dietaryTags: [DietaryTag] = [],
     mealType: MealType? = .dinner,
+    cuisine: CuisineType? = nil,
     nutrition: NutritionInfo? = nil,
     isFavorite: Bool = false
 ) -> Recipe {
@@ -251,6 +252,7 @@ func makeRecipe(
         difficulty: difficulty,
         dietaryTags: dietaryTags,
         mealType: mealType,
+        cuisine: cuisine,
         nutrition: nutrition,
         isFavorite: isFavorite
     )
@@ -1326,13 +1328,21 @@ final class AIModelTests: XCTestCase {
             prepTimeMinutes: 5,
             cookTimeMinutes: 10,
             imageURL: nil,
-            dietaryTags: [.vegan]
+            dietaryTags: [.vegan],
+            difficulty: .medium,
+            mealType: .snack,
+            cuisine: .american,
+            nutrition: NutritionInfo(calories: 120, protein: 2, carbohydrates: 8, fat: 8, fiber: 0, sugar: 0, sodium: 400)
         )
         let recipe = result.toRecipe()
         XCTAssertEqual(recipe.title, "Imported Recipe")
         XCTAssertEqual(recipe.servings, 2)
         XCTAssertEqual(recipe.dietaryTags, [.vegan])
         XCTAssertEqual(recipe.ingredients.count, 1)
+        XCTAssertEqual(recipe.difficulty, .medium)
+        XCTAssertEqual(recipe.mealType, .snack)
+        XCTAssertEqual(recipe.cuisine, .american)
+        XCTAssertEqual(recipe.nutrition?.calories, 120)
     }
 
     func testRecipeImportResultDefaultServings() {
@@ -1345,10 +1355,45 @@ final class AIModelTests: XCTestCase {
             prepTimeMinutes: nil,
             cookTimeMinutes: nil,
             imageURL: nil,
-            dietaryTags: nil
+            dietaryTags: nil,
+            difficulty: nil,
+            mealType: nil,
+            cuisine: nil,
+            nutrition: nil
         )
         let recipe = result.toRecipe()
         XCTAssertEqual(recipe.servings, 4, "Should default to 4 servings")
+        XCTAssertNotNil(recipe.mealType)
+        XCTAssertNotNil(recipe.cuisine)
+        XCTAssertNotNil(recipe.nutrition)
+    }
+
+    func testRecipeCompletionBackfillsMissingMetadata() {
+        let recipe = makeRecipe(
+            title: "Chicken stir fry",
+            ingredients: [
+                Ingredient(name: "chicken breast", quantity: 400, unit: .gram, category: .protein),
+                Ingredient(name: "soy sauce", quantity: 2, unit: .tablespoon, category: .condiments),
+                Ingredient(name: "rice", quantity: 2, unit: .cup, category: .grains),
+            ],
+            steps: [
+                RecipeStep(stepNumber: 1, instruction: "Slice the chicken and stir-fry it in a hot pan.", estimatedDurationSeconds: 480),
+                RecipeStep(stepNumber: 2, instruction: "Add soy sauce and serve over rice.", estimatedDurationSeconds: 240),
+            ],
+            prepTimeMinutes: nil,
+            cookTimeMinutes: nil,
+            mealType: nil,
+            cuisine: nil,
+            nutrition: nil
+        ).completed()
+
+        XCTAssertEqual(recipe.mealType, .dinner)
+        XCTAssertEqual(recipe.cuisine, .chinese)
+        XCTAssertNotNil(recipe.prepTimeMinutes)
+        XCTAssertNotNil(recipe.cookTimeMinutes)
+        XCTAssertNotNil(recipe.nutrition)
+        XCTAssertGreaterThan(recipe.nutrition?.calories ?? 0, 0)
+        XCTAssertGreaterThan(recipe.nutrition?.protein ?? 0, 0)
     }
 }
 
@@ -2036,7 +2081,11 @@ final class RecipeViewModelTests: XCTestCase {
             prepTimeMinutes: nil,
             cookTimeMinutes: nil,
             imageURL: nil,
-            dietaryTags: nil
+            dietaryTags: nil,
+            difficulty: nil,
+            mealType: nil,
+            cuisine: nil,
+            nutrition: nil
         )
         await vm.importFromURL("https://example.com/recipe")
         XCTAssertNotNil(vm.importedRecipe)
