@@ -40,6 +40,7 @@ final class IngredientCandidateParser: IngredientCandidateParserProtocol {
 
         let query = IngredientLexicon.parse(ingredient.rawName)
         guard !query.lookupKey.isEmpty else { return [] }
+        let queryLookupTokenSet = Set(IngredientLexicon.tokenize(query.lookupKey))
 
         var candidatesByID: [String: ScoredCandidate] = [:]
 
@@ -66,6 +67,20 @@ final class IngredientCandidateParser: IngredientCandidateParserProtocol {
             rationale: { phrase in "Exact facet template match for \(phrase.text)." },
             into: &candidatesByID
         )
+
+        if !queryLookupTokenSet.isEmpty {
+            register(
+                phrases: Self.catalogPhrases.filter {
+                    $0.source == .template &&
+                    $0.lookupKey != query.lookupKey &&
+                    Set(IngredientLexicon.tokenize($0.lookupKey)) == queryLookupTokenSet
+                },
+                stage: .exactTemplate,
+                score: 0.985,
+                rationale: { phrase in "Exact facet template token match for \(phrase.text)." },
+                into: &candidatesByID
+            )
+        }
 
         let synonymLookups = IngredientLexicon.synonymLookupGroup(for: ingredient.rawName)
             .subtracting([query.lookupKey])
@@ -126,6 +141,7 @@ final class IngredientCandidateParser: IngredientCandidateParserProtocol {
             )
         }
 
+        preferFacetSpecificExactMatches(in: &candidatesByID)
         preferGenericFallbacks(in: &candidatesByID)
 
         return candidatesByID.values
@@ -161,6 +177,31 @@ final class IngredientCandidateParser: IngredientCandidateParserProtocol {
         candidatesByID = candidatesByID.filter { _, scoredCandidate in
             let candidate = scoredCandidate.candidate
             if !catalogItemIDsWithGenericFallback.contains(candidate.catalogItemID) {
+                return true
+            }
+
+            return !candidate.facets.isEmpty
+        }
+    }
+
+    private func preferFacetSpecificExactMatches(in candidatesByID: inout [String: ScoredCandidate]) {
+        let exactFacetMatchedItemIDs = Set(
+            candidatesByID.values.compactMap { scoredCandidate -> String? in
+                let candidate = scoredCandidate.candidate
+                guard scoredCandidate.stage == .exactTemplate,
+                      !candidate.facets.isEmpty,
+                      candidate.score >= 0.985 else {
+                    return nil
+                }
+                return candidate.catalogItemID
+            }
+        )
+
+        guard !exactFacetMatchedItemIDs.isEmpty else { return }
+
+        candidatesByID = candidatesByID.filter { _, scoredCandidate in
+            let candidate = scoredCandidate.candidate
+            guard exactFacetMatchedItemIDs.contains(candidate.catalogItemID) else {
                 return true
             }
 
@@ -334,7 +375,7 @@ final class RecipeIngredientResolver: RecipeIngredientResolverProtocol {
             }
 
             let candidates = candidateParser.candidates(for: ingredient)
-            let fallbackStatus: IngredientResolutionStatus = candidates.isEmpty ? .unknown : (candidates.count == 1 && candidates[0].score >= 0.9 ? .resolved : .ambiguous)
+            let fallbackStatus = fallbackStatus(for: candidates)
             let fallbackCandidateID = fallbackStatus == .resolved ? candidates.first?.id : nil
 
             return ResolvedIngredientDraft(
@@ -373,6 +414,24 @@ final class RecipeIngredientResolver: RecipeIngredientResolverProtocol {
         }
 
         return RecipeResolutionDraft(recipe: recipe, ingredients: resolvedDrafts)
+    }
+
+    private func fallbackStatus(for candidates: [IngredientResolutionCandidate]) -> IngredientResolutionStatus {
+        guard let bestCandidate = candidates.first else {
+            return .unknown
+        }
+
+        if candidates.count == 1 && bestCandidate.score >= 0.9 {
+            return .resolved
+        }
+
+        if let secondCandidate = candidates.dropFirst().first,
+           bestCandidate.score >= 0.98,
+           bestCandidate.score - secondCandidate.score >= 0.04 {
+            return .resolved
+        }
+
+        return .ambiguous
     }
 
     private func validatedDraft(from draft: ResolvedIngredientDraft, decision: IngredientResolutionDecision) -> ResolvedIngredientDraft {

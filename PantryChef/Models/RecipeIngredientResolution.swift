@@ -85,7 +85,6 @@ struct ResolvedIngredientDraft: Identifiable, Hashable, Sendable {
     }
 
     mutating func chooseCandidate(_ candidate: IngredientResolutionCandidate) {
-        status = .resolved
         selectedCandidateID = candidate.id
         confidence = max(confidence, candidate.score)
         rationale = candidate.rationale
@@ -109,6 +108,10 @@ struct RecipeResolutionDraft: Identifiable, Hashable, Sendable {
 
     var unknownIngredients: [ResolvedIngredientDraft] {
         ingredients.filter { $0.status == .unknown }
+    }
+
+    var requiresIngredientEdits: Bool {
+        !unknownIngredients.isEmpty
     }
 
     var isReadyToBuild: Bool {

@@ -726,12 +726,22 @@ struct RecipeEditorView: View {
         isResolving = false
 
         if draft.isReadyToBuild {
-            completeSave(with: draft.builtRecipe())
+            if draft.requiresIngredientEdits {
+                let unresolvedNames = draft.unknownIngredients
+                    .map { $0.ingredient.rawName }
+                    .joined(separator: ", ")
+                resolutionErrorMessage = "Edit unresolved ingredients before saving: \(unresolvedNames)."
+            } else {
+                completeSave(with: draft.builtRecipe())
+            }
             return
         }
 
-        if draft.ambiguousIngredients.isEmpty {
-            resolutionErrorMessage = "Recipe ingredients could not be resolved."
+        if draft.requiresIngredientEdits {
+            let unresolvedNames = draft.unknownIngredients
+                .map { $0.ingredient.rawName }
+                .joined(separator: ", ")
+            resolutionErrorMessage = "Edit unresolved ingredients before saving: \(unresolvedNames)."
             return
         }
 

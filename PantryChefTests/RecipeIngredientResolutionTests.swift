@@ -58,6 +58,17 @@ final class RecipeIngredientResolutionTests: XCTestCase {
         XCTAssertEqual(candidates.first?.displayName, "Jasmine Rice")
     }
 
+    func testCandidateParserMatchesFacetTemplateRegardlessOfWordOrder() {
+        let parser = IngredientCandidateParser()
+        let ingredient = Ingredient(name: "garlic, minced")
+
+        let candidates = parser.candidates(for: ingredient)
+
+        XCTAssertEqual(candidates.first?.catalogItemID, "garlic")
+        XCTAssertEqual(candidates.first?.facets, [.init(key: .preparation, value: "minced")])
+        XCTAssertEqual(candidates.first?.displayName, "Minced Garlic")
+    }
+
     func testCandidateParserResolvesStructuredBeefCuts() {
         let parser = IngredientCandidateParser()
         let ingredient = Ingredient(name: "beef stew meat")
@@ -173,6 +184,62 @@ final class RecipeIngredientResolutionTests: XCTestCase {
         XCTAssertEqual(draft.ingredients.first?.status, .unknown)
         XCTAssertNil(built.ingredients.first?.catalogItemID)
         XCTAssertEqual(built.ingredients.first?.rawName, "dragonfruit powder")
+    }
+
+    func testResolverAutomaticallyResolvesObviousFacetSpecificIngredient() async {
+        let ingredient = Ingredient(name: "garlic, minced")
+        let recipe = makeRecipe(title: "Garlic Toast", ingredients: [ingredient])
+        let parser = IngredientCandidateParser()
+        let ai = MockAIService()
+        let resolver = RecipeIngredientResolver(candidateParser: parser, aiService: ai)
+
+        let draft = await resolver.resolve(recipe: recipe)
+        let built = draft.builtRecipe()
+
+        XCTAssertEqual(draft.ingredients.first?.status, .resolved)
+        XCTAssertEqual(draft.ingredients.first?.selectedCandidate?.catalogItemID, "garlic")
+        XCTAssertEqual(draft.ingredients.first?.selectedCandidate?.facets, [.init(key: .preparation, value: "minced")])
+        XCTAssertEqual(built.ingredients.first?.catalogItemID, "garlic")
+        XCTAssertEqual(built.ingredients.first?.facets, [.init(key: .preparation, value: "minced")])
+    }
+
+    func testChoosingCandidateDoesNotDismissAmbiguousDraftBeforeApply() {
+        let candidates = [
+            IngredientResolutionCandidate(
+                id: "garlic|preparation=whole",
+                catalogItemID: "garlic",
+                facets: [.init(key: .preparation, value: "whole")],
+                displayName: "Whole Garlic",
+                score: 0.85,
+                rationale: "Whole garlic candidate.",
+                supportedFacets: []
+            ),
+            IngredientResolutionCandidate(
+                id: "garlic|preparation=minced",
+                catalogItemID: "garlic",
+                facets: [.init(key: .preparation, value: "minced")],
+                displayName: "Minced Garlic",
+                score: 0.9,
+                rationale: "Minced garlic candidate.",
+                supportedFacets: []
+            )
+        ]
+        var draft = ResolvedIngredientDraft(
+            ingredient: Ingredient(name: "garlic"),
+            status: .ambiguous,
+            candidates: candidates,
+            selectedCandidateID: nil,
+            confidence: 0.9,
+            rationale: "Multiple plausible matches."
+        )
+
+        draft.chooseCandidate(candidates[1])
+
+        XCTAssertEqual(draft.status, .ambiguous)
+        XCTAssertEqual(draft.selectedCandidateID, candidates[1].id)
+        XCTAssertTrue(draft.requiresUserChoice)
+        XCTAssertEqual(draft.resolvedIngredient.catalogItemID, "garlic")
+        XCTAssertEqual(draft.resolvedIngredient.facets, [.init(key: .preparation, value: "minced")])
     }
 }
 
