@@ -1,141 +1,139 @@
-# Pantry Chef 🍳
+# PantryChef
 
-A personal iOS kitchen management app powered by AI. Tells you what to buy, what you can cook, and how to substitute missing ingredients.
+PantryChef is an iOS cooking and kitchen-planning app built with SwiftUI. It combines pantry tracking, recipe management, meal planning, shopping generation, and AI-assisted cook mode in a local-first app.
 
-## Features
+## What The App Does
 
-### Core
-- **What to Buy** — Given a recipe + your pantry, generates a precise shopping list
-- **What Can I Make** — Suggests recipes based on what's in your pantry (ranked by match %)
-- **Smart Substitutions** — Structured pantry-catalog substitutions with explicit taste, texture, and cooking impact data
+- Track pantry items with quantities, categories, and expiry-aware sorting.
+- Manage personal recipes alongside bundled and discovered recipes.
+- Filter recipes by pantry match, favorites, meal type, cuisine, difficulty, and dietary tags.
+- Build meal plans and turn them into consolidated shopping lists.
+- Run a guided cook mode with step navigation, timers, notifications, and resume support.
+- Use OpenAI-backed helpers for shopping lists, recipe suggestions, healthier variants, leftovers, and conversational cook assistance.
+- Search for discover recipes through Spoonacular when an API key is configured.
 
-### Pantry Management
-- Add items manually with structured pantry fields
-- Expiry date tracking with visual warnings
-- Organized by food category with search & filters
+## Current Product Shape
 
-### Recipes
-- Full recipe management with difficulty ratings, nutrition, and dietary tags
-- Import recipes from URLs
-- Recipe scaling (adjust servings)
-- Pantry match percentage on every recipe
+This repository is currently centered on the manual-entry and local-persistence experience.
 
-### Cook Mode
-- Full-screen step-by-step guided cooking
-- Built-in timers per step
-- Voice readout (Apple TTS) and voice commands ("next", "repeat", "start timer")
-- Dark UI optimized for kitchen use
+- Core app data is stored locally with SwiftData.
+- The app boots with sample pantry items and recipes to make simulator testing easy.
+- AI and network-backed features are optional and degrade gracefully when keys are not configured.
+- Pantry intake OCR and barcode workflows are being researched, but they are not the primary shipped flow today.
 
-### Meal Planning
-- Weekly calendar with breakfast/lunch/dinner slots
-- Auto-generate shopping lists from your meal plan
+## Stack
 
-### AI Assistant
-- Floating chat button for natural language queries
-- Quick actions: "What can I make?", "Use up expiring items", "Easy dinner ideas"
-- Leftover transformer, healthier recipe suggestions
-
-## Tech Stack
-
-- **Platform**: iOS 17.0+, Swift 5.9, SwiftUI
-- **Architecture**: MVVM with centralized AppState
-- **Storage**: SwiftData local persistence with bootstrap seed data on first launch.
-- **AI**: OpenAI GPT-4o
-- **Speech**: Apple AVSpeechSynthesizer + SFSpeechRecognizer
+- Platform: iOS 17.0+
+- Language: Swift 5.9
+- UI: SwiftUI
+- Project generation: XcodeGen
+- Persistence: SwiftData
+- AI: OpenAI Chat Completions plus OpenAI Realtime API
+- External recipe discovery: Spoonacular
+- Realtime voice transport: vendored swift-realtime-openai package in Vendor/
 
 ## Setup
 
 ### Prerequisites
-- macOS with Xcode 15+
-- [XcodeGen](https://github.com/yonaskolb/XcodeGen) (`brew install xcodegen`)
-- An [OpenAI](https://platform.openai.com) API key (optional — only needed for AI features)
 
-### 1. Clone & Generate Project
+- macOS with Xcode 15 or newer
+- XcodeGen
+- An OpenAI API key for AI features
+- Optionally, a Spoonacular API key for discover search
+
+Install XcodeGen if needed:
+
+```bash
+brew install xcodegen
+```
+
+### 1. Generate The Xcode Project
+
 ```bash
 cd PantryChef
 xcodegen generate
 open PantryChef.xcodeproj
 ```
 
-### 2. Configure API Keys (optional)
-Set these values in your environment or app Info.plist:
-- `OPENAI_API_KEY`
-- `SPOONACULAR_API_KEY`
+### 2. Configure Secrets
 
-`AppConfig` reads from environment first, then Info.plist.
+The project loads Config/Secrets.xcconfig, which includes Config/LocalSecrets.xcconfig for developer-local values.
 
-### 3. Build & Run
-Select your target device/simulator in Xcode and hit ⌘R. The app launches with sample pantry items and recipes preloaded — no backend setup required.
+Set these values in Config/LocalSecrets.xcconfig or in your environment:
 
-### 4. Run The Quality Gates
-The stable quality command runs unit tests and UI smoke tests separately, then enforces the current coverage gate.
+- OPENAI_API_KEY
+- SPOONACULAR_API_KEY
+
+AppConfig reads environment variables first, then Info.plist values.
+
+### 3. Build And Run
+
+Open the PantryChef scheme in Xcode and run on an iOS 17 simulator or device.
+
+On first launch, the app seeds local sample data so the main flows are usable without backend setup.
+
+## Testing
+
+Run the current quality gate:
 
 ```bash
 bash Scripts/ci/run_quality.sh
 ```
 
-See [TESTING.md](TESTING.md) for the full testing playbook, current performance budgets, exploratory checkpoints, and snapshot update procedure.
+This script runs unit tests and UI smoke tests separately, then applies the coverage gate.
 
-### Future: Migrating to Supabase
-The service layer (`StorageService.swift`) is designed for a seamless swap to cloud storage:
-1. Add the `supabase-swift` package dependency back to `project.yml`
-2. Replace the in-memory implementation with the Supabase client calls
-3. Run `Supabase/migrations/001_initial_schema.sql` in your Supabase SQL Editor
-4. Add your Supabase URL and anon key to `AppConfig.swift`
+See TESTING.md for:
 
-## Project Structure
+- direct xcodebuild commands
+- coverage enforcement
+- performance budgets
+- snapshot baseline workflow
+- exploratory release checks
 
-```
+## Repository Map
+
+```text
 PantryChef/
-├── project.yml                    # XcodeGen project spec
+├── project.yml
+├── README.md
+├── TESTING.md
+├── Config/
+│   ├── Secrets.xcconfig
+│   └── LocalSecrets.xcconfig
+├── Documentation/
+│   ├── OCR_NOTES.md
+│   └── PANTRY_INTAKE_NOTES.md
 ├── PantryChef/
-│   ├── App/
-│   │   ├── PantryChefApp.swift    # App entry point
-│   │   ├── AppState.swift         # Central state manager
-│   │   └── ContentView.swift      # Tab bar + floating AI button
-│   ├── Models/
-│   │   ├── Enums.swift            # FoodCategory, Units, Tags, etc.
-│   │   ├── PantryItem.swift       # Pantry item model
-│   │   ├── Recipe.swift           # Recipe + Ingredient + Step models
-│   │   ├── MealPlan.swift         # Meal plan entry model
-│   │   ├── ShoppingItem.swift     # Shopping list item model
-│   │   └── AIModels.swift         # AI response models
-│   ├── Services/
-│   │   ├── StorageService.swift   # SwiftData persistence
-│   │   ├── AIService.swift        # OpenAI API integration
-│   │   ├── SpeechService.swift    # TTS + voice recognition
-│   ├── ViewModels/
-│   │   ├── HomeViewModel.swift
-│   │   ├── PantryViewModel.swift
-│   │   ├── RecipeViewModel.swift
-│   │   ├── CookModeViewModel.swift
-│   │   ├── MealPlanViewModel.swift
-│   │   ├── ShoppingViewModel.swift
-│   │   └── (AI state handled via AppState + feature view models)
-│   ├── Views/
-│   │   ├── Common/Components.swift
-│   │   ├── Home/HomeView.swift
-│   │   ├── Pantry/PantryView.swift
-│   │   ├── Recipes/RecipeListView.swift
-│   │   ├── Recipes/RecipeDetailView.swift
-│   │   ├── CookMode/CookModeView.swift
-│   │   ├── MealPlan/MealPlanView.swift
-│   │   ├── Shopping/ShoppingListView.swift
-│   │   └── AI/AIAssistantView.swift
-│   └── Utils/
-│       ├── AppConfig.swift        # API keys & settings
-│       └── Extensions.swift       # Date, String, View helpers
-└── Supabase/
-    └── migrations/
-        └── 001_initial_schema.sql # Database schema
+│   ├── App/                # app entry, shared app state, root tab shell
+│   ├── Helpers/            # ingredient and audio-related helpers
+│   ├── Models/             # pantry, recipe, planning, AI, and intake models
+│   ├── Resources/          # bundled seed data
+│   ├── Services/           # storage, AI, realtime, notifications, discovery
+│   ├── Utils/              # config, extensions, launch options
+│   ├── ViewModels/         # feature state and presentation logic
+│   └── Views/              # SwiftUI screens and shared components
+├── PantryChefTests/
+├── PantryChefUITests/
+├── Scripts/
+│   └── ci/
+├── Supabase/
+│   └── migrations/
+└── Vendor/
+    └── swift-realtime-openai/
 ```
 
 ## Notes
 
-- **Local Persistence** — Data is persisted with SwiftData and seeded once on first launch.
-- **No Authentication** — Designed for personal use. Add Supabase Auth + RLS policies before sharing.
-- **Light Mode Only** — Dark mode support planned for v2.
-- **Voice Commands** — Requires microphone permission; works best in quiet environments.
+- The current storage path is local-first SwiftData, not Supabase.
+- Supabase migrations are present for future backend work, but the app does not require a backend to run.
+- Realtime cook mode requires microphone permission and an OpenAI key.
+- Spoonacular-backed discovery requires SPOONACULAR_API_KEY.
+
+## Related Docs
+
+- TESTING.md
+- Documentation/PANTRY_INTAKE_NOTES.md
+- Documentation/OCR_NOTES.md
 
 ## License
 
