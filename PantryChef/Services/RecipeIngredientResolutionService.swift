@@ -109,6 +109,8 @@ final class IngredientCandidateParser: IngredientCandidateParserProtocol {
                     into: &candidatesByID
                 )
             }
+
+            registerGenericFallbacks(query: query, into: &candidatesByID)
         }
 
         for phrase in Self.catalogPhrases {
@@ -123,6 +125,8 @@ final class IngredientCandidateParser: IngredientCandidateParserProtocol {
                 into: &candidatesByID
             )
         }
+
+        preferGenericFallbacks(in: &candidatesByID)
 
         return candidatesByID.values
             .sorted {
@@ -139,6 +143,78 @@ final class IngredientCandidateParser: IngredientCandidateParserProtocol {
             }
             .prefix(maxCandidates)
             .map(\.candidate)
+    }
+
+    private func preferGenericFallbacks(in candidatesByID: inout [String: ScoredCandidate]) {
+        let catalogItemIDsWithGenericFallback = Set(
+            candidatesByID.values.compactMap { scoredCandidate -> String? in
+                let candidate = scoredCandidate.candidate
+                let hasGenericFacet = candidate.facets.contains {
+                    $0.value == "generic"
+                }
+                return hasGenericFacet ? candidate.catalogItemID : nil
+            }
+        )
+
+        guard !catalogItemIDsWithGenericFallback.isEmpty else { return }
+
+        candidatesByID = candidatesByID.filter { _, scoredCandidate in
+            let candidate = scoredCandidate.candidate
+            if !catalogItemIDsWithGenericFallback.contains(candidate.catalogItemID) {
+                return true
+            }
+
+            return !candidate.facets.isEmpty
+        }
+    }
+
+    private func registerGenericFallbacks(
+        query: IngredientLexicon.ParsedText,
+        into candidatesByID: inout [String: ScoredCandidate]
+    ) {
+        let queryTokenSet = Set(query.tokens)
+        guard !queryTokenSet.isEmpty else { return }
+
+        for phrase in Self.catalogPhrases where phrase.source != .template {
+            guard phrase.facets.first(where: { $0.key == .variant || $0.key == .base || $0.key == .form }) == nil else { continue }
+            guard let item = PantryCatalog.item(id: phrase.itemID) else { continue }
+
+            let genericFacetKey: PantryFacetKey?
+            if item.options(for: .variant).contains("generic") {
+                genericFacetKey = .variant
+            } else if item.options(for: .base).contains("generic") {
+                genericFacetKey = .base
+            } else if item.options(for: .form).contains("generic") {
+                genericFacetKey = .form
+            } else {
+                genericFacetKey = nil
+            }
+            guard let genericFacetKey else { continue }
+
+            let phraseTokenSet = Set(phrase.tokens)
+            guard !phraseTokenSet.isEmpty, phraseTokenSet.isSubset(of: queryTokenSet) else { continue }
+
+            let meaningfulExtraTokens = query.tokens.filter {
+                !phraseTokenSet.contains($0) && !Self.nonSpecificDescriptorTokens.contains($0)
+            }
+            guard !meaningfulExtraTokens.isEmpty else { continue }
+
+            let tokenScore = IngredientLexicon.weightedTokenScore(
+                queryTokens: query.tokens,
+                candidateTokens: phrase.tokens
+            )
+            let containmentBoost = query.lookupKey.contains(phrase.lookupKey) ? 0.08 : 0
+            let score = min(0.92, max(0.8, tokenScore + 0.08 + containmentBoost))
+
+            register(
+                item: item,
+                facets: [PantryFacetSelection(key: genericFacetKey, value: "generic")],
+                stage: .lexical,
+                score: score,
+                rationale: "Matched the base ingredient but kept subtype as generic for descriptors: \(meaningfulExtraTokens.joined(separator: ", ")).",
+                into: &candidatesByID
+            )
+        }
     }
 
     private func register(
@@ -183,6 +259,35 @@ final class IngredientCandidateParser: IngredientCandidateParserProtocol {
         candidatesByID[candidate.id] = ScoredCandidate(candidate: candidate, stage: stage)
     }
 
+    private func register(
+        item: PantryCatalogItemDefinition,
+        facets: [PantryFacetSelection],
+        stage: RetrievalStage,
+        score: Double,
+        rationale: String,
+        into candidatesByID: inout [String: ScoredCandidate]
+    ) {
+        let candidate = IngredientResolutionCandidate(
+            id: candidateID(for: item.id, facets: facets),
+            catalogItemID: item.id,
+            facets: facets,
+            displayName: item.displayName(for: facets),
+            score: score,
+            rationale: rationale,
+            supportedFacets: item.facets
+        )
+
+        if let existing = candidatesByID[candidate.id] {
+            if candidate.score > existing.candidate.score ||
+                (candidate.score == existing.candidate.score && stage.rawValue < existing.stage.rawValue) {
+                candidatesByID[candidate.id] = ScoredCandidate(candidate: candidate, stage: stage)
+            }
+            return
+        }
+
+        candidatesByID[candidate.id] = ScoredCandidate(candidate: candidate, stage: stage)
+    }
+
     private func candidateID(for catalogItemID: String, facets: [PantryFacetSelection]) -> String {
         let facetKey = facets
             .sorted { $0.key.rawValue < $1.key.rawValue }
@@ -190,6 +295,10 @@ final class IngredientCandidateParser: IngredientCandidateParserProtocol {
             .joined(separator: "|")
         return facetKey.isEmpty ? catalogItemID : "\(catalogItemID)|\(facetKey)"
     }
+
+    private static let nonSpecificDescriptorTokens: Set<String> = [
+        "meat", "cut", "cuts", "piece", "pieces", "protein"
+    ]
 }
 
 final class RecipeIngredientResolver: RecipeIngredientResolverProtocol {

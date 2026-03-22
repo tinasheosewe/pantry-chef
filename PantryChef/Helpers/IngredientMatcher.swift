@@ -78,7 +78,7 @@ enum IngredientMatcher {
 
             let requiredFacets = Set(ingredient.facets)
             return pantryFacetSets.contains { pantryFacets in
-                requiredFacets.isSubset(of: pantryFacets)
+                pantryFacetsSatisfy(requiredFacets, pantryFacets: pantryFacets)
             }
         }
 
@@ -173,6 +173,26 @@ enum IngredientMatcher {
         }
 
         return false
+    }
+
+    private static func pantryFacetsSatisfy(
+        _ requiredFacets: Set<PantryFacetSelection>,
+        pantryFacets: Set<PantryFacetSelection>
+    ) -> Bool {
+        guard !requiredFacets.isEmpty else { return true }
+
+        let pantryFacetValues = Dictionary(uniqueKeysWithValues: pantryFacets.map { ($0.key, $0.value) })
+        for requiredFacet in requiredFacets {
+            if requiredFacet.value == "generic" {
+                continue
+            }
+
+            guard pantryFacetValues[requiredFacet.key] == requiredFacet.value else {
+                return false
+            }
+        }
+
+        return true
     }
 
     /// Normalized name comparison with synonym awareness.

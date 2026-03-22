@@ -947,6 +947,65 @@ final class IngredientMatcherTests: XCTestCase {
         XCTAssertEqual(match.substitutableIngredients.first?.substitutions.first?.substituteItemID, "broth")
         XCTAssertTrue(match.substitutableIngredients.first?.substitutions.first?.inPantry == true)
     }
+
+    func testPantryContainsAllowsGenericVariantRecipeToMatchSpecificPantryCut() {
+        let ingredient = Ingredient(
+            name: "beef cheeks",
+            quantity: 500,
+            unit: .gram,
+            category: .protein,
+            catalogItemID: "beef",
+            facets: [.init(key: .variant, value: "generic")]
+        )
+        let pantry = [
+            PantryItem(
+                name: "Beef",
+                category: .protein,
+                quantity: 500,
+                unit: .gram,
+                catalogItemID: "beef",
+                facets: [.init(key: .variant, value: "shank")]
+            )
+        ]
+
+        XCTAssertTrue(IngredientMatcher.pantryContains(ingredient: ingredient, pantry: pantry))
+    }
+
+    func testPantryContainsDoesNotAllowGenericVariantToSatisfySpecificRecipeCut() {
+        let ingredient = Ingredient(
+            name: "beef shank",
+            quantity: 500,
+            unit: .gram,
+            category: .protein,
+            catalogItemID: "beef",
+            facets: [.init(key: .variant, value: "shank")]
+        )
+        let pantry = [
+            PantryItem(
+                name: "Beef",
+                category: .protein,
+                quantity: 500,
+                unit: .gram,
+                catalogItemID: "beef",
+                facets: [.init(key: .variant, value: "generic")]
+            )
+        ]
+
+        XCTAssertFalse(IngredientMatcher.pantryContains(ingredient: ingredient, pantry: pantry))
+    }
+
+    func testGenericIngredientsDoNotSurfaceSubstitutions() {
+        let ingredient = Ingredient(
+            name: "beef cheeks",
+            quantity: 500,
+            unit: .gram,
+            category: .protein,
+            catalogItemID: "beef",
+            facets: [.init(key: .variant, value: "generic")]
+        )
+
+        XCTAssertTrue(SubstitutionRepository.shared.substitutions(for: ingredient).isEmpty)
+    }
 }
 
 // MARK: - Shopping Generation Tests

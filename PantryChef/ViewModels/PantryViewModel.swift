@@ -46,7 +46,7 @@ final class PantryBulkAddViewModel {
     }
 
     var commonItems: [PantryCatalogItemDefinition] {
-        let featuredIDs = ["milk", "egg", "rice", "bread", "cheese", "butter", "chicken-breast", "yogurt", "onion", "tomato", "olive-oil", "broth"]
+        let featuredIDs = ["milk", "egg", "rice", "bread", "cheese", "butter", "chicken", "beef", "yogurt", "onion", "tomato", "olive-oil", "broth"]
         return featuredIDs.compactMap(PantryCatalog.item(id:)).filter { item in
             selectedCatalogCategory == nil || item.category == selectedCatalogCategory
         }

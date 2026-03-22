@@ -116,11 +116,23 @@ struct PantryCatalogItemDefinition: Identifiable, Hashable, Sendable {
 
     func displayName(for selections: [PantryFacetSelection]) -> String {
         let orderedKeys: [PantryFacetKey] = [.variant, .form, .preservation, .processing, .preparation, .texture, .concentration, .base]
-        let words = orderedKeys.compactMap { key in
-            selections.first(where: { $0.key == key })?.value
+        let orderedSelections = orderedKeys.compactMap { key in
+            selections.first(where: { $0.key == key })
         }
-        guard !words.isEmpty else { return name }
-        return (words + [name]).map(Self.titleCase).joined(separator: " ")
+        guard !orderedSelections.isEmpty else { return name }
+
+        var prefixWords: [String] = []
+        var suffixWords: [String] = []
+
+        for selection in orderedSelections {
+            if Self.suffixFacetValues.contains(selection.value.lowercased()) {
+                suffixWords.append(selection.value)
+            } else {
+                prefixWords.append(selection.value)
+            }
+        }
+
+        return (prefixWords + [name] + suffixWords).map(Self.titleCase).joined(separator: " ")
     }
 
     private static func titleCase(_ value: String) -> String {
@@ -129,6 +141,11 @@ struct PantryCatalogItemDefinition: Identifiable, Hashable, Sendable {
             .map { $0.prefix(1).uppercased() + $0.dropFirst().lowercased() }
             .joined(separator: " ")
     }
+
+    private static let suffixFacetValues: Set<String> = [
+        "breast", "thigh", "wing", "drumstick", "tenderloin", "sirloin", "shank", "brisket",
+        "rib", "ribs", "loin", "shoulder", "belly", "leg", "chop", "chops", "fillet", "stew"
+    ]
 }
 
 enum PantryCatalog {
@@ -153,7 +170,7 @@ enum PantryCatalog {
             defaultQuantity: 1000,
             defaultStorage: .pantry,
             aliases: ["rice"],
-            facets: [.variant(["white", "brown", "jasmine", "basmati"])],
+            facets: [.variant(["white", "brown", "jasmine", "basmati", "generic"])],
             defaultSelections: [.init(key: .variant, value: "white")],
             freshnessByStorage: [.pantry: 180...365, .refrigerated: 240...365, .frozen: 365...540]
         ),
@@ -165,7 +182,7 @@ enum PantryCatalog {
             defaultQuantity: 500,
             defaultStorage: .pantry,
             aliases: ["pasta", "noodles"],
-            facets: [.form(["spaghetti", "penne", "fusilli"]), .base(["wheat", "chickpea"])],
+            facets: [.form(["spaghetti", "penne", "fusilli", "generic"]), .base(["wheat", "chickpea"])],
             defaultSelections: [.init(key: .form, value: "spaghetti")],
             substitutions: [
                 substitution(
@@ -274,7 +291,7 @@ enum PantryCatalog {
             defaultQuantity: 200,
             defaultStorage: .refrigerated,
             aliases: ["cheese", "cheddar", "cheddar cheese", "mozzarella", "mozzarella cheese", "parmesan", "parmesan cheese"],
-            facets: [.variant(["cheddar", "mozzarella", "parmesan"]), .form(["block", "shredded", "sliced"])],
+            facets: [.variant(["cheddar", "mozzarella", "parmesan", "generic"]), .form(["block", "shredded", "sliced"])],
             defaultSelections: [.init(key: .variant, value: "cheddar"), .init(key: .form, value: "block")],
             substitutions: [
                 substitution(
@@ -648,13 +665,52 @@ enum PantryCatalog {
             freshnessByStorage: [.refrigerated: 14...28]
         ),
         item(
+            id: "chicken",
+            name: "Chicken",
+            category: .protein,
+            defaultUnit: .gram,
+            defaultQuantity: 500,
+            defaultStorage: .refrigerated,
+            aliases: [
+                "chicken", "chicken meat", "chicken breast", "chicken breasts", "chicken thigh",
+                "chicken thighs", "chicken wings", "chicken wing", "chicken drumstick",
+                "chicken drumsticks", "whole chicken", "ground chicken"
+            ],
+            facets: [.variant(["breast", "thigh", "wing", "drumstick", "whole", "ground", "generic"]), .preservation(["fresh", "frozen"])],
+            substitutions: [
+                substitution(
+                    itemID: "tofu",
+                    facets: [.init(key: .variant, value: "extra firm")],
+                    ratio: "1:1 by weight",
+                    tasteImpact: .significant,
+                    textureImpact: .moderate,
+                    cookingImpact: .moderateAdjustment,
+                    nutritionImpact: "Lower saturated fat, lower protein density",
+                    notes: "Best in stir-fries, curries, and saucy dishes.",
+                    dietary: [.vegan, .vegetarian, .dairyFree]
+                ),
+                substitution(
+                    itemID: "canned-beans",
+                    facets: [.init(key: .base, value: "chickpea")],
+                    ratio: "1 can for 400 to 450 g chicken",
+                    tasteImpact: .significant,
+                    textureImpact: .significant,
+                    cookingImpact: .slightAdjustment,
+                    nutritionImpact: "More fiber, less protein per serving",
+                    notes: "Best in salads, stews, soups, and curries.",
+                    dietary: [.vegan, .vegetarian, .glutenFree, .dairyFree]
+                )
+            ],
+            freshnessByStorage: [.refrigerated: 1...3, .frozen: 60...180]
+        ),
+        item(
             id: "chicken-breast",
             name: "Chicken Breast",
             category: .protein,
             defaultUnit: .gram,
             defaultQuantity: 500,
             defaultStorage: .refrigerated,
-            aliases: ["chicken", "chicken breast", "chicken breasts", "chicken thigh", "chicken thighs", "boneless skinless chicken breast", "boneless skinless chicken thighs"],
+            aliases: ["boneless skinless chicken breast", "boneless skinless chicken breasts"],
             facets: [.preservation(["fresh", "frozen"])],
             defaultSelections: [.init(key: .preservation, value: "fresh")],
             substitutions: [
@@ -678,6 +734,44 @@ enum PantryCatalog {
                     cookingImpact: .slightAdjustment,
                     nutritionImpact: "More fiber, less protein per serving",
                     notes: "Best in salads, stews, soups, and curries.",
+                    dietary: [.vegan, .vegetarian, .glutenFree, .dairyFree]
+                )
+            ],
+            freshnessByStorage: [.refrigerated: 1...3, .frozen: 60...180]
+        ),
+        item(
+            id: "beef",
+            name: "Beef",
+            category: .protein,
+            defaultUnit: .gram,
+            defaultQuantity: 500,
+            defaultStorage: .refrigerated,
+            aliases: [
+                "beef", "stew beef", "beef stew meat", "beef shank", "beef tenderloin", "beef sirloin",
+                "beef chuck", "beef brisket", "beef short rib", "beef ribs", "beef rib"
+            ],
+            facets: [.variant(["ground", "stew", "shank", "tenderloin", "sirloin", "chuck", "brisket", "rib", "generic"]), .preservation(["fresh", "frozen"])],
+            substitutions: [
+                substitution(
+                    itemID: "tofu",
+                    facets: [.init(key: .variant, value: "firm")],
+                    ratio: "1:1 by weight",
+                    tasteImpact: .significant,
+                    textureImpact: .moderate,
+                    cookingImpact: .moderateAdjustment,
+                    nutritionImpact: "Lower saturated fat and more calcium",
+                    notes: "Crumble and brown well before seasoning.",
+                    dietary: [.vegan, .vegetarian, .dairyFree]
+                ),
+                substitution(
+                    itemID: "canned-beans",
+                    facets: [.init(key: .base, value: "black bean")],
+                    ratio: "1 can for 400 to 450 g beef",
+                    tasteImpact: .significant,
+                    textureImpact: .significant,
+                    cookingImpact: .slightAdjustment,
+                    nutritionImpact: "More fiber, less fat",
+                    notes: "Best in tacos, chilis, and heavily seasoned sauces.",
                     dietary: [.vegan, .vegetarian, .glutenFree, .dairyFree]
                 )
             ],
@@ -718,6 +812,67 @@ enum PantryCatalog {
                 )
             ],
             freshnessByStorage: [.refrigerated: 1...2, .frozen: 60...120]
+        ),
+        item(
+            id: "pork",
+            name: "Pork",
+            category: .protein,
+            defaultUnit: .gram,
+            defaultQuantity: 500,
+            defaultStorage: .refrigerated,
+            aliases: [
+                "pork", "pork loin", "pork shoulder", "pork chop", "pork chops", "pork belly",
+                "ground pork"
+            ],
+            facets: [.variant(["loin", "shoulder", "chop", "belly", "ground", "generic"]), .preservation(["fresh", "frozen"])],
+            freshnessByStorage: [.refrigerated: 1...3, .frozen: 60...180]
+        ),
+        item(
+            id: "turkey",
+            name: "Turkey",
+            category: .protein,
+            defaultUnit: .gram,
+            defaultQuantity: 500,
+            defaultStorage: .refrigerated,
+            aliases: ["turkey", "turkey breast", "turkey thigh", "ground turkey", "whole turkey"],
+            facets: [.variant(["breast", "thigh", "ground", "whole", "generic"]), .preservation(["fresh", "frozen"])],
+            freshnessByStorage: [.refrigerated: 1...3, .frozen: 60...180]
+        ),
+        item(
+            id: "lamb",
+            name: "Lamb",
+            category: .protein,
+            defaultUnit: .gram,
+            defaultQuantity: 500,
+            defaultStorage: .refrigerated,
+            aliases: ["lamb", "lamb chop", "lamb chops", "lamb leg", "lamb shoulder", "ground lamb"],
+            facets: [.variant(["chop", "leg", "shoulder", "ground", "generic"]), .preservation(["fresh", "frozen"])],
+            freshnessByStorage: [.refrigerated: 1...3, .frozen: 60...180]
+        ),
+        item(
+            id: "sausage",
+            name: "Sausage",
+            category: .protein,
+            defaultUnit: .piece,
+            defaultQuantity: 4,
+            defaultStorage: .refrigerated,
+            aliases: [
+                "sausage", "sausages", "italian sausage", "smoked sausage", "breakfast sausage",
+                "pork sausage", "beef sausage", "chicken sausage", "turkey sausage"
+            ],
+            facets: [.variant(["italian", "smoked", "breakfast", "generic"]), .base(["pork", "beef", "chicken", "turkey"])],
+            freshnessByStorage: [.refrigerated: 3...7, .frozen: 30...120]
+        ),
+        item(
+            id: "fish",
+            name: "Fish",
+            category: .protein,
+            defaultUnit: .gram,
+            defaultQuantity: 500,
+            defaultStorage: .refrigerated,
+            aliases: ["fish", "fish fillet", "fish fillets", "whole fish", "white fish", "oily fish"],
+            facets: [.variant(["fillet", "whole", "white", "oily", "generic"]), .preservation(["fresh", "frozen"])],
+            freshnessByStorage: [.refrigerated: 1...2, .frozen: 30...120]
         ),
         item(
             id: "tofu",
@@ -865,7 +1020,7 @@ enum PantryCatalog {
             defaultQuantity: 1,
             defaultStorage: .pantry,
             aliases: ["broth", "stock", "beef broth", "chicken broth", "vegetable broth", "beef stock", "chicken stock", "vegetable stock"],
-            facets: [.base(["chicken", "beef", "vegetable"])],
+            facets: [.base(["chicken", "beef", "vegetable", "generic"])],
             defaultSelections: [.init(key: .base, value: "chicken")],
             substitutions: [
                 substitution(
@@ -1126,7 +1281,7 @@ enum PantryCatalog {
             defaultQuantity: 1,
             defaultStorage: .pantry,
             aliases: ["bread", "loaf"],
-            facets: [.variant(["white", "wholemeal", "sourdough"]), .form(["loaf", "sliced"])],
+            facets: [.variant(["white", "wholemeal", "sourdough", "generic"]), .form(["loaf", "sliced"])],
             defaultSelections: [.init(key: .variant, value: "white"), .init(key: .form, value: "loaf")],
             substitutions: [
                 substitution(

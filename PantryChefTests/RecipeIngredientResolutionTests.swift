@@ -58,6 +58,39 @@ final class RecipeIngredientResolutionTests: XCTestCase {
         XCTAssertEqual(candidates.first?.displayName, "Jasmine Rice")
     }
 
+    func testCandidateParserResolvesStructuredBeefCuts() {
+        let parser = IngredientCandidateParser()
+        let ingredient = Ingredient(name: "beef stew meat")
+
+        let candidates = parser.candidates(for: ingredient)
+
+        XCTAssertEqual(candidates.first?.catalogItemID, "beef")
+        XCTAssertEqual(candidates.first?.facets, [.init(key: .variant, value: "stew")])
+        XCTAssertEqual(candidates.first?.displayName, "Beef Stew")
+    }
+
+    func testCandidateParserFallsBackToGenericForUnknownSubtypeOnGenericParent() {
+        let parser = IngredientCandidateParser()
+        let ingredient = Ingredient(name: "beef cheeks")
+
+        let candidates = parser.candidates(for: ingredient)
+
+        XCTAssertEqual(candidates.first?.catalogItemID, "beef")
+        XCTAssertEqual(candidates.first?.facets, [.init(key: .variant, value: "generic")])
+        XCTAssertEqual(candidates.first?.displayName, "Generic Beef")
+        XCTAssertTrue(candidates.first?.rationale.contains("subtype as generic") == true)
+    }
+
+    func testCandidateParserFallsBackToGenericForOpenEndedStaples() {
+        let parser = IngredientCandidateParser()
+        let ingredient = Ingredient(name: "pecorino cheese")
+
+        let candidates = parser.candidates(for: ingredient)
+
+        XCTAssertEqual(candidates.first?.catalogItemID, "cheese")
+        XCTAssertEqual(candidates.first?.facets, [.init(key: .variant, value: "generic")])
+    }
+
     func testTrustedCanonicalizerUsesBestCandidateIdentity() {
         let recipe = makeRecipe(
             title: "Parfait",
