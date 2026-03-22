@@ -1159,17 +1159,17 @@ final class ShoppingItemModelTests: XCTestCase {
 
     func testDisplayTextFull() {
         let item = ShoppingItem(name: "Tomatoes", quantity: 4, unit: .whole, category: .produce)
-        XCTAssertEqual(item.displayText, "4 whole Tomatoes")
+        XCTAssertEqual(item.displayText, "4 whole Tomato")
     }
 
     func testDisplayTextNoQuantity() {
         let item = ShoppingItem(name: "Bread", quantity: nil, unit: nil, category: .grains)
-        XCTAssertEqual(item.displayText, "Bread")
+        XCTAssertEqual(item.displayText, "White Loaf Bread")
     }
 
     func testDisplayTextQuantityOnly() {
         let item = ShoppingItem(name: "Butter", quantity: 250, unit: .gram, category: .dairy)
-        XCTAssertEqual(item.displayText, "250 g Butter")
+        XCTAssertEqual(item.displayText, "250 g Unsalted Butter")
     }
 
     func testIsCheckedDefault() {
@@ -1772,7 +1772,7 @@ final class AppStateTests: XCTestCase {
         await appState.generateShoppingListFromMealPlan()
         // "Chicken" should be matched by "Chicken Breast" (fuzzy), "Soy Sauce" should be missing
         XCTAssertEqual(appState.shoppingItems.count, 1)
-        XCTAssertEqual(appState.shoppingItems[0].name, "Soy Sauce")
+        XCTAssertEqual(appState.shoppingItems[0].catalogItemID, "soy-sauce")
     }
 
     func testGenerateShoppingListFromMealPlanMergesAdditivelyIntoExistingCart() async {
@@ -1792,8 +1792,8 @@ final class AppStateTests: XCTestCase {
         await appState.generateShoppingListFromMealPlan()
 
         XCTAssertEqual(appState.shoppingItems.count, 2)
-        XCTAssertEqual(appState.shoppingItems.first(where: { $0.name == "Flour" })?.quantity, 3)
-        XCTAssertEqual(appState.shoppingItems.first(where: { $0.name == "Eggs" })?.quantity, 2)
+        XCTAssertEqual(appState.shoppingItems.first(where: { $0.catalogItemID == "flour" })?.quantity, 3)
+        XCTAssertEqual(appState.shoppingItems.first(where: { $0.catalogItemID == "egg" })?.quantity, 2)
         XCTAssertNil(appState.shoppingItems.first(where: { $0.name == "Water" }))
     }
 
@@ -1811,6 +1811,34 @@ final class AppStateTests: XCTestCase {
         XCTAssertEqual(appState.shoppingItems.count, 1)
         XCTAssertEqual(appState.shoppingItems[0].catalogItemID, "carrot")
         XCTAssertEqual(appState.shoppingItems[0].quantity, 3)
+    }
+
+    func testAddShoppingItemsKeepsFacetVariantsSeparate() async {
+        let (appState, _, _) = makeTestAppState()
+
+        await appState.addShoppingItems([
+            ShoppingItem(
+                name: "Whole Garlic",
+                quantity: 1,
+                unit: .whole,
+                category: .produce,
+                catalogItemID: "garlic",
+                facets: [.init(key: .preparation, value: "whole")]
+            )
+        ])
+
+        await appState.addShoppingItems([
+            ShoppingItem(
+                name: "Minced Garlic",
+                quantity: 2,
+                unit: .clove,
+                category: .produce,
+                catalogItemID: "garlic",
+                facets: [.init(key: .preparation, value: "minced")]
+            )
+        ])
+
+        XCTAssertEqual(appState.shoppingItems.count, 2)
     }
 
     func testGenerateShoppingListDeduplicates() async {
@@ -2569,7 +2597,7 @@ final class ShoppingViewModelTests: XCTestCase {
         ]
         vm.searchText = "Milk"
         XCTAssertEqual(vm.items.count, 1)
-        XCTAssertEqual(vm.items[0].name, "Milk")
+        XCTAssertEqual(vm.items[0].catalogItemID, "milk")
     }
 
     // MARK: - Grouping
@@ -2659,11 +2687,11 @@ final class ShoppingViewModelTests: XCTestCase {
         await vm.addCheckedToPantry()
         // Milk should be in pantry, Bread should remain in shopping
         XCTAssertEqual(appState.pantryItems.count, 1)
-        XCTAssertEqual(appState.pantryItems[0].name, "Milk")
+        XCTAssertEqual(appState.pantryItems[0].catalogItemID, "milk")
         XCTAssertEqual(appState.pantryItems[0].category, .dairy)
         // Only unchecked items remain
         XCTAssertEqual(appState.shoppingItems.count, 1)
-        XCTAssertEqual(appState.shoppingItems[0].name, "Bread")
+        XCTAssertEqual(appState.shoppingItems[0].catalogItemID, "bread")
     }
 
     func testAddCheckedToPantryPreservesCatalogIdentity() async {
@@ -2676,6 +2704,78 @@ final class ShoppingViewModelTests: XCTestCase {
 
         XCTAssertEqual(appState.pantryItems.count, 1)
         XCTAssertEqual(appState.pantryItems[0].catalogItemID, "carrot")
+    }
+
+    func testAddCheckedToPantryPreservesCatalogFacets() async {
+        let (vm, appState) = makeSUT()
+        appState.shoppingItems = [
+            ShoppingItem(
+                name: "Minced Garlic",
+                quantity: 2,
+                unit: .clove,
+                category: .produce,
+                isChecked: true,
+                catalogItemID: "garlic",
+                facets: [.init(key: .preparation, value: "minced")]
+            )
+        ]
+
+        await vm.addCheckedToPantry()
+
+        XCTAssertEqual(appState.pantryItems.count, 1)
+        XCTAssertEqual(appState.pantryItems[0].catalogItemID, "garlic")
+        XCTAssertEqual(appState.pantryItems[0].facets, [.init(key: .preparation, value: "minced")])
+    }
+}
+
+@MainActor
+final class ShoppingAddItemViewModelTests: XCTestCase {
+    func testSearchResultsPreferFacetAwareParserMatches() {
+        let viewModel = ShoppingAddItemViewModel()
+        viewModel.searchText = "garlic, minced"
+
+        let results = viewModel.searchResults
+
+        XCTAssertEqual(results.first?.catalogItemID, "garlic")
+        XCTAssertEqual(results.first?.facets, [.init(key: .preparation, value: "minced")])
+        XCTAssertEqual(results.first?.displayName, "Minced Garlic")
+    }
+
+    func testBuildItemPreservesSelectedCatalogFacets() {
+        let viewModel = ShoppingAddItemViewModel()
+        viewModel.chooseSuggestion(
+            ShoppingCatalogSuggestion(
+                id: "garlic|preparation=minced",
+                catalogItemID: "garlic",
+                facets: [.init(key: .preparation, value: "minced")],
+                displayName: "Minced Garlic",
+                category: .produce,
+                rationale: "Exact facet template token match"
+            )
+        )
+        viewModel.setQuantityText("3")
+        viewModel.setUnit(.clove)
+
+        let item = viewModel.buildItem()
+
+        XCTAssertEqual(item?.catalogItemID, "garlic")
+        XCTAssertEqual(item?.facets, [.init(key: .preparation, value: "minced")])
+        XCTAssertEqual(item?.name, "Minced Garlic")
+    }
+
+    func testBuildItemSupportsCustomFallback() {
+        let viewModel = ShoppingAddItemViewModel()
+        viewModel.searchText = "special salt blend"
+        viewModel.setCustomItemMode()
+        viewModel.customCategory = .spices
+        viewModel.setQuantityText("1")
+        viewModel.setUnit(.package)
+
+        let item = viewModel.buildItem()
+
+        XCTAssertEqual(item?.name, "special salt blend")
+        XCTAssertEqual(item?.category, .spices)
+        XCTAssertNil(item?.catalogItemID)
     }
 }
 

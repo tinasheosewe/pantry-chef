@@ -2,7 +2,7 @@ import Foundation
 import SwiftData
 
 enum StorageSchema {
-    static let currentVersion = 6
+    static let currentVersion = 7
 }
 
 @Model
@@ -539,6 +539,9 @@ final class ShoppingItemRecord {
     var recipeSource: String?
     var catalogItemID: String?
 
+    @Relationship(deleteRule: .cascade, inverse: \ShoppingFacetRecord.shoppingItem)
+    var facetRecords: [ShoppingFacetRecord] = []
+
     init(from item: ShoppingItem) {
         id = item.id
         schemaVersion = StorageSchema.currentVersion
@@ -549,9 +552,10 @@ final class ShoppingItemRecord {
         isChecked = item.isChecked
         recipeSource = item.recipeSource
         catalogItemID = item.catalogItemID
+        facetRecords = Self.makeFacetRecords(from: item.facets)
     }
 
-    func update(from item: ShoppingItem) {
+    func update(from item: ShoppingItem, in context: ModelContext) {
         schemaVersion = StorageSchema.currentVersion
         name = item.name
         quantity = item.quantity
@@ -560,6 +564,7 @@ final class ShoppingItemRecord {
         isChecked = item.isChecked
         recipeSource = item.recipeSource
         catalogItemID = item.catalogItemID
+        replaceFacetRecords(with: item.facets, in: context)
     }
 
     func toDomain() -> ShoppingItem {
@@ -571,8 +576,50 @@ final class ShoppingItemRecord {
             category: FoodCategory(rawValue: categoryRawValue) ?? .other,
             isChecked: isChecked,
             recipeSource: recipeSource,
-            catalogItemID: catalogItemID
+            catalogItemID: catalogItemID,
+            facets: facetRecords
+                .sorted { $0.sortIndex < $1.sortIndex }
+                .compactMap { $0.toDomain() }
         )
+    }
+
+    private func replaceFacetRecords(with facets: [PantryFacetSelection], in context: ModelContext) {
+        let existingRecords = facetRecords
+        facetRecords = []
+        for record in existingRecords {
+            context.delete(record)
+        }
+        facetRecords = Self.makeFacetRecords(from: facets)
+    }
+
+    private static func makeFacetRecords(from facets: [PantryFacetSelection]) -> [ShoppingFacetRecord] {
+        facets.enumerated().map { index, selection in
+            ShoppingFacetRecord(selection: selection, sortIndex: index)
+        }
+    }
+}
+
+@Model
+final class ShoppingFacetRecord {
+    var id: UUID
+    var schemaVersion: Int
+    var sortIndex: Int
+    var keyRawValue: String
+    var value: String
+
+    var shoppingItem: ShoppingItemRecord?
+
+    init(selection: PantryFacetSelection, sortIndex: Int) {
+        id = UUID()
+        schemaVersion = StorageSchema.currentVersion
+        self.sortIndex = sortIndex
+        keyRawValue = selection.key.rawValue
+        value = selection.value
+    }
+
+    func toDomain() -> PantryFacetSelection? {
+        guard let key = PantryFacetKey(rawValue: keyRawValue) else { return nil }
+        return PantryFacetSelection(key: key, value: value)
     }
 }
 

@@ -9,6 +9,7 @@ struct ShoppingItem: Identifiable, Codable, Hashable {
     var isChecked: Bool
     var recipeSource: String? // Which recipe needed this
     var catalogItemID: String?
+    var facets: [PantryFacetSelection]
 
     init(
         id: UUID = UUID(),
@@ -18,18 +19,21 @@ struct ShoppingItem: Identifiable, Codable, Hashable {
         category: FoodCategory = .other,
         isChecked: Bool = false,
         recipeSource: String? = nil,
-        catalogItemID: String? = nil
+        catalogItemID: String? = nil,
+        facets: [PantryFacetSelection] = []
     ) {
         let resolvedCatalogItem = IngredientMatcher.resolvedCatalogItem(for: name, catalogItemID: catalogItemID)
+        let effectiveFacets = Self.normalizeFacets(facets, for: resolvedCatalogItem)
 
         self.id = id
-        self.name = name
+        self.name = resolvedCatalogItem?.displayName(for: effectiveFacets) ?? name
         self.quantity = quantity
-        self.unit = unit
+        self.unit = quantity == nil ? nil : (unit ?? resolvedCatalogItem?.suggestedUnit(for: effectiveFacets))
         self.category = category == .other ? (resolvedCatalogItem?.category ?? category) : category
         self.isChecked = isChecked
         self.recipeSource = recipeSource
         self.catalogItemID = resolvedCatalogItem?.id ?? catalogItemID
+        self.facets = effectiveFacets
     }
 
     init(ingredient: Ingredient, recipeSource: String? = nil) {
@@ -39,7 +43,8 @@ struct ShoppingItem: Identifiable, Codable, Hashable {
             unit: ingredient.unit,
             category: ingredient.category,
             recipeSource: recipeSource,
-            catalogItemID: IngredientMatcher.resolvedCatalogItemID(for: ingredient.name, catalogItemID: ingredient.catalogItemID)
+            catalogItemID: IngredientMatcher.resolvedCatalogItemID(for: ingredient.name, catalogItemID: ingredient.catalogItemID),
+            facets: ingredient.facets
         )
     }
 
@@ -49,7 +54,17 @@ struct ShoppingItem: Identifiable, Codable, Hashable {
 
     var identityKey: String {
         if let resolvedCatalogItem {
-            return "catalog:\(resolvedCatalogItem.id)"
+            let facetKey = facets
+                .sorted { lhs, rhs in
+                    if lhs.key.rawValue == rhs.key.rawValue {
+                        return lhs.value < rhs.value
+                    }
+                    return lhs.key.rawValue < rhs.key.rawValue
+                }
+                .map { "\($0.key.rawValue)=\($0.value)" }
+                .joined(separator: "|")
+
+            return facetKey.isEmpty ? "catalog:\(resolvedCatalogItem.id)" : "catalog:\(resolvedCatalogItem.id)|\(facetKey)"
         }
 
         return "name:\(IngredientMatcher.normalize(name))"
@@ -82,4 +97,26 @@ struct ShoppingItem: Identifiable, Codable, Hashable {
         ShoppingItem(name: "Butter", quantity: 250, unit: .gram, category: .dairy),
         ShoppingItem(name: "Tomatoes", quantity: 4, unit: .whole, category: .produce),
     ]
+
+    private static func normalizeFacets(
+        _ facets: [PantryFacetSelection],
+        for item: PantryCatalogItemDefinition?
+    ) -> [PantryFacetSelection] {
+        guard let item else { return [] }
+
+        var facetsByKey: [PantryFacetKey: PantryFacetSelection] = [:]
+
+        for facet in item.defaultSelections {
+            facetsByKey[facet.key] = facet
+        }
+
+        for facet in facets {
+            guard item.options(for: facet.key).contains(facet.value) else { continue }
+            facetsByKey[facet.key] = facet
+        }
+
+        return item.facets.compactMap { definition in
+            facetsByKey[definition.key]
+        }
+    }
 }

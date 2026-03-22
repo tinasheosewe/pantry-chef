@@ -96,6 +96,7 @@ actor StorageService: StorageServiceProtocol {
             StepTaskDependencyRecord.self,
             MealPlanRecord.self,
             ShoppingItemRecord.self,
+            ShoppingFacetRecord.self,
         ])
         self.shouldBootstrap = shouldBootstrap
 
@@ -290,7 +291,7 @@ actor StorageService: StorageServiceProtocol {
 
         for item in items {
             if let record = existingById[item.id] {
-                record.update(from: item)
+                record.update(from: item, in: context)
             } else {
                 context.insert(ShoppingItemRecord(from: item))
             }

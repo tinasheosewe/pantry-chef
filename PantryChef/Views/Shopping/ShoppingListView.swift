@@ -3,7 +3,6 @@ import SwiftUI
 struct ShoppingListView: View {
     @State private var viewModel: ShoppingViewModel
     @State private var showAddItem = false
-    @State private var newItemName = ""
 
     init(appState: AppState) {
         _viewModel = State(initialValue: ShoppingViewModel(appState: appState))
@@ -59,16 +58,12 @@ struct ShoppingListView: View {
                     }
                 }
             }
-            .alert("Add Item", isPresented: $showAddItem) {
-                TextField("Item name", text: $newItemName)
-                Button("Add") {
-                    if !newItemName.isEmpty {
-                        viewModel.addItem(ShoppingItem(name: newItemName))
-                        newItemName = ""
+            .sheet(isPresented: $showAddItem) {
+                NavigationStack {
+                    ShoppingAddItemView { item in
+                        viewModel.addItem(item)
+                        showAddItem = false
                     }
-                }
-                Button("Cancel", role: .cancel) {
-                    newItemName = ""
                 }
             }
         }
@@ -138,6 +133,195 @@ struct ShoppingListView: View {
             }
         }
         .listStyle(.insetGrouped)
+    }
+}
+
+private struct ShoppingAddItemView: View {
+    @Environment(\.dismiss) private var dismiss
+    @State private var viewModel = ShoppingAddItemViewModel()
+
+    let onAdd: (ShoppingItem) -> Void
+
+    var body: some View {
+        @Bindable var viewModel = viewModel
+
+        Form {
+            Section {
+                TextField(
+                    viewModel.isCustomItem ? "Custom item name" : "Search catalog",
+                    text: viewModel.isCustomItem ? $viewModel.customItemName : $viewModel.searchText
+                )
+                .textInputAutocapitalization(.words)
+                .disableAutocorrection(true)
+
+                if viewModel.isCustomItem {
+                    Button("Back to Catalog Search") {
+                        viewModel.setCatalogMode()
+                    }
+                }
+            } header: {
+                Text(viewModel.isCustomItem ? "Custom Item" : "Find Item")
+            } footer: {
+                if !viewModel.isCustomItem {
+                    Text("Pick a catalog match first so the item carries identity into the shopping list and pantry.")
+                }
+            }
+
+            if !viewModel.isCustomItem {
+                if let selectedItem = viewModel.selectedItem {
+                    Section("Selected Item") {
+                        HStack(spacing: 12) {
+                            CategoryIcon(category: selectedItem.category, size: 28)
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text(selectedItem.displayName(for: viewModel.selectedFacets))
+                                    .font(.subheadline)
+                                    .fontWeight(.semibold)
+                                Text(selectedItem.category.rawValue)
+                                    .font(.caption)
+                                    .foregroundStyle(AppColors.subtleText)
+                            }
+                            Spacer()
+                        }
+
+                        ForEach(selectedItem.facets, id: \.key) { definition in
+                            Picker(
+                                definition.key.title,
+                                selection: Binding(
+                                    get: {
+                                        viewModel.selectedFacets.first(where: { $0.key == definition.key })?.value ?? ""
+                                    },
+                                    set: { newValue in
+                                        viewModel.setFacetValue(newValue.isEmpty ? nil : newValue, for: definition.key)
+                                    }
+                                )
+                            ) {
+                                Text("Default").tag("")
+                                ForEach(definition.options, id: \.self) { option in
+                                    Text(option.capitalized).tag(option)
+                                }
+                            }
+                        }
+                    }
+                }
+
+                Section("Catalog Matches") {
+                    ForEach(viewModel.searchResults) { suggestion in
+                        Button {
+                            viewModel.chooseSuggestion(suggestion)
+                        } label: {
+                            HStack(alignment: .top, spacing: 12) {
+                                CategoryIcon(category: suggestion.category, size: 28)
+
+                                VStack(alignment: .leading, spacing: 4) {
+                                    Text(suggestion.displayName)
+                                        .font(.subheadline)
+                                        .foregroundStyle(AppColors.darkText)
+                                    Text(suggestion.rationale)
+                                        .font(.caption)
+                                        .foregroundStyle(AppColors.subtleText)
+                                        .multilineTextAlignment(.leading)
+                                }
+
+                                Spacer()
+
+                                if viewModel.selectedCatalogItemID == suggestion.catalogItemID && viewModel.selectedFacets == suggestion.facets {
+                                    Image(systemName: "checkmark.circle.fill")
+                                        .foregroundStyle(AppColors.primaryGreen)
+                                }
+                            }
+                        }
+                        .buttonStyle(.plain)
+                    }
+
+                    Button {
+                        viewModel.setCustomItemMode()
+                    } label: {
+                        Label("Can’t find it? Add Custom Item", systemImage: "square.and.pencil")
+                    }
+                }
+            }
+
+            Section("Details") {
+                TextField(
+                    "Quantity",
+                    text: Binding(
+                        get: { viewModel.quantityText },
+                        set: { viewModel.setQuantityText($0) }
+                    )
+                )
+                .keyboardType(.decimalPad)
+
+                Picker(
+                    "Unit",
+                    selection: Binding(
+                        get: { viewModel.selectedUnit },
+                        set: { viewModel.setUnit($0) }
+                    )
+                ) {
+                    Text("None").tag(nil as MeasurementUnit?)
+                    ForEach(MeasurementUnit.allCases) { unit in
+                        Text(unit.rawValue).tag(unit as MeasurementUnit?)
+                    }
+                }
+
+                if viewModel.isCustomItem {
+                    Picker("Category", selection: $viewModel.customCategory) {
+                        ForEach(FoodCategory.allCases) { category in
+                            Text(category.rawValue).tag(category)
+                        }
+                    }
+                } else {
+                    HStack {
+                        Text("Category")
+                        Spacer()
+                        Text(viewModel.previewCategory.rawValue)
+                            .foregroundStyle(AppColors.subtleText)
+                    }
+                }
+            }
+
+            if !viewModel.previewName.isEmpty {
+                Section("Preview") {
+                    HStack(spacing: 12) {
+                        CategoryIcon(category: viewModel.previewCategory, size: 28)
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(viewModel.previewName)
+                                .font(.subheadline)
+                                .fontWeight(.semibold)
+                            if let quantity = viewModel.quantityValue {
+                                Text(quantityDisplay(quantity, unit: viewModel.selectedUnit))
+                                    .font(.caption)
+                                    .foregroundStyle(AppColors.subtleText)
+                            }
+                        }
+                        Spacer()
+                    }
+                }
+            }
+        }
+        .navigationTitle("Add Shopping Item")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .cancellationAction) {
+                Button("Cancel") {
+                    dismiss()
+                }
+            }
+            ToolbarItem(placement: .confirmationAction) {
+                Button("Add") {
+                    guard let item = viewModel.buildItem() else { return }
+                    onAdd(item)
+                    dismiss()
+                }
+                .disabled(!viewModel.canAdd)
+            }
+        }
+    }
+
+    private func quantityDisplay(_ quantity: Double, unit: MeasurementUnit?) -> String {
+        let quantityText = quantity == quantity.rounded() ? String(Int(quantity)) : String(format: "%.1f", quantity)
+        let unitText = unit?.rawValue ?? ""
+        return "\(quantityText) \(unitText)".trimmingCharacters(in: .whitespaces)
     }
 }
 
