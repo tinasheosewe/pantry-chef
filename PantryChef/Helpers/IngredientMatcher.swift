@@ -11,6 +11,7 @@ enum IngredientMatcher {
         let synonymUniverse: Set<String>
         let tokenizedNames: [(name: String, tokens: Set<String>)]
         let resolvedItemsByCatalogID: [String: [Set<PantryFacetSelection>]]
+        let unresolvedItemMatchKeys: Set<String>
     }
 
     private static let pantryIndexCacheLock = NSLock()
@@ -94,7 +95,11 @@ enum IngredientMatcher {
             return pantryFacetsSatisfy(requiredFacets, pantryFacets: Set(pantryItem.facets))
         }
 
-        return namesMatch(pantryItem.name, ingredient.name)
+        guard pantryItem.catalogItemID == nil, ingredient.catalogItemID == nil else {
+            return false
+        }
+
+        return unresolvedNamesExactlyMatch(pantryItem.name, ingredient.name)
     }
 
     private static func pantryContains(ingredient: Ingredient, pantry: [PantryItem], index: PantryIndex) -> Bool {
@@ -109,7 +114,7 @@ enum IngredientMatcher {
             }
         }
 
-        return pantryContainsNormalized(normalize(ingredient.rawName), index: index)
+        return index.unresolvedItemMatchKeys.contains(unresolvedMatchKey(for: ingredient.rawName))
     }
 
     private static func buildPantryIndex(_ pantry: [PantryItem]) -> PantryIndex {
@@ -141,9 +146,13 @@ enum IngredientMatcher {
 
         var resolvedItemsByCatalogID: [String: [Set<PantryFacetSelection>]] = [:]
         resolvedItemsByCatalogID.reserveCapacity(pantry.count)
+        var unresolvedItemMatchKeys: Set<String> = []
         for pantryItem in pantry {
-            guard let catalogItemID = pantryItem.catalogItemID else { continue }
-            resolvedItemsByCatalogID[catalogItemID, default: []].append(Set(pantryItem.facets))
+            if let catalogItemID = pantryItem.catalogItemID {
+                resolvedItemsByCatalogID[catalogItemID, default: []].append(Set(pantryItem.facets))
+            } else {
+                unresolvedItemMatchKeys.insert(unresolvedMatchKey(for: pantryItem.name))
+            }
         }
 
         let index = PantryIndex(
@@ -151,7 +160,8 @@ enum IngredientMatcher {
             normalizedSet: normalizedSet,
             synonymUniverse: synonymUniverse,
             tokenizedNames: tokenizedNames,
-            resolvedItemsByCatalogID: resolvedItemsByCatalogID
+            resolvedItemsByCatalogID: resolvedItemsByCatalogID,
+            unresolvedItemMatchKeys: unresolvedItemMatchKeys
         )
 
         pantryIndexCacheLock.lock()
@@ -220,6 +230,15 @@ enum IngredientMatcher {
         }
 
         return true
+    }
+
+    private static func unresolvedNamesExactlyMatch(_ a: String, _ b: String) -> Bool {
+        unresolvedMatchKey(for: a) == unresolvedMatchKey(for: b)
+    }
+
+    private static func unresolvedMatchKey(for name: String) -> String {
+        let lookupKey = IngredientLexicon.lookupKey(name)
+        return lookupKey.isEmpty ? normalize(name) : lookupKey
     }
 
     /// Normalized name comparison with synonym awareness.

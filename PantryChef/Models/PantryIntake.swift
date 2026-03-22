@@ -61,6 +61,8 @@ struct PantryIntakeWarning: Identifiable, Hashable {
 struct PantryIntakeRowDraft: Identifiable {
     let id: UUID
     var searchText: String = ""
+    var isCustomItem = false
+    var customCategory: FoodCategory = .other
     var selectedItemID: String?
     var selectedFacetValues: [PantryFacetKey: String] = [:]
     var storage: PantryStorage?
@@ -77,6 +79,8 @@ struct PantryIntakeRowDraft: Identifiable {
         manualExpiryDate = Date()
         guard let item else { return }
         searchText = item.name
+        isCustomItem = item.catalogItemID == nil
+        customCategory = item.category
         selectedItemID = item.catalogItemID
         selectedFacetValues = Dictionary(uniqueKeysWithValues: item.facets.map { ($0.key, $0.value) })
         storage = item.storage
@@ -88,7 +92,7 @@ struct PantryIntakeRowDraft: Identifiable {
         expiryDateWasEdited = item.freshnessSource == .userProvided
         notes = item.notes ?? ""
 
-        if selectedItemID == nil, let resolved = PantryCatalog.resolveExact(name: item.name) {
+        if !isCustomItem, selectedItemID == nil, let resolved = PantryCatalog.resolveExact(name: item.name) {
             selectedItemID = resolved.id
             if storage == nil {
                 storage = resolved.defaultStorage
@@ -162,12 +166,34 @@ struct PantryIntakeRowDraft: Identifiable {
         var warnings: [PantryIntakeWarning] = []
 
         guard let selectedItem else {
-            let severity: PantryIntakeWarningSeverity = searchText.trimmed.isEmpty ? .blocking : .warning
-            let message = searchText.trimmed.isEmpty
-                ? "Select a pantry item from the catalog."
-                : "\"\(searchText.trimmed)\" is not supported by the current pantry catalog."
-            let kind: PantryIntakeWarningKind = searchText.trimmed.isEmpty ? .missingItem : .unsupportedInput
-            warnings.append(PantryIntakeWarning(kind: kind, severity: severity, message: message))
+            if isCustomItem {
+                if searchText.trimmed.isEmpty {
+                    warnings.append(PantryIntakeWarning(kind: .missingItem, severity: .blocking, message: "Enter a custom pantry item name."))
+                }
+
+                if storage == nil {
+                    warnings.append(PantryIntakeWarning(kind: .missingRequiredState, severity: .blocking, message: "Choose where this item will be stored."))
+                }
+
+                if quantityText.trimmed.isEmpty {
+                    warnings.append(PantryIntakeWarning(kind: .missingQuantity, severity: .blocking, message: "Enter a quantity before adding this item."))
+                }
+
+                if quantityIsInvalid {
+                    warnings.append(PantryIntakeWarning(kind: .unsupportedInput, severity: .blocking, message: "Enter a valid numeric quantity."))
+                }
+
+                if !searchText.trimmed.isEmpty {
+                    warnings.append(PantryIntakeWarning(kind: .unsupportedInput, severity: .informational, message: "Custom pantry items are stored without catalog identity and only match identical unresolved recipe ingredients."))
+                }
+            } else {
+                let severity: PantryIntakeWarningSeverity = searchText.trimmed.isEmpty ? .blocking : .warning
+                let message = searchText.trimmed.isEmpty
+                    ? "Select a pantry item from the catalog or add a custom pantry item."
+                    : "\"\(searchText.trimmed)\" is not supported by the current pantry catalog."
+                let kind: PantryIntakeWarningKind = searchText.trimmed.isEmpty ? .missingItem : .unsupportedInput
+                warnings.append(PantryIntakeWarning(kind: kind, severity: severity, message: message))
+            }
             return warnings
         }
 
@@ -193,11 +219,14 @@ struct PantryIntakeRowDraft: Identifiable {
     }
 
     var rowState: PantryIntakeRowState {
-        if searchText.trimmed.isEmpty && selectedItemID == nil {
+        if searchText.trimmed.isEmpty && selectedItemID == nil && !isCustomItem {
             return .empty
         }
         if warnings.contains(where: { $0.severity == .blocking }) {
             return .invalid
+        }
+        if isCustomItem {
+            return .valid
         }
         if selectedItemID == nil || storage == nil {
             return .incomplete
@@ -223,6 +252,8 @@ struct PantryIntakeRowDraft: Identifiable {
     }
 
     mutating func selectItem(_ item: PantryCatalogItemDefinition) {
+        isCustomItem = false
+        customCategory = item.category
         selectedItemID = item.id
         searchText = item.name
         if storage == nil {
@@ -295,8 +326,28 @@ struct PantryIntakeRowDraft: Identifiable {
         }
     }
 
+    mutating func enableCustomItemMode() {
+        isCustomItem = true
+        selectedItemID = nil
+        selectedFacetValues = [:]
+        if storage == nil {
+            storage = .pantry
+        }
+    }
+
+    mutating func disableCustomItemMode() {
+        isCustomItem = false
+        if selectedItemID == nil {
+            storage = nil
+            if !expiryDateWasEdited {
+                manualExpiryDate = Date()
+            }
+        }
+    }
+
     mutating func clearSelection(keepingSearchText: Bool = false) {
         let currentSearchText = searchText
+        isCustomItem = false
         selectedItemID = nil
         selectedFacetValues = [:]
         storage = nil
@@ -357,8 +408,28 @@ struct PantryIntakeRowDraft: Identifiable {
     }
 
     func buildItem(existingID: UUID? = nil, existingDateAdded: Date? = nil, existingImageURL: String? = nil) -> PantryItem? {
-        guard rowState == .valid, let selectedItem, let storage else { return nil }
+        guard rowState == .valid, let storage else { return nil }
         let notesValue = notes.trimmed.isEmpty ? nil : notes.trimmed
+
+        if isCustomItem {
+            return PantryItem(
+                id: existingID ?? UUID(),
+                name: searchText.trimmed,
+                category: customCategory,
+                quantity: parsedQuantity,
+                unit: parsedQuantity == nil ? nil : unit,
+                expiryDate: resolvedExpiryDate,
+                dateAdded: existingDateAdded ?? Date(),
+                notes: notesValue,
+                imageURL: existingImageURL,
+                catalogItemID: nil,
+                facets: [],
+                storage: storage,
+                freshnessSource: expiryDateWasEdited ? .userProvided : PantryFreshnessSource.none
+            )
+        }
+
+        guard let selectedItem else { return nil }
         return PantryItem(
             id: existingID ?? UUID(),
             name: selectedItem.displayName(for: selectedFacets),

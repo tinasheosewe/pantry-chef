@@ -76,7 +76,6 @@ struct ShoppingCatalogSuggestion: Identifiable, Hashable {
     let facets: [PantryFacetSelection]
     let displayName: String
     let category: FoodCategory
-    let rationale: String
 }
 
 @Observable
@@ -102,27 +101,26 @@ final class ShoppingAddItemViewModel {
         }
 
         var suggestions: [ShoppingCatalogSuggestion] = []
-        var seenIDs: Set<String> = []
+        var seenCatalogIDs: Set<String> = []
 
         let ingredient = Ingredient(name: query)
         for candidate in parser.candidates(for: ingredient) {
             guard let item = PantryCatalog.item(id: candidate.catalogItemID) else { continue }
             let suggestion = ShoppingCatalogSuggestion(
-                id: candidate.id,
+                id: item.id,
                 catalogItemID: item.id,
-                facets: candidate.facets,
-                displayName: candidate.displayName,
-                category: item.category,
-                rationale: candidate.rationale
+                facets: normalizedFacets(for: candidate.facets, item: item),
+                displayName: item.name,
+                category: item.category
             )
-            if seenIDs.insert(suggestion.id).inserted {
+            if seenCatalogIDs.insert(suggestion.catalogItemID).inserted {
                 suggestions.append(suggestion)
             }
         }
 
         for item in PantryCatalog.search(query) {
             let suggestion = defaultSuggestion(item)
-            if seenIDs.insert(suggestion.id).inserted {
+            if seenCatalogIDs.insert(suggestion.catalogItemID).inserted {
                 suggestions.append(suggestion)
             }
         }
@@ -134,28 +132,16 @@ final class ShoppingAddItemViewModel {
         PantryCatalog.item(id: selectedCatalogItemID)
     }
 
+    var selectedFacetSummary: String? {
+        facetValueSummary(for: selectedFacets)
+    }
+
     var canAdd: Bool {
         if isCustomItem {
             return customItemName.trimmed.nilIfEmpty != nil
         }
 
         return selectedItem != nil
-    }
-
-    var previewName: String {
-        if isCustomItem {
-            return customItemName.trimmed
-        }
-
-        return selectedItem?.displayName(for: selectedFacets) ?? ""
-    }
-
-    var previewCategory: FoodCategory {
-        if isCustomItem {
-            return customCategory
-        }
-
-        return selectedItem?.category ?? .other
     }
 
     var quantityValue: Double? {
@@ -244,6 +230,18 @@ final class ShoppingAddItemViewModel {
         )
     }
 
+    func suggestionBaseName(_ suggestion: ShoppingCatalogSuggestion) -> String {
+        PantryCatalog.item(id: suggestion.catalogItemID)?.name ?? suggestion.displayName
+    }
+
+    func suggestionFacetSummary(_ suggestion: ShoppingCatalogSuggestion) -> String? {
+        guard let item = PantryCatalog.item(id: suggestion.catalogItemID) else {
+            return facetValueSummary(for: suggestion.facets)
+        }
+
+        return availableFacetSummary(for: item)
+    }
+
     private func syncDefaultsFromSelection() {
         guard let item = selectedItem else { return }
 
@@ -260,13 +258,42 @@ final class ShoppingAddItemViewModel {
 
     private func defaultSuggestion(_ item: PantryCatalogItemDefinition) -> ShoppingCatalogSuggestion {
         ShoppingCatalogSuggestion(
-            id: "\(item.id)|default",
+            id: item.id,
             catalogItemID: item.id,
             facets: item.defaultSelections,
-            displayName: item.displayName(for: item.defaultSelections),
-            category: item.category,
-            rationale: "Catalog item"
+            displayName: item.name,
+            category: item.category
         )
+    }
+
+    private func availableFacetSummary(for item: PantryCatalogItemDefinition) -> String? {
+        let groups = item.facets.compactMap { definition -> String? in
+            let options = definition.options
+                .filter { $0.caseInsensitiveCompare("generic") != .orderedSame }
+                .map(humanizedFacetValue)
+
+            guard !options.isEmpty else { return nil }
+            return options.joined(separator: ", ")
+        }
+
+        guard !groups.isEmpty else { return nil }
+        return groups.joined(separator: " • ")
+    }
+
+    private func facetValueSummary(for facets: [PantryFacetSelection]) -> String? {
+        guard !facets.isEmpty else { return nil }
+
+        return facets
+            .map { humanizedFacetValue($0.value) }
+            .joined(separator: " • ")
+    }
+
+    private func humanizedFacetValue(_ value: String) -> String {
+        value
+            .replacingOccurrences(of: "-", with: " ")
+            .split(separator: " ")
+            .map { $0.prefix(1).uppercased() + $0.dropFirst().lowercased() }
+            .joined(separator: " ")
     }
 
     private func normalizedFacets(

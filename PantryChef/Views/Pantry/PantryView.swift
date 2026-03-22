@@ -292,7 +292,7 @@ struct AddPantryItemView: View {
                 PantryIntakeFormSections(
                     draft: $draft,
                     accessibilityPrefix: "pantry.form",
-                    allowsIdentityEditing: !isEditing,
+                    allowsIdentityEditing: !isEditing || !(existingItem?.isCatalogBacked ?? false),
                     hasSavedDefault: showsSavedDefault,
                     saveDefaultButtonTitle: saveDefaultButtonTitle,
                     isSaveDefaultDisabled: draft.rowState != .valid || isCurrentDefault,
@@ -472,6 +472,22 @@ struct BulkAddPantryView: View {
                                 catalogItemRow(item: item, viewModel: viewModel)
                             }
                         }
+
+                        if !viewModel.bulkAdd.catalogSearchText.trimmed.isEmpty {
+                            Button {
+                                viewModel.bulkAdd.stageCustomItem(named: viewModel.bulkAdd.catalogSearchText)
+                            } label: {
+                                Label("Add \"\(viewModel.bulkAdd.catalogSearchText.trimmed)\" as a custom pantry item", systemImage: "square.and.pencil")
+                                    .font(.subheadline)
+                                    .fontWeight(.semibold)
+                                    .foregroundStyle(AppColors.darkText)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                    .padding(14)
+                                    .background(AppColors.cardBackground)
+                                    .clipShape(RoundedRectangle(cornerRadius: 16))
+                            }
+                            .buttonStyle(.plain)
+                        }
                     }
                 }
             }
@@ -617,7 +633,7 @@ struct BulkAddPantryView: View {
                             .fontWeight(.semibold)
                             .foregroundStyle(AppColors.darkText)
 
-                        Text(draft.selectedItem?.category.rawValue ?? "Needs catalog match")
+                        Text(draft.selectedItem?.category.rawValue ?? (draft.isCustomItem ? draft.customCategory.rawValue : "Needs catalog match"))
                             .font(.caption)
                             .foregroundStyle(AppColors.subtleText)
 
@@ -947,7 +963,7 @@ struct PantryDraftEditorView: View {
                 PantryIntakeFormSections(
                     draft: $draft,
                     accessibilityPrefix: "pantry.bulk.form",
-                    allowsIdentityEditing: false,
+                    allowsIdentityEditing: draft.selectedItemID == nil,
                     hasSavedDefault: showsSavedDefault,
                     saveDefaultButtonTitle: saveDefaultButtonTitle,
                     isSaveDefaultDisabled: draft.rowState != .valid || isCurrentDefault,
@@ -1006,40 +1022,66 @@ struct PantryIntakeFormSections: View {
     }
 
     var body: some View {
-        Section("Catalog Item") {
+        Section(draft.isCustomItem ? "Custom Item" : "Catalog Item") {
             if let selectedItem = draft.selectedItem {
                 lockedCatalogItemRow(selectedItem)
             } else if allowsIdentityEditing {
-                TextField("Search pantry catalog", text: Binding(
+                TextField(draft.isCustomItem ? "Custom pantry item" : "Search pantry catalog", text: Binding(
                     get: { draft.searchText },
                     set: { draft.updateSearchText($0) }
                 ))
                 .textInputAutocapitalization(.words)
                 .accessibilityIdentifier("\(accessibilityPrefix).nameField")
 
-                ForEach(Array(draft.matchingItems.prefix(8))) { item in
-                    Button {
-                        draft.selectItem(item)
-                    } label: {
-                        HStack(spacing: 10) {
-                            CategoryIcon(category: item.category, size: 28)
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text(item.name)
-                                    .foregroundStyle(AppColors.darkText)
-                                Text(item.category.rawValue)
-                                    .font(.caption)
-                                    .foregroundStyle(AppColors.subtleText)
-                            }
-                            Spacer()
+                if draft.isCustomItem {
+                    Picker("Category", selection: $draft.customCategory) {
+                        ForEach(FoodCategory.allCases) { category in
+                            Text(category.rawValue).tag(category)
                         }
                     }
-                    .buttonStyle(.plain)
-                }
 
-                if draft.matchingItems.isEmpty && !draft.searchText.trimmed.isEmpty {
-                    Text("No exact catalog items match this search. Pick from the supported ontology only.")
+                    Button("Back to Catalog Search") {
+                        draft.disableCustomItemMode()
+                    }
+
+                    Text("Custom pantry items are stored without catalog identity and only satisfy identical unresolved recipe ingredients.")
                         .font(.caption)
-                        .foregroundStyle(AppColors.softRed)
+                        .foregroundStyle(AppColors.subtleText)
+                } else {
+                    ForEach(Array(draft.matchingItems.prefix(8))) { item in
+                        Button {
+                            draft.selectItem(item)
+                        } label: {
+                            HStack(spacing: 10) {
+                                CategoryIcon(category: item.category, size: 28)
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text(item.name)
+                                        .foregroundStyle(AppColors.darkText)
+                                    Text(item.category.rawValue)
+                                        .font(.caption)
+                                        .foregroundStyle(AppColors.subtleText)
+                                }
+                                Spacer()
+                            }
+                        }
+                        .buttonStyle(.plain)
+                    }
+
+                    if !draft.searchText.trimmed.isEmpty {
+                        Button {
+                            draft.enableCustomItemMode()
+                        } label: {
+                            Label("Add as Custom Pantry Item", systemImage: "square.and.pencil")
+                                .foregroundStyle(AppColors.darkText)
+                        }
+                        .buttonStyle(.plain)
+                    }
+
+                    if draft.matchingItems.isEmpty && !draft.searchText.trimmed.isEmpty {
+                        Text("No exact catalog items match this search. Add it as a custom pantry item if you still want to track it.")
+                            .font(.caption)
+                            .foregroundStyle(AppColors.subtleText)
+                    }
                 }
             }
         }

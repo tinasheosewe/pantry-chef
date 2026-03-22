@@ -1,6 +1,17 @@
 import Foundation
 
 struct ShoppingItem: Identifiable, Codable, Hashable {
+    private static let facetDisplayOrder: [PantryFacetKey] = [
+        .variant,
+        .form,
+        .preservation,
+        .processing,
+        .preparation,
+        .texture,
+        .concentration,
+        .base,
+    ]
+
     var id: UUID
     var name: String
     var quantity: Double?
@@ -50,6 +61,22 @@ struct ShoppingItem: Identifiable, Codable, Hashable {
 
     var resolvedCatalogItem: PantryCatalogItemDefinition? {
         IngredientMatcher.resolvedCatalogItem(for: name, catalogItemID: catalogItemID)
+    }
+
+    var displayName: String {
+        resolvedCatalogItem?.name ?? name
+    }
+
+    var facetSummary: String? {
+        guard !facets.isEmpty else { return nil }
+
+        let orderedFacets = Self.facetDisplayOrder.compactMap { key in
+            facets.first(where: { $0.key == key })
+        }
+
+        return orderedFacets
+            .map { Self.humanizedFacetValue($0.value) }
+            .joined(separator: " • ")
     }
 
     var identityKey: String {
@@ -118,5 +145,13 @@ struct ShoppingItem: Identifiable, Codable, Hashable {
         return item.facets.compactMap { definition in
             facetsByKey[definition.key]
         }
+    }
+
+    private static func humanizedFacetValue(_ value: String) -> String {
+        value
+            .replacingOccurrences(of: "-", with: " ")
+            .split(separator: " ")
+            .map { $0.prefix(1).uppercased() + $0.dropFirst().lowercased() }
+            .joined(separator: " ")
     }
 }

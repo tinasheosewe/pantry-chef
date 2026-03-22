@@ -196,6 +196,9 @@ enum IngredientLexicon {
         let lhsCount = lhsChars.count
         let rhsCount = rhsChars.count
 
+        if lhsCount == 0 { return rhsCount }
+        if rhsCount == 0 { return lhsCount }
+
         var distances = Array(0...rhsCount)
         for lhsIndex in 1...lhsCount {
             var previous = distances[0]

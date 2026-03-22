@@ -615,6 +615,22 @@ final class PantryIntakeRowDraftTests: XCTestCase {
         XCTAssertTrue(draft.warnings.contains { $0.kind == PantryIntakeWarningKind.unsupportedInput })
         XCTAssertNil(draft.buildItem())
     }
+
+    func testCustomItemCanBeBuiltWithoutCatalogMatch() throws {
+        var draft = PantryIntakeRowDraft()
+        draft.searchText = "House Chili Paste"
+        draft.enableCustomItemMode()
+        draft.customCategory = .condiments
+        draft.setQuantityText("1")
+        draft.setUnit(.package)
+
+        let item = try XCTUnwrap(draft.buildItem())
+
+        XCTAssertNil(item.catalogItemID)
+        XCTAssertEqual(item.name, "House Chili Paste")
+        XCTAssertEqual(item.category, .condiments)
+        XCTAssertEqual(item.storage, .pantry)
+    }
 }
 
 // MARK: - Recipe Model Tests
@@ -863,9 +879,30 @@ final class IngredientMatcherTests: XCTestCase {
 
     func testPantryItemMatchesIngredientPrefersCatalogIdentity() {
         let pantryItem = PantryItem(name: "Carrots", category: .produce, quantity: 3, unit: .whole)
-        let ingredient = Ingredient(name: "Carrot", quantity: 1, unit: .whole, category: .produce)
+        let ingredient = Ingredient(name: "Carrot", quantity: 1, unit: .whole, category: .produce, catalogItemID: "carrot")
 
         XCTAssertTrue(IngredientMatcher.pantryItemMatchesIngredient(pantryItem, ingredient: ingredient))
+    }
+
+    func testPantryItemMatchesIngredientAllowsExactUnresolvedCustomFallback() {
+        let pantryItem = PantryItem(name: "House Chili Paste", category: .condiments, quantity: 1, unit: .package)
+        let ingredient = Ingredient(name: "House Chili Paste", quantity: 1, unit: .package, category: .condiments)
+
+        XCTAssertTrue(IngredientMatcher.pantryItemMatchesIngredient(pantryItem, ingredient: ingredient))
+    }
+
+    func testPantryItemMatchesIngredientDoesNotUseFuzzyFallbackForUnresolvedItems() {
+        let pantryItem = PantryItem(name: "House Chili Paste", category: .condiments, quantity: 1, unit: .package)
+        let ingredient = Ingredient(name: "Chili Paste", quantity: 1, unit: .package, category: .condiments)
+
+        XCTAssertFalse(IngredientMatcher.pantryItemMatchesIngredient(pantryItem, ingredient: ingredient))
+    }
+
+    func testPantryItemMatchesIngredientDoesNotUseResolvedPantryForUnresolvedRecipeFallback() {
+        let pantryItem = PantryItem(name: "Soy Sauce", category: .condiments, quantity: 1, unit: .package)
+        let ingredient = Ingredient(name: "Soy Sauce", quantity: 1, unit: .tablespoon, category: .condiments)
+
+        XCTAssertFalse(IngredientMatcher.pantryItemMatchesIngredient(pantryItem, ingredient: ingredient))
     }
 
     func testPantryMatchUsesCatalogBackedSubstitutions() {
@@ -1017,6 +1054,20 @@ final class IngredientMatcherTests: XCTestCase {
     }
 }
 
+final class IngredientLexiconTests: XCTestCase {
+    func testFuzzySimilarityHandlesEmptyLeftHandSide() {
+        XCTAssertEqual(IngredientLexicon.fuzzySimilarity("", "milk"), 0)
+    }
+
+    func testFuzzySimilarityHandlesEmptyRightHandSide() {
+        XCTAssertEqual(IngredientLexicon.fuzzySimilarity("milk", ""), 0)
+    }
+
+    func testFuzzySimilarityHandlesTwoEmptyStrings() {
+        XCTAssertEqual(IngredientLexicon.fuzzySimilarity("", ""), 1)
+    }
+}
+
 // MARK: - Shopping Generation Tests
 
 @MainActor
@@ -1030,7 +1081,7 @@ final class ShoppingGenerationTests: XCTestCase {
         let recipe = Recipe(
             title: "Pancakes",
             ingredients: [
-                Ingredient(name: "milk", quantity: 250, unit: .milliliter, category: .dairy),
+                Ingredient(name: "milk", quantity: 250, unit: .milliliter, category: .dairy, catalogItemID: "milk"),
                 Ingredient(name: "all purpose flour", quantity: 200, unit: .gram, category: .grains)
             ],
             steps: [RecipeStep(stepNumber: 1, instruction: "Mix ingredients")],
@@ -1045,7 +1096,58 @@ final class ShoppingGenerationTests: XCTestCase {
         await appState.generateShoppingListFromMealPlan()
 
         XCTAssertEqual(appState.shoppingItems.count, 1)
-        XCTAssertEqual(appState.shoppingItems.first?.name, "all purpose flour")
+        XCTAssertEqual(appState.shoppingItems.first?.catalogItemID, "flour")
+    }
+
+    func testGenerateShoppingListFromMealPlanUsesExactCustomPantryFallbackForUnresolvedIngredients() async {
+        let (appState, storage, _) = makeTestAppState()
+
+        storage.pantryStore = [
+            PantryItem(name: "House Chili Paste", category: .condiments, quantity: 1, unit: .package)
+        ]
+
+        let recipe = Recipe(
+            title: "Noodles",
+            ingredients: [
+                Ingredient(name: "House Chili Paste", quantity: 1, unit: .package, category: .condiments)
+            ],
+            steps: [RecipeStep(stepNumber: 1, instruction: "Mix")],
+            servings: 2,
+            source: .user
+        )
+
+        storage.mealPlanStore = [MealPlanEntry(date: Date(), mealType: .dinner, recipe: recipe)]
+
+        await appState.loadAllData()
+        await appState.generateShoppingListFromMealPlan()
+
+        XCTAssertTrue(appState.shoppingItems.isEmpty)
+    }
+
+    func testGenerateShoppingListFromMealPlanDoesNotUseFuzzyCustomPantryFallbackForUnresolvedIngredients() async {
+        let (appState, storage, _) = makeTestAppState()
+
+        storage.pantryStore = [
+            PantryItem(name: "House Chili Paste", category: .condiments, quantity: 1, unit: .package)
+        ]
+
+        let recipe = Recipe(
+            title: "Noodles",
+            ingredients: [
+                Ingredient(name: "Chili Paste", quantity: 1, unit: .package, category: .condiments)
+            ],
+            steps: [RecipeStep(stepNumber: 1, instruction: "Mix")],
+            servings: 2,
+            source: .user
+        )
+
+        storage.mealPlanStore = [MealPlanEntry(date: Date(), mealType: .dinner, recipe: recipe)]
+
+        await appState.loadAllData()
+        await appState.generateShoppingListFromMealPlan()
+
+        XCTAssertEqual(appState.shoppingItems.count, 1)
+        XCTAssertEqual(appState.shoppingItems.first?.name, "Chili Paste")
     }
 
     func testPreviewShoppingListFromMealPlanExcludesWaterAndAggregatesDuplicates() async {
@@ -2444,6 +2546,18 @@ final class PantryBulkAddViewModelTests: XCTestCase {
         XCTAssertEqual(stagedOffset, 4)
     }
 
+    func testStageCustomItemCreatesEditableCustomDraft() {
+        let bulk = PantryBulkAddViewModel(preferenceStore: MockPantryItemPreferenceStore())
+
+        bulk.stageCustomItem(named: "House Chili Paste")
+
+        XCTAssertEqual(bulk.stagedRows.count, 1)
+        XCTAssertTrue(bulk.stagedRows[0].isCustomItem)
+        XCTAssertEqual(bulk.stagedRows[0].searchText, "House Chili Paste")
+        XCTAssertEqual(bulk.stagedRows[0].storage, .pantry)
+        XCTAssertEqual(bulk.selectedTab, .review)
+    }
+
     func testRemoveDefaultFallsBackToCatalogDefaults() throws {
         let preferenceStore = MockPantryItemPreferenceStore()
         var savedDraft = PantryIntakeRowDraft(itemDefinition: try XCTUnwrap(PantryCatalog.item(id: "bread")))
@@ -2738,19 +2852,32 @@ final class ShoppingAddItemViewModelTests: XCTestCase {
 
         XCTAssertEqual(results.first?.catalogItemID, "garlic")
         XCTAssertEqual(results.first?.facets, [.init(key: .preparation, value: "minced")])
-        XCTAssertEqual(results.first?.displayName, "Minced Garlic")
+        XCTAssertEqual(results.first?.displayName, "Garlic")
+    }
+
+    func testSearchResultsCollapseFacetVariantsIntoSingleBaseItem() {
+        let viewModel = ShoppingAddItemViewModel()
+        viewModel.searchText = "bread"
+
+        let breadResults = viewModel.searchResults.filter { $0.catalogItemID == "bread" }
+
+        XCTAssertEqual(breadResults.count, 1)
+        XCTAssertEqual(breadResults.first?.displayName, "Bread")
+        XCTAssertEqual(breadResults.first?.facets, [
+            .init(key: .variant, value: "generic"),
+            .init(key: .form, value: "loaf")
+        ])
     }
 
     func testBuildItemPreservesSelectedCatalogFacets() {
         let viewModel = ShoppingAddItemViewModel()
         viewModel.chooseSuggestion(
             ShoppingCatalogSuggestion(
-                id: "garlic|preparation=minced",
+                id: "garlic",
                 catalogItemID: "garlic",
                 facets: [.init(key: .preparation, value: "minced")],
-                displayName: "Minced Garlic",
-                category: .produce,
-                rationale: "Exact facet template token match"
+                displayName: "Garlic",
+                category: .produce
             )
         )
         viewModel.setQuantityText("3")
