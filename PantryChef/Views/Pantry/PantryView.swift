@@ -19,7 +19,7 @@ struct PantryView: View {
                     EmptyStateView(
                         icon: "refrigerator",
                         title: "Your pantry is empty",
-                        message: "Browse the catalog, search within it, stage defaults, then add everything at once.",
+                        message: "Browse the catalog, see the defaults we assume, then review everything before adding it.",
                         actionTitle: "Start Adding"
                     ) {
                         viewModel.prepareBulkAdd()
@@ -287,17 +287,22 @@ struct BulkAddPantryView: View {
                 .padding(.top, 12)
                 .padding(.bottom, 8)
 
-                Group {
-                    switch viewModel.bulkAdd.selectedTab {
-                    case .add:
-                        addTab(viewModel: viewModel)
-                    case .review:
-                        bulkStagingTab(viewModel: viewModel)
-                    }
+                ZStack {
+                    addTab(viewModel: viewModel)
+                        .opacity(viewModel.bulkAdd.selectedTab == .search ? 1 : 0)
+                        .allowsHitTesting(viewModel.bulkAdd.selectedTab == .search)
+                        .accessibilityHidden(viewModel.bulkAdd.selectedTab != .search)
+                        .zIndex(viewModel.bulkAdd.selectedTab == .search ? 1 : 0)
+
+                    bulkStagingTab(viewModel: viewModel)
+                        .opacity(viewModel.bulkAdd.selectedTab == .review ? 1 : 0)
+                        .allowsHitTesting(viewModel.bulkAdd.selectedTab == .review)
+                        .accessibilityHidden(viewModel.bulkAdd.selectedTab != .review)
+                        .zIndex(viewModel.bulkAdd.selectedTab == .review ? 1 : 0)
                 }
             }
             .background(AppColors.background)
-            .navigationTitle("Add")
+            .navigationTitle("Add To Pantry")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
@@ -444,6 +449,7 @@ struct BulkAddPantryView: View {
 
     private func catalogItemRow(item: PantryCatalogItemDefinition, viewModel: PantryViewModel) -> some View {
         let isSelected = viewModel.bulkAdd.isCatalogItemSelected(item)
+        let previewDraft = PantryIntakeRowDraft(itemDefinition: item)
 
         return Button {
             viewModel.bulkAdd.toggleCatalogItemSelection(item)
@@ -452,7 +458,7 @@ struct BulkAddPantryView: View {
                 CategoryIcon(category: item.category, size: 40)
 
                 VStack(alignment: .leading, spacing: 4) {
-                    Text(item.name)
+                    Text(previewDraft.displayName)
                         .font(.subheadline)
                         .fontWeight(.semibold)
                         .foregroundStyle(AppColors.darkText)
@@ -465,6 +471,11 @@ struct BulkAddPantryView: View {
                             .foregroundStyle(AppColors.subtleText)
                             .lineLimit(1)
                     }
+
+                    Text(defaultSummary(for: previewDraft))
+                        .font(.caption2)
+                        .foregroundStyle(AppColors.subtleText)
+                        .lineLimit(2)
                 }
 
                 Spacer()
@@ -524,79 +535,66 @@ struct BulkAddPantryView: View {
     }
 
     private func stagedRowCard(draft: PantryIntakeRowDraft, viewModel: PantryViewModel) -> some View {
-        VStack(alignment: .leading, spacing: 10) {
-            HStack(alignment: .top, spacing: 12) {
-                CategoryIcon(category: draft.selectedItem?.category ?? .other, size: 40)
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(draft.displayName.isEmpty ? "Unresolved item" : draft.displayName)
-                        .font(.subheadline)
-                        .fontWeight(.semibold)
-                        .foregroundStyle(AppColors.darkText)
+        Button {
+            editingDraft = draft
+        } label: {
+            VStack(alignment: .leading, spacing: 10) {
+                HStack(alignment: .top, spacing: 12) {
+                    CategoryIcon(category: draft.selectedItem?.category ?? .other, size: 40)
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(draft.displayName.isEmpty ? "Unresolved item" : draft.displayName)
+                            .font(.subheadline)
+                            .fontWeight(.semibold)
+                            .foregroundStyle(AppColors.darkText)
 
-                    Text(draft.selectedItem?.category.rawValue ?? "Needs catalog match")
-                        .font(.caption)
-                        .foregroundStyle(AppColors.subtleText)
+                        Text(draft.selectedItem?.category.rawValue ?? "Needs catalog match")
+                            .font(.caption)
+                            .foregroundStyle(AppColors.subtleText)
 
-                    HStack(spacing: 8) {
-                        Text(draft.quantityText.trimmed.isEmpty ? "No quantity" : "\(draft.quantityText.trimmed) \((draft.unit ?? draft.selectedItem?.suggestedUnit(for: draft.selectedFacets) ?? .piece).rawValue)")
-                        if let storage = draft.storage {
-                            Label(storage.rawValue, systemImage: storage.icon)
+                        Text(reviewSummary(for: draft))
+                            .font(.caption2)
+                            .foregroundStyle(AppColors.subtleText)
+
+                        if let facetSummary = reviewFacetSummary(for: draft) {
+                            Text(facetSummary)
+                                .font(.caption2)
+                                .foregroundStyle(AppColors.subtleText)
                         }
                     }
-                    .font(.caption)
-                    .foregroundStyle(AppColors.subtleText)
+
+                    Spacer()
+                    PantryDraftStateBadge(state: draft.rowState)
                 }
 
-                Spacer()
-                PantryDraftStateBadge(state: draft.rowState)
-            }
-
-            if let warning = draft.warnings.first {
-                HStack(spacing: 8) {
-                    Image(systemName: warning.severity == .blocking ? "exclamationmark.octagon.fill" : "exclamationmark.triangle.fill")
-                        .foregroundStyle(warning.severity == .blocking ? AppColors.softRed : AppColors.warmOrange)
-                    Text(warning.message)
-                        .font(.caption)
-                        .foregroundStyle(AppColors.subtleText)
+                if let warning = draft.warnings.first {
+                    HStack(spacing: 8) {
+                        Image(systemName: warning.severity == .blocking ? "exclamationmark.octagon.fill" : "exclamationmark.triangle.fill")
+                            .foregroundStyle(warning.severity == .blocking ? AppColors.softRed : AppColors.warmOrange)
+                        Text(warning.message)
+                            .font(.caption)
+                            .foregroundStyle(AppColors.subtleText)
+                    }
                 }
             }
-
-            HStack(spacing: 10) {
-                Button {
-                    editingDraft = draft
-                } label: {
-                    Label("Edit", systemImage: "slider.horizontal.3")
-                        .font(.caption)
-                        .fontWeight(.semibold)
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 8)
-                        .background(AppColors.lightGray)
-                        .foregroundStyle(AppColors.darkText)
-                        .clipShape(Capsule())
-                }
-
-                Button(role: .destructive) {
-                    viewModel.bulkAdd.removeStagedRow(draft)
-                } label: {
-                    Label("Remove", systemImage: "trash")
-                        .font(.caption)
-                        .fontWeight(.semibold)
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 8)
-                        .background(AppColors.softRed.opacity(0.12))
-                        .foregroundStyle(AppColors.softRed)
-                        .clipShape(Capsule())
-                }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(14)
+            .background(AppColors.cardBackground)
+            .overlay(
+                RoundedRectangle(cornerRadius: 18)
+                    .stroke(borderColor(for: draft.rowState), lineWidth: 1.25)
+            )
+            .clipShape(RoundedRectangle(cornerRadius: 18))
+            .shadow(color: Color.black.opacity(0.04), radius: 10, x: 0, y: 4)
+            .contentShape(RoundedRectangle(cornerRadius: 18))
+        }
+        .buttonStyle(.plain)
+        .swipeActions(edge: .trailing) {
+            Button(role: .destructive) {
+                viewModel.bulkAdd.removeStagedRow(draft)
+            } label: {
+                Label("Remove", systemImage: "trash")
             }
         }
-        .padding(14)
-        .background(AppColors.cardBackground)
-        .overlay(
-            RoundedRectangle(cornerRadius: 18)
-                .stroke(borderColor(for: draft.rowState), lineWidth: 1.25)
-        )
-        .clipShape(RoundedRectangle(cornerRadius: 18))
-        .shadow(color: Color.black.opacity(0.04), radius: 10, x: 0, y: 4)
     }
 
     private func bulkSummaryBar(viewModel: PantryViewModel) -> some View {
@@ -616,7 +614,7 @@ struct BulkAddPantryView: View {
                 Spacer()
 
                 Button {
-                    if viewModel.bulkAdd.selectedTab == .add {
+                    if viewModel.bulkAdd.selectedTab == .search {
                         viewModel.bulkAdd.selectedTab = .review
                     } else {
                         Task {
@@ -662,20 +660,80 @@ struct BulkAddPantryView: View {
             return "Browse categories or search the catalog, then review your selections"
         }
 
-        if viewModel.bulkAdd.selectedTab == .add {
+        if viewModel.bulkAdd.selectedTab == .search {
             return "Review them before adding to your pantry"
         }
 
         return "\(viewModel.bulkAdd.validRowCount) ready to add now"
     }
 
+    private func defaultSummary(for draft: PantryIntakeRowDraft) -> String {
+        var parts: [String] = []
+
+        if !draft.quantityText.trimmed.isEmpty {
+            let unit = draft.unit ?? draft.selectedItem?.suggestedUnit(for: draft.selectedFacets) ?? .piece
+            parts.append("Starts with \(draft.quantityText.trimmed) \(unit.rawValue)")
+        }
+
+        if let storage = draft.storage {
+            parts.append(storage.rawValue)
+        }
+
+        if let window = draft.estimatedFreshnessWindow {
+            parts.append("~\(window.lowerBound)-\(window.upperBound) day freshness")
+        }
+
+        if parts.isEmpty {
+            return "Defaults will appear here once this item is configured."
+        }
+
+        return parts.joined(separator: " • ")
+    }
+
+    private func reviewSummary(for draft: PantryIntakeRowDraft) -> String {
+        var parts: [String] = []
+
+        if !draft.quantityText.trimmed.isEmpty {
+            let unit = draft.unit ?? draft.selectedItem?.suggestedUnit(for: draft.selectedFacets) ?? .piece
+            parts.append("\(draft.quantityText.trimmed) \(unit.rawValue)")
+        }
+
+        if let storage = draft.storage {
+            parts.append(storage.rawValue)
+        }
+
+        if let expiryDate = draft.resolvedExpiryDate {
+            parts.append("Expires \(expiryDate.shortDisplay)")
+        }
+
+        if parts.isEmpty {
+            return "Open item details to finish its assumptions."
+        }
+
+        return parts.joined(separator: " • ")
+    }
+
+    private func reviewFacetSummary(for draft: PantryIntakeRowDraft) -> String? {
+        guard !draft.selectedFacets.isEmpty else { return nil }
+        let values = draft.selectedFacets.map { "\($0.key.title): \(humanizedFacetValue($0.value))" }
+        return values.joined(separator: " • ")
+    }
+
+    private func humanizedFacetValue(_ value: String) -> String {
+        value
+            .replacingOccurrences(of: "-", with: " ")
+            .split(separator: " ")
+            .map { $0.prefix(1).uppercased() + $0.dropFirst().lowercased() }
+            .joined(separator: " ")
+    }
+
     private func primaryButtonTitle(viewModel: PantryViewModel) -> String {
-        viewModel.bulkAdd.selectedTab == .add ? "Review" : "Add to Pantry"
+        viewModel.bulkAdd.selectedTab == .search ? "Review" : "Add to Pantry"
     }
 
     private func primaryButtonColor(viewModel: PantryViewModel) -> Color {
         switch viewModel.bulkAdd.selectedTab {
-        case .add:
+        case .search:
             return viewModel.bulkAdd.hasStagedRows ? AppColors.accentBlue : AppColors.mediumGray
         case .review:
             return viewModel.bulkAdd.validRowCount > 0 ? AppColors.primaryGreen : AppColors.mediumGray
@@ -688,7 +746,7 @@ struct BulkAddPantryView: View {
         }
 
         switch viewModel.bulkAdd.selectedTab {
-        case .add:
+        case .search:
             return !viewModel.bulkAdd.hasStagedRows
         case .review:
             return viewModel.bulkAdd.validRowCount == 0

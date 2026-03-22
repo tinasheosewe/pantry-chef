@@ -4,13 +4,13 @@ import SwiftUI
 @MainActor
 final class PantryBulkAddViewModel {
     enum Tab: String, CaseIterable, Identifiable {
-        case add = "Add"
+        case search = "Search"
         case review = "Review"
 
         var id: String { rawValue }
     }
 
-    var selectedTab: Tab = .add
+    var selectedTab: Tab = .search
     var catalogSearchText = ""
     private(set) var debouncedCatalogSearchText = ""
     var selectedCatalogCategory: FoodCategory?
@@ -74,7 +74,7 @@ final class PantryBulkAddViewModel {
     }
 
     func reset() {
-        selectedTab = .add
+        selectedTab = .search
         catalogSearchText = ""
         debouncedCatalogSearchText = ""
         selectedCatalogCategory = nil
