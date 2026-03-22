@@ -1,6 +1,60 @@
 import Foundation
 import SwiftData
 
+final class PantryItemPreferenceStore: PantryItemPreferenceStoreProtocol {
+    private let userDefaults: UserDefaults
+    private let storageKey: String
+    private let encoder = JSONEncoder()
+    private let decoder = JSONDecoder()
+
+    init(userDefaults: UserDefaults = .standard, storageKey: String = "pantry.item.default.preferences") {
+        self.userDefaults = userDefaults
+        self.storageKey = storageKey
+    }
+
+    func preference(for catalogItemID: String) -> PantryItemDefaultPreference? {
+        loadPreferences()[catalogItemID]
+    }
+
+    func savePreference(_ preference: PantryItemDefaultPreference) {
+        var preferences = loadPreferences()
+        preferences[preference.catalogItemID] = preference
+        persist(preferences)
+    }
+
+    func removePreference(for catalogItemID: String) {
+        var preferences = loadPreferences()
+        preferences.removeValue(forKey: catalogItemID)
+        persist(preferences)
+    }
+
+    private func loadPreferences() -> [String: PantryItemDefaultPreference] {
+        guard let data = userDefaults.data(forKey: storageKey) else { return [:] }
+
+        do {
+            return try decoder.decode([String: PantryItemDefaultPreference].self, from: data)
+        } catch {
+            AppLog.warn("[PantryItemPreferenceStore] Discarding unreadable pantry item default preferences: \(error.localizedDescription)")
+            userDefaults.removeObject(forKey: storageKey)
+            return [:]
+        }
+    }
+
+    private func persist(_ preferences: [String: PantryItemDefaultPreference]) {
+        guard !preferences.isEmpty else {
+            userDefaults.removeObject(forKey: storageKey)
+            return
+        }
+
+        do {
+            let data = try encoder.encode(preferences)
+            userDefaults.set(data, forKey: storageKey)
+        } catch {
+            AppLog.warn("[PantryItemPreferenceStore] Failed to persist pantry item default preferences: \(error.localizedDescription)")
+        }
+    }
+}
+
 actor StorageService: StorageServiceProtocol {
     private static let storeFileName = "default.store"
 

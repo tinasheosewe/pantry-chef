@@ -37,7 +37,12 @@ struct PantryView: View {
                 BulkAddPantryView(viewModel: viewModel)
             }
             .sheet(item: $editingItem) { item in
-                AddPantryItemView(item: item) { updatedItem in
+                AddPantryItemView(
+                    item: item,
+                    savedDefaultForItem: { viewModel.appState.pantryItemDefaultPreference(for: $0) },
+                    saveDefault: { viewModel.appState.savePantryItemDefaultPreference($0) },
+                    removeDefault: { viewModel.appState.removePantryItemDefaultPreference(for: $0) }
+                ) { updatedItem in
                     Task { await viewModel.updateItem(updatedItem) }
                 }
             }
@@ -226,24 +231,73 @@ struct PantryItemRow: View {
 struct AddPantryItemView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var draft: PantryIntakeRowDraft
+    @State private var savedDefault: PantryItemDefaultPreference?
 
     private let existingItem: PantryItem?
+    private let savedDefaultForItem: (String) -> PantryItemDefaultPreference?
+    private let saveDefault: (PantryIntakeRowDraft) -> Void
+    private let removeDefault: (String) -> Void
     let onSave: (PantryItem) -> Void
 
-    init(item: PantryItem? = nil, onSave: @escaping (PantryItem) -> Void) {
+    init(
+        item: PantryItem? = nil,
+        savedDefaultForItem: @escaping (String) -> PantryItemDefaultPreference? = { _ in nil },
+        saveDefault: @escaping (PantryIntakeRowDraft) -> Void = { _ in },
+        removeDefault: @escaping (String) -> Void = { _ in },
+        onSave: @escaping (PantryItem) -> Void
+    ) {
         self.existingItem = item
+        self.savedDefaultForItem = savedDefaultForItem
+        self.saveDefault = saveDefault
+        self.removeDefault = removeDefault
         self.onSave = onSave
         _draft = State(initialValue: PantryIntakeRowDraft(item: item))
+        _savedDefault = State(initialValue: item?.catalogItemID.flatMap(savedDefaultForItem))
     }
 
     private var isEditing: Bool {
         existingItem != nil
     }
 
+    private var showsSavedDefault: Bool {
+        savedDefault != nil
+    }
+
+    private var isCurrentDefault: Bool {
+        draft.matchesDefaultPreference(savedDefault)
+    }
+
+    private var saveDefaultButtonTitle: String {
+        if isCurrentDefault {
+            return "Current Default"
+        }
+        return showsSavedDefault ? "Update Default" : "Set as Default"
+    }
+
+    private func handleSaveDefault() {
+        saveDefault(draft)
+        savedDefault = PantryItemDefaultPreference(draft: draft)
+    }
+
+    private func handleResetDefault() {
+        guard let catalogItemID = draft.selectedItemID else { return }
+        removeDefault(catalogItemID)
+        savedDefault = nil
+        draft.resetToCatalogDefaults()
+    }
+
     var body: some View {
         NavigationStack {
             Form {
-                PantryIntakeFormSections(draft: $draft, accessibilityPrefix: "pantry.form")
+                PantryIntakeFormSections(
+                    draft: $draft,
+                    accessibilityPrefix: "pantry.form",
+                    hasSavedDefault: showsSavedDefault,
+                    saveDefaultButtonTitle: saveDefaultButtonTitle,
+                    isSaveDefaultDisabled: draft.rowState != .valid || isCurrentDefault,
+                    onSaveDefault: handleSaveDefault,
+                    onResetDefault: handleResetDefault
+                )
             }
             .navigationTitle(isEditing ? "Edit Item" : "Add Item")
             .navigationBarTitleDisplayMode(.inline)
@@ -262,6 +316,9 @@ struct AddPantryItemView: View {
                     .disabled(draft.rowState != .valid)
                 }
             }
+        }
+        .onChange(of: draft.selectedItemID) {
+            savedDefault = draft.selectedItemID.flatMap(savedDefaultForItem)
         }
     }
 }
@@ -320,7 +377,12 @@ struct BulkAddPantryView: View {
             }
         }
         .sheet(item: $editingDraft) { draft in
-            PantryDraftEditorView(draft: draft) { updatedDraft in
+            PantryDraftEditorView(
+                draft: draft,
+                savedDefaultForItem: { viewModel.bulkAdd.savedDefault(for: $0) },
+                saveDefault: { viewModel.bulkAdd.saveDefault(for: $0) },
+                removeDefault: { viewModel.bulkAdd.removeDefault(for: $0) }
+            ) { updatedDraft in
                 viewModel.bulkAdd.updateStagedRow(updatedDraft)
             }
         }
@@ -448,7 +510,8 @@ struct BulkAddPantryView: View {
 
     private func catalogItemRow(item: PantryCatalogItemDefinition, viewModel: PantryViewModel) -> some View {
         let isSelected = viewModel.bulkAdd.isCatalogItemSelected(item)
-        let previewDraft = PantryIntakeRowDraft(itemDefinition: item)
+        let previewDraft = viewModel.bulkAdd.draft(for: item)
+        let savedDefault = viewModel.bulkAdd.savedDefault(for: item.id)
 
         return Button {
             viewModel.bulkAdd.toggleCatalogItemSelection(item)
@@ -457,24 +520,27 @@ struct BulkAddPantryView: View {
                 CategoryIcon(category: item.category, size: 40)
 
                 VStack(alignment: .leading, spacing: 4) {
-                    Text(previewDraft.displayName)
+                    Text(item.name)
                         .font(.subheadline)
                         .fontWeight(.semibold)
                         .foregroundStyle(AppColors.darkText)
                     Text(item.category.rawValue)
                         .font(.caption)
                         .foregroundStyle(AppColors.subtleText)
-                    if !item.aliases.isEmpty {
-                        Text(item.aliases.prefix(3).joined(separator: " • "))
+
+                    if let defaultLabel = catalogDefaultLabel(for: previewDraft, savedDefault: savedDefault) {
+                        Text(defaultLabel)
+                            .font(.caption2)
+                            .foregroundStyle(AppColors.accentBlue)
+                            .lineLimit(1)
+                    }
+
+                    ForEach(catalogFacetOptions(for: item), id: \.self) { facetLine in
+                        Text(facetLine)
                             .font(.caption2)
                             .foregroundStyle(AppColors.subtleText)
                             .lineLimit(1)
                     }
-
-                    Text(defaultSummary(for: previewDraft))
-                        .font(.caption2)
-                        .foregroundStyle(AppColors.subtleText)
-                        .lineLimit(2)
                 }
 
                 Spacer()
@@ -666,27 +732,32 @@ struct BulkAddPantryView: View {
         return "\(viewModel.bulkAdd.validRowCount) ready to add now"
     }
 
-    private func defaultSummary(for draft: PantryIntakeRowDraft) -> String {
-        var parts: [String] = []
+    private func catalogDefaultLabel(for draft: PantryIntakeRowDraft, savedDefault: PantryItemDefaultPreference?) -> String? {
+        let prefix = savedDefault == nil ? "Catalog default" : "Your default"
 
-        if !draft.quantityText.trimmed.isEmpty {
-            let unit = draft.unit ?? draft.selectedItem?.suggestedUnit(for: draft.selectedFacets) ?? .piece
-            parts.append("Starts with \(draft.quantityText.trimmed) \(unit.rawValue)")
+        if let facetSummary = summaryText(for: draft.selectedFacets) {
+            return "\(prefix): \(facetSummary)"
         }
 
-        if let storage = draft.storage {
-            parts.append(storage.rawValue)
+        if savedDefault != nil {
+            return "\(prefix): \(draft.displayName)"
         }
 
-        if let window = draft.estimatedFreshnessWindow {
-            parts.append("~\(window.lowerBound)-\(window.upperBound) day freshness")
-        }
+        return nil
+    }
 
-        if parts.isEmpty {
-            return "Defaults will appear here once this item is configured."
+    private func catalogFacetOptions(for item: PantryCatalogItemDefinition) -> [String] {
+        item.facets.map { definition in
+            let options = Array(definition.options.prefix(3)).map(humanizedFacetValue)
+            let hiddenCount = max(definition.options.count - options.count, 0)
+            let suffix = hiddenCount > 0 ? ", +\(hiddenCount) more" : ""
+            return "\(definition.key.title): \(options.joined(separator: ", "))\(suffix)"
         }
+    }
 
-        return parts.joined(separator: " • ")
+    private func summaryText(for facets: [PantryFacetSelection]) -> String? {
+        guard !facets.isEmpty else { return nil }
+        return facets.map { humanizedFacetValue($0.value) }.joined(separator: " • ")
     }
 
     private func reviewSummary(for draft: PantryIntakeRowDraft) -> String {
@@ -821,17 +892,66 @@ struct FlexibleTokenWrap: View {
 struct PantryDraftEditorView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var draft: PantryIntakeRowDraft
+    @State private var savedDefault: PantryItemDefaultPreference?
+    private let savedDefaultForItem: (String) -> PantryItemDefaultPreference?
+    private let saveDefault: (PantryIntakeRowDraft) -> Void
+    private let removeDefault: (String) -> Void
     let onSave: (PantryIntakeRowDraft) -> Void
 
-    init(draft: PantryIntakeRowDraft, onSave: @escaping (PantryIntakeRowDraft) -> Void) {
+    init(
+        draft: PantryIntakeRowDraft,
+        savedDefaultForItem: @escaping (String) -> PantryItemDefaultPreference?,
+        saveDefault: @escaping (PantryIntakeRowDraft) -> Void,
+        removeDefault: @escaping (String) -> Void,
+        onSave: @escaping (PantryIntakeRowDraft) -> Void
+    ) {
         _draft = State(initialValue: draft)
+        _savedDefault = State(initialValue: draft.selectedItemID.flatMap(savedDefaultForItem))
+        self.savedDefaultForItem = savedDefaultForItem
+        self.saveDefault = saveDefault
+        self.removeDefault = removeDefault
         self.onSave = onSave
+    }
+
+    private var showsSavedDefault: Bool {
+        savedDefault != nil
+    }
+
+    private var isCurrentDefault: Bool {
+        draft.matchesDefaultPreference(savedDefault)
+    }
+
+    private var saveDefaultButtonTitle: String {
+        if isCurrentDefault {
+            return "Current Default"
+        }
+        return showsSavedDefault ? "Update Default" : "Set as Default"
+    }
+
+    private func handleSaveDefault() {
+        saveDefault(draft)
+        savedDefault = PantryItemDefaultPreference(draft: draft)
+    }
+
+    private func handleResetDefault() {
+        guard let catalogItemID = draft.selectedItemID else { return }
+        removeDefault(catalogItemID)
+        savedDefault = nil
+        draft.resetToCatalogDefaults()
     }
 
     var body: some View {
         NavigationStack {
             Form {
-                PantryIntakeFormSections(draft: $draft, accessibilityPrefix: "pantry.bulk.form")
+                PantryIntakeFormSections(
+                    draft: $draft,
+                    accessibilityPrefix: "pantry.bulk.form",
+                    hasSavedDefault: showsSavedDefault,
+                    saveDefaultButtonTitle: saveDefaultButtonTitle,
+                    isSaveDefaultDisabled: draft.rowState != .valid || isCurrentDefault,
+                    onSaveDefault: handleSaveDefault,
+                    onResetDefault: handleResetDefault
+                )
             }
             .navigationTitle("Edit Selected Item")
             .navigationBarTitleDisplayMode(.inline)
@@ -847,12 +967,38 @@ struct PantryDraftEditorView: View {
                 }
             }
         }
+        .onChange(of: draft.selectedItemID) {
+            savedDefault = draft.selectedItemID.flatMap(savedDefaultForItem)
+        }
     }
 }
 
 struct PantryIntakeFormSections: View {
     @Binding var draft: PantryIntakeRowDraft
     let accessibilityPrefix: String
+    let hasSavedDefault: Bool
+    let saveDefaultButtonTitle: String
+    let isSaveDefaultDisabled: Bool
+    let onSaveDefault: (() -> Void)?
+    let onResetDefault: (() -> Void)?
+
+    init(
+        draft: Binding<PantryIntakeRowDraft>,
+        accessibilityPrefix: String,
+        hasSavedDefault: Bool = false,
+        saveDefaultButtonTitle: String = "Set as Default",
+        isSaveDefaultDisabled: Bool = false,
+        onSaveDefault: (() -> Void)? = nil,
+        onResetDefault: (() -> Void)? = nil
+    ) {
+        self._draft = draft
+        self.accessibilityPrefix = accessibilityPrefix
+        self.hasSavedDefault = hasSavedDefault
+        self.saveDefaultButtonTitle = saveDefaultButtonTitle
+        self.isSaveDefaultDisabled = isSaveDefaultDisabled
+        self.onSaveDefault = onSaveDefault
+        self.onResetDefault = onResetDefault
+    }
 
     var body: some View {
         Section("Catalog Item") {
@@ -1000,6 +1146,29 @@ struct PantryIntakeFormSections: View {
             TextField("Optional notes", text: $draft.notes, axis: .vertical)
                 .lineLimit(3)
                 .accessibilityIdentifier("\(accessibilityPrefix).notesField")
+        }
+
+        if draft.selectedItem != nil && (onSaveDefault != nil || (hasSavedDefault && onResetDefault != nil)) {
+            Section {
+                if let onSaveDefault {
+                    Button(saveDefaultButtonTitle) {
+                        onSaveDefault()
+                    }
+                    .disabled(isSaveDefaultDisabled)
+                }
+
+                if hasSavedDefault, let onResetDefault {
+                    Button("Reset to Catalog Default") {
+                        onResetDefault()
+                    }
+                }
+            } header: {
+                Text("Defaults")
+            } footer: {
+                Text("These defaults will be reused the next time you add this catalog item.")
+                    .font(.caption)
+                    .foregroundStyle(AppColors.subtleText)
+            }
         }
 
         if !draft.warnings.isEmpty {

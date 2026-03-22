@@ -6,6 +6,7 @@ final class AppState {
     // MARK: - Services (protocol-typed for testability)
     let storageService: StorageServiceProtocol
     let aiService: AIServiceProtocol
+    let pantryItemPreferenceStore: PantryItemPreferenceStoreProtocol
     let recipeRepository = RecipeRepository.shared
 
     // MARK: - Shared State
@@ -67,6 +68,7 @@ final class AppState {
     // MARK: - Init (DI-friendly)
     init() {
         let launchOptions = Self.launchOptions
+        self.pantryItemPreferenceStore = PantryItemPreferenceStore()
         self.storageService = StorageService(
             isStoredInMemoryOnly: launchOptions.useInMemoryStorage,
             shouldBootstrap: launchOptions.shouldBootstrapStorage,
@@ -79,15 +81,35 @@ final class AppState {
         Task { await loadAllData() }
     }
 
-    init(storageService: StorageServiceProtocol, aiService: AIServiceProtocol, shouldLoadOnInit: Bool = true) {
+    init(
+        storageService: StorageServiceProtocol,
+        aiService: AIServiceProtocol,
+        pantryItemPreferenceStore: PantryItemPreferenceStoreProtocol = PantryItemPreferenceStore(),
+        shouldLoadOnInit: Bool = true
+    ) {
         self.storageService = storageService
         self.aiService = aiService
+        self.pantryItemPreferenceStore = pantryItemPreferenceStore
         pantryItems = PantryItem.samples
         recipes = Recipe.samples
         discoverRecipes = recipeRepository.seedRecipes
         if shouldLoadOnInit {
             Task { await loadAllData() }
         }
+    }
+
+    func pantryItemDefaultPreference(for catalogItemID: String?) -> PantryItemDefaultPreference? {
+        guard let catalogItemID else { return nil }
+        return pantryItemPreferenceStore.preference(for: catalogItemID)
+    }
+
+    func savePantryItemDefaultPreference(_ draft: PantryIntakeRowDraft) {
+        guard let preference = PantryItemDefaultPreference(draft: draft) else { return }
+        pantryItemPreferenceStore.savePreference(preference)
+    }
+
+    func removePantryItemDefaultPreference(for catalogItemID: String) {
+        pantryItemPreferenceStore.removePreference(for: catalogItemID)
     }
 
     // MARK: - Data Loading (for refresh / future network-backed store)

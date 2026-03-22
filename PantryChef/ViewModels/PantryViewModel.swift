@@ -18,6 +18,11 @@ final class PantryBulkAddViewModel {
     var unresolvedTokens: [String] = []
     var stagedRows: [PantryIntakeRowDraft] = []
     @ObservationIgnored private let catalogSearchDebouncer = TaskDebouncer()
+    @ObservationIgnored private let preferenceStore: PantryItemPreferenceStoreProtocol
+
+    init(preferenceStore: PantryItemPreferenceStoreProtocol) {
+        self.preferenceStore = preferenceStore
+    }
 
     var categoryCounts: [(FoodCategory, Int)] {
         FoodCategory.allCases.compactMap { category in
@@ -96,7 +101,11 @@ final class PantryBulkAddViewModel {
     }
 
     func stageCatalogItem(_ item: PantryCatalogItemDefinition) {
-        stagedRows.append(PantryIntakeRowDraft(itemDefinition: item))
+        stagedRows.append(draft(for: item))
+    }
+
+    func draft(for item: PantryCatalogItemDefinition) -> PantryIntakeRowDraft {
+        PantryIntakeRowDraft(itemDefinition: item, preference: preferenceStore.preference(for: item.id))
     }
 
     func isCatalogItemSelected(_ item: PantryCatalogItemDefinition) -> Bool {
@@ -150,6 +159,25 @@ final class PantryBulkAddViewModel {
         stagedRows.removeAll { $0.id == draft.id }
     }
 
+    func hasSavedDefault(for catalogItemID: String?) -> Bool {
+        guard let catalogItemID else { return false }
+        return preferenceStore.preference(for: catalogItemID) != nil
+    }
+
+    func savedDefault(for catalogItemID: String?) -> PantryItemDefaultPreference? {
+        guard let catalogItemID else { return nil }
+        return preferenceStore.preference(for: catalogItemID)
+    }
+
+    func saveDefault(for draft: PantryIntakeRowDraft) {
+        guard let preference = PantryItemDefaultPreference(draft: draft) else { return }
+        preferenceStore.savePreference(preference)
+    }
+
+    func removeDefault(for catalogItemID: String) {
+        preferenceStore.removePreference(for: catalogItemID)
+    }
+
     private func resolveSearchToken(_ token: String) -> PantryCatalogItemDefinition? {
         if let exact = PantryCatalog.resolveExact(name: token) {
             return exact
@@ -174,7 +202,7 @@ final class PantryViewModel {
     private(set) var debouncedSearchText = ""
     var selectedCategory: FoodCategory?
     var showAddItem = false
-    var bulkAdd = PantryBulkAddViewModel()
+    var bulkAdd: PantryBulkAddViewModel
     var showVoiceInput = false
     var sortOrder: SortOrder = .category
     @ObservationIgnored private let searchDebouncer = TaskDebouncer()
@@ -190,6 +218,7 @@ final class PantryViewModel {
 
     init(appState: AppState) {
         self.appState = appState
+        self.bulkAdd = PantryBulkAddViewModel(preferenceStore: appState.pantryItemPreferenceStore)
         self.debouncedSearchText = ""
     }
 

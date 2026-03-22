@@ -178,6 +178,22 @@ final class MockAIService: AIServiceProtocol {
     }
 }
 
+final class MockPantryItemPreferenceStore: PantryItemPreferenceStoreProtocol {
+    var preferences: [String: PantryItemDefaultPreference] = [:]
+
+    func preference(for catalogItemID: String) -> PantryItemDefaultPreference? {
+        preferences[catalogItemID]
+    }
+
+    func savePreference(_ preference: PantryItemDefaultPreference) {
+        preferences[preference.catalogItemID] = preference
+    }
+
+    func removePreference(for catalogItemID: String) {
+        preferences.removeValue(forKey: catalogItemID)
+    }
+}
+
 enum TestError: Error {
     case mock
 }
@@ -188,7 +204,8 @@ enum TestError: Error {
 func makeTestAppState() -> (AppState, MockStorageService, MockAIService) {
     let storage = MockStorageService()
     let ai = MockAIService()
-    let appState = AppState(storageService: storage, aiService: ai, shouldLoadOnInit: false)
+    let preferenceStore = MockPantryItemPreferenceStore()
+    let appState = AppState(storageService: storage, aiService: ai, pantryItemPreferenceStore: preferenceStore, shouldLoadOnInit: false)
     // Clear seeded data so tests start clean
     appState.pantryItems = []
     appState.recipes = []
@@ -2099,7 +2116,7 @@ final class PantryViewModelTests: XCTestCase {
 @MainActor
 final class PantryBulkAddViewModelTests: XCTestCase {
     func testStageCatalogItemUsesCatalogDefaults() throws {
-        let bulk = PantryBulkAddViewModel()
+        let bulk = PantryBulkAddViewModel(preferenceStore: MockPantryItemPreferenceStore())
         let item = try XCTUnwrap(PantryCatalog.item(id: "milk"))
 
         bulk.stageCatalogItem(item)
@@ -2112,7 +2129,7 @@ final class PantryBulkAddViewModelTests: XCTestCase {
     }
 
     func testToggleCatalogItemSelectionAddsAndRemovesItem() throws {
-        let bulk = PantryBulkAddViewModel()
+        let bulk = PantryBulkAddViewModel(preferenceStore: MockPantryItemPreferenceStore())
         let item = try XCTUnwrap(PantryCatalog.item(id: "milk"))
 
         bulk.toggleCatalogItemSelection(item)
@@ -2125,7 +2142,7 @@ final class PantryBulkAddViewModelTests: XCTestCase {
     }
 
     func testStageSearchEntriesAddsRecognizedItemsAndTracksUnresolvedTerms() {
-        let bulk = PantryBulkAddViewModel()
+        let bulk = PantryBulkAddViewModel(preferenceStore: MockPantryItemPreferenceStore())
         bulk.searchComposerText = "milk, dragonfruit\ncheese"
 
         let addedCount = bulk.stageSearchEntries()
@@ -2138,12 +2155,71 @@ final class PantryBulkAddViewModelTests: XCTestCase {
     }
 
     func testSearchPreviewResultsUsesTrailingToken() {
-        let bulk = PantryBulkAddViewModel()
+        let bulk = PantryBulkAddViewModel(preferenceStore: MockPantryItemPreferenceStore())
         bulk.searchComposerText = "milk\nchicken"
 
         let resultIDs = bulk.searchPreviewResults.prefix(3).map(\.id)
 
         XCTAssertTrue(resultIDs.contains("chicken-breast"))
+    }
+
+    func testStageCatalogItemUsesSavedDefaultsWhenPresent() throws {
+        let preferenceStore = MockPantryItemPreferenceStore()
+        var savedDraft = PantryIntakeRowDraft(itemDefinition: try XCTUnwrap(PantryCatalog.item(id: "bread")))
+        savedDraft.setFacet(.variant, value: "wholemeal")
+        savedDraft.setFacet(.form, value: "sliced")
+        savedDraft.setQuantityText("3")
+        savedDraft.setUnit(.slice)
+        savedDraft.setStorage(.refrigerated)
+        savedDraft.setExpiryDate(Calendar.current.date(byAdding: .day, value: 4, to: Date()) ?? Date())
+        savedDraft.notes = "Freezer half goes fast"
+        preferenceStore.savePreference(try XCTUnwrap(PantryItemDefaultPreference(draft: savedDraft)))
+
+        let bulk = PantryBulkAddViewModel(preferenceStore: preferenceStore)
+        let item = try XCTUnwrap(PantryCatalog.item(id: "bread"))
+
+        bulk.stageCatalogItem(item)
+
+        let staged = try XCTUnwrap(bulk.stagedRows.first)
+        XCTAssertEqual(staged.selectedFacetValues[.variant], "wholemeal")
+        XCTAssertEqual(staged.selectedFacetValues[.form], "sliced")
+        XCTAssertEqual(staged.quantityText, "3")
+        XCTAssertEqual(staged.unit, .slice)
+        XCTAssertEqual(staged.storage, .refrigerated)
+        XCTAssertEqual(staged.notes, "Freezer half goes fast")
+        let calendar = Calendar.current
+        let startOfToday = calendar.startOfDay(for: Date())
+        let stagedExpiryDate = try XCTUnwrap(staged.resolvedExpiryDate)
+        let stagedOffset = calendar.dateComponents([.day], from: startOfToday, to: calendar.startOfDay(for: stagedExpiryDate)).day
+        XCTAssertEqual(stagedOffset, 4)
+    }
+
+    func testRemoveDefaultFallsBackToCatalogDefaults() throws {
+        let preferenceStore = MockPantryItemPreferenceStore()
+        var savedDraft = PantryIntakeRowDraft(itemDefinition: try XCTUnwrap(PantryCatalog.item(id: "bread")))
+        savedDraft.setFacet(.variant, value: "wholemeal")
+        preferenceStore.savePreference(try XCTUnwrap(PantryItemDefaultPreference(draft: savedDraft)))
+
+        let bulk = PantryBulkAddViewModel(preferenceStore: preferenceStore)
+        bulk.removeDefault(for: "bread")
+        let draft = bulk.draft(for: try XCTUnwrap(PantryCatalog.item(id: "bread")))
+
+        XCTAssertEqual(draft.selectedFacetValues[.variant], "white")
+    }
+
+    func testMatchesDefaultPreferenceTracksWhenDraftMovesAwayAndBack() throws {
+        var draft = PantryIntakeRowDraft(itemDefinition: try XCTUnwrap(PantryCatalog.item(id: "bread")))
+        draft.setFacet(.variant, value: "wholemeal")
+        draft.setFacet(.form, value: "sliced")
+
+        let savedDefault = try XCTUnwrap(PantryItemDefaultPreference(draft: draft))
+        XCTAssertTrue(draft.matchesDefaultPreference(savedDefault))
+
+        draft.setFacet(.form, value: "loaf")
+        XCTAssertFalse(draft.matchesDefaultPreference(savedDefault))
+
+        draft.setFacet(.form, value: "sliced")
+        XCTAssertTrue(draft.matchesDefaultPreference(savedDefault))
     }
 }
 

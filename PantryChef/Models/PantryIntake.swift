@@ -21,6 +21,33 @@ enum PantryIntakeRowState: String, Hashable {
     case invalid
 }
 
+struct PantryItemDefaultPreference: Codable, Hashable, Sendable {
+    let catalogItemID: String
+    let facets: [PantryFacetSelection]
+    let storage: PantryStorage
+    let quantity: Double?
+    let unit: MeasurementUnit?
+    let expiryOffsetDays: Int?
+    let notes: String?
+
+    init?(draft: PantryIntakeRowDraft, referenceDate: Date = Date()) {
+        guard let selectedItem = draft.selectedItem, let storage = draft.storage else { return nil }
+
+        let calendar = Calendar.current
+        let baseDate = calendar.startOfDay(for: referenceDate)
+
+        self.catalogItemID = selectedItem.id
+        self.facets = draft.selectedFacets
+        self.storage = storage
+        self.quantity = draft.parsedQuantity
+        self.unit = draft.unit ?? selectedItem.suggestedUnit(for: draft.selectedFacets)
+        self.expiryOffsetDays = draft.resolvedExpiryDate.map {
+            calendar.dateComponents([.day], from: baseDate, to: calendar.startOfDay(for: $0)).day ?? 0
+        }
+        self.notes = draft.notes.trimmed.nilIfEmpty
+    }
+}
+
 struct PantryIntakeWarning: Identifiable, Hashable {
     let kind: PantryIntakeWarningKind
     let severity: PantryIntakeWarningSeverity
@@ -75,9 +102,12 @@ struct PantryIntakeRowDraft: Identifiable {
         }
     }
 
-    init(itemDefinition: PantryCatalogItemDefinition) {
+    init(itemDefinition: PantryCatalogItemDefinition, preference: PantryItemDefaultPreference? = nil) {
         self.init()
         selectItem(itemDefinition)
+        if let preference {
+            applyUserDefault(preference)
+        }
     }
 
     var selectedItem: PantryCatalogItemDefinition? {
@@ -183,6 +213,15 @@ struct PantryIntakeRowDraft: Identifiable {
         selectedItem?.displayName(for: selectedFacets) ?? searchText.trimmed
     }
 
+    var canonicalName: String {
+        selectedItem?.name ?? searchText.trimmed
+    }
+
+    func matchesDefaultPreference(_ preference: PantryItemDefaultPreference?, referenceDate: Date = Date()) -> Bool {
+        guard let preference else { return false }
+        return PantryItemDefaultPreference(draft: self, referenceDate: referenceDate) == preference
+    }
+
     mutating func selectItem(_ item: PantryCatalogItemDefinition) {
         selectedItemID = item.id
         searchText = item.name
@@ -196,6 +235,57 @@ struct PantryIntakeRowDraft: Identifiable {
         refreshSuggestedUnit(for: item)
         refreshSuggestedQuantity(for: item)
         refreshPrefilledExpiryDate()
+    }
+
+    mutating func resetToCatalogDefaults() {
+        guard let selectedItem else { return }
+
+        searchText = selectedItem.name
+        selectedFacetValues = [:]
+        storage = selectedItem.defaultStorage
+        quantityText = ""
+        quantityWasEdited = false
+        unit = nil
+        unitWasEdited = false
+        manualExpiryDate = Date()
+        expiryDateWasEdited = false
+        notes = ""
+
+        applyCatalogDefaults(for: selectedItem)
+        refreshSuggestedUnit(for: selectedItem)
+        refreshSuggestedQuantity(for: selectedItem)
+        refreshPrefilledExpiryDate()
+    }
+
+    mutating func applyUserDefault(_ preference: PantryItemDefaultPreference, referenceDate: Date = Date()) {
+        guard let selectedItem, selectedItem.id == preference.catalogItemID else { return }
+
+        resetToCatalogDefaults()
+
+        for facet in preference.facets {
+            guard selectedItem.options(for: facet.key).contains(facet.value) else { continue }
+            selectedFacetValues[facet.key] = facet.value
+        }
+
+        storage = preference.storage
+
+        if let quantity = preference.quantity {
+            quantityText = Self.quantityString(quantity)
+        }
+
+        if let unit = preference.unit {
+            self.unit = unit
+        }
+
+        if let expiryOffsetDays = preference.expiryOffsetDays {
+            let startOfToday = Calendar.current.startOfDay(for: referenceDate)
+            manualExpiryDate = Calendar.current.date(byAdding: .day, value: expiryOffsetDays, to: startOfToday)
+            expiryDateWasEdited = true
+        } else {
+            refreshPrefilledExpiryDate()
+        }
+
+        notes = preference.notes ?? ""
     }
 
     mutating func updateSearchText(_ text: String) {

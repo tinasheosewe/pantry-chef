@@ -27,6 +27,12 @@ protocol StorageServiceProtocol: AnyObject {
     func saveShoppingItems(_ items: [ShoppingItem]) async throws
 }
 
+protocol PantryItemPreferenceStoreProtocol: AnyObject {
+    func preference(for catalogItemID: String) -> PantryItemDefaultPreference?
+    func savePreference(_ preference: PantryItemDefaultPreference)
+    func removePreference(for catalogItemID: String)
+}
+
 // MARK: - AI Service Protocol
 /// Defines the contract for AI-powered features.
 protocol AIServiceProtocol: AnyObject, Sendable {
