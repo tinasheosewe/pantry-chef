@@ -46,6 +46,12 @@ final class RecipeViewModel: AsyncActionHandling {
     private(set) var neverSearchedAPI = true
     var hasMorePages: Bool { neverSearchedAPI || currentSearchOffset < totalSearchResults }
     var effectiveSearchQuery: String { localFilterQuery }
+    var coverageRefreshState: RecipeCoverageRefreshState {
+        RecipeCoverageRefreshState(
+            catalog: appState.recipeCatalogRefreshState,
+            discoverSearchSource: collectionSignature(discoverSearchResults)
+        )
+    }
 
     enum SortOrder: String, CaseIterable {
         case recent = "Recent"
@@ -841,4 +847,9 @@ private struct FullCoverageKey: Hashable {
     let userRecipes: CollectionSignature
     let discoverRecipes: CollectionSignature
     let searchedRecipes: CollectionSignature
+}
+
+struct RecipeCoverageRefreshState: Hashable {
+    let catalog: RecipeCatalogRefreshState
+    let discoverSearchSource: CollectionSignature
 }

@@ -56,12 +56,90 @@ final class AppState {
         )
     }
 
+    var recipeCatalogRefreshState: RecipeCatalogRefreshState {
+        RecipeCatalogRefreshState(
+            pantryItems: pantryItems,
+            recipes: recipes,
+            discoverRecipes: discoverRecipes
+        )
+    }
+
     /// All non-user recipes (bundled + cached API) — eagerly loaded for observability
     var discoverRecipes: [Recipe] = []
 
     /// All recipes combined (user + discover) for unified search
     var allRecipes: [Recipe] {
         recipes + discoverRecipes
+    }
+
+    func plannedEntries(on date: Date) -> [MealPlanEntry] {
+        let targetDay = Calendar.current.startOfDay(for: date)
+        return mealPlan.filter {
+            $0.isPlanned && Calendar.current.isDate($0.date, inSameDayAs: targetDay)
+        }
+    }
+
+    func plannedEntries(forWeekStarting weekStartDate: Date) -> [MealPlanEntry] {
+        let weekDays = (0..<7).compactMap { dayOffset in
+            Calendar.current.date(byAdding: .day, value: dayOffset, to: weekStartDate)
+        }
+
+        return mealPlan.filter { entry in
+            entry.isPlanned && weekDays.contains { Calendar.current.isDate(entry.date, inSameDayAs: $0) }
+        }
+    }
+
+    func suggestedRecipeForCurrentPantry() -> Recipe? {
+        guard !pantryItems.isEmpty, !recipes.isEmpty else { return nil }
+
+        var bestRecipe: Recipe?
+        var bestMatchPercentage = -1.0
+        for recipe in recipes {
+            let matchPercentage = recipe.pantryMatch(pantry: pantryItems).matchPercentage
+            if matchPercentage > bestMatchPercentage {
+                bestMatchPercentage = matchPercentage
+                bestRecipe = recipe
+            }
+        }
+
+        return bestRecipe
+    }
+
+    func weeklyNutritionSummary() -> WeeklyNutritionSummary? {
+        let cookedRecipes = mealPlan.compactMap(\.recipe)
+        guard !cookedRecipes.isEmpty else { return nil }
+
+        var totalCalories = 0
+        var totalProtein = 0.0
+        var totalCarbs = 0.0
+        var totalFat = 0.0
+
+        for recipe in cookedRecipes {
+            if let nutrition = recipe.nutrition {
+                totalCalories += nutrition.calories
+                totalProtein += nutrition.protein
+                totalCarbs += nutrition.carbohydrates
+                totalFat += nutrition.fat
+            }
+        }
+
+        return WeeklyNutritionSummary(
+            totalCalories: totalCalories,
+            avgCaloriesPerDay: totalCalories / 7,
+            totalProtein: totalProtein,
+            totalCarbs: totalCarbs,
+            totalFat: totalFat,
+            mealsPlanned: cookedRecipes.count
+        )
+    }
+
+    func homeDashboardSnapshot(for date: Date = Date()) -> HomeDashboardSnapshot {
+        HomeDashboardSnapshot(
+            todaysMeals: plannedEntries(on: date),
+            expiringItems: expiringItems,
+            suggestedRecipe: suggestedRecipeForCurrentPantry(),
+            weeklyNutrition: weeklyNutritionSummary()
+        )
     }
 
     private static let launchOptions = AppLaunchOptions.current
@@ -626,6 +704,19 @@ struct HomeDashboardRefreshState: Hashable {
     let pantryItems: [PantryItem]
     let recipes: [Recipe]
     let discoverRecipes: [Recipe]
+}
+
+struct RecipeCatalogRefreshState: Hashable {
+    let pantryItems: [PantryItem]
+    let recipes: [Recipe]
+    let discoverRecipes: [Recipe]
+}
+
+struct HomeDashboardSnapshot: Equatable {
+    let todaysMeals: [MealPlanEntry]
+    let expiringItems: [PantryItem]
+    let suggestedRecipe: Recipe?
+    let weeklyNutrition: WeeklyNutritionSummary?
 }
 
 private enum QuantityMergeOutcome {

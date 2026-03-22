@@ -4,10 +4,7 @@ import SwiftUI
 @MainActor
 final class HomeViewModel {
     var greetingMessage: String = ""
-    var todaysMeals: [MealPlanEntry] = []
-    var expiringItems: [PantryItem] = []
-    var suggestedRecipe: Recipe?
-    var weeklyNutrition: WeeklyNutritionSummary?
+    var dashboard = HomeDashboardSnapshot(todaysMeals: [], expiringItems: [], suggestedRecipe: nil, weeklyNutrition: nil)
     var isLoading = false
 
     let appState: AppState
@@ -19,10 +16,7 @@ final class HomeViewModel {
 
     func refresh() {
         updateGreeting()
-        loadTodaysMeals()
-        loadExpiringItems()
-        loadSuggestedRecipe()
-        calculateWeeklyNutrition()
+        dashboard = appState.homeDashboardSnapshot()
     }
 
     private func updateGreeting() {
@@ -34,69 +28,24 @@ final class HomeViewModel {
         }
     }
 
-    private func loadTodaysMeals() {
-        let today = Calendar.current.startOfDay(for: Date())
-        todaysMeals = appState.mealPlan.filter {
-            $0.isPlanned && Calendar.current.isDate($0.date, inSameDayAs: today)
-        }
+    var todaysMeals: [MealPlanEntry] {
+        dashboard.todaysMeals
     }
 
-    private func loadExpiringItems() {
-        expiringItems = appState.expiringItems
+    var expiringItems: [PantryItem] {
+        dashboard.expiringItems
     }
 
-    private func loadSuggestedRecipe() {
-        // Find the recipe with the best pantry match — pre-compute once, pick best
-        let pantry = appState.pantryItems
-        guard !pantry.isEmpty, !appState.recipes.isEmpty else {
-            suggestedRecipe = nil
-            return
-        }
-        var bestRecipe: Recipe?
-        var bestPct: Double = -1
-        for recipe in appState.recipes {
-            let pct = recipe.pantryMatch(pantry: pantry).matchPercentage
-            if pct > bestPct {
-                bestPct = pct
-                bestRecipe = recipe
-            }
-        }
-        suggestedRecipe = bestRecipe
+    var suggestedRecipe: Recipe? {
+        dashboard.suggestedRecipe
     }
 
-    private func calculateWeeklyNutrition() {
-        let cookedRecipes = appState.mealPlan.compactMap { $0.recipe }
-        guard !cookedRecipes.isEmpty else {
-            weeklyNutrition = nil
-            return
-        }
-
-        var totalCalories = 0
-        var totalProtein = 0.0
-        var totalCarbs = 0.0
-        var totalFat = 0.0
-
-        for recipe in cookedRecipes {
-            if let nutrition = recipe.nutrition {
-                totalCalories += nutrition.calories
-                totalProtein += nutrition.protein
-                totalCarbs += nutrition.carbohydrates
-                totalFat += nutrition.fat
-            }
-        }
-
-        weeklyNutrition = WeeklyNutritionSummary(
-            totalCalories: totalCalories,
-            avgCaloriesPerDay: totalCalories / 7,
-            totalProtein: totalProtein,
-            totalCarbs: totalCarbs,
-            totalFat: totalFat,
-            mealsPlanned: cookedRecipes.count
-        )
+    var weeklyNutrition: WeeklyNutritionSummary? {
+        dashboard.weeklyNutrition
     }
 }
 
-struct WeeklyNutritionSummary {
+struct WeeklyNutritionSummary: Equatable {
     let totalCalories: Int
     let avgCaloriesPerDay: Int
     let totalProtein: Double

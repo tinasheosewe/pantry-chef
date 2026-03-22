@@ -55,9 +55,6 @@ struct MealPlanView: View {
                     .environment(viewModel.appState)
                 }
             }
-            .onChange(of: viewModel.appState.mealPlan) { _, _ in
-                viewModel.reloadEntries()
-            }
         }
     }
 

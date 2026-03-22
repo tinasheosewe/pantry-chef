@@ -4,7 +4,6 @@ import SwiftUI
 @MainActor
 final class MealPlanViewModel: AsyncActionHandling {
     var weekStartDate: Date
-    var entries: [MealPlanEntry] = []
     var showRecipePicker = false
     var selectedSlot: MealSlot?
     var isLoading = false
@@ -23,7 +22,10 @@ final class MealPlanViewModel: AsyncActionHandling {
         self.mealPlanActions = MealPlanActions(appState: appState)
         let calendar = Calendar.current
         self.weekStartDate = calendar.dateInterval(of: .weekOfYear, for: Date())?.start ?? Date()
-        reloadEntries()
+    }
+
+    var entries: [MealPlanEntry] {
+        appState.plannedEntries(forWeekStarting: weekStartDate)
     }
 
     var weekDays: [Date] {
@@ -40,36 +42,25 @@ final class MealPlanViewModel: AsyncActionHandling {
 
     func previousWeek() {
         weekStartDate = Calendar.current.date(byAdding: .weekOfYear, value: -1, to: weekStartDate) ?? weekStartDate
-        reloadEntries()
     }
 
     func nextWeek() {
         weekStartDate = Calendar.current.date(byAdding: .weekOfYear, value: 1, to: weekStartDate) ?? weekStartDate
-        reloadEntries()
     }
 
     func goToCurrentWeek() {
         weekStartDate = Calendar.current.dateInterval(of: .weekOfYear, for: Date())?.start ?? Date()
-        reloadEntries()
-    }
-
-    func reloadEntries() {
-        entries = appState.mealPlan.filter { entry in
-            entry.isPlanned && weekDays.contains { Calendar.current.isDate(entry.date, inSameDayAs: $0) }
-        }
     }
 
     func assignRecipe(_ recipe: Recipe, to slot: MealSlot) {
         runTask {
             await mealPlanActions.assignRecipe(recipe, to: slot)
-            reloadEntries()
         }
     }
 
     func removeEntry(_ entry: MealPlanEntry) {
         runTask {
             await mealPlanActions.removeEntry(entry)
-            reloadEntries()
         }
     }
 

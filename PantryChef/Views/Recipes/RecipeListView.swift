@@ -158,18 +158,9 @@ struct RecipeListView: View {
                     viewModel.scheduleFullMetricsCoverage(reason: "discover-tab")
                 }
             }
-            .onChange(of: viewModel.appState.pantryItems) {
+            .onChange(of: viewModel.coverageRefreshState) {
                 viewModel.scheduleBackgroundMatchPrewarm(visibleDiscoverCount: discoverVisibleCount)
-                viewModel.scheduleFullMetricsCoverage(reason: "pantry-change")
-            }
-            .onChange(of: viewModel.appState.recipes) {
-                viewModel.scheduleFullMetricsCoverage(reason: "user-recipes-change")
-            }
-            .onChange(of: viewModel.appState.discoverRecipes) {
-                viewModel.scheduleFullMetricsCoverage(reason: "discover-recipes-change")
-            }
-            .onChange(of: viewModel.discoverSearchResults) {
-                viewModel.scheduleFullMetricsCoverage(reason: "discover-search-change")
+                viewModel.scheduleFullMetricsCoverage(reason: "coverage-refresh")
             }
             .onChange(of: viewModel.effectiveSearchQuery) {
                 discoverVisibleCount = 12

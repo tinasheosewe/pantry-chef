@@ -29,7 +29,7 @@ struct HomeView: View {
 
                     todaysMealPlanCard
 
-                    if !viewModel.appState.expiringItems.isEmpty {
+                    if !viewModel.expiringItems.isEmpty {
                         expiringSoonCard
                     }
 
@@ -155,10 +155,10 @@ struct HomeView: View {
         VStack(alignment: .leading, spacing: 12) {
             SectionHeader(
                 title: "Expiring Soon",
-                subtitle: "\(viewModel.appState.expiringItems.count) items need attention"
+                subtitle: "\(viewModel.expiringItems.count) items need attention"
             )
 
-            ForEach(viewModel.appState.expiringItems.prefix(5)) { item in
+            ForEach(viewModel.expiringItems.prefix(5)) { item in
                 HStack(spacing: 12) {
                     CategoryIcon(category: item.category, size: 28)
                     Text(item.name)
@@ -168,8 +168,8 @@ struct HomeView: View {
                 }
             }
 
-            if viewModel.appState.expiringItems.count > 5 {
-                Text("+ \(viewModel.appState.expiringItems.count - 5) more")
+            if viewModel.expiringItems.count > 5 {
+                Text("+ \(viewModel.expiringItems.count - 5) more")
                     .font(.caption)
                     .foregroundStyle(AppColors.subtleText)
             }
