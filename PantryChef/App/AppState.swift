@@ -47,6 +47,15 @@ final class AppState {
         Dictionary(grouping: pantryItems, by: { $0.category })
     }
 
+    var homeDashboardRefreshState: HomeDashboardRefreshState {
+        HomeDashboardRefreshState(
+            mealPlan: mealPlan,
+            pantryItems: pantryItems,
+            recipes: recipes,
+            discoverRecipes: discoverRecipes
+        )
+    }
+
     /// All non-user recipes (bundled + cached API) — eagerly loaded for observability
     var discoverRecipes: [Recipe] = []
 
@@ -610,6 +619,13 @@ final class AppState {
             errorMessage = error.localizedDescription
         }
     }
+}
+
+struct HomeDashboardRefreshState: Hashable {
+    let mealPlan: [MealPlanEntry]
+    let pantryItems: [PantryItem]
+    let recipes: [Recipe]
+    let discoverRecipes: [Recipe]
 }
 
 private enum QuantityMergeOutcome {

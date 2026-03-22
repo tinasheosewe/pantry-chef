@@ -54,14 +54,12 @@ struct RecipeEditorView: View {
             .padding()
         }
         .background(AppColors.background)
-        .sheet(item: $resolutionDraft) { draft in
-            NavigationStack {
-                IngredientResolutionReviewView(draft: draft) { resolvedRecipe in
-                    resolutionDraft = nil
-                    completeSave(with: resolvedRecipe)
-                } onCancel: {
-                    resolutionDraft = nil
-                }
+        .appNavigationSheet(item: $resolutionDraft) { draft in
+            IngredientResolutionReviewView(draft: draft) { resolvedRecipe in
+                resolutionDraft = nil
+                completeSave(with: resolvedRecipe)
+            } onCancel: {
+                resolutionDraft = nil
             }
         }
     }
@@ -77,8 +75,7 @@ struct RecipeEditorView: View {
                 .fontWeight(.semibold)
                 .focused($focusedField, equals: .title)
                 .padding(12)
-                .background(AppColors.lightGray)
-                .clipShape(RoundedRectangle(cornerRadius: 10))
+                .appInputSurface()
 
             ZStack(alignment: .topLeading) {
                 if recipe.description?.isEmpty ?? true {
@@ -94,8 +91,7 @@ struct RecipeEditorView: View {
                     .padding(.vertical, 8)
             }
             .frame(minHeight: 80)
-            .background(AppColors.lightGray)
-            .clipShape(RoundedRectangle(cornerRadius: 10))
+            .appInputSurface()
         }
         .padding()
         .cardStyle()

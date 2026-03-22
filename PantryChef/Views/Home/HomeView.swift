@@ -3,10 +3,7 @@ import SwiftUI
 struct HomeView: View {
     @State private var viewModel: HomeViewModel
     @State private var resumeRecipe: Recipe?
-    @State private var pendingShoppingItems: [ShoppingItem] = []
-    @State private var showShoppingConfirmation = false
-    @State private var shoppingAlertTitle = ""
-    @State private var shoppingAlertMessage = ""
+    @State private var shoppingConfirmation: ShoppingListConfirmationRequest?
 
     var onSwitchToShopping: (() -> Void)?
     var onSwitchToPlan: (() -> Void)?
@@ -20,7 +17,7 @@ struct HomeView: View {
     }
 
     var body: some View {
-        NavigationStack {
+        AppScreen("home.screen") {
             AppScrollView {
                 VStack(spacing: 20) {
                     greetingHeader
@@ -52,8 +49,6 @@ struct HomeView: View {
                 }
                 .padding()
             }
-            .accessibilityIdentifier("home.screen")
-            .background(AppColors.background)
             .navigationBarTitleDisplayMode(.inline)
             .refreshable {
                 await viewModel.appState.loadAllData()
@@ -63,33 +58,14 @@ struct HomeView: View {
                 viewModel.refresh()
                 viewModel.appState.activeCooks.refresh()
             }
-            .onChange(of: viewModel.appState.mealPlan) { _, _ in
+            .onChange(of: viewModel.appState.homeDashboardRefreshState) { _, _ in
                 viewModel.refresh()
             }
-            .onChange(of: viewModel.appState.pantryItems) { _, _ in
-                viewModel.refresh()
-            }
-            .onChange(of: viewModel.appState.recipes) { _, _ in
-                viewModel.refresh()
-            }
-            .onChange(of: viewModel.appState.discoverRecipes) { _, _ in
-                viewModel.refresh()
-            }
-            .alert(shoppingAlertTitle, isPresented: $showShoppingConfirmation) {
-                if pendingShoppingItems.isEmpty {
-                    Button("OK", role: .cancel) {}
-                } else {
-                    Button("Cancel", role: .cancel) {}
-                    Button("Add Items") {
-                        let itemsToAdd = pendingShoppingItems
-                        Task {
-                            await viewModel.appState.addShoppingItems(itemsToAdd)
-                            onSwitchToShopping?()
-                        }
-                    }
+            .shoppingListConfirmation($shoppingConfirmation) { itemsToAdd in
+                Task {
+                    await viewModel.appState.addShoppingItems(itemsToAdd)
+                    onSwitchToShopping?()
                 }
-            } message: {
-                Text(shoppingAlertMessage)
             }
             .fullScreenCover(item: $resumeRecipe) { recipe in
                 let session = CookingSession.load(recipeId: recipe.id)
@@ -231,18 +207,7 @@ struct HomeView: View {
     }
 
     private func prepareShoppingConfirmation() {
-        let previewItems = viewModel.appState.previewShoppingListFromMealPlan()
-        pendingShoppingItems = previewItems
-
-        if previewItems.isEmpty {
-            shoppingAlertTitle = "Nothing to Add"
-            shoppingAlertMessage = "Everything needed is already in your pantry."
-        } else {
-            shoppingAlertTitle = "Add \(previewItems.count) Item\(previewItems.count == 1 ? "" : "s")?"
-            shoppingAlertMessage = "This will add these items to your cart and exclude ingredients you already have in your pantry."
-        }
-
-        showShoppingConfirmation = true
+        shoppingConfirmation = ShoppingListConfirmationRequest(items: viewModel.appState.previewShoppingListFromMealPlan())
     }
 
     // MARK: - Recipe Suggestion Card

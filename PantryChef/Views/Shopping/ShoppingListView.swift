@@ -9,7 +9,7 @@ struct ShoppingListView: View {
     }
 
     var body: some View {
-        NavigationStack {
+        AppScreen("shopping.screen") {
             VStack(spacing: 0) {
                 if !viewModel.items.isEmpty {
                     progressHeader
@@ -30,8 +30,6 @@ struct ShoppingListView: View {
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-            .accessibilityIdentifier("shopping.screen")
-            .background(AppColors.background)
             .navigationTitle("Shopping List")
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
@@ -58,12 +56,10 @@ struct ShoppingListView: View {
                     }
                 }
             }
-            .sheet(isPresented: $showAddItem) {
-                NavigationStack {
-                    ShoppingAddItemView { item in
-                        viewModel.addItem(item)
-                        showAddItem = false
-                    }
+            .appNavigationSheet(isPresented: $showAddItem) {
+                ShoppingAddItemView { item in
+                    viewModel.addItem(item)
+                    showAddItem = false
                 }
             }
         }
@@ -152,9 +148,7 @@ private struct ShoppingAddItemView: View {
                         viewModel.isCustomItem ? "Custom item name" : "Search catalog",
                         text: viewModel.isCustomItem ? $viewModel.customItemName : $viewModel.searchText
                     )
-                    .textInputAutocapitalization(.words)
-                    .disableAutocorrection(true)
-                    .expandedTapTargetForTextInput()
+                    .appTextEntry(autocapitalization: .words, autocorrectionDisabled: true)
 
                     if viewModel.isCustomItem {
                         Button("Back to Catalog Search") {
@@ -225,7 +219,7 @@ private struct ShoppingAddItemView: View {
                             )
                         )
                         .keyboardType(.decimalPad)
-                        .expandedTapTargetForTextInput()
+                        .appTextEntry()
 
                         Picker(
                             "Unit",
@@ -293,7 +287,7 @@ private struct ShoppingAddItemView: View {
                         )
                     )
                     .keyboardType(.decimalPad)
-                    .expandedTapTargetForTextInput()
+                    .appTextEntry()
 
                     Picker(
                         "Unit",

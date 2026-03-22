@@ -110,28 +110,26 @@ struct RecipeDetailView: View {
         .sheet(isPresented: $showShoppingList) {
             ShoppingPreviewView(items: shoppingList)
         }
-        .sheet(isPresented: $showEditor) {
-            NavigationStack {
-                RecipeEditorView(
-                    recipe: recipe,
-                    isNewRecipe: false,
-                    onSave: { saved in
-                        recipe = saved
-                        servings = saved.servings
-                        Task { await appState.updateRecipe(saved) }
-                        showEditor = false
-                    },
-                    onSaveAsNew: { newRecipe in
-                        Task { await appState.addRecipe(newRecipe) }
-                        showEditor = false
-                    }
-                )
-                .navigationTitle("Edit Recipe")
-                .navigationBarTitleDisplayMode(.inline)
-                .toolbar {
-                    ToolbarItem(placement: .cancellationAction) {
-                        Button("Cancel") { showEditor = false }
-                    }
+        .appNavigationSheet(isPresented: $showEditor) {
+            RecipeEditorView(
+                recipe: recipe,
+                isNewRecipe: false,
+                onSave: { saved in
+                    recipe = saved
+                    servings = saved.servings
+                    Task { await appState.updateRecipe(saved) }
+                    showEditor = false
+                },
+                onSaveAsNew: { newRecipe in
+                    Task { await appState.addRecipe(newRecipe) }
+                    showEditor = false
+                }
+            )
+            .navigationTitle("Edit Recipe")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") { showEditor = false }
                 }
             }
         }
@@ -582,8 +580,7 @@ struct RecipeDetailView: View {
                             .lineLimit(1...4)
                             .textFieldStyle(.plain)
                             .padding(10)
-                            .background(AppColors.lightGray)
-                            .clipShape(RoundedRectangle(cornerRadius: 10))
+                            .appInputSurface()
 
                         Button {
                             Task { await performModify() }
@@ -1076,23 +1073,12 @@ struct AddRecipeView: View {
 
                 // Text input area
                 VStack(alignment: .leading, spacing: 6) {
-                    ZStack(alignment: .topLeading) {
-                        if inputText.isEmpty {
-                            Text("https://example.com/recipe\n\nor paste recipe text here...\n\ne.g.\nChicken Stir Fry\n2 chicken breasts, sliced\n1 bell pepper, diced\n3 tbsp soy sauce\n\n1. Heat oil in a wok...\n2. Cook chicken until golden...")
-                                .font(.subheadline)
-                                .foregroundStyle(AppColors.mediumGray)
-                                .padding(.horizontal, 12)
-                                .padding(.vertical, 12)
-                        }
-                        TextEditor(text: $inputText)
-                            .font(.subheadline)
-                            .scrollContentBackground(.hidden)
-                            .padding(.horizontal, 8)
-                            .padding(.vertical, 8)
-                    }
-                    .frame(minHeight: 220)
-                    .background(AppColors.lightGray)
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                    AppMultilineInput(
+                        text: $inputText,
+                        prompt: "https://example.com/recipe\n\nor paste recipe text here...\n\ne.g.\nChicken Stir Fry\n2 chicken breasts, sliced\n1 bell pepper, diced\n3 tbsp soy sauce\n\n1. Heat oil in a wok...\n2. Cook chicken until golden...",
+                        minHeight: 220,
+                        cornerRadius: 12
+                    )
 
                     if isURL {
                         HStack(spacing: 4) {

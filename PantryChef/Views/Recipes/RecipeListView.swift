@@ -32,7 +32,7 @@ struct RecipeListView: View {
         let filteredUserRecipes = selectedSection == .myRecipes ? viewModel.filteredUserRecipes : []
         let filteredDiscoverRecipes = selectedSection == .discover ? viewModel.filteredDiscoverRecipes : []
 
-        NavigationStack {
+        AppScreen("recipes.screen") {
             VStack(spacing: 0) {
                 searchBar
                 sectionPicker(discoverCount: selectedSection == .discover ? filteredDiscoverRecipes.count : nil)
@@ -44,8 +44,6 @@ struct RecipeListView: View {
                     discoverContent(recipes: filteredDiscoverRecipes, hasQuery: hasQuery, trimmedQuery: trimmedQuery)
                 }
             }
-            .accessibilityIdentifier("recipes.screen")
-            .background(AppColors.background)
             .navigationTitle("Recipes")
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
@@ -125,22 +123,20 @@ struct RecipeListView: View {
                     }
                 }
             }
-            .sheet(item: Binding(
+            .appNavigationSheet(item: Binding(
                 get: { viewModel.importedRecipe },
                 set: { viewModel.importedRecipe = $0 }
             )) { recipe in
-                NavigationStack {
-                    RecipeEditorView(recipe: recipe, isNewRecipe: true) { saved in
-                        Task { await viewModel.addRecipe(saved) }
-                        viewModel.importedRecipe = nil
-                    }
-                    .navigationTitle("Review Recipe")
-                    .navigationBarTitleDisplayMode(.inline)
-                    .toolbar {
-                        ToolbarItem(placement: .cancellationAction) {
-                            Button("Cancel") {
-                                viewModel.importedRecipe = nil
-                            }
+                RecipeEditorView(recipe: recipe, isNewRecipe: true) { saved in
+                    Task { await viewModel.addRecipe(saved) }
+                    viewModel.importedRecipe = nil
+                }
+                .navigationTitle("Review Recipe")
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .cancellationAction) {
+                        Button("Cancel") {
+                            viewModel.importedRecipe = nil
                         }
                     }
                 }
@@ -242,32 +238,15 @@ struct RecipeListView: View {
     // MARK: - Search Bar
     private var searchBar: some View {
         @Bindable var viewModel = viewModel
-        return HStack {
-            Image(systemName: "magnifyingglass")
-                .foregroundStyle(AppColors.mediumGray)
-            TextField("Search recipes...", text: $viewModel.searchText)
-                .font(.subheadline)
-                .focused($isSearchFocused)
-                .expandedTapTargetForTextInput()
-                .accessibilityIdentifier("recipes.searchField")
-                .onChange(of: viewModel.searchText) {
-                    viewModel.onSearchTextChanged(isDiscoverTab: selectedSection == .discover)
-                }
-
-            if !viewModel.searchText.isEmpty {
-                Button { viewModel.searchText = "" } label: {
-                    Image(systemName: "xmark.circle.fill")
-                        .foregroundStyle(AppColors.mediumGray)
-                }
+        return AppSearchField(
+            "Search recipes...",
+            text: $viewModel.searchText,
+            focus: $isSearchFocused,
+            onTextChange: { _ in
+                viewModel.onSearchTextChanged(isDiscoverTab: selectedSection == .discover)
             }
-        }
-        .padding(10)
-        .background(AppColors.lightGray)
-        .clipShape(RoundedRectangle(cornerRadius: 10))
-        .contentShape(RoundedRectangle(cornerRadius: 10))
-        .onTapGesture {
-            isSearchFocused = true
-        }
+        )
+        .accessibilityIdentifier("recipes.searchField")
         .padding(.horizontal)
         .padding(.top, 8)
     }

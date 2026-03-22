@@ -3,10 +3,7 @@ import SwiftUI
 struct MealPlanView: View {
     @State private var viewModel: MealPlanViewModel
     @State private var selectedMealEntry: MealPlanEntry?
-    @State private var pendingShoppingItems: [ShoppingItem] = []
-    @State private var showShoppingConfirmation = false
-    @State private var shoppingAlertTitle = ""
-    @State private var shoppingAlertMessage = ""
+    @State private var shoppingConfirmation: ShoppingListConfirmationRequest?
 
     init(appState: AppState) {
         _viewModel = State(initialValue: MealPlanViewModel(appState: appState))
@@ -14,7 +11,7 @@ struct MealPlanView: View {
 
     var body: some View {
         @Bindable var viewModel = viewModel
-        NavigationStack {
+        AppScreen("mealplan.screen") {
             VStack(spacing: 0) {
                 weekNavigation
 
@@ -28,8 +25,6 @@ struct MealPlanView: View {
                     }
                 }
             }
-            .accessibilityIdentifier("mealplan.screen")
-            .background(AppColors.background)
             .navigationTitle("Meal Plan")
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
@@ -41,18 +36,10 @@ struct MealPlanView: View {
                     .accessibilityIdentifier("mealplan.shoppingListButton")
                 }
             }
-            .alert(shoppingAlertTitle, isPresented: $showShoppingConfirmation) {
-                if pendingShoppingItems.isEmpty {
-                    Button("OK", role: .cancel) {}
-                } else {
-                    Button("Cancel", role: .cancel) {}
-                    Button("Add Items") {
-                        let itemsToAdd = pendingShoppingItems
-                        Task { await viewModel.addShoppingItems(itemsToAdd) }
-                    }
+            .shoppingListConfirmation($shoppingConfirmation) { itemsToAdd in
+                Task {
+                    await viewModel.addShoppingItems(itemsToAdd)
                 }
-            } message: {
-                Text(shoppingAlertMessage)
             }
             .sheet(isPresented: $viewModel.showRecipePicker) {
                 RecipePickerView(
@@ -64,11 +51,9 @@ struct MealPlanView: View {
                     }
                 )
             }
-            .sheet(item: $selectedMealEntry) { entry in
+            .appNavigationSheet(item: $selectedMealEntry) { entry in
                 if let recipe = entry.recipe {
-                    NavigationStack {
-                        RecipeDetailView(recipe: recipe)
-                    }
+                    RecipeDetailView(recipe: recipe)
                     .environment(viewModel.appState)
                 }
             }
@@ -79,18 +64,7 @@ struct MealPlanView: View {
     }
 
     private func prepareShoppingConfirmation() {
-        let previewItems = viewModel.previewShoppingList()
-        pendingShoppingItems = previewItems
-
-        if previewItems.isEmpty {
-            shoppingAlertTitle = "Nothing to Add"
-            shoppingAlertMessage = "Everything needed is already in your pantry."
-        } else {
-            shoppingAlertTitle = "Add \(previewItems.count) Item\(previewItems.count == 1 ? "" : "s")?"
-            shoppingAlertMessage = "This will add these items to your cart and exclude ingredients you already have in your pantry."
-        }
-
-        showShoppingConfirmation = true
+        shoppingConfirmation = ShoppingListConfirmationRequest(items: viewModel.previewShoppingList())
     }
 
     // MARK: - Week Navigation

@@ -41,6 +41,293 @@ extension View {
     }
 }
 
+// MARK: - Screen Shells
+struct AppScreen<Content: View>: View {
+    private let screenID: String
+    private let content: Content
+
+    init(_ screenID: String, @ViewBuilder content: () -> Content) {
+        self.screenID = screenID
+        self.content = content()
+    }
+
+    var body: some View {
+        NavigationStack {
+            content
+                .accessibilityIdentifier(screenID)
+                .background(AppColors.background)
+        }
+    }
+}
+
+struct AppNavigationSheet<Content: View>: View {
+    private let content: Content
+
+    init(@ViewBuilder content: () -> Content) {
+        self.content = content()
+    }
+
+    var body: some View {
+        NavigationStack {
+            content
+        }
+    }
+}
+
+extension View {
+    func appNavigationSheet<SheetContent: View>(
+        isPresented: Binding<Bool>,
+        @ViewBuilder content: @escaping () -> SheetContent
+    ) -> some View {
+        sheet(isPresented: isPresented) {
+            AppNavigationSheet(content: content)
+        }
+    }
+
+    func appNavigationSheet<Item: Identifiable, SheetContent: View>(
+        item: Binding<Item?>,
+        @ViewBuilder content: @escaping (Item) -> SheetContent
+    ) -> some View {
+        sheet(item: item) { item in
+            AppNavigationSheet {
+                content(item)
+            }
+        }
+    }
+}
+
+// MARK: - Input Styling
+private struct AppInputSurfaceModifier: ViewModifier {
+    let background: Color
+    let cornerRadius: CGFloat
+
+    func body(content: Content) -> some View {
+        content
+            .background(background)
+            .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
+    }
+}
+
+private struct AppTextEntryModifier: ViewModifier {
+    let autocapitalization: TextInputAutocapitalization?
+    let autocorrectionDisabled: Bool
+    let expandsTapTarget: Bool
+
+    @ViewBuilder
+    func body(content: Content) -> some View {
+        let configuredContent = content
+            .textInputAutocapitalization(autocapitalization)
+            .disableAutocorrection(autocorrectionDisabled)
+
+        if expandsTapTarget {
+            configuredContent.expandedTapTargetForTextInput()
+        } else {
+            configuredContent
+        }
+    }
+}
+
+extension View {
+    func appInputSurface(background: Color = AppColors.lightGray, cornerRadius: CGFloat = 10) -> some View {
+        modifier(AppInputSurfaceModifier(background: background, cornerRadius: cornerRadius))
+    }
+
+    func appTextEntry(
+        autocapitalization: TextInputAutocapitalization? = nil,
+        autocorrectionDisabled: Bool = false,
+        expandsTapTarget: Bool = true
+    ) -> some View {
+        modifier(
+            AppTextEntryModifier(
+                autocapitalization: autocapitalization,
+                autocorrectionDisabled: autocorrectionDisabled,
+                expandsTapTarget: expandsTapTarget
+            )
+        )
+    }
+}
+
+struct AppMultilineInput: View {
+    @Binding private var text: String
+    private let prompt: String
+    private let minHeight: CGFloat
+    private let cornerRadius: CGFloat
+
+    init(
+        text: Binding<String>,
+        prompt: String,
+        minHeight: CGFloat = 80,
+        cornerRadius: CGFloat = 10
+    ) {
+        _text = text
+        self.prompt = prompt
+        self.minHeight = minHeight
+        self.cornerRadius = cornerRadius
+    }
+
+    var body: some View {
+        ZStack(alignment: .topLeading) {
+            if text.isEmpty {
+                Text(prompt)
+                    .font(.subheadline)
+                    .foregroundStyle(AppColors.mediumGray)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 12)
+            }
+
+            TextEditor(text: $text)
+                .font(.subheadline)
+                .scrollContentBackground(.hidden)
+                .padding(.horizontal, 8)
+                .padding(.vertical, 8)
+        }
+        .frame(minHeight: minHeight)
+        .appInputSurface(cornerRadius: cornerRadius)
+    }
+}
+
+struct AppSearchField: View {
+    @Binding private var text: String
+
+    private let placeholder: String
+    private let focus: FocusState<Bool>.Binding?
+    private let onTextChange: ((String) -> Void)?
+    private let background: Color
+    private let cornerRadius: CGFloat
+    private let padding: CGFloat
+
+    init(
+        _ placeholder: String,
+        text: Binding<String>,
+        focus: FocusState<Bool>.Binding? = nil,
+        background: Color = AppColors.lightGray,
+        cornerRadius: CGFloat = 10,
+        padding: CGFloat = 10,
+        onTextChange: ((String) -> Void)? = nil
+    ) {
+        self.placeholder = placeholder
+        _text = text
+        self.focus = focus
+        self.background = background
+        self.cornerRadius = cornerRadius
+        self.padding = padding
+        self.onTextChange = onTextChange
+    }
+
+    var body: some View {
+        HStack(spacing: 10) {
+            Image(systemName: "magnifyingglass")
+                .foregroundStyle(AppColors.mediumGray)
+
+            searchField
+
+            if !text.isEmpty {
+                Button {
+                    trackedText.wrappedValue = ""
+                } label: {
+                    Image(systemName: "xmark.circle.fill")
+                        .foregroundStyle(AppColors.mediumGray)
+                }
+            }
+        }
+        .padding(padding)
+        .appInputSurface(background: background, cornerRadius: cornerRadius)
+        .contentShape(RoundedRectangle(cornerRadius: cornerRadius))
+        .onTapGesture {
+            focus?.wrappedValue = true
+        }
+    }
+
+    private var trackedText: Binding<String> {
+        Binding(
+            get: { text },
+            set: { newValue in
+                text = newValue
+                onTextChange?(newValue)
+            }
+        )
+    }
+
+    @ViewBuilder
+    private var searchField: some View {
+        let field = TextField(placeholder, text: trackedText)
+            .font(.subheadline)
+            .appTextEntry(autocapitalization: .words, autocorrectionDisabled: true)
+
+        if let focus {
+            field.focused(focus)
+        } else {
+            field
+        }
+    }
+}
+
+// MARK: - Shopping Confirmation
+struct ShoppingListConfirmationRequest {
+    let items: [ShoppingItem]
+
+    var title: String {
+        if items.isEmpty {
+            return "Nothing to Add"
+        }
+        return "Add \(items.count) Item\(items.count == 1 ? "" : "s")?"
+    }
+
+    var message: String {
+        if items.isEmpty {
+            return "Everything needed is already in your pantry."
+        }
+        return "This will add these items to your cart and exclude ingredients you already have in your pantry."
+    }
+}
+
+private struct ShoppingListConfirmationModifier: ViewModifier {
+    @Binding var request: ShoppingListConfirmationRequest?
+    let onConfirm: ([ShoppingItem]) -> Void
+
+    private var isPresented: Binding<Bool> {
+        Binding(
+            get: { request != nil },
+            set: { isShowing in
+                if !isShowing {
+                    request = nil
+                }
+            }
+        )
+    }
+
+    func body(content: Content) -> some View {
+        let currentRequest = request
+
+        return content.alert(currentRequest?.title ?? "", isPresented: isPresented) {
+            if let currentRequest, currentRequest.items.isEmpty {
+                Button("OK", role: .cancel) {
+                    request = nil
+                }
+            } else if let currentRequest {
+                Button("Cancel", role: .cancel) {
+                    request = nil
+                }
+                Button("Add Items") {
+                    onConfirm(currentRequest.items)
+                    request = nil
+                }
+            }
+        } message: {
+            Text(currentRequest?.message ?? "")
+        }
+    }
+}
+
+extension View {
+    func shoppingListConfirmation(
+        _ request: Binding<ShoppingListConfirmationRequest?>,
+        onConfirm: @escaping ([ShoppingItem]) -> Void
+    ) -> some View {
+        modifier(ShoppingListConfirmationModifier(request: request, onConfirm: onConfirm))
+    }
+}
+
 // MARK: - Expiry Badge
 struct ExpiryBadge: View {
     let status: ExpiryStatus

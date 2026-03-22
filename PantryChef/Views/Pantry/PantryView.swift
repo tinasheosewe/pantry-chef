@@ -11,7 +11,7 @@ struct PantryView: View {
 
     var body: some View {
         @Bindable var viewModel = viewModel
-        NavigationStack {
+        AppScreen("pantry.screen") {
             VStack(spacing: 0) {
                 inputMethodsBar
                 searchAndSortBar
@@ -31,8 +31,6 @@ struct PantryView: View {
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-            .accessibilityIdentifier("pantry.screen")
-            .background(AppColors.background)
             .navigationTitle("Pantry")
             .sheet(isPresented: $viewModel.showAddItem) {
                 BulkAddPantryView(viewModel: viewModel)
@@ -68,32 +66,15 @@ struct PantryView: View {
     private var searchAndSortBar: some View {
         @Bindable var viewModel = viewModel
         return VStack(spacing: 8) {
-            HStack {
-                Image(systemName: "magnifyingglass")
-                    .foregroundStyle(AppColors.mediumGray)
-                TextField("Search pantry...", text: $viewModel.searchText)
-                    .font(.subheadline)
-                    .focused($isSearchFieldFocused)
-                    .expandedTapTargetForTextInput()
-                    .accessibilityIdentifier("pantry.searchField")
-                    .onChange(of: viewModel.searchText) {
-                        viewModel.onSearchTextChanged()
-                    }
-
-                if !viewModel.searchText.isEmpty {
-                    Button { viewModel.searchText = "" } label: {
-                        Image(systemName: "xmark.circle.fill")
-                            .foregroundStyle(AppColors.mediumGray)
-                    }
+            AppSearchField(
+                "Search pantry...",
+                text: $viewModel.searchText,
+                focus: $isSearchFieldFocused,
+                onTextChange: { _ in
+                    viewModel.onSearchTextChanged()
                 }
-            }
-            .padding(10)
-            .background(AppColors.lightGray)
-            .clipShape(RoundedRectangle(cornerRadius: 10))
-            .contentShape(RoundedRectangle(cornerRadius: 10))
-            .onTapGesture {
-                isSearchFieldFocused = true
-            }
+            )
+            .accessibilityIdentifier("pantry.searchField")
 
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 8) {
@@ -513,38 +494,21 @@ struct BulkAddPantryView: View {
     }
 
     private func catalogSearchBar(viewModel: PantryViewModel) -> some View {
-        HStack(spacing: 10) {
-            Image(systemName: "magnifyingglass")
-                .foregroundStyle(AppColors.mediumGray)
-            TextField("Search the ingredient catalog", text: Binding(
+        AppSearchField(
+            "Search the ingredient catalog",
+            text: Binding(
                 get: { viewModel.bulkAdd.catalogSearchText },
                 set: {
                     viewModel.bulkAdd.catalogSearchText = $0
                     viewModel.bulkAdd.onCatalogSearchTextChanged()
                 }
-            ))
-            .textInputAutocapitalization(.words)
-            .focused($isCatalogSearchFocused)
-            .expandedTapTargetForTextInput()
-
-            if !viewModel.bulkAdd.catalogSearchText.isEmpty {
-                Button {
-                    viewModel.bulkAdd.catalogSearchText = ""
-                    viewModel.bulkAdd.applyCatalogSearchImmediately()
-                } label: {
-                    Image(systemName: "xmark.circle.fill")
-                        .foregroundStyle(AppColors.mediumGray)
-                }
-            }
-        }
-        .padding(12)
-        .background(AppColors.cardBackground)
-        .clipShape(RoundedRectangle(cornerRadius: 14))
+            ),
+            focus: $isCatalogSearchFocused,
+            background: AppColors.cardBackground,
+            cornerRadius: 14,
+            padding: 12
+        )
         .shadow(color: Color.black.opacity(0.04), radius: 8, x: 0, y: 3)
-        .contentShape(RoundedRectangle(cornerRadius: 14))
-        .onTapGesture {
-            isCatalogSearchFocused = true
-        }
     }
 
     private func catalogItemRow(item: PantryCatalogItemDefinition, viewModel: PantryViewModel) -> some View {
@@ -1050,8 +1014,7 @@ struct PantryIntakeFormSections: View {
                     get: { draft.searchText },
                     set: { draft.updateSearchText($0) }
                 ))
-                .textInputAutocapitalization(.words)
-                .expandedTapTargetForTextInput()
+                .appTextEntry(autocapitalization: .words)
                 .accessibilityIdentifier("\(accessibilityPrefix).nameField")
 
                 if draft.isCustomItem {
@@ -1174,7 +1137,7 @@ struct PantryIntakeFormSections: View {
                     set: { draft.setQuantityText($0) }
                 ))
                 .keyboardType(.decimalPad)
-                .expandedTapTargetForTextInput()
+                .appTextEntry()
                 .accessibilityIdentifier("\(accessibilityPrefix).quantityField")
 
                 Picker("Unit", selection: Binding(
@@ -1197,7 +1160,7 @@ struct PantryIntakeFormSections: View {
         Section("Notes") {
             TextField("Optional notes", text: $draft.notes, axis: .vertical)
                 .lineLimit(3)
-                .expandedTapTargetForTextInput()
+                .appTextEntry()
                 .accessibilityIdentifier("\(accessibilityPrefix).notesField")
         }
 
