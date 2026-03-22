@@ -10,7 +10,12 @@ enum IngredientMatcher {
         let normalizedSet: Set<String>
         let synonymUniverse: Set<String>
         let tokenizedNames: [(name: String, tokens: Set<String>)]
+        let resolvedItemsByCatalogID: [String: [Set<PantryFacetSelection>]]
     }
+
+    private static let pantryIndexCacheLock = NSLock()
+    private static var cachedPantryIndexSignature: Int?
+    private static var cachedPantryIndex: PantryIndex?
 
     // MARK: - Public API
 
@@ -22,8 +27,7 @@ enum IngredientMatcher {
         let pantryIndex = buildPantryIndex(pantry)
 
         for ingredient in required {
-            let normalizedIngredient = normalize(ingredient.name)
-            if pantryContainsNormalized(normalizedIngredient, index: pantryIndex) {
+            if pantryContains(ingredient: ingredient, pantry: pantry, index: pantryIndex) {
                 matched.append(ingredient)
             } else {
                 missing.append(ingredient)
@@ -37,7 +41,7 @@ enum IngredientMatcher {
         var substitutable: [(ingredient: Ingredient, substitutions: [SubstitutionEntry])] = []
 
         for ingredient in missing {
-            let subs = subRepo.substitutions(for: ingredient.name, pantry: pantry)
+            let subs = subRepo.substitutions(for: ingredient, pantry: pantry)
             let availableSubs = subs.filter(\.inPantry)
             if !availableSubs.isEmpty {
                 substitutable.append((ingredient: ingredient, substitutions: availableSubs))
@@ -63,10 +67,34 @@ enum IngredientMatcher {
     /// Quick check: does the pantry contain something matching this ingredient?
     static func pantryContains(ingredient: Ingredient, pantry: [PantryItem]) -> Bool {
         let index = buildPantryIndex(pantry)
-        return pantryContainsNormalized(normalize(ingredient.name), index: index)
+        return pantryContains(ingredient: ingredient, pantry: pantry, index: index)
+    }
+
+    private static func pantryContains(ingredient: Ingredient, pantry: [PantryItem], index: PantryIndex) -> Bool {
+        if let catalogItemID = ingredient.catalogItemID {
+            guard let pantryFacetSets = index.resolvedItemsByCatalogID[catalogItemID] else {
+                return false
+            }
+
+            let requiredFacets = Set(ingredient.facets)
+            return pantryFacetSets.contains { pantryFacets in
+                requiredFacets.isSubset(of: pantryFacets)
+            }
+        }
+
+        return pantryContainsNormalized(normalize(ingredient.rawName), index: index)
     }
 
     private static func buildPantryIndex(_ pantry: [PantryItem]) -> PantryIndex {
+        let signature = pantryIndexSignature(for: pantry)
+
+        pantryIndexCacheLock.lock()
+        if cachedPantryIndexSignature == signature, let cachedPantryIndex {
+            pantryIndexCacheLock.unlock()
+            return cachedPantryIndex
+        }
+        pantryIndexCacheLock.unlock()
+
         let normalizedNames = pantry.map { normalize($0.name) }
         let normalizedSet = Set(normalizedNames)
 
@@ -84,12 +112,41 @@ enum IngredientMatcher {
             (name: name, tokens: Set(name.split(separator: " ").map(String.init)))
         }
 
-        return PantryIndex(
+        var resolvedItemsByCatalogID: [String: [Set<PantryFacetSelection>]] = [:]
+        resolvedItemsByCatalogID.reserveCapacity(pantry.count)
+        for pantryItem in pantry {
+            guard let catalogItemID = pantryItem.catalogItemID else { continue }
+            resolvedItemsByCatalogID[catalogItemID, default: []].append(Set(pantryItem.facets))
+        }
+
+        let index = PantryIndex(
             normalizedNames: normalizedNames,
             normalizedSet: normalizedSet,
             synonymUniverse: synonymUniverse,
-            tokenizedNames: tokenizedNames
+            tokenizedNames: tokenizedNames,
+            resolvedItemsByCatalogID: resolvedItemsByCatalogID
         )
+
+        pantryIndexCacheLock.lock()
+        cachedPantryIndexSignature = signature
+        cachedPantryIndex = index
+        pantryIndexCacheLock.unlock()
+
+        return index
+    }
+
+    private static func pantryIndexSignature(for pantry: [PantryItem]) -> Int {
+        var hasher = Hasher()
+        hasher.combine(pantry.count)
+
+        for pantryItem in pantry {
+            hasher.combine(pantryItem.id)
+            hasher.combine(pantryItem.name)
+            hasher.combine(pantryItem.catalogItemID)
+            hasher.combine(pantryItem.facets)
+        }
+
+        return hasher.finalize()
     }
 
     private static func pantryContainsNormalized(_ normalizedIngredient: String, index: PantryIndex) -> Bool {

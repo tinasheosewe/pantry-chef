@@ -57,7 +57,7 @@ struct PantryFacetSelection: Codable, Hashable, Identifiable, Sendable {
     }
 }
 
-struct PantryFacetDefinition: Hashable, Sendable {
+struct PantryFacetDefinition: Codable, Hashable, Sendable {
     let key: PantryFacetKey
     let options: [String]
 }
@@ -339,6 +339,17 @@ enum PantryCatalog {
             freshnessByStorage: [.refrigerated: 5...10, .frozen: 30...60]
         ),
         item(
+            id: "sour-cream",
+            name: "Sour Cream",
+            category: .dairy,
+            defaultUnit: .milliliter,
+            defaultQuantity: 250,
+            defaultStorage: .refrigerated,
+            aliases: ["sour cream"],
+            facets: [],
+            freshnessByStorage: [.refrigerated: 7...14]
+        ),
+        item(
             id: "butter",
             name: "Butter",
             category: .oils,
@@ -397,6 +408,18 @@ enum PantryCatalog {
             freshnessByStorage: [.pantry: 180...365, .refrigerated: 180...365]
         ),
         item(
+            id: "sesame-oil",
+            name: "Sesame Oil",
+            category: .oils,
+            defaultUnit: .milliliter,
+            defaultQuantity: 250,
+            defaultStorage: .pantry,
+            aliases: ["sesame oil", "toasted sesame oil"],
+            facets: [.variant(["toasted", "light"])],
+            defaultSelections: [.init(key: .variant, value: "toasted")],
+            freshnessByStorage: [.pantry: 180...365, .refrigerated: 180...365]
+        ),
+        item(
             id: "tomato",
             name: "Tomato",
             category: .produce,
@@ -430,6 +453,117 @@ enum PantryCatalog {
                 )
             ],
             freshnessByStorage: [.pantry: 3...7, .refrigerated: 5...10]
+        ),
+        item(
+            id: "avocado",
+            name: "Avocado",
+            category: .produce,
+            defaultUnit: .whole,
+            defaultQuantity: 2,
+            defaultStorage: .pantry,
+            aliases: ["avocado", "avocados"],
+            facets: [],
+            freshnessByStorage: [.pantry: 2...5, .refrigerated: 4...7]
+        ),
+        item(
+            id: "banana",
+            name: "Banana",
+            category: .produce,
+            defaultUnit: .whole,
+            defaultQuantity: 6,
+            defaultStorage: .pantry,
+            aliases: ["banana", "bananas"],
+            facets: [],
+            freshnessByStorage: [.pantry: 2...6, .refrigerated: 5...10, .frozen: 30...90]
+        ),
+        item(
+            id: "bell-pepper",
+            name: "Bell Pepper",
+            category: .produce,
+            defaultUnit: .whole,
+            defaultQuantity: 2,
+            defaultStorage: .refrigerated,
+            aliases: ["bell pepper", "bell peppers", "capsicum", "red pepper", "green pepper"],
+            facets: [.variant(["red", "green", "yellow"])],
+            defaultSelections: [.init(key: .variant, value: "red")],
+            freshnessByStorage: [.refrigerated: 5...10]
+        ),
+        item(
+            id: "broccoli",
+            name: "Broccoli",
+            category: .produce,
+            defaultUnit: .whole,
+            defaultQuantity: 1,
+            defaultStorage: .refrigerated,
+            aliases: ["broccoli"],
+            facets: [],
+            freshnessByStorage: [.refrigerated: 4...7, .frozen: 60...180]
+        ),
+        item(
+            id: "carrot",
+            name: "Carrot",
+            category: .produce,
+            defaultUnit: .whole,
+            defaultQuantity: 4,
+            defaultStorage: .refrigerated,
+            aliases: ["carrot", "carrots"],
+            facets: [],
+            freshnessByStorage: [.refrigerated: 14...30]
+        ),
+        item(
+            id: "cucumber",
+            name: "Cucumber",
+            category: .produce,
+            defaultUnit: .whole,
+            defaultQuantity: 1,
+            defaultStorage: .refrigerated,
+            aliases: ["cucumber", "cucumbers"],
+            facets: [],
+            freshnessByStorage: [.refrigerated: 5...10]
+        ),
+        item(
+            id: "ginger",
+            name: "Ginger",
+            category: .produce,
+            defaultUnit: .gram,
+            defaultQuantity: 100,
+            defaultStorage: .refrigerated,
+            aliases: ["ginger", "fresh ginger", "ginger root"],
+            facets: [],
+            freshnessByStorage: [.refrigerated: 14...30, .frozen: 60...180]
+        ),
+        item(
+            id: "green-onion",
+            name: "Green Onion",
+            category: .produce,
+            defaultUnit: .piece,
+            defaultQuantity: 4,
+            defaultStorage: .refrigerated,
+            aliases: ["green onion", "green onions", "spring onion", "spring onions", "scallion", "scallions"],
+            facets: [],
+            freshnessByStorage: [.refrigerated: 5...10]
+        ),
+        item(
+            id: "lime",
+            name: "Lime",
+            category: .produce,
+            defaultUnit: .whole,
+            defaultQuantity: 2,
+            defaultStorage: .pantry,
+            aliases: ["lime", "limes"],
+            facets: [],
+            freshnessByStorage: [.pantry: 5...10, .refrigerated: 10...21]
+        ),
+        item(
+            id: "zucchini",
+            name: "Zucchini",
+            category: .produce,
+            defaultUnit: .whole,
+            defaultQuantity: 2,
+            defaultStorage: .refrigerated,
+            aliases: ["zucchini", "courgette"],
+            facets: [],
+            freshnessByStorage: [.refrigerated: 4...7]
         ),
         item(
             id: "onion",
@@ -646,6 +780,84 @@ enum PantryCatalog {
             freshnessByStorage: [.pantry: 180...365, .refrigerated: 5...10]
         ),
         item(
+            id: "coconut-milk",
+            name: "Coconut Milk",
+            category: .canned,
+            defaultUnit: .can,
+            defaultQuantity: 1,
+            defaultStorage: .pantry,
+            aliases: ["coconut milk"],
+            facets: [],
+            freshnessByStorage: [.pantry: 120...365, .refrigerated: 3...5]
+        ),
+        item(
+            id: "hummus",
+            name: "Hummus",
+            category: .condiments,
+            defaultUnit: .gram,
+            defaultQuantity: 250,
+            defaultStorage: .refrigerated,
+            aliases: ["hummus"],
+            facets: [],
+            freshnessByStorage: [.refrigerated: 5...10]
+        ),
+        item(
+            id: "miso-paste",
+            name: "Miso Paste",
+            category: .condiments,
+            defaultUnit: .gram,
+            defaultQuantity: 200,
+            defaultStorage: .refrigerated,
+            aliases: ["miso paste", "miso"],
+            facets: [],
+            freshnessByStorage: [.refrigerated: 30...90]
+        ),
+        item(
+            id: "soy-sauce",
+            name: "Soy Sauce",
+            category: .condiments,
+            defaultUnit: .milliliter,
+            defaultQuantity: 250,
+            defaultStorage: .pantry,
+            aliases: ["soy sauce", "light soy sauce", "dark soy sauce"],
+            facets: [.variant(["regular", "light", "dark"])],
+            defaultSelections: [.init(key: .variant, value: "regular")],
+            freshnessByStorage: [.pantry: 180...365, .refrigerated: 180...365]
+        ),
+        item(
+            id: "tomato-sauce",
+            name: "Tomato Sauce",
+            category: .condiments,
+            defaultUnit: .milliliter,
+            defaultQuantity: 500,
+            defaultStorage: .pantry,
+            aliases: ["tomato sauce", "pizza sauce", "passata"],
+            facets: [],
+            freshnessByStorage: [.pantry: 120...365, .refrigerated: 3...5]
+        ),
+        item(
+            id: "fish-sauce",
+            name: "Fish Sauce",
+            category: .condiments,
+            defaultUnit: .milliliter,
+            defaultQuantity: 200,
+            defaultStorage: .pantry,
+            aliases: ["fish sauce"],
+            facets: [],
+            freshnessByStorage: [.pantry: 180...365, .refrigerated: 180...365]
+        ),
+        item(
+            id: "lemon-juice",
+            name: "Lemon Juice",
+            category: .condiments,
+            defaultUnit: .milliliter,
+            defaultQuantity: 250,
+            defaultStorage: .refrigerated,
+            aliases: ["lemon juice"],
+            facets: [],
+            freshnessByStorage: [.refrigerated: 7...21]
+        ),
+        item(
             id: "broth",
             name: "Broth",
             category: .canned,
@@ -692,6 +904,28 @@ enum PantryCatalog {
             facets: [.variant(["granulated", "brown", "powdered"])],
             defaultSelections: [.init(key: .variant, value: "granulated")],
             freshnessByStorage: [.pantry: 180...365]
+        ),
+        item(
+            id: "cornstarch",
+            name: "Cornstarch",
+            category: .bakingSupplies,
+            defaultUnit: .gram,
+            defaultQuantity: 250,
+            defaultStorage: .pantry,
+            aliases: ["cornstarch", "corn flour"],
+            facets: [],
+            freshnessByStorage: [.pantry: 180...365]
+        ),
+        item(
+            id: "honey",
+            name: "Honey",
+            category: .bakingSupplies,
+            defaultUnit: .milliliter,
+            defaultQuantity: 340,
+            defaultStorage: .pantry,
+            aliases: ["honey"],
+            facets: [],
+            freshnessByStorage: [.pantry: 365...730]
         ),
         item(
             id: "baking-powder",
@@ -763,6 +997,116 @@ enum PantryCatalog {
             freshnessByStorage: [.pantry: 180...365]
         ),
         item(
+            id: "basil",
+            name: "Basil",
+            category: .spices,
+            defaultUnit: .bunch,
+            defaultQuantity: 1,
+            defaultStorage: .refrigerated,
+            aliases: ["basil", "fresh basil"],
+            facets: [],
+            freshnessByStorage: [.refrigerated: 3...7, .frozen: 30...90]
+        ),
+        item(
+            id: "cilantro",
+            name: "Cilantro",
+            category: .spices,
+            defaultUnit: .bunch,
+            defaultQuantity: 1,
+            defaultStorage: .refrigerated,
+            aliases: ["cilantro", "coriander leaves", "fresh coriander"],
+            facets: [],
+            freshnessByStorage: [.refrigerated: 3...7, .frozen: 30...90]
+        ),
+        item(
+            id: "chili-powder",
+            name: "Chili Powder",
+            category: .spices,
+            defaultUnit: .gram,
+            defaultQuantity: 50,
+            defaultStorage: .pantry,
+            aliases: ["chili powder", "chilli powder"],
+            facets: [],
+            freshnessByStorage: [.pantry: 180...365]
+        ),
+        item(
+            id: "cumin",
+            name: "Cumin",
+            category: .spices,
+            defaultUnit: .gram,
+            defaultQuantity: 50,
+            defaultStorage: .pantry,
+            aliases: ["cumin", "ground cumin"],
+            facets: [],
+            freshnessByStorage: [.pantry: 180...365]
+        ),
+        item(
+            id: "garam-masala",
+            name: "Garam Masala",
+            category: .spices,
+            defaultUnit: .gram,
+            defaultQuantity: 50,
+            defaultStorage: .pantry,
+            aliases: ["garam masala"],
+            facets: [],
+            freshnessByStorage: [.pantry: 180...365]
+        ),
+        item(
+            id: "oregano",
+            name: "Oregano",
+            category: .spices,
+            defaultUnit: .gram,
+            defaultQuantity: 30,
+            defaultStorage: .pantry,
+            aliases: ["oregano", "dried oregano"],
+            facets: [],
+            freshnessByStorage: [.pantry: 180...365]
+        ),
+        item(
+            id: "parsley",
+            name: "Parsley",
+            category: .spices,
+            defaultUnit: .bunch,
+            defaultQuantity: 1,
+            defaultStorage: .refrigerated,
+            aliases: ["parsley", "fresh parsley"],
+            facets: [],
+            freshnessByStorage: [.refrigerated: 3...7, .frozen: 30...90]
+        ),
+        item(
+            id: "red-pepper-flakes",
+            name: "Red Pepper Flakes",
+            category: .spices,
+            defaultUnit: .gram,
+            defaultQuantity: 25,
+            defaultStorage: .pantry,
+            aliases: ["red pepper flakes", "chili flakes", "chilli flakes"],
+            facets: [],
+            freshnessByStorage: [.pantry: 180...365]
+        ),
+        item(
+            id: "thyme",
+            name: "Thyme",
+            category: .spices,
+            defaultUnit: .gram,
+            defaultQuantity: 25,
+            defaultStorage: .pantry,
+            aliases: ["thyme", "fresh thyme", "dried thyme"],
+            facets: [],
+            freshnessByStorage: [.pantry: 180...365, .refrigerated: 5...10]
+        ),
+        item(
+            id: "turmeric",
+            name: "Turmeric",
+            category: .spices,
+            defaultUnit: .gram,
+            defaultQuantity: 50,
+            defaultStorage: .pantry,
+            aliases: ["turmeric", "ground turmeric"],
+            facets: [],
+            freshnessByStorage: [.pantry: 180...365]
+        ),
+        item(
             id: "paprika",
             name: "Paprika",
             category: .spices,
@@ -801,6 +1145,39 @@ enum PantryCatalog {
             freshnessByStorage: [.pantry: 3...7, .refrigerated: 5...10, .frozen: 30...90]
         ),
         item(
+            id: "pizza-dough",
+            name: "Pizza Dough",
+            category: .grains,
+            defaultUnit: .pound,
+            defaultQuantity: 1,
+            defaultStorage: .refrigerated,
+            aliases: ["pizza dough"],
+            facets: [],
+            freshnessByStorage: [.refrigerated: 2...5, .frozen: 30...90]
+        ),
+        item(
+            id: "pita",
+            name: "Pita",
+            category: .grains,
+            defaultUnit: .piece,
+            defaultQuantity: 4,
+            defaultStorage: .pantry,
+            aliases: ["pita", "pita bread"],
+            facets: [],
+            freshnessByStorage: [.pantry: 3...7, .refrigerated: 5...10, .frozen: 30...90]
+        ),
+        item(
+            id: "red-lentils",
+            name: "Red Lentils",
+            category: .grains,
+            defaultUnit: .gram,
+            defaultQuantity: 500,
+            defaultStorage: .pantry,
+            aliases: ["red lentils", "red lentil", "lentils"],
+            facets: [],
+            freshnessByStorage: [.pantry: 180...365]
+        ),
+        item(
             id: "tortilla",
             name: "Tortilla",
             category: .grains,
@@ -813,6 +1190,17 @@ enum PantryCatalog {
             freshnessByStorage: [.pantry: 7...21, .refrigerated: 14...30, .frozen: 30...90]
         ),
         item(
+            id: "rice-noodles",
+            name: "Rice Noodles",
+            category: .pasta,
+            defaultUnit: .gram,
+            defaultQuantity: 250,
+            defaultStorage: .pantry,
+            aliases: ["rice noodles", "rice noodle"],
+            facets: [],
+            freshnessByStorage: [.pantry: 180...365]
+        ),
+        item(
             id: "muffin",
             name: "Muffin",
             category: .grains,
@@ -823,6 +1211,51 @@ enum PantryCatalog {
             facets: [.variant(["blueberry", "chocolate chip", "bran"]), .preservation(["fresh", "frozen"])],
             defaultSelections: [.init(key: .variant, value: "blueberry"), .init(key: .preservation, value: "fresh")],
             freshnessByStorage: [.pantry: 2...5, .refrigerated: 4...7, .frozen: 30...90]
+        ),
+        item(
+            id: "peanuts",
+            name: "Peanuts",
+            category: .nuts,
+            defaultUnit: .gram,
+            defaultQuantity: 250,
+            defaultStorage: .pantry,
+            aliases: ["peanuts", "peanut"],
+            facets: [],
+            freshnessByStorage: [.pantry: 90...180, .refrigerated: 120...240]
+        ),
+        item(
+            id: "shrimp",
+            name: "Shrimp",
+            category: .protein,
+            defaultUnit: .gram,
+            defaultQuantity: 300,
+            defaultStorage: .refrigerated,
+            aliases: ["shrimp", "prawn", "prawns"],
+            facets: [.preservation(["fresh", "frozen"])],
+            defaultSelections: [.init(key: .preservation, value: "fresh")],
+            freshnessByStorage: [.refrigerated: 1...2, .frozen: 60...180]
+        ),
+        item(
+            id: "bean-sprouts",
+            name: "Bean Sprouts",
+            category: .produce,
+            defaultUnit: .gram,
+            defaultQuantity: 200,
+            defaultStorage: .refrigerated,
+            aliases: ["bean sprouts", "bean sprout"],
+            facets: [],
+            freshnessByStorage: [.refrigerated: 2...5]
+        ),
+        item(
+            id: "water",
+            name: "Water",
+            category: .other,
+            defaultUnit: .liter,
+            defaultQuantity: 1,
+            defaultStorage: .pantry,
+            aliases: ["water"],
+            facets: [],
+            freshnessByStorage: [.pantry: 365...730]
         )
     ]
 

@@ -90,6 +90,7 @@ actor StorageService: StorageServiceProtocol {
             PantryFacetRecord.self,
             RecipeRecord.self,
             IngredientRecord.self,
+            IngredientFacetRecord.self,
             RecipeStepRecord.self,
             StepTaskRecord.self,
             StepTaskDependencyRecord.self,
@@ -121,7 +122,13 @@ actor StorageService: StorageServiceProtocol {
             try destroyPersistentStore(at: storeURL)
         }
         let configuration = ModelConfiguration(schema: schema, url: storeURL, cloudKitDatabase: .none)
-        return try ModelContainer(for: schema, configurations: [configuration])
+        do {
+            return try ModelContainer(for: schema, configurations: [configuration])
+        } catch {
+            AppLog.warn("[StorageService] Failed to open persistent store with current schema. Resetting store and retrying: \(error.localizedDescription)")
+            try destroyPersistentStore(at: storeURL)
+            return try ModelContainer(for: schema, configurations: [configuration])
+        }
     }
 
     private static func persistentStoreURL() throws -> URL {

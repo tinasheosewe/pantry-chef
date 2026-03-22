@@ -126,11 +126,11 @@ final class AIService: AIServiceProtocol {
         var localSuggestions: [SubstitutionSuggestion] = []
 
         for ingredient in matchResult.missingIngredients {
-            let subs = SubstitutionRepository.shared.substitutions(for: ingredient.name, pantry: pantry)
+            let subs = SubstitutionRepository.shared.substitutions(for: ingredient, pantry: pantry)
             let top3 = Array(subs.prefix(3))
             for sub in top3 {
                 localSuggestions.append(SubstitutionSuggestion(
-                    originalIngredient: ingredient.name,
+                    originalIngredient: ingredient.displayName,
                     substituteName: sub.substituteName,
                     ratio: sub.ratio,
                     tasteImpact: sub.tasteImpact.rawValue,
@@ -650,6 +650,34 @@ final class AIService: AIServiceProtocol {
         ] as [String: Any]
     ]
 
+    private static let ingredientResolutionSchema: [String: Any] = [
+        "name": "ingredient_resolution",
+        "strict": true,
+        "schema": [
+            "type": "object",
+            "properties": [
+                "decisions": [
+                    "type": "array",
+                    "items": [
+                        "type": "object",
+                        "properties": [
+                            "ingredientID": ["type": "string"],
+                            "status": ["type": "string", "enum": ["resolved", "ambiguous", "unknown"]],
+                            "selectedCandidateID": ["type": ["string", "null"]],
+                            "candidateIDs": ["type": "array", "items": ["type": "string"]],
+                            "confidence": ["type": "number"],
+                            "rationale": ["type": "string"]
+                        ] as [String: Any],
+                        "required": ["ingredientID", "status", "selectedCandidateID", "candidateIDs", "confidence", "rationale"],
+                        "additionalProperties": false
+                    ] as [String: Any]
+                ] as [String: Any]
+            ] as [String: Any],
+            "required": ["decisions"],
+            "additionalProperties": false
+        ] as [String: Any]
+    ]
+
     func parseRecipeFromText(_ extractedText: String) async -> RecipeImportResult? {
         let prompt = """
         Parse the following text into a structured recipe. The text may come from a website, \
@@ -679,6 +707,67 @@ final class AIService: AIServiceProtocol {
             return validatedImportResult(raw.toRecipeImportResult(), source: "parseRecipeFromText")
         } catch {
             AppLog.warn("[AIService] Failed to decode structured recipe: \(error)")
+            return nil
+        }
+    }
+
+    func resolveIngredients(_ requests: [IngredientResolutionRequest]) async -> [IngredientResolutionDecision]? {
+        guard !requests.isEmpty else { return [] }
+
+        let requestBody = requests.map { request in
+            let unitText = request.unit?.rawValue ?? "none"
+            let notesText = request.notes ?? "none"
+            let candidateText = request.candidates.map { candidate in
+                let facetText = candidate.supportedFacets.map { definition in
+                    "\(definition.key.rawValue): [\(definition.options.joined(separator: ", "))]"
+                }.joined(separator: "; ")
+                let selectedFacetText = candidate.facets.map { "\($0.key.rawValue)=\($0.value)" }.joined(separator: ", ")
+                return "- candidateID: \(candidate.id), catalogItemID: \(candidate.catalogItemID), name: \(candidate.displayName), score: \(String(format: "%.2f", candidate.score)), rationale: \(candidate.rationale), selected facets: \(selectedFacetText.isEmpty ? "none" : selectedFacetText), supported facets: \(facetText.isEmpty ? "none" : facetText)"
+            }.joined(separator: "\n")
+
+            return """
+            Ingredient ID: \(request.ingredientID.uuidString)
+            Raw name: \(request.rawName)
+            Quantity: \(request.quantity)
+            Unit: \(unitText)
+            Category hint: \(request.category.rawValue)
+            Notes: \(notesText)
+            Allowed candidates:
+            \(candidateText.isEmpty ? "- none" : candidateText)
+            """
+        }.joined(separator: "\n\n")
+
+        let prompt = """
+        Resolve each recipe ingredient against the provided internal pantry registry candidates.
+
+        For each ingredient, choose exactly one status:
+        - resolved: when one allowed candidate is clearly correct
+        - ambiguous: when more than one allowed candidate remains plausible
+        - unknown: when no supplied candidate is credible
+
+        Constraints:
+        - Never invent a candidate ID or catalog item ID.
+        - Use only the candidate IDs listed for that ingredient.
+        - selectedCandidateID must be null unless status is resolved.
+        - candidateIDs must be empty for resolved and unknown decisions.
+        - candidateIDs must contain only plausible candidate IDs when status is ambiguous.
+        - confidence must be a number between 0 and 1.
+
+        Ingredients:
+        \(requestBody)
+        """
+
+        guard let response = await sendChatRequest(
+            prompt: prompt,
+            responseFormat: ["type": "json_schema", "json_schema": Self.ingredientResolutionSchema]
+        ) else { return nil }
+
+        guard let data = response.data(using: .utf8) else { return nil }
+        do {
+            let raw = try JSONDecoder().decode(RawIngredientResolutionBatch.self, from: data)
+            return raw.decisions
+        } catch {
+            AppLog.warn("[AIService] Failed to decode ingredient resolutions: \(error)")
             return nil
         }
     }

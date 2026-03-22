@@ -5,8 +5,13 @@ import SwiftUI
 /// A full structured editor for a recipe. Used after importing (URL / text / photo)
 /// and when editing an existing recipe from RecipeDetailView.
 struct RecipeEditorView: View {
+    @Environment(AppState.self) private var appState
     @State private var recipe: Recipe
     @State private var showNutrition: Bool
+    @State private var isResolving = false
+    @State private var resolutionErrorMessage: String?
+    @State private var resolutionDraft: RecipeResolutionDraft?
+    @State private var pendingSaveAsNew = false
     @FocusState private var focusedField: Field?
 
     let isNewRecipe: Bool
@@ -50,6 +55,16 @@ struct RecipeEditorView: View {
         }
         .scrollDismissesKeyboard(.interactively)
         .background(AppColors.background)
+        .sheet(item: $resolutionDraft) { draft in
+            NavigationStack {
+                IngredientResolutionReviewView(draft: draft) { resolvedRecipe in
+                    resolutionDraft = nil
+                    completeSave(with: resolvedRecipe)
+                } onCancel: {
+                    resolutionDraft = nil
+                }
+            }
+        }
     }
 
     // MARK: - Title & Description
@@ -632,29 +647,40 @@ struct RecipeEditorView: View {
     private var saveSection: some View {
         VStack(spacing: 12) {
             Button {
-                finalizeSave()
-                onSave(recipe)
+                Task { await handleSave() }
             } label: {
-                Text(isNewRecipe ? "Save Recipe" : "Save Changes")
-                    .fontWeight(.semibold)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 14)
-                    .foregroundStyle(.white)
-                        .background(canSave ? AppColors.primaryGreen : AppColors.mediumGray)
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                Group {
+                    if isResolving {
+                        HStack(spacing: 8) {
+                            ProgressView()
+                                .tint(.white)
+                            Text("Resolving Ingredients")
+                        }
+                    } else {
+                        Text(isNewRecipe ? "Save Recipe" : "Save Changes")
+                    }
+                }
+                .fontWeight(.semibold)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 14)
+                .foregroundStyle(.white)
+                .background(canSave && !isResolving ? AppColors.primaryGreen : AppColors.mediumGray)
+                .clipShape(RoundedRectangle(cornerRadius: 12))
             }
-                    .disabled(!canSave)
+            .disabled(!canSave || isResolving)
+
+            if let resolutionErrorMessage {
+                Text(resolutionErrorMessage)
+                    .font(.caption)
+                    .foregroundStyle(AppColors.softRed)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
 
             if !isNewRecipe, let onSaveAsNew {
                 Button {
-                    finalizeSave()
-                    var copy = recipe
-                    copy.id = UUID()
-                    copy.dateAdded = Date()
-                    copy.timesCooked = 0
-                    copy.source = .user
-                    copy.isFavorite = false
-                    onSaveAsNew(copy)
+                    Task {
+                        await handleSave(saveAsNew: onSaveAsNew)
+                    }
                 } label: {
                     Text("Save as New Recipe")
                         .fontWeight(.medium)
@@ -664,6 +690,7 @@ struct RecipeEditorView: View {
                         .background(AppColors.primaryGreen.opacity(0.1))
                         .clipShape(RoundedRectangle(cornerRadius: 12))
                 }
+                .disabled(!canSave || isResolving)
             }
         }
         .padding(.top, 8)
@@ -687,5 +714,139 @@ struct RecipeEditorView: View {
         let hasIngredients = recipe.ingredients.contains { !$0.name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
         let hasSteps = recipe.steps.contains { !$0.instruction.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
         return hasTitle && hasIngredients && hasSteps
+    }
+
+    private func handleSave(saveAsNew: ((Recipe) -> Void)? = nil) async {
+        resolutionErrorMessage = nil
+        finalizeSave()
+        pendingSaveAsNew = saveAsNew != nil
+
+        isResolving = true
+        let draft = await appState.recipeIngredientResolver.resolve(recipe: recipe)
+        isResolving = false
+
+        if draft.isReadyToBuild {
+            completeSave(with: draft.builtRecipe())
+            return
+        }
+
+        if draft.ambiguousIngredients.isEmpty {
+            resolutionErrorMessage = "Recipe ingredients could not be resolved."
+            return
+        }
+
+        resolutionDraft = draft
+    }
+
+    private func completeSave(with resolvedRecipe: Recipe) {
+        var recipeToSave = resolvedRecipe
+
+        if pendingSaveAsNew, let onSaveAsNew {
+            recipeToSave.id = UUID()
+            recipeToSave.dateAdded = Date()
+            recipeToSave.timesCooked = 0
+            recipeToSave.source = .user
+            recipeToSave.isFavorite = false
+            onSaveAsNew(recipeToSave)
+        } else {
+            onSave(recipeToSave)
+        }
+
+        pendingSaveAsNew = false
+    }
+}
+
+private struct IngredientResolutionReviewView: View {
+    @Environment(\.dismiss) private var dismiss
+    @State private var draft: RecipeResolutionDraft
+
+    let onConfirm: (Recipe) -> Void
+    let onCancel: () -> Void
+
+    init(
+        draft: RecipeResolutionDraft,
+        onConfirm: @escaping (Recipe) -> Void,
+        onCancel: @escaping () -> Void
+    ) {
+        _draft = State(initialValue: draft)
+        self.onConfirm = onConfirm
+        self.onCancel = onCancel
+    }
+
+    private var canConfirm: Bool {
+        draft.ambiguousIngredients.allSatisfy { $0.selectedCandidateID != nil }
+    }
+
+    var body: some View {
+        List {
+            Section {
+                Text("Choose a registry match for each ambiguous ingredient before saving this recipe.")
+                    .font(.subheadline)
+                    .foregroundStyle(AppColors.subtleText)
+            }
+
+            ForEach(draft.ingredients.indices, id: \.self) { index in
+                let ingredientDraft = draft.ingredients[index]
+                if ingredientDraft.requiresUserChoice {
+                    Section(ingredientDraft.ingredient.displayText) {
+                        ForEach(ingredientDraft.candidates) { candidate in
+                            Button {
+                                draft.ingredients[index].chooseCandidate(candidate)
+                            } label: {
+                                HStack(alignment: .top, spacing: 10) {
+                                    Image(systemName: draft.ingredients[index].selectedCandidateID == candidate.id ? "largecircle.fill.circle" : "circle")
+                                        .foregroundStyle(draft.ingredients[index].selectedCandidateID == candidate.id ? AppColors.primaryGreen : AppColors.mediumGray)
+
+                                    VStack(alignment: .leading, spacing: 4) {
+                                        Text(candidate.displayName)
+                                            .font(.subheadline)
+                                            .foregroundStyle(AppColors.darkText)
+
+                                        Text(candidate.rationale)
+                                            .font(.caption)
+                                            .foregroundStyle(AppColors.subtleText)
+                                    }
+
+                                    Spacer()
+                                }
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    }
+                }
+            }
+
+            if !draft.unknownIngredients.isEmpty {
+                Section("Unknown Ingredients") {
+                    ForEach(draft.unknownIngredients) { ingredientDraft in
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(ingredientDraft.ingredient.displayText)
+                                .font(.subheadline)
+                            Text("This ingredient will stay unresolved and keep its original text.")
+                                .font(.caption)
+                                .foregroundStyle(AppColors.subtleText)
+                        }
+                    }
+                }
+            }
+        }
+        .navigationTitle("Resolve Ingredients")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .cancellationAction) {
+                Button("Back") {
+                    onCancel()
+                    dismiss()
+                }
+            }
+            ToolbarItem(placement: .confirmationAction) {
+                Button("Apply") {
+                    let recipe = draft.builtRecipe()
+                    onConfirm(recipe)
+                    dismiss()
+                }
+                .disabled(!canConfirm)
+            }
+        }
     }
 }

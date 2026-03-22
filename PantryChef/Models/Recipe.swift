@@ -1,14 +1,16 @@
 import Foundation
 
 // MARK: - Ingredient
-struct Ingredient: Identifiable, Codable, Hashable {
+struct Ingredient: Identifiable, Codable, Hashable, Sendable {
     var id: UUID
-    var name: String
+    var rawName: String
     var quantity: Double
     var unit: MeasurementUnit?
     var category: FoodCategory
     var isOptional: Bool
     var notes: String?
+    var catalogItemID: String?
+    var facets: [PantryFacetSelection]
 
     init(
         id: UUID = UUID(),
@@ -17,23 +19,65 @@ struct Ingredient: Identifiable, Codable, Hashable {
         unit: MeasurementUnit? = nil,
         category: FoodCategory = .other,
         isOptional: Bool = false,
-        notes: String? = nil
+        notes: String? = nil,
+        catalogItemID: String? = nil,
+        facets: [PantryFacetSelection] = []
     ) {
         self.id = id
-        self.name = name
+        self.rawName = name
         self.quantity = quantity
         self.unit = unit
         self.category = category
         self.isOptional = isOptional
         self.notes = notes
+        self.catalogItemID = catalogItemID
+        self.facets = facets
+    }
+
+    var name: String {
+        get { rawName }
+        set { rawName = newValue }
+    }
+
+    var linkedItem: PantryCatalogItemDefinition? {
+        catalogItemID.flatMap { PantryCatalog.item(id: $0) }
+    }
+
+    var isResolved: Bool {
+        linkedItem != nil
+    }
+
+    var displayName: String {
+        linkedItem?.displayName(for: facets) ?? rawName
+    }
+
+    var resolvedCategory: FoodCategory {
+        linkedItem?.category ?? category
+    }
+
+    func resolved(to catalogItemID: String, facets: [PantryFacetSelection]) -> Ingredient {
+        var ingredient = self
+        ingredient.catalogItemID = catalogItemID
+        ingredient.facets = facets
+        if let item = ingredient.linkedItem {
+            ingredient.category = item.category
+        }
+        return ingredient
+    }
+
+    func unresolved() -> Ingredient {
+        var ingredient = self
+        ingredient.catalogItemID = nil
+        ingredient.facets = []
+        return ingredient
     }
 
     var displayText: String {
         let unitStr = unit?.rawValue ?? ""
         if quantity == quantity.rounded() {
-            return "\(Int(quantity)) \(unitStr) \(name)".trimmingCharacters(in: .whitespaces)
+            return "\(Int(quantity)) \(unitStr) \(displayName)".trimmingCharacters(in: .whitespaces)
         }
-        return String(format: "%.1f %@ %@", quantity, unitStr, name).trimmingCharacters(in: .whitespaces)
+        return String(format: "%.1f %@ %@", quantity, unitStr, displayName).trimmingCharacters(in: .whitespaces)
     }
 }
 
@@ -232,7 +276,7 @@ struct Recipe: Identifiable, Codable, Hashable {
     private static let sf9 = UUID(uuidString: "10000000-0000-0000-0000-000000000009")!  // plate
 
     // MARK: - Sample Data
-    static let sample = Recipe(
+    static let sample = TrustedRecipeCanonicalizer.canonicalize(Recipe(
         id: stirFryId,
         title: "Simple Chicken Stir Fry",
         description: "A quick and healthy chicken stir fry with vegetables.",
@@ -292,7 +336,7 @@ struct Recipe: Identifiable, Codable, Hashable {
             sodium: 580
         ),
         isFavorite: true
-    )
+    ))
 
     // Avocado Toast tasks
     private static let at0 = UUID(uuidString: "20000000-0000-0000-0000-000000000000")!  // toast bread
@@ -313,7 +357,7 @@ struct Recipe: Identifiable, Codable, Hashable {
 
     static let samples: [Recipe] = [
         sample,
-        Recipe(
+        TrustedRecipeCanonicalizer.canonicalize(Recipe(
             id: avocadoId,
             title: "Avocado Toast",
             description: "Quick, healthy, and delicious breakfast.",
@@ -347,8 +391,8 @@ struct Recipe: Identifiable, Codable, Hashable {
             mealType: .breakfast,
             cuisine: .american,
             nutrition: NutritionInfo(calories: 280, protein: 6, carbohydrates: 30, fat: 16, fiber: 8, sugar: 2, sodium: 300)
-        ),
-        Recipe(
+        )),
+        TrustedRecipeCanonicalizer.canonicalize(Recipe(
             id: friedRiceId,
             title: "Egg Fried Rice",
             description: "A classic quick dinner using leftover rice.",
@@ -389,7 +433,7 @@ struct Recipe: Identifiable, Codable, Hashable {
             mealType: .dinner,
             cuisine: .chinese,
             nutrition: NutritionInfo(calories: 380, protein: 14, carbohydrates: 52, fat: 12, fiber: 2, sugar: 3, sodium: 700)
-        ),
+        )),
     ]
 }
 

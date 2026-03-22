@@ -33,6 +33,14 @@ protocol PantryItemPreferenceStoreProtocol: AnyObject {
     func removePreference(for catalogItemID: String)
 }
 
+protocol IngredientCandidateParserProtocol: AnyObject {
+    func candidates(for ingredient: Ingredient) -> [IngredientResolutionCandidate]
+}
+
+protocol RecipeIngredientResolverProtocol: AnyObject {
+    func resolve(recipe: Recipe) async -> RecipeResolutionDraft
+}
+
 // MARK: - AI Service Protocol
 /// Defines the contract for AI-powered features.
 protocol AIServiceProtocol: AnyObject, Sendable {
@@ -43,6 +51,7 @@ protocol AIServiceProtocol: AnyObject, Sendable {
     func leftoverTransformer(ingredients: [String]) async -> [Recipe]
     func parseRecipeFromURL(_ url: String) async -> RecipeImportResult?
     func parseRecipeFromText(_ extractedText: String) async -> RecipeImportResult?
+    func resolveIngredients(_ requests: [IngredientResolutionRequest]) async -> [IngredientResolutionDecision]?
     func estimateStepDurations(for steps: [RecipeStep], recipeTitle: String) async -> [RecipeStep]
     func generateRecipe(query: String, preferences: RecipeGenerationPreferences) async -> Recipe?
     func generateStatusMessages(query: String, preferences: RecipeGenerationPreferences) async -> [String]

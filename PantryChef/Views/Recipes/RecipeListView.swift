@@ -130,16 +130,21 @@ struct RecipeListView: View {
                 set: { viewModel.importedRecipe = $0 }
             )) { recipe in
                 NavigationStack {
-                    RecipeDetailView(recipe: recipe)
-                        .toolbar {
-                            ToolbarItem(placement: .confirmationAction) {
-                                Button("Save") {
-                                    Task { await viewModel.addRecipe(recipe) }
-                                    viewModel.importedRecipe = nil
-                                }
+                    RecipeEditorView(recipe: recipe, isNewRecipe: true) { saved in
+                        Task { await viewModel.addRecipe(saved) }
+                        viewModel.importedRecipe = nil
+                    }
+                    .navigationTitle("Review Recipe")
+                    .navigationBarTitleDisplayMode(.inline)
+                    .toolbar {
+                        ToolbarItem(placement: .cancellationAction) {
+                            Button("Cancel") {
+                                viewModel.importedRecipe = nil
                             }
                         }
+                    }
                 }
+                .environment(viewModel.appState)
             }
             .onChange(of: activateCanMakeFilter) { _, newValue in
                 if newValue {

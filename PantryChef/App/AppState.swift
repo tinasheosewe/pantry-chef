@@ -7,6 +7,8 @@ final class AppState {
     let storageService: StorageServiceProtocol
     let aiService: AIServiceProtocol
     let pantryItemPreferenceStore: PantryItemPreferenceStoreProtocol
+    let ingredientCandidateParser: IngredientCandidateParserProtocol
+    let recipeIngredientResolver: RecipeIngredientResolverProtocol
     let recipeRepository = RecipeRepository.shared
 
     // MARK: - Shared State
@@ -75,6 +77,8 @@ final class AppState {
             resetPersistentStore: launchOptions.resetPersistentStore
         )
         self.aiService = AIService()
+        self.ingredientCandidateParser = IngredientCandidateParser()
+        self.recipeIngredientResolver = RecipeIngredientResolver(candidateParser: ingredientCandidateParser, aiService: aiService)
         pantryItems = launchOptions.seedPantryItems ? PantryItem.samples : []
         recipes = launchOptions.seedRecipes ? Recipe.samples : []
         discoverRecipes = launchOptions.seedDiscoverRecipes ? recipeRepository.seedRecipes : []
@@ -84,12 +88,16 @@ final class AppState {
     init(
         storageService: StorageServiceProtocol,
         aiService: AIServiceProtocol,
+        ingredientCandidateParser: IngredientCandidateParserProtocol = IngredientCandidateParser(),
         pantryItemPreferenceStore: PantryItemPreferenceStoreProtocol = PantryItemPreferenceStore(),
+        recipeIngredientResolver: RecipeIngredientResolverProtocol? = nil,
         shouldLoadOnInit: Bool = true
     ) {
         self.storageService = storageService
         self.aiService = aiService
+        self.ingredientCandidateParser = ingredientCandidateParser
         self.pantryItemPreferenceStore = pantryItemPreferenceStore
+        self.recipeIngredientResolver = recipeIngredientResolver ?? RecipeIngredientResolver(candidateParser: ingredientCandidateParser, aiService: aiService)
         pantryItems = PantryItem.samples
         recipes = Recipe.samples
         discoverRecipes = recipeRepository.seedRecipes

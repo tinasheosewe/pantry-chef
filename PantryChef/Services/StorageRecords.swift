@@ -2,7 +2,7 @@ import Foundation
 import SwiftData
 
 enum StorageSchema {
-    static let currentVersion = 4
+    static let currentVersion = 5
 }
 
 @Model
@@ -280,12 +280,16 @@ final class IngredientRecord {
     var id: UUID
     var schemaVersion: Int
     var sortIndex: Int
-    var name: String
+    var rawName: String
     var quantity: Double
     var unitRawValue: String?
     var categoryRawValue: String
     var isOptional: Bool
     var notes: String?
+    var catalogItemID: String?
+
+    @Relationship(deleteRule: .cascade, inverse: \IngredientFacetRecord.ingredient)
+    var facetRecords: [IngredientFacetRecord] = []
 
     var recipe: RecipeRecord?
 
@@ -293,24 +297,56 @@ final class IngredientRecord {
         id = ingredient.id
         schemaVersion = StorageSchema.currentVersion
         self.sortIndex = sortIndex
-        name = ingredient.name
+        rawName = ingredient.rawName
         quantity = ingredient.quantity
         unitRawValue = ingredient.unit?.rawValue
         categoryRawValue = ingredient.category.rawValue
         isOptional = ingredient.isOptional
         notes = ingredient.notes
+        catalogItemID = ingredient.catalogItemID
+        facetRecords = ingredient.facets.enumerated().map { index, facet in
+            IngredientFacetRecord(selection: facet, sortIndex: index)
+        }
     }
 
     func toDomain() -> Ingredient {
         Ingredient(
             id: id,
-            name: name,
+            name: rawName,
             quantity: quantity,
             unit: unitRawValue.flatMap { MeasurementUnit(rawValue: $0) },
             category: FoodCategory(rawValue: categoryRawValue) ?? .other,
             isOptional: isOptional,
-            notes: notes
+            notes: notes,
+            catalogItemID: catalogItemID,
+            facets: facetRecords
+                .sorted { $0.sortIndex < $1.sortIndex }
+                .compactMap { $0.toDomain() }
         )
+    }
+}
+
+@Model
+final class IngredientFacetRecord {
+    var id: UUID
+    var schemaVersion: Int
+    var sortIndex: Int
+    var keyRawValue: String
+    var value: String
+
+    var ingredient: IngredientRecord?
+
+    init(selection: PantryFacetSelection, sortIndex: Int) {
+        id = UUID()
+        schemaVersion = StorageSchema.currentVersion
+        self.sortIndex = sortIndex
+        keyRawValue = selection.key.rawValue
+        value = selection.value
+    }
+
+    func toDomain() -> PantryFacetSelection? {
+        guard let key = PantryFacetKey(rawValue: keyRawValue) else { return nil }
+        return PantryFacetSelection(key: key, value: value)
     }
 }
 

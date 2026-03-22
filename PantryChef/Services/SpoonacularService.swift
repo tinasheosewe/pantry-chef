@@ -272,7 +272,7 @@ actor SpoonacularService {
             }
         }
 
-        return Recipe(
+        return TrustedRecipeCanonicalizer.canonicalize(Recipe(
             title: title,
             description: summary,
             ingredients: ingredients,
@@ -286,7 +286,7 @@ actor SpoonacularService {
             cuisine: cuisine,
             source: .spoonacular(id: spoonacularId),
             nutrition: nutrition
-        )
+        ))
     }
 
     // MARK: - Helpers

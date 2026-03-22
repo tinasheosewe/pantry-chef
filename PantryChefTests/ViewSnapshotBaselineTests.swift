@@ -10,12 +10,12 @@ final class ViewSnapshotBaselineTests: XCTestCase {
         let (appState, _, _) = makeTestAppState()
         appState.pantryItems = [
             PantryItem(name: "Milk", category: .dairy, quantity: 1, unit: .liter, expiryDate: nil),
-            PantryItem(name: "Tomatoes", category: .produce, quantity: 3, unit: .whole, expiryDate: nil),
+            PantryItem(name: "Tomato", category: .produce, quantity: 3, unit: .whole, expiryDate: nil),
             PantryItem(name: "Rice", category: .grains, quantity: 1, unit: .kilogram, expiryDate: nil),
         ]
 
         let hash = try snapshotHash(of: PantryView(appState: appState), size: CGSize(width: 390, height: 844))
-        XCTAssertEqual(hash, "69a62131c046e254382250177376902b9f19a341b6b2be7753b71a5413301dbc")
+        XCTAssertEqual(hash, "06ce123b9a0104d6e47161e6aca637be7914f23dd484f1218686256273e886c7")
     }
 
     func testShoppingListViewSnapshotHash() throws {

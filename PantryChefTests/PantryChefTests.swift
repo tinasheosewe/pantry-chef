@@ -131,12 +131,14 @@ final class MockAIService: AIServiceProtocol {
     var substitutionsToReturn: [SubstitutionSuggestion] = []
     var healthierToReturn: HealthierSuggestion?
     var importResultToReturn: RecipeImportResult?
+    var ingredientResolutionDecisionsToReturn: [IngredientResolutionDecision]?
 
     var generateShoppingListCallCount = 0
     var suggestRecipesCallCount = 0
     var suggestSubstitutionsCallCount = 0
     var parseRecipeFromURLCallCount = 0
     var parseRecipeFromTextCallCount = 0
+    var resolveIngredientsCallCount = 0
 
     func generateShoppingList(recipe: Recipe, pantry: [PantryItem]) async -> [ShoppingItem] {
         generateShoppingListCallCount += 1
@@ -163,6 +165,10 @@ final class MockAIService: AIServiceProtocol {
     func parseRecipeFromText(_ extractedText: String) async -> RecipeImportResult? {
         parseRecipeFromTextCallCount += 1
         return importResultToReturn
+    }
+    func resolveIngredients(_ requests: [IngredientResolutionRequest]) async -> [IngredientResolutionDecision]? {
+        resolveIngredientsCallCount += 1
+        return ingredientResolutionDecisionsToReturn
     }
     func estimateStepDurations(for steps: [RecipeStep], recipeTitle: String) async -> [RecipeStep] {
         return steps

@@ -11,7 +11,42 @@ final class SubstitutionRepository: @unchecked Sendable {
             return []
         }
 
-        return item.substitutions.compactMap { definition in
+        return substitutions(forItem: item)
+    }
+
+    func substitutions(for ingredient: Ingredient) -> [SubstitutionEntry] {
+        if let catalogItemID = ingredient.catalogItemID,
+           let item = PantryCatalog.item(id: catalogItemID) {
+            return substitutions(forItem: item)
+        }
+
+        guard let item = PantryCatalog.resolveExact(name: ingredient.rawName) else {
+            return []
+        }
+
+        return substitutions(forItem: item)
+    }
+
+    func substitutions(for ingredient: Ingredient, pantry: [PantryItem]) -> [SubstitutionEntry] {
+        var results = substitutions(for: ingredient)
+
+        for index in results.indices {
+            results[index].inPantry = pantry.contains {
+                pantryItemMatches($0, substituteItemID: results[index].substituteItemID, requiredFacets: results[index].substituteFacets)
+            }
+        }
+
+        results.sort { lhs, rhs in
+            if lhs.inPantry != rhs.inPantry {
+                return lhs.inPantry && !rhs.inPantry
+            }
+            return lhs.substituteName < rhs.substituteName
+        }
+        return results
+    }
+
+    private func substitutions(forItem item: PantryCatalogItemDefinition) -> [SubstitutionEntry] {
+        item.substitutions.compactMap { definition in
             guard let substituteItem = PantryCatalog.item(id: definition.substituteItemID) else {
                 return nil
             }
@@ -35,21 +70,7 @@ final class SubstitutionRepository: @unchecked Sendable {
     }
 
     func substitutions(for ingredientName: String, pantry: [PantryItem]) -> [SubstitutionEntry] {
-        var results = substitutions(for: ingredientName)
-
-        for index in results.indices {
-            results[index].inPantry = pantry.contains {
-                pantryItemMatches($0, substituteItemID: results[index].substituteItemID, requiredFacets: results[index].substituteFacets)
-            }
-        }
-
-        results.sort { lhs, rhs in
-            if lhs.inPantry != rhs.inPantry {
-                return lhs.inPantry && !rhs.inPantry
-            }
-            return lhs.substituteName < rhs.substituteName
-        }
-        return results
+        substitutions(for: Ingredient(name: ingredientName), pantry: pantry)
     }
 
     func hasSubstitutions(for ingredientName: String) -> Bool {

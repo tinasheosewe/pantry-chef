@@ -227,6 +227,7 @@ struct RawRecipeArray: Decodable { let recipes: [RawFullRecipe] }
 struct RawShoppingList: Decodable { let items: [RawShoppingItem] }
 struct RawDurationList: Decodable { let durations: [RawStepDuration] }
 struct RawStatusMessages: Decodable { let messages: [String] }
+struct RawIngredientResolutionBatch: Decodable { let decisions: [IngredientResolutionDecision] }
 
 // MARK: - Raw Simple Types
 

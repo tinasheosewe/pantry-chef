@@ -80,8 +80,9 @@ final class RecipeRepository {
 
     /// Cache an API recipe for future access
     func cacheRecipe(_ recipe: Recipe) {
-        if !cachedRecipes.contains(where: { $0.id == recipe.id }) {
-            cachedRecipes.append(recipe)
+        let canonicalRecipe = TrustedRecipeCanonicalizer.canonicalize(recipe)
+        if !cachedRecipes.contains(where: { $0.id == canonicalRecipe.id }) {
+            cachedRecipes.append(canonicalRecipe)
             saveCachedRecipes()
         }
     }
@@ -90,8 +91,9 @@ final class RecipeRepository {
     func cacheRecipes(_ recipes: [Recipe]) {
         var changed = false
         for recipe in recipes {
-            if !cachedRecipes.contains(where: { $0.id == recipe.id }) {
-                cachedRecipes.append(recipe)
+            let canonicalRecipe = TrustedRecipeCanonicalizer.canonicalize(recipe)
+            if !cachedRecipes.contains(where: { $0.id == canonicalRecipe.id }) {
+                cachedRecipes.append(canonicalRecipe)
                 changed = true
             }
         }
@@ -178,7 +180,7 @@ final class RecipeRepository {
         }
 
         seedRecipes = seedList.map { seed in
-            Recipe(
+            TrustedRecipeCanonicalizer.canonicalize(Recipe(
                 title: seed.title,
                 description: seed.description,
                 ingredients: seed.ingredients.map { ing in
@@ -217,7 +219,7 @@ final class RecipeRepository {
                         sodium: $0.sodium
                     )
                 }
-            )
+            ))
         }
     }
 
@@ -231,7 +233,7 @@ final class RecipeRepository {
 
         do {
             let data = try Data(contentsOf: cacheURL)
-            cachedRecipes = try JSONDecoder().decode([Recipe].self, from: data)
+            cachedRecipes = try JSONDecoder().decode([Recipe].self, from: data).map(TrustedRecipeCanonicalizer.canonicalize)
         } catch {
             cachedRecipes = []
         }
