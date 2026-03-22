@@ -89,15 +89,13 @@ final class PantryBulkAddViewModel {
     }
 
     func onCatalogSearchTextChanged() {
-        catalogSearchDebouncer.cancel()
-        let normalized = catalogSearchText.trimmed
-        catalogSearchDebouncer.schedule(after: DebounceDurations.quickSearch) {
-            self.debouncedCatalogSearchText = normalized
+        SearchQuerySupport.schedule(text: catalogSearchText, debouncer: catalogSearchDebouncer) {
+            self.debouncedCatalogSearchText = $0
         }
     }
 
     func applyCatalogSearchImmediately() {
-        debouncedCatalogSearchText = catalogSearchText.trimmed
+        debouncedCatalogSearchText = SearchQuerySupport.normalized(catalogSearchText)
     }
 
     func stageCatalogItem(_ item: PantryCatalogItemDefinition) {
@@ -209,7 +207,7 @@ final class PantryBulkAddViewModel {
 
 @Observable
 @MainActor
-final class PantryViewModel {
+final class PantryViewModel: AsyncActionHandling {
     var searchText = ""
     private(set) var debouncedSearchText = ""
     var selectedCategory: FoodCategory?
@@ -218,6 +216,7 @@ final class PantryViewModel {
     var showVoiceInput = false
     var sortOrder: SortOrder = .category
     @ObservationIgnored private let searchDebouncer = TaskDebouncer()
+    @ObservationIgnored private let pantryActions: PantryActions
 
     enum SortOrder: String, CaseIterable {
         case category = "Category"
@@ -232,14 +231,14 @@ final class PantryViewModel {
         self.appState = appState
         self.bulkAdd = PantryBulkAddViewModel(preferenceStore: appState.pantryItemPreferenceStore)
         self.debouncedSearchText = ""
+        self.pantryActions = PantryActions(appState: appState)
     }
 
     var filteredItems: [PantryItem] {
-        var items = appState.pantryItems
-
-        if !debouncedSearchText.isEmpty {
-            items = items.filter { $0.name.localizedCaseInsensitiveContains(debouncedSearchText) }
-        }
+        var items = SearchQuerySupport.filtered(
+            appState.pantryItems,
+            query: debouncedSearchText
+        ) { $0.name }
 
         if let category = selectedCategory {
             items = items.filter { $0.category == category }
@@ -274,38 +273,36 @@ final class PantryViewModel {
         showAddItem = true
     }
 
-    func addItem(_ item: PantryItem) async {
-        await appState.addPantryItem(item)
+    func addItem(_ item: PantryItem) {
+        runTask {
+            await pantryActions.addItem(item)
+        }
     }
 
-    func deleteItem(_ item: PantryItem) async {
-        await appState.removePantryItem(item)
+    func deleteItem(_ item: PantryItem) {
+        runTask {
+            await pantryActions.deleteItem(item)
+        }
     }
 
-    func updateItem(_ item: PantryItem) async {
-        await appState.updatePantryItem(item)
+    func updateItem(_ item: PantryItem) {
+        runTask {
+            await pantryActions.updateItem(item)
+        }
     }
 
     @discardableResult
     func addStagedItems(_ drafts: [PantryIntakeRowDraft]) async -> Int {
-        var addedCount = 0
-        for draft in drafts {
-            guard let item = draft.buildItem() else { continue }
-            await appState.addPantryItem(item)
-            addedCount += 1
-        }
-        return addedCount
+        await pantryActions.addStagedItems(drafts)
     }
 
     func onSearchTextChanged() {
-        searchDebouncer.cancel()
-        let normalized = searchText.trimmingCharacters(in: .whitespaces)
-        searchDebouncer.schedule(after: DebounceDurations.quickSearch) {
-            self.debouncedSearchText = normalized
+        SearchQuerySupport.schedule(text: searchText, debouncer: searchDebouncer) {
+            self.debouncedSearchText = $0
         }
     }
 
     func applySearchTextImmediately() {
-        debouncedSearchText = searchText.trimmingCharacters(in: .whitespaces)
+        debouncedSearchText = SearchQuerySupport.normalized(searchText)
     }
 }

@@ -41,7 +41,7 @@ struct ShoppingListView: View {
                         }
 
                         Button {
-                            Task { await viewModel.addCheckedToPantry() }
+                            viewModel.addCheckedToPantry()
                         } label: {
                             Label("Checked → Pantry", systemImage: "arrow.right.circle")
                         }
@@ -76,7 +76,7 @@ struct ShoppingListView: View {
                 Spacer()
                 if viewModel.checkedCount > 0 {
                     Button("Add to Pantry") {
-                        Task { await viewModel.addCheckedToPantry() }
+                        viewModel.addCheckedToPantry()
                     }
                     .font(.caption)
                     .fontWeight(.semibold)

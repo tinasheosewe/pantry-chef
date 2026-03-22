@@ -115,14 +115,10 @@ struct RecipeDetailView: View {
                 recipe: recipe,
                 isNewRecipe: false,
                 onSave: { saved in
-                    recipe = saved
-                    servings = saved.servings
-                    Task { await appState.updateRecipe(saved) }
-                    showEditor = false
+                    handleSavedRecipe(saved)
                 },
                 onSaveAsNew: { newRecipe in
-                    Task { await appState.addRecipe(newRecipe) }
-                    showEditor = false
+                    handleSavedRecipeAsNew(newRecipe)
                 }
             )
             .navigationTitle("Edit Recipe")
@@ -628,6 +624,22 @@ struct RecipeDetailView: View {
             actionErrorMessage = "Couldn't modify the recipe. Please try again."
         }
         isModifying = false
+    }
+
+    private func handleSavedRecipe(_ saved: Recipe) {
+        recipe = saved
+        servings = saved.servings
+        showEditor = false
+        Task {
+            await appState.updateRecipe(saved)
+        }
+    }
+
+    private func handleSavedRecipeAsNew(_ newRecipe: Recipe) {
+        showEditor = false
+        Task {
+            await appState.addRecipe(newRecipe)
+        }
     }
 
     // MARK: - Ingredients Section
@@ -1192,8 +1204,7 @@ struct ImportRecipeURLView: View {
                     .padding(.horizontal)
 
                 Button {
-                    Task {
-                        await viewModel.importFromURL(urlString)
+                    viewModel.importFromURL(urlString) {
                         if viewModel.importedRecipe != nil {
                             dismiss()
                         }

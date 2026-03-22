@@ -2,7 +2,7 @@ import SwiftUI
 
 @Observable
 @MainActor
-final class MealPlanViewModel {
+final class MealPlanViewModel: AsyncActionHandling {
     var weekStartDate: Date
     var entries: [MealPlanEntry] = []
     var showRecipePicker = false
@@ -10,6 +10,7 @@ final class MealPlanViewModel {
     var isLoading = false
 
     let appState: AppState
+    @ObservationIgnored private let mealPlanActions: MealPlanActions
 
     struct MealSlot: Identifiable {
         let id = UUID()
@@ -19,6 +20,7 @@ final class MealPlanViewModel {
 
     init(appState: AppState) {
         self.appState = appState
+        self.mealPlanActions = MealPlanActions(appState: appState)
         let calendar = Calendar.current
         self.weekStartDate = calendar.dateInterval(of: .weekOfYear, for: Date())?.start ?? Date()
         reloadEntries()
@@ -57,19 +59,18 @@ final class MealPlanViewModel {
         }
     }
 
-    func assignRecipe(_ recipe: Recipe, to slot: MealSlot) async {
-        let entry = MealPlanEntry(
-            date: slot.date,
-            mealType: slot.mealType,
-            recipe: recipe
-        )
-        await appState.addToMealPlan(entry)
-        reloadEntries()
+    func assignRecipe(_ recipe: Recipe, to slot: MealSlot) {
+        runTask {
+            await mealPlanActions.assignRecipe(recipe, to: slot)
+            reloadEntries()
+        }
     }
 
-    func removeEntry(_ entry: MealPlanEntry) async {
-        await appState.removeFromMealPlan(entry)
-        reloadEntries()
+    func removeEntry(_ entry: MealPlanEntry) {
+        runTask {
+            await mealPlanActions.removeEntry(entry)
+            reloadEntries()
+        }
     }
 
     func selectSlot(date: Date, mealType: MealType) {
@@ -77,16 +78,20 @@ final class MealPlanViewModel {
         showRecipePicker = true
     }
 
-    func generateShoppingList() async {
-        await appState.generateShoppingListFromMealPlan()
+    func generateShoppingList() {
+        runTask {
+            await mealPlanActions.generateShoppingList()
+        }
     }
 
     func previewShoppingList() -> [ShoppingItem] {
         appState.previewShoppingListFromMealPlan()
     }
 
-    func addShoppingItems(_ items: [ShoppingItem]) async {
-        await appState.addShoppingItems(items)
+    func addShoppingItems(_ items: [ShoppingItem]) {
+        runTask {
+            await mealPlanActions.addShoppingItems(items)
+        }
     }
 
     var totalPlannedMeals: Int {

@@ -42,7 +42,7 @@ struct PantryView: View {
                     saveDefault: { viewModel.appState.savePantryItemDefaultPreference($0) },
                     removeDefault: { viewModel.appState.removePantryItemDefaultPreference(for: $0) }
                 ) { updatedItem in
-                    Task { await viewModel.updateItem(updatedItem) }
+                    viewModel.updateItem(updatedItem)
                 }
             }
         }
@@ -115,7 +115,7 @@ struct PantryView: View {
                         .accessibilityIdentifier("pantry.item.\(item.id.uuidString)")
                         .swipeActions(edge: .trailing) {
                             Button(role: .destructive) {
-                                Task { await viewModel.deleteItem(item) }
+                                viewModel.deleteItem(item)
                             } label: {
                                 Label("Delete", systemImage: "trash")
                             }

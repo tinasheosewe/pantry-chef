@@ -2,22 +2,23 @@ import SwiftUI
 
 @Observable
 @MainActor
-final class ShoppingViewModel {
+final class ShoppingViewModel: AsyncActionHandling {
     var searchText = ""
     var isLoading = false
 
     let appState: AppState
+    @ObservationIgnored private let shoppingActions: ShoppingActions
 
     init(appState: AppState) {
         self.appState = appState
+        self.shoppingActions = ShoppingActions(appState: appState)
     }
 
     var items: [ShoppingItem] {
-        var list = appState.shoppingItems
-        if !searchText.isEmpty {
-            list = list.filter { $0.name.localizedCaseInsensitiveContains(searchText) }
-        }
-        return list
+        SearchQuerySupport.filtered(
+            appState.shoppingItems,
+            query: SearchQuerySupport.normalized(searchText)
+        ) { $0.name }
     }
 
     var groupedByCategory: [(FoodCategory, [ShoppingItem])] {
@@ -38,35 +39,33 @@ final class ShoppingViewModel {
     }
 
     func toggleItem(_ item: ShoppingItem) {
-        Task { await appState.toggleShoppingItem(item) }
+        runTask {
+            await shoppingActions.toggleItem(item)
+        }
     }
 
     func removeCheckedItems() {
-        Task { await appState.removeCheckedShoppingItems() }
+        runTask {
+            await shoppingActions.removeCheckedItems()
+        }
     }
 
     func addItem(_ item: ShoppingItem) {
-        Task { await appState.addShoppingItem(item) }
+        runTask {
+            await shoppingActions.addItem(item)
+        }
     }
 
     func removeItem(_ item: ShoppingItem) {
-        Task { await appState.removeShoppingItem(item) }
+        runTask {
+            await shoppingActions.removeItem(item)
+        }
     }
 
-    func addCheckedToPantry() async {
-        let checkedItems = appState.shoppingItems.filter { $0.isChecked }
-        for item in checkedItems {
-            let pantryItem = PantryItem(
-                name: item.name,
-                category: item.category,
-                quantity: item.quantity,
-                unit: item.unit,
-                catalogItemID: item.catalogItemID,
-                facets: item.facets
-            )
-            await appState.addPantryItem(pantryItem)
+    func addCheckedToPantry() {
+        runLoadingTask {
+            await shoppingActions.addCheckedToPantry()
         }
-        await appState.removeCheckedShoppingItems()
     }
 }
 

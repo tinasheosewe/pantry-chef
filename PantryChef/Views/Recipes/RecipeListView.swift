@@ -89,7 +89,7 @@ struct RecipeListView: View {
             }
             .sheet(isPresented: $viewModel.showAddRecipe) {
                 AddRecipeView { recipe in
-                    Task { await viewModel.addRecipe(recipe) }
+                    viewModel.addRecipe(recipe)
                 }
                 .environment(viewModel.appState)
             }
@@ -128,7 +128,7 @@ struct RecipeListView: View {
                 set: { viewModel.importedRecipe = $0 }
             )) { recipe in
                 RecipeEditorView(recipe: recipe, isNewRecipe: true) { saved in
-                    Task { await viewModel.addRecipe(saved) }
+                    viewModel.addRecipe(saved)
                     viewModel.importedRecipe = nil
                 }
                 .navigationTitle("Review Recipe")
@@ -490,12 +490,12 @@ struct RecipeListView: View {
                     }
                     .contextMenu {
                         if isUserSection {
-                            Button { Task { await viewModel.toggleFavorite(recipe) } } label: {
+                            Button { viewModel.toggleFavorite(recipe) } label: {
                                 Label(recipe.isFavorite ? "Unfavorite" : "Favorite",
                                       systemImage: recipe.isFavorite ? "heart.slash" : "heart")
                             }
                             Button(role: .destructive) {
-                                Task { await viewModel.deleteRecipe(recipe) }
+                                viewModel.deleteRecipe(recipe)
                             } label: {
                                 Label("Delete", systemImage: "trash")
                             }
@@ -519,7 +519,7 @@ struct RecipeListView: View {
                                lastLoadMoreTriggerID != recipe.id,
                                viewModel.hasMorePages {
                                 lastLoadMoreTriggerID = recipe.id
-                                Task { await viewModel.loadMoreDiscoverRecipes() }
+                                viewModel.loadMoreDiscoverRecipes()
                             }
                         }
                     }

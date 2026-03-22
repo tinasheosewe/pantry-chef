@@ -2,7 +2,7 @@ import SwiftUI
 
 @Observable
 @MainActor
-final class RecipeViewModel {
+final class RecipeViewModel: AsyncActionHandling {
     var searchText = ""
     var selectedDifficulty: DifficultyLevel?
     var selectedMealType: MealType?
@@ -57,9 +57,11 @@ final class RecipeViewModel {
     }
 
     let appState: AppState
+    @ObservationIgnored private let recipeActions: RecipeActions
 
     init(appState: AppState) {
         self.appState = appState
+        self.recipeActions = RecipeActions(appState: appState)
         self.localFilterQuery = ""
 
         // Startup verification: proactively hydrate full pantry metrics cache.
@@ -315,26 +317,31 @@ final class RecipeViewModel {
 
     // MARK: - Actions
 
-    func addRecipe(_ recipe: Recipe) async {
-        await appState.addRecipe(recipe)
+    func addRecipe(_ recipe: Recipe) {
+        runTask {
+            await recipeActions.addRecipe(recipe)
+        }
     }
 
-    func deleteRecipe(_ recipe: Recipe) async {
-        await appState.deleteRecipe(recipe)
+    func deleteRecipe(_ recipe: Recipe) {
+        runTask {
+            await recipeActions.deleteRecipe(recipe)
+        }
     }
 
-    func toggleFavorite(_ recipe: Recipe) async {
-        await appState.toggleFavoriteWithSave(recipe)
+    func toggleFavorite(_ recipe: Recipe) {
+        runTask {
+            await recipeActions.toggleFavorite(recipe)
+        }
     }
 
     /// Called when searchText changes — debounces then triggers API search on Discover tab.
     func onSearchTextChanged(isDiscoverTab: Bool) {
-        localFilterDebouncer.cancel()
-        let normalizedQuery = searchText.trimmingCharacters(in: .whitespaces)
+        let normalizedQuery = SearchQuerySupport.normalized(searchText)
 
         // Debounce local filtering to avoid full-list recomputation on each keystroke.
-        localFilterDebouncer.schedule(after: DebounceDurations.quickSearch) {
-            self.localFilterQuery = normalizedQuery
+        SearchQuerySupport.schedule(text: searchText, debouncer: localFilterDebouncer) {
+            self.localFilterQuery = $0
         }
 
         apiSearchDebouncer.cancel()
@@ -351,7 +358,7 @@ final class RecipeViewModel {
 
     func applySearchTextImmediately() {
         localFilterDebouncer.cancel()
-        localFilterQuery = searchText.trimmingCharacters(in: .whitespaces)
+        localFilterQuery = SearchQuerySupport.normalized(searchText)
     }
 
     /// Activate "What Can I Make" mode — pre-applies the can-make filter
@@ -411,12 +418,18 @@ final class RecipeViewModel {
                 }
             }
         } catch {
-            appState.errorMessage = error.localizedDescription
+            captureError(error)
         }
     }
 
     /// Load the next page of API results (called on scroll)
-    func loadMoreDiscoverRecipes() async {
+    func loadMoreDiscoverRecipes() {
+        runTask {
+            await performLoadMoreDiscoverRecipes()
+        }
+    }
+
+    private func performLoadMoreDiscoverRecipes() async {
         guard !AppConfig.spoonacularAPIKey.isEmpty else { return }
         guard !isLoadingMore, !isSearchingAPI, hasMorePages else { return }
 
@@ -446,16 +459,16 @@ final class RecipeViewModel {
                 }
             }
         } catch {
-            appState.errorMessage = error.localizedDescription
+            captureError(error)
         }
     }
 
-    func importFromURL(_ urlString: String) async {
-        isLoading = true
-        defer { isLoading = false }
-
-        if let result = await appState.aiService.parseRecipeFromURL(urlString) {
-            importedRecipe = result.toRecipe()
+    func importFromURL(_ urlString: String, onComplete: (@MainActor () -> Void)? = nil) {
+        runLoadingTask {
+            if let result = await appState.aiService.parseRecipeFromURL(urlString) {
+                importedRecipe = result.toRecipe()
+            }
+            onComplete?()
         }
     }
 

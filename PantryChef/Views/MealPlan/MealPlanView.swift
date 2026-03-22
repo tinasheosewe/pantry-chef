@@ -37,16 +37,14 @@ struct MealPlanView: View {
                 }
             }
             .shoppingListConfirmation($shoppingConfirmation) { itemsToAdd in
-                Task {
-                    await viewModel.addShoppingItems(itemsToAdd)
-                }
+                viewModel.addShoppingItems(itemsToAdd)
             }
             .sheet(isPresented: $viewModel.showRecipePicker) {
                 RecipePickerView(
                     recipes: viewModel.appState.allRecipes,
                     onSelect: { recipe in
                         if let slot = viewModel.selectedSlot {
-                            Task { await viewModel.assignRecipe(recipe, to: slot) }
+                            viewModel.assignRecipe(recipe, to: slot)
                         }
                     }
                 )
@@ -204,7 +202,7 @@ struct MealPlanView: View {
                     Label("Change Recipe", systemImage: "arrow.triangle.swap")
                 }
                 Button(role: .destructive) {
-                    Task { await viewModel.removeEntry(entry) }
+                    viewModel.removeEntry(entry)
                 } label: {
                     Label("Remove", systemImage: "trash")
                 }
@@ -223,8 +221,7 @@ struct RecipePickerView: View {
     @State private var searchDebouncer = TaskDebouncer()
 
     var filteredRecipes: [Recipe] {
-        if debouncedSearchText.isEmpty { return recipes }
-        return recipes.filter { $0.title.localizedCaseInsensitiveContains(debouncedSearchText) }
+        SearchQuerySupport.filtered(recipes, query: debouncedSearchText) { $0.title }
     }
 
     var body: some View {
@@ -262,9 +259,8 @@ struct RecipePickerView: View {
             }
             .searchable(text: $searchText, prompt: "Search recipes")
             .onChange(of: searchText) {
-                let normalized = searchText.trimmingCharacters(in: .whitespaces)
-                searchDebouncer.schedule(after: DebounceDurations.quickSearch) {
-                    debouncedSearchText = normalized
+                SearchQuerySupport.schedule(text: searchText, debouncer: searchDebouncer) {
+                    debouncedSearchText = $0
                 }
             }
             .navigationTitle("Choose Recipe")

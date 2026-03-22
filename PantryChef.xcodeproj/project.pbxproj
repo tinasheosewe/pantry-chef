@@ -45,6 +45,7 @@
 		94A15C8DA60B29DCBCBCA9B4 /* RealtimeAPI in Frameworks */ = {isa = PBXBuildFile; productRef = 4A6232C1ECDD3D484F41AF09 /* RealtimeAPI */; };
 		97D5ADC3AC965A13945718D3 /* MealPlanViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32047EE127BD9837C9FAA049 /* MealPlanViewModel.swift */; };
 		983A42DABB177E748E2EC2DC /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1DC8288BBCA0F36FAC20468 /* AppState.swift */; };
+		987236F06382EB09A69A05BC /* ViewModelSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 604455120948AF2A095BFA67 /* ViewModelSupport.swift */; };
 		9B19567AF81DDBD85DE3D7D3 /* ScenarioBaselineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C9E10465104BC5BD4168B1A /* ScenarioBaselineTests.swift */; };
 		9C482ADB26F2BED8CB3ABBD3 /* IngredientMatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 441EAFD71E8F3A9148E9E00F /* IngredientMatcher.swift */; };
 		9F1CD7441C3C04EAF85D3371 /* Recipe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 732C449BE670E2788C0421ED /* Recipe.swift */; };
@@ -122,6 +123,7 @@
 		59485E1388AA5B4BFC221609 /* output_audio_buffer_cleared.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = output_audio_buffer_cleared.json; sourceTree = "<group>"; };
 		5A2FCAFEA6E108A131976BB6 /* HomeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewModel.swift; sourceTree = "<group>"; };
 		5FF94D344E15CC2935F5283B /* RealtimeService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealtimeService.swift; sourceTree = "<group>"; };
+		604455120948AF2A095BFA67 /* ViewModelSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModelSupport.swift; sourceTree = "<group>"; };
 		62F4E42A0869501AB92F81F2 /* input_audio_transcription_completed_sparse_usage.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_audio_transcription_completed_sparse_usage.json; sourceTree = "<group>"; };
 		6871CCC4A1E586AE0BDC6A91 /* MealPlan.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MealPlan.swift; sourceTree = "<group>"; };
 		6A6018CBC83EBB7329C47E4A /* MealPlanView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MealPlanView.swift; sourceTree = "<group>"; };
@@ -222,6 +224,7 @@
 				AF842C069F39670D33B9A65A /* PantryViewModel.swift */,
 				D6F929E44E2C4CBF485C5208 /* RecipeViewModel.swift */,
 				B6B9D9E4EA54BC49B8DF7F6F /* ShoppingViewModel.swift */,
+				604455120948AF2A095BFA67 /* ViewModelSupport.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -644,6 +647,7 @@
 				D2EB2D4DE02AC5A87EC4E61C /* StorageRecords.swift in Sources */,
 				59E7344CE47BB5BDC9272C27 /* StorageService.swift in Sources */,
 				BCB39B304C3B8E1F67FC0F28 /* SubstitutionRepository.swift in Sources */,
+				987236F06382EB09A69A05BC /* ViewModelSupport.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
