@@ -8,6 +8,7 @@ struct PantryChefApp: App {
     init() {
         // Register notification delegate early so we catch actions even on cold launch
         UNUserNotificationCenter.current().delegate = NotificationService.shared
+        KeyboardBehaviorInstaller.configureGlobalBehavior()
     }
 
     var body: some Scene {

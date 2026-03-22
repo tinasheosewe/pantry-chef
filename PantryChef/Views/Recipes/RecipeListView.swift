@@ -349,7 +349,7 @@ struct RecipeListView: View {
     // MARK: - Cuisine Picker
 
     private var cuisinePickerContent: some View {
-        ScrollView {
+        AppScrollView {
             VStack(alignment: .leading, spacing: 4) {
                 Button {
                     viewModel.selectedCuisine = nil
@@ -490,7 +490,7 @@ struct RecipeListView: View {
         let showAIGenerateTile = !isUserSection && query.count >= 3
         let displayedRecipes = isUserSection ? recipes : Array(recipes.prefix(discoverVisibleCount))
         let matchMetrics = viewModel.matchMetricsMap(for: displayedRecipes)
-        return ScrollView {
+        return AppScrollView {
             LazyVGrid(columns: [
                 GridItem(.flexible(), spacing: 16),
                 GridItem(.flexible(), spacing: 16),
@@ -554,7 +554,6 @@ struct RecipeListView: View {
                     .padding()
             }
         }
-        .dismissKeyboardOnScroll()
     }
 }
 
@@ -812,7 +811,7 @@ struct WhatCanIMakeView: View {
 
     var body: some View {
         NavigationStack {
-            List {
+            AppList {
                 let canMake = results.filter { $0.canMake }
                 let withSubs = results.filter { !$0.canMake && $0.canMakeWithSubstitutions }
                 let nearMisses = results.filter { !$0.canMake && !$0.canMakeWithSubstitutions && $0.matchPercentage >= 50 }
@@ -849,7 +848,6 @@ struct WhatCanIMakeView: View {
                     )
                 }
             }
-            .dismissKeyboardOnScroll()
             .navigationTitle("What Can I Make?")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

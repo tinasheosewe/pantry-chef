@@ -35,7 +35,7 @@ struct RecipeDetailView: View {
     }
 
     var body: some View {
-        ScrollView {
+        AppScrollView {
             VStack(alignment: .leading, spacing: 20) {
                 heroImage
 
@@ -60,7 +60,6 @@ struct RecipeDetailView: View {
                 .padding(.horizontal)
             }
         }
-        .dismissKeyboardOnScroll()
         .background(AppColors.background)
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {
@@ -783,7 +782,7 @@ struct SubstitutionsView: View {
 
     var body: some View {
         NavigationStack {
-            List {
+            AppList {
                 if substitutions.isEmpty {
                     EmptyStateView(
                         icon: "checkmark.circle",
@@ -891,7 +890,7 @@ struct HealthierView: View {
 
     var body: some View {
         NavigationStack {
-            List {
+            AppList {
                 Section {
                     Text(suggestion.overallImpact)
                         .font(.subheadline)
@@ -945,7 +944,7 @@ struct ShoppingPreviewView: View {
 
     var body: some View {
         NavigationStack {
-            List {
+            AppList {
                 let grouped = Dictionary(grouping: items, by: { $0.category })
                 ForEach(grouped.keys.sorted(by: { $0.rawValue < $1.rawValue }), id: \.self) { category in
                     Section {
@@ -1036,7 +1035,7 @@ struct AddRecipeView: View {
     // MARK: - Input Form
 
     private var inputForm: some View {
-        ScrollView {
+        AppScrollView {
             VStack(spacing: 20) {
                 VStack(spacing: 8) {
                     Image(systemName: "doc.text.magnifyingglass")
@@ -1148,7 +1147,6 @@ struct AddRecipeView: View {
             }
             .padding(.bottom, 20)
         }
-        .dismissKeyboardOnScroll()
     }
 
     // MARK: - Parse Input

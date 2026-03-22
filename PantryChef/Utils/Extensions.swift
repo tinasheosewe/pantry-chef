@@ -73,20 +73,6 @@ extension View {
         UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
     }
 
-    func dismissKeyboardOnScroll() -> some View {
-        scrollDismissesKeyboard(.interactively)
-            .simultaneousGesture(
-                DragGesture(minimumDistance: 8)
-                    .onChanged { _ in
-                        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
-                    }
-            )
-    }
-
-    func dismissKeyboardOnBackgroundTap() -> some View {
-        background(KeyboardDismissTapRecognizer())
-    }
-
     func expandedTapTargetForTextInput() -> some View {
         frame(maxWidth: .infinity, alignment: .leading)
             .contentShape(Rectangle())
@@ -197,99 +183,87 @@ enum DebounceDurations {
     static let apiSearch: UInt64 = 400_000_000
 }
 
-private struct KeyboardDismissTapRecognizer: UIViewRepresentable {
-    func makeCoordinator() -> Coordinator {
-        Coordinator()
-    }
+enum KeyboardBehaviorInstaller {
+    private static var isConfigured = false
 
-    func makeUIView(context: Context) -> UIView {
-        let view = KeyboardDismissAttachmentView()
-        view.onAttachmentChanged = { [weak coordinator = context.coordinator] attachmentView in
-            coordinator?.installRecognizerIfNeeded(from: attachmentView)
-        }
-        return view
-    }
+    static func configureGlobalBehavior() {
+        guard !isConfigured else { return }
+        isConfigured = true
 
-    func updateUIView(_ uiView: UIView, context: Context) {
-        guard let view = uiView as? KeyboardDismissAttachmentView else { return }
-        view.onAttachmentChanged = { [weak coordinator = context.coordinator] attachmentView in
-            coordinator?.installRecognizerIfNeeded(from: attachmentView)
-        }
-        DispatchQueue.main.async {
-            context.coordinator.installRecognizerIfNeeded(from: view)
-        }
-    }
-
-    final class Coordinator: NSObject, UIGestureRecognizerDelegate {
-        private weak var hostingView: UIView?
-        private weak var recognizer: UITapGestureRecognizer?
-
-        deinit {
-            if let recognizer, let hostingView {
-                hostingView.removeGestureRecognizer(recognizer)
-            }
-        }
-
-        func installRecognizerIfNeeded(from view: UIView) {
-            guard let hostingView = view.nearestViewController?.view ?? view.window else {
-                DispatchQueue.main.async { [weak self, weak view] in
-                    guard let view else { return }
-                    self?.installRecognizerIfNeeded(from: view)
-                }
-                return
-            }
-
-            if self.hostingView === hostingView, recognizer != nil {
-                return
-            }
-
-            if let recognizer, let oldHostingView = self.hostingView {
-                oldHostingView.removeGestureRecognizer(recognizer)
-            }
-
-            let recognizer = UITapGestureRecognizer(target: self, action: #selector(handleTap))
-            recognizer.cancelsTouchesInView = false
-            recognizer.delaysTouchesEnded = false
-            recognizer.delegate = self
-            hostingView.addGestureRecognizer(recognizer)
-
-            self.hostingView = hostingView
-            self.recognizer = recognizer
-        }
-
-        @objc private func handleTap() {
-            hostingView?.window?.endEditing(true)
-        }
-
-        func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
-            !(touch.view?.isWithinTextInput ?? false)
-        }
-
-        func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
-            true
-        }
+        KeyboardDismissTapManager.shared.start()
     }
 }
 
-private final class KeyboardDismissAttachmentView: UIView {
-    var onAttachmentChanged: ((UIView) -> Void)?
+private final class KeyboardDismissTapManager: NSObject, UIGestureRecognizerDelegate {
+    static let shared = KeyboardDismissTapManager()
 
-    override func didMoveToWindow() {
-        super.didMoveToWindow()
-        notifyAttachmentChanged()
-    }
+    private var didStart = false
+    private let recognizers = NSMapTable<UIWindow, WindowTapGestureRecognizer>(keyOptions: .weakMemory, valueOptions: .strongMemory)
 
-    override func didMoveToSuperview() {
-        super.didMoveToSuperview()
-        notifyAttachmentChanged()
-    }
+    func start() {
+        guard !didStart else { return }
+        didStart = true
 
-    private func notifyAttachmentChanged() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(refreshInstalledRecognizers),
+            name: UIWindow.didBecomeKeyNotification,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(refreshInstalledRecognizers),
+            name: UIScene.didActivateNotification,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(refreshInstalledRecognizers),
+            name: UIApplication.didBecomeActiveNotification,
+            object: nil
+        )
+
         DispatchQueue.main.async { [weak self] in
-            guard let self else { return }
-            self.onAttachmentChanged?(self)
+            self?.refreshInstalledRecognizers()
         }
     }
+
+    @objc private func refreshInstalledRecognizers() {
+        let windowScenes = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }
+        for scene in windowScenes {
+            for window in scene.windows {
+                installRecognizerIfNeeded(on: window)
+            }
+        }
+    }
+
+    private func installRecognizerIfNeeded(on window: UIWindow) {
+        guard recognizers.object(forKey: window) == nil else { return }
+
+        let recognizer = WindowTapGestureRecognizer(target: self, action: #selector(handleTap(_:)))
+        recognizer.targetWindow = window
+        recognizer.cancelsTouchesInView = false
+        recognizer.delaysTouchesEnded = false
+        recognizer.delegate = self
+        window.addGestureRecognizer(recognizer)
+        recognizers.setObject(recognizer, forKey: window)
+    }
+
+    @objc private func handleTap(_ recognizer: WindowTapGestureRecognizer) {
+        recognizer.targetWindow?.endEditing(true)
+    }
+
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
+        !(touch.view?.isWithinTextInput ?? false)
+    }
+
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+        true
+    }
+}
+
+private final class WindowTapGestureRecognizer: UITapGestureRecognizer {
+    weak var targetWindow: UIWindow?
 }
 
 private extension UIView {
@@ -304,10 +278,6 @@ private extension UIView {
         }
 
         return false
-    }
-
-    var nearestViewController: UIViewController? {
-        sequence(first: self.next, next: { $0?.next }).first { $0 is UIViewController } as? UIViewController
     }
 }
 

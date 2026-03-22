@@ -119,7 +119,7 @@ struct PantryView: View {
 
     // MARK: - Pantry List
     private var pantryList: some View {
-        List {
+        AppList {
             ForEach(viewModel.groupedByCategory, id: \.0) { category, items in
                 Section {
                     ForEach(items) { item in
@@ -151,7 +151,6 @@ struct PantryView: View {
                 }
             }
         }
-        .dismissKeyboardOnScroll()
         .accessibilityIdentifier("pantry.list")
         .listStyle(.insetGrouped)
     }
@@ -296,7 +295,7 @@ struct AddPantryItemView: View {
 
     var body: some View {
         NavigationStack {
-            Form {
+            AppForm {
                 PantryIntakeFormSections(
                     draft: $draft,
                     accessibilityPrefix: "pantry.form",
@@ -308,8 +307,6 @@ struct AddPantryItemView: View {
                     onResetDefault: handleResetDefault
                 )
             }
-            .dismissKeyboardOnScroll()
-            .dismissKeyboardOnBackgroundTap()
             .navigationTitle(isEditing ? "Edit Item" : "Add Item")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -370,7 +367,6 @@ struct BulkAddPantryView: View {
                 }
             }
             .background(AppColors.background)
-            .dismissKeyboardOnBackgroundTap()
             .navigationTitle("Add To Pantry")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -402,7 +398,7 @@ struct BulkAddPantryView: View {
     }
 
     private func addTab(viewModel: PantryViewModel) -> some View {
-        ScrollView {
+        AppScrollView {
             VStack(alignment: .leading, spacing: 16) {
                 catalogSearchBar(viewModel: viewModel)
 
@@ -505,7 +501,6 @@ struct BulkAddPantryView: View {
             .padding(.horizontal)
             .padding(.vertical, 16)
         }
-        .dismissKeyboardOnScroll()
         .simultaneousGesture(
             DragGesture(minimumDistance: 8)
                 .onChanged { _ in
@@ -623,7 +618,7 @@ struct BulkAddPantryView: View {
                 )
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
-                List {
+                AppList {
                     Section {
                         ForEach(viewModel.bulkAdd.stagedRows) { draft in
                             stagedRowCard(draft: draft, viewModel: viewModel)
@@ -638,7 +633,6 @@ struct BulkAddPantryView: View {
                         .padding(.top, 8)
                     }
                 }
-                .dismissKeyboardOnScroll()
                 .listStyle(.plain)
                 .scrollContentBackground(.hidden)
                 .background(AppColors.background)
@@ -985,7 +979,7 @@ struct PantryDraftEditorView: View {
 
     var body: some View {
         NavigationStack {
-            Form {
+            AppForm {
                 PantryIntakeFormSections(
                     draft: $draft,
                     accessibilityPrefix: "pantry.bulk.form",

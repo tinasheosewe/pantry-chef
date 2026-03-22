@@ -18,7 +18,7 @@ struct MealPlanView: View {
             VStack(spacing: 0) {
                 weekNavigation
 
-                ScrollView {
+                AppScrollView {
                     VStack(spacing: 0) {
                         ForEach(viewModel.weekDays, id: \.self) { date in
                             dayRow(date)
@@ -27,7 +27,6 @@ struct MealPlanView: View {
                         }
                     }
                 }
-                .dismissKeyboardOnScroll()
             }
             .accessibilityIdentifier("mealplan.screen")
             .background(AppColors.background)
@@ -256,7 +255,7 @@ struct RecipePickerView: View {
 
     var body: some View {
         NavigationStack {
-            List {
+            AppList {
                 ForEach(filteredRecipes) { recipe in
                     Button {
                         onSelect(recipe)

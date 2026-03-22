@@ -41,7 +41,7 @@ struct RecipeEditorView: View {
     }
 
     var body: some View {
-        ScrollView {
+        AppScrollView {
             VStack(alignment: .leading, spacing: 20) {
                 titleSection
                 detailsSection
@@ -53,7 +53,6 @@ struct RecipeEditorView: View {
             }
             .padding()
         }
-        .dismissKeyboardOnScroll()
         .background(AppColors.background)
         .sheet(item: $resolutionDraft) { draft in
             NavigationStack {
@@ -788,7 +787,7 @@ private struct IngredientResolutionReviewView: View {
     }
 
     var body: some View {
-        List {
+        AppList {
             Section {
                 Text("Choose a registry match for each ambiguous ingredient before saving this recipe.")
                     .font(.subheadline)

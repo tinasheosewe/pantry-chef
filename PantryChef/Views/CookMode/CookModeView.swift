@@ -239,7 +239,7 @@ struct CookModeView: View {
     // MARK: - Step View
 
     private func stepView(_ step: RecipeStep) -> some View {
-        ScrollView {
+        AppScrollView {
             VStack(spacing: 24) {
                 Spacer(minLength: 40)
 

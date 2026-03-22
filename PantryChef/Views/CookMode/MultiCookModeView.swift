@@ -190,7 +190,7 @@ struct MultiCookModeView: View {
     // MARK: - Block Content
 
     private func blockContent(_ block: MultiRecipeScheduler.ScheduledBlock) -> some View {
-        ScrollView {
+        AppScrollView {
             VStack(spacing: 24) {
                 // Action class badge
                 HStack(spacing: 8) {

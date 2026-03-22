@@ -21,7 +21,7 @@ struct HomeView: View {
 
     var body: some View {
         NavigationStack {
-            ScrollView {
+            AppScrollView {
                 VStack(spacing: 20) {
                     greetingHeader
 
@@ -52,7 +52,6 @@ struct HomeView: View {
                 }
                 .padding()
             }
-            .dismissKeyboardOnScroll()
             .accessibilityIdentifier("home.screen")
             .background(AppColors.background)
             .navigationBarTitleDisplayMode(.inline)

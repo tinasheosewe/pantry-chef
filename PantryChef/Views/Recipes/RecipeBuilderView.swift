@@ -36,7 +36,7 @@ struct RecipeBuilderView: View {
 
     var body: some View {
         NavigationStack {
-            ScrollView {
+            AppScrollView {
                 VStack(spacing: 24) {
                     // Header
                     headerSection

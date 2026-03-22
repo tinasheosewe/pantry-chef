@@ -73,7 +73,7 @@ struct IngredientGatheringView: View {
             VStack(spacing: 0) {
                 headerBanner
 
-                ScrollView {
+                AppScrollView {
                     LazyVStack(alignment: .leading, spacing: 20) {
                         ForEach(groupedIngredients, id: \.category) { group in
                             categorySection(group.category, items: group.items)

@@ -24,6 +24,9 @@ targets:
     platform: iOS
     sources:
       - PantryChef
+    configFiles:
+      Debug: Config/Secrets.xcconfig
+      Release: Config/Secrets.xcconfig
     dependencies:
       - package: swift-realtime-openai
         product: RealtimeAPI
@@ -37,6 +40,7 @@ targets:
           - UIInterfaceOrientationPortraitUpsideDown
         UILaunchScreen:
           BackgroundColor: LaunchBG
+        OPENAI_API_KEY: $(OPENAI_API_KEY)
         NSSpeechRecognitionUsageDescription: "Pantry Chef uses speech recognition for voice commands in cook mode"
         NSMicrophoneUsageDescription: "Pantry Chef needs microphone access for voice input"
 

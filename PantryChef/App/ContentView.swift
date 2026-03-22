@@ -79,7 +79,6 @@ struct ContentView: View {
             CookModeView(recipe: recipe, resumeAtStep: stepIndex, isResuming: true)
                 .environment(appState)
         }
-        .dismissKeyboardOnBackgroundTap()
         .onChange(of: appState.deepLinkCookModeRecipeId) { _, newId in
             guard let recipeId = newId else { return }
             // Clear immediately so it doesn't re-trigger

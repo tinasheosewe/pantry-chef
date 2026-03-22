@@ -107,7 +107,7 @@ struct ShoppingListView: View {
 
     // MARK: - Shopping List
     private var shoppingList: some View {
-        List {
+        AppList {
             ForEach(viewModel.groupedByCategory, id: \.0) { category, items in
                 Section {
                     ForEach(items) { item in
@@ -132,7 +132,6 @@ struct ShoppingListView: View {
                 }
             }
         }
-        .dismissKeyboardOnScroll()
         .listStyle(.insetGrouped)
     }
 }
@@ -146,7 +145,7 @@ private struct ShoppingAddItemView: View {
     var body: some View {
         @Bindable var viewModel = viewModel
 
-        Form {
+        AppForm {
             if viewModel.isCustomItem || viewModel.selectedItem == nil {
                 Section {
                     TextField(
@@ -317,8 +316,6 @@ private struct ShoppingAddItemView: View {
                 }
             }
         }
-        .dismissKeyboardOnScroll()
-        .dismissKeyboardOnBackgroundTap()
         .navigationTitle("Add Shopping Item")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {

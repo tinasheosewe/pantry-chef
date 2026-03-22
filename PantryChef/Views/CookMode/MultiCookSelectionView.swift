@@ -19,7 +19,7 @@ struct MultiCookSelectionView: View {
             VStack(spacing: 0) {
                 schedulePreview
 
-                List {
+                AppList {
                     Section {
                         ForEach(appState.recipes) { recipe in
                             Button {
