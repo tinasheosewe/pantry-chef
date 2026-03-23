@@ -14,6 +14,7 @@ struct PantryItem: Identifiable, Codable, Hashable {
     var facets: [PantryFacetSelection]
     var storage: PantryStorage
     var freshnessSource: PantryFreshnessSource
+    var quantityMode: PantryQuantityMode
 
     init(
         id: UUID = UUID(),
@@ -28,16 +29,19 @@ struct PantryItem: Identifiable, Codable, Hashable {
         catalogItemID: String? = nil,
         facets: [PantryFacetSelection] = [],
         storage: PantryStorage? = nil,
-        freshnessSource: PantryFreshnessSource? = nil
+        freshnessSource: PantryFreshnessSource? = nil,
+        quantityMode: PantryQuantityMode? = nil
     ) {
         let catalogItem = IngredientMatcher.resolvedCatalogItem(for: name, catalogItemID: catalogItemID)
         let effectiveFacets = Self.normalizeFacets(facets, for: catalogItem)
+        let effectiveQuantityMode = Self.normalizedQuantityMode(quantityMode, quantity: quantity)
+        let effectiveQuantity = effectiveQuantityMode == .exact ? quantity : nil
 
         self.id = id
         self.name = catalogItem?.displayName(for: effectiveFacets) ?? name
         self.category = catalogItem?.category ?? category
-        self.quantity = quantity
-        self.unit = quantity == nil ? nil : (unit ?? catalogItem?.suggestedUnit(for: effectiveFacets))
+        self.quantity = effectiveQuantity
+        self.unit = effectiveQuantity == nil ? nil : (unit ?? catalogItem?.suggestedUnit(for: effectiveFacets))
         self.expiryDate = expiryDate
         self.dateAdded = dateAdded
         self.notes = notes?.trimmed.nilIfEmpty
@@ -46,10 +50,15 @@ struct PantryItem: Identifiable, Codable, Hashable {
         self.facets = effectiveFacets
         self.storage = storage ?? catalogItem?.defaultStorage ?? .pantry
         self.freshnessSource = freshnessSource ?? (expiryDate == nil ? .none : .userProvided)
+        self.quantityMode = effectiveQuantityMode
     }
 
     var isCatalogBacked: Bool {
         catalogItemID != nil
+    }
+
+    var isTrackingExactQuantity: Bool {
+        quantityMode == .exact
     }
 
     var expiryStatus: ExpiryStatus {
@@ -114,5 +123,16 @@ struct PantryItem: Identifiable, Codable, Hashable {
 
         let orderedKeys = item?.facets.map(\.key) ?? PantryFacetKey.allCases
         return orderedKeys.compactMap { facetsByKey[$0] }
+    }
+
+    private static func normalizedQuantityMode(_ quantityMode: PantryQuantityMode?, quantity: Double?) -> PantryQuantityMode {
+        switch quantityMode {
+        case .exact where quantity != nil:
+            return .exact
+        case .presenceOnly:
+            return .presenceOnly
+        default:
+            return quantity == nil ? .presenceOnly : .exact
+        }
     }
 }

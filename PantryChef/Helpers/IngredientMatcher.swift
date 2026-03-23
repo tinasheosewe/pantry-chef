@@ -5,13 +5,16 @@ import Foundation
 /// category-aware fallback, quantity checking, and substitution integration.
 enum IngredientMatcher {
 
+    private struct PantryCandidate {
+        let facets: Set<PantryFacetSelection>
+        let quantityMode: PantryQuantityMode
+        let quantity: Double?
+        let unit: MeasurementUnit?
+    }
+
     private struct PantryIndex {
-        let normalizedNames: [String]
-        let normalizedSet: Set<String>
-        let synonymUniverse: Set<String>
-        let tokenizedNames: [(name: String, tokens: Set<String>)]
-        let resolvedItemsByCatalogID: [String: [Set<PantryFacetSelection>]]
-        let unresolvedItemMatchKeys: Set<String>
+        let resolvedItemsByCatalogID: [String: [PantryCandidate]]
+        let unresolvedItemsByMatchKey: [String: [PantryCandidate]]
     }
 
     private static let pantryIndexCacheLock = NSLock()
@@ -104,17 +107,23 @@ enum IngredientMatcher {
 
     private static func pantryContains(ingredient: Ingredient, pantry: [PantryItem], index: PantryIndex) -> Bool {
         if let catalogItemID = ingredient.catalogItemID {
-            guard let pantryFacetSets = index.resolvedItemsByCatalogID[catalogItemID] else {
+            guard let pantryCandidates = index.resolvedItemsByCatalogID[catalogItemID] else {
                 return false
             }
 
             let requiredFacets = Set(ingredient.facets)
-            return pantryFacetSets.contains { pantryFacets in
-                pantryFacetsSatisfy(requiredFacets, pantryFacets: pantryFacets)
+            return pantryCandidates.contains { pantryCandidate in
+                pantryFacetsSatisfy(requiredFacets, pantryFacets: pantryCandidate.facets)
+                    && hasEnoughQuantity(candidate: pantryCandidate, ingredient: ingredient)
             }
         }
 
-        return index.unresolvedItemMatchKeys.contains(unresolvedMatchKey(for: ingredient.rawName))
+        let unresolvedKey = unresolvedMatchKey(for: ingredient.rawName)
+        guard let pantryCandidates = index.unresolvedItemsByMatchKey[unresolvedKey] else {
+            return false
+        }
+
+        return pantryCandidates.contains { hasEnoughQuantity(candidate: $0, ingredient: ingredient) }
     }
 
     private static func buildPantryIndex(_ pantry: [PantryItem]) -> PantryIndex {
@@ -127,41 +136,27 @@ enum IngredientMatcher {
         }
         pantryIndexCacheLock.unlock()
 
-        let normalizedNames = pantry.map { normalize($0.name) }
-        let normalizedSet = Set(normalizedNames)
-
-        var synonymUniverse: Set<String> = []
-        synonymUniverse.reserveCapacity(normalizedNames.count * 2)
-        for name in normalizedNames {
-            synonymUniverse.insert(name)
-            let group = synonymGroup(for: name)
-            if !group.isEmpty {
-                synonymUniverse.formUnion(group)
-            }
-        }
-
-        let tokenizedNames = normalizedNames.map { name in
-            (name: name, tokens: Set(IngredientLexicon.tokenize(name)))
-        }
-
-        var resolvedItemsByCatalogID: [String: [Set<PantryFacetSelection>]] = [:]
+        var resolvedItemsByCatalogID: [String: [PantryCandidate]] = [:]
         resolvedItemsByCatalogID.reserveCapacity(pantry.count)
-        var unresolvedItemMatchKeys: Set<String> = []
+        var unresolvedItemsByMatchKey: [String: [PantryCandidate]] = [:]
         for pantryItem in pantry {
+            let candidate = PantryCandidate(
+                facets: Set(pantryItem.facets),
+                quantityMode: pantryItem.quantityMode,
+                quantity: pantryItem.quantity,
+                unit: pantryItem.unit
+            )
+
             if let catalogItemID = pantryItem.catalogItemID {
-                resolvedItemsByCatalogID[catalogItemID, default: []].append(Set(pantryItem.facets))
+                resolvedItemsByCatalogID[catalogItemID, default: []].append(candidate)
             } else {
-                unresolvedItemMatchKeys.insert(unresolvedMatchKey(for: pantryItem.name))
+                unresolvedItemsByMatchKey[unresolvedMatchKey(for: pantryItem.name), default: []].append(candidate)
             }
         }
 
         let index = PantryIndex(
-            normalizedNames: normalizedNames,
-            normalizedSet: normalizedSet,
-            synonymUniverse: synonymUniverse,
-            tokenizedNames: tokenizedNames,
             resolvedItemsByCatalogID: resolvedItemsByCatalogID,
-            unresolvedItemMatchKeys: unresolvedItemMatchKeys
+            unresolvedItemsByMatchKey: unresolvedItemsByMatchKey
         )
 
         pantryIndexCacheLock.lock()
@@ -181,35 +176,12 @@ enum IngredientMatcher {
             hasher.combine(pantryItem.name)
             hasher.combine(pantryItem.catalogItemID)
             hasher.combine(pantryItem.facets)
+            hasher.combine(pantryItem.quantityMode)
+            hasher.combine(pantryItem.quantity)
+            hasher.combine(pantryItem.unit)
         }
 
         return hasher.finalize()
-    }
-
-    private static func pantryContainsNormalized(_ normalizedIngredient: String, index: PantryIndex) -> Bool {
-        if index.normalizedSet.contains(normalizedIngredient) { return true }
-
-        for pantryName in index.normalizedNames {
-            if pantryName.contains(normalizedIngredient) || normalizedIngredient.contains(pantryName) {
-                return true
-            }
-        }
-
-        let group = synonymGroup(for: normalizedIngredient)
-        if !group.isEmpty && !group.isDisjoint(with: index.synonymUniverse) {
-            return true
-        }
-
-        let ingredientTokens = Set(normalizedIngredient.split(separator: " ").map(String.init))
-        if !ingredientTokens.isEmpty {
-            for (_, pantryTokens) in index.tokenizedNames {
-                if IngredientLexicon.tokenSubsetMatch(ingredientTokens, pantryTokens) {
-                    return true
-                }
-            }
-        }
-
-        return false
     }
 
     private static func pantryFacetsSatisfy(
@@ -296,23 +268,43 @@ enum IngredientMatcher {
     /// Returns true if the pantry item has enough quantity for the ingredient.
     /// Returns true (optimistic) if quantities can't be compared.
     static func hasEnoughQuantity(pantryItem: PantryItem, ingredient: Ingredient) -> Bool {
-        guard let pantryQty = pantryItem.quantity,
-              let pantryUnit = pantryItem.unit,
-              let ingredientUnit = ingredient.unit else {
-            return true // Can't compare → assume yes
+        hasEnoughQuantity(
+            candidate: PantryCandidate(
+                facets: Set(pantryItem.facets),
+                quantityMode: pantryItem.quantityMode,
+                quantity: pantryItem.quantity,
+                unit: pantryItem.unit
+            ),
+            ingredient: ingredient
+        )
+    }
+
+    private static func hasEnoughQuantity(candidate: PantryCandidate, ingredient: Ingredient) -> Bool {
+        guard candidate.quantityMode == .exact else {
+            return true
         }
 
-        // Try to convert to common unit
-        if let converted = UnitConverter.convert(pantryQty, from: pantryUnit, to: ingredientUnit) {
+        guard let pantryQuantity = candidate.quantity else {
+            return true
+        }
+
+        guard let ingredientUnit = ingredient.unit else {
+            return pantryQuantity >= ingredient.quantity
+        }
+
+        guard let pantryUnit = candidate.unit else {
+            return true
+        }
+
+        if pantryUnit == ingredientUnit {
+            return pantryQuantity >= ingredient.quantity
+        }
+
+        if let converted = UnitConverter.convert(pantryQuantity, from: pantryUnit, to: ingredientUnit) {
             return converted >= ingredient.quantity
         }
 
-        // Same unit, direct compare
-        if pantryUnit == ingredientUnit {
-            return pantryQty >= ingredient.quantity
-        }
-
-        return true // Can't convert → assume yes
+        return true
     }
 
 }

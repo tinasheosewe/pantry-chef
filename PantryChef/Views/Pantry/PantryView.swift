@@ -767,6 +767,8 @@ struct BulkAddPantryView: View {
         if !draft.quantityText.trimmed.isEmpty {
             let unit = draft.unit ?? draft.selectedItem?.suggestedUnit(for: draft.selectedFacets) ?? .piece
             parts.append("\(draft.quantityText.trimmed) \(unit.rawValue)")
+        } else {
+            parts.append(PantryQuantityMode.presenceOnly.title)
         }
 
         if let storage = draft.storage {
@@ -1130,7 +1132,7 @@ struct PantryIntakeFormSections: View {
             }
         }
 
-        Section("Quantity") {
+        Section("Quantity (Optional)") {
             HStack {
                 TextField("Amount", text: Binding(
                     get: { draft.quantityText },
@@ -1154,6 +1156,10 @@ struct PantryIntakeFormSections: View {
                 Text("Enter a valid number for quantity")
                     .font(.caption)
                     .foregroundStyle(AppColors.softRed)
+            } else {
+                Text("Leave this blank to track the item by presence only. Enter an amount only when you want exact shortage detection.")
+                    .font(.caption)
+                    .foregroundStyle(AppColors.subtleText)
             }
         }
 

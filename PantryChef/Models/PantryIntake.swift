@@ -175,10 +175,6 @@ struct PantryIntakeRowDraft: Identifiable {
                     warnings.append(PantryIntakeWarning(kind: .missingRequiredState, severity: .blocking, message: "Choose where this item will be stored."))
                 }
 
-                if quantityText.trimmed.isEmpty {
-                    warnings.append(PantryIntakeWarning(kind: .missingQuantity, severity: .blocking, message: "Enter a quantity before adding this item."))
-                }
-
                 if quantityIsInvalid {
                     warnings.append(PantryIntakeWarning(kind: .unsupportedInput, severity: .blocking, message: "Enter a valid numeric quantity."))
                 }
@@ -199,10 +195,6 @@ struct PantryIntakeRowDraft: Identifiable {
 
         if storage == nil {
             warnings.append(PantryIntakeWarning(kind: .missingRequiredState, severity: .blocking, message: "Choose where this item will be stored."))
-        }
-
-        if quantityText.trimmed.isEmpty {
-            warnings.append(PantryIntakeWarning(kind: .missingQuantity, severity: .blocking, message: "Enter a quantity before adding this item."))
         }
 
         for definition in facetDefinitions {
@@ -425,7 +417,8 @@ struct PantryIntakeRowDraft: Identifiable {
                 catalogItemID: nil,
                 facets: [],
                 storage: storage,
-                freshnessSource: expiryDateWasEdited ? .userProvided : PantryFreshnessSource.none
+                freshnessSource: expiryDateWasEdited ? .userProvided : PantryFreshnessSource.none,
+                quantityMode: parsedQuantity == nil ? .presenceOnly : .exact
             )
         }
 
@@ -443,7 +436,8 @@ struct PantryIntakeRowDraft: Identifiable {
             catalogItemID: selectedItem.id,
             facets: selectedFacets,
             storage: storage,
-            freshnessSource: expiryDateWasEdited ? .userProvided : .estimated
+            freshnessSource: expiryDateWasEdited ? .userProvided : .estimated,
+            quantityMode: parsedQuantity == nil ? .presenceOnly : .exact
         )
     }
 

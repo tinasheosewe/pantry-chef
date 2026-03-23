@@ -282,6 +282,7 @@ final class PantryItemModelTests: XCTestCase {
         XCTAssertEqual(item.category, .dairy)
         XCTAssertNil(item.quantity)
         XCTAssertNil(item.unit)
+        XCTAssertEqual(item.quantityMode, .presenceOnly)
         XCTAssertNil(item.expiryDate)
         XCTAssertNil(item.notes)
         XCTAssertNil(item.imageURL)
@@ -303,7 +304,16 @@ final class PantryItemModelTests: XCTestCase {
         XCTAssertEqual(item.category, .protein)
         XCTAssertEqual(item.quantity, 12)
         XCTAssertEqual(item.unit, .piece)
+        XCTAssertEqual(item.quantityMode, .exact)
         XCTAssertEqual(item.notes, "Free range")
+    }
+
+    func testPresenceOnlyModeClearsQuantityFields() {
+        let item = PantryItem(name: "Flour", category: .bakingSupplies, quantity: 2, unit: .kilogram, quantityMode: .presenceOnly)
+
+        XCTAssertEqual(item.quantityMode, .presenceOnly)
+        XCTAssertNil(item.quantity)
+        XCTAssertNil(item.unit)
     }
 
     func testCatalogBackedInitializationResolvesStructuredFields() {
@@ -533,14 +543,17 @@ final class PantryIntakeRowDraftTests: XCTestCase {
         XCTAssertEqual(draft.selectedFacets, [PantryFacetSelection(key: .form, value: "whole")])
     }
 
-    func testMissingQuantityBlocksRowValidationAndBuild() throws {
+    func testMissingQuantityBuildsPresenceOnlyItem() throws {
         var draft = PantryIntakeRowDraft()
         draft.selectItem(try XCTUnwrap(PantryCatalog.item(id: "milk")))
         draft.setQuantityText("")
 
-        XCTAssertEqual(draft.rowState, .invalid)
-        XCTAssertTrue(draft.warnings.contains { $0.kind == .missingQuantity })
-        XCTAssertNil(draft.buildItem())
+        let item = try XCTUnwrap(draft.buildItem())
+        XCTAssertEqual(draft.rowState, .valid)
+        XCTAssertFalse(draft.warnings.contains { $0.kind == .missingQuantity })
+        XCTAssertEqual(item.quantityMode, .presenceOnly)
+        XCTAssertNil(item.quantity)
+        XCTAssertNil(item.unit)
     }
 
     func testGroundBeefGetsWeightBasedQuantityDefault() throws {
@@ -579,6 +592,7 @@ final class PantryIntakeRowDraftTests: XCTestCase {
         XCTAssertEqual(item.facets, [PantryFacetSelection(key: .variant, value: "all-purpose")])
         XCTAssertEqual(item.quantity, 2)
         XCTAssertEqual(item.unit, .kilogram)
+        XCTAssertEqual(item.quantityMode, .exact)
         XCTAssertEqual(item.notes, "Keep sealed")
     }
 
@@ -887,6 +901,20 @@ final class IngredientMatcherTests: XCTestCase {
         XCTAssertTrue(IngredientMatcher.hasEnoughQuantity(pantryItem: pantryItem, ingredient: ingredient))
     }
 
+    func testHasEnoughQuantityUsesPresenceOnlyAsSufficient() {
+        let pantryItem = PantryItem(name: "Flour", category: .bakingSupplies)
+        let ingredient = Ingredient(name: "Flour", quantity: 500, unit: .gram, category: .bakingSupplies)
+
+        XCTAssertTrue(IngredientMatcher.hasEnoughQuantity(pantryItem: pantryItem, ingredient: ingredient))
+    }
+
+    func testHasEnoughQuantityRejectsKnownInsufficientExactQuantity() {
+        let pantryItem = PantryItem(name: "Ground Beef", category: .protein, quantity: 500, unit: .gram)
+        let ingredient = Ingredient(name: "Ground Beef", quantity: 1000, unit: .gram, category: .protein)
+
+        XCTAssertFalse(IngredientMatcher.hasEnoughQuantity(pantryItem: pantryItem, ingredient: ingredient))
+    }
+
     func testPantryItemMatchesIngredientPrefersCatalogIdentity() {
         let pantryItem = PantryItem(name: "Carrots", category: .produce, quantity: 3, unit: .whole)
         let ingredient = Ingredient(name: "Carrot", quantity: 1, unit: .whole, category: .produce, catalogItemID: "carrot")
@@ -1107,6 +1135,29 @@ final class ShoppingGenerationTests: XCTestCase {
 
         XCTAssertEqual(appState.shoppingItems.count, 1)
         XCTAssertEqual(appState.shoppingItems.first?.catalogItemID, "flour")
+    }
+
+    func testGenerateShoppingListFromMealPlanTreatsPresenceOnlyPantryItemAsAvailable() async {
+        let (appState, storage, _) = makeTestAppState()
+
+        storage.pantryStore = [PantryItem(name: "Flour", category: .grains, catalogItemID: "flour")]
+
+        let recipe = Recipe(
+            title: "Pancakes",
+            ingredients: [
+                Ingredient(name: "Flour", quantity: 200, unit: .gram, category: .grains, catalogItemID: "flour")
+            ],
+            steps: [RecipeStep(stepNumber: 1, instruction: "Mix ingredients")],
+            servings: 2,
+            source: .user
+        )
+
+        storage.mealPlanStore = [MealPlanEntry(date: Date(), mealType: .breakfast, recipe: recipe)]
+
+        await appState.loadAllData()
+        await appState.generateShoppingListFromMealPlan()
+
+        XCTAssertTrue(appState.shoppingItems.isEmpty)
     }
 
     func testGenerateShoppingListFromMealPlanUsesExactCustomPantryFallbackForUnresolvedIngredients() async {
@@ -1774,7 +1825,7 @@ final class AppStateTests: XCTestCase {
 
         XCTAssertEqual(appState.pantryItems.count, 1)
         XCTAssertEqual(appState.pantryItems[0].quantity, 2)
-        XCTAssertEqual(appState.pantryItems[0].expiryDate?.timeIntervalSince1970, earlierExpiry.timeIntervalSince1970, accuracy: 1)
+        XCTAssertEqual(try XCTUnwrap(appState.pantryItems[0].expiryDate).timeIntervalSince1970, earlierExpiry.timeIntervalSince1970, accuracy: 1)
         XCTAssertEqual(appState.pantryItems[0].freshnessSource, .estimated)
     }
 
@@ -1804,7 +1855,7 @@ final class AppStateTests: XCTestCase {
 
         XCTAssertEqual(appState.pantryItems.count, 1)
         XCTAssertEqual(appState.pantryItems[0].quantity, 2)
-        XCTAssertEqual(appState.pantryItems[0].expiryDate?.timeIntervalSince1970, incomingExpiry.timeIntervalSince1970, accuracy: 1)
+        XCTAssertEqual(try XCTUnwrap(appState.pantryItems[0].expiryDate).timeIntervalSince1970, incomingExpiry.timeIntervalSince1970, accuracy: 1)
         XCTAssertEqual(appState.pantryItems[0].freshnessSource, .estimated)
     }
 
@@ -2146,9 +2197,9 @@ final class AppStateTests: XCTestCase {
         XCTAssertFalse(appState.discoverRecipes[0].isFavorite)
     }
 
-    // MARK: - Cook Deduction (fuzzy matching)
+    // MARK: - Cook Completion
 
-    func testMarkRecipeAsCookedDeductsIngredients() async {
+    func testMarkRecipeAsCookedDoesNotDeductIngredients() async {
         let (appState, _, _) = makeTestAppState()
         await appState.addPantryItem(makePantryItem(name: "Chicken Breast", category: .protein, quantity: 600, unit: .gram))
         await appState.addPantryItem(makePantryItem(name: "Rice", category: .grains, quantity: 3, unit: .cup))
@@ -2159,26 +2210,37 @@ final class AppStateTests: XCTestCase {
         ])
         await appState.markRecipeAsCooked(recipe)
 
-        // Chicken Breast: 600 - 500 = 100
         let chicken = appState.pantryItems.first { $0.name == "Chicken Breast" }
         XCTAssertNotNil(chicken)
-        XCTAssertEqual(chicken?.quantity, 100)
+        XCTAssertEqual(chicken?.quantity, 600)
 
-        // Rice: 3 - 2 = 1
         let rice = appState.pantryItems.first { $0.name == "Rice" }
         XCTAssertNotNil(rice)
-        XCTAssertEqual(rice?.quantity, 1)
+        XCTAssertEqual(rice?.quantity, 3)
     }
 
-    func testMarkRecipeAsCookedRemovesItemWhenDepleted() async {
+    func testMarkRecipeAsCookedDoesNotRemoveDepletedItem() async {
         let (appState, _, _) = makeTestAppState()
         await appState.addPantryItem(makePantryItem(name: "Eggs", category: .dairy, quantity: 3, unit: .piece))
         let recipe = makeRecipe(ingredients: [
             Ingredient(name: "Eggs", quantity: 3, unit: .piece),
         ])
         await appState.markRecipeAsCooked(recipe)
-        XCTAssertFalse(appState.pantryItems.contains { $0.name == "Eggs" },
-                        "Should remove item when quantity runs out")
+        XCTAssertEqual(appState.pantryItems.count, 1)
+        XCTAssertTrue(appState.pantryItems.contains { $0.catalogItemID == "egg" || $0.name == "Egg" || $0.name == "Eggs" },
+                        "Cooking a recipe should not remove pantry items")
+    }
+
+    func testPantryPresenceOnlyMergeDominatesExactQuantity() async {
+        let (appState, _, _) = makeTestAppState()
+        await appState.addPantryItem(PantryItem(name: "Flour", category: .bakingSupplies))
+        await appState.addPantryItem(PantryItem(name: "Flour", category: .bakingSupplies, quantity: 1, unit: .kilogram))
+
+        let flour = try? XCTUnwrap(appState.pantryItems.first)
+        XCTAssertEqual(appState.pantryItems.count, 1)
+        XCTAssertEqual(flour?.quantityMode, .presenceOnly)
+        XCTAssertNil(flour?.quantity)
+        XCTAssertNil(flour?.unit)
     }
 
     // MARK: - Load All Data

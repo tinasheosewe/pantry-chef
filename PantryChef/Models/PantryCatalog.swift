@@ -22,6 +22,27 @@ enum PantryFreshnessSource: String, Codable, CaseIterable, Sendable {
     case userProvided
 }
 
+enum PantryQuantityMode: String, Codable, CaseIterable, Sendable {
+    case exact
+    case presenceOnly
+
+    var title: String {
+        switch self {
+        case .exact:
+            return "Exact quantity"
+        case .presenceOnly:
+            return "Presence only"
+        }
+    }
+
+    static func merged(_ lhs: PantryQuantityMode, _ rhs: PantryQuantityMode) -> PantryQuantityMode {
+        if lhs == .presenceOnly || rhs == .presenceOnly {
+            return .presenceOnly
+        }
+        return .exact
+    }
+}
+
 enum PantryFacetKey: String, Codable, CaseIterable, Identifiable, Sendable {
     case variant
     case form

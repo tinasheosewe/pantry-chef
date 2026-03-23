@@ -2,7 +2,7 @@ import Foundation
 import SwiftData
 
 enum StorageSchema {
-    static let currentVersion = 7
+    static let currentVersion = 8
 }
 
 @Model
@@ -20,6 +20,7 @@ final class PantryItemRecord {
     var catalogItemID: String?
     var storageRawValue: String
     var freshnessSourceRawValue: String
+    var quantityModeRawValue: String?
 
     @Relationship(deleteRule: .cascade, inverse: \PantryFacetRecord.pantryItem)
     var facetRecords: [PantryFacetRecord] = []
@@ -38,6 +39,7 @@ final class PantryItemRecord {
         catalogItemID = item.catalogItemID
         storageRawValue = item.storage.rawValue
         freshnessSourceRawValue = item.freshnessSource.rawValue
+        quantityModeRawValue = item.quantityMode.rawValue
         facetRecords = Self.makeFacetRecords(from: item.facets)
     }
 
@@ -54,6 +56,7 @@ final class PantryItemRecord {
         catalogItemID = item.catalogItemID
         storageRawValue = item.storage.rawValue
         freshnessSourceRawValue = item.freshnessSource.rawValue
+        quantityModeRawValue = item.quantityMode.rawValue
         replaceFacetRecords(with: item.facets, in: context)
     }
 
@@ -73,7 +76,8 @@ final class PantryItemRecord {
                 .sorted { $0.sortIndex < $1.sortIndex }
                 .compactMap { $0.toDomain() },
             storage: PantryStorage(rawValue: storageRawValue) ?? .pantry,
-            freshnessSource: PantryFreshnessSource(rawValue: freshnessSourceRawValue) ?? PantryFreshnessSource.none
+            freshnessSource: PantryFreshnessSource(rawValue: freshnessSourceRawValue) ?? PantryFreshnessSource.none,
+            quantityMode: quantityModeRawValue.flatMap(PantryQuantityMode.init(rawValue:))
         )
     }
 

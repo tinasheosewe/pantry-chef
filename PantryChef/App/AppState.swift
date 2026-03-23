@@ -482,21 +482,7 @@ final class AppState {
 
     // MARK: - Cook Mode
     func markRecipeAsCooked(_ recipe: Recipe) async {
-        // Deduct ingredients from pantry
-        for ingredient in recipe.ingredients {
-            if let index = pantryItems.firstIndex(where: {
-                IngredientMatcher.pantryItemMatchesIngredient($0, ingredient: ingredient)
-            }) {
-                var item = pantryItems[index]
-                let remaining = (item.quantity ?? 0) - ingredient.quantity
-                if remaining <= 0 {
-                    await removePantryItem(item)
-                } else {
-                    item.quantity = remaining
-                    await updatePantryItem(item)
-                }
-            }
-        }
+        // Pantry stock is user-maintained. Cooking a recipe does not decrement pantry items.
     }
 
     private func persistShoppingItems() async {
@@ -608,6 +594,11 @@ final class AppState {
             return false
         }
 
+        let mergedQuantityMode = PantryQuantityMode.merged(existing.quantityMode, addition.quantityMode)
+        guard mergedQuantityMode == .exact else {
+            return true
+        }
+
         switch combinedQuantity(
             existingQuantity: existing.quantity,
             existingUnit: existing.unit,
@@ -624,24 +615,30 @@ final class AppState {
     private func mergePantryItem(_ existing: PantryItem, with addition: PantryItem) -> PantryItem {
         var merged = existing
         merged.catalogItemID = existing.catalogItemID ?? addition.catalogItemID
+        merged.quantityMode = PantryQuantityMode.merged(existing.quantityMode, addition.quantityMode)
         if merged.facets.isEmpty || addition.facets.count > merged.facets.count {
             merged.facets = addition.facets
         }
 
-        switch combinedQuantity(
-            existingQuantity: existing.quantity,
-            existingUnit: existing.unit,
-            addedQuantity: addition.quantity,
-            addedUnit: addition.unit
-        ) {
-        case let .merged(quantity, unit):
-            merged.quantity = quantity
-            merged.unit = unit
-        case .keepExisting:
-            break
-        case let .replaceExisting(quantity, unit):
-            merged.quantity = quantity
-            merged.unit = unit
+        if merged.quantityMode == .presenceOnly {
+            merged.quantity = nil
+            merged.unit = nil
+        } else {
+            switch combinedQuantity(
+                existingQuantity: existing.quantity,
+                existingUnit: existing.unit,
+                addedQuantity: addition.quantity,
+                addedUnit: addition.unit
+            ) {
+            case let .merged(quantity, unit):
+                merged.quantity = quantity
+                merged.unit = unit
+            case .keepExisting:
+                break
+            case let .replaceExisting(quantity, unit):
+                merged.quantity = quantity
+                merged.unit = unit
+            }
         }
 
         if let existingExpiryDate = merged.expiryDate, let additionExpiryDate = addition.expiryDate {

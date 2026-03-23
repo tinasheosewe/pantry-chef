@@ -171,5 +171,6 @@ final class StorageServiceIntegrationTests: XCTestCase {
         XCTAssertEqual(roundTripped.facets, [PantryFacetSelection(key: .variant, value: "all-purpose")])
         XCTAssertEqual(roundTripped.storage, .pantry)
         XCTAssertEqual(roundTripped.freshnessSource, .userProvided)
+        XCTAssertEqual(roundTripped.quantityMode, .exact)
     }
 }
