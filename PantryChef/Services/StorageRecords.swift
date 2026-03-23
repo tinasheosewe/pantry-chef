@@ -2,7 +2,7 @@ import Foundation
 import SwiftData
 
 enum StorageSchema {
-    static let currentVersion = 8
+    static let currentVersion = 9
 }
 
 @Model
@@ -118,6 +118,104 @@ final class PantryFacetRecord {
     func toDomain() -> PantryFacetSelection? {
         guard let key = PantryFacetKey(rawValue: keyRawValue) else { return nil }
         return PantryFacetSelection(key: key, value: value)
+    }
+}
+
+@Model
+final class PreparedDishRecord {
+    @Attribute(.unique) var id: UUID
+    var schemaVersion: Int
+    var name: String
+    var mealTypesRaw: String
+    var servingsRemaining: Int
+    var storageRawValue: String
+    var useByDate: Date?
+    var dateAdded: Date
+    var freshnessSourceRawValue: String
+    var notes: String?
+    var recipeID: UUID?
+    var calories: Int?
+    var protein: Double?
+    var carbohydrates: Double?
+    var fat: Double?
+    var fiber: Double?
+    var sugar: Double?
+    var sodium: Double?
+
+    init(from dish: PreparedDish) {
+        id = dish.id
+        schemaVersion = StorageSchema.currentVersion
+        name = dish.name
+        mealTypesRaw = dish.mealTypes.map(\.rawValue).joined(separator: "|")
+        servingsRemaining = dish.servingsRemaining
+        storageRawValue = dish.storage.rawValue
+        useByDate = dish.useByDate
+        dateAdded = dish.dateAdded
+        freshnessSourceRawValue = dish.freshnessSource.rawValue
+        notes = dish.notes
+        recipeID = dish.recipeID
+        calories = dish.nutrition?.calories
+        protein = dish.nutrition?.protein
+        carbohydrates = dish.nutrition?.carbohydrates
+        fat = dish.nutrition?.fat
+        fiber = dish.nutrition?.fiber
+        sugar = dish.nutrition?.sugar
+        sodium = dish.nutrition?.sodium
+    }
+
+    func update(from dish: PreparedDish) {
+        schemaVersion = StorageSchema.currentVersion
+        name = dish.name
+        mealTypesRaw = dish.mealTypes.map(\.rawValue).joined(separator: "|")
+        servingsRemaining = dish.servingsRemaining
+        storageRawValue = dish.storage.rawValue
+        useByDate = dish.useByDate
+        dateAdded = dish.dateAdded
+        freshnessSourceRawValue = dish.freshnessSource.rawValue
+        notes = dish.notes
+        recipeID = dish.recipeID
+        calories = dish.nutrition?.calories
+        protein = dish.nutrition?.protein
+        carbohydrates = dish.nutrition?.carbohydrates
+        fat = dish.nutrition?.fat
+        fiber = dish.nutrition?.fiber
+        sugar = dish.nutrition?.sugar
+        sodium = dish.nutrition?.sodium
+    }
+
+    func toDomain() -> PreparedDish {
+        let mealTypes = mealTypesRaw
+            .split(separator: "|")
+            .compactMap { MealType(rawValue: String($0)) }
+
+        let nutrition: NutritionInfo?
+        if let calories, let protein, let carbohydrates, let fat {
+            nutrition = NutritionInfo(
+                calories: calories,
+                protein: protein,
+                carbohydrates: carbohydrates,
+                fat: fat,
+                fiber: fiber,
+                sugar: sugar,
+                sodium: sodium
+            )
+        } else {
+            nutrition = nil
+        }
+
+        return PreparedDish(
+            id: id,
+            name: name,
+            mealTypes: mealTypes,
+            servingsRemaining: servingsRemaining,
+            storage: PantryStorage(rawValue: storageRawValue) ?? .refrigerated,
+            useByDate: useByDate,
+            dateAdded: dateAdded,
+            freshnessSource: PantryFreshnessSource(rawValue: freshnessSourceRawValue) ?? .none,
+            notes: notes,
+            recipeID: recipeID,
+            nutrition: nutrition
+        )
     }
 }
 
@@ -497,6 +595,7 @@ final class MealPlanRecord {
     var date: Date
     var mealTypeRawValue: String
     var recipeId: UUID?
+    var preparedDishId: UUID?
     var customMealName: String?
     var notes: String?
 
@@ -506,6 +605,7 @@ final class MealPlanRecord {
         date = entry.date
         mealTypeRawValue = entry.mealType.rawValue
         recipeId = entry.recipe?.id
+        preparedDishId = entry.preparedDish?.id
         customMealName = entry.customMealName
         notes = entry.notes
     }
@@ -515,16 +615,18 @@ final class MealPlanRecord {
         date = entry.date
         mealTypeRawValue = entry.mealType.rawValue
         recipeId = entry.recipe?.id
+        preparedDishId = entry.preparedDish?.id
         customMealName = entry.customMealName
         notes = entry.notes
     }
 
-    func toDomain(recipe: Recipe?) -> MealPlanEntry {
+    func toDomain(recipe: Recipe?, preparedDish: PreparedDish?) -> MealPlanEntry {
         MealPlanEntry(
             id: id,
             date: date,
             mealType: MealType(rawValue: mealTypeRawValue) ?? .dinner,
             recipe: recipe,
+            preparedDish: preparedDish,
             customMealName: customMealName,
             notes: notes
         )

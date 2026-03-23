@@ -10,6 +10,12 @@ protocol StorageServiceProtocol: AnyObject {
     func updatePantryItem(_ item: PantryItem) async throws -> PantryItem
     func deletePantryItem(_ item: PantryItem) async throws
 
+    // Prepared Dishes
+    func fetchPreparedDishes() async throws -> [PreparedDish]
+    func addPreparedDish(_ dish: PreparedDish) async throws -> PreparedDish
+    func updatePreparedDish(_ dish: PreparedDish) async throws -> PreparedDish
+    func deletePreparedDish(_ dish: PreparedDish) async throws
+
     // Recipes
     func fetchRecipes() async throws -> [Recipe]
     func addRecipe(_ recipe: Recipe) async throws -> Recipe

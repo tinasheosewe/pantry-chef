@@ -39,12 +39,18 @@ struct MealPlanView: View {
             .shoppingListConfirmation($shoppingConfirmation) { itemsToAdd in
                 viewModel.addShoppingItems(itemsToAdd)
             }
-            .sheet(isPresented: $viewModel.showRecipePicker) {
-                RecipePickerView(
+            .sheet(isPresented: $viewModel.showMealPicker) {
+                MealPickerView(
                     recipes: viewModel.appState.allRecipes,
-                    onSelect: { recipe in
+                    preparedDishes: viewModel.appState.preparedDishes,
+                    onSelectRecipe: { recipe in
                         if let slot = viewModel.selectedSlot {
                             viewModel.assignRecipe(recipe, to: slot)
+                        }
+                    },
+                    onSelectPreparedDish: { dish in
+                        if let slot = viewModel.selectedSlot {
+                            viewModel.assignPreparedDish(dish, to: slot)
                         }
                     }
                 )
@@ -53,6 +59,9 @@ struct MealPlanView: View {
                 if let recipe = entry.recipe {
                     RecipeDetailView(recipe: recipe)
                     .environment(viewModel.appState)
+                } else if let preparedDish = entry.preparedDish {
+                    PreparedDishDetailView(dish: preparedDish)
+                        .environment(viewModel.appState)
                 }
             }
         }
@@ -150,7 +159,7 @@ struct MealPlanView: View {
         let entry = viewModel.entriesFor(date: date, mealType: mealType)
 
         return Button {
-            if let entry, entry.isPlanned, entry.recipe != nil {
+            if let entry, entry.isPlanned, (entry.recipe != nil || entry.preparedDish != nil) {
                 selectedMealEntry = entry
             } else {
                 viewModel.selectSlot(date: date, mealType: mealType)
@@ -186,17 +195,17 @@ struct MealPlanView: View {
         }
         .contextMenu {
             if let entry, entry.isPlanned {
-                if entry.recipe != nil {
+                if entry.recipe != nil || entry.preparedDish != nil {
                     Button {
                         selectedMealEntry = entry
                     } label: {
-                        Label("View Recipe", systemImage: "book")
+                        Label(entry.recipe != nil ? "View Recipe" : "View Prepared Dish", systemImage: entry.recipe != nil ? "book" : "takeoutbag.and.cup.and.straw")
                     }
                 }
                 Button {
                     viewModel.selectSlot(date: date, mealType: mealType)
                 } label: {
-                    Label("Change Recipe", systemImage: "arrow.triangle.swap")
+                    Label("Change Meal", systemImage: "arrow.triangle.swap")
                 }
                 Button(role: .destructive) {
                     viewModel.removeEntry(entry)
@@ -209,10 +218,12 @@ struct MealPlanView: View {
 }
 
 // MARK: - Recipe Picker View
-struct RecipePickerView: View {
+struct MealPickerView: View {
     @Environment(\.dismiss) private var dismiss
     let recipes: [Recipe]
-    let onSelect: (Recipe) -> Void
+    let preparedDishes: [PreparedDish]
+    let onSelectRecipe: (Recipe) -> Void
+    let onSelectPreparedDish: (PreparedDish) -> Void
     @State private var searchText = ""
     @State private var debouncedSearchText = ""
     @State private var searchDebouncer = TaskDebouncer()
@@ -221,33 +232,78 @@ struct RecipePickerView: View {
         SearchQuerySupport.filtered(recipes, query: debouncedSearchText) { $0.title }
     }
 
+    var filteredPreparedDishes: [PreparedDish] {
+        SearchQuerySupport.filtered(preparedDishes, query: debouncedSearchText) { $0.name }
+    }
+
     var body: some View {
         NavigationStack {
             AppList {
-                ForEach(filteredRecipes) { recipe in
-                    Button {
-                        onSelect(recipe)
-                        dismiss()
-                    } label: {
-                        HStack(spacing: 12) {
-                            Image(systemName: recipe.mealType?.icon ?? "fork.knife")
-                                .font(.title3)
-                                .foregroundStyle(AppColors.primaryGreen)
-                                .frame(width: 40, height: 40)
-                                .background(AppColors.primaryGreen.opacity(0.1))
-                                .clipShape(RoundedRectangle(cornerRadius: 8))
+                if !filteredPreparedDishes.isEmpty {
+                    Section("Prepared Dishes") {
+                        ForEach(filteredPreparedDishes) { dish in
+                            Button {
+                                onSelectPreparedDish(dish)
+                                dismiss()
+                            } label: {
+                                HStack(spacing: 12) {
+                                    Image(systemName: "takeoutbag.and.cup.and.straw")
+                                        .font(.title3)
+                                        .foregroundStyle(AppColors.warmOrange)
+                                        .frame(width: 40, height: 40)
+                                        .background(AppColors.warmOrange.opacity(0.12))
+                                        .clipShape(RoundedRectangle(cornerRadius: 8))
 
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text(recipe.title)
-                                    .font(.subheadline)
-                                    .fontWeight(.medium)
-                                    .foregroundStyle(AppColors.darkText)
+                                    VStack(alignment: .leading, spacing: 4) {
+                                        Text(dish.name)
+                                            .font(.subheadline)
+                                            .fontWeight(.medium)
+                                            .foregroundStyle(AppColors.darkText)
 
-                                HStack {
-                                    DifficultyBadge(difficulty: recipe.difficulty)
-                                    Text(recipe.totalTimeDisplay)
-                                        .font(.caption2)
-                                        .foregroundStyle(AppColors.subtleText)
+                                        Text("\(dish.servingsDisplay) • \(dish.mealTypesSummary)")
+                                            .font(.caption2)
+                                            .foregroundStyle(AppColors.subtleText)
+                                    }
+
+                                    Spacer()
+
+                                    if dish.useByDate != nil {
+                                        ExpiryBadge(status: dish.expiryStatus, daysLeft: dish.daysUntilUseBy)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if !filteredRecipes.isEmpty {
+                    Section("Recipes") {
+                        ForEach(filteredRecipes) { recipe in
+                            Button {
+                                onSelectRecipe(recipe)
+                                dismiss()
+                            } label: {
+                                HStack(spacing: 12) {
+                                    Image(systemName: recipe.mealType?.icon ?? "fork.knife")
+                                        .font(.title3)
+                                        .foregroundStyle(AppColors.primaryGreen)
+                                        .frame(width: 40, height: 40)
+                                        .background(AppColors.primaryGreen.opacity(0.1))
+                                        .clipShape(RoundedRectangle(cornerRadius: 8))
+
+                                    VStack(alignment: .leading, spacing: 4) {
+                                        Text(recipe.title)
+                                            .font(.subheadline)
+                                            .fontWeight(.medium)
+                                            .foregroundStyle(AppColors.darkText)
+
+                                        HStack {
+                                            DifficultyBadge(difficulty: recipe.difficulty)
+                                            Text(recipe.totalTimeDisplay)
+                                                .font(.caption2)
+                                                .foregroundStyle(AppColors.subtleText)
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -260,7 +316,7 @@ struct RecipePickerView: View {
                     debouncedSearchText = $0
                 }
             }
-            .navigationTitle("Choose Recipe")
+            .navigationTitle("Choose Meal")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {

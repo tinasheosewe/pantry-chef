@@ -133,6 +133,15 @@ struct MealPlanActions {
         await appState.addToMealPlan(entry)
     }
 
+    func assignPreparedDish(_ dish: PreparedDish, to slot: MealPlanViewModel.MealSlot) async {
+        let entry = MealPlanEntry(
+            date: slot.date,
+            mealType: slot.mealType,
+            preparedDish: dish
+        )
+        await appState.addToMealPlan(entry)
+    }
+
     func removeEntry(_ entry: MealPlanEntry) async {
         await appState.removeFromMealPlan(entry)
     }
@@ -160,5 +169,22 @@ struct RecipeActions {
 
     func toggleFavorite(_ recipe: Recipe) async {
         await appState.toggleFavoriteWithSave(recipe)
+    }
+}
+
+@MainActor
+struct PreparedDishActions {
+    let appState: AppState
+
+    func addDish(_ dish: PreparedDish) async {
+        await appState.addPreparedDish(dish)
+    }
+
+    func updateDish(_ dish: PreparedDish) async {
+        await appState.updatePreparedDish(dish)
+    }
+
+    func deleteDish(_ dish: PreparedDish) async {
+        await appState.removePreparedDish(dish)
     }
 }

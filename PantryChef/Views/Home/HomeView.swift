@@ -72,6 +72,9 @@ struct HomeView: View {
                 if let recipe = entry.recipe {
                     RecipeDetailView(recipe: recipe)
                         .environment(viewModel.appState)
+                } else if let preparedDish = entry.preparedDish {
+                    PreparedDishDetailView(dish: preparedDish)
+                        .environment(viewModel.appState)
                 }
             }
             .fullScreenCover(item: $resumeRecipe) { recipe in
@@ -224,11 +227,19 @@ struct HomeView: View {
                 Image(systemName: "chevron.right")
                     .font(.caption)
                     .foregroundStyle(AppColors.mediumGray)
+            } else if let preparedDish = entry.preparedDish {
+                Text(preparedDish.servingsDisplay)
+                    .font(.caption)
+                    .foregroundStyle(AppColors.subtleText)
+
+                Image(systemName: "chevron.right")
+                    .font(.caption)
+                    .foregroundStyle(AppColors.mediumGray)
             }
         }
         .padding(.vertical, 4)
 
-        if entry.recipe != nil {
+        if entry.recipe != nil || entry.preparedDish != nil {
             return AnyView(
                 Button {
                     selectedMealEntry = entry

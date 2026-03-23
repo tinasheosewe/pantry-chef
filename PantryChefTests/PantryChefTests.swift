@@ -8,12 +8,16 @@ import RealtimeAPI
 final class MockStorageService: StorageServiceProtocol {
     enum Operation: Hashable {
         case fetchPantryItems
+        case fetchPreparedDishes
         case fetchRecipes
         case fetchMealPlan
         case fetchShoppingItems
         case addPantryItem
         case updatePantryItem
         case deletePantryItem
+        case addPreparedDish
+        case updatePreparedDish
+        case deletePreparedDish
         case addRecipe
         case updateRecipe
         case deleteRecipe
@@ -24,6 +28,7 @@ final class MockStorageService: StorageServiceProtocol {
     }
 
     var pantryStore: [PantryItem] = []
+    var preparedDishStore: [PreparedDish] = []
     var recipeStore: [Recipe] = []
     var mealPlanStore: [MealPlanEntry] = []
     var shoppingStore: [ShoppingItem] = []
@@ -31,6 +36,9 @@ final class MockStorageService: StorageServiceProtocol {
     var addPantryItemCallCount = 0
     var updatePantryItemCallCount = 0
     var deletePantryItemCallCount = 0
+    var addPreparedDishCallCount = 0
+    var updatePreparedDishCallCount = 0
+    var deletePreparedDishCallCount = 0
     var addRecipeCallCount = 0
     var updateRecipeCallCount = 0
     var deleteRecipeCallCount = 0
@@ -48,11 +56,21 @@ final class MockStorageService: StorageServiceProtocol {
         if shouldFail(.fetchPantryItems) { throw TestError.mock }
         return pantryStore
     }
+    func fetchPreparedDishes() async throws -> [PreparedDish] {
+        if shouldFail(.fetchPreparedDishes) { throw TestError.mock }
+        return preparedDishStore
+    }
     func addPantryItem(_ item: PantryItem) async throws -> PantryItem {
         if shouldFail(.addPantryItem) { throw TestError.mock }
         addPantryItemCallCount += 1
         pantryStore.append(item)
         return item
+    }
+    func addPreparedDish(_ dish: PreparedDish) async throws -> PreparedDish {
+        if shouldFail(.addPreparedDish) { throw TestError.mock }
+        addPreparedDishCallCount += 1
+        preparedDishStore.append(dish)
+        return dish
     }
     func updatePantryItem(_ item: PantryItem) async throws -> PantryItem {
         if shouldFail(.updatePantryItem) { throw TestError.mock }
@@ -62,10 +80,23 @@ final class MockStorageService: StorageServiceProtocol {
         }
         return item
     }
+    func updatePreparedDish(_ dish: PreparedDish) async throws -> PreparedDish {
+        if shouldFail(.updatePreparedDish) { throw TestError.mock }
+        updatePreparedDishCallCount += 1
+        if let idx = preparedDishStore.firstIndex(where: { $0.id == dish.id }) {
+            preparedDishStore[idx] = dish
+        }
+        return dish
+    }
     func deletePantryItem(_ item: PantryItem) async throws {
         if shouldFail(.deletePantryItem) { throw TestError.mock }
         deletePantryItemCallCount += 1
         pantryStore.removeAll { $0.id == item.id }
+    }
+    func deletePreparedDish(_ dish: PreparedDish) async throws {
+        if shouldFail(.deletePreparedDish) { throw TestError.mock }
+        deletePreparedDishCallCount += 1
+        preparedDishStore.removeAll { $0.id == dish.id }
     }
 
     func fetchRecipes() async throws -> [Recipe] {
@@ -236,6 +267,7 @@ func makeTestAppState() -> (AppState, MockStorageService, MockAIService) {
     let appState = AppState(storageService: storage, aiService: ai, pantryItemPreferenceStore: preferenceStore, shouldLoadOnInit: false)
     // Clear seeded data so tests start clean
     appState.pantryItems = []
+    appState.preparedDishes = []
     appState.recipes = []
     return (appState, storage, ai)
 }
@@ -257,6 +289,27 @@ func makePantryItem(
         expiryDate: expiryDate,
         catalogItemID: catalogItemID,
         facets: facets
+    )
+}
+
+func makePreparedDish(
+    name: String = "Prepared Dish",
+    mealTypes: [MealType] = [.lunch, .dinner],
+    servingsRemaining: Int = 2,
+    storage: PantryStorage = .refrigerated,
+    useByDate: Date? = Calendar.current.date(byAdding: .day, value: 2, to: Date()),
+    recipeID: UUID? = nil,
+    nutrition: NutritionInfo? = nil
+) -> PreparedDish {
+    PreparedDish(
+        name: name,
+        mealTypes: mealTypes,
+        servingsRemaining: servingsRemaining,
+        storage: storage,
+        useByDate: useByDate,
+        freshnessSource: useByDate == nil ? .none : .estimated,
+        recipeID: recipeID,
+        nutrition: nutrition
     )
 }
 
@@ -1805,6 +1858,25 @@ final class StorageServiceTests: XCTestCase {
         XCTAssertFalse(all.contains { $0.id == entry.id })
     }
 
+    func testAddAndFetchPreparedDishes() async throws {
+        let sut = StorageService(isStoredInMemoryOnly: true, shouldBootstrap: false, resetPersistentStore: false)
+        let dish = makePreparedDish(name: "Soup")
+        let _ = try await sut.addPreparedDish(dish)
+        let all = try await sut.fetchPreparedDishes()
+        XCTAssertEqual(all.map(\.name), ["Soup"])
+    }
+
+    func testFetchMealPlanResolvesPreparedDishReference() async throws {
+        let sut = StorageService(isStoredInMemoryOnly: true, shouldBootstrap: false, resetPersistentStore: false)
+        let dish = makePreparedDish(name: "Biryani")
+        let _ = try await sut.addPreparedDish(dish)
+        let entry = MealPlanEntry(date: Date(), mealType: .dinner, preparedDish: dish)
+        let _ = try await sut.addMealPlanEntry(entry)
+
+        let all = try await sut.fetchMealPlan()
+        XCTAssertEqual(all.first?.preparedDish?.name, "Biryani")
+    }
+
     // MARK: - Shopping
 
     func testSaveAndFetchShoppingItems() async throws {
@@ -1968,6 +2040,36 @@ final class AppStateTests: XCTestCase {
         XCTAssertEqual(storage.updatePantryItemCallCount, 1)
     }
 
+    // MARK: - Prepared Dish CRUD
+
+    func testAddPreparedDish() async {
+        let (appState, storage, _) = makeTestAppState()
+        let dish = makePreparedDish(name: "Lasagna")
+        await appState.addPreparedDish(dish)
+        XCTAssertEqual(appState.preparedDishes.count, 1)
+        XCTAssertEqual(appState.preparedDishes[0].name, "Lasagna")
+        XCTAssertEqual(storage.addPreparedDishCallCount, 1)
+    }
+
+    func testUpdatePreparedDish() async {
+        let (appState, storage, _) = makeTestAppState()
+        var dish = makePreparedDish(name: "Tacos", servingsRemaining: 3)
+        await appState.addPreparedDish(dish)
+        dish.servingsRemaining = 1
+        await appState.updatePreparedDish(dish)
+        XCTAssertEqual(appState.preparedDishes[0].servingsRemaining, 1)
+        XCTAssertEqual(storage.updatePreparedDishCallCount, 1)
+    }
+
+    func testRemovePreparedDish() async {
+        let (appState, storage, _) = makeTestAppState()
+        let dish = makePreparedDish(name: "Curry")
+        await appState.addPreparedDish(dish)
+        await appState.removePreparedDish(dish)
+        XCTAssertTrue(appState.preparedDishes.isEmpty)
+        XCTAssertEqual(storage.deletePreparedDishCallCount, 1)
+    }
+
     // MARK: - Recipe CRUD
 
     func testAddRecipe() async {
@@ -2039,6 +2141,19 @@ final class AppStateTests: XCTestCase {
         let entry = MealPlanEntry(date: Date(), mealType: .dinner, recipe: makeRecipe(title: "Pasta Night"))
         await appState.addToMealPlan(entry)
         XCTAssertEqual(appState.mealPlan.count, 1)
+        XCTAssertEqual(storage.addMealPlanCallCount, 1)
+    }
+
+    func testAddPreparedDishToMealPlan() async {
+        let (appState, storage, _) = makeTestAppState()
+        let dish = makePreparedDish(name: "Leftover Chili")
+        await appState.addPreparedDish(dish)
+
+        let entry = MealPlanEntry(date: Date(), mealType: .dinner, preparedDish: dish)
+        await appState.addToMealPlan(entry)
+
+        XCTAssertEqual(appState.mealPlan.count, 1)
+        XCTAssertEqual(appState.mealPlan[0].preparedDish?.name, "Leftover Chili")
         XCTAssertEqual(storage.addMealPlanCallCount, 1)
     }
 
@@ -2121,6 +2236,30 @@ final class AppStateTests: XCTestCase {
         // "Chicken" should be matched by "Chicken Breast" (fuzzy), "Soy Sauce" should be missing
         XCTAssertEqual(appState.shoppingItems.count, 1)
         XCTAssertEqual(appState.shoppingItems[0].catalogItemID, "soy-sauce")
+    }
+
+    func testGenerateShoppingListFromMealPlanIgnoresPreparedDishEntries() async {
+        let (appState, _, _) = makeTestAppState()
+        let dish = makePreparedDish(name: "Pad Thai")
+        await appState.addPreparedDish(dish)
+        await appState.addToMealPlan(MealPlanEntry(date: Date(), mealType: .dinner, preparedDish: dish))
+
+        await appState.generateShoppingListFromMealPlan()
+
+        XCTAssertTrue(appState.shoppingItems.isEmpty)
+    }
+
+    func testWeeklyNutritionSummaryIncludesPreparedDishNutrition() async {
+        let (appState, _, _) = makeTestAppState()
+        let nutrition = NutritionInfo(calories: 500, protein: 30, carbohydrates: 45, fat: 18, fiber: nil, sugar: nil, sodium: nil)
+        let dish = makePreparedDish(name: "Meal Prep Bowl", nutrition: nutrition)
+        await appState.addPreparedDish(dish)
+        await appState.addToMealPlan(MealPlanEntry(date: Date(), mealType: .lunch, preparedDish: dish))
+
+        let summary = appState.weeklyNutritionSummary()
+
+        XCTAssertEqual(summary?.totalCalories, 500)
+        XCTAssertEqual(summary?.mealsPlanned, 1)
     }
 
     func testGenerateShoppingListFromMealPlanMergesAdditivelyIntoExistingCart() async {
@@ -3668,8 +3807,22 @@ final class MealPlanViewModelTests: XCTestCase {
         let recipe = makeRecipe(title: "Assigned")
         let slot = MealPlanViewModel.MealSlot(date: Date(), mealType: .dinner)
         await vm.assignRecipe(recipe, to: slot)
+        await Task.yield()
         XCTAssertEqual(appState.mealPlan.count, 1)
         XCTAssertEqual(vm.entries.count, 1)
+    }
+
+    func testAssignPreparedDish() async {
+        let (vm, appState) = makeSUT()
+        let dish = makePreparedDish(name: "Soup")
+        await appState.addPreparedDish(dish)
+        let slot = MealPlanViewModel.MealSlot(date: Date(), mealType: .lunch)
+
+        await vm.assignPreparedDish(dish, to: slot)
+        await Task.yield()
+
+        XCTAssertEqual(appState.mealPlan.count, 1)
+        XCTAssertEqual(appState.mealPlan.first?.preparedDish?.name, "Soup")
     }
 
     func testRemoveEntry() async {
@@ -3689,7 +3842,7 @@ final class MealPlanViewModelTests: XCTestCase {
         vm.selectSlot(date: Date(), mealType: .lunch)
         XCTAssertNotNil(vm.selectedSlot)
         XCTAssertEqual(vm.selectedSlot?.mealType, .lunch)
-        XCTAssertTrue(vm.showRecipePicker)
+        XCTAssertTrue(vm.showMealPicker)
     }
 
     // MARK: - Shopping List Generation
@@ -3701,6 +3854,7 @@ final class MealPlanViewModelTests: XCTestCase {
         ])
         await appState.addToMealPlan(MealPlanEntry(date: Date(), mealType: .dinner, recipe: recipe))
         await vm.generateShoppingList()
+        await Task.yield()
         XCTAssertFalse(appState.shoppingItems.isEmpty)
     }
 

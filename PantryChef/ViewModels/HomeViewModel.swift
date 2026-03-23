@@ -36,6 +36,10 @@ final class HomeViewModel {
         dashboard.expiringItems
     }
 
+    var expiringPreparedDishes: [PreparedDish] {
+        appState.expiringPreparedDishes
+    }
+
     var suggestedRecipe: Recipe? {
         dashboard.suggestedRecipe
     }

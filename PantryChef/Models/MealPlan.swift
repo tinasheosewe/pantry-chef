@@ -5,6 +5,7 @@ struct MealPlanEntry: Identifiable, Codable, Hashable {
     var date: Date
     var mealType: MealType
     var recipe: Recipe?
+    var preparedDish: PreparedDish?
     var customMealName: String?
     var notes: String?
 
@@ -13,6 +14,7 @@ struct MealPlanEntry: Identifiable, Codable, Hashable {
         date: Date,
         mealType: MealType,
         recipe: Recipe? = nil,
+        preparedDish: PreparedDish? = nil,
         customMealName: String? = nil,
         notes: String? = nil
     ) {
@@ -20,12 +22,13 @@ struct MealPlanEntry: Identifiable, Codable, Hashable {
         self.date = date
         self.mealType = mealType
         self.recipe = recipe
+        self.preparedDish = preparedDish
         self.customMealName = customMealName?.trimmed.nilIfEmpty
         self.notes = notes
     }
 
     var displayName: String {
-        recipe?.title ?? normalizedCustomMealName ?? "Unplanned"
+        recipe?.title ?? preparedDish?.name ?? normalizedCustomMealName ?? "Unplanned"
     }
 
     var normalizedCustomMealName: String? {
@@ -33,7 +36,7 @@ struct MealPlanEntry: Identifiable, Codable, Hashable {
     }
 
     var isPlanned: Bool {
-        recipe != nil || normalizedCustomMealName != nil
+        recipe != nil || preparedDish != nil || normalizedCustomMealName != nil
     }
 
     static func emptyWeek(from startDate: Date = Date()) -> [MealPlanEntry] {

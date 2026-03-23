@@ -163,6 +163,7 @@ final class AppState {
 
     // MARK: - Shared State
     var pantryItems: [PantryItem] = []
+    var preparedDishes: [PreparedDish] = []
     var recipes: [Recipe] = []    // User's own recipes
     var mealPlan: [MealPlanEntry] = []
     var shoppingItems: [ShoppingItem] = []
@@ -170,6 +171,7 @@ final class AppState {
     var errorMessage: String?
     private var hasScheduledInitialLoad = false
     private(set) var pantryRevision = 0
+    private(set) var preparedDishesRevision = 0
     private(set) var recipesRevision = 0
     private(set) var discoverRecipesRevision = 0
     private(set) var mealPlanRevision = 0
@@ -230,6 +232,16 @@ final class AppState {
             .sorted { ($0.expiryDate ?? .distantFuture) < ($1.expiryDate ?? .distantFuture) }
     }
 
+    var expiringPreparedDishes: [PreparedDish] {
+        let threeDaysFromNow = Calendar.current.date(byAdding: .day, value: 3, to: Date()) ?? Date()
+        return preparedDishes
+            .filter {
+                guard let useByDate = $0.useByDate else { return false }
+                return useByDate <= threeDaysFromNow
+            }
+            .sorted { ($0.useByDate ?? .distantFuture) < ($1.useByDate ?? .distantFuture) }
+    }
+
     var expiredItems: [PantryItem] {
         pantryItems.filter {
             guard let expiryDate = $0.expiryDate else { return false }
@@ -245,6 +257,7 @@ final class AppState {
         HomeDashboardRefreshState(
             mealPlanRevision: mealPlanRevision,
             pantryRevision: pantryRevision,
+            preparedDishesRevision: preparedDishesRevision,
             recipesRevision: recipesRevision,
             discoverRecipesRevision: discoverRecipesRevision
         )
@@ -313,29 +326,30 @@ final class AppState {
 
     func weeklyNutritionSummary() -> WeeklyNutritionSummary? {
         let plannedRecipes = mealPlan.filter(\.isPlanned).compactMap(\.recipe)
-        guard !plannedRecipes.isEmpty else { return nil }
+        let plannedPreparedNutrition = mealPlan.filter(\.isPlanned).compactMap { $0.preparedDish?.nutrition }
+        let recipeNutrition = plannedRecipes.compactMap(\.nutrition)
+        let nutritionSources = recipeNutrition + plannedPreparedNutrition
+        guard !nutritionSources.isEmpty else { return nil }
 
         var totalCalories = 0
         var totalProtein = 0.0
         var totalCarbs = 0.0
         var totalFat = 0.0
 
-        for recipe in plannedRecipes {
-            if let nutrition = recipe.nutrition {
-                totalCalories += nutrition.calories
-                totalProtein += nutrition.protein
-                totalCarbs += nutrition.carbohydrates
-                totalFat += nutrition.fat
-            }
+        for nutrition in nutritionSources {
+            totalCalories += nutrition.calories
+            totalProtein += nutrition.protein
+            totalCarbs += nutrition.carbohydrates
+            totalFat += nutrition.fat
         }
 
         return WeeklyNutritionSummary(
             totalCalories: totalCalories,
-            avgCaloriesPerMeal: totalCalories / plannedRecipes.count,
+            avgCaloriesPerMeal: totalCalories / nutritionSources.count,
             totalProtein: totalProtein,
             totalCarbs: totalCarbs,
             totalFat: totalFat,
-            mealsPlanned: plannedRecipes.count
+            mealsPlanned: nutritionSources.count
         )
     }
 
@@ -383,9 +397,11 @@ final class AppState {
         self.ingredientCandidateParser = IngredientCandidateParser()
         self.recipeIngredientResolver = RecipeIngredientResolver(candidateParser: ingredientCandidateParser, aiService: aiService)
         pantryItems = launchOptions.seedPantryItems ? PantryItem.samples : []
+        preparedDishes = []
         recipes = launchOptions.seedRecipes ? Recipe.samples : []
         discoverRecipeStore = []
         if !pantryItems.isEmpty { pantryRevision = 1 }
+        if !preparedDishes.isEmpty { preparedDishesRevision = 1 }
         if !recipes.isEmpty { recipesRevision = 1 }
     }
 
@@ -403,9 +419,11 @@ final class AppState {
         self.pantryItemPreferenceStore = pantryItemPreferenceStore
         self.recipeIngredientResolver = recipeIngredientResolver ?? RecipeIngredientResolver(candidateParser: ingredientCandidateParser, aiService: aiService)
         pantryItems = PantryItem.samples
+        preparedDishes = []
         recipes = Recipe.samples
         discoverRecipeStore = []
         pantryRevision = PantryItem.samples.isEmpty ? 0 : 1
+        preparedDishesRevision = 0
         recipesRevision = Recipe.samples.isEmpty ? 0 : 1
         hasScheduledInitialLoad = !shouldLoadOnInit
     }
@@ -439,6 +457,7 @@ final class AppState {
             do {
                 let snapshot = try await storageService.fetchStartupSnapshot()
                 setPantryItems(snapshot.pantryItems)
+                setPreparedDishes(snapshot.preparedDishes)
                 setRecipes(snapshot.recipes.filter { $0.source.isUserRecipe })
                 let persistedDiscover = snapshot.recipes.filter { !$0.source.isUserRecipe }
                 setDiscoverRecipes(mergedDiscoverRecipes(withPersisted: persistedDiscover))
@@ -458,6 +477,14 @@ final class AppState {
         do {
             let fetchedItems = try await storageService.fetchPantryItems()
             setPantryItems(fetchedItems)
+        } catch {
+            failures.append(error.localizedDescription)
+        }
+        await Task.yield()
+
+        do {
+            let fetchedPreparedDishes = try await storageService.fetchPreparedDishes()
+            setPreparedDishes(fetchedPreparedDishes)
         } catch {
             failures.append(error.localizedDescription)
         }
@@ -710,8 +737,48 @@ final class AppState {
         return await normalizeAIRecipes(recipes)
     }
 
+    // MARK: - Prepared Dish Actions
+    func addPreparedDish(_ dish: PreparedDish) async {
+        do {
+            let saved = try await storageService.addPreparedDish(dish)
+            preparedDishes.append(saved)
+            markPreparedDishesChanged()
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+    }
+
+    func updatePreparedDish(_ dish: PreparedDish) async {
+        do {
+            let updated = try await storageService.updatePreparedDish(dish)
+            if let index = preparedDishes.firstIndex(where: { $0.id == dish.id }) {
+                preparedDishes[index] = updated
+                markPreparedDishesChanged()
+            }
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+    }
+
+    func removePreparedDish(_ dish: PreparedDish) async {
+        do {
+            try await storageService.deletePreparedDish(dish)
+            let originalDishCount = preparedDishes.count
+            preparedDishes.removeAll { $0.id == dish.id }
+            if preparedDishes.count != originalDishCount {
+                markPreparedDishesChanged()
+            }
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+    }
+
+    func preparedDishById(_ id: UUID) -> PreparedDish? {
+        preparedDishes.first { $0.id == id }
+    }
+
     func modifyRecipe(_ recipe: Recipe, feedback: String) async -> NormalizedAIRecipe? {
-        let pantryNames = pantryItems.map(\ .name)
+        let pantryNames = pantryItems.map(\.name)
         guard let modifiedRecipe = await aiService.modifyRecipe(recipe, feedback: feedback, pantryIngredients: pantryNames) else {
             return nil
         }
@@ -1209,6 +1276,11 @@ final class AppState {
         markPantryChanged()
     }
 
+    private func setPreparedDishes(_ items: [PreparedDish]) {
+        preparedDishes = items
+        markPreparedDishesChanged()
+    }
+
     private func setRecipes(_ items: [Recipe]) {
         recipes = items
         markRecipesChanged()
@@ -1236,6 +1308,10 @@ final class AppState {
     private func markPantryChanged() {
         pantryRevision &+= 1
         cachedSuggestedRecipeKey = nil
+    }
+
+    private func markPreparedDishesChanged() {
+        preparedDishesRevision &+= 1
     }
 
     private func markRecipesChanged() {
@@ -1363,6 +1439,7 @@ final class AppState {
 struct HomeDashboardRefreshState: Hashable {
     let mealPlanRevision: Int
     let pantryRevision: Int
+    let preparedDishesRevision: Int
     let recipesRevision: Int
     let discoverRecipesRevision: Int
 }

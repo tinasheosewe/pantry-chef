@@ -88,6 +88,7 @@ actor StorageService: StorageServiceProtocol {
         let schema = Schema([
             PantryItemRecord.self,
             PantryFacetRecord.self,
+            PreparedDishRecord.self,
             RecipeRecord.self,
             IngredientRecord.self,
             IngredientFacetRecord.self,
@@ -163,11 +164,37 @@ actor StorageService: StorageServiceProtocol {
             .sorted { ($0.expiryDate ?? .distantFuture) < ($1.expiryDate ?? .distantFuture) }
     }
 
+    func fetchPreparedDishes() async throws -> [PreparedDish] {
+        try ensureBootstrapIfNeeded()
+        let records = try context.fetch(FetchDescriptor<PreparedDishRecord>())
+        return records
+            .map { $0.toDomain() }
+            .sorted { lhs, rhs in
+                switch (lhs.useByDate, rhs.useByDate) {
+                case let (left?, right?):
+                    return left < right
+                case (.some, nil):
+                    return true
+                case (nil, .some):
+                    return false
+                case (nil, nil):
+                    return lhs.dateAdded > rhs.dateAdded
+                }
+            }
+    }
+
     func addPantryItem(_ item: PantryItem) async throws -> PantryItem {
         try ensureBootstrapIfNeeded()
         context.insert(PantryItemRecord(from: item))
         try saveContext()
         return item
+    }
+
+    func addPreparedDish(_ dish: PreparedDish) async throws -> PreparedDish {
+        try ensureBootstrapIfNeeded()
+        context.insert(PreparedDishRecord(from: dish))
+        try saveContext()
+        return dish
     }
 
     func updatePantryItem(_ item: PantryItem) async throws -> PantryItem {
@@ -179,9 +206,26 @@ actor StorageService: StorageServiceProtocol {
         return item
     }
 
+    func updatePreparedDish(_ dish: PreparedDish) async throws -> PreparedDish {
+        try ensureBootstrapIfNeeded()
+        if let record = try fetchPreparedDishRecord(id: dish.id) {
+            record.update(from: dish)
+            try saveContext()
+        }
+        return dish
+    }
+
     func deletePantryItem(_ item: PantryItem) async throws {
         try ensureBootstrapIfNeeded()
         if let record = try fetchPantryRecord(id: item.id) {
+            context.delete(record)
+            try saveContext()
+        }
+    }
+
+    func deletePreparedDish(_ dish: PreparedDish) async throws {
+        try ensureBootstrapIfNeeded()
+        if let record = try fetchPreparedDishRecord(id: dish.id) {
             context.delete(record)
             try saveContext()
         }
@@ -198,6 +242,7 @@ actor StorageService: StorageServiceProtocol {
         try ensureBootstrapIfNeeded()
 
         let pantryRecords = try context.fetch(FetchDescriptor<PantryItemRecord>())
+        let preparedDishRecords = try context.fetch(FetchDescriptor<PreparedDishRecord>())
         let recipeRecords = try context.fetch(FetchDescriptor<RecipeRecord>())
         let mealPlanRecords = try context.fetch(FetchDescriptor<MealPlanRecord>())
         let shoppingRecords = try context.fetch(FetchDescriptor<ShoppingItemRecord>())
@@ -205,6 +250,21 @@ actor StorageService: StorageServiceProtocol {
         let pantryItems = pantryRecords
             .map { $0.toDomain() }
             .sorted { ($0.expiryDate ?? .distantFuture) < ($1.expiryDate ?? .distantFuture) }
+
+        let preparedDishes = preparedDishRecords
+            .map { $0.toDomain() }
+            .sorted { lhs, rhs in
+                switch (lhs.useByDate, rhs.useByDate) {
+                case let (left?, right?):
+                    return left < right
+                case (.some, nil):
+                    return true
+                case (nil, .some):
+                    return false
+                case (nil, nil):
+                    return lhs.dateAdded > rhs.dateAdded
+                }
+            }
 
         let decodedRecipes = decodeRecipes(from: recipeRecords)
         let sortedRecipes = decodedRecipes.sorted { $0.dateAdded > $1.dateAdded }
@@ -215,9 +275,18 @@ actor StorageService: StorageServiceProtocol {
             recipeById[recipe.id] = recipe
         }
 
+        var preparedDishById: [UUID: PreparedDish] = [:]
+        preparedDishById.reserveCapacity(preparedDishes.count)
+        for dish in preparedDishes {
+            preparedDishById[dish.id] = dish
+        }
+
         let mealPlan = mealPlanRecords
             .map { record in
-                record.toDomain(recipe: record.recipeId.flatMap { recipeById[$0] })
+                record.toDomain(
+                    recipe: record.recipeId.flatMap { recipeById[$0] },
+                    preparedDish: record.preparedDishId.flatMap { preparedDishById[$0] }
+                )
             }
             .sorted { $0.date < $1.date }
 
@@ -227,6 +296,7 @@ actor StorageService: StorageServiceProtocol {
 
         return StorageStartupSnapshot(
             pantryItems: pantryItems,
+            preparedDishes: preparedDishes,
             recipes: sortedRecipes,
             mealPlan: mealPlan,
             shoppingItems: shoppingItems
@@ -274,8 +344,10 @@ actor StorageService: StorageServiceProtocol {
     func fetchMealPlan() async throws -> [MealPlanEntry] {
         try ensureBootstrapIfNeeded()
         let records = try context.fetch(FetchDescriptor<MealPlanRecord>())
+        let preparedDishRecords = try context.fetch(FetchDescriptor<PreparedDishRecord>())
         let recipeRecords = try context.fetch(FetchDescriptor<RecipeRecord>())
         let decodedRecipes = decodeRecipes(from: recipeRecords)
+        let preparedDishes = preparedDishRecords.map { $0.toDomain() }
 
         var recipeById: [UUID: Recipe] = [:]
         recipeById.reserveCapacity(decodedRecipes.count)
@@ -283,9 +355,18 @@ actor StorageService: StorageServiceProtocol {
             recipeById[recipe.id] = recipe
         }
 
+        var preparedDishById: [UUID: PreparedDish] = [:]
+        preparedDishById.reserveCapacity(preparedDishes.count)
+        for dish in preparedDishes {
+            preparedDishById[dish.id] = dish
+        }
+
         return records
             .map { record in
-                record.toDomain(recipe: record.recipeId.flatMap { recipeById[$0] })
+                record.toDomain(
+                    recipe: record.recipeId.flatMap { recipeById[$0] },
+                    preparedDish: record.preparedDishId.flatMap { preparedDishById[$0] }
+                )
             }
             .sorted { $0.date < $1.date }
     }
@@ -379,6 +460,12 @@ actor StorageService: StorageServiceProtocol {
         return try context.fetch(descriptor).first
     }
 
+    private func fetchPreparedDishRecord(id: UUID) throws -> PreparedDishRecord? {
+        var descriptor = FetchDescriptor<PreparedDishRecord>(predicate: #Predicate { $0.id == id })
+        descriptor.fetchLimit = 1
+        return try context.fetch(descriptor).first
+    }
+
     private func fetchRecipeRecord(id: UUID) throws -> RecipeRecord? {
         var descriptor = FetchDescriptor<RecipeRecord>(predicate: #Predicate { $0.id == id })
         descriptor.fetchLimit = 1
@@ -414,6 +501,7 @@ actor StorageService: StorageServiceProtocol {
 
 struct StorageStartupSnapshot {
     let pantryItems: [PantryItem]
+    let preparedDishes: [PreparedDish]
     let recipes: [Recipe]
     let mealPlan: [MealPlanEntry]
     let shoppingItems: [ShoppingItem]

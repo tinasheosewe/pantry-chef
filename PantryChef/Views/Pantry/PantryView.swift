@@ -3,6 +3,7 @@ import SwiftUI
 struct PantryView: View {
     @State private var viewModel: PantryViewModel
     @State private var editingItem: PantryItem?
+    @State private var showPreparedDishes = false
     @FocusState private var isSearchFieldFocused: Bool
 
     init(appState: AppState) {
@@ -32,6 +33,15 @@ struct PantryView: View {
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             .navigationTitle("Pantry")
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        showPreparedDishes = true
+                    } label: {
+                        Label("Prepared Dishes", systemImage: "takeoutbag.and.cup.and.straw")
+                    }
+                }
+            }
             .sheet(isPresented: $viewModel.showAddItem) {
                 BulkAddPantryView(viewModel: viewModel)
             }
@@ -45,6 +55,9 @@ struct PantryView: View {
                     viewModel.updateItem(updatedItem)
                 }
             }
+            .appNavigationSheet(isPresented: $showPreparedDishes) {
+                PreparedDishesView(appState: viewModel.appState)
+            }
         }
     }
 
@@ -54,6 +67,9 @@ struct PantryView: View {
             HStack(spacing: 12) {
                 InputMethodButton(icon: "plus.circle.fill", title: "Add", color: AppColors.primaryGreen) {
                     viewModel.prepareBulkAdd()
+                }
+                InputMethodButton(icon: "takeoutbag.and.cup.and.straw.fill", title: "Prepared", color: AppColors.warmOrange) {
+                    showPreparedDishes = true
                 }
             }
             .padding(.horizontal)

@@ -4,7 +4,7 @@ import SwiftUI
 @MainActor
 final class MealPlanViewModel: AsyncActionHandling {
     var weekStartDate: Date
-    var showRecipePicker = false
+    var showMealPicker = false
     var selectedSlot: MealSlot?
     var isLoading = false
 
@@ -58,6 +58,12 @@ final class MealPlanViewModel: AsyncActionHandling {
         }
     }
 
+    func assignPreparedDish(_ dish: PreparedDish, to slot: MealSlot) {
+        runTask { [self] in
+            await self.mealPlanActions.assignPreparedDish(dish, to: slot)
+        }
+    }
+
     func removeEntry(_ entry: MealPlanEntry) {
         runTask { [self] in
             await self.mealPlanActions.removeEntry(entry)
@@ -66,7 +72,7 @@ final class MealPlanViewModel: AsyncActionHandling {
 
     func selectSlot(date: Date, mealType: MealType) {
         selectedSlot = MealSlot(date: date, mealType: mealType)
-        showRecipePicker = true
+        showMealPicker = true
     }
 
     func generateShoppingList() {
