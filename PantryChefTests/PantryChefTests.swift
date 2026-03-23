@@ -2239,7 +2239,7 @@ final class AppStateTests: XCTestCase {
         var discoverRecipe = makeRecipe(title: "Discover Dish")
         discoverRecipe.source = .spoonacular(id: 42)
         discoverRecipe.isFavorite = true
-        appState.discoverRecipes = [discoverRecipe]
+        appState.replaceDiscoverRecipesForTesting([discoverRecipe])
         appState.recipes = [Recipe(
             id: discoverRecipe.id,
             title: discoverRecipe.title,
@@ -2469,8 +2469,8 @@ final class AppStateTests: XCTestCase {
 
         let result = await appState.getRecipeSuggestions()
 
-        XCTAssertEqual(result.first?.ingredients.first?.catalogItemID, "yogurt")
-        XCTAssertEqual(result.first?.ingredients.first?.facets, [.init(key: .variant, value: "greek")])
+        XCTAssertEqual(result.first?.recipe.ingredients.first?.catalogItemID, "yogurt")
+        XCTAssertEqual(result.first?.recipe.ingredients.first?.facets, [.init(key: .variant, value: "greek")])
         XCTAssertEqual(ai.suggestRecipesCallCount, 1)
     }
 
@@ -2492,8 +2492,8 @@ final class AppStateTests: XCTestCase {
 
         let result = await appState.generateRecipe(query: "parfait", preferences: preferences)
 
-        XCTAssertEqual(result?.ingredients.first?.catalogItemID, "yogurt")
-        XCTAssertEqual(result?.ingredients.first?.facets, [.init(key: .variant, value: "greek")])
+        XCTAssertEqual(result?.recipe.ingredients.first?.catalogItemID, "yogurt")
+        XCTAssertEqual(result?.recipe.ingredients.first?.facets, [.init(key: .variant, value: "greek")])
         XCTAssertEqual(ai.generateRecipeCallCount, 1)
         XCTAssertEqual(ai.lastGenerateRecipeQuery, "parfait")
     }
@@ -2556,8 +2556,8 @@ final class AppStateTests: XCTestCase {
 
         let result = await appState.getLeftoverIdeas(ingredients: ["rice"])
 
-        XCTAssertEqual(result.first?.ingredients.first?.catalogItemID, "rice")
-        XCTAssertEqual(result.first?.ingredients.first?.facets, [.init(key: .variant, value: "jasmine")])
+        XCTAssertEqual(result.first?.recipe.ingredients.first?.catalogItemID, "rice")
+        XCTAssertEqual(result.first?.recipe.ingredients.first?.facets, [.init(key: .variant, value: "jasmine")])
     }
 
     func testNormalizedAIRecipeAutoResolvesAmbiguousIngredients() async {
@@ -2619,8 +2619,8 @@ final class AppStateTests: XCTestCase {
 
         let normalized = await appState.normalizedAIRecipe(recipe)
 
-        XCTAssertEqual(normalized?.ingredients.first?.catalogItemID, "milk")
-        XCTAssertEqual(normalized?.ingredients.first?.facets, [.init(key: .variant, value: "whole")])
+        XCTAssertEqual(normalized?.recipe.ingredients.first?.catalogItemID, "milk")
+        XCTAssertEqual(normalized?.recipe.ingredients.first?.facets, [.init(key: .variant, value: "whole")])
         XCTAssertEqual(ai.resolveIngredientsCallCount, 1)
         XCTAssertEqual(ai.disambiguateIngredientsCallCount, 1)
     }
@@ -2693,8 +2693,8 @@ final class AppStateTests: XCTestCase {
 
         let result = await appState.modifyRecipe(makeRecipe(title: "Base", source: .aiGenerated), feedback: "make it lighter")
 
-        XCTAssertEqual(result?.ingredients.first?.catalogItemID, "rice")
-        XCTAssertEqual(result?.ingredients.first?.facets, [.init(key: .variant, value: "jasmine")])
+        XCTAssertEqual(result?.recipe.ingredients.first?.catalogItemID, "rice")
+        XCTAssertEqual(result?.recipe.ingredients.first?.facets, [.init(key: .variant, value: "jasmine")])
         XCTAssertEqual(ai.modifyRecipeCallCount, 1)
         XCTAssertEqual(ai.lastModifyFeedback, "make it lighter")
         XCTAssertEqual(ai.lastModifyPantryIngredients, ["Spinach"])
@@ -2713,10 +2713,15 @@ final class AppStateTests: XCTestCase {
             source: .aiGenerated
         )
 
-        let cached = await appState.cacheDiscoverRecipe(recipe)
+        let normalizedRecipe = await appState.normalizedAIRecipe(recipe)
+        let cached: AppState.NormalizedAIRecipe? = if let normalizedRecipe {
+            await appState.cacheDiscoverRecipe(normalizedRecipe)
+        } else {
+            nil
+        }
 
-        XCTAssertEqual(cached?.ingredients.first?.catalogItemID, "yogurt")
-        XCTAssertEqual(cached?.ingredients.first?.facets, [.init(key: .variant, value: "greek")])
+        XCTAssertEqual(cached?.recipe.ingredients.first?.catalogItemID, "yogurt")
+        XCTAssertEqual(cached?.recipe.ingredients.first?.facets, [PantryFacetSelection(key: .variant, value: "greek")])
         XCTAssertEqual(storage.recipeStore.first?.ingredients.first?.catalogItemID, "yogurt")
     }
 

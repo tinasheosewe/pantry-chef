@@ -117,6 +117,42 @@ final class AppState {
         }
     }
 
+    struct NormalizedAIRecipe: Identifiable, Hashable, Sendable {
+        fileprivate let rawValue: Recipe
+
+        var id: UUID { rawValue.id }
+        var recipe: Recipe { rawValue }
+    }
+
+    private struct DiscoverRecipeRecord: Identifiable, Hashable, Sendable {
+        var recipe: Recipe
+
+        var id: UUID { recipe.id }
+
+        init?(nonAIRecipe recipe: Recipe) {
+            guard !recipe.source.isUserRecipe, recipe.source != .aiGenerated else {
+                return nil
+            }
+            self.recipe = recipe
+        }
+
+        init(normalizedAIRecipe: NormalizedAIRecipe) {
+            self.recipe = normalizedAIRecipe.rawValue
+        }
+
+        static func persisted(_ recipe: Recipe) -> DiscoverRecipeRecord? {
+            guard !recipe.source.isUserRecipe else {
+                return nil
+            }
+
+            if recipe.source == .aiGenerated {
+                return DiscoverRecipeRecord(normalizedAIRecipe: NormalizedAIRecipe(rawValue: recipe))
+            }
+
+            return DiscoverRecipeRecord(nonAIRecipe: recipe)
+        }
+    }
+
     // MARK: - Services (protocol-typed for testability)
     let storageService: StorageServiceProtocol
     let aiService: AIServiceProtocol
@@ -223,7 +259,11 @@ final class AppState {
     }
 
     /// All non-user recipes (bundled + cached API) — eagerly loaded for observability
-    var discoverRecipes: [Recipe] = []
+    private var discoverRecipeStore: [DiscoverRecipeRecord] = []
+
+    var discoverRecipes: [Recipe] {
+        discoverRecipeStore.map(\.recipe)
+    }
 
     /// All recipes combined (user + discover) for unified search
     var allRecipes: [Recipe] {
@@ -317,7 +357,7 @@ final class AppState {
 
     /// Reload discover recipes from the repository (call after caching new recipes)
     func refreshDiscoverRecipes() {
-        setDiscoverRecipes(mergedDiscoverRecipes(withPersisted: discoverRecipes.filter { !$0.source.isUserRecipe }))
+        setDiscoverRecipes(mergedDiscoverRecipes(withPersisted: persistedDiscoverRecipes()))
     }
 
     func scheduleInitialLoadIfNeeded() {
@@ -344,7 +384,7 @@ final class AppState {
         self.recipeIngredientResolver = RecipeIngredientResolver(candidateParser: ingredientCandidateParser, aiService: aiService)
         pantryItems = launchOptions.seedPantryItems ? PantryItem.samples : []
         recipes = launchOptions.seedRecipes ? Recipe.samples : []
-        discoverRecipes = []
+        discoverRecipeStore = []
         if !pantryItems.isEmpty { pantryRevision = 1 }
         if !recipes.isEmpty { recipesRevision = 1 }
     }
@@ -364,7 +404,7 @@ final class AppState {
         self.recipeIngredientResolver = recipeIngredientResolver ?? RecipeIngredientResolver(candidateParser: ingredientCandidateParser, aiService: aiService)
         pantryItems = PantryItem.samples
         recipes = Recipe.samples
-        discoverRecipes = []
+        discoverRecipeStore = []
         pantryRevision = PantryItem.samples.isEmpty ? 0 : 1
         recipesRevision = Recipe.samples.isEmpty ? 0 : 1
         hasScheduledInitialLoad = !shouldLoadOnInit
@@ -499,13 +539,22 @@ final class AppState {
     // MARK: - Recipe Actions
     func addRecipe(_ recipe: Recipe) async {
         do {
-            let canonicalRecipe = await canonicalizedRecipeForPersistence(recipe)
-            let saved = try await storageService.addRecipe(canonicalRecipe)
+            let recipeToPersist: Recipe
+            if recipe.source == .aiGenerated {
+                guard let normalizedRecipe = await normalizedAIRecipe(recipe) else {
+                    return
+                }
+                recipeToPersist = normalizedRecipe.rawValue
+            } else {
+                recipeToPersist = await canonicalizedRecipeForPersistence(recipe)
+            }
+
+            let saved = try await storageService.addRecipe(recipeToPersist)
             if saved.source.isUserRecipe {
                 recipes.append(saved)
                 markRecipesChanged()
             } else {
-                setDiscoverRecipes(mergedDiscoverRecipes(withPersisted: discoverRecipes.filter { !$0.source.isUserRecipe } + [saved]))
+                setDiscoverRecipes(mergedDiscoverRecipes(withPersisted: persistedDiscoverRecipes() + [saved]))
             }
         } catch {
             errorMessage = error.localizedDescription
@@ -514,13 +563,23 @@ final class AppState {
 
     func updateRecipe(_ recipe: Recipe) async {
         do {
-            let canonicalRecipe = await canonicalizedRecipeForPersistence(recipe)
-            let updated = try await storageService.updateRecipe(canonicalRecipe)
+            let recipeToPersist: Recipe
+            if recipe.source == .aiGenerated {
+                guard let normalizedRecipe = await normalizedAIRecipe(recipe) else {
+                    return
+                }
+                recipeToPersist = normalizedRecipe.rawValue
+            } else {
+                recipeToPersist = await canonicalizedRecipeForPersistence(recipe)
+            }
+
+            let updated = try await storageService.updateRecipe(recipeToPersist)
             if let index = recipes.firstIndex(where: { $0.id == recipe.id }) {
                 recipes[index] = updated
                 markRecipesChanged()
-            } else if let index = discoverRecipes.firstIndex(where: { $0.id == recipe.id }) {
-                discoverRecipes[index] = updated
+            } else if let index = discoverRecipeStore.firstIndex(where: { $0.id == recipe.id }),
+                      let discoverRecord = DiscoverRecipeRecord.persisted(updated) {
+                discoverRecipeStore[index] = discoverRecord
                 markDiscoverRecipesChanged()
             }
         } catch {
@@ -552,8 +611,8 @@ final class AppState {
         }
 
         // Also update in discover cache so the heart state is reflected there
-        if let idx = discoverRecipes.firstIndex(where: { $0.id == recipe.id }) {
-            discoverRecipes[idx].isFavorite = updated.isFavorite
+        if let idx = discoverRecipeStore.firstIndex(where: { $0.id == recipe.id }) {
+            discoverRecipeStore[idx].recipe.isFavorite = updated.isFavorite
             markDiscoverRecipesChanged()
         }
     }
@@ -567,9 +626,9 @@ final class AppState {
                 markRecipesChanged()
             }
             if !recipe.source.isUserRecipe {
-                let originalDiscoverCount = discoverRecipes.count
-                discoverRecipes.removeAll { $0.id == recipe.id }
-                if discoverRecipes.count != originalDiscoverCount {
+                let originalDiscoverCount = discoverRecipeStore.count
+                discoverRecipeStore.removeAll { $0.id == recipe.id }
+                if discoverRecipeStore.count != originalDiscoverCount {
                     markDiscoverRecipesChanged()
                 }
             }
@@ -578,20 +637,30 @@ final class AppState {
         }
     }
 
-    func cacheDiscoverRecipe(_ recipe: Recipe) async -> Recipe? {
-        guard !recipe.source.isUserRecipe else { return recipe }
-        guard let canonicalRecipe = await normalizedAIRecipe(recipe) else {
-            return nil
-        }
+    func cacheDiscoverRecipe(_ recipe: NormalizedAIRecipe) async -> NormalizedAIRecipe? {
         do {
-            _ = try await storageService.updateRecipe(canonicalRecipe)
-            let persistedDiscover = discoverRecipes.filter { !$0.source.isUserRecipe && $0.source != .bundled }
-            setDiscoverRecipes(mergedDiscoverRecipes(withPersisted: persistedDiscover + [canonicalRecipe]))
+            _ = try await storageService.updateRecipe(recipe.rawValue)
+            setDiscoverRecipes(mergedDiscoverRecipes(withPersisted: persistedDiscoverRecipes() + [recipe.rawValue]))
         } catch {
             errorMessage = error.localizedDescription
         }
 
-        return canonicalRecipe
+        return recipe
+    }
+
+    func cacheDiscoverRecipe(_ recipe: Recipe) async -> Recipe? {
+        guard let discoverRecord = DiscoverRecipeRecord(nonAIRecipe: recipe) else {
+            return nil
+        }
+
+        do {
+            _ = try await storageService.updateRecipe(discoverRecord.recipe)
+            setDiscoverRecipes(mergedDiscoverRecipes(withPersisted: persistedDiscoverRecipes() + [discoverRecord.recipe]))
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+
+        return discoverRecord.recipe
     }
 
     // MARK: - AI Actions
@@ -599,12 +668,12 @@ final class AppState {
         await aiService.generateShoppingList(recipe: recipe, pantry: pantryItems)
     }
 
-    func getRecipeSuggestions() async -> [Recipe] {
+    func getRecipeSuggestions() async -> [NormalizedAIRecipe] {
         let suggestedRecipes = await aiService.suggestRecipes(pantry: pantryItems)
         return await normalizeAIRecipes(suggestedRecipes)
     }
 
-    func generateRecipe(query: String, preferences: RecipeGenerationPreferences) async -> Recipe? {
+    func generateRecipe(query: String, preferences: RecipeGenerationPreferences) async -> NormalizedAIRecipe? {
         guard let recipe = await aiService.generateRecipe(query: query, preferences: preferences) else {
             return nil
         }
@@ -636,12 +705,12 @@ final class AppState {
         await aiService.makeItHealthier(recipe: recipe)
     }
 
-    func getLeftoverIdeas(ingredients: [String]) async -> [Recipe] {
+    func getLeftoverIdeas(ingredients: [String]) async -> [NormalizedAIRecipe] {
         let recipes = await aiService.leftoverTransformer(ingredients: ingredients)
         return await normalizeAIRecipes(recipes)
     }
 
-    func modifyRecipe(_ recipe: Recipe, feedback: String) async -> Recipe? {
+    func modifyRecipe(_ recipe: Recipe, feedback: String) async -> NormalizedAIRecipe? {
         let pantryNames = pantryItems.map(\ .name)
         guard let modifiedRecipe = await aiService.modifyRecipe(recipe, feedback: feedback, pantryIngredients: pantryNames) else {
             return nil
@@ -811,7 +880,7 @@ final class AppState {
         }
     }
 
-    func normalizedAIRecipe(_ recipe: Recipe) async -> Recipe? {
+    func normalizedAIRecipe(_ recipe: Recipe) async -> NormalizedAIRecipe? {
         do {
             return try await requireNormalizedAIRecipe(recipe)
         } catch {
@@ -820,8 +889,8 @@ final class AppState {
         }
     }
 
-    private func normalizeAIRecipes(_ recipes: [Recipe]) async -> [Recipe] {
-        var normalizedRecipes: [Recipe] = []
+    private func normalizeAIRecipes(_ recipes: [Recipe]) async -> [NormalizedAIRecipe] {
+        var normalizedRecipes: [NormalizedAIRecipe] = []
         normalizedRecipes.reserveCapacity(recipes.count)
 
         for recipe in recipes {
@@ -845,11 +914,11 @@ final class AppState {
         return canonicalRecipe
     }
 
-    private func requireNormalizedAIRecipe(_ recipe: Recipe) async throws -> Recipe {
+    private func requireNormalizedAIRecipe(_ recipe: Recipe) async throws -> NormalizedAIRecipe {
         let canonicalRecipe = TrustedRecipeCanonicalizer.canonicalize(recipe)
         let resolutionDraft = await recipeIngredientResolver.resolve(recipe: canonicalRecipe)
         let disambiguatedDraft = try await aiDisambiguatedRecipeDraft(from: resolutionDraft)
-        return disambiguatedDraft.builtRecipe()
+        return NormalizedAIRecipe(rawValue: disambiguatedDraft.builtRecipe())
     }
 
     private func aiDisambiguatedRecipeDraft(from draft: RecipeResolutionDraft) async throws -> RecipeResolutionDraft {
@@ -1145,9 +1214,13 @@ final class AppState {
         markRecipesChanged()
     }
 
-    private func setDiscoverRecipes(_ items: [Recipe]) {
-        discoverRecipes = items
+    private func setDiscoverRecipes(_ items: [DiscoverRecipeRecord]) {
+        discoverRecipeStore = items
         markDiscoverRecipesChanged()
+    }
+
+    func replaceDiscoverRecipesForTesting(_ items: [Recipe]) {
+        setDiscoverRecipes(discoverEntries(from: items))
     }
 
     private func setMealPlanEntries(_ entries: [MealPlanEntry]) {
@@ -1206,7 +1279,17 @@ final class AppState {
         return convertCountUnit(ingredient.quantity, from: ingredientUnit, to: pantryUnit)
     }
 
-    private func mergedDiscoverRecipes(withPersisted persisted: [Recipe]) -> [Recipe] {
+    private func discoverEntries(from recipes: [Recipe]) -> [DiscoverRecipeRecord] {
+        recipes.compactMap(DiscoverRecipeRecord.persisted)
+    }
+
+    private func persistedDiscoverRecipes() -> [Recipe] {
+        discoverRecipeStore
+            .map(\.recipe)
+            .filter { $0.source != .bundled }
+    }
+
+    private func mergedDiscoverRecipes(withPersisted persisted: [Recipe]) -> [DiscoverRecipeRecord] {
         let seed = recipeRepository.seedRecipes
         var result: [Recipe] = []
         var seen = Set<UUID>()
@@ -1216,7 +1299,7 @@ final class AppState {
                 result.append(recipe)
             }
         }
-        return result
+        return discoverEntries(from: result)
     }
 
     private func sanitizeMealPlanEntries(_ entries: [MealPlanEntry]) -> SanitizedMealPlan {

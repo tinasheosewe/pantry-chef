@@ -645,14 +645,14 @@ struct RecipeDetailView: View {
         isModifying = true
         if let normalizedRecipe = await appState.modifyRecipe(recipe, feedback: modifyText) {
             withAnimation {
-                recipe = normalizedRecipe
-                servings = normalizedRecipe.servings
+                recipe = normalizedRecipe.recipe
+                servings = normalizedRecipe.recipe.servings
             }
             modifyText = ""
             showModify = false
             // Persist if it's a saved recipe
             if appState.recipes.contains(where: { $0.id == recipe.id }) {
-                await appState.updateRecipe(normalizedRecipe)
+                await appState.updateRecipe(normalizedRecipe.recipe)
             }
         } else {
             actionErrorMessage = "Couldn't modify the recipe. Please try again."

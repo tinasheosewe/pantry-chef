@@ -724,7 +724,7 @@ struct RecipeEditorView: View {
                 resolutionErrorMessage = appState.errorMessage ?? "Couldn't save this AI recipe. Please try again."
                 return
             }
-            completeSave(with: normalizedRecipe)
+            completeSave(with: normalizedRecipe.recipe)
             return
         }
 

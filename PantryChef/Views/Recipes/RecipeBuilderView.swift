@@ -333,7 +333,7 @@ struct RecipeBuilderView: View {
             tickerTask.cancel()
             appState.refreshDiscoverRecipes()
             dismiss()
-            onGenerated(normalizedRecipe)
+            onGenerated(normalizedRecipe.recipe)
         } else {
             tickerTask.cancel()
             generationError = "Failed to generate recipe. Please try again."
