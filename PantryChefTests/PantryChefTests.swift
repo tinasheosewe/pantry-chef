@@ -2070,6 +2070,30 @@ final class AppStateTests: XCTestCase {
         XCTAssertEqual(storage.deletePreparedDishCallCount, 1)
     }
 
+    func testAdjustPreparedDishServingsDecrementsExistingDish() async {
+        let (appState, storage, _) = makeTestAppState()
+        let dish = makePreparedDish(name: "Stir Fry", servingsRemaining: 3)
+        await appState.addPreparedDish(dish)
+
+        let removed = await appState.adjustPreparedDishServings(dish, delta: -1)
+
+        XCTAssertFalse(removed)
+        XCTAssertEqual(appState.preparedDishes.first?.servingsRemaining, 2)
+        XCTAssertEqual(storage.updatePreparedDishCallCount, 1)
+    }
+
+    func testAdjustPreparedDishServingsRemovesDishWhenEmpty() async {
+        let (appState, storage, _) = makeTestAppState()
+        let dish = makePreparedDish(name: "Bowl", servingsRemaining: 1)
+        await appState.addPreparedDish(dish)
+
+        let removed = await appState.adjustPreparedDishServings(dish, delta: -1)
+
+        XCTAssertTrue(removed)
+        XCTAssertTrue(appState.preparedDishes.isEmpty)
+        XCTAssertEqual(storage.deletePreparedDishCallCount, 1)
+    }
+
     // MARK: - Recipe CRUD
 
     func testAddRecipe() async {

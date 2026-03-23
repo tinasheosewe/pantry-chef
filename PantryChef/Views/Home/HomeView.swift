@@ -4,6 +4,7 @@ struct HomeView: View {
     @State private var viewModel: HomeViewModel
     @State private var resumeRecipe: Recipe?
     @State private var selectedMealEntry: MealPlanEntry?
+    @State private var selectedPreparedDish: PreparedDish?
     @State private var shoppingConfirmation: ShoppingListConfirmationRequest?
 
     var onSwitchToShopping: (() -> Void)?
@@ -32,6 +33,10 @@ struct HomeView: View {
 
                     if !viewModel.expiringItems.isEmpty {
                         expiringSoonCard
+                    }
+
+                    if !viewModel.expiringPreparedDishes.isEmpty {
+                        expiringPreparedDishesCard
                     }
 
                     quickActionsRow
@@ -76,6 +81,10 @@ struct HomeView: View {
                     PreparedDishDetailView(dish: preparedDish)
                         .environment(viewModel.appState)
                 }
+            }
+            .appNavigationSheet(item: $selectedPreparedDish) { dish in
+                PreparedDishDetailView(dish: dish)
+                    .environment(viewModel.appState)
             }
             .fullScreenCover(item: $resumeRecipe) { recipe in
                 let session = CookingSession.load(recipeId: recipe.id)
@@ -157,6 +166,52 @@ struct HomeView: View {
 
             if viewModel.expiringItems.count > 5 {
                 Text("+ \(viewModel.expiringItems.count - 5) more")
+                    .font(.caption)
+                    .foregroundStyle(AppColors.subtleText)
+            }
+        }
+        .padding()
+        .cardStyle()
+    }
+
+    private var expiringPreparedDishesCard: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            SectionHeader(
+                title: "Use Prepared Dishes Soon",
+                subtitle: "\(viewModel.expiringPreparedDishes.count) dishes are close to their use-by date"
+            )
+
+            ForEach(viewModel.expiringPreparedDishes.prefix(3)) { dish in
+                Button {
+                    selectedPreparedDish = dish
+                } label: {
+                    HStack(spacing: 12) {
+                        Image(systemName: "takeoutbag.and.cup.and.straw")
+                            .font(.title3)
+                            .foregroundStyle(AppColors.warmOrange)
+                            .frame(width: 28)
+
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(dish.name)
+                                .font(.subheadline)
+                                .fontWeight(.medium)
+                                .foregroundStyle(AppColors.darkText)
+
+                            Text("\(dish.servingsDisplay) • \(dish.mealTypesSummary)")
+                                .font(.caption)
+                                .foregroundStyle(AppColors.subtleText)
+                        }
+
+                        Spacer()
+
+                        ExpiryBadge(status: dish.expiryStatus, daysLeft: dish.daysUntilUseBy)
+                    }
+                }
+                .buttonStyle(.plain)
+            }
+
+            if viewModel.expiringPreparedDishes.count > 3 {
+                Text("+ \(viewModel.expiringPreparedDishes.count - 3) more")
                     .font(.caption)
                     .foregroundStyle(AppColors.subtleText)
             }

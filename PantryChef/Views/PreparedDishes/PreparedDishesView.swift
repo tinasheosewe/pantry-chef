@@ -27,13 +27,25 @@ struct PreparedDishesView: View {
             } else {
                 AppList {
                     ForEach(viewModel.filteredDishes) { dish in
-                        Button {
-                            viewModel.selectedDish = dish
-                        } label: {
-                            PreparedDishRow(dish: dish)
-                                .contentShape(Rectangle())
+                        HStack(spacing: 12) {
+                            Button {
+                                viewModel.selectedDish = dish
+                            } label: {
+                                PreparedDishRow(dish: dish)
+                                    .contentShape(Rectangle())
+                            }
+                            .buttonStyle(.plain)
+
+                            Button {
+                                Task {
+                                    _ = await viewModel.appState.adjustPreparedDishServings(dish, delta: -1)
+                                }
+                            } label: {
+                                quickAdjustButton(for: dish)
+                            }
+                            .buttonStyle(.plain)
+                            .accessibilityLabel(dish.servingsRemaining == 1 ? "Finish prepared dish" : "Use one serving")
                         }
-                        .buttonStyle(.plain)
                         .swipeActions(edge: .trailing) {
                             Button(role: .destructive) {
                                 viewModel.deleteDish(dish)
@@ -115,6 +127,22 @@ struct PreparedDishesView: View {
         .padding(.vertical, 8)
         .background(AppColors.cardBackground)
     }
+
+    @ViewBuilder
+    private func quickAdjustButton(for dish: PreparedDish) -> some View {
+        VStack(spacing: 4) {
+            Image(systemName: dish.servingsRemaining == 1 ? "checkmark.circle.fill" : "minus.circle.fill")
+                .font(.headline)
+            Text(dish.servingsRemaining == 1 ? "Finish" : "Use 1")
+                .font(.caption2)
+                .fontWeight(.semibold)
+        }
+        .frame(width: 64)
+        .padding(.vertical, 10)
+        .background((dish.servingsRemaining == 1 ? AppColors.softRed : AppColors.warmOrange).opacity(0.14))
+        .foregroundStyle(dish.servingsRemaining == 1 ? AppColors.softRed : AppColors.warmOrange)
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+    }
 }
 
 struct PreparedDishRow: View {
@@ -156,12 +184,17 @@ struct PreparedDishRow: View {
 
 struct PreparedDishDetailView: View {
     @Environment(AppState.self) private var appState
+    @Environment(\.dismiss) private var dismiss
     let dish: PreparedDish
 
     @State private var editingDish: PreparedDish?
 
+    private var currentDish: PreparedDish {
+        appState.preparedDishById(dish.id) ?? dish
+    }
+
     private var linkedRecipe: Recipe? {
-        guard let recipeID = dish.recipeID else { return nil }
+        guard let recipeID = currentDish.recipeID else { return nil }
         return appState.allRecipes.first { $0.id == recipeID }
     }
 
@@ -171,14 +204,47 @@ struct PreparedDishDetailView: View {
                 header
 
                 detailCard(title: "Planning") {
-                    detailRow(title: "Meal types", value: dish.mealTypesSummary)
-                    detailRow(title: "Servings remaining", value: dish.servingsDisplay)
-                    detailRow(title: "Storage", value: dish.storage.rawValue)
+                    detailRow(title: "Meal types", value: currentDish.mealTypesSummary)
+                    detailRow(title: "Servings remaining", value: currentDish.servingsDisplay)
+                    detailRow(title: "Storage", value: currentDish.storage.rawValue)
+                }
+
+                detailCard(title: "Adjust Servings") {
+                    Text("Quickly update this dish as you eat through it.")
+                        .font(.caption)
+                        .foregroundStyle(AppColors.subtleText)
+
+                    HStack(spacing: 12) {
+                        Button {
+                            Task {
+                                let removed = await appState.adjustPreparedDishServings(currentDish, delta: -1)
+                                if removed {
+                                    dismiss()
+                                }
+                            }
+                        } label: {
+                            quickActionLabel(
+                                title: currentDish.servingsRemaining == 1 ? "Finish Dish" : "Use 1 Serving",
+                                systemImage: currentDish.servingsRemaining == 1 ? "checkmark.circle.fill" : "minus.circle.fill",
+                                color: currentDish.servingsRemaining == 1 ? AppColors.softRed : AppColors.warmOrange
+                            )
+                        }
+                        .buttonStyle(.plain)
+
+                        Button {
+                            Task {
+                                _ = await appState.adjustPreparedDishServings(currentDish, delta: 1)
+                            }
+                        } label: {
+                            quickActionLabel(title: "Add 1 Serving", systemImage: "plus.circle.fill", color: AppColors.primaryGreen)
+                        }
+                        .buttonStyle(.plain)
+                    }
                 }
 
                 detailCard(title: "Freshness") {
                     detailRow(title: "Use by", value: useByText)
-                    detailRow(title: "Source", value: dish.freshnessSource == .estimated ? "Estimated" : "User provided")
+                    detailRow(title: "Source", value: currentDish.freshnessSource == .estimated ? "Estimated" : "User provided")
                 }
 
                 if let linkedRecipe {
@@ -195,14 +261,14 @@ struct PreparedDishDetailView: View {
                     }
                 }
 
-                if let nutrition = dish.nutrition {
+                if let nutrition = currentDish.nutrition {
                     detailCard(title: "Nutrition") {
                         detailRow(title: "Calories", value: "\(nutrition.calories)")
                         detailRow(title: "Macros", value: nutrition.macroSummary)
                     }
                 }
 
-                if let notes = dish.notes, !notes.isEmpty {
+                if let notes = currentDish.notes, !notes.isEmpty {
                     detailCard(title: "Notes") {
                         Text(notes)
                             .font(.body)
@@ -213,12 +279,12 @@ struct PreparedDishDetailView: View {
             .padding()
         }
         .background(AppColors.background)
-        .navigationTitle(dish.name)
+        .navigationTitle(currentDish.name)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
                 Button("Edit") {
-                    editingDish = dish
+                    editingDish = currentDish
                 }
             }
         }
@@ -233,23 +299,23 @@ struct PreparedDishDetailView: View {
 
     private var header: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text(dish.name)
+            Text(currentDish.name)
                 .font(.largeTitle)
                 .fontWeight(.bold)
                 .foregroundStyle(AppColors.darkText)
 
             HStack(spacing: 10) {
-                pill(text: dish.servingsDisplay, color: AppColors.warmOrange)
-                pill(text: dish.storage.rawValue, color: AppColors.accentBlue)
-                if dish.expiryStatus != .fresh {
-                    pill(text: dish.expiryStatus == .expired ? "Expired" : "Use soon", color: AppColors.softRed)
+                pill(text: currentDish.servingsDisplay, color: AppColors.warmOrange)
+                pill(text: currentDish.storage.rawValue, color: AppColors.accentBlue)
+                if currentDish.expiryStatus != .fresh {
+                    pill(text: currentDish.expiryStatus == .expired ? "Expired" : "Use soon", color: AppColors.softRed)
                 }
             }
         }
     }
 
     private var useByText: String {
-        guard let useByDate = dish.useByDate else { return "Not set" }
+        guard let useByDate = currentDish.useByDate else { return "Not set" }
         return useByDate.formatted(date: .abbreviated, time: .omitted)
     }
 
@@ -284,6 +350,21 @@ struct PreparedDishDetailView: View {
                 .foregroundStyle(AppColors.darkText)
         }
         .font(.subheadline)
+    }
+
+    private func quickActionLabel(title: String, systemImage: String, color: Color) -> some View {
+        HStack(spacing: 8) {
+            Image(systemName: systemImage)
+                .font(.headline)
+            Text(title)
+                .font(.subheadline)
+                .fontWeight(.semibold)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 12)
+        .background(color.opacity(0.14))
+        .foregroundStyle(color)
+        .clipShape(RoundedRectangle(cornerRadius: 12))
     }
 }
 

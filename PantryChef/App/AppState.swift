@@ -773,6 +773,23 @@ final class AppState {
         }
     }
 
+    @discardableResult
+    func adjustPreparedDishServings(_ dish: PreparedDish, delta: Int) async -> Bool {
+        guard delta != 0 else { return false }
+        guard let currentDish = preparedDishById(dish.id) else { return false }
+
+        let updatedServings = currentDish.servingsRemaining + delta
+        if updatedServings <= 0 {
+            await removePreparedDish(currentDish)
+            return true
+        }
+
+        var updatedDish = currentDish
+        updatedDish.servingsRemaining = updatedServings
+        await updatePreparedDish(updatedDish)
+        return false
+    }
+
     func preparedDishById(_ id: UUID) -> PreparedDish? {
         preparedDishes.first { $0.id == id }
     }
