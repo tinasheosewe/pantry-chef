@@ -10,6 +10,8 @@ struct CookModeView: View {
     @State private var viewModel: CookModeViewModel?
     @State private var syncTask: Task<Void, Never>?
     @State private var showEndConfirm = false
+    @State private var showPantryReview = false
+    @State private var pantryReviewItems: [PantryCookReviewItem] = []
 
     private let recipe: Recipe
     private let resumeAtStep: Int
@@ -118,6 +120,20 @@ struct CookModeView: View {
             }
         } message: {
             Text(viewModel?.conversationError ?? "Connection lost")
+        }
+        .appNavigationSheet(isPresented: $showPantryReview) {
+            if let viewModel {
+                PantryCookReviewSheet(
+                    recipeTitle: viewModel.recipe.title,
+                    items: $pantryReviewItems,
+                    onApply: { items in
+                        await appState.applyPantryCookReview(items)
+                    },
+                    onCompletion: {
+                        dismiss()
+                    }
+                )
+            }
         }
     }
 
@@ -508,8 +524,16 @@ struct CookModeView: View {
                             await appState.updateRecipe(vm.ratedRecipe)
                         }
                         await appState.markRecipeAsCooked(vm.recipe)
+
+                        let reviewItems = appState.pantryCookReviewItems(for: vm.recipe)
+                        guard !reviewItems.isEmpty else {
+                            dismiss()
+                            return
+                        }
+
+                        pantryReviewItems = reviewItems
+                        showPantryReview = true
                     }
-                    dismiss()
                 } label: {
                     Text("Done — Update Pantry")
                         .fontWeight(.semibold)

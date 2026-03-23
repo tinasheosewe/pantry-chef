@@ -96,6 +96,226 @@ extension View {
     }
 }
 
+struct PantryCookReviewSheet: View {
+    @Environment(\.dismiss) private var dismiss
+
+    let recipeTitle: String
+    let onApply: ([PantryCookReviewItem]) async -> Void
+    let onCompletion: () -> Void
+
+    @Binding private var items: [PantryCookReviewItem]
+    @State private var isApplying = false
+
+    init(
+        recipeTitle: String,
+        items: Binding<[PantryCookReviewItem]>,
+        onApply: @escaping ([PantryCookReviewItem]) async -> Void,
+        onCompletion: @escaping () -> Void = {}
+    ) {
+        self.recipeTitle = recipeTitle
+        self.onApply = onApply
+        self.onCompletion = onCompletion
+        _items = items
+    }
+
+    private var exactItems: [PantryCookReviewItem] {
+        items.filter { $0.quantityMode == .exact }
+    }
+
+    private var presenceOnlyItems: [PantryCookReviewItem] {
+        items.filter { $0.quantityMode == .presenceOnly }
+    }
+
+    var body: some View {
+        VStack(spacing: 0) {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 20) {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Update Pantry?")
+                            .font(.title2)
+                            .fontWeight(.bold)
+                            .foregroundStyle(AppColors.darkText)
+
+                        Text("Mark what you finished while cooking \(recipeTitle). Nothing is removed automatically.")
+                            .font(.subheadline)
+                            .foregroundStyle(AppColors.subtleText)
+                    }
+
+                    if !exactItems.isEmpty {
+                        reviewSection(title: "Tracked Exactly", subtitle: "You can subtract the recipe amount or mark the item as used up.", items: exactItems)
+                    }
+
+                    if !presenceOnlyItems.isEmpty {
+                        reviewSection(title: "Tracked By Presence", subtitle: "These items can only be kept or removed.", items: presenceOnlyItems)
+                    }
+                }
+                .padding()
+            }
+
+            VStack(spacing: 10) {
+                Button {
+                    Task {
+                        isApplying = true
+                        await onApply(items)
+                        isApplying = false
+                        dismiss()
+                        onCompletion()
+                    }
+                } label: {
+                    HStack(spacing: 8) {
+                        if isApplying {
+                            ProgressView()
+                                .tint(.white)
+                        }
+                        Text("Update Pantry")
+                            .fontWeight(.semibold)
+                    }
+                    .foregroundStyle(Color.white)
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(AppColors.primaryGreen)
+                    .clipShape(RoundedRectangle(cornerRadius: 14))
+                }
+                .disabled(isApplying)
+
+                Button("Skip") {
+                    dismiss()
+                    onCompletion()
+                }
+                .foregroundStyle(AppColors.subtleText)
+                .disabled(isApplying)
+            }
+            .padding(.horizontal, 24)
+            .padding(.top, 12)
+            .padding(.bottom, 24)
+            .background(AppColors.cardBackground)
+        }
+        .background(AppColors.background)
+        .navigationTitle("Pantry Review")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .cancellationAction) {
+                Button("Close") {
+                    dismiss()
+                }
+            }
+        }
+    }
+
+    private func reviewSection(title: String, subtitle: String, items: [PantryCookReviewItem]) -> some View {
+        VStack(alignment: .leading, spacing: 12) {
+            SectionHeader(title: title, subtitle: subtitle)
+
+            ForEach(items) { item in
+                PantryCookReviewRow(item: binding(for: item))
+            }
+        }
+    }
+
+    private func binding(for item: PantryCookReviewItem) -> Binding<PantryCookReviewItem> {
+        Binding(
+            get: { items.first(where: { $0.id == item.id }) ?? item },
+            set: { updated in
+                guard let index = items.firstIndex(where: { $0.id == updated.id }) else { return }
+                items[index] = updated
+            }
+        )
+    }
+}
+
+private struct PantryCookReviewRow: View {
+    @Binding var item: PantryCookReviewItem
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(alignment: .top, spacing: 12) {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(item.pantryItem.name)
+                        .font(.headline)
+                        .foregroundStyle(AppColors.darkText)
+
+                    Text(item.pantryDetailText)
+                        .font(.subheadline)
+                        .foregroundStyle(AppColors.subtleText)
+
+                    Text(item.recipeUsageText)
+                        .font(.caption)
+                        .foregroundStyle(AppColors.darkText)
+
+                    if !item.matchedIngredientNames.isEmpty {
+                        Text(item.matchedIngredientNames.joined(separator: ", "))
+                            .font(.caption2)
+                            .foregroundStyle(AppColors.subtleText)
+                    }
+                }
+
+                Spacer(minLength: 12)
+
+                Text(item.quantityMode.title)
+                    .font(.caption2)
+                    .fontWeight(.semibold)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 5)
+                    .background(quantityModeColor.opacity(0.14))
+                    .foregroundStyle(quantityModeColor)
+                    .clipShape(Capsule())
+            }
+
+            HStack(spacing: 8) {
+                ForEach(item.availableSelections) { selection in
+                    Button {
+                        item.selection = selection
+                    } label: {
+                        HStack(spacing: 6) {
+                            Image(systemName: selection.systemImage)
+                                .font(.caption)
+                            Text(selection.title)
+                                .font(.caption)
+                                .fontWeight(.semibold)
+                        }
+                        .foregroundStyle(item.selection == selection ? Color.white : buttonForeground(for: selection))
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 8)
+                        .background(item.selection == selection ? buttonBackground(for: selection) : buttonBackground(for: selection).opacity(0.12))
+                        .clipShape(Capsule())
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+        }
+        .padding(14)
+        .background(AppColors.cardBackground)
+        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .shadow(color: Color.black.opacity(0.04), radius: 10, x: 0, y: 2)
+    }
+
+    private var quantityModeColor: Color {
+        item.quantityMode == .exact ? AppColors.accentBlue : AppColors.warmOrange
+    }
+
+    private func buttonBackground(for selection: PantryCookReviewSelection) -> Color {
+        switch selection {
+        case .keep:
+            return AppColors.primaryGreen
+        case .remove:
+            return AppColors.softRed
+        case .subtractRecipeAmount:
+            return AppColors.accentBlue
+        }
+    }
+
+    private func buttonForeground(for selection: PantryCookReviewSelection) -> Color {
+        switch selection {
+        case .keep:
+            return AppColors.primaryGreen
+        case .remove:
+            return AppColors.softRed
+        case .subtractRecipeAmount:
+            return AppColors.accentBlue
+        }
+    }
+}
+
 // MARK: - Input Styling
 private struct AppInputSurfaceModifier: ViewModifier {
     let background: Color

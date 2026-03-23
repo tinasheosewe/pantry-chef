@@ -9,9 +9,11 @@ struct RecipeDetailView: View {
     @State private var isFetchingSteps = false
     @State private var showSubstitutions = false
     @State private var showShoppingList = false
+    @State private var showPantryReview = false
     @State private var substitutions: [SubstitutionSuggestion] = []
     @State private var healthierSuggestion: HealthierSuggestion?
     @State private var shoppingList: [ShoppingItem] = []
+    @State private var pantryReviewItems: [PantryCookReviewItem] = []
     @State private var isLoadingAction = false
     @State private var actionErrorMessage: String?
     @State private var existingSession: CookingSession?
@@ -110,6 +112,15 @@ struct RecipeDetailView: View {
         .sheet(isPresented: $showShoppingList) {
             ShoppingPreviewView(items: shoppingList)
         }
+        .appNavigationSheet(isPresented: $showPantryReview) {
+            PantryCookReviewSheet(
+                recipeTitle: scaledRecipe.title,
+                items: $pantryReviewItems,
+                onApply: { items in
+                    await appState.applyPantryCookReview(items)
+                }
+            )
+        }
         .appNavigationSheet(isPresented: $showEditor) {
             RecipeEditorView(
                 recipe: recipe,
@@ -173,6 +184,17 @@ struct RecipeDetailView: View {
         }
         // Proceed to cook even if fetch failed — user can still see the recipe
         showGathering = true
+    }
+
+    private func presentPantryReview() {
+        let reviewItems = appState.pantryCookReviewItems(for: scaledRecipe)
+        guard !reviewItems.isEmpty else {
+            actionErrorMessage = "No pantry-tracked items from this recipe are currently matched in your pantry."
+            return
+        }
+
+        pantryReviewItems = reviewItems
+        showPantryReview = true
     }
 
     // MARK: - Hero Image
@@ -431,6 +453,19 @@ struct RecipeDetailView: View {
                     }
                 }
             }
+            }
+
+            Button {
+                presentPantryReview()
+            } label: {
+                Label("Cooked this? Update pantry", systemImage: "line.3.horizontal.decrease.circle")
+                    .font(.subheadline)
+                    .fontWeight(.semibold)
+                    .foregroundStyle(AppColors.accentBlue)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 12)
+                    .background(AppColors.accentBlue.opacity(0.08))
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
             }
         }
         .overlay {

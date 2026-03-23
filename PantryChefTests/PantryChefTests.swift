@@ -2231,6 +2231,80 @@ final class AppStateTests: XCTestCase {
                         "Cooking a recipe should not remove pantry items")
     }
 
+    func testPantryCookReviewItemsIncludeExactAndPresenceOnlyMatches() async {
+        let (appState, _, _) = makeTestAppState()
+        await appState.addPantryItem(PantryItem(name: "Flour", category: .grains, catalogItemID: "flour"))
+        await appState.addPantryItem(PantryItem(name: "Custom Protein", category: .protein, quantity: 800, unit: .gram))
+
+        let recipe = makeRecipe(ingredients: [
+            Ingredient(name: "Flour", quantity: 200, unit: .gram, category: .grains, catalogItemID: "flour"),
+            Ingredient(name: "Custom Protein", quantity: 500, unit: .gram, category: .protein)
+        ])
+
+        let reviewItems = appState.pantryCookReviewItems(for: recipe)
+
+        XCTAssertEqual(reviewItems.count, 2)
+        XCTAssertEqual(reviewItems.first?.pantryItem.name, "Custom Protein")
+        XCTAssertEqual(reviewItems.first?.subtractQuantity, 500)
+        XCTAssertEqual(reviewItems.first?.availableSelections, [.keep, .subtractRecipeAmount, .remove])
+        XCTAssertEqual(reviewItems.last?.pantryItem.catalogItemID, "flour")
+        XCTAssertEqual(reviewItems.last?.quantityMode, .presenceOnly)
+        XCTAssertEqual(reviewItems.last?.availableSelections, [.keep, .remove])
+    }
+
+    func testApplyPantryCookReviewRemovesPresenceOnlyItem() async {
+        let (appState, _, _) = makeTestAppState()
+        await appState.addPantryItem(PantryItem(name: "House Sauce", category: .condiments))
+
+        let recipe = makeRecipe(ingredients: [
+            Ingredient(name: "House Sauce", quantity: 2, unit: .tablespoon, category: .condiments)
+        ])
+
+        var reviewItems = appState.pantryCookReviewItems(for: recipe)
+        XCTAssertEqual(reviewItems.count, 1)
+
+        reviewItems[0].selection = .remove
+        await appState.applyPantryCookReview(reviewItems)
+
+        XCTAssertTrue(appState.pantryItems.isEmpty)
+    }
+
+    func testApplyPantryCookReviewSubtractsExactQuantity() async {
+        let (appState, _, _) = makeTestAppState()
+        await appState.addPantryItem(PantryItem(name: "Custom Protein", category: .protein, quantity: 800, unit: .gram))
+
+        let recipe = makeRecipe(ingredients: [
+            Ingredient(name: "Custom Protein", quantity: 500, unit: .gram, category: .protein)
+        ])
+
+        var reviewItems = appState.pantryCookReviewItems(for: recipe)
+        XCTAssertEqual(reviewItems.count, 1)
+        XCTAssertEqual(reviewItems[0].subtractQuantity, 500)
+
+        reviewItems[0].selection = .subtractRecipeAmount
+        await appState.applyPantryCookReview(reviewItems)
+
+        XCTAssertEqual(appState.pantryItems.count, 1)
+        XCTAssertEqual(appState.pantryItems.first?.quantity, 300)
+    }
+
+    func testApplyPantryCookReviewSubtractRemovesDepletedExactItem() async {
+        let (appState, _, _) = makeTestAppState()
+        await appState.addPantryItem(PantryItem(name: "Custom Eggs", category: .dairy, quantity: 3, unit: .piece))
+
+        let recipe = makeRecipe(ingredients: [
+            Ingredient(name: "Custom Eggs", quantity: 3, unit: .piece, category: .dairy)
+        ])
+
+        var reviewItems = appState.pantryCookReviewItems(for: recipe)
+        XCTAssertEqual(reviewItems.count, 1)
+
+        reviewItems[0].selection = .subtractRecipeAmount
+        await appState.applyPantryCookReview(reviewItems)
+
+        XCTAssertTrue(appState.pantryItems.isEmpty)
+    }
+
     func testPantryPresenceOnlyMergeDominatesExactQuantity() async {
         let (appState, _, _) = makeTestAppState()
         await appState.addPantryItem(PantryItem(name: "Flour", category: .bakingSupplies))

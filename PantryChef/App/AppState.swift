@@ -1,5 +1,107 @@
 import SwiftUI
 
+enum PantryCookReviewSelection: String, CaseIterable, Identifiable, Hashable, Sendable {
+    case keep
+    case remove
+    case subtractRecipeAmount
+
+    var id: Self { self }
+
+    var title: String {
+        switch self {
+        case .keep:
+            return "Keep"
+        case .remove:
+            return "Used up"
+        case .subtractRecipeAmount:
+            return "Subtract"
+        }
+    }
+
+    var systemImage: String {
+        switch self {
+        case .keep:
+            return "checkmark.circle"
+        case .remove:
+            return "trash"
+        case .subtractRecipeAmount:
+            return "minus.circle"
+        }
+    }
+}
+
+struct PantryCookReviewItem: Identifiable, Hashable, Sendable {
+    var id: UUID { pantryItem.id }
+
+    let pantryItem: PantryItem
+    let matchedIngredientNames: [String]
+    let matchedIngredientTexts: [String]
+    let subtractQuantity: Double?
+    let subtractUnit: MeasurementUnit?
+    var selection: PantryCookReviewSelection
+
+    init(
+        pantryItem: PantryItem,
+        matchedIngredientNames: [String],
+        matchedIngredientTexts: [String],
+        subtractQuantity: Double?,
+        subtractUnit: MeasurementUnit?,
+        selection: PantryCookReviewSelection = .keep
+    ) {
+        self.pantryItem = pantryItem
+        self.matchedIngredientNames = matchedIngredientNames
+        self.matchedIngredientTexts = matchedIngredientTexts
+        self.subtractQuantity = subtractQuantity
+        self.subtractUnit = subtractUnit
+        self.selection = selection
+    }
+
+    var quantityMode: PantryQuantityMode {
+        pantryItem.quantityMode
+    }
+
+    var supportsSubtraction: Bool {
+        pantryItem.isTrackingExactQuantity && subtractQuantity != nil && subtractUnit != nil
+    }
+
+    var availableSelections: [PantryCookReviewSelection] {
+        supportsSubtraction ? [.keep, .subtractRecipeAmount, .remove] : [.keep, .remove]
+    }
+
+    var pantryDetailText: String {
+        switch pantryItem.quantityMode {
+        case .presenceOnly:
+            return PantryQuantityMode.presenceOnly.title
+        case .exact:
+            guard let quantity = pantryItem.quantity,
+                  let unit = pantryItem.unit else {
+                return PantryQuantityMode.exact.title
+            }
+            return "Tracked: \(Self.formattedQuantity(quantity)) \(unit.rawValue)"
+        }
+    }
+
+    var recipeUsageText: String {
+        if let subtractQuantity,
+           let subtractUnit {
+            return "Recipe uses \(Self.formattedQuantity(subtractQuantity)) \(subtractUnit.rawValue)"
+        }
+
+        if matchedIngredientTexts.count == 1, let ingredientText = matchedIngredientTexts.first {
+            return ingredientText
+        }
+
+        return matchedIngredientTexts.joined(separator: " • ")
+    }
+
+    private static func formattedQuantity(_ value: Double) -> String {
+        if value == value.rounded() {
+            return String(Int(value))
+        }
+        return String(format: "%.1f", value)
+    }
+}
+
 @Observable
 @MainActor
 final class AppState {
@@ -25,6 +127,42 @@ final class AppState {
 
     /// Tracks all active cooking sessions for the UI.
     let activeCooks = ActiveCooksManager()
+
+    private struct PantryCookReviewAccumulator {
+        let pantryItem: PantryItem
+        var matchedIngredientNames: [String] = []
+        var matchedIngredientTexts: [String] = []
+        var subtractQuantity: Double = 0
+        var subtractionFailed = false
+
+        mutating func append(_ ingredient: Ingredient, subtractableAmount: Double?) {
+            if !matchedIngredientNames.contains(ingredient.displayName) {
+                matchedIngredientNames.append(ingredient.displayName)
+            }
+            matchedIngredientTexts.append(ingredient.displayText)
+
+            guard pantryItem.isTrackingExactQuantity else {
+                return
+            }
+
+            guard let subtractableAmount else {
+                subtractionFailed = true
+                return
+            }
+
+            subtractQuantity += subtractableAmount
+        }
+
+        func build() -> PantryCookReviewItem {
+            PantryCookReviewItem(
+                pantryItem: pantryItem,
+                matchedIngredientNames: matchedIngredientNames,
+                matchedIngredientTexts: matchedIngredientTexts,
+                subtractQuantity: pantryItem.isTrackingExactQuantity && !subtractionFailed ? subtractQuantity : nil,
+                subtractUnit: pantryItem.isTrackingExactQuantity ? pantryItem.unit : nil
+            )
+        }
+    }
 
     // MARK: - Computed
     var expiringItems: [PantryItem] {
@@ -485,6 +623,65 @@ final class AppState {
         // Pantry stock is user-maintained. Cooking a recipe does not decrement pantry items.
     }
 
+    func pantryCookReviewItems(for recipe: Recipe) -> [PantryCookReviewItem] {
+        let ingredients = recipe.ingredients.filter { !$0.isOptional }
+        var accumulators: [UUID: PantryCookReviewAccumulator] = [:]
+        var order: [UUID] = []
+
+        for ingredient in ingredients {
+            guard let pantryItem = pantryItems.first(where: {
+                IngredientMatcher.pantryItemMatchesIngredient($0, ingredient: ingredient)
+            }) else {
+                continue
+            }
+
+            if accumulators[pantryItem.id] == nil {
+                accumulators[pantryItem.id] = PantryCookReviewAccumulator(pantryItem: pantryItem)
+                order.append(pantryItem.id)
+            }
+
+            let subtractableAmount = subtractableRecipeAmount(for: ingredient, pantryItem: pantryItem)
+            accumulators[pantryItem.id]?.append(ingredient, subtractableAmount: subtractableAmount)
+        }
+
+        return order
+            .compactMap { accumulators[$0]?.build() }
+            .sorted { lhs, rhs in
+                if lhs.quantityMode != rhs.quantityMode {
+                    return lhs.quantityMode == .exact
+                }
+                return lhs.pantryItem.name.localizedCaseInsensitiveCompare(rhs.pantryItem.name) == .orderedAscending
+            }
+    }
+
+    func applyPantryCookReview(_ items: [PantryCookReviewItem]) async {
+        for item in items {
+            guard let currentItem = pantryItems.first(where: { $0.id == item.pantryItem.id }) else {
+                continue
+            }
+
+            switch item.selection {
+            case .keep:
+                continue
+            case .remove:
+                await removePantryItem(currentItem)
+            case .subtractRecipeAmount:
+                guard let subtractQuantity = item.subtractQuantity else {
+                    continue
+                }
+
+                let remainingQuantity = (currentItem.quantity ?? 0) - subtractQuantity
+                if remainingQuantity <= 0 {
+                    await removePantryItem(currentItem)
+                } else {
+                    var updatedItem = currentItem
+                    updatedItem.quantity = remainingQuantity
+                    await updatePantryItem(updatedItem)
+                }
+            }
+        }
+    }
+
     private func persistShoppingItems() async {
         do {
             try await storageService.saveShoppingItems(shoppingItems)
@@ -726,6 +923,30 @@ final class AppState {
         let countUnits: Set<MeasurementUnit> = [.piece, .whole]
         guard countUnits.contains(from), countUnits.contains(to) else { return nil }
         return value
+    }
+
+    private func subtractableRecipeAmount(for ingredient: Ingredient, pantryItem: PantryItem) -> Double? {
+        guard pantryItem.isTrackingExactQuantity else {
+            return nil
+        }
+
+        guard let pantryUnit = pantryItem.unit else {
+            return ingredient.unit == nil ? ingredient.quantity : nil
+        }
+
+        guard let ingredientUnit = ingredient.unit else {
+            return nil
+        }
+
+        if pantryUnit == ingredientUnit {
+            return ingredient.quantity
+        }
+
+        if let converted = UnitConverter.convert(ingredient.quantity, from: ingredientUnit, to: pantryUnit) {
+            return converted
+        }
+
+        return convertCountUnit(ingredient.quantity, from: ingredientUnit, to: pantryUnit)
     }
 
     private func mergedDiscoverRecipes(withPersisted persisted: [Recipe]) -> [Recipe] {
