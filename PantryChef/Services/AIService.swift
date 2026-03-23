@@ -774,6 +774,63 @@ final class AIService: AIServiceProtocol {
         }
     }
 
+    func disambiguateIngredients(_ requests: [IngredientResolutionRequest]) async -> [IngredientResolutionDecision]? {
+        guard !requests.isEmpty else { return [] }
+
+        let requestBody = requests.map { request in
+            let unitText = request.unit?.rawValue ?? "none"
+            let notesText = request.notes ?? "none"
+            let candidateText = request.candidates.map { candidate in
+                let selectedFacetText = candidate.facets.map { "\($0.key.rawValue)=\($0.value)" }.joined(separator: ", ")
+                let formattedScore = String(format: "%.2f", candidate.score)
+                let facetsDescription = selectedFacetText.isEmpty ? "none" : selectedFacetText
+                return "- candidateID: \(candidate.id), catalogItemID: \(candidate.catalogItemID), name: \(candidate.displayName), score: \(formattedScore), rationale: \(candidate.rationale), selected facets: \(facetsDescription)"
+            }.joined(separator: "\n")
+
+            return """
+            Ingredient ID: \(request.ingredientID.uuidString)
+            Raw name: \(request.rawName)
+            Quantity: \(request.quantity)
+            Unit: \(unitText)
+            Category hint: \(request.category.rawValue)
+            Notes: \(notesText)
+            Allowed candidates:
+            \(candidateText.isEmpty ? "- none" : candidateText)
+            """
+        }.joined(separator: "\n\n")
+
+        let prompt = """
+        Choose the single best internal pantry registry candidate for each ingredient from the supplied allowed candidates.
+
+        Constraints:
+        - You must make a final choice when at least one allowed candidate is credible.
+        - Never return status \"ambiguous\".
+        - Use only the candidate IDs listed for that ingredient.
+        - If no listed candidate is credible, return status \"unknown\".
+        - selectedCandidateID must contain exactly one allowed candidate ID when status is resolved.
+        - selectedCandidateID must be null when status is unknown.
+        - candidateIDs must be empty in every decision.
+        - confidence must be a number between 0 and 1.
+
+        Ingredients:
+        \(requestBody)
+        """
+
+        guard let response = await sendChatRequest(
+            prompt: prompt,
+            responseFormat: ["type": "json_schema", "json_schema": Self.ingredientResolutionSchema]
+        ) else { return nil }
+
+        guard let data = response.data(using: .utf8) else { return nil }
+        do {
+            let raw = try JSONDecoder().decode(RawIngredientResolutionBatch.self, from: data)
+            return raw.decisions
+        } catch {
+            AppLog.warn("[AIService] Failed to decode ingredient disambiguations: \(error)")
+            return nil
+        }
+    }
+
     // MARK: - AI Recipe Generation
 
     /// Generate a complete recipe from a search query and user preferences.
@@ -1169,7 +1226,7 @@ final class AIService: AIServiceProtocol {
     }
 
     private func validatedImportResult(_ result: RecipeImportResult, source: String) -> RecipeImportResult? {
-        let completedRecipe = result.toRecipe()
+        let completedRecipe = result.toRecipe(source: .imported)
         let completedResult = RecipeImportResult(
             title: result.title,
             description: result.description,

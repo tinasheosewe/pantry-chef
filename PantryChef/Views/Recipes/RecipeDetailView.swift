@@ -643,17 +643,16 @@ struct RecipeDetailView: View {
     private func performModify() async {
         hideKeyboard()
         isModifying = true
-        let pantryNames = appState.pantryItems.map(\.name)
-        if let modified = await appState.aiService.modifyRecipe(recipe, feedback: modifyText, pantryIngredients: pantryNames) {
+        if let normalizedRecipe = await appState.modifyRecipe(recipe, feedback: modifyText) {
             withAnimation {
-                recipe = modified
-                servings = modified.servings
+                recipe = normalizedRecipe
+                servings = normalizedRecipe.servings
             }
             modifyText = ""
             showModify = false
             // Persist if it's a saved recipe
             if appState.recipes.contains(where: { $0.id == recipe.id }) {
-                await appState.updateRecipe(recipe)
+                await appState.updateRecipe(normalizedRecipe)
             }
         } else {
             actionErrorMessage = "Couldn't modify the recipe. Please try again."
@@ -1191,14 +1190,14 @@ struct AddRecipeView: View {
         let text = inputText.trimmed
 
         if text.isValidURL {
-            if let result = await appState.aiService.parseRecipeFromURL(text) {
-                parsedRecipe = result.toRecipe()
+            if let recipe = await appState.importRecipeFromURL(text) {
+                parsedRecipe = recipe
             } else {
                 errorMessage = "Couldn't parse recipe from that URL. Try pasting the recipe text instead."
             }
         } else {
-            if let result = await appState.aiService.parseRecipeFromText(text) {
-                parsedRecipe = result.toRecipe()
+            if let recipe = await appState.importRecipeFromText(text) {
+                parsedRecipe = recipe
             } else {
                 errorMessage = "Couldn't parse the text into a recipe. Try including a title, ingredients, and steps."
             }

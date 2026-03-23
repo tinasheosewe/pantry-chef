@@ -105,6 +105,18 @@ struct PantryCookReviewItem: Identifiable, Hashable, Sendable {
 @Observable
 @MainActor
 final class AppState {
+    enum AIRecipeNormalizationError: LocalizedError {
+        case disambiguationFailed([String])
+
+        var errorDescription: String? {
+            switch self {
+            case .disambiguationFailed(let ingredientNames):
+                let joinedNames = ingredientNames.joined(separator: ", ")
+                return "Couldn't confidently match AI-generated ingredients (\(joinedNames)). Please try again."
+            }
+        }
+    }
+
     // MARK: - Services (protocol-typed for testability)
     let storageService: StorageServiceProtocol
     let aiService: AIServiceProtocol
@@ -566,16 +578,20 @@ final class AppState {
         }
     }
 
-    func cacheDiscoverRecipe(_ recipe: Recipe) async {
-        guard !recipe.source.isUserRecipe else { return }
+    func cacheDiscoverRecipe(_ recipe: Recipe) async -> Recipe? {
+        guard !recipe.source.isUserRecipe else { return recipe }
+        guard let canonicalRecipe = await normalizedAIRecipe(recipe) else {
+            return nil
+        }
         do {
-            let canonicalRecipe = await canonicalizedRecipeForPersistence(recipe)
             _ = try await storageService.updateRecipe(canonicalRecipe)
             let persistedDiscover = discoverRecipes.filter { !$0.source.isUserRecipe && $0.source != .bundled }
             setDiscoverRecipes(mergedDiscoverRecipes(withPersisted: persistedDiscover + [canonicalRecipe]))
         } catch {
             errorMessage = error.localizedDescription
         }
+
+        return canonicalRecipe
     }
 
     // MARK: - AI Actions
@@ -584,7 +600,32 @@ final class AppState {
     }
 
     func getRecipeSuggestions() async -> [Recipe] {
-        await aiService.suggestRecipes(pantry: pantryItems)
+        let suggestedRecipes = await aiService.suggestRecipes(pantry: pantryItems)
+        return await normalizeAIRecipes(suggestedRecipes)
+    }
+
+    func generateRecipe(query: String, preferences: RecipeGenerationPreferences) async -> Recipe? {
+        guard let recipe = await aiService.generateRecipe(query: query, preferences: preferences) else {
+            return nil
+        }
+
+        return await normalizedAIRecipe(recipe)
+    }
+
+    func importRecipeFromURL(_ urlString: String) async -> Recipe? {
+        guard let result = await aiService.parseRecipeFromURL(urlString) else {
+            return nil
+        }
+
+        return result.toRecipe(source: .imported)
+    }
+
+    func importRecipeFromText(_ text: String) async -> Recipe? {
+        guard let result = await aiService.parseRecipeFromText(text) else {
+            return nil
+        }
+
+        return result.toRecipe(source: .imported)
     }
 
     func getSubstitutions(for recipe: Recipe) async -> [SubstitutionSuggestion] {
@@ -596,7 +637,17 @@ final class AppState {
     }
 
     func getLeftoverIdeas(ingredients: [String]) async -> [Recipe] {
-        await aiService.leftoverTransformer(ingredients: ingredients)
+        let recipes = await aiService.leftoverTransformer(ingredients: ingredients)
+        return await normalizeAIRecipes(recipes)
+    }
+
+    func modifyRecipe(_ recipe: Recipe, feedback: String) async -> Recipe? {
+        let pantryNames = pantryItems.map(\ .name)
+        guard let modifiedRecipe = await aiService.modifyRecipe(recipe, feedback: feedback, pantryIngredients: pantryNames) else {
+            return nil
+        }
+
+        return await normalizedAIRecipe(modifiedRecipe)
     }
 
     // MARK: - Meal Plan Actions
@@ -760,6 +811,29 @@ final class AppState {
         }
     }
 
+    func normalizedAIRecipe(_ recipe: Recipe) async -> Recipe? {
+        do {
+            return try await requireNormalizedAIRecipe(recipe)
+        } catch {
+            errorMessage = error.localizedDescription
+            return nil
+        }
+    }
+
+    private func normalizeAIRecipes(_ recipes: [Recipe]) async -> [Recipe] {
+        var normalizedRecipes: [Recipe] = []
+        normalizedRecipes.reserveCapacity(recipes.count)
+
+        for recipe in recipes {
+            guard let normalizedRecipe = await normalizedAIRecipe(recipe) else {
+                return []
+            }
+            normalizedRecipes.append(normalizedRecipe)
+        }
+
+        return normalizedRecipes
+    }
+
     private func canonicalizedRecipeForPersistence(_ recipe: Recipe) async -> Recipe {
         let canonicalRecipe = TrustedRecipeCanonicalizer.canonicalize(recipe)
         let resolutionDraft = await recipeIngredientResolver.resolve(recipe: canonicalRecipe)
@@ -769,6 +843,72 @@ final class AppState {
         }
 
         return canonicalRecipe
+    }
+
+    private func requireNormalizedAIRecipe(_ recipe: Recipe) async throws -> Recipe {
+        let canonicalRecipe = TrustedRecipeCanonicalizer.canonicalize(recipe)
+        let resolutionDraft = await recipeIngredientResolver.resolve(recipe: canonicalRecipe)
+        let disambiguatedDraft = try await aiDisambiguatedRecipeDraft(from: resolutionDraft)
+        return disambiguatedDraft.builtRecipe()
+    }
+
+    private func aiDisambiguatedRecipeDraft(from draft: RecipeResolutionDraft) async throws -> RecipeResolutionDraft {
+        guard !draft.requiresIngredientEdits else {
+            throw AIRecipeNormalizationError.disambiguationFailed(draft.unknownIngredients.map { $0.ingredient.rawName })
+        }
+
+        let ambiguousIngredients = draft.ambiguousIngredients
+        guard !ambiguousIngredients.isEmpty else {
+            return draft
+        }
+
+        let requests = ambiguousIngredients.map { ingredientDraft in
+            IngredientResolutionRequest(
+                ingredientID: ingredientDraft.ingredient.id,
+                rawName: ingredientDraft.ingredient.rawName,
+                quantity: ingredientDraft.ingredient.quantity ?? 0,
+                unit: ingredientDraft.ingredient.unit,
+                category: ingredientDraft.ingredient.category,
+                notes: ingredientDraft.ingredient.notes,
+                candidates: ingredientDraft.candidates
+            )
+        }
+
+        guard let decisions = await aiService.disambiguateIngredients(requests),
+              decisions.count == requests.count else {
+            throw AIRecipeNormalizationError.disambiguationFailed(ambiguousIngredients.map { $0.ingredient.rawName })
+        }
+
+        let decisionsByIngredient = Dictionary(uniqueKeysWithValues: decisions.map { ($0.ingredientID, $0) })
+        var updatedDraft = draft
+
+        for index in updatedDraft.ingredients.indices {
+            guard updatedDraft.ingredients[index].status == .ambiguous else {
+                continue
+            }
+
+            let ingredientDraft = updatedDraft.ingredients[index]
+            guard let decision = decisionsByIngredient[ingredientDraft.ingredient.id],
+                  decision.status == .resolved,
+                  let selectedCandidateID = decision.selectedCandidateID,
+                  let candidate = ingredientDraft.candidates.first(where: { $0.id == selectedCandidateID }) else {
+                throw AIRecipeNormalizationError.disambiguationFailed([ingredientDraft.ingredient.rawName])
+            }
+
+            updatedDraft.ingredients[index].status = .resolved
+            updatedDraft.ingredients[index].selectedCandidateID = candidate.id
+            updatedDraft.ingredients[index].confidence = max(decision.confidence, candidate.score)
+            updatedDraft.ingredients[index].rationale = decision.rationale
+        }
+
+        guard updatedDraft.isReadyToBuild, !updatedDraft.requiresIngredientEdits else {
+            let unresolvedNames = updatedDraft.ingredients
+                .filter { $0.status != .resolved }
+                .map { $0.ingredient.rawName }
+            throw AIRecipeNormalizationError.disambiguationFailed(unresolvedNames)
+        }
+
+        return updatedDraft
     }
 
     private func shouldIncludeInShoppingList(_ ingredient: Ingredient) -> Bool {

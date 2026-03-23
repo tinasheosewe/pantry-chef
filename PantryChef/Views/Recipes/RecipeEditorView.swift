@@ -716,6 +716,18 @@ struct RecipeEditorView: View {
         finalizeSave()
         pendingSaveAsNew = saveAsNew != nil
 
+        if recipe.source.shouldAutoResolveIngredientsWithoutReview {
+            isResolving = true
+            let normalizedRecipe = await appState.normalizedAIRecipe(recipe)
+            isResolving = false
+            guard let normalizedRecipe else {
+                resolutionErrorMessage = appState.errorMessage ?? "Couldn't save this AI recipe. Please try again."
+                return
+            }
+            completeSave(with: normalizedRecipe)
+            return
+        }
+
         isResolving = true
         let draft = await appState.recipeIngredientResolver.resolve(recipe: recipe)
         isResolving = false
@@ -745,6 +757,10 @@ struct RecipeEditorView: View {
 
     private func completeSave(with resolvedRecipe: Recipe) {
         var recipeToSave = resolvedRecipe
+
+        if recipeToSave.source.shouldConvertToUserRecipeOnSave {
+            recipeToSave.source = .user
+        }
 
         if pendingSaveAsNew, let onSaveAsNew {
             recipeToSave.id = UUID()

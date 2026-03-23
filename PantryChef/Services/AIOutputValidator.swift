@@ -39,7 +39,7 @@ enum AIOutputIssue: Equatable, CustomStringConvertible {
 
 enum AIOutputValidator {
     static func validate(importResult: RecipeImportResult, expectedLanguage: NLLanguage = .english) -> [AIOutputIssue] {
-        validate(recipe: importResult.toRecipe(), expectedLanguage: expectedLanguage)
+        validate(recipe: importResult.toRecipe(source: .imported), expectedLanguage: expectedLanguage)
     }
 
     static func validate(recipe: Recipe, expectedLanguage: NLLanguage = .english) -> [AIOutputIssue] {

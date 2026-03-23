@@ -52,6 +52,7 @@ protocol AIServiceProtocol: AnyObject, Sendable {
     func parseRecipeFromURL(_ url: String) async -> RecipeImportResult?
     func parseRecipeFromText(_ extractedText: String) async -> RecipeImportResult?
     func resolveIngredients(_ requests: [IngredientResolutionRequest]) async -> [IngredientResolutionDecision]?
+    func disambiguateIngredients(_ requests: [IngredientResolutionRequest]) async -> [IngredientResolutionDecision]?
     func estimateStepDurations(for steps: [RecipeStep], recipeTitle: String) async -> [RecipeStep]
     func generateRecipe(query: String, preferences: RecipeGenerationPreferences) async -> Recipe?
     func generateStatusMessages(query: String, preferences: RecipeGenerationPreferences) async -> [String]

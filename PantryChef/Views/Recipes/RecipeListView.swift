@@ -692,6 +692,7 @@ struct RecipeCardView: View {
         case .user: return AppColors.primaryGreen
         case .bundled: return AppColors.warmOrange
         case .spoonacular: return Color(red: 0.38, green: 0.65, blue: 0.96)
+        case .imported: return Color(red: 0.72, green: 0.56, blue: 0.41)
         case .aiGenerated: return AppColors.accentTeal
         }
     }

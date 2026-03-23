@@ -83,6 +83,8 @@ final class MockStorageService: StorageServiceProtocol {
         updateRecipeCallCount += 1
         if let idx = recipeStore.firstIndex(where: { $0.id == recipe.id }) {
             recipeStore[idx] = recipe
+        } else {
+            recipeStore.append(recipe)
         }
         return recipe
     }
@@ -132,6 +134,7 @@ final class MockAIService: AIServiceProtocol {
     var healthierToReturn: HealthierSuggestion?
     var importResultToReturn: RecipeImportResult?
     var ingredientResolutionDecisionsToReturn: [IngredientResolutionDecision]?
+    var disambiguationDecisionsToReturn: [IngredientResolutionDecision]?
 
     var generateShoppingListCallCount = 0
     var suggestRecipesCallCount = 0
@@ -139,6 +142,14 @@ final class MockAIService: AIServiceProtocol {
     var parseRecipeFromURLCallCount = 0
     var parseRecipeFromTextCallCount = 0
     var resolveIngredientsCallCount = 0
+    var disambiguateIngredientsCallCount = 0
+    var generateRecipeCallCount = 0
+    var modifyRecipeCallCount = 0
+    var lastGenerateRecipeQuery: String?
+    var lastGenerateRecipePreferences: RecipeGenerationPreferences?
+    var lastModifyFeedback: String?
+    var lastModifyPantryIngredients: [String] = []
+    var lastDisambiguationRequests: [IngredientResolutionRequest] = []
 
     func generateShoppingList(recipe: Recipe, pantry: [PantryItem]) async -> [ShoppingItem] {
         generateShoppingListCallCount += 1
@@ -170,16 +181,27 @@ final class MockAIService: AIServiceProtocol {
         resolveIngredientsCallCount += 1
         return ingredientResolutionDecisionsToReturn
     }
+    func disambiguateIngredients(_ requests: [IngredientResolutionRequest]) async -> [IngredientResolutionDecision]? {
+        disambiguateIngredientsCallCount += 1
+        lastDisambiguationRequests = requests
+        return disambiguationDecisionsToReturn
+    }
     func estimateStepDurations(for steps: [RecipeStep], recipeTitle: String) async -> [RecipeStep] {
         return steps
     }
     func generateRecipe(query: String, preferences: RecipeGenerationPreferences) async -> Recipe? {
+        generateRecipeCallCount += 1
+        lastGenerateRecipeQuery = query
+        lastGenerateRecipePreferences = preferences
         return recipesToReturn.first
     }
     func generateStatusMessages(query: String, preferences: RecipeGenerationPreferences) async -> [String] {
         return ["Cooking..."]
     }
     func modifyRecipe(_ recipe: Recipe, feedback: String, pantryIngredients: [String]) async -> Recipe? {
+        modifyRecipeCallCount += 1
+        lastModifyFeedback = feedback
+        lastModifyPantryIngredients = pantryIngredients
         return recipesToReturn.first
     }
 }
@@ -250,7 +272,8 @@ func makeRecipe(
     mealType: MealType? = .dinner,
     cuisine: CuisineType? = nil,
     nutrition: NutritionInfo? = nil,
-    isFavorite: Bool = false
+    isFavorite: Bool = false,
+    source: RecipeSource = .user
 ) -> Recipe {
     Recipe(
         title: title,
@@ -263,9 +286,18 @@ func makeRecipe(
         dietaryTags: dietaryTags,
         mealType: mealType,
         cuisine: cuisine,
+        source: source,
         nutrition: nutrition,
         isFavorite: isFavorite
     )
+}
+
+final class StubIngredientCandidateParserForAppStateTests: IngredientCandidateParserProtocol {
+    var stubbedCandidates: [UUID: [IngredientResolutionCandidate]] = [:]
+
+    func candidates(for ingredient: Ingredient) -> [IngredientResolutionCandidate] {
+        stubbedCandidates[ingredient.id] ?? []
+    }
 }
 
 // ===================================================================
@@ -1445,6 +1477,20 @@ final class EnumTests: XCTestCase {
         XCTAssertEqual(decoded, .dairy)
     }
 
+    func testRecipeSourceAutoResolvePolicy() {
+        XCTAssertTrue(RecipeSource.aiGenerated.shouldAutoResolveIngredientsWithoutReview)
+        XCTAssertFalse(RecipeSource.user.shouldAutoResolveIngredientsWithoutReview)
+        XCTAssertFalse(RecipeSource.bundled.shouldAutoResolveIngredientsWithoutReview)
+        XCTAssertFalse(RecipeSource.spoonacular(id: 42).shouldAutoResolveIngredientsWithoutReview)
+        XCTAssertFalse(RecipeSource.imported.shouldAutoResolveIngredientsWithoutReview)
+    }
+
+    func testRecipeSourceImportedDraftConvertsOnSavePolicy() {
+        XCTAssertTrue(RecipeSource.imported.shouldConvertToUserRecipeOnSave)
+        XCTAssertFalse(RecipeSource.user.shouldConvertToUserRecipeOnSave)
+        XCTAssertFalse(RecipeSource.aiGenerated.shouldConvertToUserRecipeOnSave)
+    }
+
     // MARK: - MeasurementUnit
 
     func testMeasurementUnitAllCases() {
@@ -1991,7 +2037,7 @@ final class AppStateTests: XCTestCase {
 
     func testAddToMealPlan() async {
         let (appState, storage, _) = makeTestAppState()
-        let entry = MealPlanEntry(date: Date(), mealType: .dinner)
+        let entry = MealPlanEntry(date: Date(), mealType: .dinner, recipe: makeRecipe(title: "Pasta Night"))
         await appState.addToMealPlan(entry)
         XCTAssertEqual(appState.mealPlan.count, 1)
         XCTAssertEqual(storage.addMealPlanCallCount, 1)
@@ -1999,7 +2045,7 @@ final class AppStateTests: XCTestCase {
 
     func testRemoveFromMealPlan() async {
         let (appState, storage, _) = makeTestAppState()
-        let entry = MealPlanEntry(date: Date(), mealType: .dinner)
+        let entry = MealPlanEntry(date: Date(), mealType: .dinner, recipe: makeRecipe(title: "Pasta Night"))
         await appState.addToMealPlan(entry)
         await appState.removeFromMealPlan(entry)
         XCTAssertTrue(appState.mealPlan.isEmpty)
@@ -2057,10 +2103,16 @@ final class AppStateTests: XCTestCase {
     func testGenerateShoppingListFromMealPlan() async {
         let (appState, _, _) = makeTestAppState()
         // Add pantry item
-        await appState.addPantryItem(makePantryItem(name: "Chicken Breast", category: .protein, quantity: 500))
+        await appState.addPantryItem(makePantryItem(
+            name: "Chicken Breast",
+            category: .protein,
+            quantity: 500,
+            unit: .gram,
+            catalogItemID: "chicken"
+        ))
         // Add recipe to meal plan
         let recipe = makeRecipe(ingredients: [
-            Ingredient(name: "Chicken", quantity: 400, unit: .gram, category: .protein),
+            Ingredient(name: "Chicken Breast", quantity: 400, unit: .gram, category: .protein, catalogItemID: "chicken"),
             Ingredient(name: "Soy Sauce", quantity: 2, unit: .tablespoon, category: .condiments),
         ])
         let entry = MealPlanEntry(date: Date(), mealType: .dinner, recipe: recipe)
@@ -2345,7 +2397,7 @@ final class AppStateTests: XCTestCase {
         let (appState, storage, _) = makeTestAppState()
         storage.pantryStore = [makePantryItem(name: "Loaded")]
         storage.recipeStore = [makeRecipe(title: "Loaded Recipe")]
-        storage.mealPlanStore = [MealPlanEntry(date: Date(), mealType: .dinner)]
+        storage.mealPlanStore = [MealPlanEntry(date: Date(), mealType: .dinner, recipe: makeRecipe(title: "Loaded Dinner"))]
         storage.shoppingStore = [ShoppingItem(name: "Loaded Shopping")]
 
         await appState.loadAllData()
@@ -2405,6 +2457,267 @@ final class AppStateTests: XCTestCase {
         let result = await appState.getRecipeSuggestions()
         XCTAssertEqual(result.count, 1)
         XCTAssertEqual(ai.suggestRecipesCallCount, 1)
+    }
+
+    func testGetRecipeSuggestionsNormalizesAIAuthoredIngredients() async {
+        let (appState, _, ai) = makeTestAppState()
+        ai.recipesToReturn = [makeRecipe(
+            title: "Suggestion",
+            ingredients: [Ingredient(name: "Greek yogurt")],
+            source: .aiGenerated
+        )]
+
+        let result = await appState.getRecipeSuggestions()
+
+        XCTAssertEqual(result.first?.ingredients.first?.catalogItemID, "yogurt")
+        XCTAssertEqual(result.first?.ingredients.first?.facets, [.init(key: .variant, value: "greek")])
+        XCTAssertEqual(ai.suggestRecipesCallCount, 1)
+    }
+
+    func testGenerateRecipeNormalizesAIAuthoredIngredients() async {
+        let (appState, _, ai) = makeTestAppState()
+        ai.recipesToReturn = [makeRecipe(
+            title: "Generated",
+            ingredients: [Ingredient(name: "Greek yogurt")],
+            source: .aiGenerated
+        )]
+        let preferences = RecipeGenerationPreferences(
+            servings: 2,
+            maxTimeMinutes: 25,
+            spiceLevel: .medium,
+            dietaryTags: [],
+            usePantry: false,
+            pantryIngredients: []
+        )
+
+        let result = await appState.generateRecipe(query: "parfait", preferences: preferences)
+
+        XCTAssertEqual(result?.ingredients.first?.catalogItemID, "yogurt")
+        XCTAssertEqual(result?.ingredients.first?.facets, [.init(key: .variant, value: "greek")])
+        XCTAssertEqual(ai.generateRecipeCallCount, 1)
+        XCTAssertEqual(ai.lastGenerateRecipeQuery, "parfait")
+    }
+
+    func testImportRecipeFromURLReturnsImportedDraft() async {
+        let (appState, _, ai) = makeTestAppState()
+        ai.importResultToReturn = RecipeImportResult(
+            title: "Imported",
+            description: nil,
+            ingredients: [Ingredient(name: "soy sauce")],
+            steps: [],
+            servings: 4,
+            prepTimeMinutes: nil,
+            cookTimeMinutes: nil,
+            imageURL: nil,
+            dietaryTags: nil,
+            difficulty: nil,
+            mealType: nil,
+            cuisine: nil,
+            nutrition: nil
+        )
+
+        let result = await appState.importRecipeFromURL("https://example.com/recipe")
+
+        XCTAssertEqual(result?.source, .imported)
+        XCTAssertEqual(ai.parseRecipeFromURLCallCount, 1)
+    }
+
+    func testImportRecipeFromTextReturnsImportedDraft() async {
+        let (appState, _, ai) = makeTestAppState()
+        ai.importResultToReturn = RecipeImportResult(
+            title: "Imported Text",
+            description: nil,
+            ingredients: [Ingredient(name: "garlic")],
+            steps: [],
+            servings: 4,
+            prepTimeMinutes: nil,
+            cookTimeMinutes: nil,
+            imageURL: nil,
+            dietaryTags: nil,
+            difficulty: nil,
+            mealType: nil,
+            cuisine: nil,
+            nutrition: nil
+        )
+
+        let result = await appState.importRecipeFromText("garlic pasta")
+
+        XCTAssertEqual(result?.source, .imported)
+        XCTAssertEqual(ai.parseRecipeFromTextCallCount, 1)
+    }
+
+    func testGetLeftoverIdeasNormalizesAIAuthoredIngredients() async {
+        let (appState, _, ai) = makeTestAppState()
+        ai.recipesToReturn = [makeRecipe(
+            title: "Leftovers",
+            ingredients: [Ingredient(name: "jasmine rice")],
+            source: .aiGenerated
+        )]
+
+        let result = await appState.getLeftoverIdeas(ingredients: ["rice"])
+
+        XCTAssertEqual(result.first?.ingredients.first?.catalogItemID, "rice")
+        XCTAssertEqual(result.first?.ingredients.first?.facets, [.init(key: .variant, value: "jasmine")])
+    }
+
+    func testNormalizedAIRecipeAutoResolvesAmbiguousIngredients() async {
+        let storage = MockStorageService()
+        let ai = MockAIService()
+        let parser = StubIngredientCandidateParserForAppStateTests()
+        let ingredient = Ingredient(name: "moonmilk", category: .dairy)
+        let wholeMilk = IngredientResolutionCandidate(
+            id: "milk|variant=whole",
+            catalogItemID: "milk",
+            facets: [.init(key: .variant, value: "whole")],
+            displayName: "Whole Milk",
+            score: 0.92,
+            rationale: "Whole milk best fits the recipe.",
+            supportedFacets: []
+        )
+        let skimMilk = IngredientResolutionCandidate(
+            id: "milk|variant=skim",
+            catalogItemID: "milk",
+            facets: [.init(key: .variant, value: "skim")],
+            displayName: "Skim Milk",
+            score: 0.84,
+            rationale: "Skim milk is also plausible.",
+            supportedFacets: []
+        )
+        parser.stubbedCandidates[ingredient.id] = [wholeMilk, skimMilk]
+        ai.ingredientResolutionDecisionsToReturn = [
+            IngredientResolutionDecision(
+                ingredientID: ingredient.id,
+                status: .ambiguous,
+                selectedCandidateID: nil,
+                candidateIDs: [wholeMilk.id, skimMilk.id],
+                confidence: 0.63,
+                rationale: "Two plausible milk variants remain."
+            )
+        ]
+        ai.disambiguationDecisionsToReturn = [
+            IngredientResolutionDecision(
+                ingredientID: ingredient.id,
+                status: .resolved,
+                selectedCandidateID: wholeMilk.id,
+                candidateIDs: [],
+                confidence: 0.88,
+                rationale: "Whole milk is the best fit for a creamy soup."
+            )
+        ]
+        let appState = AppState(
+            storageService: storage,
+            aiService: ai,
+            ingredientCandidateParser: parser,
+            pantryItemPreferenceStore: MockPantryItemPreferenceStore(),
+            shouldLoadOnInit: false
+        )
+        let recipe = makeRecipe(
+            title: "Creamy Soup",
+            ingredients: [ingredient],
+            source: .aiGenerated
+        )
+
+        let normalized = await appState.normalizedAIRecipe(recipe)
+
+        XCTAssertEqual(normalized?.ingredients.first?.catalogItemID, "milk")
+        XCTAssertEqual(normalized?.ingredients.first?.facets, [.init(key: .variant, value: "whole")])
+        XCTAssertEqual(ai.resolveIngredientsCallCount, 1)
+        XCTAssertEqual(ai.disambiguateIngredientsCallCount, 1)
+    }
+
+    func testNormalizedAIRecipeFailsWhenAIDisambiguationCannotChoose() async {
+        let storage = MockStorageService()
+        let ai = MockAIService()
+        let parser = StubIngredientCandidateParserForAppStateTests()
+        let ingredient = Ingredient(name: "moonmilk", category: .dairy)
+        let wholeMilk = IngredientResolutionCandidate(
+            id: "milk|variant=whole",
+            catalogItemID: "milk",
+            facets: [.init(key: .variant, value: "whole")],
+            displayName: "Whole Milk",
+            score: 0.92,
+            rationale: "Whole milk best fits the recipe.",
+            supportedFacets: []
+        )
+        let skimMilk = IngredientResolutionCandidate(
+            id: "milk|variant=skim",
+            catalogItemID: "milk",
+            facets: [.init(key: .variant, value: "skim")],
+            displayName: "Skim Milk",
+            score: 0.84,
+            rationale: "Skim milk is also plausible.",
+            supportedFacets: []
+        )
+        parser.stubbedCandidates[ingredient.id] = [wholeMilk, skimMilk]
+        ai.ingredientResolutionDecisionsToReturn = [
+            IngredientResolutionDecision(
+                ingredientID: ingredient.id,
+                status: .ambiguous,
+                selectedCandidateID: nil,
+                candidateIDs: [wholeMilk.id, skimMilk.id],
+                confidence: 0.63,
+                rationale: "Two plausible milk variants remain."
+            )
+        ]
+        ai.disambiguationDecisionsToReturn = nil
+
+        let appState = AppState(
+            storageService: storage,
+            aiService: ai,
+            ingredientCandidateParser: parser,
+            pantryItemPreferenceStore: MockPantryItemPreferenceStore(),
+            shouldLoadOnInit: false
+        )
+        let recipe = makeRecipe(
+            title: "Creamy Soup",
+            ingredients: [ingredient],
+            source: .aiGenerated
+        )
+
+        let normalized = await appState.normalizedAIRecipe(recipe)
+
+        XCTAssertNil(normalized)
+        XCTAssertEqual(ai.resolveIngredientsCallCount, 1)
+        XCTAssertEqual(ai.disambiguateIngredientsCallCount, 1)
+        XCTAssertEqual(appState.errorMessage, "Couldn't confidently match AI-generated ingredients (moonmilk). Please try again.")
+    }
+
+    func testModifyRecipeNormalizesAIAuthoredIngredientsAndUsesPantryContext() async {
+        let (appState, _, ai) = makeTestAppState()
+        await appState.addPantryItem(PantryItem(name: "Spinach", category: .produce))
+        ai.recipesToReturn = [makeRecipe(
+            title: "Modified",
+            ingredients: [Ingredient(name: "jasmine rice")],
+            source: .aiGenerated
+        )]
+
+        let result = await appState.modifyRecipe(makeRecipe(title: "Base", source: .aiGenerated), feedback: "make it lighter")
+
+        XCTAssertEqual(result?.ingredients.first?.catalogItemID, "rice")
+        XCTAssertEqual(result?.ingredients.first?.facets, [.init(key: .variant, value: "jasmine")])
+        XCTAssertEqual(ai.modifyRecipeCallCount, 1)
+        XCTAssertEqual(ai.lastModifyFeedback, "make it lighter")
+        XCTAssertEqual(ai.lastModifyPantryIngredients, ["Spinach"])
+    }
+
+    func testCacheDiscoverRecipeReturnsNormalizedRecipe() async {
+        let (appState, storage, _) = makeTestAppState()
+        let recipe = makeRecipe(
+            title: "Generated Recipe",
+            ingredients: [Ingredient(
+                name: "Greek yogurt",
+                category: .dairy,
+                catalogItemID: "yogurt",
+                facets: [.init(key: .variant, value: "greek")]
+            )],
+            source: .aiGenerated
+        )
+
+        let cached = await appState.cacheDiscoverRecipe(recipe)
+
+        XCTAssertEqual(cached?.ingredients.first?.catalogItemID, "yogurt")
+        XCTAssertEqual(cached?.ingredients.first?.facets, [.init(key: .variant, value: "greek")])
+        XCTAssertEqual(storage.recipeStore.first?.ingredients.first?.catalogItemID, "yogurt")
     }
 
     func testGetSubstitutions() async {
@@ -2674,6 +2987,7 @@ final class RecipeViewModelTests: XCTestCase {
         await waitUntil { ai.parseRecipeFromURLCallCount == 1 }
         XCTAssertNotNil(vm.importedRecipe)
         XCTAssertEqual(vm.importedRecipe?.title, "Imported")
+        XCTAssertEqual(vm.importedRecipe?.source, .imported)
         XCTAssertEqual(ai.parseRecipeFromURLCallCount, 1)
     }
 

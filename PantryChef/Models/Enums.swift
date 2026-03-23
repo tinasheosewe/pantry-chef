@@ -366,6 +366,7 @@ enum RecipeSource: Codable, Hashable {
     case user
     case bundled
     case spoonacular(id: Int)
+    case imported
     case aiGenerated
 
     var label: String {
@@ -373,11 +374,30 @@ enum RecipeSource: Codable, Hashable {
         case .user: return "My Recipe"
         case .bundled: return "Featured"
         case .spoonacular: return "Discover"
+        case .imported: return "Imported"
         case .aiGenerated: return "Chef"
         }
     }
 
     var isUserRecipe: Bool { if case .user = self { return true } else { return false } }
+
+    var shouldAutoResolveIngredientsWithoutReview: Bool {
+        switch self {
+        case .aiGenerated:
+            return true
+        case .user, .bundled, .spoonacular, .imported:
+            return false
+        }
+    }
+
+    var shouldConvertToUserRecipeOnSave: Bool {
+        switch self {
+        case .imported:
+            return true
+        case .user, .bundled, .spoonacular, .aiGenerated:
+            return false
+        }
+    }
 }
 
 // MARK: - Substitution Impact

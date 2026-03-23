@@ -307,7 +307,7 @@ struct RecipeBuilderView: View {
 
         // Fire status messages + recipe generation in parallel
         async let statusFetch = appState.aiService.generateStatusMessages(query: query, preferences: prefs)
-        async let recipeFetch = appState.aiService.generateRecipe(query: query, preferences: prefs)
+        async let recipeFetch = appState.generateRecipe(query: query, preferences: prefs)
 
         // Status messages come back fast (~2s), start cycling them
         let messages = await statusFetch
@@ -328,12 +328,12 @@ struct RecipeBuilderView: View {
         }
 
         // Wait for the recipe
-        if let recipe = await recipeFetch {
+        if let recipe = await recipeFetch,
+           let normalizedRecipe = await appState.cacheDiscoverRecipe(recipe) {
             tickerTask.cancel()
-            await appState.cacheDiscoverRecipe(recipe)
             appState.refreshDiscoverRecipes()
             dismiss()
-            onGenerated(recipe)
+            onGenerated(normalizedRecipe)
         } else {
             tickerTask.cancel()
             generationError = "Failed to generate recipe. Please try again."

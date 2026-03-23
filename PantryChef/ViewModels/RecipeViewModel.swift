@@ -433,7 +433,7 @@ final class RecipeViewModel: AsyncActionHandling {
             // Cache in the background so UI updates stay responsive.
             Task { [appState] in
                 for recipe in recipes {
-                    await appState.cacheDiscoverRecipe(recipe)
+                    _ = await appState.cacheDiscoverRecipe(recipe)
                 }
             }
         } catch {
@@ -474,7 +474,7 @@ final class RecipeViewModel: AsyncActionHandling {
             // Cache in the background so pagination remains smooth.
             Task { [appState] in
                 for recipe in recipes {
-                    await appState.cacheDiscoverRecipe(recipe)
+                    _ = await appState.cacheDiscoverRecipe(recipe)
                 }
             }
         } catch {
@@ -484,8 +484,8 @@ final class RecipeViewModel: AsyncActionHandling {
 
     func importFromURL(_ urlString: String, onComplete: (@MainActor () -> Void)? = nil) {
         runLoadingTask { [self] in
-            if let result = await appState.aiService.parseRecipeFromURL(urlString) {
-                self.importedRecipe = result.toRecipe()
+            if let recipe = await appState.importRecipeFromURL(urlString) {
+                self.importedRecipe = recipe
             }
             onComplete?()
         }

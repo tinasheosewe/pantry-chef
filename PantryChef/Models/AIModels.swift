@@ -111,7 +111,7 @@ struct RecipeImportResult: Codable {
     let cuisine: CuisineType?
     let nutrition: NutritionInfo?
 
-    func toRecipe() -> Recipe {
+    func toRecipe(source: RecipeSource = .user) -> Recipe {
         Recipe(
             title: title,
             description: description,
@@ -124,6 +124,7 @@ struct RecipeImportResult: Codable {
             dietaryTags: dietaryTags ?? [],
             mealType: mealType,
             cuisine: cuisine,
+            source: source,
             nutrition: nutrition,
             imageURL: imageURL
         )

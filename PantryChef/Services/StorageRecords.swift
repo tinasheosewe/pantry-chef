@@ -633,6 +633,7 @@ enum RecipeSourceCodec {
         case .user: return "user"
         case .bundled: return "bundled"
         case .spoonacular: return "spoonacular"
+        case .imported: return "imported"
         case .aiGenerated: return "aiGenerated"
         }
     }
@@ -653,6 +654,7 @@ enum RecipeSourceCodec {
                 return .spoonacular(id: externalId)
             }
             return .bundled
+        case "imported": return .imported
         case "aiGenerated": return .aiGenerated
         default: return .user
         }
