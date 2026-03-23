@@ -18,6 +18,7 @@ final class AppState {
     var shoppingItems: [ShoppingItem] = []
     var isLoading = false
     var errorMessage: String?
+    private var hasScheduledInitialLoad = false
 
     /// Set by notification tap to deep-link into cook mode for a specific recipe.
     var deepLinkCookModeRecipeId: String?
@@ -106,15 +107,15 @@ final class AppState {
     }
 
     func weeklyNutritionSummary() -> WeeklyNutritionSummary? {
-        let cookedRecipes = mealPlan.compactMap(\.recipe)
-        guard !cookedRecipes.isEmpty else { return nil }
+        let plannedRecipes = mealPlan.filter(\.isPlanned).compactMap(\.recipe)
+        guard !plannedRecipes.isEmpty else { return nil }
 
         var totalCalories = 0
         var totalProtein = 0.0
         var totalCarbs = 0.0
         var totalFat = 0.0
 
-        for recipe in cookedRecipes {
+        for recipe in plannedRecipes {
             if let nutrition = recipe.nutrition {
                 totalCalories += nutrition.calories
                 totalProtein += nutrition.protein
@@ -125,11 +126,11 @@ final class AppState {
 
         return WeeklyNutritionSummary(
             totalCalories: totalCalories,
-            avgCaloriesPerDay: totalCalories / 7,
+            avgCaloriesPerMeal: totalCalories / plannedRecipes.count,
             totalProtein: totalProtein,
             totalCarbs: totalCarbs,
             totalFat: totalFat,
-            mealsPlanned: cookedRecipes.count
+            mealsPlanned: plannedRecipes.count
         )
     }
 
@@ -154,6 +155,16 @@ final class AppState {
         discoverRecipes = mergedDiscoverRecipes(withPersisted: discoverRecipes.filter { !$0.source.isUserRecipe })
     }
 
+    func scheduleInitialLoadIfNeeded() {
+        guard !hasScheduledInitialLoad else { return }
+        hasScheduledInitialLoad = true
+
+        Task { [weak self] in
+            await Task.yield()
+            await self?.loadAllData()
+        }
+    }
+
     // MARK: - Init (DI-friendly)
     init() {
         let launchOptions = Self.launchOptions
@@ -169,10 +180,6 @@ final class AppState {
         pantryItems = launchOptions.seedPantryItems ? PantryItem.samples : []
         recipes = launchOptions.seedRecipes ? Recipe.samples : []
         discoverRecipes = []
-        Task {
-            await Task.yield()
-            await loadAllData()
-        }
     }
 
     init(
@@ -191,12 +198,7 @@ final class AppState {
         pantryItems = PantryItem.samples
         recipes = Recipe.samples
         discoverRecipes = []
-        if shouldLoadOnInit {
-            Task {
-                await Task.yield()
-                await loadAllData()
-            }
-        }
+        hasScheduledInitialLoad = !shouldLoadOnInit
     }
 
     func pantryItemDefaultPreference(for catalogItemID: String?) -> PantryItemDefaultPreference? {
@@ -220,6 +222,8 @@ final class AppState {
             isLoading = false
         }
 
+        await Task.yield()
+
         var failures: [String] = []
 
         do {
@@ -228,6 +232,7 @@ final class AppState {
         } catch {
             failures.append(error.localizedDescription)
         }
+        await Task.yield()
 
         do {
             let fetchedRecipes = try await storageService.fetchRecipes()
@@ -237,6 +242,7 @@ final class AppState {
         } catch {
             failures.append(error.localizedDescription)
         }
+        await Task.yield()
 
         do {
             let fetchedPlan = try await storageService.fetchMealPlan()
@@ -246,6 +252,7 @@ final class AppState {
         } catch {
             failures.append(error.localizedDescription)
         }
+        await Task.yield()
 
         do {
             let fetchedShopping = try await storageService.fetchShoppingItems()
@@ -259,6 +266,13 @@ final class AppState {
 
     // MARK: - Pantry Actions
     func addPantryItem(_ item: PantryItem) async {
+        if let existingIndex = pantryItems.firstIndex(where: { pantryItemsCanMerge($0, item) }) {
+            var merged = pantryItems[existingIndex]
+            merged = mergePantryItem(merged, with: item)
+            await updatePantryItem(merged)
+            return
+        }
+
         do {
             let saved = try await storageService.addPantryItem(item)
             pantryItems.append(saved)
@@ -576,6 +590,95 @@ final class AppState {
         }
 
         return merged
+    }
+
+    private func pantryItemsCanMerge(_ existing: PantryItem, _ addition: PantryItem) -> Bool {
+        let identitiesMatch: Bool
+        if let existingCatalogItemID = existing.catalogItemID, let additionCatalogItemID = addition.catalogItemID {
+            identitiesMatch = existingCatalogItemID == additionCatalogItemID
+                && normalizedPantryIdentityFacets(existing) == normalizedPantryIdentityFacets(addition)
+        } else if existing.catalogItemID == nil, addition.catalogItemID == nil {
+            identitiesMatch = IngredientMatcher.normalize(existing.name) == IngredientMatcher.normalize(addition.name)
+                && existing.category == addition.category
+        } else {
+            identitiesMatch = false
+        }
+
+        guard identitiesMatch, existing.storage == addition.storage else {
+            return false
+        }
+
+        switch combinedQuantity(
+            existingQuantity: existing.quantity,
+            existingUnit: existing.unit,
+            addedQuantity: addition.quantity,
+            addedUnit: addition.unit
+        ) {
+        case .merged, .replaceExisting:
+            return true
+        case .keepExisting:
+            return existing.quantity == nil && addition.quantity == nil
+        }
+    }
+
+    private func mergePantryItem(_ existing: PantryItem, with addition: PantryItem) -> PantryItem {
+        var merged = existing
+        merged.catalogItemID = existing.catalogItemID ?? addition.catalogItemID
+        if merged.facets.isEmpty || addition.facets.count > merged.facets.count {
+            merged.facets = addition.facets
+        }
+
+        switch combinedQuantity(
+            existingQuantity: existing.quantity,
+            existingUnit: existing.unit,
+            addedQuantity: addition.quantity,
+            addedUnit: addition.unit
+        ) {
+        case let .merged(quantity, unit):
+            merged.quantity = quantity
+            merged.unit = unit
+        case .keepExisting:
+            break
+        case let .replaceExisting(quantity, unit):
+            merged.quantity = quantity
+            merged.unit = unit
+        }
+
+        if let existingExpiryDate = merged.expiryDate, let additionExpiryDate = addition.expiryDate {
+            if additionExpiryDate < existingExpiryDate {
+                merged.expiryDate = additionExpiryDate
+                merged.freshnessSource = addition.freshnessSource
+            }
+        } else if merged.expiryDate == nil {
+            merged.expiryDate = addition.expiryDate
+            if addition.expiryDate != nil {
+                merged.freshnessSource = addition.freshnessSource
+            }
+        }
+
+        if merged.notes == nil {
+            merged.notes = addition.notes
+        }
+
+        return merged
+    }
+
+    private func normalizedPantryIdentityFacets(_ item: PantryItem) -> [PantryFacetSelection] {
+        guard let catalogItemID = item.catalogItemID,
+              let catalogItem = PantryCatalog.item(id: catalogItemID) else {
+            return item.facets
+        }
+
+        var facetsByKey: [PantryFacetKey: PantryFacetSelection] = [:]
+        for facet in catalogItem.defaultSelections {
+            facetsByKey[facet.key] = facet
+        }
+
+        for facet in item.facets where catalogItem.options(for: facet.key).contains(facet.value) {
+            facetsByKey[facet.key] = facet
+        }
+
+        return catalogItem.facets.compactMap { facetsByKey[$0.key] }
     }
 
     private func mergedRecipeSources(_ lhs: String?, _ rhs: String?) -> String? {

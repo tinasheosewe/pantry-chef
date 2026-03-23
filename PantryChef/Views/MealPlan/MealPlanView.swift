@@ -59,7 +59,7 @@ struct MealPlanView: View {
     }
 
     private func prepareShoppingConfirmation() {
-        shoppingConfirmation = ShoppingListConfirmationRequest(items: viewModel.previewShoppingList())
+        shoppingConfirmation = ShoppingListConfirmationRequest(items: viewModel.previewShoppingList(), context: .mealPlan)
     }
 
     // MARK: - Week Navigation

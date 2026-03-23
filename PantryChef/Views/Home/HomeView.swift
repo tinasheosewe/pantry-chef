@@ -3,6 +3,7 @@ import SwiftUI
 struct HomeView: View {
     @State private var viewModel: HomeViewModel
     @State private var resumeRecipe: Recipe?
+    @State private var selectedMealEntry: MealPlanEntry?
     @State private var shoppingConfirmation: ShoppingListConfirmationRequest?
 
     var onSwitchToShopping: (() -> Void)?
@@ -67,6 +68,12 @@ struct HomeView: View {
                     onSwitchToShopping?()
                 }
             }
+            .appNavigationSheet(item: $selectedMealEntry) { entry in
+                if let recipe = entry.recipe {
+                    RecipeDetailView(recipe: recipe)
+                        .environment(viewModel.appState)
+                }
+            }
             .fullScreenCover(item: $resumeRecipe) { recipe in
                 let session = CookingSession.load(recipeId: recipe.id)
                 let stepIndex = session?.currentStepIndex ?? 0
@@ -119,30 +126,7 @@ struct HomeView: View {
                 .clipShape(RoundedRectangle(cornerRadius: 12))
             } else {
                 ForEach(viewModel.todaysMeals) { entry in
-                    HStack(spacing: 12) {
-                        Image(systemName: entry.mealType.icon)
-                            .font(.title3)
-                            .foregroundStyle(AppColors.primaryGreen)
-                            .frame(width: 32)
-
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(entry.mealType.rawValue)
-                                .font(.caption)
-                                .foregroundStyle(AppColors.subtleText)
-                            Text(entry.displayName)
-                                .font(.subheadline)
-                                .fontWeight(.medium)
-                        }
-
-                        Spacer()
-
-                        if let recipe = entry.recipe {
-                            Text(recipe.totalTimeDisplay)
-                                .font(.caption)
-                                .foregroundStyle(AppColors.subtleText)
-                        }
-                    }
-                    .padding(.vertical, 4)
+                    todayMealRow(entry)
                 }
             }
         }
@@ -207,7 +191,55 @@ struct HomeView: View {
     }
 
     private func prepareShoppingConfirmation() {
-        shoppingConfirmation = ShoppingListConfirmationRequest(items: viewModel.appState.previewShoppingListFromMealPlan())
+        shoppingConfirmation = ShoppingListConfirmationRequest(
+            items: viewModel.appState.previewShoppingListFromMealPlan(),
+            context: .mealPlan
+        )
+    }
+
+    private func todayMealRow(_ entry: MealPlanEntry) -> some View {
+        let row = HStack(spacing: 12) {
+            Image(systemName: entry.mealType.icon)
+                .font(.title3)
+                .foregroundStyle(AppColors.primaryGreen)
+                .frame(width: 32)
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text(entry.mealType.rawValue)
+                    .font(.caption)
+                    .foregroundStyle(AppColors.subtleText)
+                Text(entry.displayName)
+                    .font(.subheadline)
+                    .fontWeight(.medium)
+                    .foregroundStyle(AppColors.darkText)
+            }
+
+            Spacer()
+
+            if let recipe = entry.recipe {
+                Text(recipe.totalTimeDisplay)
+                    .font(.caption)
+                    .foregroundStyle(AppColors.subtleText)
+
+                Image(systemName: "chevron.right")
+                    .font(.caption)
+                    .foregroundStyle(AppColors.mediumGray)
+            }
+        }
+        .padding(.vertical, 4)
+
+        if entry.recipe != nil {
+            return AnyView(
+                Button {
+                    selectedMealEntry = entry
+                } label: {
+                    row
+                }
+                .buttonStyle(.plain)
+            )
+        }
+
+        return AnyView(row)
     }
 
     // MARK: - Recipe Suggestion Card
@@ -268,10 +300,10 @@ struct HomeView: View {
             )
 
             HStack(spacing: 20) {
-                NutritionCircle(label: "Avg Cal", value: nutrition.avgCaloriesPerDay, unit: "kcal", color: AppColors.warmOrange)
-                NutritionCircle(label: "Protein", value: Int(nutrition.totalProtein / 7), unit: "g", color: AppColors.softRed)
-                NutritionCircle(label: "Carbs", value: Int(nutrition.totalCarbs / 7), unit: "g", color: AppColors.primaryGreen)
-                NutritionCircle(label: "Fat", value: Int(nutrition.totalFat / 7), unit: "g", color: AppColors.accentBlue)
+                NutritionCircle(label: "Avg Cal", value: nutrition.avgCaloriesPerMeal, unit: "kcal", color: AppColors.warmOrange)
+                NutritionCircle(label: "Protein", value: nutrition.avgProteinPerMeal, unit: "g", color: AppColors.softRed)
+                NutritionCircle(label: "Carbs", value: nutrition.avgCarbsPerMeal, unit: "g", color: AppColors.primaryGreen)
+                NutritionCircle(label: "Fat", value: nutrition.avgFatPerMeal, unit: "g", color: AppColors.accentBlue)
             }
             .frame(maxWidth: .infinity)
         }

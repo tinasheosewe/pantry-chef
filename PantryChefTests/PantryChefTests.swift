@@ -223,9 +223,19 @@ func makePantryItem(
     category: FoodCategory = .other,
     quantity: Double? = 1,
     unit: MeasurementUnit? = .piece,
-    expiryDate: Date? = nil
+    expiryDate: Date? = nil,
+    catalogItemID: String? = nil,
+    facets: [PantryFacetSelection] = []
 ) -> PantryItem {
-    PantryItem(name: name, category: category, quantity: quantity, unit: unit, expiryDate: expiryDate)
+    PantryItem(
+        name: name,
+        category: category,
+        quantity: quantity,
+        unit: unit,
+        expiryDate: expiryDate,
+        catalogItemID: catalogItemID,
+        facets: facets
+    )
 }
 
 func makeRecipe(
@@ -1709,6 +1719,55 @@ final class AppStateTests: XCTestCase {
         XCTAssertEqual(storage.addPantryItemCallCount, 1)
     }
 
+    func testAddPantryItemMergesMatchingCatalogBackedQuantity() async {
+        let (appState, storage, _) = makeTestAppState()
+        await appState.addPantryItem(makePantryItem(
+            name: "Sourdough Bread",
+            category: .grains,
+            quantity: 1,
+            unit: .whole,
+            catalogItemID: "bread",
+            facets: [.init(key: .variant, value: "sourdough")]
+        ))
+
+        await appState.addPantryItem(makePantryItem(
+            name: "Sourdough Bread",
+            category: .grains,
+            quantity: 1,
+            unit: .whole,
+            catalogItemID: "bread",
+            facets: [.init(key: .variant, value: "sourdough")]
+        ))
+
+        XCTAssertEqual(appState.pantryItems.count, 1)
+        XCTAssertEqual(appState.pantryItems[0].quantity, 2)
+        XCTAssertEqual(storage.addPantryItemCallCount, 1)
+        XCTAssertEqual(storage.updatePantryItemCallCount, 1)
+    }
+
+    func testAddPantryItemKeepsDifferentFacetVariantsSeparate() async {
+        let (appState, _, _) = makeTestAppState()
+        await appState.addPantryItem(makePantryItem(
+            name: "Sourdough Bread",
+            category: .grains,
+            quantity: 1,
+            unit: .whole,
+            catalogItemID: "bread",
+            facets: [.init(key: .variant, value: "sourdough")]
+        ))
+
+        await appState.addPantryItem(makePantryItem(
+            name: "White Bread",
+            category: .grains,
+            quantity: 1,
+            unit: .whole,
+            catalogItemID: "bread",
+            facets: [.init(key: .variant, value: "white")]
+        ))
+
+        XCTAssertEqual(appState.pantryItems.count, 2)
+    }
+
     func testRemovePantryItem() async {
         let (appState, storage, _) = makeTestAppState()
         let item = makePantryItem(name: "Eggs")
@@ -2678,6 +2737,25 @@ final class HomeViewModelTests: XCTestCase {
         XCTAssertNotNil(vm.weeklyNutrition)
         XCTAssertEqual(vm.weeklyNutrition?.totalCalories, 700)
         XCTAssertEqual(vm.weeklyNutrition?.mealsPlanned, 1)
+        XCTAssertEqual(vm.weeklyNutrition?.avgCaloriesPerMeal, 700)
+    }
+
+    func testWeeklyNutritionAveragesUsePlannedMealsInsteadOfWeekDays() async {
+        let (vm, appState) = makeSUT()
+        let firstRecipe = makeRecipe(
+            nutrition: NutritionInfo(calories: 600, protein: 30, carbohydrates: 60, fat: 20)
+        )
+        let secondRecipe = makeRecipe(
+            nutrition: NutritionInfo(calories: 400, protein: 10, carbohydrates: 20, fat: 10)
+        )
+
+        await appState.addToMealPlan(MealPlanEntry(date: Date(), mealType: .breakfast, recipe: firstRecipe))
+        await appState.addToMealPlan(MealPlanEntry(date: Date(), mealType: .lunch, recipe: secondRecipe))
+        vm.refresh()
+
+        XCTAssertEqual(vm.weeklyNutrition?.mealsPlanned, 2)
+        XCTAssertEqual(vm.weeklyNutrition?.avgCaloriesPerMeal, 500)
+        XCTAssertEqual(vm.weeklyNutrition?.avgProteinPerMeal, 20)
     }
 }
 
@@ -2840,6 +2918,35 @@ final class ShoppingViewModelTests: XCTestCase {
         XCTAssertEqual(appState.pantryItems[0].catalogItemID, "garlic")
         XCTAssertEqual(appState.pantryItems[0].facets, [.init(key: .preparation, value: "minced")])
     }
+
+    func testAddCheckedToPantryMergesIntoExistingMatchingPantryRow() async {
+        let (vm, appState) = makeSUT()
+        await appState.addPantryItem(makePantryItem(
+            name: "Sourdough Bread",
+            category: .grains,
+            quantity: 1,
+            unit: .whole,
+            catalogItemID: "bread",
+            facets: [.init(key: .variant, value: "sourdough")]
+        ))
+        appState.shoppingItems = [
+            ShoppingItem(
+                name: "Sourdough Bread",
+                quantity: 1,
+                unit: .whole,
+                category: .grains,
+                isChecked: true,
+                catalogItemID: "bread",
+                facets: [.init(key: .variant, value: "sourdough")]
+            )
+        ]
+
+        vm.addCheckedToPantry()
+        await Task.yield()
+
+        XCTAssertEqual(appState.pantryItems.count, 1)
+        XCTAssertEqual(appState.pantryItems[0].quantity, 2)
+    }
 }
 
 @MainActor
@@ -2963,8 +3070,8 @@ final class MealPlanViewModelTests: XCTestCase {
         let (vm, appState) = makeSUT()
         let entry = MealPlanEntry(date: Date(), mealType: .dinner, recipe: makeRecipe())
         await appState.addToMealPlan(entry)
-        vm.entries.append(entry)
-        await vm.removeEntry(entry)
+        vm.removeEntry(entry)
+        await Task.yield()
         XCTAssertTrue(appState.mealPlan.isEmpty)
         XCTAssertTrue(vm.entries.isEmpty)
     }

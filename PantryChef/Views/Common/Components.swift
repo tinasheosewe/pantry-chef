@@ -264,20 +264,46 @@ struct AppSearchField: View {
 
 // MARK: - Shopping Confirmation
 struct ShoppingListConfirmationRequest {
+    enum Context {
+        case generic
+        case mealPlan
+    }
+
     let items: [ShoppingItem]
+    let context: Context
+
+    init(items: [ShoppingItem], context: Context = .generic) {
+        self.items = items
+        self.context = context
+    }
 
     var title: String {
         if items.isEmpty {
             return "Nothing to Add"
         }
-        return "Add \(items.count) Item\(items.count == 1 ? "" : "s")?"
+        switch context {
+        case .generic:
+            return "Add \(items.count) Item\(items.count == 1 ? "" : "s")?"
+        case .mealPlan:
+            return "Add Missing Ingredients?"
+        }
     }
 
     var message: String {
         if items.isEmpty {
-            return "Everything needed is already in your pantry."
+            switch context {
+            case .generic:
+                return "Everything needed is already in your pantry."
+            case .mealPlan:
+                return "Your meal plan is already covered by what you have on hand."
+            }
         }
-        return "This will add these items to your cart and exclude ingredients you already have in your pantry."
+        switch context {
+        case .generic:
+            return "This will add these items to your cart and exclude ingredients you already have in your pantry."
+        case .mealPlan:
+            return "We'll add the ingredients you're still missing from your meal plan to your shopping list."
+        }
     }
 }
 
@@ -308,7 +334,7 @@ private struct ShoppingListConfirmationModifier: ViewModifier {
                 Button("Cancel", role: .cancel) {
                     request = nil
                 }
-                Button("Add Items") {
+                Button(currentRequest.context == .mealPlan ? "Add to Shopping List" : "Add Items") {
                     onConfirm(currentRequest.items)
                     request = nil
                 }

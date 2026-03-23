@@ -47,9 +47,24 @@ final class HomeViewModel {
 
 struct WeeklyNutritionSummary: Equatable {
     let totalCalories: Int
-    let avgCaloriesPerDay: Int
+    let avgCaloriesPerMeal: Int
     let totalProtein: Double
     let totalCarbs: Double
     let totalFat: Double
     let mealsPlanned: Int
+
+    var avgProteinPerMeal: Int {
+        guard mealsPlanned > 0 else { return 0 }
+        return Int(totalProtein / Double(mealsPlanned))
+    }
+
+    var avgCarbsPerMeal: Int {
+        guard mealsPlanned > 0 else { return 0 }
+        return Int(totalCarbs / Double(mealsPlanned))
+    }
+
+    var avgFatPerMeal: Int {
+        guard mealsPlanned > 0 else { return 0 }
+        return Int(totalFat / Double(mealsPlanned))
+    }
 }
