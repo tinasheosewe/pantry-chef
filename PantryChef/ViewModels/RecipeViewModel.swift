@@ -18,7 +18,11 @@ final class RecipeViewModel: AsyncActionHandling {
     var importedRecipe: Recipe?
 
     // Discover search (Spoonacular)
-    var discoverSearchResults: [Recipe] = []
+    var discoverSearchResults: [Recipe] = [] {
+        didSet {
+            discoverSearchResultsRevision &+= 1
+        }
+    }
     var isSearchingAPI = false
     var isLoadingMore = false
     @ObservationIgnored private let apiSearchDebouncer = TaskDebouncer()
@@ -30,15 +34,20 @@ final class RecipeViewModel: AsyncActionHandling {
     @ObservationIgnored private var matchMapCache: [MatchMapCacheKey: [UUID: PantryMatchResult]] = [:]
     @ObservationIgnored private var matchMapCacheOrder: [MatchMapCacheKey] = []
     @ObservationIgnored private let maxMatchMapCacheEntries = 8
-    @ObservationIgnored private var persistedMetrics: [CollectionSignature: [UUID: RecipeMatchMetrics]] = [:]
-    @ObservationIgnored private var loadedPersistedPantrySignature: CollectionSignature?
-    @ObservationIgnored private var searchIndexCache: [CollectionSignature: RecipeSearchIndex] = [:]
+    @ObservationIgnored private var persistedMetrics: [PantryMetricsSignature: [UUID: PersistedRecipeMatchMetrics]] = [:]
+    @ObservationIgnored private var persistedMetricsStoreLoaded = false
+    @ObservationIgnored private var persistedMetricSignatureOrder: [PantryMetricsSignature] = []
+    @ObservationIgnored private let maxPersistedMetricSignatures = 8
+    @ObservationIgnored private var searchIndexCache: [SearchIndexCacheKey: RecipeSearchIndex] = [:]
+    @ObservationIgnored private var ingredientDependencyIndexCache: [RecipeContentSignature: RecipeIngredientDependencyIndex] = [:]
+    @ObservationIgnored private var pantryDependencyStateCache: [PantryMetricsSignature: PantryDependencyState] = [:]
     @ObservationIgnored private var hasPrewarmedDiscover = false
     @ObservationIgnored private var prewarmTask: Task<Void, Never>?
-    @ObservationIgnored private var lastPrewarmedPantrySignature: CollectionSignature?
+    @ObservationIgnored private var lastPrewarmedPantryRevision: Int?
     @ObservationIgnored private var fullCoverageTask: Task<Void, Never>?
     @ObservationIgnored private var lastFullCoverageKey: FullCoverageKey?
     @ObservationIgnored private let fullCoverageChunkSize = 128
+    @ObservationIgnored private var discoverSearchResultsRevision = 0
     private var localFilterQuery = ""
     private var currentSearchOffset = 0
     private var totalSearchResults = 0
@@ -49,7 +58,7 @@ final class RecipeViewModel: AsyncActionHandling {
     var coverageRefreshState: RecipeCoverageRefreshState {
         RecipeCoverageRefreshState(
             catalog: appState.recipeCatalogRefreshState,
-            discoverSearchSource: collectionSignature(discoverSearchResults)
+            discoverSearchSource: appStateCollectionKey(revision: discoverSearchResultsRevision, count: discoverSearchResults.count)
         )
     }
 
@@ -69,18 +78,13 @@ final class RecipeViewModel: AsyncActionHandling {
         self.appState = appState
         self.recipeActions = RecipeActions(appState: appState)
         self.localFilterQuery = ""
-
-        // Startup verification: proactively hydrate full pantry metrics cache.
-        Task { @MainActor in
-            self.scheduleFullMetricsCoverage(reason: "startup")
-        }
     }
 
     // MARK: - Filtered User Recipes
 
     var filteredUserRecipes: [Recipe] {
         let key = UserFilterCacheKey(
-            source: collectionSignature(appState.recipes),
+            source: appStateCollectionKey(revision: appState.recipesRevision, count: appState.recipes.count),
             pantry: pantrySignatureIfNeeded(),
             query: localFilterQuery,
             selectedDifficulty: selectedDifficulty,
@@ -119,8 +123,8 @@ final class RecipeViewModel: AsyncActionHandling {
 
     var filteredDiscoverRecipes: [Recipe] {
         let key = DiscoverFilterCacheKey(
-            discoverSearchSource: collectionSignature(discoverSearchResults),
-            discoverPoolSource: collectionSignature(appState.discoverRecipes),
+            discoverSearchSource: appStateCollectionKey(revision: discoverSearchResultsRevision, count: discoverSearchResults.count),
+            discoverPoolSource: appStateCollectionKey(revision: appState.discoverRecipesRevision, count: appState.discoverRecipes.count),
             pantry: pantrySignatureIfNeeded(),
             query: localFilterQuery,
             selectedDifficulty: selectedDifficulty,
@@ -179,7 +183,7 @@ final class RecipeViewModel: AsyncActionHandling {
 
         if !localFilterQuery.isEmpty {
             let query = localFilterQuery
-            let index = searchIndex(for: recipes)
+            let index = searchIndex(for: recipes, cacheKey: searchIndexCacheKey(for: recipes))
             let queryTokens = RecipeSearchIndex.tokenize(query)
             if let candidateIDs = index.candidateIDs(for: queryTokens), !candidateIDs.isEmpty {
                 recipes = recipes.filter { recipe in
@@ -223,17 +227,34 @@ final class RecipeViewModel: AsyncActionHandling {
     func matchMetricsMap(for recipes: [Recipe]) -> [UUID: RecipeMatchMetrics] {
         guard !appState.pantryItems.isEmpty, !recipes.isEmpty else { return [:] }
 
-        let pantrySig = collectionSignature(appState.pantryItems)
+        let pantry = appState.pantryItems
+        let pantrySig = pantryMetricsSignature(for: pantry)
         hydratePersistedMetricsIfNeeded(for: pantrySig)
+        let dependencyIndex = ingredientDependencyIndex(for: recipes)
+        let pantryState = pantryDependencyState(for: pantry, signature: pantrySig)
 
         var metricsMap = persistedMetrics[pantrySig] ?? [:]
-        let missingRecipes = recipes.filter { metricsMap[$0.id] == nil }
+        let seededMetrics = seedMetricsFromNearbyPantryState(
+            pantrySignature: pantrySig,
+            pantryState: pantryState,
+            recipes: recipes,
+            dependencyIndex: dependencyIndex,
+            existingMetrics: metricsMap
+        )
+        if !seededMetrics.isEmpty {
+            metricsMap.merge(seededMetrics) { current, _ in current }
+            persistedMetrics[pantrySig] = metricsMap
+        }
+
+        let missingRecipes = recipes.filter { recipe in
+            guard let cached = metricsMap[recipe.id] else { return true }
+            return cached.recipeDigest != Self.recipeDigest(recipe)
+        }
 
         if !missingRecipes.isEmpty {
-            let pantry = appState.pantryItems
             let computed = Dictionary(uniqueKeysWithValues: missingRecipes.map { recipe in
                 let match = recipe.pantryMatch(pantry: pantry)
-                return (recipe.id, RecipeMatchMetrics(from: match))
+                return (recipe.id, PersistedRecipeMatchMetrics(recipeDigest: Self.recipeDigest(recipe), metrics: RecipeMatchMetrics(from: match)))
             })
             metricsMap.merge(computed) { _, new in new }
             persistedMetrics[pantrySig] = metricsMap
@@ -241,7 +262,7 @@ final class RecipeViewModel: AsyncActionHandling {
         }
 
         return Dictionary(uniqueKeysWithValues: recipes.compactMap { recipe in
-            guard let metrics = metricsMap[recipe.id] else { return nil }
+            guard let metrics = metricsMap[recipe.id]?.metrics else { return nil }
             return (recipe.id, metrics)
         })
     }
@@ -250,8 +271,8 @@ final class RecipeViewModel: AsyncActionHandling {
         guard !appState.pantryItems.isEmpty, !recipes.isEmpty else { return [:] }
 
         let key = MatchMapCacheKey(
-            pantry: collectionSignature(appState.pantryItems),
-            recipes: collectionSignature(recipes)
+            pantry: appStateCollectionKey(revision: appState.pantryRevision, count: appState.pantryItems.count),
+            recipes: recipeContentSignature(recipes)
         )
         if let cached = matchMapCache[key] {
             // Keep hot keys near the end (simple LRU behavior)
@@ -268,17 +289,9 @@ final class RecipeViewModel: AsyncActionHandling {
         return map
     }
 
-    private func pantrySignatureIfNeeded() -> CollectionSignature? {
+    private func pantrySignatureIfNeeded() -> AppStateCollectionKey? {
         guard showCanMakeOnly || sortOrder == .matchPercent else { return nil }
-        return collectionSignature(appState.pantryItems)
-    }
-
-    private func collectionSignature<T: Identifiable>(_ items: [T]) -> CollectionSignature where T.ID == UUID {
-        CollectionSignature(
-            count: items.count,
-            first: items.first?.id,
-            last: items.last?.id
-        )
+        return appStateCollectionKey(revision: appState.pantryRevision, count: appState.pantryItems.count)
     }
 
     private func applyMakeabilityFilter(_ recipes: [Recipe], matchCache: [UUID: PantryMatchResult]? = nil) -> [Recipe] {
@@ -522,11 +535,11 @@ final class RecipeViewModel: AsyncActionHandling {
         let pantry = appState.pantryItems
         guard !pantry.isEmpty else { return }
 
-        let pantrySig = collectionSignature(pantry)
-        if lastPrewarmedPantrySignature == pantrySig {
+        let pantryKey = appStateCollectionKey(revision: appState.pantryRevision, count: pantry.count)
+        if lastPrewarmedPantryRevision == appState.pantryRevision {
             return
         }
-        lastPrewarmedPantrySignature = pantrySig
+        lastPrewarmedPantryRevision = appState.pantryRevision
 
         let discoverCandidates = filteredDiscoverRecipes
         let discoverSample = Array(discoverCandidates.prefix(max(visibleDiscoverCount, 1)))
@@ -547,39 +560,51 @@ final class RecipeViewModel: AsyncActionHandling {
             await MainActor.run {
                 if !userMap.isEmpty {
                     let key = MatchMapCacheKey(
-                        pantry: pantrySig,
-                        recipes: self.collectionSignature(userSample)
+                        pantry: pantryKey,
+                        recipes: self.recipeContentSignature(userSample)
                     )
                     self.insertMatchMapCache(key: key, map: userMap)
-                    let userMetrics = Dictionary(uniqueKeysWithValues: userMap.map { ($0.key, RecipeMatchMetrics(from: $0.value)) })
-                    self.insertMetricsCache(pantrySignature: pantrySig, metrics: userMetrics)
+                    let userRecipesByID = Dictionary(uniqueKeysWithValues: userSample.map { ($0.id, $0) })
+                    let userMetricPairs: [(UUID, PersistedRecipeMatchMetrics)] = userMap.compactMap { id, match in
+                        guard let recipe = userRecipesByID[id] else { return nil }
+                        return (id, PersistedRecipeMatchMetrics(recipeDigest: Self.recipeDigest(recipe), metrics: RecipeMatchMetrics(from: match)))
+                    }
+                    let userMetrics = Dictionary(uniqueKeysWithValues: userMetricPairs)
+                    self.insertMetricsCache(pantrySignature: self.pantryMetricsSignature(for: pantry), metrics: userMetrics)
                 }
                 if !discoverMap.isEmpty {
                     let key = MatchMapCacheKey(
-                        pantry: pantrySig,
-                        recipes: self.collectionSignature(discoverSample)
+                        pantry: pantryKey,
+                        recipes: self.recipeContentSignature(discoverSample)
                     )
                     self.insertMatchMapCache(key: key, map: discoverMap)
-                    let discoverMetrics = Dictionary(uniqueKeysWithValues: discoverMap.map { ($0.key, RecipeMatchMetrics(from: $0.value)) })
-                    self.insertMetricsCache(pantrySignature: pantrySig, metrics: discoverMetrics)
+                    let discoverRecipesByID = Dictionary(uniqueKeysWithValues: discoverSample.map { ($0.id, $0) })
+                    let discoverMetricPairs: [(UUID, PersistedRecipeMatchMetrics)] = discoverMap.compactMap { id, match in
+                        guard let recipe = discoverRecipesByID[id] else { return nil }
+                        return (id, PersistedRecipeMatchMetrics(recipeDigest: Self.recipeDigest(recipe), metrics: RecipeMatchMetrics(from: match)))
+                    }
+                    let discoverMetrics = Dictionary(uniqueKeysWithValues: discoverMetricPairs)
+                    self.insertMetricsCache(pantrySignature: self.pantryMetricsSignature(for: pantry), metrics: discoverMetrics)
                 }
             }
         }
     }
 
     func scheduleFullMetricsCoverage(reason: String) {
+        guard shouldPrecomputeFullCoverage else { return }
+
         let pantry = appState.pantryItems
         guard !pantry.isEmpty else { return }
 
         let allRecipes = uniqueRecipes(appState.recipes + appState.discoverRecipes + discoverSearchResults)
         guard !allRecipes.isEmpty else { return }
 
-        let pantrySig = collectionSignature(pantry)
+        let pantrySig = pantryMetricsSignature(for: pantry)
         let coverageKey = FullCoverageKey(
-            pantry: pantrySig,
-            userRecipes: collectionSignature(appState.recipes),
-            discoverRecipes: collectionSignature(appState.discoverRecipes),
-            searchedRecipes: collectionSignature(discoverSearchResults)
+            pantry: appStateCollectionKey(revision: appState.pantryRevision, count: appState.pantryItems.count),
+            userRecipes: appStateCollectionKey(revision: appState.recipesRevision, count: appState.recipes.count),
+            discoverRecipes: appStateCollectionKey(revision: appState.discoverRecipesRevision, count: appState.discoverRecipes.count),
+            searchedRecipes: appStateCollectionKey(revision: discoverSearchResultsRevision, count: discoverSearchResults.count)
         )
         if lastFullCoverageKey == coverageKey {
             return
@@ -594,14 +619,20 @@ final class RecipeViewModel: AsyncActionHandling {
         fullCoverageTask?.cancel()
         fullCoverageTask = Task.detached(priority: .utility) {
             var chunkStart = 0
-            var accumulated: [UUID: RecipeMatchMetrics] = [:]
+            var accumulated: [UUID: PersistedRecipeMatchMetrics] = [:]
             while chunkStart < missing.count {
                 if Task.isCancelled { return }
 
                 let next = min(chunkStart + self.fullCoverageChunkSize, missing.count)
                 let chunk = Array(missing[chunkStart..<next])
                 let chunkMetrics = Dictionary(uniqueKeysWithValues: chunk.map { recipe in
-                    (recipe.id, RecipeMatchMetrics(from: recipe.pantryMatch(pantry: pantry)))
+                    (
+                        recipe.id,
+                        PersistedRecipeMatchMetrics(
+                            recipeDigest: Self.recipeDigest(recipe),
+                            metrics: RecipeMatchMetrics(from: recipe.pantryMatch(pantry: pantry))
+                        )
+                    )
                 })
 
                 accumulated.merge(chunkMetrics) { _, new in new }
@@ -643,17 +674,84 @@ final class RecipeViewModel: AsyncActionHandling {
         (recipe.mealType?.rawValue.localizedCaseInsensitiveContains(query) ?? false)
     }
 
-    private func searchIndex(for recipes: [Recipe]) -> RecipeSearchIndex {
-        let signature = collectionSignature(recipes)
-        if let cached = searchIndexCache[signature] {
+    private func searchIndex(for recipes: [Recipe], cacheKey: SearchIndexCacheKey) -> RecipeSearchIndex {
+        if let cached = searchIndexCache[cacheKey] {
             return cached
         }
         let built = RecipeSearchIndex(recipes: recipes)
-        searchIndexCache[signature] = built
+        searchIndexCache[cacheKey] = built
         return built
     }
 
-    private func insertMetricsCache(pantrySignature: CollectionSignature, metrics: [UUID: RecipeMatchMetrics], persist: Bool = true) {
+    private func ingredientDependencyIndex(for recipes: [Recipe]) -> RecipeIngredientDependencyIndex {
+        let signature = recipeContentSignature(recipes)
+        if let cached = ingredientDependencyIndexCache[signature] {
+            return cached
+        }
+
+        let built = RecipeIngredientDependencyIndex(recipes: recipes)
+        ingredientDependencyIndexCache[signature] = built
+        return built
+    }
+
+    private func pantryDependencyState(for pantry: [PantryItem], signature: PantryMetricsSignature) -> PantryDependencyState {
+        if let cached = pantryDependencyStateCache[signature] {
+            return cached
+        }
+
+        var fingerprintsByKey: [String: [String]] = [:]
+        for pantryItem in pantry {
+            let fingerprint = pantryDependencyFingerprint(for: pantryItem)
+            for key in IngredientMatcher.dependencyKeys(for: pantryItem) {
+                fingerprintsByKey[key, default: []].append(fingerprint)
+            }
+        }
+
+        let built = PantryDependencyState(
+            fingerprints: Dictionary(uniqueKeysWithValues: fingerprintsByKey.map { key, fingerprints in
+                var hasher = StableDigestHasher()
+                hasher.combine(fingerprints.count)
+                for fingerprint in fingerprints.sorted() {
+                    hasher.combine(fingerprint)
+                }
+                return (key, hasher.finalize())
+            })
+        )
+        pantryDependencyStateCache[signature] = built
+        return built
+    }
+
+    private func seedMetricsFromNearbyPantryState(
+        pantrySignature: PantryMetricsSignature,
+        pantryState: PantryDependencyState,
+        recipes: [Recipe],
+        dependencyIndex: RecipeIngredientDependencyIndex,
+        existingMetrics: [UUID: PersistedRecipeMatchMetrics]
+    ) -> [UUID: PersistedRecipeMatchMetrics] {
+        let candidateRecipeIDs = Set(recipes.map(\.id))
+
+        for previousSignature in persistedMetricSignatureOrder.reversed() where previousSignature != pantrySignature {
+            guard let previousMetrics = persistedMetrics[previousSignature],
+                  let previousState = pantryDependencyStateCache[previousSignature] else {
+                continue
+            }
+
+            let changedKeys = pantryState.changedKeys(comparedTo: previousState)
+            let affectedRecipeIDs = dependencyIndex.recipeIDs(affectedBy: changedKeys)
+            let reusable = previousMetrics.filter { id, _ in
+                candidateRecipeIDs.contains(id)
+                    && existingMetrics[id] == nil
+                    && !affectedRecipeIDs.contains(id)
+            }
+            if !reusable.isEmpty {
+                return reusable
+            }
+        }
+
+        return [:]
+    }
+
+    private func insertMetricsCache(pantrySignature: PantryMetricsSignature, metrics: [UUID: PersistedRecipeMatchMetrics], persist: Bool = true) {
         guard !metrics.isEmpty else { return }
         var current = persistedMetrics[pantrySignature] ?? [:]
         var changed = false
@@ -679,24 +777,129 @@ final class RecipeViewModel: AsyncActionHandling {
         return unique
     }
 
-    private func hydratePersistedMetricsIfNeeded(for pantrySignature: CollectionSignature) {
-        guard loadedPersistedPantrySignature != pantrySignature else { return }
-        loadedPersistedPantrySignature = pantrySignature
-        guard let loaded = loadPersistedMetrics(), loaded.pantrySignature == pantrySignature else {
-            return
+    private var shouldPrecomputeFullCoverage: Bool {
+        showCanMakeOnly || sortOrder == .matchPercent
+    }
+
+    private func searchIndexCacheKey(for recipes: [Recipe]) -> SearchIndexCacheKey {
+        if recipes == appState.recipes {
+            return .appState(appStateCollectionKey(revision: appState.recipesRevision, count: appState.recipes.count))
         }
-        persistedMetrics[pantrySignature] = loaded.metrics
+
+        if recipes == appState.discoverRecipes {
+            return .appState(appStateCollectionKey(revision: appState.discoverRecipesRevision, count: appState.discoverRecipes.count))
+        }
+
+        if recipes == discoverSearchResults {
+            return .appState(appStateCollectionKey(revision: discoverSearchResultsRevision, count: discoverSearchResults.count))
+        }
+
+        return .content(recipeContentSignature(recipes))
     }
 
-    private func loadPersistedMetrics() -> PersistedMatchMetricsPayload? {
-        guard let fileURL = matchMetricsCacheFileURL else { return nil }
-        guard let data = try? Data(contentsOf: fileURL) else { return nil }
-        return try? JSONDecoder().decode(PersistedMatchMetricsPayload.self, from: data)
+    private func appStateCollectionKey(revision: Int, count: Int) -> AppStateCollectionKey {
+        AppStateCollectionKey(revision: revision, count: count)
     }
 
-    private func persistMetrics(pantrySignature: CollectionSignature, metrics: [UUID: RecipeMatchMetrics]) {
+    private func pantryDependencyFingerprint(for pantryItem: PantryItem) -> String {
+        var hasher = StableDigestHasher()
+        hasher.combine(pantryItem.id.uuidString)
+        hasher.combine(pantryItem.name)
+        hasher.combine(pantryItem.catalogItemID ?? "")
+        hasher.combine(pantryItem.quantityMode.rawValue)
+        hasher.combine(pantryItem.quantity ?? -1)
+        hasher.combine(pantryItem.unit?.rawValue ?? "")
+        hasher.combine(pantryItem.facets.map { "\($0.key.rawValue)=\($0.value)" }.joined(separator: "|"))
+        return hasher.finalize()
+    }
+
+    private func recipeContentSignature(_ recipes: [Recipe]) -> RecipeContentSignature {
+        var hasher = StableDigestHasher()
+        hasher.combine(recipes.count)
+        for recipe in recipes {
+            hasher.combine(Self.recipeDigest(recipe))
+        }
+        return RecipeContentSignature(count: recipes.count, digest: hasher.finalize())
+    }
+
+    nonisolated private static func recipeDigest(_ recipe: Recipe) -> String {
+        var hasher = StableDigestHasher()
+        hasher.combine(recipe.id.uuidString)
+        hasher.combine(recipe.title)
+        hasher.combine(recipe.description ?? "")
+        hasher.combine(recipe.cuisine?.rawValue ?? "")
+        hasher.combine(recipe.mealType?.rawValue ?? "")
+        hasher.combine(recipe.isFavorite)
+        hasher.combine(recipe.timesCooked)
+        hasher.combine(recipe.totalTimeMinutes ?? -1)
+        hasher.combine(recipe.ingredients.count)
+        for ingredient in recipe.ingredients {
+            hasher.combine(ingredient.name)
+            hasher.combine(ingredient.displayText)
+            hasher.combine(ingredient.quantity)
+            hasher.combine(ingredient.unit?.rawValue ?? "")
+            hasher.combine(ingredient.isOptional)
+        }
+        return hasher.finalize()
+    }
+
+    private func pantryMetricsSignature(for pantry: [PantryItem]) -> PantryMetricsSignature {
+        var hasher = StableDigestHasher()
+        hasher.combine(pantry.count)
+        for item in pantry.sorted(by: { $0.id.uuidString < $1.id.uuidString }) {
+            hasher.combine(item.id.uuidString)
+            hasher.combine(item.name)
+            hasher.combine(item.category.rawValue)
+            hasher.combine(item.quantityMode.rawValue)
+            hasher.combine(item.quantity ?? -1)
+            hasher.combine(item.unit?.rawValue ?? "")
+            hasher.combine(item.catalogItemID ?? "")
+            hasher.combine(item.storage.rawValue)
+            hasher.combine(item.facets.map { "\($0.key.rawValue)=\($0.value)" }.joined(separator: "|"))
+        }
+        return PantryMetricsSignature(count: pantry.count, digest: hasher.finalize())
+    }
+
+    private func hydratePersistedMetricsIfNeeded(for pantrySignature: PantryMetricsSignature) {
+        loadPersistedMetricsStoreIfNeeded()
+        if persistedMetricSignatureOrder.contains(pantrySignature) {
+            persistedMetricSignatureOrder.removeAll { $0 == pantrySignature }
+            persistedMetricSignatureOrder.append(pantrySignature)
+        }
+    }
+
+    private func loadPersistedMetricsStoreIfNeeded() {
+        guard !persistedMetricsStoreLoaded else { return }
+        persistedMetricsStoreLoaded = true
+        guard shouldUsePersistedMetricsStore else { return }
+
         guard let fileURL = matchMetricsCacheFileURL else { return }
-        let payload = PersistedMatchMetricsPayload(pantrySignature: pantrySignature, metrics: metrics)
+        guard let data = try? Data(contentsOf: fileURL) else { return }
+        guard let payload = try? JSONDecoder().decode(PersistedMatchMetricsPayload.self, from: data) else { return }
+
+        persistedMetricSignatureOrder = payload.entries.map(\.pantrySignature)
+        persistedMetrics = Dictionary(uniqueKeysWithValues: payload.entries.map { ($0.pantrySignature, $0.metrics) })
+    }
+
+    private func persistMetrics(pantrySignature: PantryMetricsSignature, metrics: [UUID: PersistedRecipeMatchMetrics]) {
+        guard shouldUsePersistedMetricsStore else { return }
+        guard let fileURL = matchMetricsCacheFileURL else { return }
+        loadPersistedMetricsStoreIfNeeded()
+
+        persistedMetrics[pantrySignature] = metrics
+        persistedMetricSignatureOrder.removeAll { $0 == pantrySignature }
+        persistedMetricSignatureOrder.append(pantrySignature)
+        while persistedMetricSignatureOrder.count > maxPersistedMetricSignatures {
+            let evicted = persistedMetricSignatureOrder.removeFirst()
+            persistedMetrics.removeValue(forKey: evicted)
+        }
+
+        let payload = PersistedMatchMetricsPayload(
+            entries: persistedMetricSignatureOrder.compactMap { signature in
+                guard let metrics = persistedMetrics[signature] else { return nil }
+                return PersistedMetricEntry(pantrySignature: signature, metrics: metrics)
+            }
+        )
         guard let data = try? JSONEncoder().encode(payload) else { return }
         do {
             try FileManager.default.createDirectory(
@@ -714,14 +917,12 @@ final class RecipeViewModel: AsyncActionHandling {
         }
         return cachesDirectory
             .appendingPathComponent("PantryChef", isDirectory: true)
-            .appendingPathComponent("match_metrics_v1.json")
+            .appendingPathComponent("match_metrics_v2.json")
     }
-}
 
-struct CollectionSignature: Hashable, Codable {
-    let count: Int
-    let first: UUID?
-    let last: UUID?
+    private var shouldUsePersistedMetricsStore: Bool {
+        ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] == nil
+    }
 }
 
 struct RecipeMatchMetrics: Codable, Hashable {
@@ -748,8 +949,17 @@ struct RecipeMatchMetrics: Codable, Hashable {
 }
 
 private struct PersistedMatchMetricsPayload: Codable {
-    let pantrySignature: CollectionSignature
-    let metrics: [UUID: RecipeMatchMetrics]
+    let entries: [PersistedMetricEntry]
+}
+
+private struct PersistedMetricEntry: Codable, Hashable {
+    let pantrySignature: PantryMetricsSignature
+    let metrics: [UUID: PersistedRecipeMatchMetrics]
+}
+
+private struct PersistedRecipeMatchMetrics: Codable, Hashable {
+    let recipeDigest: String
+    let metrics: RecipeMatchMetrics
 }
 
 private struct RecipeSearchIndex {
@@ -809,9 +1019,48 @@ private struct RecipeSearchIndex {
     }
 }
 
+private struct RecipeIngredientDependencyIndex {
+    let keysByRecipeID: [UUID: Set<String>]
+    let recipeIDsByKey: [String: Set<UUID>]
+
+    init(recipes: [Recipe]) {
+        var keysByRecipeID: [UUID: Set<String>] = [:]
+        var recipeIDsByKey: [String: Set<UUID>] = [:]
+
+        for recipe in recipes {
+            let keys = Set(recipe.ingredients.filter { !$0.isOptional }.flatMap { IngredientMatcher.dependencyKeys(for: $0) })
+            keysByRecipeID[recipe.id] = keys
+            for key in keys {
+                recipeIDsByKey[key, default: []].insert(recipe.id)
+            }
+        }
+
+        self.keysByRecipeID = keysByRecipeID
+        self.recipeIDsByKey = recipeIDsByKey
+    }
+
+    func recipeIDs(affectedBy keys: Set<String>) -> Set<UUID> {
+        guard !keys.isEmpty else { return [] }
+        var affected: Set<UUID> = []
+        for key in keys {
+            affected.formUnion(recipeIDsByKey[key] ?? [])
+        }
+        return affected
+    }
+}
+
+private struct PantryDependencyState {
+    let fingerprints: [String: String]
+
+    func changedKeys(comparedTo other: PantryDependencyState) -> Set<String> {
+        let allKeys = Set(fingerprints.keys).union(other.fingerprints.keys)
+        return Set(allKeys.filter { fingerprints[$0] != other.fingerprints[$0] })
+    }
+}
+
 private struct UserFilterCacheKey: Hashable {
-    let source: CollectionSignature
-    let pantry: CollectionSignature?
+    let source: AppStateCollectionKey
+    let pantry: AppStateCollectionKey?
     let query: String
     let selectedDifficulty: DifficultyLevel?
     let selectedMealType: MealType?
@@ -824,9 +1073,9 @@ private struct UserFilterCacheKey: Hashable {
 }
 
 private struct DiscoverFilterCacheKey: Hashable {
-    let discoverSearchSource: CollectionSignature
-    let discoverPoolSource: CollectionSignature
-    let pantry: CollectionSignature?
+    let discoverSearchSource: AppStateCollectionKey
+    let discoverPoolSource: AppStateCollectionKey
+    let pantry: AppStateCollectionKey?
     let query: String
     let selectedDifficulty: DifficultyLevel?
     let selectedMealType: MealType?
@@ -838,18 +1087,71 @@ private struct DiscoverFilterCacheKey: Hashable {
 }
 
 private struct MatchMapCacheKey: Hashable {
-    let pantry: CollectionSignature
-    let recipes: CollectionSignature
+    let pantry: AppStateCollectionKey
+    let recipes: RecipeContentSignature
 }
 
 private struct FullCoverageKey: Hashable {
-    let pantry: CollectionSignature
-    let userRecipes: CollectionSignature
-    let discoverRecipes: CollectionSignature
-    let searchedRecipes: CollectionSignature
+    let pantry: AppStateCollectionKey
+    let userRecipes: AppStateCollectionKey
+    let discoverRecipes: AppStateCollectionKey
+    let searchedRecipes: AppStateCollectionKey
 }
 
 struct RecipeCoverageRefreshState: Hashable {
     let catalog: RecipeCatalogRefreshState
-    let discoverSearchSource: CollectionSignature
+    let discoverSearchSource: AppStateCollectionKey
+}
+
+private enum SearchIndexCacheKey: Hashable {
+    case appState(AppStateCollectionKey)
+    case content(RecipeContentSignature)
+}
+
+struct AppStateCollectionKey: Hashable {
+    let revision: Int
+    let count: Int
+}
+
+struct RecipeContentSignature: Hashable, Codable {
+    let count: Int
+    let digest: String
+}
+
+struct PantryMetricsSignature: Hashable, Codable {
+    let count: Int
+    let digest: String
+}
+
+private struct StableDigestHasher {
+    private var hash: UInt64 = 0xcbf29ce484222325
+
+    mutating func combine(_ value: String) {
+        for byte in value.utf8 {
+            hash ^= UInt64(byte)
+            hash &*= 0x100000001b3
+        }
+        combineDelimiter()
+    }
+
+    mutating func combine(_ value: Int) {
+        combine(String(value))
+    }
+
+    mutating func combine(_ value: Double) {
+        combine(String(value))
+    }
+
+    mutating func combine(_ value: Bool) {
+        combine(value ? "1" : "0")
+    }
+
+    mutating func finalize() -> String {
+        String(hash, radix: 16)
+    }
+
+    private mutating func combineDelimiter() {
+        hash ^= 0xff
+        hash &*= 0x100000001b3
+    }
 }

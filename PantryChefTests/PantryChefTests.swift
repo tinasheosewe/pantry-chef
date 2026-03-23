@@ -2403,6 +2403,24 @@ final class AppStateTests: XCTestCase {
 @MainActor
 final class RecipeViewModelTests: XCTestCase {
 
+    private func waitUntil(
+        timeoutNanoseconds: UInt64 = 1_000_000_000,
+        pollIntervalNanoseconds: UInt64 = 10_000_000,
+        file: StaticString = #filePath,
+        line: UInt = #line,
+        _ condition: @escaping @MainActor () -> Bool
+    ) async {
+        let deadline = ContinuousClock.now + .nanoseconds(Int64(timeoutNanoseconds))
+        while ContinuousClock.now < deadline {
+            if condition() {
+                return
+            }
+            try? await Task.sleep(nanoseconds: pollIntervalNanoseconds)
+        }
+
+        XCTAssertTrue(condition(), "Timed out waiting for asynchronous RecipeViewModel work to finish", file: file, line: line)
+    }
+
     private func makeSUT() -> (RecipeViewModel, AppState, MockStorageService, MockAIService) {
         let (appState, storage, ai) = makeTestAppState()
         let vm = RecipeViewModel(appState: appState)
@@ -2506,13 +2524,56 @@ final class RecipeViewModelTests: XCTestCase {
         XCTAssertEqual(vm.filteredRecipes[0].title, "Quick")
     }
 
+    func testShowCanMakeOnlyUpdatesWhenPantryItemChangesInPlace() async {
+        let (vm, appState, _, _) = makeSUT()
+        let recipe = makeRecipe(
+            title: "Milk Toast",
+            ingredients: [Ingredient(name: "Milk", quantity: 2, unit: .cup, category: .dairy)]
+        )
+        await appState.addRecipe(recipe)
+
+        let pantryItem = makePantryItem(name: "Milk", category: .dairy, quantity: 1, unit: .cup)
+        await appState.addPantryItem(pantryItem)
+
+        vm.showCanMakeOnly = true
+        XCTAssertTrue(vm.filteredRecipes.isEmpty)
+
+        var updatedPantryItem = pantryItem
+        updatedPantryItem.quantity = 2
+        await appState.updatePantryItem(updatedPantryItem)
+
+        XCTAssertEqual(vm.filteredRecipes.map(\.title), ["Milk Toast"])
+    }
+
+    func testShowCanMakeOnlyUpdatesWhenRecipeChangesInPlace() async {
+        let (vm, appState, _, _) = makeSUT()
+        let pantryItem = makePantryItem(name: "Milk", category: .dairy)
+        await appState.addPantryItem(pantryItem)
+
+        let recipe = makeRecipe(
+            title: "Breakfast",
+            ingredients: [Ingredient(name: "Milk", quantity: 1, unit: .cup, category: .dairy)]
+        )
+        await appState.addRecipe(recipe)
+
+        vm.showCanMakeOnly = true
+        XCTAssertEqual(vm.filteredRecipes.map(\.title), ["Breakfast"])
+
+        var updatedRecipe = recipe
+        updatedRecipe.ingredients = [Ingredient(name: "Flour", quantity: 1, unit: .cup, category: .grains)]
+        await appState.updateRecipe(updatedRecipe)
+
+        XCTAssertTrue(vm.filteredRecipes.isEmpty)
+    }
+
     // MARK: - Actions
 
     func testToggleFavoriteUsesUpdate() async {
         let (vm, appState, storage, _) = makeSUT()
         let recipe = makeRecipe(title: "TestFav", isFavorite: false)
         await appState.addRecipe(recipe)
-        await vm.toggleFavorite(recipe)
+        vm.toggleFavorite(recipe)
+        await waitUntil { storage.updateRecipeCallCount == 1 }
         XCTAssertEqual(storage.updateRecipeCallCount, 1, "toggleFavorite should call updateRecipe, not addRecipe")
         XCTAssertEqual(appState.recipes.count, 1, "Should not duplicate recipe")
         XCTAssertTrue(appState.recipes[0].isFavorite)
@@ -2522,21 +2583,25 @@ final class RecipeViewModelTests: XCTestCase {
         let (vm, appState, _, _) = makeSUT()
         let recipe = makeRecipe(title: "Fav", isFavorite: true)
         await appState.addRecipe(recipe)
-        await vm.toggleFavorite(recipe)
+        vm.toggleFavorite(recipe)
+        await waitUntil { !appState.recipes.isEmpty && appState.recipes[0].isFavorite == false }
         XCTAssertFalse(appState.recipes[0].isFavorite)
     }
 
     func testAddRecipe() async {
         let (vm, appState, _, _) = makeSUT()
-        await vm.addRecipe(makeRecipe(title: "New"))
+        vm.addRecipe(makeRecipe(title: "New"))
+        await waitUntil { appState.recipes.count == 1 }
         XCTAssertEqual(appState.recipes.count, 1)
     }
 
     func testDeleteRecipe() async {
         let (vm, appState, _, _) = makeSUT()
         let recipe = makeRecipe(title: "Delete")
-        await vm.addRecipe(recipe)
-        await vm.deleteRecipe(recipe)
+        vm.addRecipe(recipe)
+        await waitUntil { appState.recipes.count == 1 }
+        vm.deleteRecipe(recipe)
+        await waitUntil { appState.recipes.isEmpty }
         XCTAssertTrue(appState.recipes.isEmpty)
     }
 
@@ -2583,7 +2648,8 @@ final class RecipeViewModelTests: XCTestCase {
             cuisine: nil,
             nutrition: nil
         )
-        await vm.importFromURL("https://example.com/recipe")
+        vm.importFromURL("https://example.com/recipe")
+        await waitUntil { ai.parseRecipeFromURLCallCount == 1 }
         XCTAssertNotNil(vm.importedRecipe)
         XCTAssertEqual(vm.importedRecipe?.title, "Imported")
         XCTAssertEqual(ai.parseRecipeFromURLCallCount, 1)
@@ -2592,7 +2658,8 @@ final class RecipeViewModelTests: XCTestCase {
     func testImportFromURLFails() async {
         let (vm, _, _, ai) = makeSUT()
         ai.importResultToReturn = nil
-        await vm.importFromURL("https://bad.url")
+        vm.importFromURL("https://bad.url")
+        await waitUntil { ai.parseRecipeFromURLCallCount == 1 }
         XCTAssertNil(vm.importedRecipe)
     }
 

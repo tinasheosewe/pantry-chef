@@ -194,6 +194,45 @@ actor StorageService: StorageServiceProtocol {
         return recipes.sorted { $0.dateAdded > $1.dateAdded }
     }
 
+    func fetchStartupSnapshot() async throws -> StorageStartupSnapshot {
+        try ensureBootstrapIfNeeded()
+
+        let pantryRecords = try context.fetch(FetchDescriptor<PantryItemRecord>())
+        let recipeRecords = try context.fetch(FetchDescriptor<RecipeRecord>())
+        let mealPlanRecords = try context.fetch(FetchDescriptor<MealPlanRecord>())
+        let shoppingRecords = try context.fetch(FetchDescriptor<ShoppingItemRecord>())
+
+        let pantryItems = pantryRecords
+            .map { $0.toDomain() }
+            .sorted { ($0.expiryDate ?? .distantFuture) < ($1.expiryDate ?? .distantFuture) }
+
+        let decodedRecipes = decodeRecipes(from: recipeRecords)
+        let sortedRecipes = decodedRecipes.sorted { $0.dateAdded > $1.dateAdded }
+
+        var recipeById: [UUID: Recipe] = [:]
+        recipeById.reserveCapacity(decodedRecipes.count)
+        for recipe in decodedRecipes {
+            recipeById[recipe.id] = recipe
+        }
+
+        let mealPlan = mealPlanRecords
+            .map { record in
+                record.toDomain(recipe: record.recipeId.flatMap { recipeById[$0] })
+            }
+            .sorted { $0.date < $1.date }
+
+        let shoppingItems = shoppingRecords
+            .map { $0.toDomain() }
+            .sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
+
+        return StorageStartupSnapshot(
+            pantryItems: pantryItems,
+            recipes: sortedRecipes,
+            mealPlan: mealPlan,
+            shoppingItems: shoppingItems
+        )
+    }
+
     func addRecipe(_ recipe: Recipe) async throws -> Recipe {
         try ensureBootstrapIfNeeded()
         do {
@@ -368,4 +407,11 @@ actor StorageService: StorageServiceProtocol {
             try context.save()
         }
     }
+}
+
+struct StorageStartupSnapshot {
+    let pantryItems: [PantryItem]
+    let recipes: [Recipe]
+    let mealPlan: [MealPlanEntry]
+    let shoppingItems: [ShoppingItem]
 }

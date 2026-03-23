@@ -9,9 +9,14 @@ final class RecipeRepository {
 
     /// Bundled seed recipes (shipped with app)
     private var seedRecipeStore: [Recipe] = []
+    private var seedRecipeIDs: Set<UUID> = []
+    private var seedRecipeTitlesLowercased: Set<String> = []
 
     /// Cached API recipes (persisted to disk, 7-day TTL)
     private var cachedRecipeStore: [Recipe] = []
+    private var cachedRecipeIDs: Set<UUID> = []
+    private var mergedDiscoverRecipeStore: [Recipe] = []
+    private var mergedDiscoverRecipesDirty = true
     private var hasLoadedSeedRecipes = false
     private var hasLoadedCachedRecipes = false
 
@@ -19,6 +24,11 @@ final class RecipeRepository {
     private var cacheURL: URL {
         FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)[0]
             .appendingPathComponent("cached_recipes.json")
+    }
+
+    private var seedCacheURL: URL {
+        FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)[0]
+            .appendingPathComponent("seed_recipes_cache_v1.json")
     }
 
     private init() {}
@@ -33,13 +43,10 @@ final class RecipeRepository {
     /// All non-user recipes (seed + cached)
     var discoverRecipes: [Recipe] {
         ensureLoaded()
-
-        var all = seedRecipeStore
-        // Avoid duplicates by title
-        let seedTitles = Set(seedRecipeStore.map { $0.title.lowercased() })
-        let unique = cachedRecipeStore.filter { !seedTitles.contains($0.title.lowercased()) }
-        all.append(contentsOf: unique)
-        return all
+        if mergedDiscoverRecipesDirty {
+            rebuildMergedDiscoverRecipes()
+        }
+        return mergedDiscoverRecipeStore
     }
 
     /// Filter discover recipes by criteria
@@ -88,8 +95,9 @@ final class RecipeRepository {
     func cacheRecipe(_ recipe: Recipe) {
         ensureLoaded()
         let canonicalRecipe = TrustedRecipeCanonicalizer.canonicalize(recipe)
-        if !cachedRecipeStore.contains(where: { $0.id == canonicalRecipe.id }) {
+        if cachedRecipeIDs.insert(canonicalRecipe.id).inserted {
             cachedRecipeStore.append(canonicalRecipe)
+            mergedDiscoverRecipesDirty = true
             saveCachedRecipes()
         }
     }
@@ -100,12 +108,15 @@ final class RecipeRepository {
         var changed = false
         for recipe in recipes {
             let canonicalRecipe = TrustedRecipeCanonicalizer.canonicalize(recipe)
-            if !cachedRecipeStore.contains(where: { $0.id == canonicalRecipe.id }) {
+            if cachedRecipeIDs.insert(canonicalRecipe.id).inserted {
                 cachedRecipeStore.append(canonicalRecipe)
                 changed = true
             }
         }
-        if changed { saveCachedRecipes() }
+        if changed {
+            mergedDiscoverRecipesDirty = true
+            saveCachedRecipes()
+        }
     }
 
     /// Update favorite state in cached recipe
@@ -113,6 +124,7 @@ final class RecipeRepository {
         ensureLoaded()
         if let idx = cachedRecipeStore.firstIndex(where: { $0.id == id }) {
             cachedRecipeStore[idx].isFavorite = isFavorite
+            mergedDiscoverRecipesDirty = true
             saveCachedRecipes()
         }
     }
@@ -123,7 +135,11 @@ final class RecipeRepository {
         let cutoff = Calendar.current.date(byAdding: .day, value: -7, to: Date()) ?? Date()
         let before = cachedRecipeStore.count
         cachedRecipeStore.removeAll { $0.dateAdded < cutoff }
-        if cachedRecipeStore.count != before { saveCachedRecipes() }
+        if cachedRecipeStore.count != before {
+            cachedRecipeIDs = Set(cachedRecipeStore.map(\.id))
+            mergedDiscoverRecipesDirty = true
+            saveCachedRecipes()
+        }
     }
 
     private func ensureLoaded() {
@@ -142,13 +158,23 @@ final class RecipeRepository {
 
         guard let url = Bundle.main.url(forResource: "seed_recipes", withExtension: "json") else {
             seedRecipeStore = []
+            seedRecipeIDs = []
+            seedRecipeTitlesLowercased = []
             return
         }
+
+        if loadSeedRecipesFromCache(using: url) {
+            return
+        }
+
         do {
             let data = try Data(contentsOf: url)
             parseSeedJSON(data)
+            persistSeedRecipeCache(using: url)
         } catch {
             seedRecipeStore = []
+            seedRecipeIDs = []
+            seedRecipeTitlesLowercased = []
         }
     }
 
@@ -242,6 +268,9 @@ final class RecipeRepository {
                 }
             ))
         }
+        seedRecipeIDs = Set(seedRecipeStore.map(\.id))
+        seedRecipeTitlesLowercased = Set(seedRecipeStore.map { $0.title.lowercased() })
+        mergedDiscoverRecipesDirty = true
     }
 
     // MARK: - Cache Persistence
@@ -257,8 +286,11 @@ final class RecipeRepository {
         do {
             let data = try Data(contentsOf: cacheURL)
             cachedRecipeStore = try JSONDecoder().decode([Recipe].self, from: data).map(TrustedRecipeCanonicalizer.canonicalize)
+            cachedRecipeIDs = Set(cachedRecipeStore.map(\.id))
+            mergedDiscoverRecipesDirty = true
         } catch {
             cachedRecipeStore = []
+            cachedRecipeIDs = []
         }
     }
 
@@ -269,4 +301,53 @@ final class RecipeRepository {
         } catch { }
     }
 
+    private func rebuildMergedDiscoverRecipes() {
+        var merged = seedRecipeStore
+        merged.reserveCapacity(seedRecipeStore.count + cachedRecipeStore.count)
+        for recipe in cachedRecipeStore where !seedRecipeTitlesLowercased.contains(recipe.title.lowercased()) {
+            merged.append(recipe)
+        }
+        mergedDiscoverRecipeStore = merged
+        mergedDiscoverRecipesDirty = false
+    }
+
+    private func loadSeedRecipesFromCache(using seedURL: URL) -> Bool {
+        guard let fingerprint = seedResourceFingerprint(for: seedURL) else { return false }
+        guard let data = try? Data(contentsOf: seedCacheURL) else { return false }
+        guard let payload = try? JSONDecoder().decode(SeedRecipeCachePayload.self, from: data) else { return false }
+        guard payload.resourceFingerprint == fingerprint else { return false }
+
+        seedRecipeStore = payload.recipes
+        seedRecipeIDs = Set(seedRecipeStore.map(\.id))
+        seedRecipeTitlesLowercased = Set(seedRecipeStore.map { $0.title.lowercased() })
+        mergedDiscoverRecipesDirty = true
+        return true
+    }
+
+    private func persistSeedRecipeCache(using seedURL: URL) {
+        guard let fingerprint = seedResourceFingerprint(for: seedURL) else { return }
+        let payload = SeedRecipeCachePayload(resourceFingerprint: fingerprint, recipes: seedRecipeStore)
+        guard let data = try? JSONEncoder().encode(payload) else { return }
+        do {
+            try FileManager.default.createDirectory(
+                at: seedCacheURL.deletingLastPathComponent(),
+                withIntermediateDirectories: true,
+                attributes: nil
+            )
+            try data.write(to: seedCacheURL, options: .atomic)
+        } catch { }
+    }
+
+    private func seedResourceFingerprint(for url: URL) -> String? {
+        let values = try? url.resourceValues(forKeys: [.contentModificationDateKey, .fileSizeKey])
+        let modified = values?.contentModificationDate?.timeIntervalSince1970 ?? 0
+        let size = values?.fileSize ?? 0
+        return "\(modified)-\(size)"
+    }
+
+}
+
+private struct SeedRecipeCachePayload: Codable {
+    let resourceFingerprint: String
+    let recipes: [Recipe]
 }

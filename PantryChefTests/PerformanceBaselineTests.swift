@@ -7,6 +7,7 @@ final class PerformanceBaselineTests: XCTestCase {
     private enum Budget {
         static let recipeFilteringAverageSeconds = 0.250
         static let pantryMatchAverageSeconds = 1.100
+        static let ingredientCandidateAverageSeconds = 0.025
     }
 
     func testRecipeFilteringPerformanceBaseline() {
@@ -68,6 +69,26 @@ final class PerformanceBaselineTests: XCTestCase {
             average,
             Budget.pantryMatchAverageSeconds,
             "Pantry match average runtime exceeded budget: \(average)s > \(Budget.pantryMatchAverageSeconds)s"
+        )
+    }
+
+    func testIngredientCandidateParserPerformanceBaseline() {
+        let parser = IngredientCandidateParser()
+        let ingredients = (0..<80).map { index in
+            Ingredient(name: index.isMultiple(of: 2) ? "jasmine rice" : "greek yogurt")
+        }
+
+        measure(metrics: [XCTClockMetric()]) {
+            _ = ingredients.map { parser.candidates(for: $0) }
+        }
+
+        let average = averageRuntime {
+            _ = ingredients.map { parser.candidates(for: $0) }
+        }
+        XCTAssertLessThan(
+            average,
+            Budget.ingredientCandidateAverageSeconds,
+            "Ingredient candidate parser average runtime exceeded budget: \(average)s > \(Budget.ingredientCandidateAverageSeconds)s"
         )
     }
 

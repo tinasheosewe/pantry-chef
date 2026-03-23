@@ -179,6 +179,8 @@ struct MultiRecipeScheduler {
         var completed = Set<UUID>()
         var remaining = Set(tasks.map(\.id))
         let taskById = Dictionary(uniqueKeysWithValues: tasks.map { ($0.id, $0) })
+        let dependents = buildDependents(dependencies: dependencies)
+        let criticalPathLengths = computeCriticalPathLengths(tasks: taskById, dependents: dependents)
 
         func isReady(_ taskId: UUID) -> Bool {
             (dependencies[taskId] ?? []).isSubset(of: completed)
@@ -214,12 +216,21 @@ struct MultiRecipeScheduler {
             let activeReady = activeReadyIds.compactMap { taskById[$0] }
                 .filter { $0.type == .active }
                 .sorted {
-                    // Primary: phase priority (prep first)
+                    let c0 = criticalPathLengths[$0.id] ?? $0.durationSeconds
+                    let c1 = criticalPathLengths[$1.id] ?? $1.durationSeconds
+                    if c0 != c1 { return c0 > c1 }
+
+                    // Secondary: phase priority (prep first)
                     let p0 = $0.action.actionClass.phasePriority
                     let p1 = $1.action.actionClass.phasePriority
                     if p0 != p1 { return p0 < p1 }
-                    // Secondary: lower effort first (pack more tasks)
-                    return $0.effortPoints < $1.effortPoints
+
+                    // Tertiary: prioritize higher effort if critical path is tied.
+                    if $0.effortPoints != $1.effortPoints {
+                        return $0.effortPoints > $1.effortPoints
+                    }
+
+                    return $0.durationSeconds > $1.durationSeconds
                 }
 
             guard !activeReady.isEmpty else {
@@ -256,6 +267,42 @@ struct MultiRecipeScheduler {
         }
 
         return timeline
+    }
+
+    private static func buildDependents(dependencies: [UUID: Set<UUID>]) -> [UUID: Set<UUID>] {
+        var dependents: [UUID: Set<UUID>] = [:]
+        for (taskID, prerequisites) in dependencies {
+            dependents[taskID, default: []] = dependents[taskID] ?? []
+            for prerequisite in prerequisites {
+                dependents[prerequisite, default: []].insert(taskID)
+            }
+        }
+        return dependents
+    }
+
+    private static func computeCriticalPathLengths(
+        tasks: [UUID: StepTask],
+        dependents: [UUID: Set<UUID>]
+    ) -> [UUID: Int] {
+        var memo: [UUID: Int] = [:]
+
+        func criticalPath(for taskID: UUID) -> Int {
+            if let cached = memo[taskID] {
+                return cached
+            }
+
+            let duration = tasks[taskID]?.durationSeconds ?? 0
+            let downstream = (dependents[taskID] ?? []).map { criticalPath(for: $0) }.max() ?? 0
+            let total = duration + downstream
+            memo[taskID] = total
+            return total
+        }
+
+        for taskID in tasks.keys {
+            memo[taskID] = criticalPath(for: taskID)
+        }
+
+        return memo
     }
 
     // MARK: - Estimated Total Time

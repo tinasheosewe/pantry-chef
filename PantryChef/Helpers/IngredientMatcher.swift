@@ -105,6 +105,22 @@ enum IngredientMatcher {
         return unresolvedNamesExactlyMatch(pantryItem.name, ingredient.name)
     }
 
+    static func dependencyKeys(for ingredient: Ingredient) -> Set<String> {
+        dependencyKeys(
+            name: ingredient.rawName,
+            catalogItemID: ingredient.catalogItemID,
+            facets: ingredient.facets
+        )
+    }
+
+    static func dependencyKeys(for pantryItem: PantryItem) -> Set<String> {
+        dependencyKeys(
+            name: pantryItem.name,
+            catalogItemID: pantryItem.catalogItemID,
+            facets: pantryItem.facets
+        )
+    }
+
     private static func pantryContains(ingredient: Ingredient, pantry: [PantryItem], index: PantryIndex) -> Bool {
         if let catalogItemID = ingredient.catalogItemID {
             guard let pantryCandidates = index.resolvedItemsByCatalogID[catalogItemID] else {
@@ -147,7 +163,7 @@ enum IngredientMatcher {
                 unit: pantryItem.unit
             )
 
-            if let catalogItemID = pantryItem.catalogItemID {
+            if let catalogItemID = resolvedCatalogItemID(for: pantryItem.name, catalogItemID: pantryItem.catalogItemID) {
                 resolvedItemsByCatalogID[catalogItemID, default: []].append(candidate)
             } else {
                 unresolvedItemsByMatchKey[unresolvedMatchKey(for: pantryItem.name), default: []].append(candidate)
@@ -189,6 +205,7 @@ enum IngredientMatcher {
         pantryFacets: Set<PantryFacetSelection>
     ) -> Bool {
         guard !requiredFacets.isEmpty else { return true }
+        guard !pantryFacets.isEmpty else { return true }
 
         let pantryFacetValues = Dictionary(uniqueKeysWithValues: pantryFacets.map { ($0.key, $0.value) })
         for requiredFacet in requiredFacets {
@@ -211,6 +228,24 @@ enum IngredientMatcher {
     private static func unresolvedMatchKey(for name: String) -> String {
         let lookupKey = IngredientLexicon.lookupKey(name)
         return lookupKey.isEmpty ? normalize(name) : lookupKey
+    }
+
+    private static func dependencyKeys(
+        name: String,
+        catalogItemID: String?,
+        facets: [PantryFacetSelection]
+    ) -> Set<String> {
+        if let resolvedCatalogItemID = resolvedCatalogItemID(for: name, catalogItemID: catalogItemID) {
+            var keys: Set<String> = ["catalog:\(resolvedCatalogItemID)"]
+            for facet in facets where facet.value != "generic" {
+                keys.insert("catalog:\(resolvedCatalogItemID)|\(facet.key.rawValue)=\(facet.value)")
+            }
+            return keys
+        }
+
+        let unresolvedKey = unresolvedMatchKey(for: name)
+        guard !unresolvedKey.isEmpty else { return [] }
+        return ["raw:\(unresolvedKey)"]
     }
 
     /// Normalized name comparison with synonym awareness.

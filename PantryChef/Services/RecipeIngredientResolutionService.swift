@@ -16,6 +16,7 @@ final class IngredientCandidateParser: IngredientCandidateParserProtocol {
     }
 
     private static let catalogPhrases = PantryCatalog.allItems.flatMap(IngredientLexicon.generatedCatalogPhrases(for:))
+    private static let catalogPhraseIndex = CatalogPhraseIndex(phrases: catalogPhrases)
 
     private let maxCandidates: Int
 
@@ -41,11 +42,12 @@ final class IngredientCandidateParser: IngredientCandidateParserProtocol {
         let query = IngredientLexicon.parse(ingredient.rawName)
         guard !query.lookupKey.isEmpty else { return [] }
         let queryLookupTokenSet = Set(IngredientLexicon.tokenize(query.lookupKey))
+        let phraseIndex = Self.catalogPhraseIndex
 
         var candidatesByID: [String: ScoredCandidate] = [:]
 
         register(
-            phrases: Self.catalogPhrases.filter { $0.source == .name && $0.lookupKey == query.lookupKey },
+            phrases: phraseIndex.exactPhrases(source: .name, lookupKey: query.lookupKey),
             stage: .exactName,
             score: 1,
             rationale: { phrase in "Exact catalog name match for \(phrase.text)." },
@@ -53,7 +55,7 @@ final class IngredientCandidateParser: IngredientCandidateParserProtocol {
         )
 
         register(
-            phrases: Self.catalogPhrases.filter { $0.source == .alias && $0.lookupKey == query.lookupKey },
+            phrases: phraseIndex.exactPhrases(source: .alias, lookupKey: query.lookupKey),
             stage: .exactAlias,
             score: 0.995,
             rationale: { phrase in "Exact alias match for \(phrase.text)." },
@@ -61,7 +63,7 @@ final class IngredientCandidateParser: IngredientCandidateParserProtocol {
         )
 
         register(
-            phrases: Self.catalogPhrases.filter { $0.source == .template && $0.lookupKey == query.lookupKey },
+            phrases: phraseIndex.exactPhrases(source: .template, lookupKey: query.lookupKey),
             stage: .exactTemplate,
             score: 0.99,
             rationale: { phrase in "Exact facet template match for \(phrase.text)." },
@@ -70,11 +72,7 @@ final class IngredientCandidateParser: IngredientCandidateParserProtocol {
 
         if !queryLookupTokenSet.isEmpty {
             register(
-                phrases: Self.catalogPhrases.filter {
-                    $0.source == .template &&
-                    $0.lookupKey != query.lookupKey &&
-                    Set(IngredientLexicon.tokenize($0.lookupKey)) == queryLookupTokenSet
-                },
+                phrases: phraseIndex.templatePhrases(matchingTokenSet: queryLookupTokenSet, excludingLookupKey: query.lookupKey),
                 stage: .exactTemplate,
                 score: 0.985,
                 rationale: { phrase in "Exact facet template token match for \(phrase.text)." },
@@ -86,7 +84,7 @@ final class IngredientCandidateParser: IngredientCandidateParserProtocol {
             .subtracting([query.lookupKey])
         if !synonymLookups.isEmpty {
             register(
-                phrases: Self.catalogPhrases.filter { synonymLookups.contains($0.lookupKey) },
+                phrases: phraseIndex.phrases(withLookupKeys: synonymLookups),
                 stage: .exactSynonym,
                 score: 0.96,
                 rationale: { phrase in "Synonym expansion linked \(ingredient.rawName) to \(phrase.text)." },
@@ -98,7 +96,11 @@ final class IngredientCandidateParser: IngredientCandidateParserProtocol {
             let synonymTokens = synonymLookups.flatMap(IngredientLexicon.tokenize)
             let expandedQueryTokens = Array(Set(query.tokens + synonymTokens))
 
-            for phrase in Self.catalogPhrases {
+            for phrase in phraseIndex.lexicalCandidates(
+                queryTokens: expandedQueryTokens,
+                lookupKey: query.lookupKey,
+                synonymLookups: synonymLookups
+            ) {
                 let tokenScore = IngredientLexicon.weightedTokenScore(
                     queryTokens: expandedQueryTokens,
                     candidateTokens: phrase.tokens
@@ -125,10 +127,14 @@ final class IngredientCandidateParser: IngredientCandidateParserProtocol {
                 )
             }
 
-            registerGenericFallbacks(query: query, into: &candidatesByID)
+            registerGenericFallbacks(
+                query: query,
+                candidatePhrases: phraseIndex.genericFallbackCandidates(for: expandedQueryTokens),
+                into: &candidatesByID
+            )
         }
 
-        for phrase in Self.catalogPhrases {
+        for phrase in phraseIndex.fuzzyCandidates(normalized: query.normalized, queryTokens: query.tokens) {
             let fuzzyScore = IngredientLexicon.fuzzySimilarity(query.normalized, phrase.normalized)
             guard fuzzyScore >= 0.78 else { continue }
 
@@ -141,6 +147,7 @@ final class IngredientCandidateParser: IngredientCandidateParserProtocol {
             )
         }
 
+        preferFacetSpecificCandidates(for: query, in: &candidatesByID)
         preferFacetSpecificExactMatches(in: &candidatesByID)
         preferGenericFallbacks(in: &candidatesByID)
 
@@ -209,14 +216,78 @@ final class IngredientCandidateParser: IngredientCandidateParserProtocol {
         }
     }
 
+    private func preferFacetSpecificCandidates(
+        for query: IngredientLexicon.ParsedText,
+        in candidatesByID: inout [String: ScoredCandidate]
+    ) {
+        let lookupTokens = IngredientLexicon.tokenize(query.lookupKey)
+        guard lookupTokens.count > 1 else { return }
+
+        let queryLookup = query.lookupKey
+
+        let explicitlyMatchedItemIDs = Set(
+            candidatesByID.values.compactMap { scoredCandidate -> String? in
+                let candidate = scoredCandidate.candidate
+                guard !candidate.facets.isEmpty, candidate.score >= 0.9 else {
+                    return nil
+                }
+
+                let facetValues = candidate.facets.map(\.value)
+                let allFacetValuesAppearInQuery = facetValues.allSatisfy { facetValue in
+                    let normalizedFacetValue = IngredientLexicon.lookupKey(facetValue)
+                    return !normalizedFacetValue.isEmpty && queryLookup.contains(normalizedFacetValue)
+                }
+                return allFacetValuesAppearInQuery ? candidate.catalogItemID : nil
+            }
+        )
+
+        if !explicitlyMatchedItemIDs.isEmpty {
+            candidatesByID = candidatesByID.filter { _, scoredCandidate in
+                let candidate = scoredCandidate.candidate
+                guard explicitlyMatchedItemIDs.contains(candidate.catalogItemID) else {
+                    return true
+                }
+
+                guard !candidate.facets.isEmpty else { return false }
+                return candidate.facets.allSatisfy { facet in
+                    let normalizedFacetValue = IngredientLexicon.lookupKey(facet.value)
+                    return !normalizedFacetValue.isEmpty && queryLookup.contains(normalizedFacetValue)
+                }
+            }
+            return
+        }
+
+        let itemIDsWithFacetSpecificCandidates = Set(
+            candidatesByID.values.compactMap { scoredCandidate -> String? in
+                let candidate = scoredCandidate.candidate
+                guard !candidate.facets.isEmpty, candidate.score >= 0.9 else {
+                    return nil
+                }
+                return candidate.catalogItemID
+            }
+        )
+
+        guard !itemIDsWithFacetSpecificCandidates.isEmpty else { return }
+
+        candidatesByID = candidatesByID.filter { _, scoredCandidate in
+            let candidate = scoredCandidate.candidate
+            guard itemIDsWithFacetSpecificCandidates.contains(candidate.catalogItemID) else {
+                return true
+            }
+
+            return !candidate.facets.isEmpty
+        }
+    }
+
     private func registerGenericFallbacks(
         query: IngredientLexicon.ParsedText,
+        candidatePhrases: [IngredientLexicon.CatalogPhrase],
         into candidatesByID: inout [String: ScoredCandidate]
     ) {
         let queryTokenSet = Set(query.tokens)
         guard !queryTokenSet.isEmpty else { return }
 
-        for phrase in Self.catalogPhrases where phrase.source != .template {
+        for phrase in candidatePhrases where phrase.source != .template {
             guard phrase.facets.first(where: { $0.key == .variant || $0.key == .base || $0.key == .form }) == nil else { continue }
             guard let item = PantryCatalog.item(id: phrase.itemID) else { continue }
 
@@ -342,6 +413,128 @@ final class IngredientCandidateParser: IngredientCandidateParserProtocol {
     ]
 }
 
+private struct CatalogPhraseIndex {
+    private let phrases: [IngredientLexicon.CatalogPhrase]
+    private let exactPhraseIndices: [IngredientLexicon.CatalogPhraseSource: [String: [Int]]]
+    private let lookupKeyIndices: [String: [Int]]
+    private let templateTokenSetIndices: [String: [Int]]
+    private let tokenToPhraseIndices: [String: Set<Int>]
+    private let normalizedLengthIndices: [Int: Set<Int>]
+    private let leadingCharacterIndices: [Character: Set<Int>]
+
+    init(phrases: [IngredientLexicon.CatalogPhrase]) {
+        self.phrases = phrases
+
+        var exactPhraseIndices: [IngredientLexicon.CatalogPhraseSource: [String: [Int]]] = [:]
+        var lookupKeyIndices: [String: [Int]] = [:]
+        var templateTokenSetIndices: [String: [Int]] = [:]
+        var tokenToPhraseIndices: [String: Set<Int>] = [:]
+        var normalizedLengthIndices: [Int: Set<Int>] = [:]
+        var leadingCharacterIndices: [Character: Set<Int>] = [:]
+
+        for (index, phrase) in phrases.enumerated() {
+            exactPhraseIndices[phrase.source, default: [:]][phrase.lookupKey, default: []].append(index)
+            lookupKeyIndices[phrase.lookupKey, default: []].append(index)
+
+            if phrase.source == .template {
+                templateTokenSetIndices[Self.tokenSetKey(phrase.tokens), default: []].append(index)
+            }
+
+            for token in Set(phrase.tokens) {
+                tokenToPhraseIndices[token, default: []].insert(index)
+            }
+
+            normalizedLengthIndices[phrase.normalized.count, default: []].insert(index)
+            if let leadingCharacter = phrase.normalized.first {
+                leadingCharacterIndices[leadingCharacter, default: []].insert(index)
+            }
+        }
+
+        self.exactPhraseIndices = exactPhraseIndices
+        self.lookupKeyIndices = lookupKeyIndices
+        self.templateTokenSetIndices = templateTokenSetIndices
+        self.tokenToPhraseIndices = tokenToPhraseIndices
+        self.normalizedLengthIndices = normalizedLengthIndices
+        self.leadingCharacterIndices = leadingCharacterIndices
+    }
+
+    func exactPhrases(source: IngredientLexicon.CatalogPhraseSource, lookupKey: String) -> [IngredientLexicon.CatalogPhrase] {
+        phrases(at: exactPhraseIndices[source]?[lookupKey] ?? [])
+    }
+
+    func phrases(withLookupKeys lookupKeys: Set<String>) -> [IngredientLexicon.CatalogPhrase] {
+        phrases(at: Set(lookupKeys.flatMap { lookupKeyIndices[$0] ?? [] }))
+    }
+
+    func templatePhrases(matchingTokenSet tokenSet: Set<String>, excludingLookupKey lookupKey: String) -> [IngredientLexicon.CatalogPhrase] {
+        phrases(at: templateTokenSetIndices[Self.tokenSetKey(tokenSet)] ?? []).filter { $0.lookupKey != lookupKey }
+    }
+
+    func lexicalCandidates(
+        queryTokens: [String],
+        lookupKey: String,
+        synonymLookups: Set<String>
+    ) -> [IngredientLexicon.CatalogPhrase] {
+        var indices = Set(lookupKeyIndices[lookupKey] ?? [])
+        for synonymLookup in synonymLookups {
+            indices.formUnion(lookupKeyIndices[synonymLookup] ?? [])
+        }
+
+        for token in Set(queryTokens) {
+            indices.formUnion(tokenToPhraseIndices[token] ?? [])
+        }
+
+        return phrases(at: indices)
+    }
+
+    func genericFallbackCandidates(for queryTokens: [String]) -> [IngredientLexicon.CatalogPhrase] {
+        phrases(at: candidateIndices(for: queryTokens))
+    }
+
+    func fuzzyCandidates(normalized: String, queryTokens: [String]) -> [IngredientLexicon.CatalogPhrase] {
+        var indices = candidateIndices(for: queryTokens)
+
+        if indices.isEmpty {
+            let normalizedLength = normalized.count
+            for length in max(0, normalizedLength - 2)...(normalizedLength + 2) {
+                indices.formUnion(normalizedLengthIndices[length] ?? [])
+            }
+        }
+
+        if let leadingCharacter = normalized.first,
+           let leadingCandidates = leadingCharacterIndices[leadingCharacter],
+           !indices.isEmpty {
+            indices.formIntersection(leadingCandidates)
+        }
+
+        if indices.isEmpty {
+            indices = candidateIndices(for: IngredientLexicon.tokenize(normalized))
+        }
+
+        return phrases(at: indices)
+    }
+
+    private func candidateIndices(for queryTokens: [String]) -> Set<Int> {
+        var indices: Set<Int> = []
+        for token in Set(queryTokens) {
+            indices.formUnion(tokenToPhraseIndices[token] ?? [])
+        }
+        return indices
+    }
+
+    private func phrases(at indices: [Int]) -> [IngredientLexicon.CatalogPhrase] {
+        indices.map { phrases[$0] }
+    }
+
+    private func phrases(at indices: Set<Int>) -> [IngredientLexicon.CatalogPhrase] {
+        indices.sorted().map { phrases[$0] }
+    }
+
+    private static func tokenSetKey<S: Sequence>(_ tokens: S) -> String where S.Element == String {
+        Array(tokens).sorted().joined(separator: "|")
+    }
+}
+
 final class RecipeIngredientResolver: RecipeIngredientResolverProtocol {
     private let candidateParser: IngredientCandidateParserProtocol
     private let aiService: AIServiceProtocol
@@ -375,8 +568,14 @@ final class RecipeIngredientResolver: RecipeIngredientResolverProtocol {
             }
 
             let candidates = candidateParser.candidates(for: ingredient)
-            let fallbackStatus = fallbackStatus(for: candidates)
-            let fallbackCandidateID = fallbackStatus == .resolved ? candidates.first?.id : nil
+            let query = IngredientLexicon.parse(ingredient.rawName)
+            let fallbackCandidate = fallbackResolvedCandidate(for: candidates, query: query)
+            let fallbackStatus = fallbackStatus(
+                for: candidates,
+                fallbackCandidate: fallbackCandidate,
+                query: query
+            )
+            let fallbackCandidateID = fallbackStatus == .resolved ? fallbackCandidate?.id : nil
 
             return ResolvedIngredientDraft(
                 ingredient: ingredient,
@@ -416,9 +615,56 @@ final class RecipeIngredientResolver: RecipeIngredientResolverProtocol {
         return RecipeResolutionDraft(recipe: recipe, ingredients: resolvedDrafts)
     }
 
-    private func fallbackStatus(for candidates: [IngredientResolutionCandidate]) -> IngredientResolutionStatus {
+    private func fallbackResolvedCandidate(
+        for candidates: [IngredientResolutionCandidate],
+        query: IngredientLexicon.ParsedText
+    ) -> IngredientResolutionCandidate? {
+        let queryMatchedFacetCandidates = candidates.filter { candidate in
+            guard !candidate.facets.isEmpty else { return false }
+            return candidate.facets.allSatisfy { facet in
+                let normalizedFacetValue = IngredientLexicon.lookupKey(facet.value)
+                return !normalizedFacetValue.isEmpty && query.lookupKey.contains(normalizedFacetValue)
+            }
+        }
+
+        if let matchedFacetCandidate = queryMatchedFacetCandidates.max(by: { lhs, rhs in
+            if lhs.score == rhs.score {
+                return lhs.facets.count < rhs.facets.count
+            }
+            return lhs.score < rhs.score
+        }) {
+            return matchedFacetCandidate
+        }
+
+        if let exactTemplateCandidate = candidates.first(where: {
+            $0.score >= 0.985 && $0.rationale.contains("Exact facet template")
+        }) {
+            return exactTemplateCandidate
+        }
+
+        return candidates.first
+    }
+
+    private func fallbackStatus(
+        for candidates: [IngredientResolutionCandidate],
+        fallbackCandidate: IngredientResolutionCandidate?,
+        query: IngredientLexicon.ParsedText
+    ) -> IngredientResolutionStatus {
         guard let bestCandidate = candidates.first else {
             return .unknown
+        }
+
+        if let fallbackCandidate,
+           fallbackCandidate.score >= 0.985,
+           fallbackCandidate.rationale.contains("Exact facet template") {
+            return .resolved
+        }
+
+        if IngredientLexicon.tokenize(query.lookupKey).count > 1,
+              let fallbackCandidate,
+           !fallbackCandidate.facets.isEmpty,
+              fallbackCandidate.score >= 0.8 {
+            return .resolved
         }
 
         if candidates.count == 1 && bestCandidate.score >= 0.9 {
