@@ -221,11 +221,11 @@ struct RecipeDetailView: View {
 
     // MARK: - Pantry Match Section
     private var pantryMatchSection: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        AppDetailCard("Pantry Match") {
             HStack {
-                Text("Pantry Match")
+                Text("Coverage")
                     .font(.subheadline)
-                    .fontWeight(.medium)
+                    .foregroundStyle(AppColors.subtleText)
                 Spacer()
                 Text(pantryMatch.displayPercentage)
                     .font(.subheadline)
@@ -270,8 +270,6 @@ struct RecipeDetailView: View {
                 .padding(.top, 4)
             }
         }
-        .padding()
-        .cardStyle()
     }
 
     private func missingIngredientRow(_ ingredient: Ingredient) -> some View {
@@ -472,9 +470,7 @@ struct RecipeDetailView: View {
 
     // MARK: - Nutrition Section
     private func nutritionSection(_ nutrition: NutritionInfo) -> some View {
-        VStack(alignment: .leading, spacing: 12) {
-            SectionHeader(title: "Nutrition", subtitle: "Per serving")
-
+        AppDetailCard("Nutrition", subtitle: "Per serving") {
             HStack(spacing: 16) {
                 NutritionCircle(label: "Calories", value: nutrition.calories, unit: "kcal", color: AppColors.warmOrange)
                 NutritionCircle(label: "Protein", value: Int(nutrition.protein), unit: "g", color: AppColors.softRed)
@@ -507,13 +503,11 @@ struct RecipeDetailView: View {
                 .frame(maxWidth: .infinity)
             }
         }
-        .padding()
-        .cardStyle()
     }
 
     // MARK: - Modify Section
     private var modifySection: some View {
-        VStack(alignment: .leading, spacing: 10) {
+        AppDetailCard("Recipe Adjustments", subtitle: "Prompt PantryChef to revise this recipe") {
             Button {
                 withAnimation(.easeInOut(duration: 0.25)) {
                     showModify.toggle()
@@ -588,8 +582,6 @@ struct RecipeDetailView: View {
                 .transition(.opacity.combined(with: .move(edge: .top)))
             }
         }
-        .padding()
-        .cardStyle()
     }
 
     private func performModify() async {
@@ -630,47 +622,24 @@ struct RecipeDetailView: View {
 
     // MARK: - Ingredients Section
     private var ingredientsSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            SectionHeader(title: "Ingredients", subtitle: "\(scaledRecipe.ingredients.count) items")
-
+        AppIngredientDetailGroup("Ingredients", subtitle: "\(scaledRecipe.ingredients.count) items") {
             ForEach(scaledRecipe.ingredients) { ingredient in
-                HStack(spacing: 12) {
-                    let isAvailable = appState.pantryItems.contains {
-                        IngredientMatcher.pantryItemMatchesIngredient($0, ingredient: ingredient)
-                    }
-
-                    Image(systemName: isAvailable ? "checkmark.circle.fill" : "circle")
-                        .foregroundStyle(isAvailable ? AppColors.primaryGreen : AppColors.mediumGray)
-                        .font(.subheadline)
-
-                    Text(ingredient.displayText)
-                        .font(.subheadline)
-                        .foregroundStyle(AppColors.darkText)
-
-                    if ingredient.isOptional {
-                        Text("optional")
-                            .font(.caption2)
-                            .foregroundStyle(AppColors.subtleText)
-                            .padding(.horizontal, 6)
-                            .padding(.vertical, 2)
-                            .background(AppColors.lightGray)
-                            .clipShape(Capsule())
-                    }
-
-                    Spacer()
+                let isAvailable = appState.pantryItems.contains {
+                    IngredientMatcher.pantryItemMatchesIngredient($0, ingredient: ingredient)
                 }
-                .padding(.vertical, 2)
+
+                AppIngredientDetailRow(
+                    ingredientText: ingredient.displayText,
+                    isAvailable: isAvailable,
+                    isOptional: ingredient.isOptional
+                )
             }
         }
-        .padding()
-        .cardStyle()
     }
 
     // MARK: - Steps Section
     private var stepsSection: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            SectionHeader(title: "Steps", subtitle: "\(recipe.steps.count) steps")
-
+        AppDetailCard("Steps", subtitle: "\(recipe.steps.count) steps") {
             ForEach(recipe.steps.sorted { $0.stepNumber < $1.stepNumber }) { step in
                 HStack(alignment: .top, spacing: 12) {
                     Text("\(step.stepNumber)")
@@ -713,17 +682,11 @@ struct RecipeDetailView: View {
                 }
             }
         }
-        .padding()
-        .cardStyle()
     }
 
     // MARK: - Dietary Tags Section
     private var dietaryTagsSection: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text("Dietary Info")
-                .font(.subheadline)
-                .fontWeight(.medium)
-
+        AppDetailCard("Dietary Info") {
             FlowLayout(spacing: 8) {
                 ForEach(recipe.dietaryTags) { tag in
                     DietaryTagChip(tag: tag)

@@ -321,16 +321,20 @@ final class AppState {
     }
 
     func suggestedRecipeForCurrentPantry() -> Recipe? {
-        guard !pantryItems.isEmpty, !recipes.isEmpty else { return nil }
+        guard !pantryItems.isEmpty, !allRecipes.isEmpty else { return nil }
 
-        let cacheKey = SuggestedRecipeCacheKey(pantryRevision: pantryRevision, recipesRevision: recipesRevision)
+        let cacheKey = SuggestedRecipeCacheKey(
+            pantryRevision: pantryRevision,
+            recipesRevision: recipesRevision,
+            discoverRecipesRevision: discoverRecipesRevision
+        )
         if cachedSuggestedRecipeKey == cacheKey {
             return cachedSuggestedRecipe
         }
 
         var bestRecipe: Recipe?
         var bestMatchPercentage = -1.0
-        for recipe in recipes {
+        for recipe in allRecipes {
             let matchPercentage = recipe.pantryMatch(pantry: pantryItems).matchPercentage
             if matchPercentage > bestMatchPercentage {
                 bestMatchPercentage = matchPercentage
@@ -345,8 +349,11 @@ final class AppState {
     }
 
     func weeklyNutritionSummary() -> WeeklyNutritionSummary? {
-        let plannedRecipes = mealPlan.filter(\.isPlanned).compactMap(\.recipe)
-        let plannedPreparedNutrition = mealPlan.filter(\.isPlanned).compactMap { $0.preparedDish?.nutrition }
+        let calendar = Calendar.current
+        let weekStart = calendar.dateInterval(of: .weekOfYear, for: Date())?.start ?? calendar.startOfDay(for: Date())
+        let weeklyEntries = plannedEntries(forWeekStarting: weekStart)
+        let plannedRecipes = weeklyEntries.compactMap(\.recipe)
+        let plannedPreparedNutrition = weeklyEntries.compactMap { $0.preparedDish?.nutrition }
         let recipeNutrition = plannedRecipes.compactMap(\.nutrition)
         let nutritionSources = recipeNutrition + plannedPreparedNutrition
         guard !nutritionSources.isEmpty else { return nil }
@@ -1518,4 +1525,5 @@ private struct MealPlanSlotKey: Hashable {
 private struct SuggestedRecipeCacheKey: Hashable {
     let pantryRevision: Int
     let recipesRevision: Int
+    let discoverRecipesRevision: Int
 }

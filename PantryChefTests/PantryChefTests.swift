@@ -2295,6 +2295,47 @@ final class AppStateTests: XCTestCase {
         XCTAssertEqual(summary?.mealsPlanned, 1)
     }
 
+    func testSuggestedRecipeForCurrentPantryIncludesDiscoverRecipes() async {
+        let (appState, _, _) = makeTestAppState()
+        await appState.addPantryItem(makePantryItem(name: "Chicken Breast", category: .protein, quantity: 1, unit: .piece, catalogItemID: "chicken"))
+
+        let discoverRecipe = makeRecipe(
+            title: "Chicken Bowl",
+            ingredients: [
+                Ingredient(name: "Chicken Breast", quantity: 1, unit: .piece, category: .protein, catalogItemID: "chicken")
+            ],
+            source: .bundled
+        )
+
+        _ = await appState.cacheDiscoverRecipe(discoverRecipe)
+
+        XCTAssertEqual(appState.suggestedRecipeForCurrentPantry()?.title, "Chicken Bowl")
+    }
+
+    func testPreparedDishDraftBuildUsesLinkedRecipeDefaultsWhenFieldsBlank() {
+        let recipe = makeRecipe(
+            title: "Black Bean Chili",
+            servings: 6,
+            mealType: .dinner,
+            nutrition: NutritionInfo(calories: 420, protein: 22, carbohydrates: 39, fat: 14, fiber: nil, sugar: nil, sodium: nil)
+        )
+
+        var draft = PreparedDishDraft()
+        draft.name = ""
+        draft.mealTypes = []
+        draft.recipeID = recipe.id
+        draft.caloriesText = ""
+        draft.proteinText = ""
+        draft.carbsText = ""
+        draft.fatText = ""
+
+        let dish = draft.buildDish(using: recipe)
+
+        XCTAssertEqual(dish?.name, "Black Bean Chili")
+        XCTAssertEqual(dish?.mealTypes, [.dinner])
+        XCTAssertEqual(dish?.nutrition?.calories, 420)
+    }
+
     func testGenerateShoppingListFromMealPlanMergesAdditivelyIntoExistingCart() async {
         let (appState, _, _) = makeTestAppState()
 
@@ -3486,6 +3527,31 @@ final class HomeViewModelTests: XCTestCase {
         XCTAssertEqual(vm.suggestedRecipe?.title, "Full Match")
     }
 
+    func testRefreshUsesDiscoverRecipesForSuggestion() async {
+        let (vm, appState) = makeSUT()
+        await appState.addPantryItem(makePantryItem(
+            name: "Spinach",
+            category: .produce,
+            quantity: 1,
+            unit: .whole,
+            catalogItemID: "spinach"
+        ))
+
+        let discoverRecipe = makeRecipe(
+            title: "Spinach Omelette",
+            ingredients: [
+                Ingredient(name: "Spinach", quantity: 1, unit: .whole, category: .produce, catalogItemID: "spinach")
+            ],
+            source: .bundled
+        )
+
+        appState.replaceDiscoverRecipesForTesting([discoverRecipe])
+
+        vm.refresh()
+
+        XCTAssertEqual(vm.suggestedRecipe?.title, "Spinach Omelette")
+    }
+
     // MARK: - Today's Meals
 
     func testTodaysMealsFilters() async {
@@ -3536,6 +3602,31 @@ final class HomeViewModelTests: XCTestCase {
         XCTAssertEqual(vm.weeklyNutrition?.mealsPlanned, 2)
         XCTAssertEqual(vm.weeklyNutrition?.avgCaloriesPerMeal, 500)
         XCTAssertEqual(vm.weeklyNutrition?.avgProteinPerMeal, 20)
+    }
+
+    func testWeeklyNutritionIgnoresMealsOutsideCurrentWeek() async throws {
+        let (vm, appState) = makeSUT()
+        let calendar = Calendar.current
+        let currentWeek = try XCTUnwrap(calendar.dateInterval(of: .weekOfYear, for: Date()))
+        let nextWeekDate = try XCTUnwrap(calendar.date(byAdding: .day, value: 7, to: currentWeek.start))
+
+        let currentWeekRecipe = makeRecipe(
+            title: "This Week Dinner",
+            nutrition: NutritionInfo(calories: 650, protein: 28, carbohydrates: 50, fat: 24)
+        )
+        let nextWeekRecipe = makeRecipe(
+            title: "Next Week Dinner",
+            nutrition: NutritionInfo(calories: 1200, protein: 60, carbohydrates: 90, fat: 48)
+        )
+
+        await appState.addToMealPlan(MealPlanEntry(date: currentWeek.start, mealType: .dinner, recipe: currentWeekRecipe))
+        await appState.addToMealPlan(MealPlanEntry(date: nextWeekDate, mealType: .dinner, recipe: nextWeekRecipe))
+
+        vm.refresh()
+
+        XCTAssertEqual(vm.weeklyNutrition?.totalCalories, 650)
+        XCTAssertEqual(vm.weeklyNutrition?.mealsPlanned, 1)
+        XCTAssertEqual(vm.weeklyNutrition?.avgCaloriesPerMeal, 650)
     }
 }
 

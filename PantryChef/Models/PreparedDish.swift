@@ -166,6 +166,13 @@ struct PreparedDishDraft: Identifiable, Hashable {
         !name.trimmed.isEmpty && !mealTypes.isEmpty && servingsRemaining > 0 && !nutritionIsInvalid
     }
 
+    func isValid(using recipe: Recipe?) -> Bool {
+        !resolvedName(using: recipe).isEmpty
+            && !resolvedMealTypes(using: recipe).isEmpty
+            && servingsRemaining > 0
+            && !nutritionIsInvalid
+    }
+
     func buildDish() -> PreparedDish? {
         guard isValid else { return nil }
 
@@ -181,6 +188,24 @@ struct PreparedDishDraft: Identifiable, Hashable {
             notes: notes,
             recipeID: recipeID,
             nutrition: nutrition
+        )
+    }
+
+    func buildDish(using recipe: Recipe?) -> PreparedDish? {
+        guard isValid(using: recipe) else { return nil }
+
+        return PreparedDish(
+            id: id,
+            name: resolvedName(using: recipe),
+            mealTypes: resolvedMealTypes(using: recipe),
+            servingsRemaining: servingsRemaining,
+            storage: storage,
+            useByDate: resolvedUseByDate,
+            dateAdded: dateAdded,
+            freshnessSource: useEstimatedFreshness ? .estimated : .userProvided,
+            notes: notes,
+            recipeID: recipeID,
+            nutrition: resolvedNutrition(using: recipe)
         )
     }
 
@@ -217,5 +242,46 @@ struct PreparedDishDraft: Identifiable, Hashable {
             carbs: decimalString(nutrition.carbohydrates),
             fat: decimalString(nutrition.fat)
         )
+    }
+
+    func resolvedName(using recipe: Recipe?) -> String {
+        name.trimmed.nilIfEmpty ?? recipe?.title.trimmed ?? ""
+    }
+
+    func resolvedMealTypes(using recipe: Recipe?) -> [MealType] {
+        let selectedMealTypes = mealTypes.sorted { $0.rawValue < $1.rawValue }
+        if !selectedMealTypes.isEmpty {
+            return selectedMealTypes
+        }
+        if let mealType = recipe?.mealType {
+            return [mealType]
+        }
+        return []
+    }
+
+    func resolvedNutrition(using recipe: Recipe?) -> NutritionInfo? {
+        nutrition ?? recipe?.nutrition
+    }
+
+    mutating func applyLinkedRecipeDefaults(_ recipe: Recipe) {
+        if name.trimmed.isEmpty {
+            name = recipe.title
+        }
+
+        if mealTypes.isEmpty, let mealType = recipe.mealType {
+            mealTypes = [mealType]
+        }
+
+        if servingsRemaining == 1, recipe.servings > 1 {
+            servingsRemaining = recipe.servings
+        }
+
+        if caloriesText.trimmed.isEmpty, let nutrition = recipe.nutrition {
+            let nutritionStrings = Self.nutritionStrings(from: nutrition)
+            caloriesText = String(nutrition.calories)
+            proteinText = nutritionStrings.protein
+            carbsText = nutritionStrings.carbs
+            fatText = nutritionStrings.fat
+        }
     }
 }

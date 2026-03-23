@@ -11,6 +11,7 @@ struct CookModeView: View {
     @State private var syncTask: Task<Void, Never>?
     @State private var showEndConfirm = false
     @State private var showPantryReview = false
+    @State private var showPreparedDishEditor = false
     @State private var pantryReviewItems: [PantryCookReviewItem] = []
 
     private let recipe: Recipe
@@ -133,6 +134,15 @@ struct CookModeView: View {
                         dismiss()
                     }
                 )
+            }
+        }
+        .sheet(isPresented: $showPreparedDishEditor) {
+            if let viewModel {
+                PreparedDishEditorView(appState: appState, seedRecipe: viewModel.recipe) { dish in
+                    Task {
+                        await appState.addPreparedDish(dish)
+                    }
+                }
             }
         }
     }
@@ -517,6 +527,18 @@ struct CookModeView: View {
             Spacer()
 
             VStack(spacing: 12) {
+                Button {
+                    showPreparedDishEditor = true
+                } label: {
+                    Text("Add to Prepared Food")
+                        .fontWeight(.semibold)
+                        .foregroundStyle(AppColors.primaryGreen)
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(AppColors.primaryGreen.opacity(0.10))
+                        .clipShape(RoundedRectangle(cornerRadius: 14))
+                }
+
                 Button {
                     Task {
                         // Save rating if set, then mark as cooked

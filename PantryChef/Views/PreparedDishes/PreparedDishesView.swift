@@ -3,15 +3,21 @@ import SwiftUI
 struct PreparedDishesView: View {
     @State private var viewModel: PreparedDishViewModel
     @FocusState private var isSearchFocused: Bool
+    private let isEmbedded: Bool
 
-    init(appState: AppState) {
+    init(appState: AppState, isEmbedded: Bool = false) {
         _viewModel = State(initialValue: PreparedDishViewModel(appState: appState))
+        self.isEmbedded = isEmbedded
     }
 
     var body: some View {
         @Bindable var viewModel = viewModel
 
         VStack(spacing: 0) {
+            if isEmbedded {
+                embeddedHeader
+            }
+
             searchAndFilters
 
             if viewModel.filteredDishes.isEmpty {
@@ -60,18 +66,30 @@ struct PreparedDishesView: View {
                             }
                             .tint(AppColors.accentBlue)
                         }
+                        .swipeActions(edge: .leading, allowsFullSwipe: false) {
+                            Button {
+                                Task {
+                                    _ = await viewModel.appState.adjustPreparedDishServings(dish, delta: 1)
+                                }
+                            } label: {
+                                Label("Add Serving", systemImage: "plus")
+                            }
+                            .tint(AppColors.primaryGreen)
+                        }
                     }
                 }
                 .listStyle(.insetGrouped)
             }
         }
-        .navigationTitle("Prepared Dishes")
+        .navigationTitle(isEmbedded ? "" : "Prepared Dishes")
         .toolbar {
-            ToolbarItem(placement: .primaryAction) {
-                Button {
-                    viewModel.showAddDish = true
-                } label: {
-                    Label("Add Prepared Dish", systemImage: "plus")
+            if !isEmbedded {
+                ToolbarItem(placement: .primaryAction) {
+                    Button {
+                        viewModel.showAddDish = true
+                    } label: {
+                        Label("Add Prepared Dish", systemImage: "plus")
+                    }
                 }
             }
         }
@@ -89,6 +107,39 @@ struct PreparedDishesView: View {
             PreparedDishDetailView(dish: dish)
                 .environment(viewModel.appState)
         }
+    }
+
+    private var embeddedHeader: some View {
+        HStack {
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Prepared Food")
+                    .font(.headline)
+                    .foregroundStyle(AppColors.darkText)
+                Text("Track leftovers and ready-to-eat meals alongside pantry mode.")
+                    .font(.caption)
+                    .foregroundStyle(AppColors.subtleText)
+            }
+
+            Spacer()
+
+            Button {
+                viewModel.showAddDish = true
+            } label: {
+                Label("Add", systemImage: "plus")
+                    .font(.subheadline)
+                    .fontWeight(.semibold)
+                    .foregroundStyle(AppColors.primaryGreen)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 8)
+                    .background(AppColors.primaryGreen.opacity(0.12))
+                    .clipShape(Capsule())
+            }
+            .buttonStyle(.plain)
+        }
+        .padding(.horizontal)
+        .padding(.top, 12)
+        .padding(.bottom, 4)
+        .background(AppColors.cardBackground)
     }
 
     private var searchAndFilters: some View {
@@ -203,13 +254,15 @@ struct PreparedDishDetailView: View {
             VStack(alignment: .leading, spacing: 20) {
                 header
 
-                detailCard(title: "Planning") {
-                    detailRow(title: "Meal types", value: currentDish.mealTypesSummary)
-                    detailRow(title: "Servings remaining", value: currentDish.servingsDisplay)
-                    detailRow(title: "Storage", value: currentDish.storage.rawValue)
+                AppDetailCard("Planning") {
+                    AppDetailRowGroup {
+                        AppDetailRow("Meal types", value: currentDish.mealTypesSummary)
+                        AppDetailRow("Servings remaining", value: currentDish.servingsDisplay)
+                        AppDetailRow("Storage", value: currentDish.storage.rawValue)
+                    }
                 }
 
-                detailCard(title: "Adjust Servings") {
+                AppDetailCard("Adjust Servings") {
                     Text("Quickly update this dish as you eat through it.")
                         .font(.caption)
                         .foregroundStyle(AppColors.subtleText)
@@ -242,13 +295,15 @@ struct PreparedDishDetailView: View {
                     }
                 }
 
-                detailCard(title: "Freshness") {
-                    detailRow(title: "Use by", value: useByText)
-                    detailRow(title: "Source", value: currentDish.freshnessSource == .estimated ? "Estimated" : "User provided")
+                AppDetailCard("Freshness") {
+                    AppDetailRowGroup {
+                        AppDetailRow("Use by", value: useByText)
+                        AppDetailRow("Source", value: currentDish.freshnessSource == .estimated ? "Estimated" : "User provided")
+                    }
                 }
 
                 if let linkedRecipe {
-                    detailCard(title: "Linked Recipe") {
+                    AppDetailCard("Linked Recipe") {
                         NavigationLink(destination: RecipeDetailView(recipe: linkedRecipe).environment(appState)) {
                             HStack {
                                 Text(linkedRecipe.title)
@@ -259,17 +314,33 @@ struct PreparedDishDetailView: View {
                             }
                         }
                     }
+
+                    AppIngredientDetailGroup("Ingredients", subtitle: "From linked recipe") {
+                        ForEach(linkedRecipe.ingredients) { ingredient in
+                            let isAvailable = appState.pantryItems.contains {
+                                IngredientMatcher.pantryItemMatchesIngredient($0, ingredient: ingredient)
+                            }
+
+                            AppIngredientDetailRow(
+                                ingredientText: ingredient.displayText,
+                                isAvailable: isAvailable,
+                                isOptional: ingredient.isOptional
+                            )
+                        }
+                    }
                 }
 
                 if let nutrition = currentDish.nutrition {
-                    detailCard(title: "Nutrition") {
-                        detailRow(title: "Calories", value: "\(nutrition.calories)")
-                        detailRow(title: "Macros", value: nutrition.macroSummary)
+                    AppDetailCard("Nutrition") {
+                        AppDetailRowGroup {
+                            AppDetailRow("Calories", value: "\(nutrition.calories)")
+                            AppDetailRow("Macros", value: nutrition.macroSummary)
+                        }
                     }
                 }
 
                 if let notes = currentDish.notes, !notes.isEmpty {
-                    detailCard(title: "Notes") {
+                    AppDetailCard("Notes") {
                         Text(notes)
                             .font(.body)
                             .foregroundStyle(AppColors.darkText)
@@ -330,28 +401,6 @@ struct PreparedDishDetailView: View {
             .clipShape(Capsule())
     }
 
-    private func detailCard<Content: View>(title: String, @ViewBuilder content: () -> Content) -> some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text(title)
-                .font(.headline)
-                .foregroundStyle(AppColors.darkText)
-            content()
-        }
-        .padding()
-        .cardStyle()
-    }
-
-    private func detailRow(title: String, value: String) -> some View {
-        HStack {
-            Text(title)
-                .foregroundStyle(AppColors.subtleText)
-            Spacer()
-            Text(value)
-                .foregroundStyle(AppColors.darkText)
-        }
-        .font(.subheadline)
-    }
-
     private func quickActionLabel(title: String, systemImage: String, color: Color) -> some View {
         HStack(spacing: 8) {
             Image(systemName: systemImage)
@@ -379,11 +428,16 @@ struct PreparedDishEditorView: View {
     @State private var draft: PreparedDishDraft
     @State private var showRecipePicker = false
 
-    init(appState: AppState, dish: PreparedDish? = nil, onSave: @escaping (PreparedDish) -> Void) {
+    init(appState: AppState, dish: PreparedDish? = nil, seedRecipe: Recipe? = nil, onSave: @escaping (PreparedDish) -> Void) {
         self.appState = appState
         self.existingDish = dish
         self.onSave = onSave
-        _draft = State(initialValue: PreparedDishDraft(dish: dish))
+        var initialDraft = PreparedDishDraft(dish: dish)
+        if dish == nil, let seedRecipe {
+            initialDraft.recipeID = seedRecipe.id
+            initialDraft.applyLinkedRecipeDefaults(seedRecipe)
+        }
+        _draft = State(initialValue: initialDraft)
     }
 
     private var linkedRecipe: Recipe? {
@@ -412,11 +466,11 @@ struct PreparedDishEditorView: View {
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Save") {
-                        guard let dish = draft.buildDish() else { return }
+                        guard let dish = draft.buildDish(using: linkedRecipe) else { return }
                         onSave(dish)
                         dismiss()
                     }
-                    .disabled(!draft.isValid)
+                    .disabled(!draft.isValid(using: linkedRecipe))
                 }
             }
             .sheet(isPresented: $showRecipePicker) {
@@ -425,13 +479,7 @@ struct PreparedDishEditorView: View {
                     preparedDishes: [],
                     onSelectRecipe: { recipe in
                         draft.recipeID = recipe.id
-                        if draft.caloriesText.trimmed.isEmpty, let nutrition = recipe.nutrition {
-                            let nutritionStrings = PreparedDishDraft.nutritionStrings(from: nutrition)
-                            draft.caloriesText = String(nutrition.calories)
-                            draft.proteinText = nutritionStrings.protein
-                            draft.carbsText = nutritionStrings.carbs
-                            draft.fatText = nutritionStrings.fat
-                        }
+                        draft.applyLinkedRecipeDefaults(recipe)
                     },
                     onSelectPreparedDish: { _ in }
                 )
@@ -447,6 +495,12 @@ struct PreparedDishEditorView: View {
 
             TextField("Dish name", text: $draft.name)
                 .textFieldStyle(.roundedBorder)
+
+            if let linkedRecipe, draft.name.trimmed.isEmpty {
+                Text("Will use \(linkedRecipe.title) from the linked recipe.")
+                    .font(.caption)
+                    .foregroundStyle(AppColors.subtleText)
+            }
 
             VStack(alignment: .leading, spacing: 8) {
                 Text("Meal types")
@@ -508,6 +562,12 @@ struct PreparedDishEditorView: View {
                     Image(systemName: "chevron.right")
                         .foregroundStyle(AppColors.mediumGray)
                 }
+            }
+
+            if linkedRecipe != nil {
+                Text("If name, meal type, or nutrition are left blank, they inherit from the linked recipe.")
+                    .font(.caption)
+                    .foregroundStyle(AppColors.subtleText)
             }
 
             if draft.recipeID != nil {

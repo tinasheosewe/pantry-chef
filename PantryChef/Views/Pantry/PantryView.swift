@@ -1,9 +1,16 @@
 import SwiftUI
 
 struct PantryView: View {
+    private enum ContentMode: String, CaseIterable, Identifiable {
+        case pantry = "Pantry"
+        case prepared = "Prepared"
+
+        var id: String { rawValue }
+    }
+
     @State private var viewModel: PantryViewModel
     @State private var editingItem: PantryItem?
-    @State private var showPreparedDishes = false
+    @State private var contentMode: ContentMode = .pantry
     @FocusState private var isSearchFieldFocused: Bool
 
     init(appState: AppState) {
@@ -15,33 +22,39 @@ struct PantryView: View {
         AppScreen("pantry.screen") {
             VStack(spacing: 0) {
                 inputMethodsBar
-                searchAndSortBar
 
-                if viewModel.appState.pantryItems.isEmpty {
-                    EmptyStateView(
-                        icon: "refrigerator",
-                        title: "Your pantry is empty",
-                        message: "Browse the catalog, see the defaults we assume, then review everything before adding it.",
-                        actionTitle: "Start Adding"
-                    ) {
-                        viewModel.prepareBulkAdd()
+                Picker("Mode", selection: $contentMode) {
+                    ForEach(ContentMode.allCases) { mode in
+                        Text(mode.rawValue).tag(mode)
                     }
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                }
+                .pickerStyle(.segmented)
+                .padding(.horizontal)
+                .padding(.top, 12)
+
+                if contentMode == .pantry {
+                    searchAndSortBar
+
+                    if viewModel.appState.pantryItems.isEmpty {
+                        EmptyStateView(
+                            icon: "refrigerator",
+                            title: "Your pantry is empty",
+                            message: "Browse the catalog, see the defaults we assume, then review everything before adding it.",
+                            actionTitle: "Start Adding"
+                        ) {
+                            viewModel.prepareBulkAdd()
+                        }
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    } else {
+                        pantryList
+                    }
                 } else {
-                    pantryList
+                    PreparedDishesView(appState: viewModel.appState, isEmbedded: true)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             .navigationTitle("Pantry")
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-                        showPreparedDishes = true
-                    } label: {
-                        Label("Prepared Dishes", systemImage: "takeoutbag.and.cup.and.straw")
-                    }
-                }
-            }
             .sheet(isPresented: $viewModel.showAddItem) {
                 BulkAddPantryView(viewModel: viewModel)
             }
@@ -55,9 +68,6 @@ struct PantryView: View {
                     viewModel.updateItem(updatedItem)
                 }
             }
-            .appNavigationSheet(isPresented: $showPreparedDishes) {
-                PreparedDishesView(appState: viewModel.appState)
-            }
         }
     }
 
@@ -66,10 +76,11 @@ struct PantryView: View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 12) {
                 InputMethodButton(icon: "plus.circle.fill", title: "Add", color: AppColors.primaryGreen) {
+                    contentMode = .pantry
                     viewModel.prepareBulkAdd()
                 }
                 InputMethodButton(icon: "takeoutbag.and.cup.and.straw.fill", title: "Prepared", color: AppColors.warmOrange) {
-                    showPreparedDishes = true
+                    contentMode = .prepared
                 }
             }
             .padding(.horizontal)

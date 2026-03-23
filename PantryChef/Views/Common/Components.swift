@@ -96,6 +96,128 @@ extension View {
     }
 }
 
+struct AppDetailCard<Content: View>: View {
+    private let title: String
+    private let subtitle: String?
+    private let content: Content
+
+    init(_ title: String, subtitle: String? = nil, @ViewBuilder content: () -> Content) {
+        self.title = title
+        self.subtitle = subtitle
+        self.content = content()
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            SectionHeader(title: title, subtitle: subtitle)
+            content
+        }
+        .padding()
+        .cardStyle()
+    }
+}
+
+struct AppDetailRow: View {
+    private let title: String
+    private let value: String
+
+    init(_ title: String, value: String) {
+        self.title = title
+        self.value = value
+    }
+
+    var body: some View {
+        HStack(alignment: .firstTextBaseline, spacing: 12) {
+            Text(title)
+                .foregroundStyle(AppColors.subtleText)
+
+            Spacer(minLength: 12)
+
+            Text(value)
+                .foregroundStyle(AppColors.darkText)
+                .multilineTextAlignment(.trailing)
+        }
+        .font(.subheadline)
+    }
+}
+
+struct AppDetailRowGroup<Content: View>: View {
+    private let spacing: CGFloat
+    private let content: Content
+
+    init(spacing: CGFloat = 10, @ViewBuilder content: () -> Content) {
+        self.spacing = spacing
+        self.content = content()
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: spacing) {
+            content
+        }
+    }
+}
+
+struct AppIngredientDetailRow: View {
+    let ingredientText: String
+    let isAvailable: Bool
+    let isOptional: Bool
+    var accessoryText: String?
+
+    var body: some View {
+        HStack(alignment: .top, spacing: 12) {
+            Image(systemName: isAvailable ? "checkmark.circle.fill" : "circle")
+                .foregroundStyle(isAvailable ? AppColors.primaryGreen : AppColors.mediumGray)
+                .font(.subheadline)
+
+            VStack(alignment: .leading, spacing: 6) {
+                Text(ingredientText)
+                    .font(.subheadline)
+                    .foregroundStyle(AppColors.darkText)
+
+                HStack(spacing: 8) {
+                    if isOptional {
+                        Text("optional")
+                            .font(.caption2)
+                            .foregroundStyle(AppColors.subtleText)
+                            .padding(.horizontal, 6)
+                            .padding(.vertical, 2)
+                            .background(AppColors.lightGray)
+                            .clipShape(Capsule())
+                    }
+
+                    if let accessoryText, !accessoryText.isEmpty {
+                        Text(accessoryText)
+                            .font(.caption2)
+                            .foregroundStyle(AppColors.subtleText)
+                    }
+                }
+            }
+
+            Spacer(minLength: 0)
+        }
+    }
+}
+
+struct AppIngredientDetailGroup<Content: View>: View {
+    private let title: String
+    private let subtitle: String?
+    private let content: Content
+
+    init(_ title: String, subtitle: String? = nil, @ViewBuilder content: () -> Content) {
+        self.title = title
+        self.subtitle = subtitle
+        self.content = content()
+    }
+
+    var body: some View {
+        AppDetailCard(title, subtitle: subtitle) {
+            VStack(alignment: .leading, spacing: 14) {
+                content
+            }
+        }
+    }
+}
+
 struct PantryCookReviewSheet: View {
     @Environment(\.dismiss) private var dismiss
 
