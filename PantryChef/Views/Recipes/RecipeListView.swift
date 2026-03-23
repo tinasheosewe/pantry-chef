@@ -403,16 +403,7 @@ struct RecipeListView: View {
 
     private func discoverContent(recipes: [Recipe], hasQuery: Bool, trimmedQuery: String) -> some View {
         Group {
-            if viewModel.isSearchingAPI {
-                if hasQuery {
-                    // Show grid with AI tile + loading indicator while API results load
-                    recipeGrid(recipes: recipes, isUserSection: false, trimmedQuery: trimmedQuery)
-                } else {
-                    centeredEmptyState {
-                        ProgressView("Searching...")
-                    }
-                }
-            } else if recipes.isEmpty && !hasQuery {
+            if recipes.isEmpty && !hasQuery {
                 centeredEmptyState {
                     if !trimmedQuery.isEmpty {
                         EmptyStateView(
@@ -504,25 +495,12 @@ struct RecipeListView: View {
                            recipe.id == displayedRecipes.last?.id {
                             if displayedRecipes.count < recipes.count {
                                 discoverVisibleCount = min(discoverVisibleCount + 24, recipes.count)
-                                return
-                            }
-                            if recipe.id == recipes.last?.id,
-                               lastLoadMoreTriggerID != recipe.id,
-                               viewModel.hasMorePages {
-                                lastLoadMoreTriggerID = recipe.id
-                                viewModel.loadMoreDiscoverRecipes()
                             }
                         }
                     }
                 }
             }
             .padding()
-
-            // Loading indicator at bottom during API search or pagination
-            if !isUserSection && (viewModel.isSearchingAPI || viewModel.isLoadingMore) {
-                ProgressView()
-                    .padding()
-            }
         }
     }
 }
@@ -691,7 +669,6 @@ struct RecipeCardView: View {
         switch recipe.source {
         case .user: return AppColors.primaryGreen
         case .bundled: return AppColors.warmOrange
-        case .spoonacular: return Color(red: 0.38, green: 0.65, blue: 0.96)
         case .imported: return Color(red: 0.72, green: 0.56, blue: 0.41)
         case .aiGenerated: return AppColors.accentTeal
         }

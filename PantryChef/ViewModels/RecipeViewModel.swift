@@ -17,15 +17,6 @@ final class RecipeViewModel: AsyncActionHandling {
     var isLoading = false
     var importedRecipe: Recipe?
 
-    // Discover search (Spoonacular)
-    var discoverSearchResults: [Recipe] = [] {
-        didSet {
-            discoverSearchResultsRevision &+= 1
-        }
-    }
-    var isSearchingAPI = false
-    var isLoadingMore = false
-    @ObservationIgnored private let apiSearchDebouncer = TaskDebouncer()
     @ObservationIgnored private let localFilterDebouncer = TaskDebouncer()
     @ObservationIgnored private var cachedUserFilterKey: UserFilterCacheKey?
     @ObservationIgnored private var cachedUserFilterResult: [Recipe] = []
@@ -47,18 +38,11 @@ final class RecipeViewModel: AsyncActionHandling {
     @ObservationIgnored private var fullCoverageTask: Task<Void, Never>?
     @ObservationIgnored private var lastFullCoverageKey: FullCoverageKey?
     @ObservationIgnored private let fullCoverageChunkSize = 128
-    @ObservationIgnored private var discoverSearchResultsRevision = 0
     private var localFilterQuery = ""
-    private var currentSearchOffset = 0
-    private var totalSearchResults = 0
-    /// True until the first API search completes (enables scroll-to-load-more even before any search)
-    private(set) var neverSearchedAPI = true
-    var hasMorePages: Bool { neverSearchedAPI || currentSearchOffset < totalSearchResults }
     var effectiveSearchQuery: String { localFilterQuery }
     var coverageRefreshState: RecipeCoverageRefreshState {
         RecipeCoverageRefreshState(
-            catalog: appState.recipeCatalogRefreshState,
-            discoverSearchSource: appStateCollectionKey(revision: discoverSearchResultsRevision, count: discoverSearchResults.count)
+            catalog: appState.recipeCatalogRefreshState
         )
     }
 
@@ -119,12 +103,11 @@ final class RecipeViewModel: AsyncActionHandling {
         return result
     }
 
-    // MARK: - Filtered Discover Recipes (bundled + cached + API search results)
+    // MARK: - Filtered Discover Recipes
 
     var filteredDiscoverRecipes: [Recipe] {
         let key = DiscoverFilterCacheKey(
-            discoverSearchSource: appStateCollectionKey(revision: discoverSearchResultsRevision, count: discoverSearchResults.count),
-            discoverPoolSource: appStateCollectionKey(revision: appState.discoverRecipesRevision, count: appState.discoverRecipes.count),
+            source: appStateCollectionKey(revision: appState.discoverRecipesRevision, count: appState.discoverRecipes.count),
             pantry: pantrySignatureIfNeeded(),
             query: localFilterQuery,
             selectedDifficulty: selectedDifficulty,
@@ -139,15 +122,7 @@ final class RecipeViewModel: AsyncActionHandling {
             return cachedDiscoverFilterResult
         }
 
-        // When API search results are present, treat them as the authoritative
-        // list to keep Discover rendering fast and pagination stable.
-        // Fall back to seed/cached pool only when no API results exist.
-        var recipes: [Recipe]
-        if !discoverSearchResults.isEmpty {
-            recipes = discoverSearchResults
-        } else {
-            recipes = appState.discoverRecipes
-        }
+        var recipes = appState.discoverRecipes
 
         let pantryMatchCache = pantryMatchCacheIfNeeded(for: recipes)
 
@@ -157,13 +132,7 @@ final class RecipeViewModel: AsyncActionHandling {
             recipes = applyMakeabilityFilter(recipes, matchCache: pantryMatchCache)
         }
 
-        // Only apply local sort when browsing seed recipes (no API results).
-        // When API results are present the server already sorted them
-        // (by relevance or popularity) and re-sorting would break
-        // pagination order and scroll position.
-        if discoverSearchResults.isEmpty {
-            recipes = applySortOrder(recipes, matchCache: pantryMatchCache)
-        }
+        recipes = applySortOrder(recipes, matchCache: pantryMatchCache)
 
         cachedDiscoverFilterKey = key
         cachedDiscoverFilterResult = recipes
@@ -354,24 +323,11 @@ final class RecipeViewModel: AsyncActionHandling {
         }
     }
 
-    /// Called when searchText changes — debounces then triggers API search on Discover tab.
-    func onSearchTextChanged(isDiscoverTab: Bool) {
-        let normalizedQuery = SearchQuerySupport.normalized(searchText)
-
+    /// Called when searchText changes — debounces local recipe filtering.
+    func onSearchTextChanged(isDiscoverTab _: Bool) {
         // Debounce local filtering to avoid full-list recomputation on each keystroke.
         SearchQuerySupport.schedule(text: searchText, debouncer: localFilterDebouncer) {
             self.localFilterQuery = $0
-        }
-
-        apiSearchDebouncer.cancel()
-        guard isDiscoverTab else { return }
-        guard normalizedQuery.count >= 2 else {
-            // Clear API results for very short queries
-            if normalizedQuery.isEmpty { discoverSearchResults = [] }
-            return
-        }
-        apiSearchDebouncer.schedule(after: DebounceDurations.apiSearch) {
-            await self.searchDiscoverRecipes(query: normalizedQuery)
         }
     }
 
@@ -384,102 +340,6 @@ final class RecipeViewModel: AsyncActionHandling {
     func activateWhatCanIMake() {
         showCanMakeOnly = true
         sortOrder = .matchPercent
-    }
-
-    /// Builds the common params from current filter state
-    private func buildSearchParams(query: String?, offset: Int) -> SpoonacularService.ComplexSearchParams {
-        var params = SpoonacularService.ComplexSearchParams()
-        params.query = query
-        params.cuisine = selectedCuisine
-        params.mealType = selectedMealType
-        params.diet = selectedDietaryTags.first
-        params.number = 20
-        params.offset = offset
-        // Sort by popularity when browsing (no search query)
-        if query == nil || query?.isEmpty == true {
-            params.sort = "popularity"
-            params.sortDirection = "desc"
-        }
-        if showCanMakeOnly {
-            params.includeIngredients = appState.pantryItems.map { $0.name }
-        }
-        return params
-    }
-
-    /// Search Spoonacular API for more recipes (resets pagination)
-    func searchDiscoverRecipes(query: String? = nil) async {
-        // Skip API call when no key is configured — local filtering still works
-        guard !AppConfig.spoonacularAPIKey.isEmpty else { return }
-        guard !isSearchingAPI else { return }
-        isSearchingAPI = true
-        defer { isSearchingAPI = false }
-
-        // Reset pagination for new search
-        neverSearchedAPI = false
-        currentSearchOffset = 0
-        totalSearchResults = 0
-        discoverSearchResults = []
-
-        let effectiveQuery = query?.isEmpty == true ? nil : query
-
-        do {
-            let params = buildSearchParams(query: effectiveQuery, offset: 0)
-
-            let (recipes, total) = try await SpoonacularService.shared.complexSearchWithRecipes(params)
-            discoverSearchResults = recipes
-            totalSearchResults = total
-            currentSearchOffset = recipes.count
-
-            // Cache in the background so UI updates stay responsive.
-            Task { [appState] in
-                for recipe in recipes {
-                    _ = await appState.cacheDiscoverRecipe(recipe)
-                }
-            }
-        } catch {
-            captureError(error)
-        }
-    }
-
-    /// Load the next page of API results (called on scroll)
-    func loadMoreDiscoverRecipes() {
-        runTask { [self] in
-            await self.performLoadMoreDiscoverRecipes()
-        }
-    }
-
-    private func performLoadMoreDiscoverRecipes() async {
-        guard !AppConfig.spoonacularAPIKey.isEmpty else { return }
-        guard !isLoadingMore, !isSearchingAPI, hasMorePages else { return }
-
-        // First-ever scroll: treat as initial popular search
-        if neverSearchedAPI {
-            neverSearchedAPI = false
-            await searchDiscoverRecipes(query: searchText.isEmpty ? nil : searchText)
-            return
-        }
-        isLoadingMore = true
-        defer { isLoadingMore = false }
-
-        let effectiveQuery = searchText.isEmpty ? nil : searchText
-
-        do {
-            let params = buildSearchParams(query: effectiveQuery, offset: currentSearchOffset)
-
-            let (recipes, total) = try await SpoonacularService.shared.complexSearchWithRecipes(params)
-            discoverSearchResults.append(contentsOf: recipes)
-            totalSearchResults = total
-            currentSearchOffset += recipes.count
-
-            // Cache in the background so pagination remains smooth.
-            Task { [appState] in
-                for recipe in recipes {
-                    _ = await appState.cacheDiscoverRecipe(recipe)
-                }
-            }
-        } catch {
-            captureError(error)
-        }
     }
 
     func importFromURL(_ urlString: String, onComplete: (@MainActor () -> Void)? = nil) {
@@ -515,9 +375,6 @@ final class RecipeViewModel: AsyncActionHandling {
     func recipeForNavigation(id: UUID) -> Recipe? {
         if let user = appState.recipes.first(where: { $0.id == id }) {
             return user
-        }
-        if let searched = discoverSearchResults.first(where: { $0.id == id }) {
-            return searched
         }
         return appState.discoverRecipes.first(where: { $0.id == id })
     }
@@ -596,15 +453,14 @@ final class RecipeViewModel: AsyncActionHandling {
         let pantry = appState.pantryItems
         guard !pantry.isEmpty else { return }
 
-        let allRecipes = uniqueRecipes(appState.recipes + appState.discoverRecipes + discoverSearchResults)
+        let allRecipes = uniqueRecipes(appState.recipes + appState.discoverRecipes)
         guard !allRecipes.isEmpty else { return }
 
         let pantrySig = pantryMetricsSignature(for: pantry)
         let coverageKey = FullCoverageKey(
             pantry: appStateCollectionKey(revision: appState.pantryRevision, count: appState.pantryItems.count),
             userRecipes: appStateCollectionKey(revision: appState.recipesRevision, count: appState.recipes.count),
-            discoverRecipes: appStateCollectionKey(revision: appState.discoverRecipesRevision, count: appState.discoverRecipes.count),
-            searchedRecipes: appStateCollectionKey(revision: discoverSearchResultsRevision, count: discoverSearchResults.count)
+            discoverRecipes: appStateCollectionKey(revision: appState.discoverRecipesRevision, count: appState.discoverRecipes.count)
         )
         if lastFullCoverageKey == coverageKey {
             return
@@ -788,10 +644,6 @@ final class RecipeViewModel: AsyncActionHandling {
 
         if recipes == appState.discoverRecipes {
             return .appState(appStateCollectionKey(revision: appState.discoverRecipesRevision, count: appState.discoverRecipes.count))
-        }
-
-        if recipes == discoverSearchResults {
-            return .appState(appStateCollectionKey(revision: discoverSearchResultsRevision, count: discoverSearchResults.count))
         }
 
         return .content(recipeContentSignature(recipes))
@@ -1073,8 +925,7 @@ private struct UserFilterCacheKey: Hashable {
 }
 
 private struct DiscoverFilterCacheKey: Hashable {
-    let discoverSearchSource: AppStateCollectionKey
-    let discoverPoolSource: AppStateCollectionKey
+    let source: AppStateCollectionKey
     let pantry: AppStateCollectionKey?
     let query: String
     let selectedDifficulty: DifficultyLevel?
@@ -1095,12 +946,10 @@ private struct FullCoverageKey: Hashable {
     let pantry: AppStateCollectionKey
     let userRecipes: AppStateCollectionKey
     let discoverRecipes: AppStateCollectionKey
-    let searchedRecipes: AppStateCollectionKey
 }
 
 struct RecipeCoverageRefreshState: Hashable {
     let catalog: RecipeCatalogRefreshState
-    let discoverSearchSource: AppStateCollectionKey
 }
 
 private enum SearchIndexCacheKey: Hashable {

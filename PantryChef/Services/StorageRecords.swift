@@ -632,28 +632,20 @@ enum RecipeSourceCodec {
         switch source {
         case .user: return "user"
         case .bundled: return "bundled"
-        case .spoonacular: return "spoonacular"
         case .imported: return "imported"
         case .aiGenerated: return "aiGenerated"
         }
     }
 
     static func externalId(from source: RecipeSource) -> Int? {
-        if case .spoonacular(let id) = source {
-            return id
-        }
         return nil
     }
 
     static func decode(kind: String, externalId: Int?) -> RecipeSource {
+        _ = externalId
         switch kind {
         case "user": return .user
         case "bundled": return .bundled
-        case "spoonacular":
-            if let externalId {
-                return .spoonacular(id: externalId)
-            }
-            return .bundled
         case "imported": return .imported
         case "aiGenerated": return .aiGenerated
         default: return .user

@@ -7,9 +7,6 @@ enum AppConfig {
     // OpenAI
     static let openAIAPIKey = requiredConfigValue("OPENAI_API_KEY")
 
-    // Spoonacular
-    static let spoonacularAPIKey = requiredConfigValue("SPOONACULAR_API_KEY")
-
     // App Settings
     static let expiryWarningDays = 3
     static let maxRecipeSuggestions = 5

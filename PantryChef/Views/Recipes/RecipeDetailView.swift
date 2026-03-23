@@ -6,7 +6,6 @@ struct RecipeDetailView: View {
     @State private var servings: Int
     @State private var showCookMode = false
     @State private var showGathering = false
-    @State private var isFetchingSteps = false
     @State private var showSubstitutions = false
     @State private var showShoppingList = false
     @State private var showPantryReview = false
@@ -148,42 +147,6 @@ struct RecipeDetailView: View {
         } message: {
             Text(actionErrorMessage ?? "Something went wrong. Please try again.")
         }
-    }
-
-    // MARK: - Fetch Steps Fallback
-
-    /// For Spoonacular recipes that arrived without steps (complexSearch sometimes
-    /// omits analyzedInstructions), fetch the full recipe detail before entering cook mode.
-    private func fetchStepsThenCook(spoonId: Int) async {
-        isFetchingSteps = true
-        defer { isFetchingSteps = false }
-        do {
-            if let detailed = try await SpoonacularService.shared.getRecipeDetail(id: spoonId),
-               !detailed.steps.isEmpty {
-                recipe = Recipe(
-                    id: recipe.id,
-                    title: recipe.title,
-                    description: recipe.description,
-                    ingredients: detailed.ingredients.isEmpty ? recipe.ingredients : detailed.ingredients,
-                    steps: detailed.steps,
-                    servings: recipe.servings,
-                    prepTimeMinutes: recipe.prepTimeMinutes ?? detailed.prepTimeMinutes,
-                    cookTimeMinutes: recipe.cookTimeMinutes ?? detailed.cookTimeMinutes,
-                    difficulty: detailed.difficulty,
-                    dietaryTags: recipe.dietaryTags,
-                    mealType: recipe.mealType,
-                    cuisine: recipe.cuisine,
-                    source: recipe.source,
-                    nutrition: recipe.nutrition ?? detailed.nutrition,
-                    imageURL: recipe.imageURL,
-                    sourceURL: recipe.sourceURL
-                )
-            }
-        } catch {
-            AppLog.warn("[RecipeDetailView] Failed to fetch steps: \(error)")
-        }
-        // Proceed to cook even if fetch failed — user can still see the recipe
-        showGathering = true
     }
 
     private func presentPantryReview() {
@@ -380,27 +343,17 @@ struct RecipeDetailView: View {
                 if existingSession != nil {
                     showCookMode = true       // resume — skip gathering
                 } else {
-                    // If this is a Spoonacular recipe with no steps, fetch full details first
-                    if recipe.steps.isEmpty, case .spoonacular(let spoonId) = recipe.source {
-                        Task { await fetchStepsThenCook(spoonId: spoonId) }
-                    } else {
-                        showGathering = true   // new session — show ingredients first
-                    }
+                    showGathering = true   // new session — show ingredients first
                 }
             } label: {
                 HStack(spacing: 8) {
-                    if isFetchingSteps {
-                        ProgressView()
-                            .tint(.white)
-                    } else {
-                        Image(systemName: existingSession != nil ? "arrow.counterclockwise" : "play.fill")
-                            .font(.title3)
-                    }
+                    Image(systemName: existingSession != nil ? "arrow.counterclockwise" : "play.fill")
+                        .font(.title3)
                     if let session = existingSession {
                         Text("Resume Cooking (step \(session.currentStepIndex + 1)/\(session.totalSteps))")
                             .font(.headline)
                     } else {
-                        Text(isFetchingSteps ? "Loading Steps…" : "Start Cooking")
+                        Text("Start Cooking")
                             .font(.headline)
                     }
                 }
@@ -410,7 +363,6 @@ struct RecipeDetailView: View {
                 .background(existingSession != nil ? AppColors.warmOrange : AppColors.primaryGreen)
                 .clipShape(RoundedRectangle(cornerRadius: 14))
             }
-            .disabled(isFetchingSteps)
 
             HStack(spacing: 12) {
                 ActionButton(icon: "cart", title: "What to Buy", color: AppColors.warmOrange) {

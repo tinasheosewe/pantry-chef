@@ -1481,7 +1481,6 @@ final class EnumTests: XCTestCase {
         XCTAssertTrue(RecipeSource.aiGenerated.shouldAutoResolveIngredientsWithoutReview)
         XCTAssertFalse(RecipeSource.user.shouldAutoResolveIngredientsWithoutReview)
         XCTAssertFalse(RecipeSource.bundled.shouldAutoResolveIngredientsWithoutReview)
-        XCTAssertFalse(RecipeSource.spoonacular(id: 42).shouldAutoResolveIngredientsWithoutReview)
         XCTAssertFalse(RecipeSource.imported.shouldAutoResolveIngredientsWithoutReview)
     }
 
@@ -2224,7 +2223,7 @@ final class AppStateTests: XCTestCase {
     func testToggleFavoriteWithSaveCreatesUserRecipeCopy() async {
         let (appState, storage, _) = makeTestAppState()
         var discoverRecipe = makeRecipe(title: "Discover Dish")
-        discoverRecipe.source = .spoonacular(id: 42)
+        discoverRecipe.source = .bundled
 
         await appState.toggleFavoriteWithSave(discoverRecipe)
 
@@ -2237,7 +2236,7 @@ final class AppStateTests: XCTestCase {
     func testToggleFavoriteWithSaveRemovesLinkedDiscoverCopyWhenUnfavorited() async {
         let (appState, storage, _) = makeTestAppState()
         var discoverRecipe = makeRecipe(title: "Discover Dish")
-        discoverRecipe.source = .spoonacular(id: 42)
+        discoverRecipe.source = .bundled
         discoverRecipe.isFavorite = true
         appState.replaceDiscoverRecipesForTesting([discoverRecipe])
         appState.recipes = [Recipe(

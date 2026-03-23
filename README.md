@@ -5,12 +5,11 @@ PantryChef is an iOS cooking and kitchen-planning app built with SwiftUI. It com
 ## What The App Does
 
 - Track pantry items with quantities, categories, and expiry-aware sorting.
-- Manage personal recipes alongside bundled and discovered recipes.
+- Manage personal recipes alongside bundled discover recipes.
 - Filter recipes by pantry match, favorites, meal type, cuisine, difficulty, and dietary tags.
 - Build meal plans and turn them into consolidated shopping lists.
 - Run a guided cook mode with step navigation, timers, notifications, and resume support.
 - Use OpenAI-backed helpers for shopping lists, recipe suggestions, healthier variants, leftovers, and conversational cook assistance.
-- Search for discover recipes through Spoonacular when an API key is configured.
 
 ## Current Product Shape
 
@@ -29,7 +28,6 @@ This repository is currently centered on the manual-entry and local-persistence 
 - Project generation: XcodeGen
 - Persistence: SwiftData
 - AI: OpenAI Chat Completions plus OpenAI Realtime API
-- External recipe discovery: Spoonacular
 - Realtime voice transport: vendored swift-realtime-openai package in Vendor/
 
 ## Setup
@@ -39,7 +37,6 @@ This repository is currently centered on the manual-entry and local-persistence 
 - macOS with Xcode 15 or newer
 - XcodeGen
 - An OpenAI API key for AI features
-- Optionally, a Spoonacular API key for discover search
 
 Install XcodeGen if needed:
 
@@ -62,7 +59,6 @@ The project loads Config/Secrets.xcconfig, which includes Config/LocalSecrets.xc
 Set these values in Config/LocalSecrets.xcconfig or in your environment:
 
 - OPENAI_API_KEY
-- SPOONACULAR_API_KEY
 
 AppConfig reads environment variables first, then Info.plist values.
 
@@ -108,7 +104,7 @@ PantryChef/
 │   ├── Helpers/            # ingredient and audio-related helpers
 │   ├── Models/             # pantry, recipe, planning, AI, and intake models
 │   ├── Resources/          # bundled seed data
-│   ├── Services/           # storage, AI, realtime, notifications, discovery
+│   ├── Services/           # storage, AI, realtime, notifications, background coordination
 │   ├── Utils/              # config, extensions, launch options
 │   ├── ViewModels/         # feature state and presentation logic
 │   └── Views/              # SwiftUI screens and shared components
@@ -127,7 +123,6 @@ PantryChef/
 - The current storage path is local-first SwiftData, not Supabase.
 - Supabase migrations are present for future backend work, but the app does not require a backend to run.
 - Realtime cook mode requires microphone permission and an OpenAI key.
-- Spoonacular-backed discovery requires SPOONACULAR_API_KEY.
 
 ## Related Docs
 

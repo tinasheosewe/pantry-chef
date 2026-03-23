@@ -365,7 +365,6 @@ enum CuisineType: String, Codable, CaseIterable, Identifiable {
 enum RecipeSource: Codable, Hashable {
     case user
     case bundled
-    case spoonacular(id: Int)
     case imported
     case aiGenerated
 
@@ -373,7 +372,6 @@ enum RecipeSource: Codable, Hashable {
         switch self {
         case .user: return "My Recipe"
         case .bundled: return "Featured"
-        case .spoonacular: return "Discover"
         case .imported: return "Imported"
         case .aiGenerated: return "Chef"
         }
@@ -385,7 +383,7 @@ enum RecipeSource: Codable, Hashable {
         switch self {
         case .aiGenerated:
             return true
-        case .user, .bundled, .spoonacular, .imported:
+        case .user, .bundled, .imported:
             return false
         }
     }
@@ -394,7 +392,7 @@ enum RecipeSource: Codable, Hashable {
         switch self {
         case .imported:
             return true
-        case .user, .bundled, .spoonacular, .aiGenerated:
+        case .user, .bundled, .aiGenerated:
             return false
         }
     }
