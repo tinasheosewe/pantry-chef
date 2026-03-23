@@ -21,8 +21,6 @@ struct PantryView: View {
         @Bindable var viewModel = viewModel
         AppScreen("pantry.screen") {
             VStack(spacing: 0) {
-                inputMethodsBar
-
                 Picker("Mode", selection: $contentMode) {
                     ForEach(ContentMode.allCases) { mode in
                         Text(mode.rawValue).tag(mode)
@@ -33,13 +31,20 @@ struct PantryView: View {
                 .padding(.top, 12)
 
                 if contentMode == .pantry {
+                    modeSummaryBar(
+                        description: "Browse ingredients and update stock in one place.",
+                        addTitle: "Add"
+                    ) {
+                        viewModel.prepareBulkAdd()
+                    }
+
                     searchAndSortBar
 
                     if viewModel.appState.pantryItems.isEmpty {
                         EmptyStateView(
                             icon: "refrigerator",
                             title: "Your pantry is empty",
-                            message: "Browse the catalog, see the defaults we assume, then review everything before adding it.",
+                            message: "Browse the catalog, set your preferences, then review everything before adding it.",
                             actionTitle: "Start Adding"
                         ) {
                             viewModel.prepareBulkAdd()
@@ -54,7 +59,7 @@ struct PantryView: View {
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-            .navigationTitle("Pantry")
+            .navigationTitle(contentMode == .pantry ? "Pantry" : "Prepared Food")
             .sheet(isPresented: $viewModel.showAddItem) {
                 BulkAddPantryView(viewModel: viewModel)
             }
@@ -71,21 +76,28 @@ struct PantryView: View {
         }
     }
 
-    // MARK: - Input Methods Bar
-    private var inputMethodsBar: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 12) {
-                InputMethodButton(icon: "plus.circle.fill", title: "Add", color: AppColors.primaryGreen) {
-                    contentMode = .pantry
-                    viewModel.prepareBulkAdd()
-                }
-                InputMethodButton(icon: "takeoutbag.and.cup.and.straw.fill", title: "Prepared", color: AppColors.warmOrange) {
-                    contentMode = .prepared
-                }
+    private func modeSummaryBar(description: String, addTitle: String, action: @escaping () -> Void) -> some View {
+        HStack(alignment: .top, spacing: 12) {
+            Text(description)
+                .font(.caption)
+                .foregroundStyle(AppColors.subtleText)
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+            Button(action: action) {
+                Label(addTitle, systemImage: "plus")
+                    .font(.subheadline)
+                    .fontWeight(.semibold)
+                    .foregroundStyle(AppColors.primaryGreen)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 8)
+                    .background(AppColors.primaryGreen.opacity(0.12))
+                    .clipShape(Capsule())
             }
-            .padding(.horizontal)
-            .padding(.vertical, 8)
+            .buttonStyle(.plain)
         }
+        .padding(.horizontal)
+        .padding(.top, 12)
+        .padding(.bottom, 4)
         .background(AppColors.cardBackground)
     }
 
@@ -123,6 +135,7 @@ struct PantryView: View {
         }
         .padding(.horizontal)
         .padding(.vertical, 8)
+        .background(AppColors.cardBackground)
     }
 
     // MARK: - Pantry List

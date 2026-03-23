@@ -13,7 +13,7 @@ struct PreparedDishesView: View {
     var body: some View {
         @Bindable var viewModel = viewModel
 
-        VStack(spacing: 0) {
+        let content = VStack(spacing: 0) {
             if isEmbedded {
                 embeddedHeader
             }
@@ -24,7 +24,7 @@ struct PreparedDishesView: View {
                 EmptyStateView(
                     icon: "takeoutbag.and.cup.and.straw",
                     title: "No prepared dishes",
-                    message: "Track leftovers, takeout, and ready-to-eat meals separately from pantry ingredients.",
+                    message: "Track leftovers, takeout, and ready-to-eat meals.",
                     actionTitle: "Add Prepared Dish"
                 ) {
                     viewModel.showAddDish = true
@@ -81,7 +81,6 @@ struct PreparedDishesView: View {
                 .listStyle(.insetGrouped)
             }
         }
-        .navigationTitle(isEmbedded ? "" : "Prepared Dishes")
         .toolbar {
             if !isEmbedded {
                 ToolbarItem(placement: .primaryAction) {
@@ -107,18 +106,21 @@ struct PreparedDishesView: View {
             PreparedDishDetailView(dish: dish)
                 .environment(viewModel.appState)
         }
+
+        if isEmbedded {
+            content
+        } else {
+            content
+                .navigationTitle("Prepared Dishes")
+        }
     }
 
     private var embeddedHeader: some View {
-        HStack {
-            VStack(alignment: .leading, spacing: 4) {
-                Text("Prepared Food")
-                    .font(.headline)
-                    .foregroundStyle(AppColors.darkText)
-                Text("Track leftovers and ready-to-eat meals alongside pantry mode.")
-                    .font(.caption)
-                    .foregroundStyle(AppColors.subtleText)
-            }
+        HStack(alignment: .top, spacing: 12) {
+            Text("Track leftovers, takeout, and ready-to-eat meals.")
+                .font(.caption)
+                .foregroundStyle(AppColors.subtleText)
+                .frame(maxWidth: .infinity, alignment: .leading)
 
             Spacer()
 

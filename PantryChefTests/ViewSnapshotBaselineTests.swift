@@ -15,7 +15,7 @@ final class ViewSnapshotBaselineTests: XCTestCase {
         ]
 
         let hash = try snapshotHash(of: PantryView(appState: appState), size: CGSize(width: 390, height: 844))
-        XCTAssertEqual(hash, "94fc62ac38743855de53203e7e6cad7f5cbb95d6a1ecf2900910c2555361f665")
+        XCTAssertEqual(hash, "6dad85e4d8736e023a5f3385119e988caff24c650a6cc773db51ba7e129c1974")
     }
 
     func testShoppingListViewSnapshotHash() throws {
