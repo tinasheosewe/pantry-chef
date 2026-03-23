@@ -998,6 +998,29 @@ enum PantryCatalog {
             aliases: ["soy sauce", "light soy sauce", "dark soy sauce"],
             facets: [.variant(["regular", "light", "dark"])],
             defaultSelections: [.init(key: .variant, value: "regular")],
+            substitutions: [
+                substitution(
+                    itemID: "coconut-aminos",
+                    ratio: "1:1",
+                    tasteImpact: .slight,
+                    textureImpact: .none,
+                    cookingImpact: .none,
+                    nutritionImpact: "Usually lower sodium and slightly sweeter.",
+                    notes: "Good general replacement for stir-fries, marinades, and fried rice.",
+                    dietary: [.vegan, .vegetarian, .dairyFree, .glutenFree]
+                )
+            ],
+            freshnessByStorage: [.pantry: 180...365, .refrigerated: 180...365]
+        ),
+        item(
+            id: "coconut-aminos",
+            name: "Coconut Aminos",
+            category: .condiments,
+            defaultUnit: .milliliter,
+            defaultQuantity: 250,
+            defaultStorage: .pantry,
+            aliases: ["coconut aminos", "coconut amino", "coconut liquid aminos"],
+            facets: [],
             freshnessByStorage: [.pantry: 180...365, .refrigerated: 180...365]
         ),
         item(

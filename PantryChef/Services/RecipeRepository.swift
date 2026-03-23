@@ -156,7 +156,7 @@ final class RecipeRepository {
     private func loadSeedRecipes() {
         defer { hasLoadedSeedRecipes = true }
 
-        guard let url = Bundle.main.url(forResource: "seed_recipes", withExtension: "json") else {
+        guard let url = BundledSeedRecipeLoader.resourceURL() else {
             seedRecipeStore = []
             seedRecipeIDs = []
             seedRecipeTitlesLowercased = []
@@ -169,108 +169,16 @@ final class RecipeRepository {
 
         do {
             let data = try Data(contentsOf: url)
-            parseSeedJSON(data)
+            seedRecipeStore = BundledSeedRecipeLoader.loadRecipes(from: data)
+            seedRecipeIDs = Set(seedRecipeStore.map(\.id))
+            seedRecipeTitlesLowercased = Set(seedRecipeStore.map { $0.title.lowercased() })
+            mergedDiscoverRecipesDirty = true
             persistSeedRecipeCache(using: url)
         } catch {
             seedRecipeStore = []
             seedRecipeIDs = []
             seedRecipeTitlesLowercased = []
         }
-    }
-
-    private func parseSeedJSON(_ data: Data) {
-        struct SeedIngredient: Decodable {
-            let name: String
-            let quantity: Double
-            let unit: String?
-            let category: String?
-            let isOptional: Bool?
-        }
-
-        struct SeedStep: Decodable {
-            let stepNumber: Int
-            let instruction: String
-            let timerMinutes: Int?
-            let estimatedDurationSeconds: Int?
-        }
-
-        struct SeedNutrition: Decodable {
-            let calories: Int
-            let protein: Double
-            let carbohydrates: Double
-            let fat: Double
-            let fiber: Double?
-            let sugar: Double?
-            let sodium: Double?
-        }
-
-        struct SeedRecipe: Decodable {
-            let title: String
-            let description: String?
-            let cuisine: String?
-            let mealType: String?
-            let difficulty: Int
-            let servings: Int
-            let prepTimeMinutes: Int?
-            let cookTimeMinutes: Int?
-            let dietaryTags: [String]
-            let ingredients: [SeedIngredient]
-            let steps: [SeedStep]
-            let nutrition: SeedNutrition?
-        }
-
-        let seedList: [SeedRecipe]
-        do {
-            seedList = try JSONDecoder().decode([SeedRecipe].self, from: data)
-        } catch {
-            return
-        }
-
-        seedRecipeStore = seedList.map { seed in
-            TrustedRecipeCanonicalizer.canonicalize(Recipe(
-                title: seed.title,
-                description: seed.description,
-                ingredients: seed.ingredients.map { ing in
-                    Ingredient(
-                        name: ing.name,
-                        quantity: ing.quantity,
-                        unit: MeasurementUnit.parse(ing.unit),
-                        category: FoodCategory.infer(from: ing.category),
-                        isOptional: ing.isOptional ?? false
-                    )
-                },
-                steps: seed.steps.map { step in
-                    RecipeStep(
-                        stepNumber: step.stepNumber,
-                        instruction: step.instruction,
-                        timerMinutes: step.timerMinutes,
-                        estimatedDurationSeconds: step.estimatedDurationSeconds
-                    )
-                },
-                servings: seed.servings,
-                prepTimeMinutes: seed.prepTimeMinutes,
-                cookTimeMinutes: seed.cookTimeMinutes,
-                difficulty: DifficultyLevel(rawValue: seed.difficulty) ?? .easy,
-                dietaryTags: seed.dietaryTags.compactMap { DietaryTag(rawValue: $0) },
-                mealType: seed.mealType.flatMap { MealType(rawValue: $0) },
-                cuisine: seed.cuisine.flatMap { CuisineType(rawValue: $0) },
-                source: .bundled,
-                nutrition: seed.nutrition.map {
-                    NutritionInfo(
-                        calories: $0.calories,
-                        protein: $0.protein,
-                        carbohydrates: $0.carbohydrates,
-                        fat: $0.fat,
-                        fiber: $0.fiber,
-                        sugar: $0.sugar,
-                        sodium: $0.sodium
-                    )
-                }
-            ))
-        }
-        seedRecipeIDs = Set(seedRecipeStore.map(\.id))
-        seedRecipeTitlesLowercased = Set(seedRecipeStore.map { $0.title.lowercased() })
-        mergedDiscoverRecipesDirty = true
     }
 
     // MARK: - Cache Persistence
@@ -350,4 +258,111 @@ final class RecipeRepository {
 private struct SeedRecipeCachePayload: Codable {
     let resourceFingerprint: String
     let recipes: [Recipe]
+}
+
+enum BundledSeedRecipeLoader {
+    static func resourceURL() -> URL? {
+        Bundle.main.url(forResource: "seed_recipes", withExtension: "json")
+    }
+
+    static func loadRecipes() -> [Recipe] {
+        guard let url = resourceURL(),
+              let data = try? Data(contentsOf: url) else {
+            return []
+        }
+
+        return loadRecipes(from: data)
+    }
+
+    static func loadRecipes(from data: Data) -> [Recipe] {
+        let seedList: [SeedRecipe]
+        do {
+            seedList = try JSONDecoder().decode([SeedRecipe].self, from: data)
+        } catch {
+            return []
+        }
+
+        return seedList.map { seed in
+            TrustedRecipeCanonicalizer.canonicalize(Recipe(
+                title: seed.title,
+                description: seed.description,
+                ingredients: seed.ingredients.map { ing in
+                    Ingredient(
+                        name: ing.name,
+                        quantity: ing.quantity,
+                        unit: MeasurementUnit.parse(ing.unit),
+                        category: FoodCategory.infer(from: ing.category),
+                        isOptional: ing.isOptional ?? false
+                    )
+                },
+                steps: seed.steps.map { step in
+                    RecipeStep(
+                        stepNumber: step.stepNumber,
+                        instruction: step.instruction,
+                        timerMinutes: step.timerMinutes,
+                        estimatedDurationSeconds: step.estimatedDurationSeconds
+                    )
+                },
+                servings: seed.servings,
+                prepTimeMinutes: seed.prepTimeMinutes,
+                cookTimeMinutes: seed.cookTimeMinutes,
+                difficulty: DifficultyLevel(rawValue: seed.difficulty) ?? .easy,
+                dietaryTags: seed.dietaryTags.compactMap { DietaryTag(rawValue: $0) },
+                mealType: seed.mealType.flatMap { MealType(rawValue: $0) },
+                cuisine: seed.cuisine.flatMap { CuisineType(rawValue: $0) },
+                source: .bundled,
+                nutrition: seed.nutrition.map {
+                    NutritionInfo(
+                        calories: $0.calories,
+                        protein: $0.protein,
+                        carbohydrates: $0.carbohydrates,
+                        fat: $0.fat,
+                        fiber: $0.fiber,
+                        sugar: $0.sugar,
+                        sodium: $0.sodium
+                    )
+                }
+            ))
+        }
+    }
+
+    private struct SeedIngredient: Decodable {
+        let name: String
+        let quantity: Double
+        let unit: String?
+        let category: String?
+        let isOptional: Bool?
+    }
+
+    private struct SeedStep: Decodable {
+        let stepNumber: Int
+        let instruction: String
+        let timerMinutes: Int?
+        let estimatedDurationSeconds: Int?
+    }
+
+    private struct SeedNutrition: Decodable {
+        let calories: Int
+        let protein: Double
+        let carbohydrates: Double
+        let fat: Double
+        let fiber: Double?
+        let sugar: Double?
+        let sodium: Double?
+    }
+
+    private struct SeedRecipe: Decodable {
+        let title: String
+        let description: String?
+        let cuisine: String?
+        let mealType: String?
+        let difficulty: Int
+        let servings: Int
+        let prepTimeMinutes: Int?
+        let cookTimeMinutes: Int?
+        let dietaryTags: [String]
+        let ingredients: [SeedIngredient]
+        let steps: [SeedStep]
+        let nutrition: SeedNutrition?
+    }
 }

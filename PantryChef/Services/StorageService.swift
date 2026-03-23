@@ -361,7 +361,10 @@ actor StorageService: StorageServiceProtocol {
             context.insert(PantryItemRecord(from: item))
         }
 
-        for recipe in Recipe.samples {
+        let bundledRecipes = BundledSeedRecipeLoader.loadRecipes()
+        let recipesToSeed = bundledRecipes.isEmpty ? Recipe.samples : bundledRecipes
+
+        for recipe in recipesToSeed {
             context.insert(try RecipeRecord(from: recipe))
         }
 

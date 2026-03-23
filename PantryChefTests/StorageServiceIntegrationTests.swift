@@ -10,7 +10,9 @@ final class StorageServiceIntegrationTests: XCTestCase {
         let recipes = try await sut.fetchRecipes()
 
         XCTAssertEqual(pantry.count, PantryItem.samples.count)
-        XCTAssertEqual(recipes.count, Recipe.samples.count)
+        XCTAssertEqual(recipes.count, BundledSeedRecipeLoader.loadRecipes().count)
+        XCTAssertTrue(recipes.contains { $0.title == "Fried Rice with Vegetables" })
+        XCTAssertTrue(recipes.flatMap(\.ingredients).allSatisfy(\.isResolved))
     }
 
     func testColdStartWithoutBootstrapStartsEmpty() async throws {

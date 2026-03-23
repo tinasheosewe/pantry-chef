@@ -1032,6 +1032,28 @@ final class IngredientMatcherTests: XCTestCase {
         XCTAssertTrue(match.substitutableIngredients.first?.substitutions.first?.inPantry == true)
     }
 
+    func testPantryMatchUsesSoySauceSubstitutionFromCatalogBackedPantry() {
+        let recipe = makeRecipe(ingredients: [
+            Ingredient(name: "soy sauce", quantity: 2, unit: .tablespoon, category: .condiments)
+        ])
+        let pantry = [
+            PantryItem(
+                name: "Coconut Aminos",
+                category: .condiments,
+                quantity: 250,
+                unit: .milliliter,
+                catalogItemID: "coconut-aminos"
+            )
+        ]
+
+        let match = recipe.pantryMatch(pantry: pantry)
+
+        XCTAssertFalse(match.canMake)
+        XCTAssertTrue(match.canMakeWithSubstitutions)
+        XCTAssertEqual(match.substitutableIngredients.first?.substitutions.first?.substituteItemID, "coconut-aminos")
+        XCTAssertTrue(match.substitutableIngredients.first?.substitutions.first?.inPantry == true)
+    }
+
     func testPantryContainsAllowsGenericVariantRecipeToMatchSpecificPantryCut() {
         let ingredient = Ingredient(
             name: "beef cheeks",
