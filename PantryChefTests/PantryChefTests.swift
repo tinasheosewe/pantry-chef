@@ -307,7 +307,6 @@ func makePreparedDish(
         servingsRemaining: servingsRemaining,
         storage: storage,
         useByDate: useByDate,
-        freshnessSource: useByDate == nil ? .none : .estimated,
         recipeID: recipeID,
         nutrition: nutrition
     )
@@ -2334,6 +2333,23 @@ final class AppStateTests: XCTestCase {
         XCTAssertEqual(dish?.name, "Black Bean Chili")
         XCTAssertEqual(dish?.mealTypes, [.dinner])
         XCTAssertEqual(dish?.nutrition?.calories, 420)
+    }
+
+    func testPreparedDishDraftUsesEstimatedFreshnessUntilUseByDateIsEdited() {
+        var draft = PreparedDishDraft()
+        draft.storage = .refrigerated
+        draft.name = "Soup"
+
+        let estimatedDish = draft.buildDish()
+
+        XCTAssertEqual(estimatedDish?.useByDate, draft.estimatedUseByDate)
+
+        let customDate = Calendar.current.date(byAdding: .day, value: 7, to: draft.dateAdded)!
+        draft.updateUseByDate(customDate)
+
+        let editedDish = draft.buildDish()
+
+        XCTAssertEqual(editedDish?.useByDate, customDate)
     }
 
     func testGenerateShoppingListFromMealPlanMergesAdditivelyIntoExistingCart() async {

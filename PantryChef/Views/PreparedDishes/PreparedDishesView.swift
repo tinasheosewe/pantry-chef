@@ -300,7 +300,6 @@ struct PreparedDishDetailView: View {
                 AppDetailCard("Freshness") {
                     AppDetailRowGroup {
                         AppDetailRow("Use by", value: useByText)
-                        AppDetailRow("Source", value: currentDish.freshnessSource == .estimated ? "Estimated" : "User provided")
                     }
                 }
 
@@ -447,6 +446,13 @@ struct PreparedDishEditorView: View {
         return appState.allRecipes.first { $0.id == recipeID }
     }
 
+    private var useByDateBinding: Binding<Date> {
+        Binding(
+            get: { draft.useByDateWasEdited ? draft.manualUseByDate : draft.estimatedUseByDate },
+            set: { draft.updateUseByDate($0) }
+        )
+    }
+
     var body: some View {
         AppNavigationSheet {
             AppScrollView {
@@ -534,15 +540,15 @@ struct PreparedDishEditorView: View {
                 .font(.headline)
                 .foregroundStyle(AppColors.darkText)
 
-            Toggle("Use estimated freshness", isOn: $draft.useEstimatedFreshness)
+            DatePicker("Use by date", selection: useByDateBinding, displayedComponents: .date)
 
-            if draft.useEstimatedFreshness {
-                Text("Estimated use by: \(draft.resolvedUseByDate.formatted(date: .abbreviated, time: .omitted))")
-                    .font(.subheadline)
-                    .foregroundStyle(AppColors.subtleText)
-            } else {
-                DatePicker("Use by date", selection: $draft.manualUseByDate, displayedComponents: .date)
-            }
+            Text(
+                draft.useByDateWasEdited
+                    ? "Use-by date set manually."
+                    : "Prepopulated from estimated freshness for \(draft.storage.rawValue.lowercased()) storage. Edit it if needed."
+            )
+            .font(.subheadline)
+            .foregroundStyle(AppColors.subtleText)
         }
         .padding()
         .cardStyle()

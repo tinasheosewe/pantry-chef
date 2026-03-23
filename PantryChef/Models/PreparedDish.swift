@@ -8,7 +8,6 @@ struct PreparedDish: Identifiable, Codable, Hashable {
     var storage: PantryStorage
     var useByDate: Date?
     var dateAdded: Date
-    var freshnessSource: PantryFreshnessSource
     var notes: String?
     var recipeID: UUID?
     var nutrition: NutritionInfo?
@@ -21,7 +20,6 @@ struct PreparedDish: Identifiable, Codable, Hashable {
         storage: PantryStorage,
         useByDate: Date? = nil,
         dateAdded: Date = Date(),
-        freshnessSource: PantryFreshnessSource = .none,
         notes: String? = nil,
         recipeID: UUID? = nil,
         nutrition: NutritionInfo? = nil
@@ -33,7 +31,6 @@ struct PreparedDish: Identifiable, Codable, Hashable {
         self.storage = storage
         self.useByDate = useByDate
         self.dateAdded = dateAdded
-        self.freshnessSource = useByDate == nil ? .none : freshnessSource
         self.notes = notes?.trimmed.nilIfEmpty
         self.recipeID = recipeID
         self.nutrition = nutrition
@@ -76,7 +73,6 @@ struct PreparedDish: Identifiable, Codable, Hashable {
             servingsRemaining: 2,
             storage: .refrigerated,
             useByDate: Calendar.current.date(byAdding: .day, value: 3, to: Date()),
-            freshnessSource: .estimated,
             notes: "Leftover from batch cook"
         ),
         PreparedDish(
@@ -84,8 +80,7 @@ struct PreparedDish: Identifiable, Codable, Hashable {
             mealTypes: [.lunch, .dinner],
             servingsRemaining: 1,
             storage: .refrigerated,
-            useByDate: Calendar.current.date(byAdding: .day, value: 1, to: Date()),
-            freshnessSource: .userProvided
+            useByDate: Calendar.current.date(byAdding: .day, value: 1, to: Date())
         ),
     ]
 
@@ -117,8 +112,8 @@ struct PreparedDishDraft: Identifiable, Hashable {
     var mealTypes: Set<MealType>
     var servingsRemaining: Int
     var storage: PantryStorage
-    var useEstimatedFreshness: Bool
     var manualUseByDate: Date
+    var useByDateWasEdited: Bool
     var dateAdded: Date
     var notes: String
     var recipeID: UUID?
@@ -133,8 +128,8 @@ struct PreparedDishDraft: Identifiable, Hashable {
         self.mealTypes = Set(dish?.mealTypes ?? [.lunch, .dinner])
         self.servingsRemaining = dish?.servingsRemaining ?? 1
         self.storage = dish?.storage ?? .refrigerated
-        self.useEstimatedFreshness = dish?.freshnessSource != .userProvided
         self.manualUseByDate = dish?.useByDate ?? PreparedDishFreshnessPolicy.estimatedUseByDate(for: dish?.storage ?? .refrigerated)
+        self.useByDateWasEdited = dish?.useByDate != nil
         self.dateAdded = dish?.dateAdded ?? Date()
         self.notes = dish?.notes ?? ""
         self.recipeID = dish?.recipeID
@@ -144,8 +139,12 @@ struct PreparedDishDraft: Identifiable, Hashable {
         self.fatText = dish?.nutrition.map { Self.decimalString($0.fat) } ?? ""
     }
 
+    var estimatedUseByDate: Date {
+        PreparedDishFreshnessPolicy.estimatedUseByDate(for: storage, referenceDate: dateAdded)
+    }
+
     var resolvedUseByDate: Date {
-        useEstimatedFreshness ? PreparedDishFreshnessPolicy.estimatedUseByDate(for: storage, referenceDate: dateAdded) : manualUseByDate
+        useByDateWasEdited ? manualUseByDate : estimatedUseByDate
     }
 
     var hasPartialNutrition: Bool {
@@ -184,7 +183,6 @@ struct PreparedDishDraft: Identifiable, Hashable {
             storage: storage,
             useByDate: resolvedUseByDate,
             dateAdded: dateAdded,
-            freshnessSource: useEstimatedFreshness ? .estimated : .userProvided,
             notes: notes,
             recipeID: recipeID,
             nutrition: nutrition
@@ -202,7 +200,6 @@ struct PreparedDishDraft: Identifiable, Hashable {
             storage: storage,
             useByDate: resolvedUseByDate,
             dateAdded: dateAdded,
-            freshnessSource: useEstimatedFreshness ? .estimated : .userProvided,
             notes: notes,
             recipeID: recipeID,
             nutrition: resolvedNutrition(using: recipe)
@@ -261,6 +258,11 @@ struct PreparedDishDraft: Identifiable, Hashable {
 
     func resolvedNutrition(using recipe: Recipe?) -> NutritionInfo? {
         nutrition ?? recipe?.nutrition
+    }
+
+    mutating func updateUseByDate(_ date: Date) {
+        manualUseByDate = date
+        useByDateWasEdited = true
     }
 
     mutating func applyLinkedRecipeDefaults(_ recipe: Recipe) {

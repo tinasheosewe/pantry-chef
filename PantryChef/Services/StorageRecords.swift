@@ -131,6 +131,7 @@ final class PreparedDishRecord {
     var storageRawValue: String
     var useByDate: Date?
     var dateAdded: Date
+    // Kept only to avoid unnecessary schema churn for existing stores.
     var freshnessSourceRawValue: String
     var notes: String?
     var recipeID: UUID?
@@ -151,7 +152,7 @@ final class PreparedDishRecord {
         storageRawValue = dish.storage.rawValue
         useByDate = dish.useByDate
         dateAdded = dish.dateAdded
-        freshnessSourceRawValue = dish.freshnessSource.rawValue
+        freshnessSourceRawValue = ""
         notes = dish.notes
         recipeID = dish.recipeID
         calories = dish.nutrition?.calories
@@ -171,7 +172,7 @@ final class PreparedDishRecord {
         storageRawValue = dish.storage.rawValue
         useByDate = dish.useByDate
         dateAdded = dish.dateAdded
-        freshnessSourceRawValue = dish.freshnessSource.rawValue
+        freshnessSourceRawValue = ""
         notes = dish.notes
         recipeID = dish.recipeID
         calories = dish.nutrition?.calories
@@ -211,7 +212,6 @@ final class PreparedDishRecord {
             storage: PantryStorage(rawValue: storageRawValue) ?? .refrigerated,
             useByDate: useByDate,
             dateAdded: dateAdded,
-            freshnessSource: PantryFreshnessSource(rawValue: freshnessSourceRawValue) ?? .none,
             notes: notes,
             recipeID: recipeID,
             nutrition: nutrition

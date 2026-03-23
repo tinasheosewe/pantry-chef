@@ -88,7 +88,6 @@ final class ViewSnapshotBaselineTests: XCTestCase {
             servingsRemaining: 3,
             storage: .refrigerated,
             useByDate: Calendar.current.date(byAdding: .day, value: 3, to: Date()),
-            freshnessSource: .estimated,
             recipeID: recipe.id,
             nutrition: recipe.nutrition
         )
@@ -98,7 +97,7 @@ final class ViewSnapshotBaselineTests: XCTestCase {
             of: NavigationStack { PreparedDishDetailView(dish: dish).environment(appState) },
             size: CGSize(width: 390, height: 844)
         )
-        XCTAssertEqual(hash, "f5cef72a10a3c5436c39a0fcff7f36c25b66c34c63f2d2d64bfd66b892d4e36e")
+        XCTAssertEqual(hash, "aceee8f041fb68b72d7f81eeac073124dc4f068e054291dccaf4025e989a095e")
     }
 
     private func snapshotHash<V: View>(of view: V, size: CGSize) throws -> String {
