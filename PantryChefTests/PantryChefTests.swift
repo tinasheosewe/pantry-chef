@@ -1745,6 +1745,69 @@ final class AppStateTests: XCTestCase {
         XCTAssertEqual(storage.updatePantryItemCallCount, 1)
     }
 
+    func testAddPantryItemMergeKeepsEarlierExpiryDate() async {
+        let (appState, _, _) = makeTestAppState()
+        let laterExpiry = Calendar.current.date(byAdding: .day, value: 5, to: Date())!
+        let earlierExpiry = Calendar.current.date(byAdding: .day, value: 2, to: Date())!
+
+        await appState.addPantryItem(PantryItem(
+            name: "Sourdough Bread",
+            category: .grains,
+            quantity: 1,
+            unit: .whole,
+            expiryDate: laterExpiry,
+            catalogItemID: "bread",
+            facets: [.init(key: .variant, value: "sourdough")],
+            freshnessSource: .userProvided
+        ))
+
+        await appState.addPantryItem(PantryItem(
+            name: "Sourdough Bread",
+            category: .grains,
+            quantity: 1,
+            unit: .whole,
+            expiryDate: earlierExpiry,
+            catalogItemID: "bread",
+            facets: [.init(key: .variant, value: "sourdough")],
+            freshnessSource: .estimated
+        ))
+
+        XCTAssertEqual(appState.pantryItems.count, 1)
+        XCTAssertEqual(appState.pantryItems[0].quantity, 2)
+        XCTAssertEqual(appState.pantryItems[0].expiryDate?.timeIntervalSince1970, earlierExpiry.timeIntervalSince1970, accuracy: 1)
+        XCTAssertEqual(appState.pantryItems[0].freshnessSource, .estimated)
+    }
+
+    func testAddPantryItemMergeAdoptsIncomingExpiryWhenExistingHasNone() async {
+        let (appState, _, _) = makeTestAppState()
+        let incomingExpiry = Calendar.current.date(byAdding: .day, value: 4, to: Date())!
+
+        await appState.addPantryItem(PantryItem(
+            name: "Sourdough Bread",
+            category: .grains,
+            quantity: 1,
+            unit: .whole,
+            catalogItemID: "bread",
+            facets: [.init(key: .variant, value: "sourdough")]
+        ))
+
+        await appState.addPantryItem(PantryItem(
+            name: "Sourdough Bread",
+            category: .grains,
+            quantity: 1,
+            unit: .whole,
+            expiryDate: incomingExpiry,
+            catalogItemID: "bread",
+            facets: [.init(key: .variant, value: "sourdough")],
+            freshnessSource: .estimated
+        ))
+
+        XCTAssertEqual(appState.pantryItems.count, 1)
+        XCTAssertEqual(appState.pantryItems[0].quantity, 2)
+        XCTAssertEqual(appState.pantryItems[0].expiryDate?.timeIntervalSince1970, incomingExpiry.timeIntervalSince1970, accuracy: 1)
+        XCTAssertEqual(appState.pantryItems[0].freshnessSource, .estimated)
+    }
+
     func testAddPantryItemKeepsDifferentFacetVariantsSeparate() async {
         let (appState, _, _) = makeTestAppState()
         await appState.addPantryItem(makePantryItem(
