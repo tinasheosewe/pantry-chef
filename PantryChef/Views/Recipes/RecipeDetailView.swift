@@ -981,7 +981,7 @@ struct AddRecipeView: View {
     @Environment(AppState.self) private var appState
     @State private var inputText = ""
     @State private var isParsing = false
-    @State private var parsedRecipe: Recipe?
+    @State private var importedRecipeDraft: AppState.ReviewableImportedRecipe?
     @State private var errorMessage: String?
 
     let onSave: (Recipe) -> Void
@@ -993,9 +993,9 @@ struct AddRecipeView: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
-                if let recipe = parsedRecipe {
+                if let importedRecipe = importedRecipeDraft {
                     // Structured editor for parsed recipe
-                    RecipeEditorView(recipe: recipe, isNewRecipe: true) { saved in
+                    RecipeEditorView(importedRecipe: importedRecipe, isNewRecipe: true) { saved in
                         onSave(saved)
                         dismiss()
                     }
@@ -1004,16 +1004,16 @@ struct AddRecipeView: View {
                 }
             }
             .background(AppColors.background)
-            .navigationTitle(parsedRecipe != nil ? "Review Recipe" : "Add Recipe")
+            .navigationTitle(importedRecipeDraft != nil ? "Review Recipe" : "Add Recipe")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") { dismiss() }
                 }
-                if parsedRecipe != nil {
+                if importedRecipeDraft != nil {
                     ToolbarItem(placement: .primaryAction) {
                         Button {
-                            parsedRecipe = nil
+                            importedRecipeDraft = nil
                         } label: {
                             HStack(spacing: 4) {
                                 Image(systemName: "arrow.uturn.backward")
@@ -1143,13 +1143,13 @@ struct AddRecipeView: View {
 
         if text.isValidURL {
             if let recipe = await appState.importRecipeFromURL(text) {
-                parsedRecipe = recipe
+                importedRecipeDraft = recipe
             } else {
                 errorMessage = "Couldn't parse recipe from that URL. Try pasting the recipe text instead."
             }
         } else {
             if let recipe = await appState.importRecipeFromText(text) {
-                parsedRecipe = recipe
+                importedRecipeDraft = recipe
             } else {
                 errorMessage = "Couldn't parse the text into a recipe. Try including a title, ingredients, and steps."
             }
@@ -1191,7 +1191,7 @@ struct ImportRecipeURLView: View {
 
                 Button {
                     viewModel.importFromURL(urlString) {
-                        if viewModel.importedRecipe != nil {
+                        if viewModel.importedRecipeDraft != nil {
                             dismiss()
                         }
                     }

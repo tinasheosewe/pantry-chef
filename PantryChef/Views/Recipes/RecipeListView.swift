@@ -124,19 +124,19 @@ struct RecipeListView: View {
                 }
             }
             .appNavigationSheet(item: Binding(
-                get: { viewModel.importedRecipe },
-                set: { viewModel.importedRecipe = $0 }
-            )) { recipe in
-                RecipeEditorView(recipe: recipe, isNewRecipe: true) { saved in
+                get: { viewModel.importedRecipeDraft },
+                set: { viewModel.importedRecipeDraft = $0 }
+            )) { importedRecipe in
+                RecipeEditorView(importedRecipe: importedRecipe, isNewRecipe: true) { saved in
                     viewModel.addRecipe(saved)
-                    viewModel.importedRecipe = nil
+                    viewModel.importedRecipeDraft = nil
                 }
                 .navigationTitle("Review Recipe")
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
                     ToolbarItem(placement: .cancellationAction) {
                         Button("Cancel") {
-                            viewModel.importedRecipe = nil
+                            viewModel.importedRecipeDraft = nil
                         }
                     }
                 }

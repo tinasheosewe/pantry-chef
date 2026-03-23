@@ -17,6 +17,7 @@ struct RecipeEditorView: View {
     let isNewRecipe: Bool
     let onSave: (Recipe) -> Void
     let onSaveAsNew: ((Recipe) -> Void)?
+    private let importedRecipeDraft: AppState.ReviewableImportedRecipe?
 
     private let maxServings = 100
 
@@ -38,6 +39,22 @@ struct RecipeEditorView: View {
         self.isNewRecipe = isNewRecipe
         self.onSave = onSave
         self.onSaveAsNew = onSaveAsNew
+        self.importedRecipeDraft = nil
+    }
+
+    init(
+        importedRecipe: AppState.ReviewableImportedRecipe,
+        isNewRecipe: Bool = true,
+        onSave: @escaping (Recipe) -> Void,
+        onSaveAsNew: ((Recipe) -> Void)? = nil
+    ) {
+        let recipe = importedRecipe.recipe
+        _recipe = State(initialValue: recipe)
+        _showNutrition = State(initialValue: recipe.nutrition != nil)
+        self.isNewRecipe = isNewRecipe
+        self.onSave = onSave
+        self.onSaveAsNew = onSaveAsNew
+        self.importedRecipeDraft = importedRecipe
     }
 
     var body: some View {
@@ -756,19 +773,21 @@ struct RecipeEditorView: View {
     }
 
     private func completeSave(with resolvedRecipe: Recipe) {
-        var recipeToSave = resolvedRecipe
-
-        if recipeToSave.source.shouldConvertToUserRecipeOnSave {
-            recipeToSave.source = .user
+        let recipeToSave: Recipe
+        if let importedRecipeDraft {
+            recipeToSave = importedRecipeDraft.reviewed(resolvedRecipe)
+        } else {
+            recipeToSave = resolvedRecipe
         }
 
         if pendingSaveAsNew, let onSaveAsNew {
-            recipeToSave.id = UUID()
-            recipeToSave.dateAdded = Date()
-            recipeToSave.timesCooked = 0
-            recipeToSave.source = .user
-            recipeToSave.isFavorite = false
-            onSaveAsNew(recipeToSave)
+            var recipeToSaveAsNew = recipeToSave
+            recipeToSaveAsNew.id = UUID()
+            recipeToSaveAsNew.dateAdded = Date()
+            recipeToSaveAsNew.timesCooked = 0
+            recipeToSaveAsNew.source = .user
+            recipeToSaveAsNew.isFavorite = false
+            onSaveAsNew(recipeToSaveAsNew)
         } else {
             onSave(recipeToSave)
         }

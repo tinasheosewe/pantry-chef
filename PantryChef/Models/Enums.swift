@@ -387,15 +387,6 @@ enum RecipeSource: Codable, Hashable {
             return false
         }
     }
-
-    var shouldConvertToUserRecipeOnSave: Bool {
-        switch self {
-        case .imported:
-            return true
-        case .user, .bundled, .aiGenerated:
-            return false
-        }
-    }
 }
 
 // MARK: - Substitution Impact

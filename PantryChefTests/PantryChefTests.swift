@@ -1537,10 +1537,19 @@ final class EnumTests: XCTestCase {
         XCTAssertFalse(RecipeSource.imported.shouldAutoResolveIngredientsWithoutReview)
     }
 
-    func testRecipeSourceImportedDraftConvertsOnSavePolicy() {
-        XCTAssertTrue(RecipeSource.imported.shouldConvertToUserRecipeOnSave)
-        XCTAssertFalse(RecipeSource.user.shouldConvertToUserRecipeOnSave)
-        XCTAssertFalse(RecipeSource.aiGenerated.shouldConvertToUserRecipeOnSave)
+    func testReviewableImportedRecipeConvertsReviewedRecipeToUserSource() throws {
+        let importedRecipe = Recipe(
+            title: "Imported",
+            ingredients: [Ingredient(name: "garlic")],
+            steps: [],
+            source: .imported
+        )
+        let draft = try XCTUnwrap(AppState.ReviewableImportedRecipe(recipe: importedRecipe))
+
+        let reviewed = draft.reviewed(importedRecipe)
+
+        XCTAssertEqual(reviewed.source, .user)
+        XCTAssertEqual(reviewed.title, importedRecipe.title)
     }
 
     // MARK: - MeasurementUnit
@@ -2680,7 +2689,8 @@ final class AppStateTests: XCTestCase {
 
         let result = await appState.importRecipeFromURL("https://example.com/recipe")
 
-        XCTAssertEqual(result?.source, .imported)
+        XCTAssertEqual(result?.recipe.source, .imported)
+        XCTAssertEqual(result?.recipe.title, "Imported")
         XCTAssertEqual(ai.parseRecipeFromURLCallCount, 1)
     }
 
@@ -2704,7 +2714,8 @@ final class AppStateTests: XCTestCase {
 
         let result = await appState.importRecipeFromText("garlic pasta")
 
-        XCTAssertEqual(result?.source, .imported)
+        XCTAssertEqual(result?.recipe.source, .imported)
+        XCTAssertEqual(result?.recipe.title, "Imported Text")
         XCTAssertEqual(ai.parseRecipeFromTextCallCount, 1)
     }
 
@@ -3152,9 +3163,9 @@ final class RecipeViewModelTests: XCTestCase {
         )
         vm.importFromURL("https://example.com/recipe")
         await waitUntil { ai.parseRecipeFromURLCallCount == 1 }
-        XCTAssertNotNil(vm.importedRecipe)
-        XCTAssertEqual(vm.importedRecipe?.title, "Imported")
-        XCTAssertEqual(vm.importedRecipe?.source, .imported)
+        XCTAssertNotNil(vm.importedRecipeDraft)
+        XCTAssertEqual(vm.importedRecipeDraft?.recipe.title, "Imported")
+        XCTAssertEqual(vm.importedRecipeDraft?.recipe.source, .imported)
         XCTAssertEqual(ai.parseRecipeFromURLCallCount, 1)
     }
 
@@ -3163,7 +3174,7 @@ final class RecipeViewModelTests: XCTestCase {
         ai.importResultToReturn = nil
         vm.importFromURL("https://bad.url")
         await waitUntil { ai.parseRecipeFromURLCallCount == 1 }
-        XCTAssertNil(vm.importedRecipe)
+        XCTAssertNil(vm.importedRecipeDraft)
     }
 
 }

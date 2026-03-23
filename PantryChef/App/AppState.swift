@@ -124,6 +124,26 @@ final class AppState {
         var recipe: Recipe { rawValue }
     }
 
+    struct ReviewableImportedRecipe: Identifiable, Hashable, Sendable {
+        fileprivate let rawValue: Recipe
+
+        init?(recipe: Recipe) {
+            guard recipe.source == .imported else {
+                return nil
+            }
+            self.rawValue = recipe
+        }
+
+        var id: UUID { rawValue.id }
+        var recipe: Recipe { rawValue }
+
+        func reviewed(_ editedRecipe: Recipe) -> Recipe {
+            var reviewedRecipe = editedRecipe
+            reviewedRecipe.source = .user
+            return reviewedRecipe
+        }
+    }
+
     private struct DiscoverRecipeRecord: Identifiable, Hashable, Sendable {
         var recipe: Recipe
 
@@ -708,20 +728,20 @@ final class AppState {
         return await normalizedAIRecipe(recipe)
     }
 
-    func importRecipeFromURL(_ urlString: String) async -> Recipe? {
+    func importRecipeFromURL(_ urlString: String) async -> ReviewableImportedRecipe? {
         guard let result = await aiService.parseRecipeFromURL(urlString) else {
             return nil
         }
 
-        return result.toRecipe(source: .imported)
+        return ReviewableImportedRecipe(recipe: result.toRecipe(source: .imported))
     }
 
-    func importRecipeFromText(_ text: String) async -> Recipe? {
+    func importRecipeFromText(_ text: String) async -> ReviewableImportedRecipe? {
         guard let result = await aiService.parseRecipeFromText(text) else {
             return nil
         }
 
-        return result.toRecipe(source: .imported)
+        return ReviewableImportedRecipe(recipe: result.toRecipe(source: .imported))
     }
 
     func getSubstitutions(for recipe: Recipe) async -> [SubstitutionSuggestion] {

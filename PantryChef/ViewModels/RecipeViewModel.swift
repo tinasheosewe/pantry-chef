@@ -15,7 +15,7 @@ final class RecipeViewModel: AsyncActionHandling {
     var showCanMakeOnly = false          // Filter to recipes user can make
     var showWithSubstitutions = true     // Include recipes makeable with subs
     var isLoading = false
-    var importedRecipe: Recipe?
+    var importedRecipeDraft: AppState.ReviewableImportedRecipe?
 
     @ObservationIgnored private let localFilterDebouncer = TaskDebouncer()
     @ObservationIgnored private var cachedUserFilterKey: UserFilterCacheKey?
@@ -345,7 +345,7 @@ final class RecipeViewModel: AsyncActionHandling {
     func importFromURL(_ urlString: String, onComplete: (@MainActor () -> Void)? = nil) {
         runLoadingTask { [self] in
             if let recipe = await appState.importRecipeFromURL(urlString) {
-                self.importedRecipe = recipe
+                self.importedRecipeDraft = recipe
             }
             onComplete?()
         }
