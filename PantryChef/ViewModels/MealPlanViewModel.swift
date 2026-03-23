@@ -5,6 +5,7 @@ import SwiftUI
 final class MealPlanViewModel: AsyncActionHandling {
     var weekStartDate: Date
     var showMealPicker = false
+    var showMultiMealPicker = false
     var selectedSlot: MealSlot?
     var isLoading = false
 
@@ -15,6 +16,13 @@ final class MealPlanViewModel: AsyncActionHandling {
         let id = UUID()
         let date: Date
         let mealType: MealType
+        let replaceExisting: Bool
+
+        init(date: Date, mealType: MealType, replaceExisting: Bool = true) {
+            self.date = date
+            self.mealType = mealType
+            self.replaceExisting = replaceExisting
+        }
     }
 
     init(appState: AppState) {
@@ -34,8 +42,8 @@ final class MealPlanViewModel: AsyncActionHandling {
         }
     }
 
-    func entriesFor(date: Date, mealType: MealType) -> MealPlanEntry? {
-        entries.first { entry in
+    func entriesFor(date: Date, mealType: MealType) -> [MealPlanEntry] {
+        entries.filter { entry in
             Calendar.current.isDate(entry.date, inSameDayAs: date) && entry.mealType == mealType
         }
     }
@@ -64,15 +72,31 @@ final class MealPlanViewModel: AsyncActionHandling {
         }
     }
 
+    func assignSelections(_ selections: [MealSelectionItem], to slot: MealSlot) {
+        runTask { [self] in
+            await self.mealPlanActions.assignSelections(selections, to: slot)
+        }
+    }
+
     func removeEntry(_ entry: MealPlanEntry) {
         runTask { [self] in
             await self.mealPlanActions.removeEntry(entry)
         }
     }
 
-    func selectSlot(date: Date, mealType: MealType) {
-        selectedSlot = MealSlot(date: date, mealType: mealType)
-        showMealPicker = true
+    func removeEntries(_ entries: [MealPlanEntry]) {
+        runTask { [self] in
+            await self.mealPlanActions.removeEntries(entries)
+        }
+    }
+
+    func selectSlot(date: Date, mealType: MealType, replaceExisting: Bool = true, allowsMultipleSelection: Bool = false) {
+        selectedSlot = MealSlot(date: date, mealType: mealType, replaceExisting: replaceExisting)
+        if allowsMultipleSelection {
+            showMultiMealPicker = true
+        } else {
+            showMealPicker = true
+        }
     }
 
     func generateShoppingList() {

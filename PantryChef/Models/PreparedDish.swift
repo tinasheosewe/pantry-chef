@@ -286,4 +286,23 @@ struct PreparedDishDraft: Identifiable, Hashable {
             fatText = nutritionStrings.fat
         }
     }
+
+    mutating func syncLinkedRecipe(_ recipe: Recipe) {
+        name = recipe.title
+        mealTypes = recipe.mealType.map { [$0] } ?? []
+        servingsRemaining = max(1, recipe.servings)
+
+        if let nutrition = recipe.nutrition {
+            let nutritionStrings = Self.nutritionStrings(from: nutrition)
+            caloriesText = String(nutrition.calories)
+            proteinText = nutritionStrings.protein
+            carbsText = nutritionStrings.carbs
+            fatText = nutritionStrings.fat
+        } else {
+            caloriesText = ""
+            proteinText = ""
+            carbsText = ""
+            fatText = ""
+        }
+    }
 }

@@ -2352,6 +2352,82 @@ final class AppStateTests: XCTestCase {
         XCTAssertEqual(editedDish?.useByDate, customDate)
     }
 
+    func testPreparedDishDraftSyncLinkedRecipeReplacesExistingLinkedFields() {
+        let originalRecipe = makeRecipe(
+            title: "Original Chili",
+            servings: 2,
+            mealType: .lunch,
+            nutrition: NutritionInfo(calories: 300, protein: 20, carbohydrates: 15, fat: 12, fiber: nil, sugar: nil, sodium: nil)
+        )
+        let updatedRecipe = makeRecipe(
+            title: "Updated Curry",
+            servings: 5,
+            mealType: .dinner,
+            nutrition: NutritionInfo(calories: 640, protein: 32, carbohydrates: 48, fat: 22, fiber: nil, sugar: nil, sodium: nil)
+        )
+
+        var draft = PreparedDishDraft()
+        draft.recipeID = originalRecipe.id
+        draft.syncLinkedRecipe(originalRecipe)
+        draft.recipeID = updatedRecipe.id
+        draft.syncLinkedRecipe(updatedRecipe)
+
+        let dish = draft.buildDish(using: updatedRecipe)
+
+        XCTAssertEqual(dish?.name, "Updated Curry")
+        XCTAssertEqual(dish?.mealTypes, [.dinner])
+        XCTAssertEqual(dish?.servingsRemaining, 5)
+        XCTAssertEqual(dish?.nutrition?.calories, 640)
+    }
+
+    func testUpdateRecipeSyncsLinkedPreparedDishes() async {
+        let (appState, storage, _) = makeTestAppState()
+        var recipe = makeRecipe(
+            title: "Lentil Soup",
+            servings: 2,
+            mealType: .lunch,
+            nutrition: NutritionInfo(calories: 320, protein: 18, carbohydrates: 36, fat: 8, fiber: nil, sugar: nil, sodium: nil)
+        )
+        await appState.addRecipe(recipe)
+
+        let linkedDish = PreparedDish(
+            name: "Lentil Soup",
+            mealTypes: [.lunch],
+            servingsRemaining: 2,
+            storage: .refrigerated,
+            recipeID: recipe.id,
+            nutrition: recipe.nutrition
+        )
+        await appState.addPreparedDish(linkedDish)
+
+        recipe.title = "Creamy Lentil Soup"
+        recipe.servings = 4
+        recipe.mealType = .dinner
+        recipe.nutrition = NutritionInfo(calories: 480, protein: 24, carbohydrates: 42, fat: 18, fiber: nil, sugar: nil, sodium: nil)
+
+        await appState.updateRecipe(recipe)
+
+        XCTAssertEqual(appState.preparedDishes.first?.name, "Creamy Lentil Soup")
+        XCTAssertEqual(appState.preparedDishes.first?.mealTypes, [.dinner])
+        XCTAssertEqual(appState.preparedDishes.first?.servingsRemaining, 4)
+        XCTAssertEqual(appState.preparedDishes.first?.nutrition?.calories, 480)
+        XCTAssertEqual(storage.updatePreparedDishCallCount, 1)
+    }
+
+    func testAddToMealPlanAllowsMultipleEntriesInSameSlot() async {
+        let (appState, storage, _) = makeTestAppState()
+        let date = Date()
+        let first = MealPlanEntry(date: date, mealType: .dinner, recipe: makeRecipe(title: "Pasta"))
+        let second = MealPlanEntry(date: date, mealType: .dinner, preparedDish: makePreparedDish(name: "Leftover Salad"))
+
+        await appState.addToMealPlan(first)
+        await appState.addToMealPlan(second)
+
+        XCTAssertEqual(appState.mealPlan.count, 2)
+        XCTAssertEqual(storage.addMealPlanCallCount, 2)
+        XCTAssertEqual(storage.mealPlanStore.count, 2)
+    }
+
     func testGenerateShoppingListFromMealPlanMergesAdditivelyIntoExistingCart() async {
         let (appState, _, _) = makeTestAppState()
 
@@ -5193,7 +5269,7 @@ final class ErrorHandlingTests: XCTestCase {
         appState.mealPlan = [stale]
         storage.mealPlanStore = [stale]
 
-        await appState.addToMealPlan(replacement)
+        await appState.addToMealPlan(replacement, replaceExistingSlot: true)
 
         XCTAssertEqual(appState.mealPlan.count, 1)
         XCTAssertEqual(appState.mealPlan.first?.recipe?.title, "Curry")

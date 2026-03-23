@@ -43,9 +43,7 @@ struct PreparedDishesView: View {
                             .buttonStyle(.plain)
 
                             Button {
-                                Task {
-                                    _ = await viewModel.appState.adjustPreparedDishServings(dish, delta: -1)
-                                }
+                                viewModel.consumeServing(dish)
                             } label: {
                                 quickAdjustButton(for: dish)
                             }
@@ -81,6 +79,21 @@ struct PreparedDishesView: View {
                 .listStyle(.insetGrouped)
             }
         }
+        .overlay(alignment: .top) {
+            if let feedback = viewModel.feedbackBanner {
+                Text(feedback.message)
+                    .font(.subheadline)
+                    .foregroundStyle(AppColors.darkText)
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 10)
+                    .background(AppColors.cardBackground)
+                    .clipShape(Capsule())
+                    .shadow(color: .black.opacity(0.08), radius: 10, y: 3)
+                    .padding(.top, isEmbedded ? 8 : 12)
+                    .transition(.move(edge: .top).combined(with: .opacity))
+            }
+        }
+        .animation(.easeInOut(duration: 0.2), value: viewModel.feedbackBanner)
         .toolbar {
             if !isEmbedded {
                 ToolbarItem(placement: .primaryAction) {
@@ -436,7 +449,7 @@ struct PreparedDishEditorView: View {
         var initialDraft = PreparedDishDraft(dish: dish)
         if dish == nil, let seedRecipe {
             initialDraft.recipeID = seedRecipe.id
-            initialDraft.applyLinkedRecipeDefaults(seedRecipe)
+            initialDraft.syncLinkedRecipe(seedRecipe)
         }
         _draft = State(initialValue: initialDraft)
     }
@@ -487,7 +500,7 @@ struct PreparedDishEditorView: View {
                     preparedDishes: [],
                     onSelectRecipe: { recipe in
                         draft.recipeID = recipe.id
-                        draft.applyLinkedRecipeDefaults(recipe)
+                        draft.syncLinkedRecipe(recipe)
                     },
                     onSelectPreparedDish: { _ in }
                 )
@@ -503,12 +516,6 @@ struct PreparedDishEditorView: View {
 
             TextField("Dish name", text: $draft.name)
                 .textFieldStyle(.roundedBorder)
-
-            if let linkedRecipe, draft.name.trimmed.isEmpty {
-                Text("Will use \(linkedRecipe.title) from the linked recipe.")
-                    .font(.caption)
-                    .foregroundStyle(AppColors.subtleText)
-            }
 
             VStack(alignment: .leading, spacing: 8) {
                 Text("Meal types")
@@ -573,7 +580,7 @@ struct PreparedDishEditorView: View {
             }
 
             if linkedRecipe != nil {
-                Text("If name, meal type, or nutrition are left blank, they inherit from the linked recipe.")
+                Text("Changing the linked recipe updates the name, meal type, servings, and nutrition to match it.")
                     .font(.caption)
                     .foregroundStyle(AppColors.subtleText)
             }

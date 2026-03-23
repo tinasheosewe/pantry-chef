@@ -60,3 +60,35 @@ struct MealPlanEntry: Identifiable, Codable, Hashable {
         ]
     }()
 }
+
+enum MealSelectionItem: Identifiable, Hashable {
+    case recipe(Recipe)
+    case preparedDish(PreparedDish)
+
+    var id: String {
+        switch self {
+        case .recipe(let recipe):
+            return "recipe:\(recipe.id.uuidString)"
+        case .preparedDish(let dish):
+            return "prepared:\(dish.id.uuidString)"
+        }
+    }
+
+    var displayName: String {
+        switch self {
+        case .recipe(let recipe):
+            return recipe.title
+        case .preparedDish(let dish):
+            return dish.name
+        }
+    }
+
+    func makeEntry(date: Date, mealType: MealType) -> MealPlanEntry {
+        switch self {
+        case .recipe(let recipe):
+            return MealPlanEntry(date: date, mealType: mealType, recipe: recipe)
+        case .preparedDish(let dish):
+            return MealPlanEntry(date: date, mealType: mealType, preparedDish: dish)
+        }
+    }
+}

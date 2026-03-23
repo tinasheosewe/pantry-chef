@@ -130,7 +130,7 @@ struct MealPlanActions {
             mealType: slot.mealType,
             recipe: recipe
         )
-        await appState.addToMealPlan(entry)
+        await appState.addToMealPlan(entry, replaceExistingSlot: slot.replaceExisting)
     }
 
     func assignPreparedDish(_ dish: PreparedDish, to slot: MealPlanViewModel.MealSlot) async {
@@ -139,11 +139,22 @@ struct MealPlanActions {
             mealType: slot.mealType,
             preparedDish: dish
         )
-        await appState.addToMealPlan(entry)
+        await appState.addToMealPlan(entry, replaceExistingSlot: slot.replaceExisting)
+    }
+
+    func assignSelections(_ selections: [MealSelectionItem], to slot: MealPlanViewModel.MealSlot) async {
+        let entries = selections.map { $0.makeEntry(date: slot.date, mealType: slot.mealType) }
+        await appState.addToMealPlan(entries, replaceExistingSlot: slot.replaceExisting)
     }
 
     func removeEntry(_ entry: MealPlanEntry) async {
         await appState.removeFromMealPlan(entry)
+    }
+
+    func removeEntries(_ entries: [MealPlanEntry]) async {
+        for entry in entries {
+            await appState.removeFromMealPlan(entry)
+        }
     }
 
     func generateShoppingList() async {

@@ -636,6 +636,8 @@ final class AppState {
                 discoverRecipeStore[index] = discoverRecord
                 markDiscoverRecipesChanged()
             }
+
+            await syncPreparedDishesLinked(to: updated)
         } catch {
             errorMessage = error.localizedDescription
         }
@@ -831,18 +833,28 @@ final class AppState {
     }
 
     // MARK: - Meal Plan Actions
-    func addToMealPlan(_ entry: MealPlanEntry) async {
-        guard entry.isPlanned else { return }
+    func addToMealPlan(_ entry: MealPlanEntry, replaceExistingSlot: Bool = false) async {
+        await addToMealPlan([entry], replaceExistingSlot: replaceExistingSlot)
+    }
+
+    func addToMealPlan(_ entries: [MealPlanEntry], replaceExistingSlot: Bool = false) async {
+        let plannedEntries = entries.filter(\.isPlanned)
+        guard !plannedEntries.isEmpty else { return }
 
         do {
-            let conflictingEntries = mealPlan.filter { isSameMealSlot($0, entry) }
-            for conflict in conflictingEntries {
-                try await storageService.deleteMealPlanEntry(conflict)
+            if replaceExistingSlot, let slotSeed = plannedEntries.first {
+                let conflictingEntries = mealPlan.filter { isSameMealSlot($0, slotSeed) }
+                for conflict in conflictingEntries {
+                    try await storageService.deleteMealPlanEntry(conflict)
+                }
+                mealPlan.removeAll { isSameMealSlot($0, slotSeed) }
             }
 
-            let saved = try await storageService.addMealPlanEntry(entry)
-            mealPlan.removeAll { isSameMealSlot($0, saved) }
-            mealPlan.append(saved)
+            for entry in plannedEntries {
+                let saved = try await storageService.addMealPlanEntry(entry)
+                mealPlan.append(saved)
+            }
+
             setMealPlanEntries(sanitizeMealPlanEntries(mealPlan).visibleEntries)
         } catch {
             errorMessage = error.localizedDescription
@@ -1046,7 +1058,7 @@ final class AppState {
             IngredientResolutionRequest(
                 ingredientID: ingredientDraft.ingredient.id,
                 rawName: ingredientDraft.ingredient.rawName,
-                quantity: ingredientDraft.ingredient.quantity ?? 0,
+                quantity: ingredientDraft.ingredient.quantity,
                 unit: ingredientDraft.ingredient.unit,
                 category: ingredientDraft.ingredient.category,
                 notes: ingredientDraft.ingredient.notes,
@@ -1423,32 +1435,26 @@ final class AppState {
     }
 
     private func sanitizeMealPlanEntries(_ entries: [MealPlanEntry]) -> SanitizedMealPlan {
-        var latestEntryBySlot: [MealPlanSlotKey: MealPlanEntry] = [:]
-        var slotOrder: [MealPlanSlotKey] = []
         var removedEntries: [MealPlanEntry] = []
+        var visibleEntries: [MealPlanEntry] = []
 
         for entry in entries.sorted(by: { $0.date < $1.date }) {
             guard entry.isPlanned else {
                 removedEntries.append(entry)
                 continue
             }
-
-            let slotKey = MealPlanSlotKey(entry)
-            if let replaced = latestEntryBySlot.updateValue(entry, forKey: slotKey) {
-                removedEntries.append(replaced)
-            } else {
-                slotOrder.append(slotKey)
-            }
+            visibleEntries.append(entry)
         }
 
-        let visibleEntries = slotOrder
-            .compactMap { latestEntryBySlot[$0] }
-            .sorted { lhs, rhs in
-                if Calendar.current.isDate(lhs.date, inSameDayAs: rhs.date) {
-                    return lhs.mealType.rawValue < rhs.mealType.rawValue
+        visibleEntries.sort { lhs, rhs in
+            if Calendar.current.isDate(lhs.date, inSameDayAs: rhs.date) {
+                if lhs.mealType == rhs.mealType {
+                    return lhs.displayName.localizedCaseInsensitiveCompare(rhs.displayName) == .orderedAscending
                 }
-                return lhs.date < rhs.date
+                return lhs.mealType.rawValue < rhs.mealType.rawValue
             }
+            return lhs.date < rhs.date
+        }
 
         return SanitizedMealPlan(visibleEntries: visibleEntries, removedEntries: removedEntries)
     }
@@ -1467,6 +1473,30 @@ final class AppState {
 
     private func isSameMealSlot(_ lhs: MealPlanEntry, _ rhs: MealPlanEntry) -> Bool {
         Calendar.current.isDate(lhs.date, inSameDayAs: rhs.date) && lhs.mealType == rhs.mealType
+    }
+
+    private func syncPreparedDishesLinked(to recipe: Recipe) async {
+        let linkedDishes = preparedDishes.filter { $0.recipeID == recipe.id }
+        guard !linkedDishes.isEmpty else { return }
+
+        for dish in linkedDishes {
+            var draft = PreparedDishDraft(dish: dish)
+            draft.syncLinkedRecipe(recipe)
+
+            guard let syncedDish = draft.buildDish(using: recipe) else { continue }
+
+            do {
+                let updatedDish = try await storageService.updatePreparedDish(syncedDish)
+                if let index = preparedDishes.firstIndex(where: { $0.id == updatedDish.id }) {
+                    preparedDishes[index] = updatedDish
+                }
+            } catch {
+                errorMessage = error.localizedDescription
+                return
+            }
+        }
+
+        markPreparedDishesChanged()
     }
 
     private func removeFromMyRecipes(id: UUID) async {
@@ -1510,16 +1540,6 @@ private enum QuantityMergeOutcome {
 private struct SanitizedMealPlan {
     let visibleEntries: [MealPlanEntry]
     let removedEntries: [MealPlanEntry]
-}
-
-private struct MealPlanSlotKey: Hashable {
-    let day: Date
-    let mealType: MealType
-
-    init(_ entry: MealPlanEntry) {
-        day = Calendar.current.startOfDay(for: entry.date)
-        mealType = entry.mealType
-    }
 }
 
 private struct SuggestedRecipeCacheKey: Hashable {
