@@ -5,6 +5,9 @@ struct MealPlanView: View {
     @State private var selectedMealEntry: MealPlanEntry?
     @State private var selectedMealSlot: MealSlotPresentation?
     @State private var shoppingConfirmation: ShoppingListConfirmationRequest?
+    @State private var showPreparedFoodSelection = false
+    @State private var showPreparedFoodReview = false
+    @State private var preparedFoodDrafts: [MealPlanPreparedDishReviewDraft] = []
     @State private var showMealLoggingSelection = false
     @State private var showMealLoggingReview = false
     @State private var mealLoggingDrafts: [MealPlanEatenReviewDraft] = []
@@ -33,6 +36,13 @@ struct MealPlanView: View {
             .toolbar {
                 ToolbarItemGroup(placement: .primaryAction) {
                     Button {
+                        showPreparedFoodSelection = true
+                    } label: {
+                        Label("Add to Prepared Food", systemImage: "calendar.badge.plus")
+                    }
+                    .disabled(preparedFoodSourceEntries.isEmpty)
+
+                    Button {
                         showMealLoggingSelection = true
                     } label: {
                         Label("Log Meals Eaten", systemImage: "checklist.checked")
@@ -49,6 +59,27 @@ struct MealPlanView: View {
             }
             .shoppingListConfirmation($shoppingConfirmation) { itemsToAdd in
                 viewModel.addShoppingItems(itemsToAdd)
+            }
+            .sheet(isPresented: $showPreparedFoodSelection) {
+                PreparedDishMealPlanSelectionView(appState: viewModel.appState) { entries in
+                    preparedFoodDrafts = entries.map(MealPlanPreparedDishReviewDraft.init)
+                    showPreparedFoodSelection = false
+                    Task { @MainActor in
+                        showPreparedFoodReview = true
+                    }
+                }
+            }
+            .sheet(isPresented: $showPreparedFoodReview, onDismiss: {
+                preparedFoodDrafts = []
+            }) {
+                PreparedDishMealPlanReviewView(appState: viewModel.appState, drafts: $preparedFoodDrafts) { dishes in
+                    Task {
+                        for dish in dishes {
+                            await viewModel.appState.addPreparedDish(dish)
+                        }
+                    }
+                    showPreparedFoodReview = false
+                }
             }
             .sheet(isPresented: $showMealLoggingSelection) {
                 MealPlanEatenSelectionView(entries: mealEntriesEligibleForLogging) { entries in
@@ -129,6 +160,10 @@ struct MealPlanView: View {
 
     private func prepareShoppingConfirmation() {
         shoppingConfirmation = ShoppingListConfirmationRequest(items: viewModel.previewShoppingList(), context: .mealPlan)
+    }
+
+    private var preparedFoodSourceEntries: [MealPlanEntry] {
+        viewModel.appState.preparedFoodSourceEntriesFromMealPlan()
     }
 
     private var mealEntriesEligibleForLogging: [MealPlanEntry] {

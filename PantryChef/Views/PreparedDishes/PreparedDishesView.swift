@@ -703,7 +703,7 @@ private struct PreparedDishDraftForm: View {
 }
 
 @MainActor
-private struct MealPlanPreparedDishReviewDraft: Identifiable, Hashable {
+struct MealPlanPreparedDishReviewDraft: Identifiable, Hashable {
     let id: UUID
     let sourceEntry: MealPlanEntry
     var draft: PreparedDishDraft
@@ -756,7 +756,7 @@ private struct MealPlanPreparedDishReviewDraft: Identifiable, Hashable {
     }
 }
 
-private struct PreparedDishMealPlanSelectionView: View {
+struct PreparedDishMealPlanSelectionView: View {
     @Environment(\.dismiss) private var dismiss
 
     let appState: AppState
@@ -917,7 +917,7 @@ private struct PreparedDishMealPlanSelectionView: View {
     }
 }
 
-private struct PreparedDishMealPlanReviewView: View {
+struct PreparedDishMealPlanReviewView: View {
     @Environment(\.dismiss) private var dismiss
 
     let appState: AppState
@@ -1068,7 +1068,7 @@ private struct PreparedDishMealPlanReviewView: View {
     }
 }
 
-private struct PreparedDishMealPlanDraftEditorView: View {
+struct PreparedDishMealPlanDraftEditorView: View {
     @Environment(\.dismiss) private var dismiss
 
     let appState: AppState
