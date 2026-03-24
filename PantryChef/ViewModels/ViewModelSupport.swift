@@ -161,6 +161,10 @@ struct MealPlanActions {
         await appState.updateMealPlanEntry(entry)
     }
 
+    func logEntriesEaten(_ entries: [MealPlanEntry]) async {
+        await appState.logMealPlanEntriesEaten(entries)
+    }
+
     func generateShoppingList() async {
         await appState.generateShoppingListFromMealPlan()
     }

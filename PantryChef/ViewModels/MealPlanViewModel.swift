@@ -96,6 +96,12 @@ final class MealPlanViewModel: AsyncActionHandling {
         }
     }
 
+    func logEntriesEaten(_ entries: [MealPlanEntry]) {
+        runTask { [self] in
+            await self.mealPlanActions.logEntriesEaten(entries)
+        }
+    }
+
     func selectSlot(date: Date, mealType: MealType, replaceExisting: Bool = true, allowsMultipleSelection: Bool = false) {
         selectedSlot = MealSlot(date: date, mealType: mealType, replaceExisting: replaceExisting)
         if allowsMultipleSelection {

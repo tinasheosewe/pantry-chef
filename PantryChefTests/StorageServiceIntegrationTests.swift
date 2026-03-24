@@ -91,6 +91,7 @@ final class StorageServiceIntegrationTests: XCTestCase {
             mealType: .dinner,
             recipe: updatedRecipe,
             plannedServings: 2,
+            eatenServings: 1,
             notes: "integration test"
         )
 
@@ -99,12 +100,15 @@ final class StorageServiceIntegrationTests: XCTestCase {
         XCTAssertEqual(mealPlans.count, 1)
         XCTAssertEqual(mealPlans.first?.recipe?.id, updatedRecipe.id)
         XCTAssertEqual(mealPlans.first?.plannedServings, 2)
+        XCTAssertEqual(mealPlans.first?.eatenServings, 1)
 
         var updatedMealPlan = mealPlan
         updatedMealPlan.customMealName = "Custom dinner"
+        updatedMealPlan.eatenServings = 2
         _ = try await sut.updateMealPlanEntry(updatedMealPlan)
         mealPlans = try await sut.fetchMealPlan()
         XCTAssertEqual(mealPlans.first?.customMealName, "Custom dinner")
+        XCTAssertEqual(mealPlans.first?.eatenServings, 2)
 
         let shoppingItems = [
             ShoppingItem(name: "Garlic", quantity: 2, unit: .clove, category: .produce),

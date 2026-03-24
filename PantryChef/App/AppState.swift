@@ -892,6 +892,53 @@ final class AppState {
         }
     }
 
+    func logMealPlanEntriesEaten(_ entries: [MealPlanEntry]) async {
+        let requests = entries.compactMap { updatedEntry -> MealPlanEatenLoggingRequest? in
+            guard let currentEntry = mealPlan.first(where: { $0.id == updatedEntry.id }) else { return nil }
+            guard currentEntry.supportsMealLogging else { return nil }
+            let currentEatenServings = currentEntry.effectiveEatenServings
+            let targetEatenServings = Swift.max(currentEatenServings, updatedEntry.effectiveEatenServings)
+            guard targetEatenServings > currentEatenServings else { return nil }
+            return MealPlanEatenLoggingRequest(entry: currentEntry, targetEatenServings: targetEatenServings)
+        }
+
+        guard !requests.isEmpty else { return }
+
+        let requestedServingsByPreparedDishID = requests.reduce(into: [UUID: Int]()) { partialResult, request in
+            guard let preparedDishID = request.entry.preparedDish?.id else { return }
+            partialResult[preparedDishID, default: 0] += request.additionalServings
+        }
+
+        for (preparedDishID, requestedServings) in requestedServingsByPreparedDishID {
+            guard let preparedDish = preparedDishById(preparedDishID) else { continue }
+            guard requestedServings <= preparedDish.servingsRemaining else {
+                errorMessage = "Not enough servings remain in \(preparedDish.name) to log those meals as eaten."
+                return
+            }
+        }
+
+        for request in requests {
+            if request.additionalServings > 0, let preparedDish = request.entry.preparedDish {
+                if let currentPreparedDish = preparedDishById(preparedDish.id) {
+                    _ = await adjustPreparedDishServings(currentPreparedDish, delta: -request.additionalServings)
+                }
+            }
+
+            do {
+                let updatedEntry = request.entry.updatingEatenServings(request.targetEatenServings)
+                let saved = try await storageService.updateMealPlanEntry(updatedEntry)
+                if let index = mealPlan.firstIndex(where: { $0.id == saved.id }) {
+                    mealPlan[index] = saved
+                }
+            } catch {
+                errorMessage = error.localizedDescription
+                return
+            }
+        }
+
+        setMealPlanEntries(sanitizeMealPlanEntries(mealPlan).visibleEntries)
+    }
+
     // MARK: - Shopping Actions
     func previewShoppingListFromMealPlan() -> [ShoppingItem] {
         let recipes = mealPlan.compactMap(\.scaledRecipeForPlanning)
@@ -1534,6 +1581,15 @@ struct HomeDashboardRefreshState: Hashable {
     let preparedDishesRevision: Int
     let recipesRevision: Int
     let discoverRecipesRevision: Int
+}
+
+private struct MealPlanEatenLoggingRequest {
+    let entry: MealPlanEntry
+    let targetEatenServings: Int
+
+    var additionalServings: Int {
+        targetEatenServings - entry.effectiveEatenServings
+    }
 }
 
 struct RecipeCatalogRefreshState: Hashable {

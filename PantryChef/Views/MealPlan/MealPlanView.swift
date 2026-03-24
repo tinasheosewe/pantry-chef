@@ -5,6 +5,9 @@ struct MealPlanView: View {
     @State private var selectedMealEntry: MealPlanEntry?
     @State private var selectedMealSlot: MealSlotPresentation?
     @State private var shoppingConfirmation: ShoppingListConfirmationRequest?
+    @State private var showMealLoggingSelection = false
+    @State private var showMealLoggingReview = false
+    @State private var mealLoggingDrafts: [MealPlanEatenReviewDraft] = []
 
     init(appState: AppState) {
         _viewModel = State(initialValue: MealPlanViewModel(appState: appState))
@@ -28,7 +31,14 @@ struct MealPlanView: View {
             }
             .navigationTitle("Meal Plan")
             .toolbar {
-                ToolbarItem(placement: .primaryAction) {
+                ToolbarItemGroup(placement: .primaryAction) {
+                    Button {
+                        showMealLoggingSelection = true
+                    } label: {
+                        Label("Log Meals Eaten", systemImage: "checklist.checked")
+                    }
+                    .disabled(mealEntriesEligibleForLogging.isEmpty)
+
                     Button {
                         prepareShoppingConfirmation()
                     } label: {
@@ -39,6 +49,23 @@ struct MealPlanView: View {
             }
             .shoppingListConfirmation($shoppingConfirmation) { itemsToAdd in
                 viewModel.addShoppingItems(itemsToAdd)
+            }
+            .sheet(isPresented: $showMealLoggingSelection) {
+                MealPlanEatenSelectionView(entries: mealEntriesEligibleForLogging) { entries in
+                    mealLoggingDrafts = entries.map(MealPlanEatenReviewDraft.init)
+                    showMealLoggingSelection = false
+                    Task { @MainActor in
+                        showMealLoggingReview = true
+                    }
+                }
+            }
+            .sheet(isPresented: $showMealLoggingReview, onDismiss: {
+                mealLoggingDrafts = []
+            }) {
+                MealPlanEatenReviewView(appState: viewModel.appState, drafts: $mealLoggingDrafts) { updatedEntries in
+                    viewModel.logEntriesEaten(updatedEntries)
+                    showMealLoggingReview = false
+                }
             }
             .sheet(isPresented: $viewModel.showMealPicker) {
                 if let slot = viewModel.selectedSlot {
@@ -102,6 +129,10 @@ struct MealPlanView: View {
 
     private func prepareShoppingConfirmation() {
         shoppingConfirmation = ShoppingListConfirmationRequest(items: viewModel.previewShoppingList(), context: .mealPlan)
+    }
+
+    private var mealEntriesEligibleForLogging: [MealPlanEntry] {
+        viewModel.entries.filter { $0.supportsMealLogging && !$0.isFullyEaten }
     }
 
     // MARK: - Week Navigation
@@ -226,8 +257,8 @@ struct MealPlanView: View {
                             .font(.system(size: 9))
                             .fontWeight(.semibold)
                             .foregroundStyle(AppColors.primaryGreen)
-                    } else if let planningSubtitle = primaryEntry.planningSubtitle {
-                        Text(planningSubtitle)
+                    } else if let statusSummary = primaryEntry.mealLoggingSummary ?? primaryEntry.planningSubtitle {
+                        Text(statusSummary)
                             .font(.system(size: 8))
                             .foregroundStyle(AppColors.subtleText)
                             .lineLimit(2)
@@ -327,14 +358,14 @@ private struct MealSlotEntriesView: View {
                     VStack(alignment: .leading, spacing: 10) {
                         if let recipe = entry.recipe {
                             NavigationLink(destination: RecipeDetailView(recipe: recipe).environment(appState)) {
-                                mealEntryRow(title: recipe.title, subtitle: entry.planningSubtitle, systemImage: recipe.mealType?.icon ?? "book")
+                                mealEntryRow(title: recipe.title, subtitle: mealEntrySubtitle(for: entry), systemImage: recipe.mealType?.icon ?? "book")
                             }
                         } else if let preparedDish = entry.preparedDish {
                             NavigationLink(destination: PreparedDishDetailView(dish: preparedDish).environment(appState)) {
-                                mealEntryRow(title: preparedDish.name, subtitle: entry.planningSubtitle, systemImage: "takeoutbag.and.cup.and.straw")
+                                mealEntryRow(title: preparedDish.name, subtitle: mealEntrySubtitle(for: entry), systemImage: "takeoutbag.and.cup.and.straw")
                             }
                         } else {
-                            mealEntryRow(title: entry.displayName, subtitle: entry.planningSubtitle, systemImage: "fork.knife")
+                            mealEntryRow(title: entry.displayName, subtitle: mealEntrySubtitle(for: entry), systemImage: "fork.knife")
                         }
 
                         if entry.supportsPlannedServings {
@@ -343,6 +374,17 @@ private struct MealSlotEntriesView: View {
                                     .font(.caption)
                                     .foregroundStyle(AppColors.subtleText)
                             }
+                        }
+
+                        if let eatenProgressLabel = entry.eatenProgressLabel {
+                            Text(eatenProgressLabel)
+                                .font(.caption)
+                                .fontWeight(.semibold)
+                                .foregroundStyle(entry.isFullyEaten ? AppColors.primaryGreen : AppColors.accentBlue)
+                                .padding(.horizontal, 10)
+                                .padding(.vertical, 6)
+                                .background((entry.isFullyEaten ? AppColors.primaryGreen : AppColors.accentBlue).opacity(0.12))
+                                .clipShape(Capsule())
                         }
                     }
                 }
@@ -391,6 +433,14 @@ private struct MealSlotEntriesView: View {
         }
     }
 
+    private func mealEntrySubtitle(for entry: MealPlanEntry) -> String? {
+        let pieces: [String] = [entry.planningSubtitle, entry.mealLoggingSummary].compactMap { value in
+            guard let value, !value.isEmpty else { return nil }
+            return value
+        }
+        return pieces.isEmpty ? nil : pieces.joined(separator: " • ")
+    }
+
     private func plannedServingsBinding(for entry: MealPlanEntry) -> Binding<Int> {
         Binding(
             get: {
@@ -400,6 +450,437 @@ private struct MealSlotEntriesView: View {
                 onUpdateEntry(entry.updatingPlannedServings(newValue))
             }
         )
+    }
+}
+
+private struct MealPlanEatenReviewDraft: Identifiable, Hashable {
+    let id: UUID
+    let entry: MealPlanEntry
+    var targetEatenServings: Int
+
+    init(entry: MealPlanEntry) {
+        self.id = entry.id
+        self.entry = entry
+        self.targetEatenServings = entry.effectiveEatenServings
+    }
+
+    var plannedServings: Int {
+        entry.trackingPlannedServings ?? 0
+    }
+
+    var currentEatenServings: Int {
+        entry.effectiveEatenServings
+    }
+
+    var additionalServings: Int {
+        Swift.max(0, targetEatenServings - currentEatenServings)
+    }
+
+    var isDirty: Bool {
+        targetEatenServings > currentEatenServings
+    }
+
+    var updatedEntry: MealPlanEntry {
+        entry.updatingEatenServings(targetEatenServings)
+    }
+
+    var sourceSummary: String {
+        "\(entry.date.formatted(date: .abbreviated, time: .omitted)) • \(entry.mealType.rawValue)"
+    }
+
+    var progressText: String {
+        if targetEatenServings >= plannedServings {
+            return plannedServings == 1 ? "Finished" : "Finished • \(plannedServings) of \(plannedServings) eaten"
+        }
+        if targetEatenServings == 0 {
+            return plannedServings == 1 ? "0 of 1 eaten" : "0 of \(plannedServings) eaten"
+        }
+        return "\(targetEatenServings) of \(plannedServings) eaten"
+    }
+}
+
+private struct MealPlanEatenSelectionView: View {
+    @Environment(\.dismiss) private var dismiss
+
+    let entries: [MealPlanEntry]
+    let onContinue: ([MealPlanEntry]) -> Void
+
+    @State private var searchText = ""
+    @State private var debouncedSearchText = ""
+    @State private var selectedEntryIDs: Set<UUID> = []
+    @State private var searchDebouncer = TaskDebouncer()
+
+    private var filteredEntries: [MealPlanEntry] {
+        SearchQuerySupport.filtered(entries, query: debouncedSearchText) { entry in
+            [entry.displayName, entry.mealType.rawValue, entry.date.formatted(date: .abbreviated, time: .omitted)]
+                .joined(separator: " ")
+        }
+    }
+
+    private var selectedEntries: [MealPlanEntry] {
+        entries.filter { selectedEntryIDs.contains($0.id) }
+    }
+
+    private var entriesByDay: [(date: Date, entries: [MealPlanEntry])] {
+        let grouped = Dictionary(grouping: filteredEntries) { Calendar.current.startOfDay(for: $0.date) }
+        return grouped.keys.sorted().map { date in
+            let entries = grouped[date, default: []].sorted {
+                if $0.mealType == $1.mealType {
+                    return $0.displayName.localizedCaseInsensitiveCompare($1.displayName) == .orderedAscending
+                }
+                return $0.mealType.rawValue < $1.mealType.rawValue
+            }
+            return (date, entries)
+        }
+    }
+
+    var body: some View {
+        NavigationStack {
+            VStack(spacing: 0) {
+                if filteredEntries.isEmpty {
+                    EmptyStateView(
+                        icon: "fork.knife.circle",
+                        title: entries.isEmpty ? "Nothing left to log" : "No meals found",
+                        message: entries.isEmpty
+                            ? "Only cooked meals from Prepared Food show up here, and everything eligible is already fully logged."
+                            : "Try a different search for this week’s cooked meals."
+                    )
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                } else {
+                    AppList {
+                        Section {
+                            Text("Select cooked meals from this week, then set how many servings were actually eaten before saving once.")
+                                .font(.subheadline)
+                                .foregroundStyle(AppColors.subtleText)
+                        }
+
+                        ForEach(entriesByDay, id: \.date) { group in
+                            Section(group.date.formatted(date: .abbreviated, time: .omitted)) {
+                                ForEach(group.entries) { entry in
+                                    selectionRow(for: entry)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            .searchable(text: $searchText, prompt: "Search this week")
+            .onChange(of: searchText) {
+                SearchQuerySupport.schedule(text: searchText, debouncer: searchDebouncer) {
+                    debouncedSearchText = $0
+                }
+            }
+            .navigationTitle("Log Meals Eaten")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Close") { dismiss() }
+                }
+            }
+            .safeAreaInset(edge: .bottom) {
+                selectionSummaryBar
+            }
+        }
+    }
+
+    private func selectionRow(for entry: MealPlanEntry) -> some View {
+        let isSelected = selectedEntryIDs.contains(entry.id)
+        let accent = entry.preparedDish != nil ? AppColors.warmOrange : AppColors.primaryGreen
+
+        return Button {
+            if isSelected {
+                selectedEntryIDs.remove(entry.id)
+            } else {
+                selectedEntryIDs.insert(entry.id)
+            }
+        } label: {
+            HStack(spacing: 12) {
+                Image(systemName: entry.recipe != nil ? (entry.recipe?.mealType?.icon ?? "book") : entry.preparedDish != nil ? "takeoutbag.and.cup.and.straw" : entry.mealType.icon)
+                    .font(.title3)
+                    .foregroundStyle(accent)
+                    .frame(width: 40, height: 40)
+                    .background(accent.opacity(0.12))
+                    .clipShape(RoundedRectangle(cornerRadius: 10))
+
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(entry.displayName)
+                        .font(.subheadline)
+                        .fontWeight(.semibold)
+                        .foregroundStyle(AppColors.darkText)
+                    Text("\(entry.mealType.rawValue) • \(entry.mealLoggingSummary ?? entry.planningSubtitle ?? "1 planned")")
+                        .font(.caption)
+                        .foregroundStyle(AppColors.subtleText)
+                }
+
+                Spacer()
+
+                Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
+                    .font(.title3)
+                    .foregroundStyle(isSelected ? AppColors.primaryGreen : AppColors.mediumGray)
+            }
+            .padding(.vertical, 4)
+        }
+        .buttonStyle(.plain)
+    }
+
+    private var selectionSummaryBar: some View {
+        VStack(spacing: 10) {
+            Divider()
+            HStack(spacing: 12) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(selectedEntries.isEmpty ? "Select meals to update" : "\(selectedEntries.count) meals selected")
+                        .font(.subheadline)
+                        .fontWeight(.semibold)
+                        .foregroundStyle(AppColors.darkText)
+                    Text("You’ll set eaten amounts in the next step.")
+                        .font(.caption)
+                        .foregroundStyle(AppColors.subtleText)
+                }
+
+                Spacer()
+
+                Button {
+                    onContinue(selectedEntries)
+                } label: {
+                    Text("Review")
+                        .font(.subheadline)
+                        .fontWeight(.semibold)
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 12)
+                        .background(selectedEntries.isEmpty ? AppColors.mediumGray : AppColors.accentBlue)
+                        .foregroundStyle(.white)
+                        .clipShape(Capsule())
+                }
+                .disabled(selectedEntries.isEmpty)
+            }
+            .padding(.horizontal)
+            .padding(.bottom, 8)
+        }
+        .background(.ultraThinMaterial)
+    }
+}
+
+private struct MealPlanEatenReviewView: View {
+    @Environment(\.dismiss) private var dismiss
+
+    let appState: AppState
+    @Binding var drafts: [MealPlanEatenReviewDraft]
+    let onSave: ([MealPlanEntry]) -> Void
+
+    private var hasChanges: Bool {
+        drafts.contains(where: \.isDirty)
+    }
+
+    private var overdrawMessages: [String] {
+        let grouped = drafts.reduce(into: [UUID: Int]()) { partialResult, draft in
+            guard let preparedDishID = draft.entry.preparedDish?.id else { return }
+            partialResult[preparedDishID, default: 0] += draft.additionalServings
+        }
+
+        return grouped.compactMap { preparedDishID, requestedServings in
+            guard requestedServings > 0, let preparedDish = appState.preparedDishById(preparedDishID) else { return nil }
+            guard requestedServings > preparedDish.servingsRemaining else { return nil }
+            return "\(preparedDish.name) only has \(preparedDish.servingsRemaining) servings left, but this batch would log \(requestedServings)."
+        }
+    }
+
+    var body: some View {
+        NavigationStack {
+            VStack(spacing: 0) {
+                if drafts.isEmpty {
+                    EmptyStateView(
+                        icon: "fork.knife.circle",
+                        title: "Nothing selected yet",
+                        message: "Pick meals first, then set how much was eaten here."
+                    )
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                } else {
+                    AppList {
+                        Section {
+                            HStack(spacing: 10) {
+                                quickApplyButton(title: "Clear All") {
+                                    clearAllToZero()
+                                }
+
+                                quickApplyButton(title: "+1 To All") {
+                                    applyIncrementToAll(1)
+                                }
+
+                                quickApplyButton(title: "Finish All") {
+                                    setAllToFinished()
+                                }
+                            }
+                            .padding(.vertical, 4)
+                        }
+
+                        if !overdrawMessages.isEmpty {
+                            Section {
+                                ForEach(overdrawMessages, id: \.self) { message in
+                                    Text(message)
+                                        .font(.subheadline)
+                                        .foregroundStyle(AppColors.softRed)
+                                }
+                            }
+                        }
+
+                        Section {
+                            ForEach($drafts) { $draft in
+                                reviewRow($draft)
+                            }
+                        } header: {
+                            SectionHeader(
+                                title: "Selected Meals",
+                                subtitle: hasChanges ? "Review the eaten amounts, then save them together." : "Set servings eaten for any meals you’re updating."
+                            )
+                            .padding(.top, 8)
+                        }
+                    }
+                }
+            }
+            .navigationTitle("Log Meals Eaten")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Close") { dismiss() }
+                }
+            }
+            .safeAreaInset(edge: .bottom) {
+                reviewSummaryBar
+            }
+        }
+    }
+
+    private func reviewRow(_ draft: Binding<MealPlanEatenReviewDraft>) -> some View {
+        let accent = draft.wrappedValue.entry.preparedDish != nil ? AppColors.warmOrange : AppColors.primaryGreen
+
+        return VStack(alignment: .leading, spacing: 12) {
+            HStack(alignment: .top, spacing: 12) {
+                Image(systemName: draft.wrappedValue.entry.recipe != nil ? (draft.wrappedValue.entry.recipe?.mealType?.icon ?? "book") : draft.wrappedValue.entry.preparedDish != nil ? "takeoutbag.and.cup.and.straw" : draft.wrappedValue.entry.mealType.icon)
+                    .font(.title3)
+                    .foregroundStyle(accent)
+                    .frame(width: 40, height: 40)
+                    .background(accent.opacity(0.12))
+                    .clipShape(RoundedRectangle(cornerRadius: 10))
+
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(draft.wrappedValue.entry.displayName)
+                        .font(.subheadline)
+                        .fontWeight(.semibold)
+                        .foregroundStyle(AppColors.darkText)
+                    Text(draft.wrappedValue.sourceSummary)
+                        .font(.caption)
+                        .foregroundStyle(AppColors.subtleText)
+                    Text(draft.wrappedValue.progressText)
+                        .font(.caption)
+                        .foregroundStyle(AppColors.subtleText)
+                }
+            }
+
+            VStack(alignment: .leading, spacing: 8) {
+                HStack(spacing: 8) {
+                    quickEntryButton(title: "+1") {
+                        draft.wrappedValue.targetEatenServings = Swift.min(draft.wrappedValue.plannedServings, draft.wrappedValue.targetEatenServings + 1)
+                    }
+
+                    quickEntryButton(title: "+2") {
+                        draft.wrappedValue.targetEatenServings = Swift.min(draft.wrappedValue.plannedServings, draft.wrappedValue.targetEatenServings + 2)
+                    }
+
+                    quickEntryButton(title: "Finished") {
+                        draft.wrappedValue.targetEatenServings = draft.wrappedValue.plannedServings
+                    }
+                }
+
+                Stepper(value: draft.targetEatenServings, in: draft.wrappedValue.currentEatenServings...draft.wrappedValue.plannedServings) {
+                    Text("Servings eaten: \(draft.wrappedValue.targetEatenServings) of \(draft.wrappedValue.plannedServings)")
+                        .font(.caption)
+                        .foregroundStyle(AppColors.subtleText)
+                }
+            }
+        }
+        .padding(.vertical, 8)
+    }
+
+    private var reviewSummaryBar: some View {
+        VStack(spacing: 10) {
+            Divider()
+            HStack(spacing: 12) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(hasChanges ? "Ready to save eaten amounts" : "Set at least one meal to save")
+                        .font(.subheadline)
+                        .fontWeight(.semibold)
+                        .foregroundStyle(AppColors.darkText)
+                    Text(overdrawMessages.isEmpty ? "Linked Prepared Food will decrement only for the extra eaten servings you log." : "Resolve the Prepared Food overdraw warning before saving.")
+                        .font(.caption)
+                        .foregroundStyle(AppColors.subtleText)
+                }
+
+                Spacer()
+
+                Button {
+                    onSave(drafts.map(\.updatedEntry))
+                } label: {
+                    Text("Save Eaten Amounts")
+                        .font(.subheadline)
+                        .fontWeight(.semibold)
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 12)
+                        .background(hasChanges && overdrawMessages.isEmpty ? AppColors.primaryGreen : AppColors.mediumGray)
+                        .foregroundStyle(.white)
+                        .clipShape(Capsule())
+                }
+                .disabled(!hasChanges || !overdrawMessages.isEmpty)
+            }
+            .padding(.horizontal)
+            .padding(.bottom, 8)
+        }
+        .background(.ultraThinMaterial)
+    }
+
+    private func applyIncrementToAll(_ increment: Int) {
+        for index in drafts.indices {
+            drafts[index].targetEatenServings = Swift.min(drafts[index].plannedServings, drafts[index].targetEatenServings + increment)
+        }
+    }
+
+    private func setAllToFinished() {
+        for index in drafts.indices {
+            drafts[index].targetEatenServings = drafts[index].plannedServings
+        }
+    }
+
+    private func clearAllToZero() {
+        for index in drafts.indices {
+            drafts[index].targetEatenServings = 0
+        }
+    }
+
+    private func quickApplyButton(title: String, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Text(title)
+                .font(.caption)
+                .fontWeight(.semibold)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 8)
+                .background(AppColors.lightGray)
+                .foregroundStyle(AppColors.darkText)
+                .clipShape(Capsule())
+        }
+        .buttonStyle(.plain)
+    }
+
+    private func quickEntryButton(title: String, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Text(title)
+                .font(.caption)
+                .fontWeight(.semibold)
+                .padding(.horizontal, 10)
+                .padding(.vertical, 6)
+                .background(AppColors.lightGray)
+                .foregroundStyle(AppColors.darkText)
+                .clipShape(Capsule())
+        }
+        .buttonStyle(.plain)
     }
 }
 

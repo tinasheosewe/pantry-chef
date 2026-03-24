@@ -8,6 +8,7 @@ struct MealPlanEntry: Identifiable, Codable, Hashable {
     var preparedDish: PreparedDish?
     var customMealName: String?
     var plannedServings: Int?
+    var eatenServings: Int?
     var notes: String?
 
     init(
@@ -18,15 +19,26 @@ struct MealPlanEntry: Identifiable, Codable, Hashable {
         preparedDish: PreparedDish? = nil,
         customMealName: String? = nil,
         plannedServings: Int? = nil,
+        eatenServings: Int? = nil,
         notes: String? = nil
     ) {
+        let normalizedCustomMealName = customMealName?.trimmed.nilIfEmpty
+        let normalizedPlannedServings = plannedServings.flatMap { $0 > 0 ? $0 : nil }
+
         self.id = id
         self.date = date
         self.mealType = mealType
         self.recipe = recipe
         self.preparedDish = preparedDish
-        self.customMealName = customMealName?.trimmed.nilIfEmpty
-        self.plannedServings = plannedServings.flatMap { $0 > 0 ? $0 : nil }
+        self.customMealName = normalizedCustomMealName
+        self.plannedServings = normalizedPlannedServings
+        self.eatenServings = Self.normalizedEatenServings(
+            eatenServings,
+            recipe: recipe,
+            preparedDish: preparedDish,
+            customMealName: normalizedCustomMealName,
+            plannedServings: normalizedPlannedServings
+        )
         self.notes = notes
     }
 
@@ -64,6 +76,59 @@ struct MealPlanEntry: Identifiable, Codable, Hashable {
 
     var supportsPlannedServings: Bool {
         defaultPlannedServings != nil
+    }
+
+    var trackingPlannedServings: Int? {
+        effectivePlannedServings ?? (normalizedCustomMealName != nil ? 1 : nil)
+    }
+
+    var effectiveEatenServings: Int {
+        let normalizedEatenServings = Swift.max(0, eatenServings ?? 0)
+        if let trackingPlannedServings {
+            return Swift.min(normalizedEatenServings, trackingPlannedServings)
+        }
+        return normalizedEatenServings
+    }
+
+    var remainingTrackedServings: Int? {
+        trackingPlannedServings.map { Swift.max(0, $0 - effectiveEatenServings) }
+    }
+
+    var supportsEatenTracking: Bool {
+        trackingPlannedServings != nil
+    }
+
+    var eatenServingsRange: ClosedRange<Int> {
+        let upperBound = Swift.max(trackingPlannedServings ?? effectiveEatenServings, effectiveEatenServings)
+        return 0...upperBound
+    }
+
+    var eatenProgressLabel: String? {
+        guard preparedDish != nil else { return nil }
+        guard let trackingPlannedServings else { return nil }
+        guard effectiveEatenServings > 0 else { return nil }
+        if effectiveEatenServings >= trackingPlannedServings {
+            return "Finished"
+        }
+        return "\(effectiveEatenServings) of \(trackingPlannedServings) eaten"
+    }
+
+    var mealLoggingSummary: String? {
+        guard preparedDish != nil else { return nil }
+        guard let trackingPlannedServings else { return nil }
+        if let eatenProgressLabel {
+            return "\(eatenProgressLabel) • \(trackingPlannedServings) planned"
+        }
+        return trackingPlannedServings == 1 ? "1 planned" : "\(trackingPlannedServings) planned"
+    }
+
+    var isFullyEaten: Bool {
+        guard let trackingPlannedServings else { return false }
+        return effectiveEatenServings >= trackingPlannedServings
+    }
+
+    var supportsMealLogging: Bool {
+        preparedDish != nil && trackingPlannedServings != nil
     }
 
     var editablePlannedServingsRange: ClosedRange<Int> {
@@ -105,6 +170,25 @@ struct MealPlanEntry: Identifiable, Codable, Hashable {
     func updatingPlannedServings(_ plannedServings: Int?) -> MealPlanEntry {
         var updated = self
         updated.plannedServings = plannedServings.flatMap { $0 > 0 ? $0 : nil }
+        updated.eatenServings = Self.normalizedEatenServings(
+            updated.eatenServings,
+            recipe: updated.recipe,
+            preparedDish: updated.preparedDish,
+            customMealName: updated.customMealName,
+            plannedServings: updated.plannedServings
+        )
+        return updated
+    }
+
+    func updatingEatenServings(_ eatenServings: Int?) -> MealPlanEntry {
+        var updated = self
+        updated.eatenServings = Self.normalizedEatenServings(
+            eatenServings,
+            recipe: updated.recipe,
+            preparedDish: updated.preparedDish,
+            customMealName: updated.customMealName,
+            plannedServings: updated.plannedServings
+        )
         return updated
     }
 
@@ -157,6 +241,25 @@ struct MealPlanEntry: Identifiable, Codable, Hashable {
             MealPlanEntry(date: today, mealType: .dinner, recipe: Recipe.samples[0]),
         ]
     }()
+
+    private static func normalizedEatenServings(
+        _ eatenServings: Int?,
+        recipe: Recipe?,
+        preparedDish: PreparedDish?,
+        customMealName: String?,
+        plannedServings: Int?
+    ) -> Int? {
+        guard let eatenServings else { return nil }
+
+        let normalizedPlannedServings = plannedServings.flatMap { $0 > 0 ? $0 : nil }
+        let trackingPlannedServings = normalizedPlannedServings
+            ?? recipe?.servings
+            ?? preparedDish?.servingsRemaining
+            ?? (customMealName != nil ? 1 : nil)
+
+        let clamped = trackingPlannedServings.map { Swift.min(Swift.max(0, eatenServings), $0) } ?? Swift.max(0, eatenServings)
+        return clamped > 0 ? clamped : nil
+    }
 }
 
 enum MealSelectionItem: Identifiable, Hashable {

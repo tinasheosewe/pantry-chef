@@ -1540,6 +1540,22 @@ final class MealPlanEntryModelTests: XCTestCase {
         XCTAssertEqual(draft.recipeID, recipe.id)
         XCTAssertEqual(draft.servingsRemaining, 2)
     }
+
+    func testUpdatingEatenServingsClampsToTrackedServings() {
+        let recipe = makeRecipe(title: "Soup", servings: 4)
+        let entry = MealPlanEntry(date: Date(), mealType: .dinner, recipe: recipe).updatingEatenServings(6)
+
+        XCTAssertEqual(entry.effectiveEatenServings, 4)
+        XCTAssertTrue(entry.isFullyEaten)
+    }
+
+    func testCustomMealTracksSingleServingForEatenLogging() {
+        let entry = MealPlanEntry(date: Date(), mealType: .lunch, customMealName: "Cafe lunch", eatenServings: 3)
+
+        XCTAssertEqual(entry.trackingPlannedServings, 1)
+        XCTAssertEqual(entry.effectiveEatenServings, 1)
+        XCTAssertEqual(entry.eatenProgressLabel, "Finished")
+    }
 }
 
 // ===================================================================
@@ -2498,6 +2514,52 @@ final class AppStateTests: XCTestCase {
         XCTAssertTrue(eligibleEntries.contains { $0.recipe?.title == "Curry" })
         XCTAssertTrue(eligibleEntries.contains { $0.customMealName == "Office breakfast" })
         XCTAssertFalse(eligibleEntries.contains { $0.preparedDish?.name == "Soup" })
+    }
+
+    func testLogMealPlanEntriesEatenIgnoresRecipeOnlyEntries() async {
+        let (appState, storage, _) = makeTestAppState()
+        let entry = MealPlanEntry(date: Date(), mealType: .dinner, recipe: makeRecipe(title: "Curry", servings: 4), plannedServings: 4)
+
+        await appState.addToMealPlan(entry)
+        await appState.logMealPlanEntriesEaten([entry.updatingEatenServings(2)])
+
+        XCTAssertEqual(appState.mealPlan.first?.effectiveEatenServings, 0)
+        XCTAssertNil(storage.mealPlanStore.first?.eatenServings)
+    }
+
+    func testLogMealPlanEntriesEatenDecrementsPreparedDishServings() async {
+        let (appState, storage, _) = makeTestAppState()
+        let dish = makePreparedDish(name: "Chili", servingsRemaining: 4)
+        await appState.addPreparedDish(dish)
+
+        let entry = MealPlanEntry(date: Date(), mealType: .dinner, preparedDish: dish, plannedServings: 2)
+        await appState.addToMealPlan(entry)
+        await appState.logMealPlanEntriesEaten([entry.updatingEatenServings(2)])
+
+        XCTAssertEqual(appState.mealPlan.first?.effectiveEatenServings, 2)
+        XCTAssertEqual(appState.preparedDishes.first?.servingsRemaining, 2)
+        XCTAssertEqual(storage.mealPlanStore.first?.eatenServings, 2)
+    }
+
+    func testLogMealPlanEntriesEatenRejectsPreparedDishOverdrawAcrossBatch() async {
+        let (appState, storage, _) = makeTestAppState()
+        let dish = makePreparedDish(name: "Burrito Bowl", servingsRemaining: 2)
+        await appState.addPreparedDish(dish)
+
+        let breakfast = MealPlanEntry(date: Date(), mealType: .breakfast, preparedDish: dish, plannedServings: 2)
+        let lunch = MealPlanEntry(date: Date(), mealType: .lunch, preparedDish: dish, plannedServings: 2)
+        await appState.addToMealPlan([breakfast, lunch])
+
+        await appState.logMealPlanEntriesEaten([
+            breakfast.updatingEatenServings(2),
+            lunch.updatingEatenServings(1)
+        ])
+
+        XCTAssertEqual(appState.preparedDishes.first?.servingsRemaining, 2)
+        XCTAssertEqual(appState.mealPlan.first(where: { $0.id == breakfast.id })?.effectiveEatenServings, 0)
+        XCTAssertEqual(appState.mealPlan.first(where: { $0.id == lunch.id })?.effectiveEatenServings, 0)
+        XCTAssertEqual(storage.mealPlanStore.first(where: { $0.id == breakfast.id })?.eatenServings, nil)
+        XCTAssertEqual(appState.errorMessage, "Not enough servings remain in Burrito Bowl to log those meals as eaten.")
     }
 
     func testGenerateShoppingListFromMealPlanMergesAdditivelyIntoExistingCart() async {
