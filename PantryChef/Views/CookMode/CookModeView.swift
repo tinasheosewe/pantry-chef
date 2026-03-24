@@ -13,6 +13,7 @@ struct CookModeView: View {
     @State private var showPantryReview = false
     @State private var showPreparedDishEditor = false
     @State private var pantryReviewItems: [PantryCookReviewItem] = []
+    @State private var displayMode: CookDisplayMode = .step
 
     private let recipe: Recipe
     private let resumeAtStep: Int
@@ -169,13 +170,28 @@ struct CookModeView: View {
                 topBar(vm: vm)
                 progressBar(vm: vm)
 
-                TabView(selection: Bindable(vm).currentStepIndex) {
-                    ForEach(Array(vm.steps.enumerated()), id: \.element.id) { index, step in
-                        stepView(step)
-                            .tag(index)
+                Picker("Display", selection: $displayMode) {
+                    ForEach(CookDisplayMode.allCases) { mode in
+                        Text(mode.title).tag(mode)
                     }
                 }
-                .tabViewStyle(.page(indexDisplayMode: .never))
+                .pickerStyle(.segmented)
+                .padding(.horizontal)
+                .padding(.top, 12)
+
+                Group {
+                    if displayMode == .step {
+                        TabView(selection: Bindable(vm).currentStepIndex) {
+                            ForEach(Array(vm.steps.enumerated()), id: \.element.id) { index, step in
+                                stepView(step)
+                                    .tag(index)
+                            }
+                        }
+                        .tabViewStyle(.page(indexDisplayMode: .never))
+                    } else {
+                        fullRecipeView(vm: vm)
+                    }
+                }
 
                 if vm.currentStep?.timerMinutes != nil || vm.isTimerRunning {
                     timerView(vm: vm)
@@ -330,6 +346,80 @@ struct CookModeView: View {
 
                 Spacer(minLength: 40)
             }
+        }
+    }
+
+    private func fullRecipeView(vm: CookModeViewModel) -> some View {
+        AppScrollView {
+            VStack(alignment: .leading, spacing: 20) {
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("Ingredients")
+                        .font(.headline)
+                        .foregroundStyle(AppColors.darkText)
+
+                    ForEach(vm.recipe.ingredients) { ingredient in
+                        HStack(alignment: .top, spacing: 10) {
+                            Image(systemName: "circle.fill")
+                                .font(.system(size: 6))
+                                .foregroundStyle(AppColors.primaryGreen)
+                                .padding(.top, 6)
+                            Text(ingredient.displayText)
+                                .font(.subheadline)
+                                .foregroundStyle(AppColors.darkText)
+                        }
+                    }
+                }
+                .padding()
+                .background(AppColors.cardBackground)
+                .clipShape(RoundedRectangle(cornerRadius: 16))
+
+                VStack(alignment: .leading, spacing: 12) {
+                    Text("Steps")
+                        .font(.headline)
+                        .foregroundStyle(AppColors.darkText)
+
+                    ForEach(Array(vm.steps.enumerated()), id: \.element.id) { index, step in
+                        Button {
+                            vm.goToStep(index)
+                            displayMode = .step
+                        } label: {
+                            VStack(alignment: .leading, spacing: 8) {
+                                HStack(spacing: 10) {
+                                    Text("\(step.stepNumber)")
+                                        .font(.caption)
+                                        .fontWeight(.bold)
+                                        .foregroundStyle(index == vm.currentStepIndex ? .white : AppColors.primaryGreen)
+                                        .frame(width: 28, height: 28)
+                                        .background(index == vm.currentStepIndex ? AppColors.primaryGreen : AppColors.primaryGreen.opacity(0.12))
+                                        .clipShape(Circle())
+
+                                    Text(step.instruction)
+                                        .font(.subheadline)
+                                        .fontWeight(index == vm.currentStepIndex ? .semibold : .regular)
+                                        .foregroundStyle(AppColors.darkText)
+                                        .multilineTextAlignment(.leading)
+
+                                    Spacer()
+                                }
+
+                                if let timerMinutes = step.timerMinutes {
+                                    Label("\(timerMinutes) min", systemImage: "timer")
+                                        .font(.caption)
+                                        .foregroundStyle(AppColors.warmOrange)
+                                        .padding(.leading, 38)
+                                }
+                            }
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding()
+                            .background(index == vm.currentStepIndex ? AppColors.primaryGreen.opacity(0.08) : AppColors.cardBackground)
+                            .clipShape(RoundedRectangle(cornerRadius: 16))
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+            }
+            .padding()
+            .padding(.bottom, 24)
         }
     }
 
@@ -598,6 +688,22 @@ struct CookModeView: View {
             }
             .padding(.horizontal, 24)
             .padding(.bottom, 32)
+        }
+    }
+}
+
+private enum CookDisplayMode: String, CaseIterable, Identifiable {
+    case step
+    case fullRecipe
+
+    var id: Self { self }
+
+    var title: String {
+        switch self {
+        case .step:
+            return "Step"
+        case .fullRecipe:
+            return "Whole Recipe"
         }
     }
 }

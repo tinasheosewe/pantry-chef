@@ -149,6 +149,64 @@ struct CookQueue: Identifiable, Codable, Hashable {
             self.updatedAt = updatedAt
         }
     }
+
+    mutating func moveStage(_ stageID: UUID, by offset: Int, updatedAt: Date = Date()) {
+        guard let index = stages.firstIndex(where: { $0.id == stageID }) else { return }
+        let destination = max(0, min(stages.count - 1, index + offset))
+        guard destination != index else { return }
+
+        let stage = stages.remove(at: index)
+        stages.insert(stage, at: destination)
+        self.updatedAt = updatedAt
+    }
+
+    mutating func bundleStageWithNext(_ stageID: UUID, updatedAt: Date = Date()) {
+        guard let index = stages.firstIndex(where: { $0.id == stageID }),
+              index + 1 < stages.count else {
+            return
+        }
+
+        let first = stages[index]
+        let second = stages[index + 1]
+        guard first.status == .pending,
+              second.status == .pending else {
+            return
+        }
+
+        let bundledStage = CookQueueStage(
+            recipeIDs: first.recipeIDs + second.recipeIDs,
+            recipeTitleSnapshots: first.recipeTitleSnapshots + second.recipeTitleSnapshots,
+            sourceMealPlanEntryIDs: first.sourceMealPlanEntryIDs + second.sourceMealPlanEntryIDs,
+            addedAt: min(first.addedAt, second.addedAt),
+            status: .pending
+        )
+
+        stages.replaceSubrange(index...index + 1, with: [bundledStage])
+        self.updatedAt = updatedAt
+    }
+
+    mutating func splitStage(_ stageID: UUID, updatedAt: Date = Date()) {
+        guard let index = stages.firstIndex(where: { $0.id == stageID }) else { return }
+
+        let stage = stages[index]
+        guard stage.recipeIDs.count > 1,
+              stage.status == .pending else {
+            return
+        }
+
+        let splitStages = zip(stage.recipeIDs, stage.recipeTitleSnapshots).map { recipeID, title in
+            CookQueueStage(
+                recipeIDs: [recipeID],
+                recipeTitleSnapshots: [title],
+                sourceMealPlanEntryIDs: stage.sourceMealPlanEntryIDs,
+                addedAt: stage.addedAt,
+                status: .pending
+            )
+        }
+
+        stages.replaceSubrange(index...index, with: splitStages)
+        self.updatedAt = updatedAt
+    }
 }
 
 // MARK: - Cooking Session

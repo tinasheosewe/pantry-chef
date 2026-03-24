@@ -607,6 +607,53 @@ struct CookQueueView: View {
                     }
                 }
 
+                Menu {
+                    Button {
+                        Task {
+                            await appState.moveCookQueueStage(stage.id, by: -1)
+                        }
+                    } label: {
+                        Label("Move Earlier", systemImage: "arrow.up")
+                    }
+                    .disabled(!canMoveStage(stage, by: -1))
+
+                    Button {
+                        Task {
+                            await appState.moveCookQueueStage(stage.id, by: 1)
+                        }
+                    } label: {
+                        Label("Move Later", systemImage: "arrow.down")
+                    }
+                    .disabled(!canMoveStage(stage, by: 1))
+
+                    Button {
+                        Task {
+                            await appState.bundleCookQueueStageWithNext(stage.id)
+                        }
+                    } label: {
+                        Label("Bundle With Next", systemImage: "square.stack.3d.up")
+                    }
+                    .disabled(!canBundleWithNext(stage))
+
+                    Button {
+                        Task {
+                            await appState.splitCookQueueStage(stage.id)
+                        }
+                    } label: {
+                        Label("Split Batch", systemImage: "square.split.2x1")
+                    }
+                    .disabled(!canSplit(stage))
+                } label: {
+                    Text("Edit")
+                        .font(.caption)
+                        .fontWeight(.semibold)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 8)
+                        .background(AppColors.lightGray)
+                        .foregroundStyle(AppColors.darkText)
+                        .clipShape(Capsule())
+                }
+
                 Button {
                     Task {
                         await appState.removeCookQueueStage(stage.id)
@@ -624,6 +671,30 @@ struct CookQueueView: View {
             }
         }
         .padding(.vertical, 6)
+    }
+
+    private func canMoveStage(_ stage: CookQueueStage, by offset: Int) -> Bool {
+        guard let queue,
+              let index = queue.stages.firstIndex(where: { $0.id == stage.id }) else {
+            return false
+        }
+
+        let destination = index + offset
+        return destination >= 0 && destination < queue.stages.count
+    }
+
+    private func canBundleWithNext(_ stage: CookQueueStage) -> Bool {
+        guard let queue,
+              let index = queue.stages.firstIndex(where: { $0.id == stage.id }),
+              index + 1 < queue.stages.count else {
+            return false
+        }
+
+        return stage.status == .pending && queue.stages[index + 1].status == .pending
+    }
+
+    private func canSplit(_ stage: CookQueueStage) -> Bool {
+        stage.status == .pending && stage.recipeIDs.count > 1
     }
 
     private func launchStage(_ stage: CookQueueStage) {

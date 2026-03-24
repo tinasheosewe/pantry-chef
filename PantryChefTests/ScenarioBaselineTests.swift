@@ -48,7 +48,7 @@ final class ScenarioBaselineTests: XCTestCase {
         await appState.generateShoppingListFromMealPlan()
 
         XCTAssertEqual(appState.shoppingItems.count, 1)
-        XCTAssertEqual(appState.shoppingItems.first?.name, "Tomatoes")
+        XCTAssertEqual(appState.shoppingItems.first?.name, "Tomato")
     }
 
     func testWhatCanIMakeScenarioFiltersToMakeableRecipes() async {

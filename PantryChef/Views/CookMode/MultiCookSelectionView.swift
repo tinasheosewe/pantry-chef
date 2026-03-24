@@ -14,6 +14,13 @@ struct MultiCookSelectionView: View {
     @State private var showMultiCookMode = false
     @State private var scheduleSummary: ScheduleSummary?
 
+    private var availableRecipes: [Recipe] {
+        var seenIDs: Set<UUID> = []
+        return appState.allRecipes.filter { recipe in
+            seenIDs.insert(recipe.id).inserted
+        }
+    }
+
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
@@ -21,7 +28,7 @@ struct MultiCookSelectionView: View {
 
                 AppList {
                     Section {
-                        ForEach(appState.recipes) { recipe in
+                        ForEach(availableRecipes) { recipe in
                             Button {
                                 toggleSelection(recipe.id)
                             } label: {
@@ -69,6 +76,15 @@ struct MultiCookSelectionView: View {
                                             .padding(.vertical, 2)
                                             .background(AppColors.warmOrange)
                                             .clipShape(Capsule())
+                                    } else if !recipe.source.isUserRecipe {
+                                        Text(recipe.source.label)
+                                            .font(.caption2)
+                                            .fontWeight(.bold)
+                                            .foregroundStyle(AppColors.accentTeal)
+                                            .padding(.horizontal, 6)
+                                            .padding(.vertical, 2)
+                                            .background(AppColors.accentTeal.opacity(0.12))
+                                            .clipShape(Capsule())
                                     }
                                 }
                             }
@@ -94,14 +110,14 @@ struct MultiCookSelectionView: View {
                 }
             }
             .sheet(isPresented: $showGathering) {
-                let selectedRecipes = appState.recipes.filter { selectedRecipeIds.contains($0.id) }
+                let selectedRecipes = availableRecipes.filter { selectedRecipeIds.contains($0.id) }
                 IngredientGatheringView(recipes: selectedRecipes) {
                     showGathering = false
                     showMultiCookMode = true
                 }
             }
             .fullScreenCover(isPresented: $showMultiCookMode) {
-                let selectedRecipes = appState.recipes.filter { selectedRecipeIds.contains($0.id) }
+                let selectedRecipes = availableRecipes.filter { selectedRecipeIds.contains($0.id) }
                 let blocks = MultiRecipeScheduler.schedule(recipes: selectedRecipes)
                 MultiCookModeView(
                     recipes: selectedRecipes,
@@ -174,7 +190,7 @@ struct MultiCookSelectionView: View {
     }
 
     private var selectedRecipes: [Recipe] {
-        appState.recipes.filter { selectedRecipeIds.contains($0.id) }
+        availableRecipes.filter { selectedRecipeIds.contains($0.id) }
     }
 
     private var previewSummary: ScheduleSummary {

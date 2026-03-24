@@ -117,6 +117,18 @@ final class AppState {
         }
     }
 
+    enum RecipeIntakeNormalizationError: LocalizedError {
+        case unresolvedIngredients([String])
+
+        var errorDescription: String? {
+            switch self {
+            case .unresolvedIngredients(let ingredientNames):
+                let joinedNames = ingredientNames.joined(separator: ", ")
+                return "Resolve recipe ingredients before saving: \(joinedNames)."
+            }
+        }
+    }
+
     struct NormalizedAIRecipe: Identifiable, Hashable, Sendable {
         fileprivate let rawValue: Recipe
 
@@ -627,15 +639,7 @@ final class AppState {
     // MARK: - Recipe Actions
     func addRecipe(_ recipe: Recipe) async {
         do {
-            let recipeToPersist: Recipe
-            if recipe.source == .aiGenerated {
-                guard let normalizedRecipe = await normalizedAIRecipe(recipe) else {
-                    return
-                }
-                recipeToPersist = normalizedRecipe.rawValue
-            } else {
-                recipeToPersist = await canonicalizedRecipeForPersistence(recipe)
-            }
+            let recipeToPersist = try await preparedRecipeForIntake(recipe)
 
             let saved = try await storageService.addRecipe(recipeToPersist)
             if saved.source.isUserRecipe {
@@ -651,15 +655,7 @@ final class AppState {
 
     func updateRecipe(_ recipe: Recipe) async {
         do {
-            let recipeToPersist: Recipe
-            if recipe.source == .aiGenerated {
-                guard let normalizedRecipe = await normalizedAIRecipe(recipe) else {
-                    return
-                }
-                recipeToPersist = normalizedRecipe.rawValue
-            } else {
-                recipeToPersist = await canonicalizedRecipeForPersistence(recipe)
-            }
+            let recipeToPersist = try await preparedRecipeForIntake(recipe)
 
             let updated = try await storageService.updateRecipe(recipeToPersist)
             if let index = recipes.firstIndex(where: { $0.id == recipe.id }) {
@@ -739,7 +735,15 @@ final class AppState {
     }
 
     func cacheDiscoverRecipe(_ recipe: Recipe) async -> Recipe? {
-        guard let discoverRecord = DiscoverRecipeRecord(nonAIRecipe: recipe) else {
+        let recipeToPersist: Recipe
+        do {
+            recipeToPersist = try await preparedRecipeForIntake(recipe)
+        } catch {
+            errorMessage = error.localizedDescription
+            return nil
+        }
+
+        guard let discoverRecord = DiscoverRecipeRecord(nonAIRecipe: recipeToPersist) else {
             return nil
         }
 
@@ -776,7 +780,7 @@ final class AppState {
             return nil
         }
 
-        return ReviewableImportedRecipe(recipe: result.toRecipe(source: .imported))
+        return await importedRecipeDraft(from: result.toRecipe(source: .imported))
     }
 
     func importRecipeFromText(_ text: String) async -> ReviewableImportedRecipe? {
@@ -784,7 +788,7 @@ final class AppState {
             return nil
         }
 
-        return ReviewableImportedRecipe(recipe: result.toRecipe(source: .imported))
+        return await importedRecipeDraft(from: result.toRecipe(source: .imported))
     }
 
     func getSubstitutions(for recipe: Recipe) async -> [SubstitutionSuggestion] {
@@ -1090,6 +1094,27 @@ final class AppState {
         await persistCookQueue()
     }
 
+    func moveCookQueueStage(_ stageID: UUID, by offset: Int) async {
+        guard var queue = cookQueue else { return }
+        queue.moveStage(stageID, by: offset)
+        setCookQueueValue(queue)
+        await persistCookQueue()
+    }
+
+    func bundleCookQueueStageWithNext(_ stageID: UUID) async {
+        guard var queue = cookQueue else { return }
+        queue.bundleStageWithNext(stageID)
+        setCookQueueValue(queue)
+        await persistCookQueue()
+    }
+
+    func splitCookQueueStage(_ stageID: UUID) async {
+        guard var queue = cookQueue else { return }
+        queue.splitStage(stageID)
+        setCookQueueValue(queue)
+        await persistCookQueue()
+    }
+
     func startCookQueueStage(_ stageID: UUID) async {
         guard var queue = cookQueue else { return }
         queue.startStage(stageID)
@@ -1264,11 +1289,45 @@ final class AppState {
         return canonicalRecipe
     }
 
+    private func preparedRecipeForIntake(_ recipe: Recipe) async throws -> Recipe {
+        if recipe.source == .aiGenerated {
+            return try await requireNormalizedAIRecipe(recipe).rawValue
+        }
+
+        return try await requireResolvedRecipeForPersistence(recipe)
+    }
+
+    private func requireResolvedRecipeForPersistence(_ recipe: Recipe) async throws -> Recipe {
+        let canonicalRecipe = TrustedRecipeCanonicalizer.canonicalize(recipe)
+        let resolutionDraft = await recipeIngredientResolver.resolve(recipe: canonicalRecipe)
+
+        guard resolutionDraft.isReadyToBuild, !resolutionDraft.requiresIngredientEdits else {
+            let unresolvedNames = unresolvedIngredientNames(in: resolutionDraft)
+            throw RecipeIntakeNormalizationError.unresolvedIngredients(unresolvedNames)
+        }
+
+        return resolutionDraft.builtRecipe()
+    }
+
     private func requireNormalizedAIRecipe(_ recipe: Recipe) async throws -> NormalizedAIRecipe {
         let canonicalRecipe = TrustedRecipeCanonicalizer.canonicalize(recipe)
         let resolutionDraft = await recipeIngredientResolver.resolve(recipe: canonicalRecipe)
         let disambiguatedDraft = try await aiDisambiguatedRecipeDraft(from: resolutionDraft)
         return NormalizedAIRecipe(rawValue: disambiguatedDraft.builtRecipe())
+    }
+
+    private func importedRecipeDraft(from recipe: Recipe) async -> ReviewableImportedRecipe? {
+        let canonicalRecipe = TrustedRecipeCanonicalizer.canonicalize(recipe)
+        let resolutionDraft = await recipeIngredientResolver.resolve(recipe: canonicalRecipe)
+        let resolvedRecipe = resolutionDraft.isReadyToBuild ? resolutionDraft.builtRecipe() : canonicalRecipe
+        return ReviewableImportedRecipe(recipe: resolvedRecipe)
+    }
+
+    private func unresolvedIngredientNames(in draft: RecipeResolutionDraft) -> [String] {
+        let ambiguous = draft.ambiguousIngredients.map { $0.ingredient.rawName }
+        let unknown = draft.unknownIngredients.map { $0.ingredient.rawName }
+        let names = ambiguous + unknown
+        return names.isEmpty ? draft.recipe.ingredients.map(\ .rawName) : names
     }
 
     private func aiDisambiguatedRecipeDraft(from draft: RecipeResolutionDraft) async throws -> RecipeResolutionDraft {

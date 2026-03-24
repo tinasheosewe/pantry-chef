@@ -152,17 +152,23 @@ struct ShoppingItem: Identifiable, Codable, Hashable {
         return pantryQuantityMode != defaultMode || pantryQuantity != defaultQuantity || pantryUnit != defaultUnit
     }
 
-    func updatingPantryPlan(quantity: Double?, unit: MeasurementUnit?, quantityMode: PantryQuantityMode) -> ShoppingItem {
-        ShoppingItem(
+    func updatingPantryPlan(
+        quantity: Double?,
+        unit: MeasurementUnit?,
+        quantityMode: PantryQuantityMode,
+        facets: [PantryFacetSelection]? = nil
+    ) -> ShoppingItem {
+        let updatedFacets = facets ?? self.facets
+        return ShoppingItem(
             id: id,
             name: name,
-            quantity: quantity == nil && quantityMode == .exact ? self.quantity : self.quantity,
+            quantity: self.quantity,
             unit: self.unit,
             category: category,
             isChecked: isChecked,
             recipeSource: recipeSource,
             catalogItemID: catalogItemID,
-            facets: facets,
+            facets: updatedFacets,
             pantryQuantity: quantityMode == .exact ? (quantity ?? self.quantity) : nil,
             pantryUnit: quantityMode == .exact ? (unit ?? self.unit) : nil,
             pantryQuantityMode: quantityMode

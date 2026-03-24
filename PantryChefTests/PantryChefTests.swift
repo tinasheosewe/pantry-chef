@@ -1527,6 +1527,28 @@ final class ShoppingItemModelTests: XCTestCase {
         XCTAssertEqual(updated.pantryQuantityMode, .presenceOnly)
         XCTAssertEqual(updated.pantryPlanText, "On hand")
     }
+
+    func testUpdatingPantryPlanCanChangeCatalogFacets() {
+        let item = ShoppingItem(
+            name: "Whole Milk",
+            quantity: 1,
+            unit: .cup,
+            category: .dairy,
+            catalogItemID: "milk",
+            facets: [.init(key: .variant, value: "whole")]
+        )
+
+        let updated = item.updatingPantryPlan(
+            quantity: 1,
+            unit: .cup,
+            quantityMode: .exact,
+            facets: [.init(key: .variant, value: "skim")]
+        )
+
+        XCTAssertEqual(updated.facets, [.init(key: .variant, value: "skim")])
+        XCTAssertEqual(updated.displayName, "Milk")
+        XCTAssertEqual(updated.facetSummary, "Skim")
+    }
 }
 
 // MARK: - MealPlanEntry Model Tests
@@ -2284,7 +2306,7 @@ final class AppStateTests: XCTestCase {
         XCTAssertEqual(storage.recipeStore[0].ingredients[0].catalogItemID, "carrot")
     }
 
-    func testAddRecipePreservesUnresolvedIngredientsWhenNoSafeMatchExists() async {
+    func testAddRecipeRejectsUnresolvedIngredientsWhenNoSafeMatchExists() async {
         let (appState, storage, _) = makeTestAppState()
         let recipe = makeRecipe(ingredients: [
             Ingredient(name: "mystery leaf", quantity: 1, unit: .whole, category: .produce)
@@ -2292,9 +2314,8 @@ final class AppStateTests: XCTestCase {
 
         await appState.addRecipe(recipe)
 
-        XCTAssertEqual(storage.recipeStore.count, 1)
-        XCTAssertNil(storage.recipeStore[0].ingredients[0].catalogItemID)
-        XCTAssertEqual(storage.recipeStore[0].ingredients[0].name, "mystery leaf")
+        XCTAssertTrue(storage.recipeStore.isEmpty)
+        XCTAssertEqual(appState.errorMessage, "Resolve recipe ingredients before saving: mystery leaf.")
     }
 
     func testDeleteRecipe() async {
@@ -2921,6 +2942,57 @@ final class AppStateTests: XCTestCase {
         XCTAssertEqual(storage.cookQueueStore?.stages.count, 1)
     }
 
+    func testMoveCookQueueStageReordersStages() async throws {
+        let (appState, _, _) = makeTestAppState()
+        let recipes = [
+            makeRecipe(title: "Soup"),
+            makeRecipe(title: "Salad"),
+            makeRecipe(title: "Bread"),
+        ]
+
+        await appState.addRecipesToCookQueue(recipes, asParallelBatch: false)
+        let secondStageID = try XCTUnwrap(appState.cookQueue?.stages[1].id)
+
+        await appState.moveCookQueueStage(secondStageID, by: -1)
+
+        XCTAssertEqual(appState.cookQueue?.stages.map(\.title), ["Salad", "Soup", "Bread"])
+    }
+
+    func testBundleCookQueueStageWithNextCreatesParallelStage() async throws {
+        let (appState, _, _) = makeTestAppState()
+        let recipes = [
+            makeRecipe(title: "Soup"),
+            makeRecipe(title: "Salad"),
+            makeRecipe(title: "Bread"),
+        ]
+
+        await appState.addRecipesToCookQueue(recipes, asParallelBatch: false)
+        let firstStageID = try XCTUnwrap(appState.cookQueue?.stages.first?.id)
+
+        await appState.bundleCookQueueStageWithNext(firstStageID)
+
+        XCTAssertEqual(appState.cookQueue?.stages.count, 2)
+        XCTAssertEqual(appState.cookQueue?.stages.first?.recipeTitleSnapshots, ["Soup", "Salad"])
+        XCTAssertTrue(appState.cookQueue?.stages.first?.isParallelBatch == true)
+    }
+
+    func testSplitCookQueueStageExpandsParallelBatchIntoSoloStages() async throws {
+        let (appState, _, _) = makeTestAppState()
+        let recipes = [
+            makeRecipe(title: "Soup"),
+            makeRecipe(title: "Salad"),
+        ]
+
+        await appState.addRecipesToCookQueue(recipes, asParallelBatch: true)
+        let stageID = try XCTUnwrap(appState.cookQueue?.stages.first?.id)
+
+        await appState.splitCookQueueStage(stageID)
+
+        XCTAssertEqual(appState.cookQueue?.stages.count, 2)
+        XCTAssertEqual(appState.cookQueue?.stages.map(\.title), ["Soup", "Salad"])
+        XCTAssertTrue(appState.cookQueue?.stages.allSatisfy { !$0.isParallelBatch } == true)
+    }
+
     func testCompleteCookQueueStageAdvancesToNextPendingStage() async throws {
         let (appState, _, _) = makeTestAppState()
         let recipes = [
@@ -3085,6 +3157,7 @@ final class AppStateTests: XCTestCase {
 
         XCTAssertEqual(result?.recipe.source, .imported)
         XCTAssertEqual(result?.recipe.title, "Imported")
+        XCTAssertEqual(result?.recipe.ingredients.first?.catalogItemID, "soy-sauce")
         XCTAssertEqual(ai.parseRecipeFromURLCallCount, 1)
     }
 
@@ -3110,6 +3183,7 @@ final class AppStateTests: XCTestCase {
 
         XCTAssertEqual(result?.recipe.source, .imported)
         XCTAssertEqual(result?.recipe.title, "Imported Text")
+        XCTAssertEqual(result?.recipe.ingredients.first?.catalogItemID, "garlic")
         XCTAssertEqual(ai.parseRecipeFromTextCallCount, 1)
     }
 
@@ -3290,6 +3364,20 @@ final class AppStateTests: XCTestCase {
         XCTAssertEqual(cached?.recipe.ingredients.first?.catalogItemID, "yogurt")
         XCTAssertEqual(cached?.recipe.ingredients.first?.facets, [PantryFacetSelection(key: .variant, value: "greek")])
         XCTAssertEqual(storage.recipeStore.first?.ingredients.first?.catalogItemID, "yogurt")
+    }
+
+    func testCacheDiscoverRecipeCanonicalizesResolvableIngredientsBeforeSaving() async {
+        let (appState, storage, _) = makeTestAppState()
+        let recipe = makeRecipe(
+            title: "Discover Soup",
+            ingredients: [Ingredient(name: "Carrots", quantity: 2, unit: .whole, category: .produce)],
+            source: .bundled
+        )
+
+        let cached = await appState.cacheDiscoverRecipe(recipe)
+
+        XCTAssertEqual(cached?.ingredients.first?.catalogItemID, "carrot")
+        XCTAssertEqual(storage.recipeStore.first?.ingredients.first?.catalogItemID, "carrot")
     }
 
     func testGetSubstitutions() async {

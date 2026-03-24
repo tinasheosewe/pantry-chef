@@ -1,5 +1,105 @@
 import SwiftUI
 
+
+private struct RecipeMultiCookQueueSelectionView: View {
+    @Environment(\.dismiss) private var dismiss
+
+    let baseRecipe: Recipe
+    let appState: AppState
+    let onSave: ([Recipe]) -> Void
+
+    @State private var selectedRecipeIDs: Set<UUID> = []
+
+    private var availableRecipes: [Recipe] {
+        var seenIDs: Set<UUID> = [baseRecipe.id]
+        return appState.allRecipes.filter { recipe in
+            guard recipe.id != baseRecipe.id else { return false }
+            return seenIDs.insert(recipe.id).inserted
+        }
+    }
+
+    private var selectedRecipes: [Recipe] {
+        [baseRecipe] + availableRecipes.filter { selectedRecipeIDs.contains($0.id) }
+    }
+
+    var body: some View {
+        NavigationStack {
+            AppList {
+                Section {
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text(baseRecipe.title)
+                            .font(.subheadline)
+                            .fontWeight(.semibold)
+                            .foregroundStyle(AppColors.darkText)
+                        Text("This recipe is always included. Add one or more other recipes to queue them as one parallel stage.")
+                            .font(.caption)
+                            .foregroundStyle(AppColors.subtleText)
+                    }
+                } header: {
+                    Text("Base Recipe")
+                }
+
+                Section {
+                    ForEach(availableRecipes) { recipe in
+                        Button {
+                            toggle(recipe.id)
+                        } label: {
+                            HStack(spacing: 12) {
+                                Image(systemName: selectedRecipeIDs.contains(recipe.id) ? "checkmark.circle.fill" : "circle")
+                                    .font(.title3)
+                                    .foregroundStyle(selectedRecipeIDs.contains(recipe.id) ? AppColors.primaryGreen : AppColors.mediumGray)
+
+                                VStack(alignment: .leading, spacing: 4) {
+                                    Text(recipe.title)
+                                        .font(.subheadline)
+                                        .fontWeight(.medium)
+                                        .foregroundStyle(AppColors.darkText)
+                                    HStack(spacing: 8) {
+                                        Text(recipe.totalTimeDisplay)
+                                            .font(.caption)
+                                            .foregroundStyle(AppColors.subtleText)
+                                        if !recipe.source.isUserRecipe {
+                                            Text(recipe.source.label)
+                                                .font(.caption2)
+                                                .fontWeight(.semibold)
+                                                .foregroundStyle(AppColors.accentTeal)
+                                        }
+                                    }
+                                }
+
+                                Spacer()
+                            }
+                        }
+                        .buttonStyle(.plain)
+                    }
+                } header: {
+                    Text("Add More Recipes")
+                }
+            }
+            .navigationTitle("Queue Multi-Cook")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") { dismiss() }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Queue") {
+                        onSave(selectedRecipes)
+                    }
+                    .disabled(selectedRecipeIDs.isEmpty)
+                }
+            }
+        }
+    }
+
+    private func toggle(_ recipeID: UUID) {
+        if selectedRecipeIDs.contains(recipeID) {
+            selectedRecipeIDs.remove(recipeID)
+        } else {
+            selectedRecipeIDs.insert(recipeID)
+        }
+    }
+}
 struct RecipeDetailView: View {
     @Environment(AppState.self) private var appState
     @State private var recipe: Recipe
@@ -10,6 +110,7 @@ struct RecipeDetailView: View {
     @State private var showShoppingList = false
     @State private var showPantryReview = false
     @State private var showCookQueueManager = false
+    @State private var showMultiCookQueueBuilder = false
     @State private var substitutions: [SubstitutionSuggestion] = []
     @State private var healthierSuggestion: HealthierSuggestion?
     @State private var shoppingList: [ShoppingItem] = []
@@ -45,6 +146,9 @@ struct RecipeDetailView: View {
                     titleSection
                     pantryMatchSection
                     actionButtons
+                    if appState.cookQueue?.stages.isEmpty == false {
+                        cookQueueSection
+                    }
                     modifySection
                     servingsAdjuster
 
@@ -130,6 +234,15 @@ struct RecipeDetailView: View {
         }
         .appNavigationSheet(isPresented: $showCookQueueManager) {
             CookQueueView(appState: appState)
+        }
+        .appNavigationSheet(isPresented: $showMultiCookQueueBuilder) {
+            RecipeMultiCookQueueSelectionView(baseRecipe: scaledRecipe, appState: appState) { recipes in
+                Task {
+                    await appState.addRecipesToCookQueue(recipes, asParallelBatch: true)
+                    showMultiCookQueueBuilder = false
+                    showCookQueueManager = true
+                }
+            }
         }
         .appNavigationSheet(isPresented: $showEditor) {
             RecipeEditorView(
@@ -381,46 +494,58 @@ struct RecipeDetailView: View {
                     }
                 }
 
+                ActionButton(icon: "square.stack.3d.up.fill", title: "Multi Queue", color: AppColors.accentTeal) {
+                    showMultiCookQueueBuilder = true
+                }
+
+                if appState.cookQueue?.stages.isEmpty == false {
+                    ActionButton(icon: "list.bullet.rectangle", title: "View Queue", color: AppColors.primaryGreen) {
+                        showCookQueueManager = true
+                    }
+                }
+            }
+
+            HStack(spacing: 12) {
                 ActionButton(icon: "cart", title: "What to Buy", color: AppColors.warmOrange) {
-                Task {
-                    isLoadingAction = true
-                    let result = await appState.getShoppingList(for: recipe)
-                    isLoadingAction = false
-                    if result.isEmpty {
-                        actionErrorMessage = "Couldn't generate shopping list. Please check your internet connection and try again."
-                    } else {
-                        shoppingList = result
-                        showShoppingList = true
+                    Task {
+                        isLoadingAction = true
+                        let result = await appState.getShoppingList(for: recipe)
+                        isLoadingAction = false
+                        if result.isEmpty {
+                            actionErrorMessage = "Couldn't generate shopping list. Please check your internet connection and try again."
+                        } else {
+                            shoppingList = result
+                            showShoppingList = true
+                        }
                     }
                 }
-            }
 
-            ActionButton(icon: "arrow.triangle.2.circlepath", title: "Substitutes", color: AppColors.accentTeal) {
-                Task {
-                    isLoadingAction = true
-                    let result = await appState.getSubstitutions(for: recipe)
-                    isLoadingAction = false
-                    if result.isEmpty {
-                        actionErrorMessage = "No local substitutions are available for the missing ingredients in this recipe."
-                    } else {
-                        substitutions = result
-                        showSubstitutions = true
+                ActionButton(icon: "arrow.triangle.2.circlepath", title: "Substitutes", color: AppColors.accentTeal) {
+                    Task {
+                        isLoadingAction = true
+                        let result = await appState.getSubstitutions(for: recipe)
+                        isLoadingAction = false
+                        if result.isEmpty {
+                            actionErrorMessage = "No local substitutions are available for the missing ingredients in this recipe."
+                        } else {
+                            substitutions = result
+                            showSubstitutions = true
+                        }
                     }
                 }
-            }
 
-            ActionButton(icon: "heart.circle", title: "Healthier", color: AppColors.primaryGreen) {
-                Task {
-                    isLoadingAction = true
-                    let result = await appState.getHealthierVersion(of: recipe)
-                    isLoadingAction = false
-                    if let result {
-                        healthierSuggestion = result
-                    } else {
-                        actionErrorMessage = "Couldn't generate healthier suggestions. Please check your internet connection and try again."
+                ActionButton(icon: "heart.circle", title: "Healthier", color: AppColors.primaryGreen) {
+                    Task {
+                        isLoadingAction = true
+                        let result = await appState.getHealthierVersion(of: recipe)
+                        isLoadingAction = false
+                        if let result {
+                            healthierSuggestion = result
+                        } else {
+                            actionErrorMessage = "Couldn't generate healthier suggestions. Please check your internet connection and try again."
+                        }
                     }
                 }
-            }
             }
 
             Button {
@@ -518,7 +643,6 @@ struct RecipeDetailView: View {
                         }
                     }
                 }
-                .frame(maxWidth: .infinity)
             }
         }
     }
@@ -529,7 +653,9 @@ struct RecipeDetailView: View {
             Button {
                 withAnimation(.easeInOut(duration: 0.25)) {
                     showModify.toggle()
-                    if !showModify { modifyText = "" }
+                    if !showModify {
+                        modifyText = ""
+                    }
                 }
             } label: {
                 HStack(spacing: 8) {
@@ -598,6 +724,50 @@ struct RecipeDetailView: View {
                     }
                 }
                 .transition(.opacity.combined(with: .move(edge: .top)))
+            }
+        }
+    }
+
+    private var cookQueueSection: some View {
+        let queue = appState.cookQueue
+        let currentStage = queue?.currentStage
+        let isRecipeQueued = queue?.stages.contains(where: { $0.recipeIDs.contains(recipe.id) }) == true
+
+        return AppDetailCard("Cook Queue", subtitle: queue?.name) {
+            if let currentStage {
+                VStack(alignment: .leading, spacing: 6) {
+                    Text(currentStage.title)
+                        .font(.subheadline)
+                        .fontWeight(.semibold)
+                        .foregroundStyle(AppColors.darkText)
+                    Text(currentStage.subtitle)
+                        .font(.caption)
+                        .foregroundStyle(AppColors.subtleText)
+                }
+            }
+
+            HStack {
+                Text(isRecipeQueued ? "This recipe already has a queue stage." : "Queue is active and ready to launch from here.")
+                    .font(.caption)
+                    .foregroundStyle(AppColors.subtleText)
+                Spacer()
+                Text("\(queue?.pendingStageCount ?? 0) left")
+                    .font(.caption2)
+                    .fontWeight(.semibold)
+                    .foregroundStyle(AppColors.primaryGreen)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .background(AppColors.primaryGreen.opacity(0.12))
+                    .clipShape(Capsule())
+            }
+
+            Button {
+                showCookQueueManager = true
+            } label: {
+                Label("Open Queue Manager", systemImage: "list.number")
+                    .font(.subheadline)
+                    .fontWeight(.semibold)
+                    .foregroundStyle(AppColors.accentBlue)
             }
         }
     }

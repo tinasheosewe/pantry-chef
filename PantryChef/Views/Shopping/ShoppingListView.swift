@@ -611,14 +611,16 @@ private struct ShoppingPantryPlanEditorView: View {
                     }
 
                     if draft.quantityMode == .exact {
-                        TextField("Quantity", text: $draft.quantityText)
-                            .keyboardType(.decimalPad)
-                            .appTextEntry()
+                        HStack(alignment: .firstTextBaseline, spacing: 12) {
+                            TextField("Quantity", text: $draft.quantityText)
+                                .keyboardType(.decimalPad)
+                                .appTextEntry()
 
-                        Picker("Unit", selection: $draft.selectedUnit) {
-                            Text("None").tag(nil as MeasurementUnit?)
-                            ForEach(MeasurementUnit.allCases) { unit in
-                                Text(unit.rawValue).tag(unit as MeasurementUnit?)
+                            Picker("Unit", selection: $draft.selectedUnit) {
+                                Text("None").tag(nil as MeasurementUnit?)
+                                ForEach(MeasurementUnit.allCases) { unit in
+                                    Text(unit.rawValue).tag(unit as MeasurementUnit?)
+                                }
                             }
                         }
                     }
@@ -626,6 +628,28 @@ private struct ShoppingPantryPlanEditorView: View {
                     Text("Pantry Plan")
                 } footer: {
                     Text("Use this when the amount you buy differs from what the recipe needs, like buying a bottle of soy sauce instead of 2 tbsp.")
+                }
+
+                if let catalogItem = draft.catalogItem {
+                    Section {
+                        ForEach(catalogItem.facets, id: \.key) { definition in
+                            Picker(
+                                definition.key.title,
+                                selection: Binding(
+                                    get: { draft.selection(for: definition) },
+                                    set: { draft.setFacetValue($0, for: definition.key) }
+                                )
+                            ) {
+                                ForEach(definition.options, id: \.self) { option in
+                                    Text(draft.humanizedFacetValue(option)).tag(option)
+                                }
+                            }
+                        }
+                    } header: {
+                        Text("Facets")
+                    } footer: {
+                        Text("Catalog-backed recipe items already carry structured facet choices. Adjust them here when you bought a different cut, form, or variant.")
+                    }
                 }
             }
             .navigationTitle("Pantry Plan")
@@ -651,6 +675,7 @@ private struct ShoppingPantryPlanDraft {
     var quantityMode: PantryQuantityMode
     var quantityText: String
     var selectedUnit: MeasurementUnit?
+    var selectedFacets: [PantryFacetSelection]
 
     init(item: ShoppingItem) {
         self.item = item
@@ -659,6 +684,11 @@ private struct ShoppingPantryPlanDraft {
             quantity == quantity.rounded() ? "\(Int(quantity))" : String(format: "%.1f", quantity)
         } ?? ""
         self.selectedUnit = item.pantryUnit ?? item.unit
+        self.selectedFacets = item.facets
+    }
+
+    var catalogItem: PantryCatalogItemDefinition? {
+        item.resolvedCatalogItem
     }
 
     var quantityValue: Double? {
@@ -676,11 +706,43 @@ private struct ShoppingPantryPlanDraft {
         }
     }
 
+    mutating func setFacetValue(_ value: String, for key: PantryFacetKey) {
+        guard let catalogItem else { return }
+
+        var facetsByKey = Dictionary(uniqueKeysWithValues: selectedFacets.map { ($0.key, $0) })
+        if catalogItem.options(for: key).contains(value) {
+            facetsByKey[key] = PantryFacetSelection(key: key, value: value)
+        }
+
+        selectedFacets = catalogItem.facets.compactMap { definition in
+            facetsByKey[definition.key]
+        }
+
+        if quantityMode == .exact {
+            selectedUnit = catalogItem.suggestedUnit(for: selectedFacets) ?? selectedUnit
+        }
+    }
+
+    func selection(for definition: PantryFacetDefinition) -> String {
+        selectedFacets.first(where: { $0.key == definition.key })?.value
+            ?? definition.options.first
+            ?? ""
+    }
+
+    func humanizedFacetValue(_ value: String) -> String {
+        value
+            .replacingOccurrences(of: "-", with: " ")
+            .split(separator: " ")
+            .map { $0.prefix(1).uppercased() + $0.dropFirst().lowercased() }
+            .joined(separator: " ")
+    }
+
     func buildItem() -> ShoppingItem {
         item.updatingPantryPlan(
             quantity: quantityValue,
             unit: selectedUnit,
-            quantityMode: quantityMode
+            quantityMode: quantityMode,
+            facets: selectedFacets
         )
     }
 }
