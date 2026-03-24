@@ -2,7 +2,7 @@ import Foundation
 import SwiftData
 
 enum StorageSchema {
-    static let currentVersion = 9
+    static let currentVersion = 10
 }
 
 @Model
@@ -597,6 +597,7 @@ final class MealPlanRecord {
     var recipeId: UUID?
     var preparedDishId: UUID?
     var customMealName: String?
+    var plannedServings: Int?
     var notes: String?
 
     init(from entry: MealPlanEntry) {
@@ -607,6 +608,7 @@ final class MealPlanRecord {
         recipeId = entry.recipe?.id
         preparedDishId = entry.preparedDish?.id
         customMealName = entry.customMealName
+        plannedServings = entry.plannedServings
         notes = entry.notes
     }
 
@@ -617,6 +619,7 @@ final class MealPlanRecord {
         recipeId = entry.recipe?.id
         preparedDishId = entry.preparedDish?.id
         customMealName = entry.customMealName
+        plannedServings = entry.plannedServings
         notes = entry.notes
     }
 
@@ -628,6 +631,7 @@ final class MealPlanRecord {
             recipe: recipe,
             preparedDish: preparedDish,
             customMealName: customMealName,
+            plannedServings: plannedServings,
             notes: notes
         )
     }

@@ -157,6 +157,10 @@ struct MealPlanActions {
         }
     }
 
+    func updateEntry(_ entry: MealPlanEntry) async {
+        await appState.updateMealPlanEntry(entry)
+    }
+
     func generateShoppingList() async {
         await appState.generateShoppingListFromMealPlan()
     }

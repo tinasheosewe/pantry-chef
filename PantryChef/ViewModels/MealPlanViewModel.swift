@@ -90,6 +90,12 @@ final class MealPlanViewModel: AsyncActionHandling {
         }
     }
 
+    func updateEntry(_ entry: MealPlanEntry) {
+        runTask { [self] in
+            await self.mealPlanActions.updateEntry(entry)
+        }
+    }
+
     func selectSlot(date: Date, mealType: MealType, replaceExisting: Bool = true, allowsMultipleSelection: Bool = false) {
         selectedSlot = MealSlot(date: date, mealType: mealType, replaceExisting: replaceExisting)
         if allowsMultipleSelection {

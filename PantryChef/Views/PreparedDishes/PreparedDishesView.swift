@@ -3,6 +3,9 @@ import SwiftUI
 struct PreparedDishesView: View {
     @State private var viewModel: PreparedDishViewModel
     @FocusState private var isSearchFocused: Bool
+    @State private var showMealPlanQuickAddSelection = false
+    @State private var showMealPlanQuickAddReview = false
+    @State private var mealPlanQuickAddDrafts: [MealPlanPreparedDishReviewDraft] = []
     private let isEmbedded: Bool
 
     init(appState: AppState, isEmbedded: Bool = false) {
@@ -27,7 +30,7 @@ struct PreparedDishesView: View {
                     message: "Track leftovers, takeout, and ready-to-eat meals.",
                     actionTitle: "Add Prepared Dish"
                 ) {
-                    viewModel.showAddDish = true
+                    presentSingleAdd()
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
@@ -79,7 +82,7 @@ struct PreparedDishesView: View {
                 .listStyle(.insetGrouped)
             }
         }
-        .overlay(alignment: .top) {
+        .overlay(alignment: .bottom) {
             if let feedback = viewModel.feedbackBanner {
                 Text(feedback.message)
                     .font(.subheadline)
@@ -89,25 +92,40 @@ struct PreparedDishesView: View {
                     .background(AppColors.cardBackground)
                     .clipShape(Capsule())
                     .shadow(color: .black.opacity(0.08), radius: 10, y: 3)
-                    .padding(.top, isEmbedded ? 8 : 12)
-                    .transition(.move(edge: .top).combined(with: .opacity))
+                    .padding(.bottom, isEmbedded ? 10 : 12)
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
             }
         }
         .animation(.easeInOut(duration: 0.2), value: viewModel.feedbackBanner)
         .toolbar {
             if !isEmbedded {
                 ToolbarItem(placement: .primaryAction) {
-                    Button {
-                        viewModel.showAddDish = true
-                    } label: {
-                        Label("Add Prepared Dish", systemImage: "plus")
-                    }
+                    addMenuLabel(title: "Add Prepared Dish")
                 }
             }
         }
         .sheet(isPresented: $viewModel.showAddDish) {
             PreparedDishEditorView(appState: viewModel.appState) { dish in
                 viewModel.addDish(dish)
+            }
+        }
+        .sheet(isPresented: $showMealPlanQuickAddSelection) {
+            PreparedDishMealPlanSelectionView(appState: viewModel.appState) { entries in
+                mealPlanQuickAddDrafts = entries.map(MealPlanPreparedDishReviewDraft.init)
+                showMealPlanQuickAddSelection = false
+                Task { @MainActor in
+                    showMealPlanQuickAddReview = true
+                }
+            }
+        }
+        .sheet(isPresented: $showMealPlanQuickAddReview, onDismiss: {
+            mealPlanQuickAddDrafts = []
+        }) {
+            PreparedDishMealPlanReviewView(appState: viewModel.appState, drafts: $mealPlanQuickAddDrafts) { dishes in
+                for dish in dishes {
+                    viewModel.addDish(dish)
+                }
+                showMealPlanQuickAddReview = false
             }
         }
         .sheet(item: $viewModel.editingDish) { dish in
@@ -137,19 +155,7 @@ struct PreparedDishesView: View {
 
             Spacer()
 
-            Button {
-                viewModel.showAddDish = true
-            } label: {
-                Label("Add", systemImage: "plus")
-                    .font(.subheadline)
-                    .fontWeight(.semibold)
-                    .foregroundStyle(AppColors.primaryGreen)
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 8)
-                    .background(AppColors.primaryGreen.opacity(0.12))
-                    .clipShape(Capsule())
-            }
-            .buttonStyle(.plain)
+            addMenuLabel(title: "Add")
         }
         .padding(.horizontal)
         .padding(.top, 12)
@@ -208,6 +214,36 @@ struct PreparedDishesView: View {
         .background((dish.servingsRemaining == 1 ? AppColors.softRed : AppColors.warmOrange).opacity(0.14))
         .foregroundStyle(dish.servingsRemaining == 1 ? AppColors.softRed : AppColors.warmOrange)
         .clipShape(RoundedRectangle(cornerRadius: 12))
+    }
+
+    private func presentSingleAdd() {
+        viewModel.showAddDish = true
+    }
+
+    @ViewBuilder
+    private func addMenuLabel(title: String) -> some View {
+        Menu {
+            Button {
+                presentSingleAdd()
+            } label: {
+                Label("Single Meal", systemImage: "plus.circle")
+            }
+
+            Button {
+                showMealPlanQuickAddSelection = true
+            } label: {
+                Label("From Meal Plan", systemImage: "calendar.badge.plus")
+            }
+        } label: {
+            Label(title, systemImage: "plus")
+                .font(.subheadline)
+                .fontWeight(.semibold)
+                .foregroundStyle(AppColors.primaryGreen)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 8)
+                .background(AppColors.primaryGreen.opacity(0.12))
+                .clipShape(Capsule())
+        }
     }
 }
 
@@ -459,23 +495,15 @@ struct PreparedDishEditorView: View {
         return appState.allRecipes.first { $0.id == recipeID }
     }
 
-    private var useByDateBinding: Binding<Date> {
-        Binding(
-            get: { draft.useByDateWasEdited ? draft.manualUseByDate : draft.estimatedUseByDate },
-            set: { draft.updateUseByDate($0) }
-        )
-    }
-
     var body: some View {
         AppNavigationSheet {
             AppScrollView {
-                VStack(alignment: .leading, spacing: 20) {
-                    basicSection
-                    freshnessSection
-                    recipeSection
-                    nutritionSection
-                    notesSection
-                }
+                PreparedDishDraftForm(
+                    appState: appState,
+                    draft: $draft,
+                    linkedRecipe: linkedRecipe,
+                    showRecipePicker: $showRecipePicker
+                )
                 .padding()
             }
             .background(AppColors.background)
@@ -494,17 +522,41 @@ struct PreparedDishEditorView: View {
                     .disabled(!draft.isValid(using: linkedRecipe))
                 }
             }
-            .sheet(isPresented: $showRecipePicker) {
-                MealPickerView(
-                    recipes: appState.allRecipes,
-                    preparedDishes: [],
-                    onSelectRecipe: { recipe in
-                        draft.recipeID = recipe.id
-                        draft.syncLinkedRecipe(recipe)
-                    },
-                    onSelectPreparedDish: { _ in }
-                )
-            }
+        }
+    }
+}
+
+private struct PreparedDishDraftForm: View {
+    let appState: AppState
+    @Binding var draft: PreparedDishDraft
+    let linkedRecipe: Recipe?
+    @Binding var showRecipePicker: Bool
+
+    private var useByDateBinding: Binding<Date> {
+        Binding(
+            get: { draft.useByDateWasEdited ? draft.manualUseByDate : draft.estimatedUseByDate },
+            set: { draft.updateUseByDate($0) }
+        )
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 20) {
+            basicSection
+            freshnessSection
+            recipeSection
+            nutritionSection
+            notesSection
+        }
+        .sheet(isPresented: $showRecipePicker) {
+            MealPickerView(
+                recipes: appState.allRecipes,
+                preparedDishes: [],
+                onSelectRecipe: { recipe in
+                    draft.recipeID = recipe.id
+                    draft.syncLinkedRecipe(recipe)
+                },
+                onSelectPreparedDish: { _ in }
+            )
         }
     }
 
@@ -647,6 +699,427 @@ struct PreparedDishEditorView: View {
         }
         .padding()
         .cardStyle()
+    }
+}
+
+@MainActor
+private struct MealPlanPreparedDishReviewDraft: Identifiable, Hashable {
+    let id: UUID
+    let sourceEntry: MealPlanEntry
+    var draft: PreparedDishDraft
+
+    init(entry: MealPlanEntry) {
+        id = entry.id
+        sourceEntry = entry
+        draft = entry.makePreparedDishDraft()
+    }
+
+    var sourceSummary: String {
+        "\(sourceEntry.date.formatted(date: .abbreviated, time: .omitted)) • \(sourceEntry.mealType.rawValue)"
+    }
+
+    func linkedRecipe(in appState: AppState) -> Recipe? {
+        guard let recipeID = draft.recipeID else { return nil }
+        return appState.allRecipes.first { $0.id == recipeID }
+    }
+
+    func resolvedTitle(in appState: AppState) -> String {
+        draft.resolvedName(using: linkedRecipe(in: appState)).nilIfEmpty ?? sourceEntry.displayName
+    }
+
+    func reviewSummary(in appState: AppState) -> String {
+        var parts: [String] = []
+        parts.append(draft.servingsRemaining == 1 ? "1 serving" : "\(draft.servingsRemaining) servings")
+        parts.append(draft.storage.rawValue)
+
+        let mealTypes = draft.mealTypes
+            .sorted { $0.rawValue < $1.rawValue }
+            .map(\.rawValue)
+            .joined(separator: " • ")
+        if !mealTypes.isEmpty {
+            parts.append(mealTypes)
+        }
+
+        if let linkedRecipe = linkedRecipe(in: appState) {
+            parts.append("Linked to \(linkedRecipe.title)")
+        }
+
+        return parts.joined(separator: " • ")
+    }
+
+    func isValid(in appState: AppState) -> Bool {
+        draft.isValid(using: linkedRecipe(in: appState))
+    }
+
+    func buildDish(in appState: AppState) -> PreparedDish? {
+        draft.buildDish(using: linkedRecipe(in: appState))
+    }
+}
+
+private struct PreparedDishMealPlanSelectionView: View {
+    @Environment(\.dismiss) private var dismiss
+
+    let appState: AppState
+    let onContinue: ([MealPlanEntry]) -> Void
+
+    @State private var searchText = ""
+    @State private var debouncedSearchText = ""
+    @State private var selectedEntryIDs: Set<UUID> = []
+    @State private var searchDebouncer = TaskDebouncer()
+
+    private var filteredEntries: [MealPlanEntry] {
+        let plannedEntries = appState.preparedFoodSourceEntriesFromMealPlan()
+        return SearchQuerySupport.filtered(plannedEntries, query: debouncedSearchText) { entry in
+            [entry.displayName, entry.mealType.rawValue, entry.date.formatted(date: .abbreviated, time: .omitted)]
+                .joined(separator: " ")
+        }
+    }
+
+    private var selectedEntries: [MealPlanEntry] {
+        appState.preparedFoodSourceEntriesFromMealPlan().filter { selectedEntryIDs.contains($0.id) }
+    }
+
+    private var entriesByDay: [(date: Date, entries: [MealPlanEntry])] {
+        let grouped = Dictionary(grouping: filteredEntries) { Calendar.current.startOfDay(for: $0.date) }
+        return grouped.keys.sorted().map { date in
+            let entries = grouped[date, default: []].sorted {
+                if $0.mealType == $1.mealType {
+                    return $0.displayName.localizedCaseInsensitiveCompare($1.displayName) == .orderedAscending
+                }
+                return $0.mealType.rawValue < $1.mealType.rawValue
+            }
+            return (date, entries)
+        }
+    }
+
+    var body: some View {
+        NavigationStack {
+            VStack(spacing: 0) {
+                if filteredEntries.isEmpty {
+                    EmptyStateView(
+                        icon: "calendar.badge.exclamationmark",
+                        title: "No eligible meal-plan items",
+                        message: "Only recipes and custom planned meals can be added to Prepared Food from here."
+                    )
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                } else {
+                    AppList {
+                        Section {
+                            Text("Select one or more meal-plan entries, then review them before adding them to Prepared Food.")
+                                .font(.subheadline)
+                                .foregroundStyle(AppColors.subtleText)
+                        }
+
+                        ForEach(entriesByDay, id: \.date) { group in
+                            Section(group.date.formatted(date: .abbreviated, time: .omitted)) {
+                                ForEach(group.entries) { entry in
+                                    mealPlanEntryRow(entry)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            .searchable(text: $searchText, prompt: "Search meal plan")
+            .onChange(of: searchText) {
+                SearchQuerySupport.schedule(text: searchText, debouncer: searchDebouncer) {
+                    debouncedSearchText = $0
+                }
+            }
+            .navigationTitle("From Meal Plan")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Close") { dismiss() }
+                }
+            }
+            .safeAreaInset(edge: .bottom) {
+                selectionSummaryBar
+            }
+        }
+    }
+
+    private func mealPlanEntryRow(_ entry: MealPlanEntry) -> some View {
+        let isSelected = selectedEntryIDs.contains(entry.id)
+        let accent = entry.preparedDish != nil ? AppColors.warmOrange : AppColors.primaryGreen
+        let icon = entry.recipe != nil ? (entry.recipe?.mealType?.icon ?? "book") : entry.preparedDish != nil ? "takeoutbag.and.cup.and.straw" : entry.mealType.icon
+
+        return Button {
+            if isSelected {
+                selectedEntryIDs.remove(entry.id)
+            } else {
+                selectedEntryIDs.insert(entry.id)
+            }
+        } label: {
+            HStack(spacing: 12) {
+                Image(systemName: icon)
+                    .font(.title3)
+                    .foregroundStyle(accent)
+                    .frame(width: 40, height: 40)
+                    .background(accent.opacity(0.12))
+                    .clipShape(RoundedRectangle(cornerRadius: 10))
+
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(entry.displayName)
+                        .font(.subheadline)
+                        .fontWeight(.semibold)
+                        .foregroundStyle(AppColors.darkText)
+                    Text("\(entry.mealType.rawValue) • \(entry.planningSubtitle ?? entry.sourceDateText)")
+                        .font(.caption)
+                        .foregroundStyle(AppColors.subtleText)
+                }
+
+                Spacer()
+
+                Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
+                    .font(.title3)
+                    .foregroundStyle(isSelected ? AppColors.primaryGreen : AppColors.mediumGray)
+            }
+            .padding(.vertical, 4)
+        }
+        .buttonStyle(.plain)
+    }
+
+    private var selectionSummaryBar: some View {
+        VStack(spacing: 10) {
+            Divider()
+            HStack(spacing: 12) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(selectedEntries.isEmpty ? "Select meal-plan items" : "\(selectedEntries.count) items selected")
+                        .font(.subheadline)
+                        .fontWeight(.semibold)
+                        .foregroundStyle(AppColors.darkText)
+                    Text("Selected meals open in a review step before anything is added.")
+                        .font(.caption)
+                        .foregroundStyle(AppColors.subtleText)
+                }
+
+                Spacer()
+
+                Button {
+                    onContinue(selectedEntries)
+                } label: {
+                    Text("Review")
+                        .font(.subheadline)
+                        .fontWeight(.semibold)
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 12)
+                        .background(selectedEntries.isEmpty ? AppColors.mediumGray : AppColors.accentBlue)
+                        .foregroundStyle(.white)
+                        .clipShape(Capsule())
+                }
+                .disabled(selectedEntries.isEmpty)
+            }
+            .padding(.horizontal)
+            .padding(.bottom, 8)
+        }
+        .background(.ultraThinMaterial)
+    }
+}
+
+private struct PreparedDishMealPlanReviewView: View {
+    @Environment(\.dismiss) private var dismiss
+
+    let appState: AppState
+    @Binding var drafts: [MealPlanPreparedDishReviewDraft]
+    let onSave: ([PreparedDish]) -> Void
+
+    @State private var editingDraft: MealPlanPreparedDishReviewDraft?
+    @State private var isSaving = false
+
+    private var validDraftCount: Int {
+        drafts.filter { $0.isValid(in: appState) }.count
+    }
+
+    var body: some View {
+        NavigationStack {
+            VStack(spacing: 0) {
+                if drafts.isEmpty {
+                    EmptyStateView(
+                        icon: "square.stack.3d.up.slash",
+                        title: "Nothing selected yet",
+                        message: "Pick meal-plan items first, then review them here."
+                    )
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                } else {
+                    AppList {
+                        Section {
+                            ForEach(drafts) { reviewDraft in
+                                reviewDraftRow(reviewDraft)
+                                    .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
+                            }
+                        } header: {
+                            SectionHeader(
+                                title: "Review Items",
+                                subtitle: "\(validDraftCount) ready • \(drafts.count - validDraftCount) need edits"
+                            )
+                            .padding(.top, 8)
+                        }
+                    }
+                    .listStyle(.plain)
+                    .scrollContentBackground(.hidden)
+                    .background(AppColors.background)
+                }
+            }
+            .navigationTitle("Review Prepared Food")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Close") { dismiss() }
+                }
+            }
+            .safeAreaInset(edge: .bottom) {
+                reviewSummaryBar
+            }
+        }
+        .sheet(item: $editingDraft) { reviewDraft in
+            PreparedDishMealPlanDraftEditorView(appState: appState, reviewDraft: reviewDraft) { updatedDraft in
+                if let index = drafts.firstIndex(where: { $0.id == updatedDraft.id }) {
+                    drafts[index] = updatedDraft
+                }
+            }
+        }
+    }
+
+    private func reviewDraftRow(_ reviewDraft: MealPlanPreparedDishReviewDraft) -> some View {
+        let accent = reviewDraft.sourceEntry.preparedDish != nil ? AppColors.warmOrange : AppColors.primaryGreen
+
+        return Button {
+            editingDraft = reviewDraft
+        } label: {
+            VStack(alignment: .leading, spacing: 10) {
+                HStack(alignment: .top, spacing: 12) {
+                    Image(systemName: reviewDraft.sourceEntry.preparedDish != nil ? "takeoutbag.and.cup.and.straw" : "fork.knife")
+                        .font(.title3)
+                        .foregroundStyle(accent)
+                        .frame(width: 40, height: 40)
+                        .background(accent.opacity(0.12))
+                        .clipShape(RoundedRectangle(cornerRadius: 10))
+
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(reviewDraft.resolvedTitle(in: appState))
+                            .font(.subheadline)
+                            .fontWeight(.semibold)
+                            .foregroundStyle(AppColors.darkText)
+                        Text(reviewDraft.sourceSummary)
+                            .font(.caption)
+                            .foregroundStyle(AppColors.subtleText)
+                        Text(reviewDraft.reviewSummary(in: appState))
+                            .font(.caption2)
+                            .foregroundStyle(AppColors.subtleText)
+                    }
+
+                    Spacer()
+                    PantryDraftStateBadge(state: reviewDraft.isValid(in: appState) ? .valid : .incomplete)
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 14)
+            .background(AppColors.cardBackground)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+    }
+
+    private var reviewSummaryBar: some View {
+        VStack(spacing: 10) {
+            Divider()
+            HStack(spacing: 12) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(drafts.isEmpty ? "Nothing to add" : "\(drafts.count) dishes staged")
+                        .font(.subheadline)
+                        .fontWeight(.semibold)
+                        .foregroundStyle(AppColors.darkText)
+                    Text(validDraftCount == drafts.count ? "Everything is ready to add." : "Review incomplete items before adding them.")
+                        .font(.caption)
+                        .foregroundStyle(AppColors.subtleText)
+                }
+
+                Spacer()
+
+                Button {
+                    let dishes = drafts.compactMap { $0.buildDish(in: appState) }
+                    guard dishes.count == drafts.count else { return }
+                    isSaving = true
+                    onSave(dishes)
+                } label: {
+                    HStack(spacing: 8) {
+                        if isSaving {
+                            ProgressView()
+                                .tint(.white)
+                        }
+                        Text("Add to Prepared Food")
+                    }
+                    .font(.subheadline)
+                    .fontWeight(.semibold)
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 12)
+                    .background(validDraftCount == drafts.count && !drafts.isEmpty ? AppColors.primaryGreen : AppColors.mediumGray)
+                    .foregroundStyle(.white)
+                    .clipShape(Capsule())
+                }
+                .disabled(validDraftCount != drafts.count || drafts.isEmpty || isSaving)
+            }
+            .padding(.horizontal)
+            .padding(.bottom, 8)
+        }
+        .background(.ultraThinMaterial)
+    }
+}
+
+private struct PreparedDishMealPlanDraftEditorView: View {
+    @Environment(\.dismiss) private var dismiss
+
+    let appState: AppState
+    let onSave: (MealPlanPreparedDishReviewDraft) -> Void
+
+    @State private var reviewDraft: MealPlanPreparedDishReviewDraft
+    @State private var showRecipePicker = false
+
+    init(appState: AppState, reviewDraft: MealPlanPreparedDishReviewDraft, onSave: @escaping (MealPlanPreparedDishReviewDraft) -> Void) {
+        self.appState = appState
+        self.onSave = onSave
+        _reviewDraft = State(initialValue: reviewDraft)
+    }
+
+    private var linkedRecipe: Recipe? {
+        reviewDraft.linkedRecipe(in: appState)
+    }
+
+    var body: some View {
+        AppNavigationSheet {
+            AppScrollView {
+                PreparedDishDraftForm(
+                    appState: appState,
+                    draft: $reviewDraft.draft,
+                    linkedRecipe: linkedRecipe,
+                    showRecipePicker: $showRecipePicker
+                )
+                .padding()
+            }
+            .background(AppColors.background)
+            .navigationTitle("Edit Selected Item")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") { dismiss() }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Save") {
+                        onSave(reviewDraft)
+                        dismiss()
+                    }
+                    .disabled(!reviewDraft.isValid(in: appState))
+                }
+            }
+        }
+    }
+}
+
+private extension MealPlanEntry {
+    var sourceDateText: String {
+        date.formatted(date: .abbreviated, time: .omitted)
     }
 }
 

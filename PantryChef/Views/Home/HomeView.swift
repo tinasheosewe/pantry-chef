@@ -270,23 +270,20 @@ struct HomeView: View {
                     .font(.subheadline)
                     .fontWeight(.medium)
                     .foregroundStyle(AppColors.darkText)
+                if let planningSubtitle = entry.planningSubtitle {
+                    Text(planningSubtitle)
+                        .font(.caption)
+                        .foregroundStyle(AppColors.subtleText)
+                }
             }
 
             Spacer()
 
-            if let recipe = entry.recipe {
-                Text(recipe.totalTimeDisplay)
-                    .font(.caption)
-                    .foregroundStyle(AppColors.subtleText)
-
+            if entry.recipe != nil {
                 Image(systemName: "chevron.right")
                     .font(.caption)
                     .foregroundStyle(AppColors.mediumGray)
-            } else if let preparedDish = entry.preparedDish {
-                Text(preparedDish.servingsDisplay)
-                    .font(.caption)
-                    .foregroundStyle(AppColors.subtleText)
-
+            } else if entry.preparedDish != nil {
                 Image(systemName: "chevron.right")
                     .font(.caption)
                     .foregroundStyle(AppColors.mediumGray)

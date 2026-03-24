@@ -81,6 +81,9 @@ struct MealPlanView: View {
                     onRemoveEntry: { entry in
                         viewModel.removeEntry(entry)
                     },
+                    onUpdateEntry: { entry in
+                        viewModel.updateEntry(entry)
+                    },
                     onAddMore: {
                         viewModel.selectSlot(
                             date: slot.date,
@@ -223,6 +226,12 @@ struct MealPlanView: View {
                             .font(.system(size: 9))
                             .fontWeight(.semibold)
                             .foregroundStyle(AppColors.primaryGreen)
+                    } else if let planningSubtitle = primaryEntry.planningSubtitle {
+                        Text(planningSubtitle)
+                            .font(.system(size: 8))
+                            .foregroundStyle(AppColors.subtleText)
+                            .lineLimit(2)
+                            .multilineTextAlignment(.center)
                     }
                 } else {
                     Image(systemName: "plus")
@@ -249,6 +258,14 @@ struct MealPlanView: View {
                         selectedMealEntry = entry
                     } label: {
                         Label(entry.recipe != nil ? "View Recipe" : "View Prepared Dish", systemImage: entry.recipe != nil ? "book" : "takeoutbag.and.cup.and.straw")
+                    }
+                }
+
+                if entry.supportsPlannedServings {
+                    Button {
+                        selectedMealSlot = MealSlotPresentation(date: date, mealType: mealType)
+                    } label: {
+                        Label("Allocate Servings", systemImage: "slider.horizontal.3")
                     }
                 }
             }
@@ -294,6 +311,7 @@ private struct MealSlotEntriesView: View {
     let slot: MealSlotPresentation
     let appState: AppState
     let onRemoveEntry: (MealPlanEntry) -> Void
+    let onUpdateEntry: (MealPlanEntry) -> Void
     let onAddMore: () -> Void
     let onReplaceSlot: () -> Void
 
@@ -306,16 +324,26 @@ private struct MealSlotEntriesView: View {
         AppList {
             Section {
                 ForEach(entries) { entry in
-                    if let recipe = entry.recipe {
-                        NavigationLink(destination: RecipeDetailView(recipe: recipe).environment(appState)) {
-                            mealEntryRow(title: recipe.title, subtitle: recipe.totalTimeDisplay, systemImage: recipe.mealType?.icon ?? "book")
+                    VStack(alignment: .leading, spacing: 10) {
+                        if let recipe = entry.recipe {
+                            NavigationLink(destination: RecipeDetailView(recipe: recipe).environment(appState)) {
+                                mealEntryRow(title: recipe.title, subtitle: entry.planningSubtitle, systemImage: recipe.mealType?.icon ?? "book")
+                            }
+                        } else if let preparedDish = entry.preparedDish {
+                            NavigationLink(destination: PreparedDishDetailView(dish: preparedDish).environment(appState)) {
+                                mealEntryRow(title: preparedDish.name, subtitle: entry.planningSubtitle, systemImage: "takeoutbag.and.cup.and.straw")
+                            }
+                        } else {
+                            mealEntryRow(title: entry.displayName, subtitle: entry.planningSubtitle, systemImage: "fork.knife")
                         }
-                    } else if let preparedDish = entry.preparedDish {
-                        NavigationLink(destination: PreparedDishDetailView(dish: preparedDish).environment(appState)) {
-                            mealEntryRow(title: preparedDish.name, subtitle: preparedDish.servingsDisplay, systemImage: "takeoutbag.and.cup.and.straw")
+
+                        if entry.supportsPlannedServings {
+                            Stepper(value: plannedServingsBinding(for: entry), in: entry.editablePlannedServingsRange) {
+                                Text(entry.plannedServingsLabel ?? "1 serving planned")
+                                    .font(.caption)
+                                    .foregroundStyle(AppColors.subtleText)
+                            }
                         }
-                    } else {
-                        mealEntryRow(title: entry.displayName, subtitle: nil, systemImage: "fork.knife")
                     }
                 }
                 .onDelete { indexSet in
@@ -361,6 +389,17 @@ private struct MealSlotEntriesView: View {
                 }
             }
         }
+    }
+
+    private func plannedServingsBinding(for entry: MealPlanEntry) -> Binding<Int> {
+        Binding(
+            get: {
+                entry.effectivePlannedServings ?? entry.editablePlannedServingsRange.lowerBound
+            },
+            set: { newValue in
+                onUpdateEntry(entry.updatingPlannedServings(newValue))
+            }
+        )
     }
 }
 
@@ -445,6 +484,9 @@ struct MealPickerView: View {
                                             .foregroundStyle(AppColors.darkText)
 
                                         HStack {
+                                            Text(recipe.servings == 1 ? "1 serving" : "\(recipe.servings) servings")
+                                                .font(.caption2)
+                                                .foregroundStyle(AppColors.subtleText)
                                             DifficultyBadge(difficulty: recipe.difficulty)
                                             Text(recipe.totalTimeDisplay)
                                                 .font(.caption2)
@@ -542,7 +584,7 @@ struct MultiMealPickerView: View {
                             } label: {
                                 selectionRow(
                                     title: recipe.title,
-                                    subtitle: recipe.totalTimeDisplay,
+                                    subtitle: "\(recipe.servings == 1 ? "1 serving" : "\(recipe.servings) servings") • \(recipe.totalTimeDisplay)",
                                     systemImage: recipe.mealType?.icon ?? "fork.knife",
                                     accent: AppColors.primaryGreen,
                                     count: stagedSelections.filter { $0 == .recipe(recipe) }.count

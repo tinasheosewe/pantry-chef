@@ -1345,6 +1345,25 @@ final class ShoppingGenerationTests: XCTestCase {
         XCTAssertEqual(preview.first?.quantity, 3)
         XCTAssertEqual(preview.first?.unit, .whole)
     }
+
+    func testPreviewShoppingListFromMealPlanScalesRecipeToAllocatedServings() async {
+        let (appState, _, _) = makeTestAppState()
+
+        let recipe = makeRecipe(
+            title: "Pasta",
+            ingredients: [
+                Ingredient(name: "Flour", quantity: 4, unit: .cup, category: .grains)
+            ],
+            servings: 4
+        )
+
+        await appState.addToMealPlan(MealPlanEntry(date: Date(), mealType: .dinner, recipe: recipe, plannedServings: 2))
+
+        let preview = appState.previewShoppingListFromMealPlan()
+
+        XCTAssertEqual(preview.first?.quantity, 2)
+        XCTAssertEqual(preview.first?.unit, .cup)
+    }
 }
 
 // MARK: - Ingredient Model Tests
@@ -1494,6 +1513,32 @@ final class MealPlanEntryModelTests: XCTestCase {
         let week = MealPlanEntry.emptyWeek()
         // 7 days * 3 meal types (breakfast, lunch, dinner)
         XCTAssertEqual(week.count, 21)
+    }
+
+    func testEffectivePlannedServingsDefaultsFromRecipe() {
+        let recipe = makeRecipe(servings: 4)
+        let entry = MealPlanEntry(date: Date(), mealType: .dinner, recipe: recipe)
+
+        XCTAssertEqual(entry.effectivePlannedServings, 4)
+        XCTAssertEqual(entry.plannedServingsLabel, "4 servings planned")
+    }
+
+    func testEffectivePlannedServingsClampsPreparedDishToAvailableServings() {
+        let dish = makePreparedDish(name: "Soup", servingsRemaining: 3)
+        let entry = MealPlanEntry(date: Date(), mealType: .lunch, preparedDish: dish, plannedServings: 5)
+
+        XCTAssertEqual(entry.effectivePlannedServings, 3)
+    }
+
+    func testMealPlanEntrySeedsPreparedDishDraftFromAllocatedRecipeServings() {
+        let recipe = makeRecipe(title: "Chili", servings: 6, mealType: .dinner)
+        let entry = MealPlanEntry(date: Date(), mealType: .dinner, recipe: recipe, plannedServings: 2)
+
+        let draft = entry.makePreparedDishDraft()
+
+        XCTAssertEqual(draft.name, "Chili")
+        XCTAssertEqual(draft.recipeID, recipe.id)
+        XCTAssertEqual(draft.servingsRemaining, 2)
     }
 }
 
@@ -2426,6 +2471,33 @@ final class AppStateTests: XCTestCase {
         XCTAssertEqual(appState.mealPlan.count, 2)
         XCTAssertEqual(storage.addMealPlanCallCount, 2)
         XCTAssertEqual(storage.mealPlanStore.count, 2)
+    }
+
+    func testUpdateMealPlanEntryPersistsAllocatedServings() async {
+        let (appState, storage, _) = makeTestAppState()
+        let entry = MealPlanEntry(date: Date(), mealType: .dinner, recipe: makeRecipe(title: "Curry", servings: 4))
+
+        await appState.addToMealPlan(entry)
+        await appState.updateMealPlanEntry(entry.updatingPlannedServings(2))
+
+        XCTAssertEqual(appState.mealPlan.first?.effectivePlannedServings, 2)
+        XCTAssertEqual(storage.mealPlanStore.first?.plannedServings, 2)
+    }
+
+    func testPreparedFoodSourceEntriesFromMealPlanExcludesPreparedDishEntries() async {
+        let (appState, _, _) = makeTestAppState()
+        let recipeEntry = MealPlanEntry(date: Date(), mealType: .dinner, recipe: makeRecipe(title: "Curry"))
+        let preparedDishEntry = MealPlanEntry(date: Date(), mealType: .lunch, preparedDish: makePreparedDish(name: "Soup"))
+        let customEntry = MealPlanEntry(date: Date(), mealType: .breakfast, customMealName: "Office breakfast")
+
+        await appState.addToMealPlan([recipeEntry, preparedDishEntry, customEntry])
+
+        let eligibleEntries = appState.preparedFoodSourceEntriesFromMealPlan()
+
+        XCTAssertEqual(eligibleEntries.count, 2)
+        XCTAssertTrue(eligibleEntries.contains { $0.recipe?.title == "Curry" })
+        XCTAssertTrue(eligibleEntries.contains { $0.customMealName == "Office breakfast" })
+        XCTAssertFalse(eligibleEntries.contains { $0.preparedDish?.name == "Soup" })
     }
 
     func testGenerateShoppingListFromMealPlanMergesAdditivelyIntoExistingCart() async {

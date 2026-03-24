@@ -320,6 +320,12 @@ final class AppState {
         }
     }
 
+    func preparedFoodSourceEntriesFromMealPlan() -> [MealPlanEntry] {
+        mealPlan.filter { entry in
+            entry.isPlanned && entry.preparedDish == nil
+        }
+    }
+
     func suggestedRecipeForCurrentPantry() -> Recipe? {
         guard !pantryItems.isEmpty, !allRecipes.isEmpty else { return nil }
 
@@ -352,7 +358,7 @@ final class AppState {
         let calendar = Calendar.current
         let weekStart = calendar.dateInterval(of: .weekOfYear, for: Date())?.start ?? calendar.startOfDay(for: Date())
         let weeklyEntries = plannedEntries(forWeekStarting: weekStart)
-        let plannedRecipes = weeklyEntries.compactMap(\.recipe)
+        let plannedRecipes = weeklyEntries.compactMap(\.scaledRecipeForPlanning)
         let plannedPreparedNutrition = weeklyEntries.compactMap { $0.preparedDish?.nutrition }
         let recipeNutrition = plannedRecipes.compactMap(\.nutrition)
         let nutritionSources = recipeNutrition + plannedPreparedNutrition
@@ -874,9 +880,21 @@ final class AppState {
         }
     }
 
+    func updateMealPlanEntry(_ entry: MealPlanEntry) async {
+        do {
+            let updated = try await storageService.updateMealPlanEntry(entry)
+            if let index = mealPlan.firstIndex(where: { $0.id == entry.id }) {
+                mealPlan[index] = updated
+                setMealPlanEntries(sanitizeMealPlanEntries(mealPlan).visibleEntries)
+            }
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+    }
+
     // MARK: - Shopping Actions
     func previewShoppingListFromMealPlan() -> [ShoppingItem] {
-        let recipes = mealPlan.compactMap(\.recipe)
+        let recipes = mealPlan.compactMap(\.scaledRecipeForPlanning)
         let candidates = recipes.flatMap { recipe in
             recipe.ingredients.compactMap { ingredient -> ShoppingItem? in
                 guard shouldIncludeInShoppingList(ingredient) else { return nil }

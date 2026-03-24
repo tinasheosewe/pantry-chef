@@ -90,6 +90,7 @@ final class StorageServiceIntegrationTests: XCTestCase {
             date: Date(),
             mealType: .dinner,
             recipe: updatedRecipe,
+            plannedServings: 2,
             notes: "integration test"
         )
 
@@ -97,6 +98,7 @@ final class StorageServiceIntegrationTests: XCTestCase {
         var mealPlans = try await sut.fetchMealPlan()
         XCTAssertEqual(mealPlans.count, 1)
         XCTAssertEqual(mealPlans.first?.recipe?.id, updatedRecipe.id)
+        XCTAssertEqual(mealPlans.first?.plannedServings, 2)
 
         var updatedMealPlan = mealPlan
         updatedMealPlan.customMealName = "Custom dinner"
