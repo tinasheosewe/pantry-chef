@@ -6,17 +6,18 @@ struct HomeView: View {
     @State private var selectedMealEntry: MealPlanEntry?
     @State private var selectedPreparedDish: PreparedDish?
     @State private var shoppingConfirmation: ShoppingListConfirmationRequest?
-    @State private var showCookQueueManager = false
 
     var onSwitchToShopping: (() -> Void)?
     var onSwitchToPlan: (() -> Void)?
     var onSwitchToRecipesCanMake: (() -> Void)?
+    var onSwitchToCook: (() -> Void)?
 
-    init(appState: AppState, onSwitchToShopping: (() -> Void)? = nil, onSwitchToPlan: (() -> Void)? = nil, onSwitchToRecipesCanMake: (() -> Void)? = nil) {
+    init(appState: AppState, onSwitchToShopping: (() -> Void)? = nil, onSwitchToPlan: (() -> Void)? = nil, onSwitchToRecipesCanMake: (() -> Void)? = nil, onSwitchToCook: (() -> Void)? = nil) {
         _viewModel = State(initialValue: HomeViewModel(appState: appState))
         self.onSwitchToShopping = onSwitchToShopping
         self.onSwitchToPlan = onSwitchToPlan
         self.onSwitchToRecipesCanMake = onSwitchToRecipesCanMake
+        self.onSwitchToCook = onSwitchToCook
     }
 
     var body: some View {
@@ -90,9 +91,6 @@ struct HomeView: View {
             .appNavigationSheet(item: $selectedPreparedDish) { dish in
                 PreparedDishDetailView(dish: dish)
                     .environment(viewModel.appState)
-            }
-            .appNavigationSheet(isPresented: $showCookQueueManager) {
-                CookQueueView(appState: viewModel.appState)
             }
             .fullScreenCover(item: $resumeRecipe) { recipe in
                 let session = CookingSession.load(recipeId: recipe.id)
@@ -298,7 +296,7 @@ struct HomeView: View {
                 Image(systemName: "chevron.right")
                     .font(.caption)
                     .foregroundStyle(AppColors.mediumGray)
-            } else if entry.preparedDish != nil {
+            } else if entry.preparedDish != nil || entry.isPreparedFoodPlan {
                 Image(systemName: "chevron.right")
                     .font(.caption)
                     .foregroundStyle(AppColors.mediumGray)
@@ -486,7 +484,7 @@ struct HomeView: View {
         let remainingCount = queue?.pendingStageCount ?? 0
 
         return Button {
-            showCookQueueManager = true
+            onSwitchToCook?()
         } label: {
             VStack(alignment: .leading, spacing: 12) {
                 HStack {

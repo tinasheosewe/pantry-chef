@@ -116,7 +116,7 @@ final class ShoppingAddItemViewModel {
         }
 
         var suggestions: [ShoppingCatalogSuggestion] = []
-        var seenCatalogIDs: Set<String> = []
+        var indexesByCatalogID: [String: Int] = [:]
 
         let ingredient = Ingredient(name: query)
         for candidate in parser.candidates(for: ingredient) {
@@ -128,16 +128,12 @@ final class ShoppingAddItemViewModel {
                 displayName: item.name,
                 category: item.category
             )
-            if seenCatalogIDs.insert(suggestion.catalogItemID).inserted {
-                suggestions.append(suggestion)
-            }
+            appendSuggestion(suggestion, for: item, query: query, to: &suggestions, indexesByCatalogID: &indexesByCatalogID)
         }
 
         for item in PantryCatalog.search(query) {
             let suggestion = defaultSuggestion(item)
-            if seenCatalogIDs.insert(suggestion.catalogItemID).inserted {
-                suggestions.append(suggestion)
-            }
+            appendSuggestion(suggestion, for: item, query: query, to: &suggestions, indexesByCatalogID: &indexesByCatalogID)
         }
 
         return Array(suggestions.prefix(20))
@@ -275,10 +271,55 @@ final class ShoppingAddItemViewModel {
         ShoppingCatalogSuggestion(
             id: item.id,
             catalogItemID: item.id,
-            facets: item.defaultSelections,
+            facets: searchDefaultFacets(for: item),
             displayName: item.name,
             category: item.category
         )
+    }
+
+    private func searchDefaultFacets(for item: PantryCatalogItemDefinition) -> [PantryFacetSelection] {
+        item.defaultSelections.map { selection in
+            if item.options(for: selection.key).contains("generic") {
+                return PantryFacetSelection(key: selection.key, value: "generic")
+            }
+            return selection
+        }
+    }
+
+    private func appendSuggestion(
+        _ suggestion: ShoppingCatalogSuggestion,
+        for item: PantryCatalogItemDefinition,
+        query: String,
+        to suggestions: inout [ShoppingCatalogSuggestion],
+        indexesByCatalogID: inout [String: Int]
+    ) {
+        if let existingIndex = indexesByCatalogID[suggestion.catalogItemID] {
+            let existingSuggestion = suggestions[existingIndex]
+            if shouldPreferSuggestion(suggestion, over: existingSuggestion, for: item, query: query) {
+                suggestions[existingIndex] = suggestion
+            }
+            return
+        }
+
+        indexesByCatalogID[suggestion.catalogItemID] = suggestions.count
+        suggestions.append(suggestion)
+    }
+
+    private func shouldPreferSuggestion(
+        _ candidate: ShoppingCatalogSuggestion,
+        over existing: ShoppingCatalogSuggestion,
+        for item: PantryCatalogItemDefinition,
+        query: String
+    ) -> Bool {
+        let normalizedQuery = IngredientMatcher.normalize(query)
+        let normalizedItemName = IngredientMatcher.normalize(item.name)
+        guard normalizedQuery == normalizedItemName else { return false }
+
+        let defaultFacets = searchDefaultFacets(for: item)
+        let existingFacets = normalizedFacets(for: existing.facets, item: item)
+        let candidateFacets = normalizedFacets(for: candidate.facets, item: item)
+
+        return candidateFacets == defaultFacets && existingFacets != defaultFacets
     }
 
     private func availableFacetSummary(for item: PantryCatalogItemDefinition) -> String? {

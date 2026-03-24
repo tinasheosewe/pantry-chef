@@ -1,7 +1,13 @@
 import Foundation
 
+enum PreparedFoodMatchKey: Hashable, Codable, Sendable {
+    case recipe(UUID)
+    case preparedFoodIdentity(UUID)
+}
+
 struct PreparedDish: Identifiable, Codable, Hashable {
     var id: UUID
+    var foodIdentityID: UUID
     var name: String
     var mealTypes: [MealType]
     var servingsRemaining: Int
@@ -14,6 +20,7 @@ struct PreparedDish: Identifiable, Codable, Hashable {
 
     init(
         id: UUID = UUID(),
+        foodIdentityID: UUID = UUID(),
         name: String,
         mealTypes: [MealType],
         servingsRemaining: Int,
@@ -25,6 +32,7 @@ struct PreparedDish: Identifiable, Codable, Hashable {
         nutrition: NutritionInfo? = nil
     ) {
         self.id = id
+        self.foodIdentityID = foodIdentityID
         self.name = name.trimmed
         self.mealTypes = Self.normalizedMealTypes(mealTypes)
         self.servingsRemaining = max(1, servingsRemaining)
@@ -66,6 +74,13 @@ struct PreparedDish: Identifiable, Codable, Hashable {
         nutrition != nil
     }
 
+    var preparedFoodMatchKey: PreparedFoodMatchKey {
+        if let recipeID {
+            return .recipe(recipeID)
+        }
+        return .preparedFoodIdentity(foodIdentityID)
+    }
+
     static let samples: [PreparedDish] = [
         PreparedDish(
             name: "Lentil Soup",
@@ -92,6 +107,7 @@ struct PreparedDish: Identifiable, Codable, Hashable {
 
 struct PreparedDishHistoryItem: Identifiable, Codable, Hashable {
     var id: UUID
+    var foodIdentityID: UUID
     var name: String
     var mealTypes: [MealType]
     var defaultServings: Int
@@ -106,6 +122,7 @@ struct PreparedDishHistoryItem: Identifiable, Codable, Hashable {
 
     init(
         id: UUID = UUID(),
+        foodIdentityID: UUID = UUID(),
         name: String,
         mealTypes: [MealType],
         defaultServings: Int,
@@ -119,6 +136,7 @@ struct PreparedDishHistoryItem: Identifiable, Codable, Hashable {
         timesPrepared: Int = 1
     ) {
         self.id = id
+        self.foodIdentityID = foodIdentityID
         self.name = name.trimmed
         self.mealTypes = PreparedDish.normalizedMealTypes(mealTypes)
         self.defaultServings = max(1, defaultServings)
@@ -135,6 +153,7 @@ struct PreparedDishHistoryItem: Identifiable, Codable, Hashable {
     init(dish: PreparedDish, previousItem: PreparedDishHistoryItem? = nil, referenceDate: Date = Date()) {
         self.init(
             id: previousItem?.id ?? UUID(),
+            foodIdentityID: previousItem?.foodIdentityID ?? dish.foodIdentityID,
             name: dish.name,
             mealTypes: dish.mealTypes,
             defaultServings: dish.servingsRemaining,
@@ -165,16 +184,24 @@ struct PreparedDishHistoryItem: Identifiable, Codable, Hashable {
         mealTypes.map(\.rawValue).joined(separator: " • ")
     }
 
+    var preparedFoodMatchKey: PreparedFoodMatchKey {
+        if let recipeID {
+            return .recipe(recipeID)
+        }
+        return .preparedFoodIdentity(foodIdentityID)
+    }
+
     var servingsText: String {
         defaultServings == 1 ? "1 serving" : "\(defaultServings) servings"
     }
 
     func matches(_ dish: PreparedDish) -> Bool {
-        canonicalMatchKey == PreparedDishHistoryItem(dish: dish, previousItem: self).canonicalMatchKey
+        preparedFoodMatchKey == dish.preparedFoodMatchKey
     }
 
     func makeDraft(referenceDate: Date = Date()) -> PreparedDishDraft {
         var draft = PreparedDishDraft(id: UUID())
+        draft.foodIdentityID = foodIdentityID
         draft.name = name
         draft.mealTypes = Set(mealTypes)
         draft.servingsRemaining = defaultServings
@@ -241,6 +268,7 @@ enum PreparedDishFreshnessPolicy {
 
 struct PreparedDishDraft: Identifiable, Hashable {
     let id: UUID
+    var foodIdentityID: UUID
     var name: String
     var mealTypes: Set<MealType>
     var servingsRemaining: Int
@@ -257,6 +285,7 @@ struct PreparedDishDraft: Identifiable, Hashable {
 
     init(id: UUID = UUID(), dish: PreparedDish? = nil) {
         self.id = dish?.id ?? id
+        self.foodIdentityID = dish?.foodIdentityID ?? UUID()
         self.name = dish?.name ?? ""
         self.mealTypes = Set(dish?.mealTypes ?? [.lunch, .dinner])
         self.servingsRemaining = dish?.servingsRemaining ?? 1
@@ -310,6 +339,7 @@ struct PreparedDishDraft: Identifiable, Hashable {
 
         return PreparedDish(
             id: id,
+            foodIdentityID: foodIdentityID,
             name: name,
             mealTypes: mealTypes.sorted { $0.rawValue < $1.rawValue },
             servingsRemaining: servingsRemaining,
@@ -327,6 +357,7 @@ struct PreparedDishDraft: Identifiable, Hashable {
 
         return PreparedDish(
             id: id,
+            foodIdentityID: foodIdentityID,
             name: resolvedName(using: recipe),
             mealTypes: resolvedMealTypes(using: recipe),
             servingsRemaining: servingsRemaining,

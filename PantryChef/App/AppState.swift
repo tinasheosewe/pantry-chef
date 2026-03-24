@@ -218,6 +218,9 @@ final class AppState {
     /// Set by notification tap to deep-link into cook mode for a specific recipe.
     var deepLinkCookModeRecipeId: String?
 
+    /// Set by child screens to request a root tab switch.
+    var requestedRootTab: RootTab?
+
     /// Tracks all active cooking sessions for the UI.
     let activeCooks = ActiveCooksManager()
 
@@ -338,8 +341,21 @@ final class AppState {
 
     func preparedFoodSourceEntriesFromMealPlan() -> [MealPlanEntry] {
         mealPlan.filter { entry in
-            entry.isPlanned && entry.preparedDish == nil
+            entry.isPlanned && !entry.isPreparedFoodPlan
         }
+    }
+
+    func matchingPreparedDishes(for entry: MealPlanEntry) -> [PreparedDish] {
+        guard let matchKey = entry.preparedFoodMatchKey else { return [] }
+
+        return preparedDishes
+            .filter { $0.preparedFoodMatchKey == matchKey }
+            .sorted { lhs, rhs in
+                if lhs.dateAdded == rhs.dateAdded {
+                    return lhs.name.localizedCaseInsensitiveCompare(rhs.name) == .orderedAscending
+                }
+                return lhs.dateAdded > rhs.dateAdded
+            }
     }
 
     func suggestedRecipeForCurrentPantry() -> Recipe? {
@@ -939,21 +955,41 @@ final class AppState {
         }
     }
 
-    func logMealPlanEntriesEaten(_ entries: [MealPlanEntry]) async {
-        let requests = entries.compactMap { updatedEntry -> MealPlanEatenLoggingRequest? in
-            guard let currentEntry = mealPlan.first(where: { $0.id == updatedEntry.id }) else { return nil }
+    func logMealPlanEntriesEaten(_ selections: [MealPlanEatenLoggingSelection]) async {
+        let requests = selections.compactMap { selection -> MealPlanEatenLoggingRequest? in
+            guard let currentEntry = mealPlan.first(where: { $0.id == selection.entryID }) else { return nil }
             guard currentEntry.supportsMealLogging else { return nil }
+
             let currentEatenServings = currentEntry.effectiveEatenServings
-            let targetEatenServings = Swift.max(currentEatenServings, updatedEntry.effectiveEatenServings)
+            let targetEatenServings = Swift.max(currentEatenServings, selection.targetEatenServings)
             guard targetEatenServings > currentEatenServings else { return nil }
-            return MealPlanEatenLoggingRequest(entry: currentEntry, targetEatenServings: targetEatenServings)
+
+            return MealPlanEatenLoggingRequest(
+                entry: currentEntry,
+                targetEatenServings: targetEatenServings,
+                preparedDishID: selection.preparedDishID
+            )
         }
 
         guard !requests.isEmpty else { return }
 
         let requestedServingsByPreparedDishID = requests.reduce(into: [UUID: Int]()) { partialResult, request in
-            guard let preparedDishID = request.entry.preparedDish?.id else { return }
+            guard request.additionalServings > 0 else { return }
+            guard let preparedDishID = request.preparedDishID else { return }
             partialResult[preparedDishID, default: 0] += request.additionalServings
+        }
+
+        for request in requests where request.additionalServings > 0 {
+            guard let preparedDishID = request.preparedDishID else {
+                errorMessage = "Choose which Prepared Food item was eaten before saving."
+                return
+            }
+
+            let matchingDishIDs = Set(matchingPreparedDishes(for: request.entry).map(\.id))
+            guard matchingDishIDs.contains(preparedDishID) else {
+                errorMessage = "The selected Prepared Food item no longer matches \(request.entry.displayName)."
+                return
+            }
         }
 
         for (preparedDishID, requestedServings) in requestedServingsByPreparedDishID {
@@ -965,8 +1001,8 @@ final class AppState {
         }
 
         for request in requests {
-            if request.additionalServings > 0, let preparedDish = request.entry.preparedDish {
-                if let currentPreparedDish = preparedDishById(preparedDish.id) {
+            if request.additionalServings > 0, let preparedDishID = request.preparedDishID {
+                if let currentPreparedDish = preparedDishById(preparedDishID) {
                     _ = await adjustPreparedDishServings(currentPreparedDish, delta: -request.additionalServings)
                 }
             }
@@ -984,6 +1020,17 @@ final class AppState {
         }
 
         setMealPlanEntries(sanitizeMealPlanEntries(mealPlan).visibleEntries)
+    }
+
+    func logMealPlanEntriesEaten(_ entries: [MealPlanEntry]) async {
+        let selections = entries.map { entry in
+            MealPlanEatenLoggingSelection(
+                entryID: entry.id,
+                targetEatenServings: entry.effectiveEatenServings,
+                preparedDishID: entry.preparedDish?.id
+            )
+        }
+        await logMealPlanEntriesEaten(selections)
     }
 
     // MARK: - Shopping Actions
@@ -1146,6 +1193,45 @@ final class AppState {
     func clearCookQueue() async {
         setCookQueueValue(nil)
         await persistCookQueue()
+    }
+
+    func replaceCookQueueStages(_ stages: [CookQueueStage], name: String? = nil) async {
+        let normalizedStages = stages.filter { !$0.recipeIDs.isEmpty }
+
+        guard !normalizedStages.isEmpty else {
+            setCookQueueValue(nil)
+            await persistCookQueue()
+            return
+        }
+
+        if var existingQueue = cookQueue {
+            existingQueue.name = name ?? existingQueue.name
+            existingQueue.replaceStages(normalizedStages)
+            setCookQueueValue(existingQueue)
+        } else {
+            setCookQueueValue(CookQueue(name: name ?? "Cook Queue", stages: normalizedStages))
+        }
+
+        await persistCookQueue()
+    }
+
+    func appendCookQueueStages(_ stages: [CookQueueStage], name: String? = nil) async {
+        let normalizedStages = stages.filter { !$0.recipeIDs.isEmpty }
+        guard !normalizedStages.isEmpty else { return }
+
+        if var existingQueue = cookQueue {
+            existingQueue.name = name ?? existingQueue.name
+            existingQueue.appendStages(normalizedStages)
+            setCookQueueValue(existingQueue)
+        } else {
+            setCookQueueValue(CookQueue(name: name ?? "Cook Queue", stages: normalizedStages))
+        }
+
+        await persistCookQueue()
+    }
+
+    func requestRootTab(_ tab: RootTab) {
+        requestedRootTab = tab
     }
 
     func resolvedRecipes(for stage: CookQueueStage) -> [Recipe] {
@@ -1394,9 +1480,18 @@ final class AppState {
             return false
         }
 
+        let exactMatchIngredient: Ingredient
+        if ingredient.catalogItemID != nil {
+            exactMatchIngredient = ingredient
+        } else if let catalogItemID = IngredientMatcher.resolvedCatalogItemID(for: ingredient.name) {
+            exactMatchIngredient = ingredient.resolved(to: catalogItemID, facets: ingredient.facets)
+        } else {
+            exactMatchIngredient = ingredient
+        }
+
         return !pantryItems.contains { pantryItem in
-            IngredientMatcher.pantryItemMatchesIngredient(pantryItem, ingredient: ingredient) &&
-            IngredientMatcher.hasEnoughQuantity(pantryItem: pantryItem, ingredient: ingredient)
+            IngredientMatcher.pantryItemMatchesIngredient(pantryItem, ingredient: exactMatchIngredient)
+                && IngredientMatcher.hasEnoughQuantity(pantryItem: pantryItem, ingredient: exactMatchIngredient)
         }
     }
 
@@ -1836,6 +1931,26 @@ final class AppState {
     }
 }
 
+enum RootTab: String, CaseIterable, Hashable {
+    case home = "Home"
+    case pantry = "Pantry"
+    case recipes = "Recipes"
+    case cook = "Cook"
+    case plan = "Plan"
+    case shop = "Shop"
+
+    var icon: String {
+        switch self {
+        case .home: return "house.fill"
+        case .pantry: return "refrigerator.fill"
+        case .recipes: return "book.fill"
+        case .cook: return "frying.pan.fill"
+        case .plan: return "calendar"
+        case .shop: return "cart.fill"
+        }
+    }
+}
+
 struct HomeDashboardRefreshState: Hashable {
     let mealPlanRevision: Int
     let pantryRevision: Int
@@ -1844,9 +1959,18 @@ struct HomeDashboardRefreshState: Hashable {
     let discoverRecipesRevision: Int
 }
 
+struct MealPlanEatenLoggingSelection: Identifiable, Hashable, Sendable {
+    var id: UUID { entryID }
+
+    let entryID: UUID
+    let targetEatenServings: Int
+    let preparedDishID: UUID?
+}
+
 private struct MealPlanEatenLoggingRequest {
     let entry: MealPlanEntry
     let targetEatenServings: Int
+    let preparedDishID: UUID?
 
     var additionalServings: Int {
         targetEatenServings - entry.effectiveEatenServings

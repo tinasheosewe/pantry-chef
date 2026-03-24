@@ -81,4 +81,44 @@ final class ScenarioBaselineTests: XCTestCase {
 
         XCTAssertEqual(titles, ["Toast"])
     }
+
+    func testMealLoggingScenarioMatchesReplacementPreparedFoodByIdentity() async {
+        let (appState, _, _) = makeTestAppState()
+        let foodIdentityID = UUID()
+        let originalDish = makePreparedDish(name: "Lentil Soup", servingsRemaining: 2, foodIdentityID: foodIdentityID)
+        let replacementDish = makePreparedDish(name: "Lentil Soup", servingsRemaining: 3, foodIdentityID: foodIdentityID)
+
+        await appState.addPreparedDish(originalDish)
+        let entry = MealPlanEntry(date: Date(), mealType: .lunch, preparedDish: originalDish, plannedServings: 2)
+        await appState.addToMealPlan(entry)
+
+        await appState.removePreparedDish(originalDish)
+        await appState.addPreparedDish(replacementDish)
+
+        await appState.logMealPlanEntriesEaten([
+            MealPlanEatenLoggingSelection(entryID: entry.id, targetEatenServings: 1, preparedDishID: replacementDish.id)
+        ])
+
+        XCTAssertEqual(appState.mealPlan.first?.effectiveEatenServings, 1)
+        XCTAssertEqual(appState.preparedDishes.first?.servingsRemaining, 2)
+    }
+
+    func testCookReviewWorkspaceScenarioBuildsParallelStageFromAdjacentMeals() {
+        let entries = [
+            MealPlanEntry(date: Date(), mealType: .breakfast, recipe: makeRecipe(title: "Eggs")),
+            MealPlanEntry(date: Date(), mealType: .lunch, recipe: makeRecipe(title: "Soup")),
+            MealPlanEntry(date: Date(), mealType: .dinner, recipe: makeRecipe(title: "Pasta")),
+        ]
+
+        var workspace = MealPlanCookQueueReviewWorkspace(entries: entries)
+        var lunch = workspace.drafts[1]
+        lunch.stagePlacement = .withPrevious
+        workspace.updateDraft(lunch)
+
+        let stages = workspace.buildStages()
+
+        XCTAssertEqual(stages.count, 2)
+        XCTAssertEqual(stages[0].recipeTitleSnapshots, ["Eggs", "Soup"])
+        XCTAssertEqual(stages[1].recipeTitleSnapshots, ["Pasta"])
+    }
 }

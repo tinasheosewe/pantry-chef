@@ -10,6 +10,9 @@ struct MultiCookSelectionView: View {
     @Environment(\.dismiss) private var dismiss
 
     @State private var selectedRecipeIds: Set<UUID> = []
+    @State private var searchText = ""
+    @State private var debouncedSearchText = ""
+    @State private var searchDebouncer = TaskDebouncer()
     @State private var showGathering = false
     @State private var showMultiCookMode = false
     @State private var scheduleSummary: ScheduleSummary?
@@ -21,14 +24,32 @@ struct MultiCookSelectionView: View {
         }
     }
 
+    private var filteredRecipes: [Recipe] {
+        SearchQuerySupport.filtered(availableRecipes, query: debouncedSearchText) { recipe in
+            [recipe.title, recipe.source.label, recipe.totalTimeDisplay].joined(separator: " ")
+        }
+    }
+
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
                 schedulePreview
 
+                AppSearchField(
+                    "Search recipes to cook together",
+                    text: $searchText,
+                    onTextChange: { text in
+                        SearchQuerySupport.schedule(text: text, debouncer: searchDebouncer) {
+                            debouncedSearchText = $0
+                        }
+                    }
+                )
+                .padding(.horizontal)
+                .padding(.top, 12)
+
                 AppList {
                     Section {
-                        ForEach(availableRecipes) { recipe in
+                        ForEach(filteredRecipes) { recipe in
                             Button {
                                 toggleSelection(recipe.id)
                             } label: {
@@ -91,6 +112,10 @@ struct MultiCookSelectionView: View {
                         }
                     } header: {
                         Text("Select 2 or more recipes to cook together")
+                    } footer: {
+                        if filteredRecipes.isEmpty {
+                            Text("No recipes match your current search.")
+                        }
                     }
                 }
                 .listStyle(.insetGrouped)

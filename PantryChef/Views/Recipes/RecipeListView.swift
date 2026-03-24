@@ -12,6 +12,7 @@ struct RecipeListView: View {
     @State private var showCuisinePicker = false
     @State private var showRecipeBuilder = false
     @State private var generatedRecipe: Recipe?
+    @State private var launchRecipe: Recipe?
     @Binding var activateCanMakeFilter: Bool
     @FocusState private var isSearchFocused: Bool
 
@@ -106,6 +107,9 @@ struct RecipeListView: View {
                 .environment(viewModel.appState)
             }
             .navigationDestination(item: $generatedRecipe) { recipe in
+                RecipeDetailView(recipe: recipe)
+            }
+            .navigationDestination(item: $launchRecipe) { recipe in
                 RecipeDetailView(recipe: recipe)
             }
             .navigationDestination(for: UUID.self) { recipeID in
@@ -470,6 +474,7 @@ struct RecipeListView: View {
                     NavigationLink(value: recipe.id) {
                         RecipeCardView(recipe: recipe, pantry: pantry, metrics: matchMetrics[recipe.id])
                     }
+                    .accessibilityIdentifier("recipes.card.\(recipe.id.uuidString)")
                     .contextMenu {
                         if isUserSection {
                             Button { viewModel.toggleFavorite(recipe) } label: {
@@ -497,6 +502,11 @@ struct RecipeListView: View {
                                 discoverVisibleCount = min(discoverVisibleCount + 24, recipes.count)
                             }
                         }
+                    }
+                    .task {
+                        guard AppLaunchOptions.current.openSeededRecipeDetail else { return }
+                        guard launchRecipe == nil else { return }
+                        launchRecipe = viewModel.recipeForNavigation(id: Recipe.stirFryId)
                     }
                 }
             }
@@ -598,6 +608,7 @@ struct RecipeCardView: View {
                     .fontWeight(.semibold)
                     .foregroundStyle(AppColors.darkText)
                     .lineLimit(2)
+                    .accessibilityIdentifier("recipes.card.title.\(recipe.id.uuidString)")
             }
 
             HStack(spacing: 8) {

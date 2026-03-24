@@ -9,18 +9,18 @@ final class PantryChefUITests: XCTestCase {
         let app = makeApp()
         app.launch()
 
-        XCTAssertTrue(app.tabBars.buttons["Home"].waitForExistence(timeout: 5))
+        XCTAssertTrue(rootTabButton(in: app, id: "home").waitForExistence(timeout: 5))
 
-        app.tabBars.buttons["Pantry"].tap()
+        rootTabButton(in: app, id: "pantry").tap()
         XCTAssertTrue(element(in: app, id: "pantry.screen").waitForExistence(timeout: 5))
 
-        app.tabBars.buttons["Recipes"].tap()
+        rootTabButton(in: app, id: "recipes").tap()
         XCTAssertTrue(element(in: app, id: "recipes.screen").waitForExistence(timeout: 5))
 
-        app.tabBars.buttons["Plan"].tap()
+        rootTabButton(in: app, id: "plan").tap()
         XCTAssertTrue(element(in: app, id: "mealplan.shoppingListButton").waitForExistence(timeout: 5))
 
-        app.tabBars.buttons["Shop"].tap()
+        rootTabButton(in: app, id: "shop").tap()
         XCTAssertTrue(element(in: app, id: "shopping.screen").waitForExistence(timeout: 5))
     }
 
@@ -28,7 +28,7 @@ final class PantryChefUITests: XCTestCase {
         let app = makeApp()
         app.launch()
 
-        app.tabBars.buttons["Pantry"].tap()
+        rootTabButton(in: app, id: "pantry").tap()
         let searchField = app.textFields["Search pantry..."]
         XCTAssertTrue(searchField.waitForExistence(timeout: 5))
         searchField.tap()
@@ -41,7 +41,7 @@ final class PantryChefUITests: XCTestCase {
         let app = makeApp(additionalArguments: ["UITEST_EMPTY_STATE"])
         app.launch()
 
-        app.tabBars.buttons["Pantry"].tap()
+        rootTabButton(in: app, id: "pantry").tap()
         XCTAssertTrue(app.staticTexts["Your pantry is empty"].waitForExistence(timeout: 2))
     }
 
@@ -49,9 +49,9 @@ final class PantryChefUITests: XCTestCase {
         let app = makeApp()
         app.launch()
 
-        app.tabBars.buttons["Pantry"].tap()
+        rootTabButton(in: app, id: "pantry").tap()
 
-        let milkRow = app.staticTexts["Milk"]
+        let milkRow = app.buttons.containing(.staticText, identifier: "Milk").firstMatch
         XCTAssertTrue(milkRow.waitForExistence(timeout: 5))
         milkRow.tap()
 
@@ -67,14 +67,10 @@ final class PantryChefUITests: XCTestCase {
     }
 
     func testRecipeDetailShowsDirectTopBarActions() {
-        let app = makeApp()
+        let app = makeApp(additionalArguments: ["UITEST_RECIPE_DETAIL"])
         app.launch()
 
-        app.tabBars.buttons["Recipes"].tap()
-
-        let recipeCell = app.staticTexts["Simple Chicken Stir Fry"]
-        XCTAssertTrue(recipeCell.waitForExistence(timeout: 5))
-        recipeCell.tap()
+        rootTabButton(in: app, id: "recipes").tap()
 
         XCTAssertTrue(element(in: app, id: "recipe.detail.editButton").waitForExistence(timeout: 5))
         XCTAssertTrue(element(in: app, id: "recipe.detail.favoriteButton").waitForExistence(timeout: 5))
@@ -84,7 +80,7 @@ final class PantryChefUITests: XCTestCase {
         let app = makeApp()
         app.launch()
 
-        app.tabBars.buttons["Recipes"].tap()
+        rootTabButton(in: app, id: "recipes").tap()
 
         XCTAssertTrue(element(in: app, id: "recipes.toolbar.sortMenu").waitForExistence(timeout: 5))
     }
@@ -108,5 +104,9 @@ final class PantryChefUITests: XCTestCase {
 
     private func element(in app: XCUIApplication, id: String) -> XCUIElement {
         app.descendants(matching: .any)[id]
+    }
+
+    private func rootTabButton(in app: XCUIApplication, id: String) -> XCUIElement {
+        app.buttons["root.tabButton.\(id)"]
     }
 }

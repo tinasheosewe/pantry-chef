@@ -274,21 +274,33 @@ final class PantryViewModel: AsyncActionHandling {
         showAddItem = true
     }
 
+    func addItem(_ item: PantryItem) async {
+        await pantryActions.addItem(item)
+    }
+
     func addItem(_ item: PantryItem) {
         runTask { [self] in
-            await self.pantryActions.addItem(item)
+            await self.addItem(item)
         }
+    }
+
+    func deleteItem(_ item: PantryItem) async {
+        await pantryActions.deleteItem(item)
     }
 
     func deleteItem(_ item: PantryItem) {
         runTask { [self] in
-            await self.pantryActions.deleteItem(item)
+            await self.deleteItem(item)
         }
+    }
+
+    func updateItem(_ item: PantryItem) async {
+        await pantryActions.updateItem(item)
     }
 
     func updateItem(_ item: PantryItem) {
         runTask { [self] in
-            await self.pantryActions.updateItem(item)
+            await self.updateItem(item)
         }
     }
 

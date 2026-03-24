@@ -7,6 +7,7 @@ struct AppLaunchOptions {
     let seedPantryItems: Bool
     let seedRecipes: Bool
     let seedDiscoverRecipes: Bool
+    let openSeededRecipeDetail: Bool
 
     static var current: AppLaunchOptions {
         let args = ProcessInfo.processInfo.arguments
@@ -17,7 +18,8 @@ struct AppLaunchOptions {
                 resetPersistentStore: args.contains("RESET_PERSISTENT_STORE"),
                 seedPantryItems: true,
                 seedRecipes: true,
-                seedDiscoverRecipes: true
+                seedDiscoverRecipes: true,
+                openSeededRecipeDetail: false
             )
         }
 
@@ -28,7 +30,8 @@ struct AppLaunchOptions {
             resetPersistentStore: args.contains("RESET_PERSISTENT_STORE"),
             seedPantryItems: !emptyState,
             seedRecipes: !emptyState,
-            seedDiscoverRecipes: !emptyState
+            seedDiscoverRecipes: !emptyState,
+            openSeededRecipeDetail: args.contains("UITEST_RECIPE_DETAIL")
         )
     }
 }

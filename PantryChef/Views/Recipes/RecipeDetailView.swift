@@ -8,6 +8,9 @@ private struct RecipeMultiCookQueueSelectionView: View {
     let appState: AppState
     let onSave: ([Recipe]) -> Void
 
+    @State private var searchText = ""
+    @State private var debouncedSearchText = ""
+    @State private var searchDebouncer = TaskDebouncer()
     @State private var selectedRecipeIDs: Set<UUID> = []
 
     private var availableRecipes: [Recipe] {
@@ -22,58 +25,82 @@ private struct RecipeMultiCookQueueSelectionView: View {
         [baseRecipe] + availableRecipes.filter { selectedRecipeIDs.contains($0.id) }
     }
 
+    private var filteredRecipes: [Recipe] {
+        SearchQuerySupport.filtered(availableRecipes, query: debouncedSearchText) { recipe in
+            [recipe.title, recipe.totalTimeDisplay, recipe.source.label].joined(separator: " ")
+        }
+    }
+
     var body: some View {
         NavigationStack {
-            AppList {
-                Section {
-                    VStack(alignment: .leading, spacing: 6) {
-                        Text(baseRecipe.title)
-                            .font(.subheadline)
-                            .fontWeight(.semibold)
-                            .foregroundStyle(AppColors.darkText)
-                        Text("This recipe is always included. Add one or more other recipes to queue them as one parallel stage.")
-                            .font(.caption)
-                            .foregroundStyle(AppColors.subtleText)
+            VStack(spacing: 0) {
+                AppSearchField(
+                    "Search recipes to add",
+                    text: $searchText,
+                    onTextChange: { text in
+                        SearchQuerySupport.schedule(text: text, debouncer: searchDebouncer) {
+                            debouncedSearchText = $0
+                        }
                     }
-                } header: {
-                    Text("Base Recipe")
-                }
+                )
+                .padding(.horizontal)
+                .padding(.top, 12)
 
-                Section {
-                    ForEach(availableRecipes) { recipe in
-                        Button {
-                            toggle(recipe.id)
-                        } label: {
-                            HStack(spacing: 12) {
-                                Image(systemName: selectedRecipeIDs.contains(recipe.id) ? "checkmark.circle.fill" : "circle")
-                                    .font(.title3)
-                                    .foregroundStyle(selectedRecipeIDs.contains(recipe.id) ? AppColors.primaryGreen : AppColors.mediumGray)
+                AppList {
+                    Section {
+                        VStack(alignment: .leading, spacing: 6) {
+                            Text(baseRecipe.title)
+                                .font(.subheadline)
+                                .fontWeight(.semibold)
+                                .foregroundStyle(AppColors.darkText)
+                            Text("This recipe is always included. Add one or more other recipes to queue them as one parallel stage.")
+                                .font(.caption)
+                                .foregroundStyle(AppColors.subtleText)
+                        }
+                    } header: {
+                        Text("Base Recipe")
+                    }
 
-                                VStack(alignment: .leading, spacing: 4) {
-                                    Text(recipe.title)
-                                        .font(.subheadline)
-                                        .fontWeight(.medium)
-                                        .foregroundStyle(AppColors.darkText)
-                                    HStack(spacing: 8) {
-                                        Text(recipe.totalTimeDisplay)
-                                            .font(.caption)
-                                            .foregroundStyle(AppColors.subtleText)
-                                        if !recipe.source.isUserRecipe {
-                                            Text(recipe.source.label)
-                                                .font(.caption2)
-                                                .fontWeight(.semibold)
-                                                .foregroundStyle(AppColors.accentTeal)
+                    Section {
+                        ForEach(filteredRecipes) { recipe in
+                            Button {
+                                toggle(recipe.id)
+                            } label: {
+                                HStack(spacing: 12) {
+                                    Image(systemName: selectedRecipeIDs.contains(recipe.id) ? "checkmark.circle.fill" : "circle")
+                                        .font(.title3)
+                                        .foregroundStyle(selectedRecipeIDs.contains(recipe.id) ? AppColors.primaryGreen : AppColors.mediumGray)
+
+                                    VStack(alignment: .leading, spacing: 4) {
+                                        Text(recipe.title)
+                                            .font(.subheadline)
+                                            .fontWeight(.medium)
+                                            .foregroundStyle(AppColors.darkText)
+                                        HStack(spacing: 8) {
+                                            Text(recipe.totalTimeDisplay)
+                                                .font(.caption)
+                                                .foregroundStyle(AppColors.subtleText)
+                                            if !recipe.source.isUserRecipe {
+                                                Text(recipe.source.label)
+                                                    .font(.caption2)
+                                                    .fontWeight(.semibold)
+                                                    .foregroundStyle(AppColors.accentTeal)
+                                            }
                                         }
                                     }
-                                }
 
-                                Spacer()
+                                    Spacer()
+                                }
                             }
+                            .buttonStyle(.plain)
                         }
-                        .buttonStyle(.plain)
+                    } header: {
+                        Text("Add More Recipes")
+                    } footer: {
+                        if filteredRecipes.isEmpty {
+                            Text("No recipes match your current search.")
+                        }
                     }
-                } header: {
-                    Text("Add More Recipes")
                 }
             }
             .navigationTitle("Queue Multi-Cook")
@@ -109,8 +136,6 @@ struct RecipeDetailView: View {
     @State private var showSubstitutions = false
     @State private var showShoppingList = false
     @State private var showPantryReview = false
-    @State private var showCookQueueManager = false
-    @State private var showMultiCookQueueBuilder = false
     @State private var substitutions: [SubstitutionSuggestion] = []
     @State private var healthierSuggestion: HealthierSuggestion?
     @State private var shoppingList: [ShoppingItem] = []
@@ -146,9 +171,6 @@ struct RecipeDetailView: View {
                     titleSection
                     pantryMatchSection
                     actionButtons
-                    if appState.cookQueue?.stages.isEmpty == false {
-                        cookQueueSection
-                    }
                     modifySection
                     servingsAdjuster
 
@@ -231,18 +253,6 @@ struct RecipeDetailView: View {
                     await appState.applyPantryCookReview(items)
                 }
             )
-        }
-        .appNavigationSheet(isPresented: $showCookQueueManager) {
-            CookQueueView(appState: appState)
-        }
-        .appNavigationSheet(isPresented: $showMultiCookQueueBuilder) {
-            RecipeMultiCookQueueSelectionView(baseRecipe: scaledRecipe, appState: appState) { recipes in
-                Task {
-                    await appState.addRecipesToCookQueue(recipes, asParallelBatch: true)
-                    showMultiCookQueueBuilder = false
-                    showCookQueueManager = true
-                }
-            }
         }
         .appNavigationSheet(isPresented: $showEditor) {
             RecipeEditorView(
@@ -490,22 +500,10 @@ struct RecipeDetailView: View {
                 ActionButton(icon: "list.number", title: "Add Queue", color: AppColors.accentBlue) {
                     Task {
                         await appState.addRecipesToCookQueue([scaledRecipe])
-                        showCookQueueManager = true
+                        appState.requestRootTab(.cook)
                     }
                 }
 
-                ActionButton(icon: "square.stack.3d.up.fill", title: "Multi Queue", color: AppColors.accentTeal) {
-                    showMultiCookQueueBuilder = true
-                }
-
-                if appState.cookQueue?.stages.isEmpty == false {
-                    ActionButton(icon: "list.bullet.rectangle", title: "View Queue", color: AppColors.primaryGreen) {
-                        showCookQueueManager = true
-                    }
-                }
-            }
-
-            HStack(spacing: 12) {
                 ActionButton(icon: "cart", title: "What to Buy", color: AppColors.warmOrange) {
                     Task {
                         isLoadingAction = true
@@ -703,6 +701,21 @@ struct RecipeDetailView: View {
                             .padding(10)
                             .appInputSurface()
 
+                        Text("\(servings)")
+                            .font(.title3)
+                            .fontWeight(.semibold)
+                            .frame(width: 40)
+
+                        Button {
+                            if servings < maxServings {
+                                servings += 1
+                            }
+                        } label: {
+                            Image(systemName: "plus.circle.fill")
+                                .font(.title3)
+                                .foregroundStyle(servings < maxServings ? AppColors.primaryGreen : AppColors.mediumGray)
+                        }
+                        .disabled(servings >= maxServings)
                         Button {
                             Task { await performModify() }
                         } label: {
@@ -724,50 +737,6 @@ struct RecipeDetailView: View {
                     }
                 }
                 .transition(.opacity.combined(with: .move(edge: .top)))
-            }
-        }
-    }
-
-    private var cookQueueSection: some View {
-        let queue = appState.cookQueue
-        let currentStage = queue?.currentStage
-        let isRecipeQueued = queue?.stages.contains(where: { $0.recipeIDs.contains(recipe.id) }) == true
-
-        return AppDetailCard("Cook Queue", subtitle: queue?.name) {
-            if let currentStage {
-                VStack(alignment: .leading, spacing: 6) {
-                    Text(currentStage.title)
-                        .font(.subheadline)
-                        .fontWeight(.semibold)
-                        .foregroundStyle(AppColors.darkText)
-                    Text(currentStage.subtitle)
-                        .font(.caption)
-                        .foregroundStyle(AppColors.subtleText)
-                }
-            }
-
-            HStack {
-                Text(isRecipeQueued ? "This recipe already has a queue stage." : "Queue is active and ready to launch from here.")
-                    .font(.caption)
-                    .foregroundStyle(AppColors.subtleText)
-                Spacer()
-                Text("\(queue?.pendingStageCount ?? 0) left")
-                    .font(.caption2)
-                    .fontWeight(.semibold)
-                    .foregroundStyle(AppColors.primaryGreen)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 4)
-                    .background(AppColors.primaryGreen.opacity(0.12))
-                    .clipShape(Capsule())
-            }
-
-            Button {
-                showCookQueueManager = true
-            } label: {
-                Label("Open Queue Manager", systemImage: "list.number")
-                    .font(.subheadline)
-                    .fontWeight(.semibold)
-                    .foregroundStyle(AppColors.accentBlue)
             }
         }
     }

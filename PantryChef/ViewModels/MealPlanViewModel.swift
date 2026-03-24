@@ -96,9 +96,9 @@ final class MealPlanViewModel: AsyncActionHandling {
         }
     }
 
-    func logEntriesEaten(_ entries: [MealPlanEntry]) {
+    func logEntriesEaten(_ selections: [MealPlanEatenLoggingSelection]) {
         runTask { [self] in
-            await self.mealPlanActions.logEntriesEaten(entries)
+            await self.mealPlanActions.logEntriesEaten(selections)
         }
     }
 

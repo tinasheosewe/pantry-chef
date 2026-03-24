@@ -1,6 +1,13 @@
 import Foundation
 
 final class IngredientCandidateParser: IngredientCandidateParserProtocol {
+    private struct CacheKey: Hashable {
+        let rawName: String
+        let catalogItemID: String?
+        let linkedItemID: String?
+        let facets: [PantryFacetSelection]
+    }
+
     private enum RetrievalStage: Int {
         case exactName = 0
         case exactAlias = 1
@@ -19,14 +26,30 @@ final class IngredientCandidateParser: IngredientCandidateParserProtocol {
     private static let catalogPhraseIndex = CatalogPhraseIndex(phrases: catalogPhrases)
 
     private let maxCandidates: Int
+    private let cacheLock = NSLock()
+    private var cachedCandidatesByKey: [CacheKey: [IngredientResolutionCandidate]] = [:]
 
     init(maxCandidates: Int = 4) {
         self.maxCandidates = maxCandidates
     }
 
     func candidates(for ingredient: Ingredient) -> [IngredientResolutionCandidate] {
+        let cacheKey = CacheKey(
+            rawName: ingredient.rawName,
+            catalogItemID: ingredient.catalogItemID,
+            linkedItemID: ingredient.linkedItem?.id,
+            facets: ingredient.facets
+        )
+
+        cacheLock.lock()
+        if let cachedCandidates = cachedCandidatesByKey[cacheKey] {
+            cacheLock.unlock()
+            return cachedCandidates
+        }
+        cacheLock.unlock()
+
         if let item = ingredient.linkedItem {
-            return [
+            let linkedCandidates = [
                 IngredientResolutionCandidate(
                     id: candidateID(for: item.id, facets: ingredient.facets),
                     catalogItemID: item.id,
@@ -37,10 +60,15 @@ final class IngredientCandidateParser: IngredientCandidateParserProtocol {
                     supportedFacets: item.facets
                 )
             ]
+            cacheCandidates(linkedCandidates, for: cacheKey)
+            return linkedCandidates
         }
 
         let query = IngredientLexicon.parse(ingredient.rawName)
-        guard !query.lookupKey.isEmpty else { return [] }
+        guard !query.lookupKey.isEmpty else {
+            cacheCandidates([], for: cacheKey)
+            return []
+        }
         let queryLookupTokenSet = Set(IngredientLexicon.tokenize(query.lookupKey))
         let phraseIndex = Self.catalogPhraseIndex
 
@@ -151,7 +179,7 @@ final class IngredientCandidateParser: IngredientCandidateParserProtocol {
         preferFacetSpecificExactMatches(in: &candidatesByID)
         preferGenericFallbacks(in: &candidatesByID)
 
-        return candidatesByID.values
+        let resolvedCandidates = candidatesByID.values
             .sorted {
                 if $0.candidate.score == $1.candidate.score {
                     if $0.stage.rawValue == $1.stage.rawValue {
@@ -166,6 +194,15 @@ final class IngredientCandidateParser: IngredientCandidateParserProtocol {
             }
             .prefix(maxCandidates)
             .map(\.candidate)
+
+        cacheCandidates(resolvedCandidates, for: cacheKey)
+        return resolvedCandidates
+    }
+
+    private func cacheCandidates(_ candidates: [IngredientResolutionCandidate], for key: CacheKey) {
+        cacheLock.lock()
+        cachedCandidatesByKey[key] = candidates
+        cacheLock.unlock()
     }
 
     private func preferGenericFallbacks(in candidatesByID: inout [String: ScoredCandidate]) {

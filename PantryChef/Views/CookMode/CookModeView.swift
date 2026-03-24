@@ -166,6 +166,8 @@ struct CookModeView: View {
         if vm.showCompletionScreen {
             completionView(vm: vm)
         } else {
+            let isFullRecipeMode = displayMode == .fullRecipe
+
             VStack(spacing: 0) {
                 topBar(vm: vm)
                 progressBar(vm: vm)
@@ -193,13 +195,15 @@ struct CookModeView: View {
                     }
                 }
 
-                if vm.currentStep?.timerMinutes != nil || vm.isTimerRunning {
+                if !isFullRecipeMode && (vm.currentStep?.timerMinutes != nil || vm.isTimerRunning) {
                     timerView(vm: vm)
                 }
 
-                navigationControls(vm: vm)
+                if !isFullRecipeMode {
+                    navigationControls(vm: vm)
+                }
 
-                if vm.isConversationActive {
+                if !isFullRecipeMode && vm.isConversationActive {
                     conversationIndicator(vm: vm)
                 }
             }
@@ -381,7 +385,6 @@ struct CookModeView: View {
                     ForEach(Array(vm.steps.enumerated()), id: \.element.id) { index, step in
                         Button {
                             vm.goToStep(index)
-                            displayMode = .step
                         } label: {
                             VStack(alignment: .leading, spacing: 8) {
                                 HStack(spacing: 10) {

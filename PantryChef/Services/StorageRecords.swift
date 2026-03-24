@@ -2,7 +2,7 @@ import Foundation
 import SwiftData
 
 enum StorageSchema {
-    static let currentVersion = 13
+    static let currentVersion = 14
 }
 
 @Model
@@ -125,6 +125,7 @@ final class PantryFacetRecord {
 final class PreparedDishRecord {
     @Attribute(.unique) var id: UUID
     var schemaVersion: Int
+    var foodIdentityID: UUID
     var name: String
     var mealTypesRaw: String
     var servingsRemaining: Int
@@ -146,6 +147,7 @@ final class PreparedDishRecord {
     init(from dish: PreparedDish) {
         id = dish.id
         schemaVersion = StorageSchema.currentVersion
+        foodIdentityID = dish.foodIdentityID
         name = dish.name
         mealTypesRaw = dish.mealTypes.map(\.rawValue).joined(separator: "|")
         servingsRemaining = dish.servingsRemaining
@@ -166,6 +168,7 @@ final class PreparedDishRecord {
 
     func update(from dish: PreparedDish) {
         schemaVersion = StorageSchema.currentVersion
+        foodIdentityID = dish.foodIdentityID
         name = dish.name
         mealTypesRaw = dish.mealTypes.map(\.rawValue).joined(separator: "|")
         servingsRemaining = dish.servingsRemaining
@@ -206,6 +209,7 @@ final class PreparedDishRecord {
 
         return PreparedDish(
             id: id,
+            foodIdentityID: foodIdentityID,
             name: name,
             mealTypes: mealTypes,
             servingsRemaining: servingsRemaining,
@@ -621,6 +625,9 @@ final class MealPlanRecord {
     var mealTypeRawValue: String
     var recipeId: UUID?
     var preparedDishId: UUID?
+    var preparedFoodNameSnapshot: String?
+    var preparedFoodRecipeID: UUID?
+    var preparedFoodIdentityID: UUID?
     var customMealName: String?
     var plannedServings: Int?
     var eatenServings: Int?
@@ -633,6 +640,9 @@ final class MealPlanRecord {
         mealTypeRawValue = entry.mealType.rawValue
         recipeId = entry.recipe?.id
         preparedDishId = entry.preparedDish?.id
+        preparedFoodNameSnapshot = entry.preparedFoodNameSnapshot
+        preparedFoodRecipeID = entry.preparedFoodRecipeID
+        preparedFoodIdentityID = entry.preparedFoodIdentityID
         customMealName = entry.customMealName
         plannedServings = entry.plannedServings
         eatenServings = entry.eatenServings
@@ -645,6 +655,9 @@ final class MealPlanRecord {
         mealTypeRawValue = entry.mealType.rawValue
         recipeId = entry.recipe?.id
         preparedDishId = entry.preparedDish?.id
+        preparedFoodNameSnapshot = entry.preparedFoodNameSnapshot
+        preparedFoodRecipeID = entry.preparedFoodRecipeID
+        preparedFoodIdentityID = entry.preparedFoodIdentityID
         customMealName = entry.customMealName
         plannedServings = entry.plannedServings
         eatenServings = entry.eatenServings
@@ -658,6 +671,9 @@ final class MealPlanRecord {
             mealType: MealType(rawValue: mealTypeRawValue) ?? .dinner,
             recipe: recipe,
             preparedDish: preparedDish,
+            preparedFoodNameSnapshot: preparedFoodNameSnapshot,
+            preparedFoodRecipeID: preparedFoodRecipeID,
+            preparedFoodIdentityID: preparedFoodIdentityID,
             customMealName: customMealName,
             plannedServings: plannedServings,
             eatenServings: eatenServings,

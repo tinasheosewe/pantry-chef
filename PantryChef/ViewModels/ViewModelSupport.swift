@@ -138,7 +138,8 @@ struct MealPlanActions {
         let entry = MealPlanEntry(
             date: slot.date,
             mealType: slot.mealType,
-            preparedDish: dish
+            preparedDish: dish,
+            plannedServings: 1
         )
         await appState.addToMealPlan(entry, replaceExistingSlot: slot.replaceExisting)
     }
@@ -162,8 +163,8 @@ struct MealPlanActions {
         await appState.updateMealPlanEntry(entry)
     }
 
-    func logEntriesEaten(_ entries: [MealPlanEntry]) async {
-        await appState.logMealPlanEntriesEaten(entries)
+    func logEntriesEaten(_ selections: [MealPlanEatenLoggingSelection]) async {
+        await appState.logMealPlanEntriesEaten(selections)
     }
 
     func generateShoppingList() async {

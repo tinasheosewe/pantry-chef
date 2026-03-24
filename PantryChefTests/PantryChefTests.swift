@@ -320,10 +320,12 @@ func makePreparedDish(
     servingsRemaining: Int = 2,
     storage: PantryStorage = .refrigerated,
     useByDate: Date? = Calendar.current.date(byAdding: .day, value: 2, to: Date()),
+    foodIdentityID: UUID = UUID(),
     recipeID: UUID? = nil,
     nutrition: NutritionInfo? = nil
 ) -> PreparedDish {
     PreparedDish(
+        foodIdentityID: foodIdentityID,
         name: name,
         mealTypes: mealTypes,
         servingsRemaining: servingsRemaining,
@@ -1595,11 +1597,11 @@ final class MealPlanEntryModelTests: XCTestCase {
         XCTAssertEqual(entry.plannedServingsLabel, "4 servings planned")
     }
 
-    func testEffectivePlannedServingsClampsPreparedDishToAvailableServings() {
+    func testEffectivePlannedServingsKeepsExplicitPreparedFoodPlan() {
         let dish = makePreparedDish(name: "Soup", servingsRemaining: 3)
         let entry = MealPlanEntry(date: Date(), mealType: .lunch, preparedDish: dish, plannedServings: 5)
 
-        XCTAssertEqual(entry.effectivePlannedServings, 3)
+        XCTAssertEqual(entry.effectivePlannedServings, 5)
     }
 
     func testMealPlanEntrySeedsPreparedDishDraftFromAllocatedRecipeServings() {
@@ -2626,29 +2628,71 @@ final class AppStateTests: XCTestCase {
         XCTAssertFalse(eligibleEntries.contains { $0.preparedDish?.name == "Soup" })
     }
 
-    func testLogMealPlanEntriesEatenIgnoresRecipeOnlyEntries() async {
+    func testPreparedDishMealPlanEntryDefaultsToOnePlannedServingAndSnapshotIdentity() async {
         let (appState, storage, _) = makeTestAppState()
-        let entry = MealPlanEntry(date: Date(), mealType: .dinner, recipe: makeRecipe(title: "Curry", servings: 4), plannedServings: 4)
+        let dish = makePreparedDish(name: "Chili", servingsRemaining: 4)
 
-        await appState.addToMealPlan(entry)
-        await appState.logMealPlanEntriesEaten([entry.updatingEatenServings(2)])
+        await appState.addToMealPlan(MealPlanEntry(date: Date(), mealType: .dinner, preparedDish: dish))
 
-        XCTAssertEqual(appState.mealPlan.first?.effectiveEatenServings, 0)
-        XCTAssertNil(storage.mealPlanStore.first?.eatenServings)
+        XCTAssertEqual(appState.mealPlan.first?.effectivePlannedServings, 1)
+        XCTAssertEqual(storage.mealPlanStore.first?.effectivePlannedServings, 1)
+        XCTAssertEqual(appState.mealPlan.first?.preparedFoodNameSnapshot, "Chili")
+        XCTAssertEqual(appState.mealPlan.first?.preparedFoodIdentityID, dish.foodIdentityID)
     }
 
-    func testLogMealPlanEntriesEatenDecrementsPreparedDishServings() async {
+    func testLogMealPlanEntriesEatenMatchesRecipeMealToCurrentPreparedFoodByRecipe() async {
+        let (appState, storage, _) = makeTestAppState()
+        let recipe = makeRecipe(title: "Curry", servings: 4)
+        let cookedDish = makePreparedDish(name: "Curry", servingsRemaining: 4, recipeID: recipe.id)
+        await appState.addPreparedDish(cookedDish)
+
+        let entry = MealPlanEntry(date: Date(), mealType: .dinner, recipe: recipe, plannedServings: 2)
+        await appState.addToMealPlan(entry)
+        await appState.logMealPlanEntriesEaten([
+            MealPlanEatenLoggingSelection(entryID: entry.id, targetEatenServings: 2, preparedDishID: cookedDish.id)
+        ])
+
+        XCTAssertEqual(appState.mealPlan.first?.effectiveEatenServings, 2)
+        XCTAssertEqual(appState.preparedDishes.first?.servingsRemaining, 2)
+        XCTAssertEqual(storage.mealPlanStore.first?.eatenServings, 2)
+    }
+
+    func testLogMealPlanEntriesEatenDecrementsSelectedPreparedDishServings() async {
         let (appState, storage, _) = makeTestAppState()
         let dish = makePreparedDish(name: "Chili", servingsRemaining: 4)
         await appState.addPreparedDish(dish)
 
         let entry = MealPlanEntry(date: Date(), mealType: .dinner, preparedDish: dish, plannedServings: 2)
         await appState.addToMealPlan(entry)
-        await appState.logMealPlanEntriesEaten([entry.updatingEatenServings(2)])
+        await appState.logMealPlanEntriesEaten([
+            MealPlanEatenLoggingSelection(entryID: entry.id, targetEatenServings: 2, preparedDishID: dish.id)
+        ])
 
         XCTAssertEqual(appState.mealPlan.first?.effectiveEatenServings, 2)
         XCTAssertEqual(appState.preparedDishes.first?.servingsRemaining, 2)
         XCTAssertEqual(storage.mealPlanStore.first?.eatenServings, 2)
+    }
+
+    func testLogMealPlanEntriesEatenMatchesPreparedFoodPlanToReplacementInstanceByIdentity() async {
+        let (appState, storage, _) = makeTestAppState()
+        let foodIdentityID = UUID()
+        let originalDish = makePreparedDish(name: "Burrito Bowl", servingsRemaining: 2, foodIdentityID: foodIdentityID)
+        let replacementDish = makePreparedDish(name: "Burrito Bowl", servingsRemaining: 3, foodIdentityID: foodIdentityID)
+
+        await appState.addPreparedDish(originalDish)
+        let entry = MealPlanEntry(date: Date(), mealType: .lunch, preparedDish: originalDish, plannedServings: 2)
+        await appState.addToMealPlan(entry)
+        await appState.removePreparedDish(originalDish)
+        await appState.addPreparedDish(replacementDish)
+
+        await appState.logMealPlanEntriesEaten([
+            MealPlanEatenLoggingSelection(entryID: entry.id, targetEatenServings: 1, preparedDishID: replacementDish.id)
+        ])
+
+        XCTAssertEqual(appState.mealPlan.first?.effectiveEatenServings, 1)
+        XCTAssertEqual(appState.preparedDishes.first?.id, replacementDish.id)
+        XCTAssertEqual(appState.preparedDishes.first?.servingsRemaining, 2)
+        XCTAssertEqual(storage.mealPlanStore.first?.eatenServings, 1)
     }
 
     func testLogMealPlanEntriesEatenRejectsPreparedDishOverdrawAcrossBatch() async {
@@ -2661,8 +2705,8 @@ final class AppStateTests: XCTestCase {
         await appState.addToMealPlan([breakfast, lunch])
 
         await appState.logMealPlanEntriesEaten([
-            breakfast.updatingEatenServings(2),
-            lunch.updatingEatenServings(1)
+            MealPlanEatenLoggingSelection(entryID: breakfast.id, targetEatenServings: 2, preparedDishID: dish.id),
+            MealPlanEatenLoggingSelection(entryID: lunch.id, targetEatenServings: 1, preparedDishID: dish.id)
         ])
 
         XCTAssertEqual(appState.preparedDishes.first?.servingsRemaining, 2)
@@ -2670,6 +2714,25 @@ final class AppStateTests: XCTestCase {
         XCTAssertEqual(appState.mealPlan.first(where: { $0.id == lunch.id })?.effectiveEatenServings, 0)
         XCTAssertEqual(storage.mealPlanStore.first(where: { $0.id == breakfast.id })?.eatenServings, nil)
         XCTAssertEqual(appState.errorMessage, "Not enough servings remain in Burrito Bowl to log those meals as eaten.")
+    }
+
+    func testMealPlanCookQueueReviewWorkspaceBuildsMixedSerialAndParallelStages() {
+        let date = Date()
+        let first = MealPlanEntry(date: date, mealType: .breakfast, recipe: makeRecipe(title: "Oats"))
+        let second = MealPlanEntry(date: date, mealType: .lunch, recipe: makeRecipe(title: "Soup"))
+        let third = MealPlanEntry(date: date, mealType: .dinner, recipe: makeRecipe(title: "Salad"))
+
+        var workspace = MealPlanCookQueueReviewWorkspace(entries: [first, second, third])
+        var updatedSecond = workspace.drafts[1]
+        updatedSecond.stagePlacement = .withPrevious
+        workspace.updateDraft(updatedSecond)
+
+        let stages = workspace.buildStages()
+
+        XCTAssertEqual(stages.count, 2)
+        XCTAssertEqual(stages[0].recipeTitleSnapshots, ["Oats", "Soup"])
+        XCTAssertEqual(stages[1].recipeTitleSnapshots, ["Salad"])
+        XCTAssertEqual(stages[0].sourceMealPlanEntryIDs, [first.id, second.id])
     }
 
     func testGenerateShoppingListFromMealPlanMergesAdditivelyIntoExistingCart() async {
@@ -3010,6 +3073,46 @@ final class AppStateTests: XCTestCase {
         XCTAssertEqual(appState.cookQueue?.stages.first?.status, .completed)
         XCTAssertEqual(appState.cookQueue?.currentStage?.id, secondStageID)
         XCTAssertEqual(appState.cookQueue?.currentStage?.status, .pending)
+    }
+
+    func testReplaceCookQueueStagesPreservesQueueIdentityAndOrdering() async throws {
+        let (appState, storage, _) = makeTestAppState()
+        let recipes = [
+            makeRecipe(title: "Soup"),
+            makeRecipe(title: "Salad"),
+            makeRecipe(title: "Bread"),
+        ]
+
+        await appState.addRecipesToCookQueue(recipes, asParallelBatch: false)
+        let originalQueueID = try XCTUnwrap(appState.cookQueue?.id)
+        let secondStage = try XCTUnwrap(appState.cookQueue?.stages[1])
+        let firstStage = try XCTUnwrap(appState.cookQueue?.stages.first)
+        let replacement = [secondStage, firstStage]
+
+        await appState.replaceCookQueueStages(replacement)
+
+        XCTAssertEqual(appState.cookQueue?.id, originalQueueID)
+        XCTAssertEqual(appState.cookQueue?.stages.map(\.title), ["Salad", "Soup"])
+        XCTAssertEqual(storage.cookQueueStore?.id, originalQueueID)
+        XCTAssertEqual(storage.cookQueueStore?.stages.map(\.title), ["Salad", "Soup"])
+    }
+
+    func testReplaceCookQueueStagesClearsQueueWhenStagesAreEmpty() async {
+        let (appState, storage, _) = makeTestAppState()
+        await appState.addRecipesToCookQueue([makeRecipe(title: "Soup")])
+
+        await appState.replaceCookQueueStages([])
+
+        XCTAssertNil(appState.cookQueue)
+        XCTAssertNil(storage.cookQueueStore)
+    }
+
+    func testRequestRootTabStoresRequestedDestination() {
+        let (appState, _, _) = makeTestAppState()
+
+        appState.requestRootTab(.cook)
+
+        XCTAssertEqual(appState.requestedRootTab, .cook)
     }
 
     func testPantryPresenceOnlyMergeDominatesExactQuantity() async {

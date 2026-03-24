@@ -8,11 +8,6 @@ struct MealPlanView: View {
     @State private var showPreparedFoodSelection = false
     @State private var showPreparedFoodReview = false
     @State private var preparedFoodDrafts: [MealPlanPreparedDishReviewDraft] = []
-    @State private var showCookQueueSelection = false
-    @State private var showCookQueueReview = false
-    @State private var showCookQueueManager = false
-    @State private var cookQueueEntries: [MealPlanEntry] = []
-    @State private var cookQueueAsParallelBatch = false
     @State private var showMealLoggingSelection = false
     @State private var showMealLoggingReview = false
     @State private var mealLoggingDrafts: [MealPlanEatenReviewDraft] = []
@@ -26,6 +21,7 @@ struct MealPlanView: View {
         AppScreen("mealplan.screen") {
             VStack(spacing: 0) {
                 weekNavigation
+                compactActionBar
 
                 AppScrollView {
                     VStack(spacing: 0) {
@@ -38,43 +34,6 @@ struct MealPlanView: View {
                 }
             }
             .navigationTitle("Meal Plan")
-            .toolbar {
-                ToolbarItemGroup(placement: .primaryAction) {
-                    Button {
-                        showPreparedFoodSelection = true
-                    } label: {
-                        Label("Add to Prepared Food", systemImage: "calendar.badge.plus")
-                    }
-                    .disabled(preparedFoodSourceEntries.isEmpty)
-
-                    Button {
-                        showMealLoggingSelection = true
-                    } label: {
-                        Label("Log Meals Eaten", systemImage: "checklist.checked")
-                    }
-                    .disabled(mealEntriesEligibleForLogging.isEmpty)
-
-                    Button {
-                        showCookQueueSelection = true
-                    } label: {
-                        Label("Queue Meals", systemImage: "flame")
-                    }
-                    .disabled(mealEntriesEligibleForCookQueue.isEmpty)
-
-                    Button {
-                        showCookQueueManager = true
-                    } label: {
-                        Label("Cook Queue", systemImage: "list.number")
-                    }
-
-                    Button {
-                        prepareShoppingConfirmation()
-                    } label: {
-                        Label("Shopping List", systemImage: "cart")
-                    }
-                    .accessibilityIdentifier("mealplan.shoppingListButton")
-                }
-            }
             .shoppingListConfirmation($shoppingConfirmation) { itemsToAdd in
                 viewModel.addShoppingItems(itemsToAdd)
             }
@@ -99,31 +58,14 @@ struct MealPlanView: View {
                     showPreparedFoodReview = false
                 }
             }
-            .sheet(isPresented: $showCookQueueSelection) {
-                MealPlanCookQueueSelectionView(entries: mealEntriesEligibleForCookQueue) { entries in
-                    cookQueueEntries = entries
-                    cookQueueAsParallelBatch = entries.count > 1
-                    showCookQueueSelection = false
-                    Task { @MainActor in
-                        showCookQueueReview = true
-                    }
-                }
-            }
-            .sheet(isPresented: $showCookQueueReview, onDismiss: {
-                cookQueueEntries = []
-                cookQueueAsParallelBatch = false
-            }) {
-                MealPlanCookQueueReviewView(entries: cookQueueEntries, asParallelBatch: $cookQueueAsParallelBatch) { entries, asParallelBatch in
-                    viewModel.addEntriesToCookQueue(entries, asParallelBatch: asParallelBatch)
-                    showCookQueueReview = false
-                    Task { @MainActor in
-                        showCookQueueManager = true
-                    }
-                }
-            }
             .sheet(isPresented: $showMealLoggingSelection) {
                 MealPlanEatenSelectionView(entries: mealEntriesEligibleForLogging) { entries in
-                    mealLoggingDrafts = entries.map(MealPlanEatenReviewDraft.init)
+                    mealLoggingDrafts = entries.map {
+                        MealPlanEatenReviewDraft(
+                            entry: $0,
+                            candidatePreparedDishes: viewModel.appState.matchingPreparedDishes(for: $0)
+                        )
+                    }
                     showMealLoggingSelection = false
                     Task { @MainActor in
                         showMealLoggingReview = true
@@ -133,13 +75,10 @@ struct MealPlanView: View {
             .sheet(isPresented: $showMealLoggingReview, onDismiss: {
                 mealLoggingDrafts = []
             }) {
-                MealPlanEatenReviewView(appState: viewModel.appState, drafts: $mealLoggingDrafts) { updatedEntries in
-                    viewModel.logEntriesEaten(updatedEntries)
+                MealPlanEatenReviewView(appState: viewModel.appState, drafts: $mealLoggingDrafts) { selections in
+                    viewModel.logEntriesEaten(selections)
                     showMealLoggingReview = false
                 }
-            }
-            .appNavigationSheet(isPresented: $showCookQueueManager) {
-                CookQueueView(appState: viewModel.appState)
             }
             .sheet(isPresented: $viewModel.showMealPicker) {
                 if let slot = viewModel.selectedSlot {
@@ -210,11 +149,78 @@ struct MealPlanView: View {
     }
 
     private var mealEntriesEligibleForLogging: [MealPlanEntry] {
-        viewModel.entries.filter { $0.supportsMealLogging && !$0.isFullyEaten }
+        viewModel.entries.filter { entry in
+            entry.supportsMealLogging
+                && !entry.isFullyEaten
+                && !viewModel.appState.matchingPreparedDishes(for: entry).isEmpty
+        }
     }
 
-    private var mealEntriesEligibleForCookQueue: [MealPlanEntry] {
-        viewModel.entries.filter { $0.scaledRecipeForPlanning != nil }
+    private var compactActionBar: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 10) {
+                compactActionButton(
+                    title: "Prepared Food",
+                    systemImage: "calendar.badge.plus",
+                    tint: AppColors.primaryGreen,
+                    isDisabled: preparedFoodSourceEntries.isEmpty,
+                    action: {
+                        showPreparedFoodSelection = true
+                    }
+                )
+
+                compactActionButton(
+                    title: "Log Eating",
+                    systemImage: "checklist.checked",
+                    tint: AppColors.warmOrange,
+                    isDisabled: false,
+                    action: {
+                        showMealLoggingSelection = true
+                    }
+                )
+
+                compactActionButton(
+                    title: "Shopping List",
+                    systemImage: "cart",
+                    tint: AppColors.accentBlue,
+                    isDisabled: false,
+                    accessibilityIdentifier: "mealplan.shoppingListButton",
+                    action: {
+                        prepareShoppingConfirmation()
+                    }
+                )
+            }
+            .padding(.horizontal)
+            .padding(.vertical, 12)
+        }
+        .background(AppColors.cardBackground)
+    }
+
+    private func compactActionButton(
+        title: String,
+        systemImage: String,
+        tint: Color,
+        isDisabled: Bool,
+        accessibilityIdentifier: String? = nil,
+        action: @escaping () -> Void
+    ) -> some View {
+        Button(action: action) {
+            HStack(spacing: 8) {
+                Image(systemName: systemImage)
+                    .font(.caption)
+                Text(title)
+                    .font(.caption)
+                    .fontWeight(.semibold)
+            }
+            .foregroundStyle(isDisabled ? AppColors.mediumGray : tint)
+            .padding(.horizontal, 14)
+            .padding(.vertical, 10)
+            .background(isDisabled ? AppColors.lightGray : tint.opacity(0.1))
+            .clipShape(Capsule())
+        }
+        .buttonStyle(.plain)
+        .disabled(isDisabled)
+        .accessibilityIdentifier(accessibilityIdentifier ?? "")
     }
 
     // MARK: - Week Navigation
@@ -863,12 +869,16 @@ private struct MealSlotEntriesView: View {
 private struct MealPlanEatenReviewDraft: Identifiable, Hashable {
     let id: UUID
     let entry: MealPlanEntry
+    let candidatePreparedDishes: [PreparedDish]
     var targetEatenServings: Int
+    var selectedPreparedDishID: UUID?
 
-    init(entry: MealPlanEntry) {
+    init(entry: MealPlanEntry, candidatePreparedDishes: [PreparedDish]) {
         self.id = entry.id
         self.entry = entry
+        self.candidatePreparedDishes = candidatePreparedDishes
         self.targetEatenServings = entry.effectiveEatenServings
+        self.selectedPreparedDishID = candidatePreparedDishes.count == 1 ? candidatePreparedDishes.first?.id : nil
     }
 
     var plannedServings: Int {
@@ -887,8 +897,20 @@ private struct MealPlanEatenReviewDraft: Identifiable, Hashable {
         targetEatenServings > currentEatenServings
     }
 
-    var updatedEntry: MealPlanEntry {
-        entry.updatingEatenServings(targetEatenServings)
+    var requiresPreparedDishSelection: Bool {
+        additionalServings > 0 && selectedPreparedDishID == nil
+    }
+
+    var selectedPreparedDishName: String? {
+        candidatePreparedDishes.first(where: { $0.id == selectedPreparedDishID })?.name
+    }
+
+    var loggingSelection: MealPlanEatenLoggingSelection {
+        MealPlanEatenLoggingSelection(
+            entryID: entry.id,
+            targetEatenServings: targetEatenServings,
+            preparedDishID: selectedPreparedDishID
+        )
     }
 
     var sourceSummary: String {
@@ -904,276 +926,21 @@ private struct MealPlanEatenReviewDraft: Identifiable, Hashable {
         }
         return "\(targetEatenServings) of \(plannedServings) eaten"
     }
-}
 
-private struct MealPlanCookQueueSelectionView: View {
-    @Environment(\.dismiss) private var dismiss
-
-    let entries: [MealPlanEntry]
-    let onContinue: ([MealPlanEntry]) -> Void
-
-    @State private var searchText = ""
-    @State private var debouncedSearchText = ""
-    @State private var selectedEntryIDs: Set<UUID> = []
-    @State private var searchDebouncer = TaskDebouncer()
-
-    private var filteredEntries: [MealPlanEntry] {
-        SearchQuerySupport.filtered(entries, query: debouncedSearchText) { entry in
-            [entry.displayName, entry.mealType.rawValue, entry.date.formatted(date: .abbreviated, time: .omitted)].joined(separator: " ")
+    var preparedFoodSelectionSummary: String {
+        if let selectedPreparedDishName {
+            return "Using Prepared Food: \(selectedPreparedDishName)"
         }
-    }
 
-    private var selectedEntries: [MealPlanEntry] {
-        entries.filter { selectedEntryIDs.contains($0.id) }
-            .sorted { $0.date < $1.date }
-    }
-
-    var body: some View {
-        NavigationStack {
-            VStack(spacing: 0) {
-                if filteredEntries.isEmpty {
-                    EmptyStateView(
-                        icon: "flame",
-                        title: entries.isEmpty ? "No recipes planned this week" : "No meals found",
-                        message: entries.isEmpty
-                            ? "Only planned recipe meals can be added to the cook queue from here."
-                            : "Try a different search for this week’s planned recipes."
-                    )
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                } else {
-                    AppList {
-                        Section {
-                            Text("Select planned recipe meals to queue. In the next step you can keep them serial or collapse them into one parallel batch.")
-                                .font(.subheadline)
-                                .foregroundStyle(AppColors.subtleText)
-                        }
-
-                        Section {
-                            ForEach(filteredEntries) { entry in
-                                queueSelectionRow(entry)
-                            }
-                        }
-                    }
-                }
-            }
-            .searchable(text: $searchText, prompt: "Search planned recipes")
-            .onChange(of: searchText) {
-                SearchQuerySupport.schedule(text: searchText, debouncer: searchDebouncer) {
-                    debouncedSearchText = $0
-                }
-            }
-            .navigationTitle("Queue Meals")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Close") { dismiss() }
-                }
-            }
-            .safeAreaInset(edge: .bottom) {
-                VStack(spacing: 10) {
-                    Divider()
-                    HStack(spacing: 12) {
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(selectedEntries.isEmpty ? "Select meals to queue" : "\(selectedEntries.count) meals selected")
-                                .font(.subheadline)
-                                .fontWeight(.semibold)
-                                .foregroundStyle(AppColors.darkText)
-                            Text("Recipe scaling from Meal Plan carries into the cook queue.")
-                                .font(.caption)
-                                .foregroundStyle(AppColors.subtleText)
-                        }
-
-                        Spacer()
-
-                        Button {
-                            onContinue(selectedEntries)
-                        } label: {
-                            Text("Review")
-                                .font(.subheadline)
-                                .fontWeight(.semibold)
-                                .padding(.horizontal, 16)
-                                .padding(.vertical, 12)
-                                .background(selectedEntries.isEmpty ? AppColors.mediumGray : AppColors.accentBlue)
-                                .foregroundStyle(.white)
-                                .clipShape(Capsule())
-                        }
-                        .disabled(selectedEntries.isEmpty)
-                    }
-                    .padding(.horizontal)
-                    .padding(.bottom, 8)
-                }
-                .background(.ultraThinMaterial)
-            }
+        if candidatePreparedDishes.isEmpty {
+            return "No matching Prepared Food available"
         }
-    }
 
-    private func queueSelectionRow(_ entry: MealPlanEntry) -> some View {
-        let isSelected = selectedEntryIDs.contains(entry.id)
-
-        return Button {
-            if isSelected {
-                selectedEntryIDs.remove(entry.id)
-            } else {
-                selectedEntryIDs.insert(entry.id)
-            }
-        } label: {
-            HStack(spacing: 12) {
-                Image(systemName: entry.recipe?.mealType?.icon ?? entry.mealType.icon)
-                    .font(.title3)
-                    .foregroundStyle(AppColors.primaryGreen)
-                    .frame(width: 40, height: 40)
-                    .background(AppColors.primaryGreen.opacity(0.12))
-                    .clipShape(RoundedRectangle(cornerRadius: 10))
-
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(entry.displayName)
-                        .font(.subheadline)
-                        .fontWeight(.semibold)
-                        .foregroundStyle(AppColors.darkText)
-                    Text("\(entry.date.formatted(date: .abbreviated, time: .omitted)) • \(entry.mealType.rawValue) • \(entry.planningSubtitle ?? "Planned")")
-                        .font(.caption)
-                        .foregroundStyle(AppColors.subtleText)
-                }
-
-                Spacer()
-
-                Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
-                    .font(.title3)
-                    .foregroundStyle(isSelected ? AppColors.primaryGreen : AppColors.mediumGray)
-            }
-            .padding(.vertical, 4)
+        if candidatePreparedDishes.count == 1, let name = candidatePreparedDishes.first?.name {
+            return "Prepared Food: \(name)"
         }
-        .buttonStyle(.plain)
-    }
-}
 
-private struct MealPlanCookQueueReviewView: View {
-    @Environment(\.dismiss) private var dismiss
-
-    let entries: [MealPlanEntry]
-    @Binding var asParallelBatch: Bool
-    let onSave: ([MealPlanEntry], Bool) -> Void
-
-    private var recipes: [Recipe] {
-        entries.compactMap(\.scaledRecipeForPlanning)
-    }
-
-    private var projectedStageCount: Int {
-        asParallelBatch ? (recipes.isEmpty ? 0 : 1) : recipes.count
-    }
-
-    private var projectedTimeText: String {
-        guard !recipes.isEmpty else { return "0m" }
-        if asParallelBatch, recipes.count > 1 {
-            let blocks = MultiRecipeScheduler.schedule(recipes: recipes)
-            return formatDuration(MultiRecipeScheduler.estimatedTotalTime(blocks: blocks))
-        }
-        let minutes = recipes.compactMap(\.totalTimeMinutes).reduce(0, +)
-        return formatDuration(minutes * 60)
-    }
-
-    var body: some View {
-        NavigationStack {
-            AppList {
-                Section {
-                    Text("Choose whether these meals should stay serial in queue order or launch together as one parallel batch.")
-                        .font(.subheadline)
-                        .foregroundStyle(AppColors.subtleText)
-                }
-
-                if recipes.count > 1 {
-                    Section {
-                        Toggle("Cook selected meals together", isOn: $asParallelBatch)
-                        Text(asParallelBatch
-                             ? "These meals will become one parallel stage and use Multi-Cook when started."
-                             : "These meals will stay as separate stages in the same queue, ordered by plan date.")
-                            .font(.caption)
-                            .foregroundStyle(AppColors.subtleText)
-                    } header: {
-                        Text("Queue Structure")
-                    }
-                }
-
-                Section {
-                    ForEach(entries) { entry in
-                        HStack(spacing: 12) {
-                            Image(systemName: entry.recipe?.mealType?.icon ?? entry.mealType.icon)
-                                .foregroundStyle(AppColors.primaryGreen)
-                                .frame(width: 28)
-
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text(entry.displayName)
-                                    .font(.subheadline)
-                                    .fontWeight(.semibold)
-                                    .foregroundStyle(AppColors.darkText)
-                                Text("\(entry.date.formatted(date: .abbreviated, time: .omitted)) • \(entry.mealType.rawValue)")
-                                    .font(.caption)
-                                    .foregroundStyle(AppColors.subtleText)
-                            }
-                        }
-                        .padding(.vertical, 4)
-                    }
-                } header: {
-                    SectionHeader(
-                        title: projectedStageCount == 1 ? "1 Queue Stage" : "\(projectedStageCount) Queue Stages",
-                        subtitle: "Estimated cook time: \(projectedTimeText)"
-                    )
-                    .padding(.top, 8)
-                }
-            }
-            .navigationTitle("Review Queue")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Close") { dismiss() }
-                }
-            }
-            .safeAreaInset(edge: .bottom) {
-                VStack(spacing: 10) {
-                    Divider()
-                    HStack(spacing: 12) {
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(projectedStageCount == 1 ? "Add 1 stage to cook queue" : "Add \(projectedStageCount) stages to cook queue")
-                                .font(.subheadline)
-                                .fontWeight(.semibold)
-                                .foregroundStyle(AppColors.darkText)
-                            Text("The queue manager lets you start, skip, or remove stages later.")
-                                .font(.caption)
-                                .foregroundStyle(AppColors.subtleText)
-                        }
-
-                        Spacer()
-
-                        Button {
-                            onSave(entries, asParallelBatch)
-                        } label: {
-                            Text("Add to Queue")
-                                .font(.subheadline)
-                                .fontWeight(.semibold)
-                                .padding(.horizontal, 16)
-                                .padding(.vertical, 12)
-                                .background(entries.isEmpty ? AppColors.mediumGray : AppColors.primaryGreen)
-                                .foregroundStyle(.white)
-                                .clipShape(Capsule())
-                        }
-                        .disabled(entries.isEmpty)
-                    }
-                    .padding(.horizontal)
-                    .padding(.bottom, 8)
-                }
-                .background(.ultraThinMaterial)
-            }
-        }
-    }
-
-    private func formatDuration(_ seconds: Int) -> String {
-        let minutes = seconds / 60
-        if minutes < 60 {
-            return "\(minutes)m"
-        }
-        let hours = minutes / 60
-        let remainder = minutes % 60
-        return remainder == 0 ? "\(hours)h" : "\(hours)h\(remainder)m"
+        return "Choose 1 of \(candidatePreparedDishes.count) matching Prepared Food items"
     }
 }
 
@@ -1220,14 +987,14 @@ private struct MealPlanEatenSelectionView: View {
                         icon: "fork.knife.circle",
                         title: entries.isEmpty ? "Nothing left to log" : "No meals found",
                         message: entries.isEmpty
-                            ? "Only cooked meals from Prepared Food show up here, and everything eligible is already fully logged."
-                            : "Try a different search for this week’s cooked meals."
+                            ? "Meals only show up here when they still have servings left to log and there is matching Prepared Food available right now."
+                            : "Try a different search for this week’s meals."
                     )
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                 } else {
                     AppList {
                         Section {
-                            Text("Select cooked meals from this week, then set how many servings were actually eaten before saving once.")
+                            Text("Select meals from this week, then choose the matching Prepared Food and how many servings were actually eaten before saving once.")
                                 .font(.subheadline)
                                 .foregroundStyle(AppColors.subtleText)
                         }
@@ -1248,7 +1015,7 @@ private struct MealPlanEatenSelectionView: View {
                     debouncedSearchText = $0
                 }
             }
-            .navigationTitle("Log Meals Eaten")
+            .navigationTitle("Log Eating")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
@@ -1263,7 +1030,7 @@ private struct MealPlanEatenSelectionView: View {
 
     private func selectionRow(for entry: MealPlanEntry) -> some View {
         let isSelected = selectedEntryIDs.contains(entry.id)
-        let accent = entry.preparedDish != nil ? AppColors.warmOrange : AppColors.primaryGreen
+        let accent = entry.isPreparedFoodPlan ? AppColors.warmOrange : AppColors.primaryGreen
 
         return Button {
             if isSelected {
@@ -1273,7 +1040,7 @@ private struct MealPlanEatenSelectionView: View {
             }
         } label: {
             HStack(spacing: 12) {
-                Image(systemName: entry.recipe != nil ? (entry.recipe?.mealType?.icon ?? "book") : entry.preparedDish != nil ? "takeoutbag.and.cup.and.straw" : entry.mealType.icon)
+                Image(systemName: entry.recipe != nil ? (entry.recipe?.mealType?.icon ?? "book") : entry.isPreparedFoodPlan ? "takeoutbag.and.cup.and.straw" : entry.mealType.icon)
                     .font(.title3)
                     .foregroundStyle(accent)
                     .frame(width: 40, height: 40)
@@ -1343,15 +1110,19 @@ private struct MealPlanEatenReviewView: View {
 
     let appState: AppState
     @Binding var drafts: [MealPlanEatenReviewDraft]
-    let onSave: ([MealPlanEntry]) -> Void
+    let onSave: ([MealPlanEatenLoggingSelection]) -> Void
 
     private var hasChanges: Bool {
         drafts.contains(where: \.isDirty)
     }
 
+    private var hasMissingSelections: Bool {
+        drafts.contains(where: \.requiresPreparedDishSelection)
+    }
+
     private var overdrawMessages: [String] {
         let grouped = drafts.reduce(into: [UUID: Int]()) { partialResult, draft in
-            guard let preparedDishID = draft.entry.preparedDish?.id else { return }
+            guard let preparedDishID = draft.selectedPreparedDishID else { return }
             partialResult[preparedDishID, default: 0] += draft.additionalServings
         }
 
@@ -1415,7 +1186,7 @@ private struct MealPlanEatenReviewView: View {
                     }
                 }
             }
-            .navigationTitle("Log Meals Eaten")
+            .navigationTitle("Log Eating")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
@@ -1429,11 +1200,11 @@ private struct MealPlanEatenReviewView: View {
     }
 
     private func reviewRow(_ draft: Binding<MealPlanEatenReviewDraft>) -> some View {
-        let accent = draft.wrappedValue.entry.preparedDish != nil ? AppColors.warmOrange : AppColors.primaryGreen
+        let accent = draft.wrappedValue.entry.isPreparedFoodPlan ? AppColors.warmOrange : AppColors.primaryGreen
 
         return VStack(alignment: .leading, spacing: 12) {
             HStack(alignment: .top, spacing: 12) {
-                Image(systemName: draft.wrappedValue.entry.recipe != nil ? (draft.wrappedValue.entry.recipe?.mealType?.icon ?? "book") : draft.wrappedValue.entry.preparedDish != nil ? "takeoutbag.and.cup.and.straw" : draft.wrappedValue.entry.mealType.icon)
+                Image(systemName: draft.wrappedValue.entry.recipe != nil ? (draft.wrappedValue.entry.recipe?.mealType?.icon ?? "book") : draft.wrappedValue.entry.isPreparedFoodPlan ? "takeoutbag.and.cup.and.straw" : draft.wrappedValue.entry.mealType.icon)
                     .font(.title3)
                     .foregroundStyle(accent)
                     .frame(width: 40, height: 40)
@@ -1451,10 +1222,27 @@ private struct MealPlanEatenReviewView: View {
                     Text(draft.wrappedValue.progressText)
                         .font(.caption)
                         .foregroundStyle(AppColors.subtleText)
+                    Text(draft.wrappedValue.preparedFoodSelectionSummary)
+                        .font(.caption2)
+                        .foregroundStyle(draft.wrappedValue.requiresPreparedDishSelection ? AppColors.softRed : AppColors.subtleText)
                 }
             }
 
             VStack(alignment: .leading, spacing: 8) {
+                if !draft.wrappedValue.candidatePreparedDishes.isEmpty {
+                    Picker("Prepared Food", selection: Binding(
+                        get: { draft.wrappedValue.selectedPreparedDishID },
+                        set: { draft.wrappedValue.selectedPreparedDishID = $0 }
+                    )) {
+                        Text("Select Prepared Food").tag(Optional<UUID>.none)
+                        ForEach(draft.wrappedValue.candidatePreparedDishes) { dish in
+                            Text("\(dish.name) • \(dish.servingsDisplay)").tag(Optional(dish.id))
+                        }
+                    }
+                    .pickerStyle(.menu)
+                    .font(.caption)
+                }
+
                 HStack(spacing: 8) {
                     quickEntryButton(title: "+1") {
                         draft.wrappedValue.targetEatenServings = Swift.min(draft.wrappedValue.plannedServings, draft.wrappedValue.targetEatenServings + 1)
@@ -1488,7 +1276,7 @@ private struct MealPlanEatenReviewView: View {
                         .font(.subheadline)
                         .fontWeight(.semibold)
                         .foregroundStyle(AppColors.darkText)
-                    Text(overdrawMessages.isEmpty ? "Linked Prepared Food will decrement only for the extra eaten servings you log." : "Resolve the Prepared Food overdraw warning before saving.")
+                    Text(reviewSummaryText)
                         .font(.caption)
                         .foregroundStyle(AppColors.subtleText)
                 }
@@ -1496,23 +1284,35 @@ private struct MealPlanEatenReviewView: View {
                 Spacer()
 
                 Button {
-                    onSave(drafts.map(\.updatedEntry))
+                    onSave(drafts.map(\.loggingSelection))
                 } label: {
                     Text("Save Eaten Amounts")
                         .font(.subheadline)
                         .fontWeight(.semibold)
                         .padding(.horizontal, 16)
                         .padding(.vertical, 12)
-                        .background(hasChanges && overdrawMessages.isEmpty ? AppColors.primaryGreen : AppColors.mediumGray)
+                        .background(hasChanges && !hasMissingSelections && overdrawMessages.isEmpty ? AppColors.primaryGreen : AppColors.mediumGray)
                         .foregroundStyle(.white)
                         .clipShape(Capsule())
                 }
-                .disabled(!hasChanges || !overdrawMessages.isEmpty)
+                .disabled(!hasChanges || hasMissingSelections || !overdrawMessages.isEmpty)
             }
             .padding(.horizontal)
             .padding(.bottom, 8)
         }
         .background(.ultraThinMaterial)
+    }
+
+    private var reviewSummaryText: String {
+        if !overdrawMessages.isEmpty {
+            return "Resolve the Prepared Food overdraw warning before saving."
+        }
+
+        if hasMissingSelections {
+            return "Choose which Prepared Food item each updated meal should draw from before saving."
+        }
+
+        return "Prepared Food will decrement only for the extra eaten servings you log."
     }
 
     private func applyIncrementToAll(_ increment: Int) {

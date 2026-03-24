@@ -112,6 +112,11 @@ struct CookQueue: Identifiable, Codable, Hashable {
         self.updatedAt = updatedAt
     }
 
+    mutating func replaceStages(_ newStages: [CookQueueStage], updatedAt: Date = Date()) {
+        stages = newStages
+        self.updatedAt = updatedAt
+    }
+
     mutating func startStage(_ stageID: UUID, updatedAt: Date = Date()) {
         var didChange = false
         for index in stages.indices {
@@ -206,6 +211,169 @@ struct CookQueue: Identifiable, Codable, Hashable {
 
         stages.replaceSubrange(index...index, with: splitStages)
         self.updatedAt = updatedAt
+    }
+}
+
+enum CookQueueStagePlacement: String, CaseIterable, Codable, Hashable {
+    case newStage
+    case withPrevious
+
+    var title: String {
+        switch self {
+        case .newStage:
+            return "New Stage"
+        case .withPrevious:
+            return "Cook With Previous"
+        }
+    }
+
+    var subtitle: String {
+        switch self {
+        case .newStage:
+            return "Start a separate stage in the queue."
+        case .withPrevious:
+            return "Run in parallel with the previous selected meal."
+        }
+    }
+}
+
+struct MealPlanCookQueueReviewDraft: Identifiable, Hashable {
+    let entry: MealPlanEntry
+    var isIncluded: Bool
+    var stagePlacement: CookQueueStagePlacement
+
+    var id: UUID { entry.id }
+
+    init(entry: MealPlanEntry, isFirst: Bool) {
+        self.entry = entry
+        self.isIncluded = true
+        self.stagePlacement = isFirst ? .newStage : .newStage
+    }
+
+    var recipe: Recipe? {
+        entry.scaledRecipeForPlanning
+    }
+
+    var canCookWithPrevious: Bool {
+        recipe != nil
+    }
+
+    var sourceSummary: String {
+        "\(entry.date.formatted(date: .abbreviated, time: .omitted)) • \(entry.mealType.rawValue)"
+    }
+}
+
+struct MealPlanCookQueueReviewWorkspace: Identifiable, Hashable {
+    let id: UUID
+    var drafts: [MealPlanCookQueueReviewDraft]
+    var focusedDraftID: UUID?
+
+    init(entries: [MealPlanEntry]) {
+        self.id = UUID()
+        self.drafts = entries.enumerated().map { index, entry in
+            MealPlanCookQueueReviewDraft(entry: entry, isFirst: index == 0)
+        }
+        self.focusedDraftID = drafts.first?.id
+    }
+
+    var focusedDraft: MealPlanCookQueueReviewDraft? {
+        guard let focusedDraftID else { return nil }
+        return drafts.first(where: { $0.id == focusedDraftID })
+    }
+
+    var includedDrafts: [MealPlanCookQueueReviewDraft] {
+        drafts.filter { $0.isIncluded && $0.recipe != nil }
+    }
+
+    var projectedStageCount: Int {
+        buildStages().count
+    }
+
+    var includedRecipeCount: Int {
+        includedDrafts.count
+    }
+
+    var estimatedTotalTimeText: String {
+        let stages = buildStages()
+        let totalSeconds = stages.reduce(0) { partialResult, stage in
+            let recipes = includedDrafts
+                .filter { stage.recipeIDs.contains($0.entry.recipe?.id ?? $0.entry.id) || stage.sourceMealPlanEntryIDs.contains($0.entry.id) }
+                .compactMap(\.recipe)
+
+            if stage.isParallelBatch, recipes.count > 1 {
+                let blocks = MultiRecipeScheduler.schedule(recipes: recipes)
+                return partialResult + MultiRecipeScheduler.estimatedTotalTime(blocks: blocks)
+            }
+
+            let minutes = recipes.compactMap(\.totalTimeMinutes).reduce(0, +)
+            return partialResult + (minutes * 60)
+        }
+
+        let minutes = totalSeconds / 60
+        if minutes < 60 {
+            return "\(minutes)m"
+        }
+        let hours = minutes / 60
+        let remainder = minutes % 60
+        return remainder == 0 ? "\(hours)h" : "\(hours)h\(remainder)m"
+    }
+
+    mutating func updateDraft(_ updatedDraft: MealPlanCookQueueReviewDraft) {
+        guard let index = drafts.firstIndex(where: { $0.id == updatedDraft.id }) else { return }
+        drafts[index] = updatedDraft
+        normalizeStagePlacements()
+    }
+
+    mutating func removeDraft(_ draftID: UUID) {
+        guard let index = drafts.firstIndex(where: { $0.id == draftID }) else { return }
+        drafts[index].isIncluded = false
+        normalizeStagePlacements()
+        if focusedDraftID == draftID {
+            focusedDraftID = includedDrafts.first?.id ?? drafts.first(where: { $0.isIncluded })?.id ?? drafts.first?.id
+        }
+    }
+
+    func buildStages() -> [CookQueueStage] {
+        var stages: [CookQueueStage] = []
+
+        for draft in drafts where draft.isIncluded {
+            guard let recipe = draft.recipe else { continue }
+
+            if draft.stagePlacement == .withPrevious, !stages.isEmpty {
+                stages[stages.count - 1].recipeIDs.append(recipe.id)
+                stages[stages.count - 1].recipeTitleSnapshots.append(recipe.title)
+                stages[stages.count - 1].sourceMealPlanEntryIDs.append(draft.entry.id)
+            } else {
+                stages.append(CookQueueStage(recipes: [recipe], sourceMealPlanEntryIDs: [draft.entry.id]))
+            }
+        }
+
+        return stages
+    }
+
+    func canDraftCookWithPrevious(_ draftID: UUID) -> Bool {
+        guard let index = drafts.firstIndex(where: { $0.id == draftID }) else { return false }
+        return drafts[..<index].contains { $0.isIncluded && $0.recipe != nil }
+    }
+
+    mutating func normalizeStagePlacements() {
+        var hasIncludedDraft = false
+
+        for index in drafts.indices {
+            guard drafts[index].isIncluded else { continue }
+
+            if !hasIncludedDraft {
+                drafts[index].stagePlacement = .newStage
+                hasIncludedDraft = true
+                continue
+            }
+
+            if drafts[index].stagePlacement == .withPrevious {
+                continue
+            }
+
+            drafts[index].stagePlacement = .newStage
+        }
     }
 }
 
