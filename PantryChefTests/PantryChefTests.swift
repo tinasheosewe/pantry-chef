@@ -9,15 +9,18 @@ final class MockStorageService: StorageServiceProtocol {
     enum Operation: Hashable {
         case fetchPantryItems
         case fetchPreparedDishes
+        case fetchPreparedDishHistory
         case fetchRecipes
         case fetchMealPlan
         case fetchShoppingItems
+        case fetchCookQueue
         case addPantryItem
         case updatePantryItem
         case deletePantryItem
         case addPreparedDish
         case updatePreparedDish
         case deletePreparedDish
+        case savePreparedDishHistory
         case addRecipe
         case updateRecipe
         case deleteRecipe
@@ -25,13 +28,16 @@ final class MockStorageService: StorageServiceProtocol {
         case updateMealPlanEntry
         case deleteMealPlanEntry
         case saveShoppingItems
+        case saveCookQueue
     }
 
     var pantryStore: [PantryItem] = []
     var preparedDishStore: [PreparedDish] = []
+    var preparedDishHistoryStore: [PreparedDishHistoryItem] = []
     var recipeStore: [Recipe] = []
     var mealPlanStore: [MealPlanEntry] = []
     var shoppingStore: [ShoppingItem] = []
+    var cookQueueStore: CookQueue?
 
     var addPantryItemCallCount = 0
     var updatePantryItemCallCount = 0
@@ -59,6 +65,14 @@ final class MockStorageService: StorageServiceProtocol {
     func fetchPreparedDishes() async throws -> [PreparedDish] {
         if shouldFail(.fetchPreparedDishes) { throw TestError.mock }
         return preparedDishStore
+    }
+    func fetchPreparedDishHistory() async throws -> [PreparedDishHistoryItem] {
+        if shouldFail(.fetchPreparedDishHistory) { throw TestError.mock }
+        return preparedDishHistoryStore
+    }
+    func savePreparedDishHistory(_ items: [PreparedDishHistoryItem]) async throws {
+        if shouldFail(.savePreparedDishHistory) { throw TestError.mock }
+        preparedDishHistoryStore = items
     }
     func addPantryItem(_ item: PantryItem) async throws -> PantryItem {
         if shouldFail(.addPantryItem) { throw TestError.mock }
@@ -155,6 +169,14 @@ final class MockStorageService: StorageServiceProtocol {
     func saveShoppingItems(_ items: [ShoppingItem]) async throws {
         if shouldFail(.saveShoppingItems) { throw TestError.mock }
         shoppingStore = items
+    }
+    func fetchCookQueue() async throws -> CookQueue? {
+        if shouldFail(.fetchCookQueue) { throw TestError.mock }
+        return cookQueueStore
+    }
+    func saveCookQueue(_ queue: CookQueue?) async throws {
+        if shouldFail(.saveCookQueue) { throw TestError.mock }
+        cookQueueStore = queue
     }
 }
 
@@ -1477,6 +1499,34 @@ final class ShoppingItemModelTests: XCTestCase {
     func testSampleData() {
         XCTAssertFalse(ShoppingItem.samples.isEmpty)
     }
+
+    func testPantryPlanDefaultsToRecipeRequirement() {
+        let item = ShoppingItem(name: "Soy Sauce", quantity: 2, unit: .tablespoon, category: .condiments)
+
+        XCTAssertEqual(item.pantryQuantity, 2)
+        XCTAssertEqual(item.pantryUnit, .tablespoon)
+        XCTAssertEqual(item.pantryQuantityMode, .exact)
+        XCTAssertFalse(item.isPantryPlanCustomized)
+    }
+
+    func testUpdatingPantryPlanSupportsPackageOverride() {
+        let item = ShoppingItem(name: "Soy Sauce", quantity: 2, unit: .tablespoon, category: .condiments)
+        let updated = item.updatingPantryPlan(quantity: 1, unit: .package, quantityMode: .exact)
+
+        XCTAssertEqual(updated.pantryQuantity, 1)
+        XCTAssertEqual(updated.pantryUnit, .package)
+        XCTAssertTrue(updated.isPantryPlanCustomized)
+        XCTAssertEqual(updated.pantryPlanText, "1 pkg")
+    }
+
+    func testUpdatingPantryPlanSupportsPresenceOnly() {
+        let item = ShoppingItem(name: "Salt", quantity: 1, unit: .pinch, category: .spices)
+        let updated = item.updatingPantryPlan(quantity: nil, unit: nil, quantityMode: .presenceOnly)
+
+        XCTAssertNil(updated.pantryQuantity)
+        XCTAssertEqual(updated.pantryQuantityMode, .presenceOnly)
+        XCTAssertEqual(updated.pantryPlanText, "On hand")
+    }
 }
 
 // MARK: - MealPlanEntry Model Tests
@@ -2163,6 +2213,45 @@ final class AppStateTests: XCTestCase {
         XCTAssertEqual(storage.deletePreparedDishCallCount, 1)
     }
 
+    func testAddPreparedDishCreatesReusableHistoryItem() async {
+        let (appState, storage, _) = makeTestAppState()
+        let dish = makePreparedDish(name: "Batch Curry", servingsRemaining: 4)
+
+        await appState.addPreparedDish(dish)
+
+        XCTAssertEqual(appState.preparedDishHistory.count, 1)
+        XCTAssertEqual(appState.preparedDishHistory.first?.name, "Batch Curry")
+        XCTAssertEqual(appState.preparedDishHistory.first?.defaultServings, 4)
+        XCTAssertEqual(storage.preparedDishHistoryStore.first?.name, "Batch Curry")
+    }
+
+    func testServingAdjustmentsDoNotCreateDuplicatePreparedDishHistorySnapshots() async {
+        let (appState, storage, _) = makeTestAppState()
+        var dish = makePreparedDish(name: "Roast Chicken", servingsRemaining: 4)
+
+        await appState.addPreparedDish(dish)
+        dish.servingsRemaining = 3
+        await appState.updatePreparedDish(dish)
+
+        XCTAssertEqual(appState.preparedDishHistory.count, 1)
+        XCTAssertEqual(appState.preparedDishHistory.first?.timesPrepared, 1)
+        XCTAssertEqual(storage.preparedDishHistoryStore.count, 1)
+    }
+
+    func testMeaningfulPreparedDishEditRefreshesHistoryTemplate() async {
+        let (appState, storage, _) = makeTestAppState()
+        var dish = makePreparedDish(name: "Rice Bowl", servingsRemaining: 2)
+
+        await appState.addPreparedDish(dish)
+        dish.notes = "With extra chili crisp"
+        await appState.updatePreparedDish(dish)
+
+        XCTAssertEqual(appState.preparedDishHistory.count, 1)
+        XCTAssertEqual(appState.preparedDishHistory.first?.notes, "With extra chili crisp")
+        XCTAssertEqual(appState.preparedDishHistory.first?.timesPrepared, 2)
+        XCTAssertEqual(storage.preparedDishHistoryStore.first?.timesPrepared, 2)
+    }
+
     // MARK: - Recipe CRUD
 
     func testAddRecipe() async {
@@ -2817,6 +2906,40 @@ final class AppStateTests: XCTestCase {
         XCTAssertTrue(appState.pantryItems.isEmpty)
     }
 
+    func testAddRecipesToCookQueueBuildsParallelStage() async {
+        let (appState, storage, _) = makeTestAppState()
+        let recipes = [
+            makeRecipe(title: "Soup"),
+            makeRecipe(title: "Salad"),
+        ]
+
+        await appState.addRecipesToCookQueue(recipes, asParallelBatch: true)
+
+        XCTAssertEqual(appState.cookQueue?.stages.count, 1)
+        XCTAssertEqual(appState.cookQueue?.stages.first?.recipeIDs.count, 2)
+        XCTAssertTrue(appState.cookQueue?.stages.first?.isParallelBatch == true)
+        XCTAssertEqual(storage.cookQueueStore?.stages.count, 1)
+    }
+
+    func testCompleteCookQueueStageAdvancesToNextPendingStage() async throws {
+        let (appState, _, _) = makeTestAppState()
+        let recipes = [
+            makeRecipe(title: "Soup"),
+            makeRecipe(title: "Salad"),
+        ]
+
+        await appState.addRecipesToCookQueue(recipes, asParallelBatch: false)
+        let firstStageID = try XCTUnwrap(appState.cookQueue?.stages.first?.id)
+        let secondStageID = try XCTUnwrap(appState.cookQueue?.stages.dropFirst().first?.id)
+
+        await appState.startCookQueueStage(firstStageID)
+        await appState.completeCookQueueStage(firstStageID)
+
+        XCTAssertEqual(appState.cookQueue?.stages.first?.status, .completed)
+        XCTAssertEqual(appState.cookQueue?.currentStage?.id, secondStageID)
+        XCTAssertEqual(appState.cookQueue?.currentStage?.status, .pending)
+    }
+
     func testPantryPresenceOnlyMergeDominatesExactQuantity() async {
         let (appState, _, _) = makeTestAppState()
         await appState.addPantryItem(PantryItem(name: "Flour", category: .bakingSupplies))
@@ -2834,15 +2957,19 @@ final class AppStateTests: XCTestCase {
     func testLoadAllData() async {
         let (appState, storage, _) = makeTestAppState()
         storage.pantryStore = [makePantryItem(name: "Loaded")]
+        storage.preparedDishHistoryStore = [PreparedDishHistoryItem(dish: makePreparedDish(name: "Saved History"))]
         storage.recipeStore = [makeRecipe(title: "Loaded Recipe")]
         storage.mealPlanStore = [MealPlanEntry(date: Date(), mealType: .dinner, recipe: makeRecipe(title: "Loaded Dinner"))]
         storage.shoppingStore = [ShoppingItem(name: "Loaded Shopping")]
+        storage.cookQueueStore = CookQueue(stages: [CookQueueStage(recipes: [makeRecipe(title: "Queued")])])
 
         await appState.loadAllData()
         XCTAssertEqual(appState.pantryItems.count, 1)
+        XCTAssertEqual(appState.preparedDishHistory.count, 1)
         XCTAssertEqual(appState.recipes.count, 1)
         XCTAssertEqual(appState.mealPlan.count, 1)
         XCTAssertEqual(appState.shoppingItems.count, 1)
+        XCTAssertEqual(appState.cookQueue?.stages.count, 1)
     }
 
     func testLoadAllDataError() async {
@@ -3973,7 +4100,8 @@ final class ShoppingViewModelTests: XCTestCase {
             ShoppingItem(name: "Milk", quantity: 1, unit: .liter, category: .dairy, isChecked: true),
             ShoppingItem(name: "Bread", category: .grains, isChecked: false),
         ]
-        await vm.addCheckedToPantry()
+        vm.addCheckedToPantry()
+        await Task.yield()
         // Milk should be in pantry, Bread should remain in shopping
         XCTAssertEqual(appState.pantryItems.count, 1)
         XCTAssertEqual(appState.pantryItems[0].catalogItemID, "milk")
@@ -3989,7 +4117,8 @@ final class ShoppingViewModelTests: XCTestCase {
             ShoppingItem(name: "Carrots", quantity: 2, unit: .whole, category: .produce, isChecked: true)
         ]
 
-        await vm.addCheckedToPantry()
+        vm.addCheckedToPantry()
+        await Task.yield()
 
         XCTAssertEqual(appState.pantryItems.count, 1)
         XCTAssertEqual(appState.pantryItems[0].catalogItemID, "carrot")
@@ -4009,7 +4138,8 @@ final class ShoppingViewModelTests: XCTestCase {
             )
         ]
 
-        await vm.addCheckedToPantry()
+        vm.addCheckedToPantry()
+        await Task.yield()
 
         XCTAssertEqual(appState.pantryItems.count, 1)
         XCTAssertEqual(appState.pantryItems[0].catalogItemID, "garlic")
@@ -4043,6 +4173,50 @@ final class ShoppingViewModelTests: XCTestCase {
 
         XCTAssertEqual(appState.pantryItems.count, 1)
         XCTAssertEqual(appState.pantryItems[0].quantity, 2)
+    }
+
+    func testAddCheckedToPantryUsesReviewedPantryQuantity() async {
+        let (vm, appState) = makeSUT()
+        appState.shoppingItems = [
+            ShoppingItem(
+                name: "Soy Sauce",
+                quantity: 2,
+                unit: .tablespoon,
+                category: .condiments,
+                isChecked: true,
+                pantryQuantity: 1,
+                pantryUnit: .package,
+                pantryQuantityMode: .exact
+            )
+        ]
+
+        vm.addCheckedToPantry()
+        await Task.yield()
+
+        XCTAssertEqual(appState.pantryItems.count, 1)
+        XCTAssertEqual(appState.pantryItems[0].quantity, 1)
+        XCTAssertEqual(appState.pantryItems[0].unit, .package)
+    }
+
+    func testAddCheckedToPantrySupportsPresenceOnlyPantryTransfer() async {
+        let (vm, appState) = makeSUT()
+        appState.shoppingItems = [
+            ShoppingItem(
+                name: "Salt",
+                quantity: 1,
+                unit: .package,
+                category: .spices,
+                isChecked: true,
+                pantryQuantityMode: .presenceOnly
+            )
+        ]
+
+        vm.addCheckedToPantry()
+        await Task.yield()
+
+        XCTAssertEqual(appState.pantryItems.count, 1)
+        XCTAssertNil(appState.pantryItems[0].quantity)
+        XCTAssertEqual(appState.pantryItems[0].quantityMode, .presenceOnly)
     }
 }
 
@@ -4222,7 +4396,7 @@ final class MealPlanViewModelTests: XCTestCase {
         await appState.addToMealPlan(MealPlanEntry(date: Date(), mealType: .dinner, recipe: recipe))
 
         let preview = vm.previewShoppingList()
-        XCTAssertEqual(preview.map(\.name), ["Pasta"])
+        XCTAssertEqual(preview.map(\.name), ["Spaghetti Pasta"])
     }
 
     // MARK: - Computed Properties
@@ -4231,7 +4405,8 @@ final class MealPlanViewModelTests: XCTestCase {
         let (vm, _) = makeSUT()
         let recipe = makeRecipe()
         let slot = MealPlanViewModel.MealSlot(date: Date(), mealType: .dinner)
-        await vm.assignRecipe(recipe, to: slot)
+        vm.assignRecipe(recipe, to: slot)
+        await Task.yield()
         XCTAssertEqual(vm.totalPlannedMeals, 1)
     }
 

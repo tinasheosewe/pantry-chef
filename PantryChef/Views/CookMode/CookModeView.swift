@@ -17,11 +17,15 @@ struct CookModeView: View {
     private let recipe: Recipe
     private let resumeAtStep: Int
     private let isResuming: Bool
+    private let queueID: UUID?
+    private let queueStageID: UUID?
 
-    init(recipe: Recipe, resumeAtStep: Int = 0, isResuming: Bool = false) {
+    init(recipe: Recipe, resumeAtStep: Int = 0, isResuming: Bool = false, queueID: UUID? = nil, queueStageID: UUID? = nil) {
         self.recipe = recipe
         self.resumeAtStep = resumeAtStep
         self.isResuming = isResuming
+        self.queueID = queueID
+        self.queueStageID = queueStageID
     }
 
     var body: some View {
@@ -38,7 +42,14 @@ struct CookModeView: View {
             if viewModel == nil {
                 let realtime = RealtimeService()
                 realtimeService = realtime
-                let vm = CookModeViewModel(recipe: recipe, realtimeService: realtime, initialStepIndex: resumeAtStep, isResuming: isResuming)
+                let vm = CookModeViewModel(
+                    recipe: recipe,
+                    realtimeService: realtime,
+                    initialStepIndex: resumeAtStep,
+                    isResuming: isResuming,
+                    queueId: queueID,
+                    queueStageId: queueStageID
+                )
                 viewModel = vm
                 // Auto-start conversational cook mode
                 vm.startConversation()
@@ -546,6 +557,9 @@ struct CookModeView: View {
                             await appState.updateRecipe(vm.ratedRecipe)
                         }
                         await appState.markRecipeAsCooked(vm.recipe)
+                        if let queueStageID {
+                            await appState.completeCookQueueStage(queueStageID)
+                        }
 
                         let reviewItems = appState.pantryCookReviewItems(for: vm.recipe)
                         guard !reviewItems.isEmpty else {
@@ -557,7 +571,7 @@ struct CookModeView: View {
                         showPantryReview = true
                     }
                 } label: {
-                    Text("Done — Update Pantry")
+                    Text(queueStageID == nil ? "Done — Update Pantry" : "Done — Update Pantry & Queue")
                         .fontWeight(.semibold)
                         .foregroundStyle(Color.white)
                         .frame(maxWidth: .infinity)
@@ -567,9 +581,18 @@ struct CookModeView: View {
                 }
 
                 Button {
-                    dismiss()
+                    Task {
+                        if vm.selectedRating != nil {
+                            await appState.updateRecipe(vm.ratedRecipe)
+                        }
+                        await appState.markRecipeAsCooked(vm.recipe)
+                        if let queueStageID {
+                            await appState.completeCookQueueStage(queueStageID)
+                        }
+                        dismiss()
+                    }
                 } label: {
-                    Text("Close")
+                    Text(queueStageID == nil ? "Close" : "Close & Continue Queue")
                         .foregroundStyle(AppColors.subtleText)
                 }
             }

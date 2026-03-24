@@ -1,5 +1,156 @@
 import Foundation
 
+enum CookQueueStageStatus: String, Codable, CaseIterable, Hashable {
+    case pending
+    case active
+    case completed
+    case skipped
+}
+
+struct CookQueueStage: Identifiable, Codable, Hashable {
+    var id: UUID
+    var recipeIDs: [UUID]
+    var recipeTitleSnapshots: [String]
+    var sourceMealPlanEntryIDs: [UUID]
+    var addedAt: Date
+    var status: CookQueueStageStatus
+
+    init(
+        id: UUID = UUID(),
+        recipes: [Recipe],
+        sourceMealPlanEntryIDs: [UUID] = [],
+        addedAt: Date = Date(),
+        status: CookQueueStageStatus = .pending
+    ) {
+        self.id = id
+        self.recipeIDs = recipes.map(\.id)
+        self.recipeTitleSnapshots = recipes.map(\.title)
+        self.sourceMealPlanEntryIDs = sourceMealPlanEntryIDs
+        self.addedAt = addedAt
+        self.status = status
+    }
+
+    init(
+        id: UUID = UUID(),
+        recipeIDs: [UUID],
+        recipeTitleSnapshots: [String],
+        sourceMealPlanEntryIDs: [UUID] = [],
+        addedAt: Date = Date(),
+        status: CookQueueStageStatus = .pending
+    ) {
+        self.id = id
+        self.recipeIDs = recipeIDs
+        self.recipeTitleSnapshots = recipeTitleSnapshots
+        self.sourceMealPlanEntryIDs = sourceMealPlanEntryIDs
+        self.addedAt = addedAt
+        self.status = status
+    }
+
+    var isParallelBatch: Bool {
+        recipeIDs.count > 1
+    }
+
+    var title: String {
+        switch recipeTitleSnapshots.count {
+        case 0:
+            return "Untitled Stage"
+        case 1:
+            return recipeTitleSnapshots[0]
+        case 2:
+            return recipeTitleSnapshots.joined(separator: " + ")
+        default:
+            return "\(recipeTitleSnapshots[0]) + \(recipeTitleSnapshots.count - 1) more"
+        }
+    }
+
+    var subtitle: String {
+        let mode = isParallelBatch ? "Parallel batch" : "Solo cook"
+        return sourceMealPlanEntryIDs.isEmpty ? mode : "\(mode) • From Meal Plan"
+    }
+}
+
+struct CookQueue: Identifiable, Codable, Hashable {
+    var id: UUID
+    var name: String
+    var createdAt: Date
+    var updatedAt: Date
+    var stages: [CookQueueStage]
+
+    init(
+        id: UUID = UUID(),
+        name: String = "Cook Queue",
+        createdAt: Date = Date(),
+        updatedAt: Date = Date(),
+        stages: [CookQueueStage] = []
+    ) {
+        self.id = id
+        self.name = name
+        self.createdAt = createdAt
+        self.updatedAt = updatedAt
+        self.stages = stages
+    }
+
+    var isEmpty: Bool {
+        stages.isEmpty
+    }
+
+    var completedStageCount: Int {
+        stages.filter { $0.status == .completed }.count
+    }
+
+    var pendingStageCount: Int {
+        stages.filter { $0.status == .pending || $0.status == .active }.count
+    }
+
+    var currentStage: CookQueueStage? {
+        stages.first(where: { $0.status == .active }) ?? stages.first(where: { $0.status == .pending })
+    }
+
+    mutating func appendStages(_ newStages: [CookQueueStage], updatedAt: Date = Date()) {
+        guard !newStages.isEmpty else { return }
+        stages.append(contentsOf: newStages)
+        self.updatedAt = updatedAt
+    }
+
+    mutating func startStage(_ stageID: UUID, updatedAt: Date = Date()) {
+        var didChange = false
+        for index in stages.indices {
+            if stages[index].id == stageID {
+                if stages[index].status != .completed && stages[index].status != .skipped {
+                    stages[index].status = .active
+                    didChange = true
+                }
+            } else if stages[index].status == .active {
+                stages[index].status = .pending
+                didChange = true
+            }
+        }
+        if didChange {
+            self.updatedAt = updatedAt
+        }
+    }
+
+    mutating func completeStage(_ stageID: UUID, updatedAt: Date = Date()) {
+        guard let index = stages.firstIndex(where: { $0.id == stageID }) else { return }
+        stages[index].status = .completed
+        self.updatedAt = updatedAt
+    }
+
+    mutating func skipStage(_ stageID: UUID, updatedAt: Date = Date()) {
+        guard let index = stages.firstIndex(where: { $0.id == stageID }) else { return }
+        stages[index].status = .skipped
+        self.updatedAt = updatedAt
+    }
+
+    mutating func removeStage(_ stageID: UUID, updatedAt: Date = Date()) {
+        let originalCount = stages.count
+        stages.removeAll { $0.id == stageID }
+        if stages.count != originalCount {
+            self.updatedAt = updatedAt
+        }
+    }
+}
+
 // MARK: - Cooking Session
 //
 // Lightweight persistence model for "Continue in Background" sessions.
@@ -37,6 +188,10 @@ struct CookingSession: Codable, Identifiable {
     /// Whether this is part of a multi-recipe cook session.
     var multiCookSessionId: UUID?
 
+    /// Optional queue metadata so resumed sessions can continue their queue stage.
+    var queueId: UUID?
+    var queueStageId: UUID?
+
     // MARK: - Step Summary
 
     struct StepSummary: Codable {
@@ -51,6 +206,7 @@ struct CookingSession: Codable, Identifiable {
         case recipeId, recipeName, totalSteps, stepSummaries
         case currentStepIndex, startedAt, backgroundedAt
         case isActive, expiryTimeoutSeconds, multiCookSessionId
+        case queueId, queueStageId
     }
 
     /// Decode with defaults for fields that may be missing in older persisted
@@ -68,6 +224,8 @@ struct CookingSession: Codable, Identifiable {
         isActive          = try c.decodeIfPresent(Bool.self,     forKey: .isActive) ?? true
         expiryTimeoutSeconds = try c.decodeIfPresent(TimeInterval.self, forKey: .expiryTimeoutSeconds) ?? 7200
         multiCookSessionId   = try c.decodeIfPresent(UUID.self,  forKey: .multiCookSessionId)
+        queueId             = try c.decodeIfPresent(UUID.self,   forKey: .queueId)
+        queueStageId        = try c.decodeIfPresent(UUID.self,   forKey: .queueStageId)
     }
 
     /// Memberwise initializer (used when creating a new session in code).
@@ -81,7 +239,9 @@ struct CookingSession: Codable, Identifiable {
         backgroundedAt: Date,
         isActive: Bool,
         expiryTimeoutSeconds: TimeInterval = 7200,
-        multiCookSessionId: UUID? = nil
+        multiCookSessionId: UUID? = nil,
+        queueId: UUID? = nil,
+        queueStageId: UUID? = nil
     ) {
         self.recipeId = recipeId
         self.recipeName = recipeName
@@ -93,6 +253,8 @@ struct CookingSession: Codable, Identifiable {
         self.isActive = isActive
         self.expiryTimeoutSeconds = expiryTimeoutSeconds
         self.multiCookSessionId = multiCookSessionId
+        self.queueId = queueId
+        self.queueStageId = queueStageId
     }
 
     // MARK: - Computed

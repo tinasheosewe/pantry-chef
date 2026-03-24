@@ -127,6 +127,12 @@ final class MealPlanViewModel: AsyncActionHandling {
         }
     }
 
+    func addEntriesToCookQueue(_ entries: [MealPlanEntry], asParallelBatch: Bool) {
+        runTask { [self] in
+            await self.mealPlanActions.addEntriesToCookQueue(entries, asParallelBatch: asParallelBatch)
+        }
+    }
+
     var totalPlannedMeals: Int {
         entries.filter { $0.isPlanned }.count
     }

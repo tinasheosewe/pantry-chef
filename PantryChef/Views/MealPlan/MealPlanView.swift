@@ -8,6 +8,11 @@ struct MealPlanView: View {
     @State private var showPreparedFoodSelection = false
     @State private var showPreparedFoodReview = false
     @State private var preparedFoodDrafts: [MealPlanPreparedDishReviewDraft] = []
+    @State private var showCookQueueSelection = false
+    @State private var showCookQueueReview = false
+    @State private var showCookQueueManager = false
+    @State private var cookQueueEntries: [MealPlanEntry] = []
+    @State private var cookQueueAsParallelBatch = false
     @State private var showMealLoggingSelection = false
     @State private var showMealLoggingReview = false
     @State private var mealLoggingDrafts: [MealPlanEatenReviewDraft] = []
@@ -50,6 +55,19 @@ struct MealPlanView: View {
                     .disabled(mealEntriesEligibleForLogging.isEmpty)
 
                     Button {
+                        showCookQueueSelection = true
+                    } label: {
+                        Label("Queue Meals", systemImage: "flame")
+                    }
+                    .disabled(mealEntriesEligibleForCookQueue.isEmpty)
+
+                    Button {
+                        showCookQueueManager = true
+                    } label: {
+                        Label("Cook Queue", systemImage: "list.number")
+                    }
+
+                    Button {
                         prepareShoppingConfirmation()
                     } label: {
                         Label("Shopping List", systemImage: "cart")
@@ -81,6 +99,28 @@ struct MealPlanView: View {
                     showPreparedFoodReview = false
                 }
             }
+            .sheet(isPresented: $showCookQueueSelection) {
+                MealPlanCookQueueSelectionView(entries: mealEntriesEligibleForCookQueue) { entries in
+                    cookQueueEntries = entries
+                    cookQueueAsParallelBatch = entries.count > 1
+                    showCookQueueSelection = false
+                    Task { @MainActor in
+                        showCookQueueReview = true
+                    }
+                }
+            }
+            .sheet(isPresented: $showCookQueueReview, onDismiss: {
+                cookQueueEntries = []
+                cookQueueAsParallelBatch = false
+            }) {
+                MealPlanCookQueueReviewView(entries: cookQueueEntries, asParallelBatch: $cookQueueAsParallelBatch) { entries, asParallelBatch in
+                    viewModel.addEntriesToCookQueue(entries, asParallelBatch: asParallelBatch)
+                    showCookQueueReview = false
+                    Task { @MainActor in
+                        showCookQueueManager = true
+                    }
+                }
+            }
             .sheet(isPresented: $showMealLoggingSelection) {
                 MealPlanEatenSelectionView(entries: mealEntriesEligibleForLogging) { entries in
                     mealLoggingDrafts = entries.map(MealPlanEatenReviewDraft.init)
@@ -97,6 +137,9 @@ struct MealPlanView: View {
                     viewModel.logEntriesEaten(updatedEntries)
                     showMealLoggingReview = false
                 }
+            }
+            .appNavigationSheet(isPresented: $showCookQueueManager) {
+                CookQueueView(appState: viewModel.appState)
             }
             .sheet(isPresented: $viewModel.showMealPicker) {
                 if let slot = viewModel.selectedSlot {
@@ -168,6 +211,10 @@ struct MealPlanView: View {
 
     private var mealEntriesEligibleForLogging: [MealPlanEntry] {
         viewModel.entries.filter { $0.supportsMealLogging && !$0.isFullyEaten }
+    }
+
+    private var mealEntriesEligibleForCookQueue: [MealPlanEntry] {
+        viewModel.entries.filter { $0.scaledRecipeForPlanning != nil }
     }
 
     // MARK: - Week Navigation
@@ -367,6 +414,260 @@ struct MealPlanView: View {
     }
 }
 
+struct CookQueueView: View {
+    @Environment(\.dismiss) private var dismiss
+
+    let appState: AppState
+
+    @State private var launchingStage: CookQueueStage?
+    @State private var showGathering = false
+    @State private var showSoloCookMode = false
+    @State private var showMultiCookMode = false
+
+    private var queue: CookQueue? {
+        appState.cookQueue
+    }
+
+    private var launchingRecipes: [Recipe] {
+        guard let launchingStage else { return [] }
+        return appState.resolvedRecipes(for: launchingStage)
+    }
+
+    private var queueContext: (queueID: UUID, stageID: UUID)? {
+        guard let launchingStage else { return nil }
+        return appState.cookQueueContext(for: launchingStage.id)
+    }
+
+    var body: some View {
+        NavigationStack {
+            VStack(spacing: 0) {
+                if let queue, !queue.stages.isEmpty {
+                    AppList {
+                        Section {
+                            Text("Queue recipes or meal-plan meals into solo or parallel stages. Finish a stage to unlock the next one without losing your place.")
+                                .font(.subheadline)
+                                .foregroundStyle(AppColors.subtleText)
+                        }
+
+                        Section {
+                            ForEach(queue.stages) { stage in
+                                queueStageRow(stage)
+                            }
+                        } header: {
+                            SectionHeader(
+                                title: queue.name,
+                                subtitle: queue.pendingStageCount == 0
+                                    ? "All stages are complete or skipped."
+                                    : "\(queue.pendingStageCount) stages remaining • \(queue.completedStageCount) finished"
+                            )
+                            .padding(.top, 8)
+                        }
+                    }
+                } else {
+                    EmptyStateView(
+                        icon: "list.number",
+                        title: "Cook queue is empty",
+                        message: "Add recipes from Recipe detail or queue planned meals from Meal Plan to build your next cooking run."
+                    )
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                }
+            }
+            .navigationTitle("Cook Queue")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Close") { dismiss() }
+                }
+                if queue != nil {
+                    ToolbarItem(placement: .primaryAction) {
+                        Button("Clear") {
+                            Task {
+                                await appState.clearCookQueue()
+                            }
+                        }
+                        .foregroundStyle(AppColors.softRed)
+                    }
+                }
+            }
+            .sheet(isPresented: $showGathering) {
+                IngredientGatheringView(recipes: launchingRecipes) {
+                    showGathering = false
+                    if launchingRecipes.count > 1 {
+                        showMultiCookMode = true
+                    } else {
+                        showSoloCookMode = true
+                    }
+                }
+            }
+            .fullScreenCover(isPresented: $showSoloCookMode, onDismiss: {
+                launchingStage = nil
+            }) {
+                if let recipe = launchingRecipes.first {
+                    let session = CookingSession.load(recipeId: recipe.id)
+                    CookModeView(
+                        recipe: recipe,
+                        resumeAtStep: session?.currentStepIndex ?? 0,
+                        isResuming: session != nil,
+                        queueID: queueContext?.queueID,
+                        queueStageID: queueContext?.stageID
+                    )
+                    .environment(appState)
+                }
+            }
+            .fullScreenCover(isPresented: $showMultiCookMode, onDismiss: {
+                launchingStage = nil
+            }) {
+                let blocks = MultiRecipeScheduler.schedule(recipes: launchingRecipes)
+                MultiCookModeView(
+                    recipes: launchingRecipes,
+                    blocks: blocks,
+                    queueID: queueContext?.queueID,
+                    queueStageID: queueContext?.stageID
+                )
+                .environment(appState)
+            }
+        }
+    }
+
+    private func queueStageRow(_ stage: CookQueueStage) -> some View {
+        let recipes = appState.resolvedRecipes(for: stage)
+        let canStart = !recipes.isEmpty
+        let hasActiveSession = recipes.contains { CookingSession.load(recipeId: $0.id) != nil }
+
+        return VStack(alignment: .leading, spacing: 12) {
+            HStack(alignment: .top, spacing: 12) {
+                Image(systemName: stage.isParallelBatch ? "square.stack.3d.up.fill" : "frying.pan.fill")
+                    .font(.title3)
+                    .foregroundStyle(stage.isParallelBatch ? AppColors.accentBlue : AppColors.primaryGreen)
+                    .frame(width: 40, height: 40)
+                    .background((stage.isParallelBatch ? AppColors.accentBlue : AppColors.primaryGreen).opacity(0.12))
+                    .clipShape(RoundedRectangle(cornerRadius: 10))
+
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(stage.title)
+                        .font(.subheadline)
+                        .fontWeight(.semibold)
+                        .foregroundStyle(AppColors.darkText)
+                    Text(stage.subtitle)
+                        .font(.caption)
+                        .foregroundStyle(AppColors.subtleText)
+                    if !recipes.isEmpty {
+                        Text(recipes.map(\.totalTimeDisplay).joined(separator: " • "))
+                            .font(.caption2)
+                            .foregroundStyle(AppColors.subtleText)
+                    }
+                    if !canStart {
+                        Text("One or more recipes in this stage can no longer be found.")
+                            .font(.caption2)
+                            .foregroundStyle(AppColors.softRed)
+                    }
+                }
+
+                Spacer()
+
+                Text(statusTitle(for: stage.status))
+                    .font(.caption2)
+                    .fontWeight(.semibold)
+                    .foregroundStyle(statusColor(for: stage.status))
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .background(statusColor(for: stage.status).opacity(0.12))
+                    .clipShape(Capsule())
+            }
+
+            HStack(spacing: 8) {
+                if stage.status == .pending || stage.status == .active {
+                    Button {
+                        launchStage(stage)
+                    } label: {
+                        Text(hasActiveSession ? "Resume" : "Start")
+                            .font(.caption)
+                            .fontWeight(.semibold)
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 8)
+                            .background(canStart ? AppColors.primaryGreen : AppColors.mediumGray)
+                            .foregroundStyle(.white)
+                            .clipShape(Capsule())
+                    }
+                    .disabled(!canStart)
+
+                    Button {
+                        Task {
+                            await appState.skipCookQueueStage(stage.id)
+                        }
+                    } label: {
+                        Text("Skip")
+                            .font(.caption)
+                            .fontWeight(.semibold)
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 8)
+                            .background(AppColors.lightGray)
+                            .foregroundStyle(AppColors.darkText)
+                            .clipShape(Capsule())
+                    }
+                }
+
+                Button {
+                    Task {
+                        await appState.removeCookQueueStage(stage.id)
+                    }
+                } label: {
+                    Text("Remove")
+                        .font(.caption)
+                        .fontWeight(.semibold)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 8)
+                        .background(AppColors.softRed.opacity(0.12))
+                        .foregroundStyle(AppColors.softRed)
+                        .clipShape(Capsule())
+                }
+            }
+        }
+        .padding(.vertical, 6)
+    }
+
+    private func launchStage(_ stage: CookQueueStage) {
+        launchingStage = stage
+        Task {
+            await appState.startCookQueueStage(stage.id)
+            let recipes = appState.resolvedRecipes(for: stage)
+            guard !recipes.isEmpty else { return }
+
+            if recipes.count == 1, let recipe = recipes.first, CookingSession.load(recipeId: recipe.id) != nil {
+                showSoloCookMode = true
+            } else {
+                showGathering = true
+            }
+        }
+    }
+
+    private func statusTitle(for status: CookQueueStageStatus) -> String {
+        switch status {
+        case .pending:
+            return "Queued"
+        case .active:
+            return "Active"
+        case .completed:
+            return "Done"
+        case .skipped:
+            return "Skipped"
+        }
+    }
+
+    private func statusColor(for status: CookQueueStageStatus) -> Color {
+        switch status {
+        case .pending:
+            return AppColors.accentBlue
+        case .active:
+            return AppColors.primaryGreen
+        case .completed:
+            return AppColors.warmOrange
+        case .skipped:
+            return AppColors.mediumGray
+        }
+    }
+}
+
 private struct MealSlotPresentation: Identifiable {
     let id = UUID()
     let date: Date
@@ -531,6 +832,277 @@ private struct MealPlanEatenReviewDraft: Identifiable, Hashable {
             return plannedServings == 1 ? "0 of 1 eaten" : "0 of \(plannedServings) eaten"
         }
         return "\(targetEatenServings) of \(plannedServings) eaten"
+    }
+}
+
+private struct MealPlanCookQueueSelectionView: View {
+    @Environment(\.dismiss) private var dismiss
+
+    let entries: [MealPlanEntry]
+    let onContinue: ([MealPlanEntry]) -> Void
+
+    @State private var searchText = ""
+    @State private var debouncedSearchText = ""
+    @State private var selectedEntryIDs: Set<UUID> = []
+    @State private var searchDebouncer = TaskDebouncer()
+
+    private var filteredEntries: [MealPlanEntry] {
+        SearchQuerySupport.filtered(entries, query: debouncedSearchText) { entry in
+            [entry.displayName, entry.mealType.rawValue, entry.date.formatted(date: .abbreviated, time: .omitted)].joined(separator: " ")
+        }
+    }
+
+    private var selectedEntries: [MealPlanEntry] {
+        entries.filter { selectedEntryIDs.contains($0.id) }
+            .sorted { $0.date < $1.date }
+    }
+
+    var body: some View {
+        NavigationStack {
+            VStack(spacing: 0) {
+                if filteredEntries.isEmpty {
+                    EmptyStateView(
+                        icon: "flame",
+                        title: entries.isEmpty ? "No recipes planned this week" : "No meals found",
+                        message: entries.isEmpty
+                            ? "Only planned recipe meals can be added to the cook queue from here."
+                            : "Try a different search for this week’s planned recipes."
+                    )
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                } else {
+                    AppList {
+                        Section {
+                            Text("Select planned recipe meals to queue. In the next step you can keep them serial or collapse them into one parallel batch.")
+                                .font(.subheadline)
+                                .foregroundStyle(AppColors.subtleText)
+                        }
+
+                        Section {
+                            ForEach(filteredEntries) { entry in
+                                queueSelectionRow(entry)
+                            }
+                        }
+                    }
+                }
+            }
+            .searchable(text: $searchText, prompt: "Search planned recipes")
+            .onChange(of: searchText) {
+                SearchQuerySupport.schedule(text: searchText, debouncer: searchDebouncer) {
+                    debouncedSearchText = $0
+                }
+            }
+            .navigationTitle("Queue Meals")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Close") { dismiss() }
+                }
+            }
+            .safeAreaInset(edge: .bottom) {
+                VStack(spacing: 10) {
+                    Divider()
+                    HStack(spacing: 12) {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(selectedEntries.isEmpty ? "Select meals to queue" : "\(selectedEntries.count) meals selected")
+                                .font(.subheadline)
+                                .fontWeight(.semibold)
+                                .foregroundStyle(AppColors.darkText)
+                            Text("Recipe scaling from Meal Plan carries into the cook queue.")
+                                .font(.caption)
+                                .foregroundStyle(AppColors.subtleText)
+                        }
+
+                        Spacer()
+
+                        Button {
+                            onContinue(selectedEntries)
+                        } label: {
+                            Text("Review")
+                                .font(.subheadline)
+                                .fontWeight(.semibold)
+                                .padding(.horizontal, 16)
+                                .padding(.vertical, 12)
+                                .background(selectedEntries.isEmpty ? AppColors.mediumGray : AppColors.accentBlue)
+                                .foregroundStyle(.white)
+                                .clipShape(Capsule())
+                        }
+                        .disabled(selectedEntries.isEmpty)
+                    }
+                    .padding(.horizontal)
+                    .padding(.bottom, 8)
+                }
+                .background(.ultraThinMaterial)
+            }
+        }
+    }
+
+    private func queueSelectionRow(_ entry: MealPlanEntry) -> some View {
+        let isSelected = selectedEntryIDs.contains(entry.id)
+
+        return Button {
+            if isSelected {
+                selectedEntryIDs.remove(entry.id)
+            } else {
+                selectedEntryIDs.insert(entry.id)
+            }
+        } label: {
+            HStack(spacing: 12) {
+                Image(systemName: entry.recipe?.mealType?.icon ?? entry.mealType.icon)
+                    .font(.title3)
+                    .foregroundStyle(AppColors.primaryGreen)
+                    .frame(width: 40, height: 40)
+                    .background(AppColors.primaryGreen.opacity(0.12))
+                    .clipShape(RoundedRectangle(cornerRadius: 10))
+
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(entry.displayName)
+                        .font(.subheadline)
+                        .fontWeight(.semibold)
+                        .foregroundStyle(AppColors.darkText)
+                    Text("\(entry.date.formatted(date: .abbreviated, time: .omitted)) • \(entry.mealType.rawValue) • \(entry.planningSubtitle ?? "Planned")")
+                        .font(.caption)
+                        .foregroundStyle(AppColors.subtleText)
+                }
+
+                Spacer()
+
+                Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
+                    .font(.title3)
+                    .foregroundStyle(isSelected ? AppColors.primaryGreen : AppColors.mediumGray)
+            }
+            .padding(.vertical, 4)
+        }
+        .buttonStyle(.plain)
+    }
+}
+
+private struct MealPlanCookQueueReviewView: View {
+    @Environment(\.dismiss) private var dismiss
+
+    let entries: [MealPlanEntry]
+    @Binding var asParallelBatch: Bool
+    let onSave: ([MealPlanEntry], Bool) -> Void
+
+    private var recipes: [Recipe] {
+        entries.compactMap(\.scaledRecipeForPlanning)
+    }
+
+    private var projectedStageCount: Int {
+        asParallelBatch ? (recipes.isEmpty ? 0 : 1) : recipes.count
+    }
+
+    private var projectedTimeText: String {
+        guard !recipes.isEmpty else { return "0m" }
+        if asParallelBatch, recipes.count > 1 {
+            let blocks = MultiRecipeScheduler.schedule(recipes: recipes)
+            return formatDuration(MultiRecipeScheduler.estimatedTotalTime(blocks: blocks))
+        }
+        let minutes = recipes.compactMap(\.totalTimeMinutes).reduce(0, +)
+        return formatDuration(minutes * 60)
+    }
+
+    var body: some View {
+        NavigationStack {
+            AppList {
+                Section {
+                    Text("Choose whether these meals should stay serial in queue order or launch together as one parallel batch.")
+                        .font(.subheadline)
+                        .foregroundStyle(AppColors.subtleText)
+                }
+
+                if recipes.count > 1 {
+                    Section {
+                        Toggle("Cook selected meals together", isOn: $asParallelBatch)
+                        Text(asParallelBatch
+                             ? "These meals will become one parallel stage and use Multi-Cook when started."
+                             : "These meals will stay as separate stages in the same queue, ordered by plan date.")
+                            .font(.caption)
+                            .foregroundStyle(AppColors.subtleText)
+                    } header: {
+                        Text("Queue Structure")
+                    }
+                }
+
+                Section {
+                    ForEach(entries) { entry in
+                        HStack(spacing: 12) {
+                            Image(systemName: entry.recipe?.mealType?.icon ?? entry.mealType.icon)
+                                .foregroundStyle(AppColors.primaryGreen)
+                                .frame(width: 28)
+
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text(entry.displayName)
+                                    .font(.subheadline)
+                                    .fontWeight(.semibold)
+                                    .foregroundStyle(AppColors.darkText)
+                                Text("\(entry.date.formatted(date: .abbreviated, time: .omitted)) • \(entry.mealType.rawValue)")
+                                    .font(.caption)
+                                    .foregroundStyle(AppColors.subtleText)
+                            }
+                        }
+                        .padding(.vertical, 4)
+                    }
+                } header: {
+                    SectionHeader(
+                        title: projectedStageCount == 1 ? "1 Queue Stage" : "\(projectedStageCount) Queue Stages",
+                        subtitle: "Estimated cook time: \(projectedTimeText)"
+                    )
+                    .padding(.top, 8)
+                }
+            }
+            .navigationTitle("Review Queue")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Close") { dismiss() }
+                }
+            }
+            .safeAreaInset(edge: .bottom) {
+                VStack(spacing: 10) {
+                    Divider()
+                    HStack(spacing: 12) {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(projectedStageCount == 1 ? "Add 1 stage to cook queue" : "Add \(projectedStageCount) stages to cook queue")
+                                .font(.subheadline)
+                                .fontWeight(.semibold)
+                                .foregroundStyle(AppColors.darkText)
+                            Text("The queue manager lets you start, skip, or remove stages later.")
+                                .font(.caption)
+                                .foregroundStyle(AppColors.subtleText)
+                        }
+
+                        Spacer()
+
+                        Button {
+                            onSave(entries, asParallelBatch)
+                        } label: {
+                            Text("Add to Queue")
+                                .font(.subheadline)
+                                .fontWeight(.semibold)
+                                .padding(.horizontal, 16)
+                                .padding(.vertical, 12)
+                                .background(entries.isEmpty ? AppColors.mediumGray : AppColors.primaryGreen)
+                                .foregroundStyle(.white)
+                                .clipShape(Capsule())
+                        }
+                        .disabled(entries.isEmpty)
+                    }
+                    .padding(.horizontal)
+                    .padding(.bottom, 8)
+                }
+                .background(.ultraThinMaterial)
+            }
+        }
+    }
+
+    private func formatDuration(_ seconds: Int) -> String {
+        let minutes = seconds / 60
+        if minutes < 60 {
+            return "\(minutes)m"
+        }
+        let hours = minutes / 60
+        let remainder = minutes % 60
+        return remainder == 0 ? "\(hours)h" : "\(hours)h\(remainder)m"
     }
 }
 

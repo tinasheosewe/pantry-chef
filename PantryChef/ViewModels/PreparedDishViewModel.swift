@@ -49,6 +49,23 @@ final class PreparedDishViewModel: AsyncActionHandling {
         }
     }
 
+    var filteredHistoryItems: [PreparedDishHistoryItem] {
+        var items = SearchQuerySupport.filtered(appState.preparedDishHistory, query: debouncedSearchText) { item in
+            [item.name, item.mealTypesSummary].joined(separator: " ")
+        }
+
+        if let selectedMealType {
+            items = items.filter { $0.mealTypes.contains(selectedMealType) }
+        }
+
+        return items.sorted { lhs, rhs in
+            if lhs.recipeID != rhs.recipeID {
+                return lhs.recipeID != nil
+            }
+            return lhs.lastUsedAt > rhs.lastUsedAt
+        }
+    }
+
     var mealTypeCounts: [MealType: Int] {
         var counts: [MealType: Int] = [:]
         for dish in appState.preparedDishes {

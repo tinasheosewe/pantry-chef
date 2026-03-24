@@ -3,6 +3,9 @@ import SwiftUI
 struct ShoppingListView: View {
     @State private var viewModel: ShoppingViewModel
     @State private var showAddItem = false
+    @State private var showPantryReview = false
+    @State private var pantryReviewItems: [ShoppingItem] = []
+    @State private var editingPantryPlanItem: ShoppingItem?
 
     init(appState: AppState) {
         _viewModel = State(initialValue: ShoppingViewModel(appState: appState))
@@ -41,10 +44,11 @@ struct ShoppingListView: View {
                         }
 
                         Button {
-                            viewModel.addCheckedToPantry()
+                            presentPantryReview()
                         } label: {
                             Label("Checked → Pantry", systemImage: "arrow.right.circle")
                         }
+                        .disabled(viewModel.checkedCount == 0)
 
                         Button(role: .destructive) {
                             viewModel.removeCheckedItems()
@@ -76,7 +80,7 @@ struct ShoppingListView: View {
                 Spacer()
                 if viewModel.checkedCount > 0 {
                     Button("Add to Pantry") {
-                        viewModel.addCheckedToPantry()
+                        presentPantryReview()
                     }
                     .font(.caption)
                     .fontWeight(.semibold)
@@ -109,6 +113,8 @@ struct ShoppingListView: View {
                     ForEach(items) { item in
                         ShoppingItemRow(item: item) {
                             viewModel.toggleItem(item)
+                        } onAdjust: {
+                            editingPantryPlanItem = item
                         }
                         .swipeActions(edge: .trailing) {
                             Button(role: .destructive) {
@@ -116,6 +122,13 @@ struct ShoppingListView: View {
                             } label: {
                                 Label("Delete", systemImage: "trash")
                             }
+
+                            Button {
+                                editingPantryPlanItem = item
+                            } label: {
+                                Label("Pantry Plan", systemImage: "slider.horizontal.3")
+                            }
+                            .tint(AppColors.accentBlue)
                         }
                     }
                 } header: {
@@ -129,6 +142,24 @@ struct ShoppingListView: View {
             }
         }
         .listStyle(.insetGrouped)
+        .sheet(isPresented: $showPantryReview, onDismiss: {
+            pantryReviewItems = []
+        }) {
+            ShoppingPantryReviewView(items: $pantryReviewItems) { reviewedItems in
+                viewModel.completeCheckedToPantry(with: reviewedItems)
+                showPantryReview = false
+            }
+        }
+        .sheet(item: $editingPantryPlanItem) { item in
+            ShoppingPantryPlanEditorView(item: item) { updatedItem in
+                viewModel.updateItem(updatedItem)
+            }
+        }
+    }
+
+    private func presentPantryReview() {
+        pantryReviewItems = viewModel.checkedItems
+        showPantryReview = !pantryReviewItems.isEmpty
     }
 }
 
@@ -335,6 +366,7 @@ private struct ShoppingAddItemView: View {
 struct ShoppingItemRow: View {
     let item: ShoppingItem
     let onToggle: () -> Void
+    let onAdjust: () -> Void
 
     var body: some View {
         Button(action: onToggle) {
@@ -356,10 +388,17 @@ struct ShoppingItemRow: View {
                             .strikethrough(item.isChecked)
                     }
 
-                    if let qty = item.quantity {
-                        Text("\(qty == qty.rounded() ? "\(Int(qty))" : String(format: "%.1f", qty)) \(item.unit?.rawValue ?? "")")
+                    if let requirementText = item.recipeRequirementText {
+                        Text("Need: \(requirementText)")
                             .font(.caption)
                             .foregroundStyle(AppColors.subtleText)
+                    }
+
+                    if item.isPantryPlanCustomized || item.recipeRequirementText == nil {
+                        Text("Pantry: \(item.pantryPlanText)")
+                            .font(.caption)
+                            .fontWeight(.medium)
+                            .foregroundStyle(AppColors.accentBlue)
                     }
                 }
 
@@ -374,8 +413,274 @@ struct ShoppingItemRow: View {
                         .background(AppColors.lightGray)
                         .clipShape(Capsule())
                 }
+
+                Button(action: onAdjust) {
+                    Image(systemName: "slider.horizontal.3")
+                        .font(.subheadline)
+                        .foregroundStyle(AppColors.accentBlue)
+                        .padding(8)
+                        .background(AppColors.accentBlue.opacity(0.12))
+                        .clipShape(Circle())
+                }
+                .buttonStyle(.plain)
             }
         }
         .padding(.vertical, 2)
+    }
+}
+
+private struct ShoppingPantryReviewView: View {
+    @Environment(\.dismiss) private var dismiss
+
+    @Binding var items: [ShoppingItem]
+    let onSave: ([ShoppingItem]) -> Void
+
+    @State private var editingItem: ShoppingItem?
+
+    private var customizedCount: Int {
+        items.filter(\.isPantryPlanCustomized).count
+    }
+
+    var body: some View {
+        NavigationStack {
+            VStack(spacing: 0) {
+                if items.isEmpty {
+                    EmptyStateView(
+                        icon: "cart.badge.questionmark",
+                        title: "Nothing checked yet",
+                        message: "Check shopping items first, then review what should go into Pantry."
+                    )
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                } else {
+                    AppList {
+                        Section {
+                            Text("Review what should go into Pantry. Recipe amounts stay visible, but Pantry reflects what you actually bought.")
+                                .font(.subheadline)
+                                .foregroundStyle(AppColors.subtleText)
+                        }
+
+                        Section {
+                            ForEach(items.indices, id: \.self) { index in
+                                reviewRow(for: items[index])
+                            }
+                        } header: {
+                            SectionHeader(
+                                title: "Checked Items",
+                                subtitle: customizedCount == 0 ? "Using recipe amounts unless you adjust them." : "\(customizedCount) items have custom Pantry amounts."
+                            )
+                            .padding(.top, 8)
+                        }
+                    }
+                }
+            }
+            .navigationTitle("Review Pantry Intake")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") { dismiss() }
+                }
+            }
+            .safeAreaInset(edge: .bottom) {
+                summaryBar
+            }
+        }
+        .sheet(item: $editingItem) { item in
+            ShoppingPantryPlanEditorView(item: item) { updatedItem in
+                if let index = items.firstIndex(where: { $0.id == updatedItem.id }) {
+                    items[index] = updatedItem
+                }
+            }
+        }
+    }
+
+    private func reviewRow(for item: ShoppingItem) -> some View {
+        Button {
+            editingItem = item
+        } label: {
+            VStack(alignment: .leading, spacing: 10) {
+                HStack(alignment: .top, spacing: 12) {
+                    CategoryIcon(category: item.category, size: 36)
+
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(item.displayName)
+                            .font(.subheadline)
+                            .fontWeight(.semibold)
+                            .foregroundStyle(AppColors.darkText)
+                        if let requirementText = item.recipeRequirementText {
+                            Text("Recipe needs: \(requirementText)")
+                                .font(.caption)
+                                .foregroundStyle(AppColors.subtleText)
+                        }
+                        Text("Pantry add: \(item.pantryPlanText)")
+                            .font(.caption)
+                            .foregroundStyle(item.isPantryPlanCustomized ? AppColors.accentBlue : AppColors.subtleText)
+                        if let source = item.recipeSource {
+                            Text(source)
+                                .font(.caption2)
+                                .foregroundStyle(AppColors.subtleText)
+                        }
+                    }
+
+                    Spacer()
+
+                    if item.isPantryPlanCustomized {
+                        Text("Adjusted")
+                            .font(.caption2)
+                            .fontWeight(.semibold)
+                            .foregroundStyle(AppColors.accentBlue)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 4)
+                            .background(AppColors.accentBlue.opacity(0.12))
+                            .clipShape(Capsule())
+                    }
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.vertical, 6)
+        }
+        .buttonStyle(.plain)
+    }
+
+    private var summaryBar: some View {
+        VStack(spacing: 10) {
+            Divider()
+            HStack(spacing: 12) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(items.isEmpty ? "Nothing to add" : "Add \(items.count) item\(items.count == 1 ? "" : "s") to Pantry")
+                        .font(.subheadline)
+                        .fontWeight(.semibold)
+                        .foregroundStyle(AppColors.darkText)
+                    Text("Adjusted Pantry amounts will be used when these items move out of Shopping.")
+                        .font(.caption)
+                        .foregroundStyle(AppColors.subtleText)
+                }
+
+                Spacer()
+
+                Button {
+                    onSave(items)
+                } label: {
+                    Text("Add to Pantry")
+                        .font(.subheadline)
+                        .fontWeight(.semibold)
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 12)
+                        .background(items.isEmpty ? AppColors.mediumGray : AppColors.primaryGreen)
+                        .foregroundStyle(.white)
+                        .clipShape(Capsule())
+                }
+                .disabled(items.isEmpty)
+            }
+            .padding(.horizontal)
+            .padding(.bottom, 8)
+        }
+        .background(.ultraThinMaterial)
+    }
+}
+
+private struct ShoppingPantryPlanEditorView: View {
+    @Environment(\.dismiss) private var dismiss
+
+    let onSave: (ShoppingItem) -> Void
+
+    @State private var draft: ShoppingPantryPlanDraft
+
+    init(item: ShoppingItem, onSave: @escaping (ShoppingItem) -> Void) {
+        self.onSave = onSave
+        _draft = State(initialValue: ShoppingPantryPlanDraft(item: item))
+    }
+
+    var body: some View {
+        AppNavigationSheet {
+            AppForm {
+                Section {
+                    Text(draft.item.displayName)
+                        .font(.headline)
+                        .foregroundStyle(AppColors.darkText)
+                    if let requirementText = draft.item.recipeRequirementText {
+                        Text("Recipe needs: \(requirementText)")
+                            .font(.caption)
+                            .foregroundStyle(AppColors.subtleText)
+                    }
+                }
+
+                Section {
+                    Picker("How to add this", selection: $draft.quantityMode) {
+                        Text("Track exact amount").tag(PantryQuantityMode.exact)
+                        Text("Just mark on hand").tag(PantryQuantityMode.presenceOnly)
+                    }
+
+                    if draft.quantityMode == .exact {
+                        TextField("Quantity", text: $draft.quantityText)
+                            .keyboardType(.decimalPad)
+                            .appTextEntry()
+
+                        Picker("Unit", selection: $draft.selectedUnit) {
+                            Text("None").tag(nil as MeasurementUnit?)
+                            ForEach(MeasurementUnit.allCases) { unit in
+                                Text(unit.rawValue).tag(unit as MeasurementUnit?)
+                            }
+                        }
+                    }
+                } header: {
+                    Text("Pantry Plan")
+                } footer: {
+                    Text("Use this when the amount you buy differs from what the recipe needs, like buying a bottle of soy sauce instead of 2 tbsp.")
+                }
+            }
+            .navigationTitle("Pantry Plan")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") { dismiss() }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Save") {
+                        onSave(draft.buildItem())
+                        dismiss()
+                    }
+                    .disabled(!draft.isValid)
+                }
+            }
+        }
+    }
+}
+
+private struct ShoppingPantryPlanDraft {
+    let item: ShoppingItem
+    var quantityMode: PantryQuantityMode
+    var quantityText: String
+    var selectedUnit: MeasurementUnit?
+
+    init(item: ShoppingItem) {
+        self.item = item
+        self.quantityMode = item.pantryQuantityMode
+        self.quantityText = item.pantryQuantity.map { quantity in
+            quantity == quantity.rounded() ? "\(Int(quantity))" : String(format: "%.1f", quantity)
+        } ?? ""
+        self.selectedUnit = item.pantryUnit ?? item.unit
+    }
+
+    var quantityValue: Double? {
+        let trimmed = quantityText.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return nil }
+        return Double(trimmed)
+    }
+
+    var isValid: Bool {
+        switch quantityMode {
+        case .exact:
+            return quantityValue != nil
+        case .presenceOnly:
+            return true
+        }
+    }
+
+    func buildItem() -> ShoppingItem {
+        item.updatingPantryPlan(
+            quantity: quantityValue,
+            unit: selectedUnit,
+            quantityMode: quantityMode
+        )
     }
 }

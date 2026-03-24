@@ -15,6 +15,8 @@ protocol StorageServiceProtocol: AnyObject {
     func addPreparedDish(_ dish: PreparedDish) async throws -> PreparedDish
     func updatePreparedDish(_ dish: PreparedDish) async throws -> PreparedDish
     func deletePreparedDish(_ dish: PreparedDish) async throws
+    func fetchPreparedDishHistory() async throws -> [PreparedDishHistoryItem]
+    func savePreparedDishHistory(_ items: [PreparedDishHistoryItem]) async throws
 
     // Recipes
     func fetchRecipes() async throws -> [Recipe]
@@ -31,6 +33,10 @@ protocol StorageServiceProtocol: AnyObject {
     // Shopping
     func fetchShoppingItems() async throws -> [ShoppingItem]
     func saveShoppingItems(_ items: [ShoppingItem]) async throws
+
+    // Cook Queue
+    func fetchCookQueue() async throws -> CookQueue?
+    func saveCookQueue(_ queue: CookQueue?) async throws
 }
 
 protocol PantryItemPreferenceStoreProtocol: AnyObject {

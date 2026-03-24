@@ -184,18 +184,22 @@ final class AppState {
     // MARK: - Shared State
     var pantryItems: [PantryItem] = []
     var preparedDishes: [PreparedDish] = []
+    var preparedDishHistory: [PreparedDishHistoryItem] = []
     var recipes: [Recipe] = []    // User's own recipes
     var mealPlan: [MealPlanEntry] = []
     var shoppingItems: [ShoppingItem] = []
+    var cookQueue: CookQueue?
     var isLoading = false
     var errorMessage: String?
     private var hasScheduledInitialLoad = false
     private(set) var pantryRevision = 0
     private(set) var preparedDishesRevision = 0
+    private(set) var preparedDishHistoryRevision = 0
     private(set) var recipesRevision = 0
     private(set) var discoverRecipesRevision = 0
     private(set) var mealPlanRevision = 0
     private(set) var shoppingRevision = 0
+    private(set) var cookQueueRevision = 0
     private var cachedSuggestedRecipeKey: SuggestedRecipeCacheKey?
     private var cachedSuggestedRecipe: Recipe?
 
@@ -431,7 +435,9 @@ final class AppState {
         self.recipeIngredientResolver = RecipeIngredientResolver(candidateParser: ingredientCandidateParser, aiService: aiService)
         pantryItems = launchOptions.seedPantryItems ? PantryItem.samples : []
         preparedDishes = []
+        preparedDishHistory = []
         recipes = launchOptions.seedRecipes ? Recipe.samples : []
+        cookQueue = nil
         discoverRecipeStore = []
         if !pantryItems.isEmpty { pantryRevision = 1 }
         if !preparedDishes.isEmpty { preparedDishesRevision = 1 }
@@ -453,10 +459,13 @@ final class AppState {
         self.recipeIngredientResolver = recipeIngredientResolver ?? RecipeIngredientResolver(candidateParser: ingredientCandidateParser, aiService: aiService)
         pantryItems = PantryItem.samples
         preparedDishes = []
+        preparedDishHistory = []
         recipes = Recipe.samples
+        cookQueue = nil
         discoverRecipeStore = []
         pantryRevision = PantryItem.samples.isEmpty ? 0 : 1
         preparedDishesRevision = 0
+        preparedDishHistoryRevision = 0
         recipesRevision = Recipe.samples.isEmpty ? 0 : 1
         hasScheduledInitialLoad = !shouldLoadOnInit
     }
@@ -491,6 +500,7 @@ final class AppState {
                 let snapshot = try await storageService.fetchStartupSnapshot()
                 setPantryItems(snapshot.pantryItems)
                 setPreparedDishes(snapshot.preparedDishes)
+                setPreparedDishHistoryItems(snapshot.preparedDishHistory)
                 setRecipes(snapshot.recipes.filter { $0.source.isUserRecipe })
                 let persistedDiscover = snapshot.recipes.filter { !$0.source.isUserRecipe }
                 setDiscoverRecipes(mergedDiscoverRecipes(withPersisted: persistedDiscover))
@@ -500,6 +510,7 @@ final class AppState {
                 await purgeMealPlanEntries(sanitizedPlan.removedEntries)
 
                 setShoppingItemsValue(snapshot.shoppingItems)
+                setCookQueueValue(snapshot.cookQueue)
                 errorMessage = nil
                 return
             } catch {
@@ -518,6 +529,14 @@ final class AppState {
         do {
             let fetchedPreparedDishes = try await storageService.fetchPreparedDishes()
             setPreparedDishes(fetchedPreparedDishes)
+        } catch {
+            failures.append(error.localizedDescription)
+        }
+        await Task.yield()
+
+        do {
+            let fetchedPreparedDishHistory = try await storageService.fetchPreparedDishHistory()
+            setPreparedDishHistoryItems(fetchedPreparedDishHistory)
         } catch {
             failures.append(error.localizedDescription)
         }
@@ -546,6 +565,15 @@ final class AppState {
         do {
             let fetchedShopping = try await storageService.fetchShoppingItems()
             setShoppingItemsValue(fetchedShopping)
+        } catch {
+            failures.append(error.localizedDescription)
+        }
+
+        await Task.yield()
+
+        do {
+            let fetchedCookQueue = try await storageService.fetchCookQueue()
+            setCookQueueValue(fetchedCookQueue)
         } catch {
             failures.append(error.localizedDescription)
         }
@@ -778,6 +806,8 @@ final class AppState {
             let saved = try await storageService.addPreparedDish(dish)
             preparedDishes.append(saved)
             markPreparedDishesChanged()
+            refreshPreparedDishHistory(with: saved)
+            await persistPreparedDishHistory()
         } catch {
             errorMessage = error.localizedDescription
         }
@@ -785,10 +815,19 @@ final class AppState {
 
     func updatePreparedDish(_ dish: PreparedDish) async {
         do {
+            let previousDish = preparedDishes.first(where: { $0.id == dish.id })
             let updated = try await storageService.updatePreparedDish(dish)
             if let index = preparedDishes.firstIndex(where: { $0.id == dish.id }) {
                 preparedDishes[index] = updated
                 markPreparedDishesChanged()
+            }
+            if let previousDish {
+                let shouldRefreshHistory = previousDish.historyTemplateSignature != updated.historyTemplateSignature
+                    || updated.servingsRemaining > previousDish.servingsRemaining
+                if shouldRefreshHistory {
+                    refreshPreparedDishHistory(with: updated)
+                    await persistPreparedDishHistory()
+                }
             }
         } catch {
             errorMessage = error.localizedDescription
@@ -827,6 +866,10 @@ final class AppState {
 
     func preparedDishById(_ id: UUID) -> PreparedDish? {
         preparedDishes.first { $0.id == id }
+    }
+
+    func preparedDishHistoryItem(by id: UUID) -> PreparedDishHistoryItem? {
+        preparedDishHistory.first { $0.id == id }
     }
 
     func modifyRecipe(_ recipe: Recipe, feedback: String) async -> NormalizedAIRecipe? {
@@ -987,6 +1030,30 @@ final class AppState {
         await persistShoppingItems()
     }
 
+    func updateShoppingItem(_ item: ShoppingItem) async {
+        guard let index = shoppingItems.firstIndex(where: { $0.id == item.id }) else { return }
+        shoppingItems[index] = item
+        markShoppingChanged()
+        await persistShoppingItems()
+    }
+
+    func replaceShoppingItems(_ items: [ShoppingItem]) async {
+        guard !items.isEmpty else { return }
+
+        let itemsByID = Dictionary(uniqueKeysWithValues: items.map { ($0.id, $0) })
+        var didChange = false
+
+        for index in shoppingItems.indices {
+            guard let updated = itemsByID[shoppingItems[index].id] else { continue }
+            shoppingItems[index] = updated
+            didChange = true
+        }
+
+        guard didChange else { return }
+        markShoppingChanged()
+        await persistShoppingItems()
+    }
+
     func removeCheckedShoppingItems() async {
         let originalCount = shoppingItems.count
         shoppingItems.removeAll { $0.isChecked }
@@ -994,6 +1061,85 @@ final class AppState {
             markShoppingChanged()
         }
         await persistShoppingItems()
+    }
+
+    // MARK: - Cook Queue
+    func addRecipesToCookQueue(_ recipes: [Recipe], asParallelBatch: Bool = false, sourceEntries: [MealPlanEntry] = []) async {
+        guard !recipes.isEmpty else { return }
+
+        let sourceEntryIDs = sourceEntries.map(\.id)
+        let newStages: [CookQueueStage]
+        if asParallelBatch {
+            newStages = [CookQueueStage(recipes: recipes, sourceMealPlanEntryIDs: sourceEntryIDs)]
+        } else {
+            newStages = recipes.map { recipe in
+                let matchingEntryIDs = sourceEntries
+                    .filter { $0.recipe?.id == recipe.id }
+                    .map(\.id)
+                return CookQueueStage(recipes: [recipe], sourceMealPlanEntryIDs: matchingEntryIDs)
+            }
+        }
+
+        if var existingQueue = cookQueue {
+            existingQueue.appendStages(newStages)
+            setCookQueueValue(existingQueue)
+        } else {
+            setCookQueueValue(CookQueue(stages: newStages))
+        }
+
+        await persistCookQueue()
+    }
+
+    func startCookQueueStage(_ stageID: UUID) async {
+        guard var queue = cookQueue else { return }
+        queue.startStage(stageID)
+        setCookQueueValue(queue)
+        await persistCookQueue()
+    }
+
+    func completeCookQueueStage(_ stageID: UUID) async {
+        guard var queue = cookQueue else { return }
+        queue.completeStage(stageID)
+        setCookQueueValue(queue.isEmpty ? nil : queue)
+        await persistCookQueue()
+    }
+
+    func skipCookQueueStage(_ stageID: UUID) async {
+        guard var queue = cookQueue else { return }
+        queue.skipStage(stageID)
+        setCookQueueValue(queue.isEmpty ? nil : queue)
+        await persistCookQueue()
+    }
+
+    func removeCookQueueStage(_ stageID: UUID) async {
+        guard var queue = cookQueue else { return }
+        queue.removeStage(stageID)
+        setCookQueueValue(queue.stages.isEmpty ? nil : queue)
+        await persistCookQueue()
+    }
+
+    func clearCookQueue() async {
+        setCookQueueValue(nil)
+        await persistCookQueue()
+    }
+
+    func resolvedRecipes(for stage: CookQueueStage) -> [Recipe] {
+        stage.recipeIDs.compactMap { recipeID in
+            allRecipes.first(where: { $0.id == recipeID })
+        }
+    }
+
+    func cookQueueContext(for stageID: UUID) -> (queueID: UUID, stageID: UUID)? {
+        guard let queue = cookQueue, queue.stages.contains(where: { $0.id == stageID }) else {
+            return nil
+        }
+        return (queue.id, stageID)
+    }
+
+    func cookQueueContext(for session: CookingSession) -> (queueID: UUID, stageID: UUID)? {
+        guard let queueID = session.queueId, let stageID = session.queueStageId else { return nil }
+        guard cookQueue?.id == queueID else { return nil }
+        return (queueID, stageID)
     }
 
     // MARK: - Cook Mode
@@ -1063,6 +1209,22 @@ final class AppState {
     private func persistShoppingItems() async {
         do {
             try await storageService.saveShoppingItems(shoppingItems)
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+    }
+
+    private func persistPreparedDishHistory() async {
+        do {
+            try await storageService.savePreparedDishHistory(preparedDishHistory)
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+    }
+
+    private func persistCookQueue() async {
+        do {
+            try await storageService.saveCookQueue(cookQueue)
         } catch {
             errorMessage = error.localizedDescription
         }
@@ -1402,6 +1564,16 @@ final class AppState {
         markPreparedDishesChanged()
     }
 
+    private func setPreparedDishHistoryItems(_ items: [PreparedDishHistoryItem]) {
+        preparedDishHistory = items.sorted { lhs, rhs in
+            if lhs.recipeID != rhs.recipeID {
+                return lhs.recipeID != nil
+            }
+            return lhs.lastUsedAt > rhs.lastUsedAt
+        }
+        markPreparedDishHistoryChanged()
+    }
+
     private func setRecipes(_ items: [Recipe]) {
         recipes = items
         markRecipesChanged()
@@ -1426,6 +1598,11 @@ final class AppState {
         markShoppingChanged()
     }
 
+    private func setCookQueueValue(_ queue: CookQueue?) {
+        cookQueue = queue
+        markCookQueueChanged()
+    }
+
     private func markPantryChanged() {
         pantryRevision &+= 1
         cachedSuggestedRecipeKey = nil
@@ -1433,6 +1610,10 @@ final class AppState {
 
     private func markPreparedDishesChanged() {
         preparedDishesRevision &+= 1
+    }
+
+    private func markPreparedDishHistoryChanged() {
+        preparedDishHistoryRevision &+= 1
     }
 
     private func markRecipesChanged() {
@@ -1450,6 +1631,27 @@ final class AppState {
 
     private func markShoppingChanged() {
         shoppingRevision &+= 1
+    }
+
+    private func markCookQueueChanged() {
+        cookQueueRevision &+= 1
+    }
+
+    private func refreshPreparedDishHistory(with dish: PreparedDish) {
+        let existingIndex = preparedDishHistory.firstIndex(where: { historyItem in
+            historyItem.matches(dish)
+        })
+
+        if let existingIndex {
+            preparedDishHistory[existingIndex] = PreparedDishHistoryItem(
+                dish: dish,
+                previousItem: preparedDishHistory[existingIndex]
+            )
+        } else {
+            preparedDishHistory.append(PreparedDishHistoryItem(dish: dish))
+        }
+
+        setPreparedDishHistoryItems(preparedDishHistory)
     }
 
     private func subtractableRecipeAmount(for ingredient: Ingredient, pantryItem: PantryItem) -> Double? {

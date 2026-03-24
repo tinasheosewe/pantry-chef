@@ -42,6 +42,8 @@ final class CookModeViewModel {
 
     let recipe: Recipe
     let realtimeService: any RealtimeServiceProtocol
+    let queueId: UUID?
+    let queueStageId: UUID?
 
     /// Whether the next startConversation() should use resume greeting.
     private var isResuming: Bool
@@ -52,11 +54,20 @@ final class CookModeViewModel {
     private var timerPausedRemaining: TimeInterval = 0
     private var timerCancellable: AnyCancellable?
 
-    init(recipe: Recipe, realtimeService: any RealtimeServiceProtocol, initialStepIndex: Int = 0, isResuming: Bool = false) {
+    init(
+        recipe: Recipe,
+        realtimeService: any RealtimeServiceProtocol,
+        initialStepIndex: Int = 0,
+        isResuming: Bool = false,
+        queueId: UUID? = nil,
+        queueStageId: UUID? = nil
+    ) {
         self.recipe = recipe
         self.realtimeService = realtimeService
         self.isResuming = isResuming
         self.currentStepIndex = initialStepIndex
+        self.queueId = queueId
+        self.queueStageId = queueStageId
         setupRealtimeCallbacks()
     }
 
@@ -658,7 +669,9 @@ final class CookModeViewModel {
             startedAt: Date(),
             backgroundedAt: Date(),
             isActive: true,
-            expiryTimeoutSeconds: expiryDelay
+            expiryTimeoutSeconds: expiryDelay,
+            queueId: queueId,
+            queueStageId: queueStageId
         )
         session.save()
 

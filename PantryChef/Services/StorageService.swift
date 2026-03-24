@@ -89,6 +89,7 @@ actor StorageService: StorageServiceProtocol {
             PantryItemRecord.self,
             PantryFacetRecord.self,
             PreparedDishRecord.self,
+            PreparedDishHistoryRecord.self,
             RecipeRecord.self,
             IngredientRecord.self,
             IngredientFacetRecord.self,
@@ -98,6 +99,7 @@ actor StorageService: StorageServiceProtocol {
             MealPlanRecord.self,
             ShoppingItemRecord.self,
             ShoppingFacetRecord.self,
+            CookQueueRecord.self,
         ])
         self.shouldBootstrap = shouldBootstrap
 
@@ -197,6 +199,40 @@ actor StorageService: StorageServiceProtocol {
         return dish
     }
 
+    func fetchPreparedDishHistory() async throws -> [PreparedDishHistoryItem] {
+        try ensureBootstrapIfNeeded()
+        let records = try context.fetch(FetchDescriptor<PreparedDishHistoryRecord>())
+        return try records
+            .map { try $0.toDomain() }
+            .sorted { lhs, rhs in
+                if lhs.recipeID != rhs.recipeID {
+                    return lhs.recipeID != nil
+                }
+                return lhs.lastUsedAt > rhs.lastUsedAt
+            }
+    }
+
+    func savePreparedDishHistory(_ items: [PreparedDishHistoryItem]) async throws {
+        try ensureBootstrapIfNeeded()
+        let existing = try context.fetch(FetchDescriptor<PreparedDishHistoryRecord>())
+        let existingById = Dictionary(uniqueKeysWithValues: existing.map { ($0.id, $0) })
+        let incomingIds = Set(items.map { $0.id })
+
+        for item in items {
+            if let record = existingById[item.id] {
+                try record.update(from: item)
+            } else {
+                context.insert(try PreparedDishHistoryRecord(from: item))
+            }
+        }
+
+        for record in existing where !incomingIds.contains(record.id) {
+            context.delete(record)
+        }
+
+        try saveContext()
+    }
+
     func updatePantryItem(_ item: PantryItem) async throws -> PantryItem {
         try ensureBootstrapIfNeeded()
         if let record = try fetchPantryRecord(id: item.id) {
@@ -243,9 +279,11 @@ actor StorageService: StorageServiceProtocol {
 
         let pantryRecords = try context.fetch(FetchDescriptor<PantryItemRecord>())
         let preparedDishRecords = try context.fetch(FetchDescriptor<PreparedDishRecord>())
+        let preparedDishHistoryRecords = try context.fetch(FetchDescriptor<PreparedDishHistoryRecord>())
         let recipeRecords = try context.fetch(FetchDescriptor<RecipeRecord>())
         let mealPlanRecords = try context.fetch(FetchDescriptor<MealPlanRecord>())
         let shoppingRecords = try context.fetch(FetchDescriptor<ShoppingItemRecord>())
+        let cookQueueRecords = try context.fetch(FetchDescriptor<CookQueueRecord>())
 
         let pantryItems = pantryRecords
             .map { $0.toDomain() }
@@ -294,12 +332,28 @@ actor StorageService: StorageServiceProtocol {
             .map { $0.toDomain() }
             .sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
 
+        let preparedDishHistory = try preparedDishHistoryRecords
+            .map { try $0.toDomain() }
+            .sorted { lhs, rhs in
+                if lhs.recipeID != rhs.recipeID {
+                    return lhs.recipeID != nil
+                }
+                return lhs.lastUsedAt > rhs.lastUsedAt
+            }
+
+        let cookQueue = try cookQueueRecords
+            .sorted { $0.updatedAt > $1.updatedAt }
+            .first?
+            .toDomain()
+
         return StorageStartupSnapshot(
             pantryItems: pantryItems,
             preparedDishes: preparedDishes,
+            preparedDishHistory: preparedDishHistory,
             recipes: sortedRecipes,
             mealPlan: mealPlan,
-            shoppingItems: shoppingItems
+            shoppingItems: shoppingItems,
+            cookQueue: cookQueue
         )
     }
 
@@ -424,6 +478,42 @@ actor StorageService: StorageServiceProtocol {
         try saveContext()
     }
 
+    func fetchCookQueue() async throws -> CookQueue? {
+        try ensureBootstrapIfNeeded()
+        let records = try context.fetch(FetchDescriptor<CookQueueRecord>())
+        guard let record = records.sorted(by: { $0.updatedAt > $1.updatedAt }).first else {
+            return nil
+        }
+        return try record.toDomain()
+    }
+
+    func saveCookQueue(_ queue: CookQueue?) async throws {
+        try ensureBootstrapIfNeeded()
+        let existing = try context.fetch(FetchDescriptor<CookQueueRecord>())
+
+        guard let queue else {
+            for record in existing {
+                context.delete(record)
+            }
+            try saveContext()
+            return
+        }
+
+        if let record = existing.first(where: { $0.id == queue.id }) {
+            try record.update(from: queue)
+            for staleRecord in existing where staleRecord.id != queue.id {
+                context.delete(staleRecord)
+            }
+        } else {
+            for staleRecord in existing {
+                context.delete(staleRecord)
+            }
+            context.insert(try CookQueueRecord(from: queue))
+        }
+
+        try saveContext()
+    }
+
     private func ensureBootstrapIfNeeded() throws {
         guard shouldBootstrap, !didBootstrap else { return }
         try bootstrapIfNeeded()
@@ -502,7 +592,9 @@ actor StorageService: StorageServiceProtocol {
 struct StorageStartupSnapshot {
     let pantryItems: [PantryItem]
     let preparedDishes: [PreparedDish]
+    let preparedDishHistory: [PreparedDishHistoryItem]
     let recipes: [Recipe]
     let mealPlan: [MealPlanEntry]
     let shoppingItems: [ShoppingItem]
+    let cookQueue: CookQueue?
 }

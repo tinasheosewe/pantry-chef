@@ -6,6 +6,7 @@ struct HomeView: View {
     @State private var selectedMealEntry: MealPlanEntry?
     @State private var selectedPreparedDish: PreparedDish?
     @State private var shoppingConfirmation: ShoppingListConfirmationRequest?
+    @State private var showCookQueueManager = false
 
     var onSwitchToShopping: (() -> Void)?
     var onSwitchToPlan: (() -> Void)?
@@ -27,6 +28,10 @@ struct HomeView: View {
                     // Active cooking sessions banner
                     if viewModel.appState.activeCooks.hasActiveSessions {
                         activeCooksBanner
+                    }
+
+                    if viewModel.appState.cookQueue?.stages.isEmpty == false {
+                        cookQueueBanner
                     }
 
                     todaysMealPlanCard
@@ -86,10 +91,20 @@ struct HomeView: View {
                 PreparedDishDetailView(dish: dish)
                     .environment(viewModel.appState)
             }
+            .appNavigationSheet(isPresented: $showCookQueueManager) {
+                CookQueueView(appState: viewModel.appState)
+            }
             .fullScreenCover(item: $resumeRecipe) { recipe in
                 let session = CookingSession.load(recipeId: recipe.id)
                 let stepIndex = session?.currentStepIndex ?? 0
-                CookModeView(recipe: recipe, resumeAtStep: stepIndex, isResuming: true)
+                let queueContext = session.flatMap { viewModel.appState.cookQueueContext(for: $0) }
+                CookModeView(
+                    recipe: recipe,
+                    resumeAtStep: stepIndex,
+                    isResuming: true,
+                    queueID: queueContext?.queueID,
+                    queueStageID: queueContext?.stageID
+                )
                     .environment(viewModel.appState)
             }
         }
@@ -463,6 +478,57 @@ struct HomeView: View {
                         .strokeBorder(AppColors.warmOrange.opacity(0.2), lineWidth: 1)
                 )
         )
+    }
+
+    private var cookQueueBanner: some View {
+        let queue = viewModel.appState.cookQueue
+        let currentStage = queue?.currentStage
+        let remainingCount = queue?.pendingStageCount ?? 0
+
+        return Button {
+            showCookQueueManager = true
+        } label: {
+            VStack(alignment: .leading, spacing: 12) {
+                HStack {
+                    Image(systemName: "list.number")
+                        .foregroundStyle(AppColors.accentBlue)
+                    Text("Cook Queue")
+                        .font(.headline)
+                        .foregroundStyle(AppColors.darkText)
+                    Spacer()
+                    Text("\(remainingCount)")
+                        .font(.caption)
+                        .fontWeight(.bold)
+                        .foregroundStyle(.white)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(AppColors.accentBlue)
+                        .clipShape(Capsule())
+                }
+
+                if let currentStage {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(currentStage.title)
+                            .font(.subheadline)
+                            .fontWeight(.semibold)
+                            .foregroundStyle(AppColors.darkText)
+                        Text(currentStage.subtitle)
+                            .font(.caption)
+                            .foregroundStyle(AppColors.subtleText)
+                    }
+                }
+            }
+            .padding()
+            .background(
+                RoundedRectangle(cornerRadius: 16)
+                    .fill(AppColors.accentBlue.opacity(0.08))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 16)
+                            .strokeBorder(AppColors.accentBlue.opacity(0.2), lineWidth: 1)
+                    )
+            )
+        }
+        .buttonStyle(.plain)
     }
 }
 

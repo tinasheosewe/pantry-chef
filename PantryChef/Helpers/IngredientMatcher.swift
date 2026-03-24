@@ -91,7 +91,7 @@ enum IngredientMatcher {
     }
 
     static func pantryItemMatchesIngredient(_ pantryItem: PantryItem, ingredient: Ingredient) -> Bool {
-        if let ingredientCatalogItemID = ingredient.catalogItemID,
+        if let ingredientCatalogItemID = resolvedCatalogItemID(for: ingredient.rawName, catalogItemID: ingredient.catalogItemID),
            let pantryCatalogItemID = resolvedCatalogItemID(for: pantryItem.name, catalogItemID: pantryItem.catalogItemID),
            ingredientCatalogItemID == pantryCatalogItemID {
             let requiredFacets = Set(ingredient.facets)
@@ -122,7 +122,7 @@ enum IngredientMatcher {
     }
 
     private static func pantryContains(ingredient: Ingredient, pantry: [PantryItem], index: PantryIndex) -> Bool {
-        if let catalogItemID = ingredient.catalogItemID {
+        if let catalogItemID = resolvedCatalogItemID(for: ingredient.rawName, catalogItemID: ingredient.catalogItemID) {
             guard let pantryCandidates = index.resolvedItemsByCatalogID[catalogItemID] else {
                 return false
             }

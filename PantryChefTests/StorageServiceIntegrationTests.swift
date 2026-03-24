@@ -22,11 +22,15 @@ final class StorageServiceIntegrationTests: XCTestCase {
         let recipes = try await sut.fetchRecipes()
         let mealPlan = try await sut.fetchMealPlan()
         let shopping = try await sut.fetchShoppingItems()
+        let preparedDishHistory = try await sut.fetchPreparedDishHistory()
+        let cookQueue = try await sut.fetchCookQueue()
 
         XCTAssertTrue(pantry.isEmpty)
         XCTAssertTrue(recipes.isEmpty)
         XCTAssertTrue(mealPlan.isEmpty)
         XCTAssertTrue(shopping.isEmpty)
+        XCTAssertTrue(preparedDishHistory.isEmpty)
+        XCTAssertNil(cookQueue)
     }
 
     func testCrudSmokeAcrossPantryRecipeMealPlanAndShopping() async throws {
@@ -111,18 +115,32 @@ final class StorageServiceIntegrationTests: XCTestCase {
         XCTAssertEqual(mealPlans.first?.eatenServings, 2)
 
         let shoppingItems = [
-            ShoppingItem(name: "Garlic", quantity: 2, unit: .clove, category: .produce),
+            ShoppingItem(name: "Garlic", quantity: 2, unit: .clove, category: .produce, pantryQuantity: 1, pantryUnit: .package),
             ShoppingItem(name: "Olive Oil", quantity: 1, unit: .liter, category: .oils),
         ]
+        let historyItems = [
+            PreparedDishHistoryItem(dish: makePreparedDish(name: "Integration Leftovers", servingsRemaining: 3))
+        ]
+        let cookQueue = CookQueue(stages: [CookQueueStage(recipes: [updatedRecipe])])
 
         try await sut.saveShoppingItems(shoppingItems)
+        try await sut.savePreparedDishHistory(historyItems)
+        try await sut.saveCookQueue(cookQueue)
         var savedShopping = try await sut.fetchShoppingItems()
         XCTAssertEqual(savedShopping.count, 2)
+        XCTAssertEqual(savedShopping.first(where: { $0.catalogItemID == "garlic" })?.pantryQuantity, 1)
+        XCTAssertEqual(savedShopping.first(where: { $0.catalogItemID == "garlic" })?.pantryUnit, .package)
+        let savedHistory = try await sut.fetchPreparedDishHistory()
+        let savedCookQueue = try await sut.fetchCookQueue()
+        XCTAssertEqual(savedHistory.first?.name, "Integration Leftovers")
+        XCTAssertEqual(savedCookQueue?.stages.first?.recipeTitleSnapshots.first, updatedRecipe.title)
 
         savedShopping[0].isChecked = true
+        savedShopping[0] = savedShopping[0].updatingPantryPlan(quantity: nil, unit: nil, quantityMode: .presenceOnly)
         try await sut.saveShoppingItems(savedShopping)
         let checked = try await sut.fetchShoppingItems().first(where: { $0.id == savedShopping[0].id })
         XCTAssertEqual(checked?.isChecked, true)
+        XCTAssertEqual(checked?.pantryQuantityMode, .presenceOnly)
 
         try await sut.deleteMealPlanEntry(updatedMealPlan)
         let mealPlanAfterDelete = try await sut.fetchMealPlan()
@@ -153,6 +171,12 @@ final class StorageServiceIntegrationTests: XCTestCase {
         let shopping = ShoppingItem(name: "Salt", quantity: 1, unit: .pinch, category: .spices)
         let shoppingRecord = ShoppingItemRecord(from: shopping)
         XCTAssertEqual(shoppingRecord.schemaVersion, StorageSchema.currentVersion)
+
+        let historyRecord = try PreparedDishHistoryRecord(from: PreparedDishHistoryItem(dish: makePreparedDish(name: "History")))
+        XCTAssertEqual(historyRecord.schemaVersion, StorageSchema.currentVersion)
+
+        let cookQueueRecord = try CookQueueRecord(from: CookQueue(stages: [CookQueueStage(recipes: [recipe])]))
+        XCTAssertEqual(cookQueueRecord.schemaVersion, StorageSchema.currentVersion)
     }
 
     func testPantryRecordRoundTripsStructuredFacetRecords() throws {

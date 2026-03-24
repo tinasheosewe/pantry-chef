@@ -2,7 +2,7 @@ import Foundation
 import SwiftData
 
 enum StorageSchema {
-    static let currentVersion = 11
+    static let currentVersion = 13
 }
 
 @Model
@@ -216,6 +216,31 @@ final class PreparedDishRecord {
             recipeID: recipeID,
             nutrition: nutrition
         )
+    }
+}
+
+@Model
+final class PreparedDishHistoryRecord {
+    @Attribute(.unique) var id: UUID
+    var schemaVersion: Int
+    var payload: Data
+    var sortDate: Date
+
+    init(from item: PreparedDishHistoryItem) throws {
+        id = item.id
+        schemaVersion = StorageSchema.currentVersion
+        sortDate = item.lastUsedAt
+        payload = try JSONEncoder().encode(item)
+    }
+
+    func update(from item: PreparedDishHistoryItem) throws {
+        schemaVersion = StorageSchema.currentVersion
+        sortDate = item.lastUsedAt
+        payload = try JSONEncoder().encode(item)
+    }
+
+    func toDomain() throws -> PreparedDishHistoryItem {
+        try JSONDecoder().decode(PreparedDishHistoryItem.self, from: payload)
     }
 }
 
@@ -652,6 +677,9 @@ final class ShoppingItemRecord {
     var isChecked: Bool
     var recipeSource: String?
     var catalogItemID: String?
+    var pantryQuantity: Double?
+    var pantryUnitRawValue: String?
+    var pantryQuantityModeRawValue: String
 
     @Relationship(deleteRule: .cascade, inverse: \ShoppingFacetRecord.shoppingItem)
     var facetRecords: [ShoppingFacetRecord] = []
@@ -666,6 +694,9 @@ final class ShoppingItemRecord {
         isChecked = item.isChecked
         recipeSource = item.recipeSource
         catalogItemID = item.catalogItemID
+        pantryQuantity = item.pantryQuantity
+        pantryUnitRawValue = item.pantryUnit?.rawValue
+        pantryQuantityModeRawValue = item.pantryQuantityMode.rawValue
         facetRecords = Self.makeFacetRecords(from: item.facets)
     }
 
@@ -678,6 +709,9 @@ final class ShoppingItemRecord {
         isChecked = item.isChecked
         recipeSource = item.recipeSource
         catalogItemID = item.catalogItemID
+        pantryQuantity = item.pantryQuantity
+        pantryUnitRawValue = item.pantryUnit?.rawValue
+        pantryQuantityModeRawValue = item.pantryQuantityMode.rawValue
         replaceFacetRecords(with: item.facets, in: context)
     }
 
@@ -693,7 +727,10 @@ final class ShoppingItemRecord {
             catalogItemID: catalogItemID,
             facets: facetRecords
                 .sorted { $0.sortIndex < $1.sortIndex }
-                .compactMap { $0.toDomain() }
+                .compactMap { $0.toDomain() },
+            pantryQuantity: pantryQuantity,
+            pantryUnit: pantryUnitRawValue.flatMap { MeasurementUnit(rawValue: $0) },
+            pantryQuantityMode: PantryQuantityMode(rawValue: pantryQuantityModeRawValue)
         )
     }
 
@@ -734,6 +771,31 @@ final class ShoppingFacetRecord {
     func toDomain() -> PantryFacetSelection? {
         guard let key = PantryFacetKey(rawValue: keyRawValue) else { return nil }
         return PantryFacetSelection(key: key, value: value)
+    }
+}
+
+@Model
+final class CookQueueRecord {
+    @Attribute(.unique) var id: UUID
+    var schemaVersion: Int
+    var payload: Data
+    var updatedAt: Date
+
+    init(from queue: CookQueue) throws {
+        id = queue.id
+        schemaVersion = StorageSchema.currentVersion
+        updatedAt = queue.updatedAt
+        payload = try JSONEncoder().encode(queue)
+    }
+
+    func update(from queue: CookQueue) throws {
+        schemaVersion = StorageSchema.currentVersion
+        updatedAt = queue.updatedAt
+        payload = try JSONEncoder().encode(queue)
+    }
+
+    func toDomain() throws -> CookQueue {
+        try JSONDecoder().decode(CookQueue.self, from: payload)
     }
 }
 

@@ -11,6 +11,8 @@ struct MultiCookModeView: View {
     @Environment(AppState.self) private var appState
 
     let recipes: [Recipe]
+    let queueID: UUID?
+    let queueStageID: UUID?
     @State private var blocks: [MultiRecipeScheduler.ScheduledBlock]
     @State private var currentBlockIndex = 0
     @State private var showEndConfirm = false
@@ -29,8 +31,10 @@ struct MultiCookModeView: View {
         Color(red: 0.48, green: 0.40, blue: 0.82)     // soft indigo
     ]
 
-    init(recipes: [Recipe], blocks: [MultiRecipeScheduler.ScheduledBlock]) {
+    init(recipes: [Recipe], blocks: [MultiRecipeScheduler.ScheduledBlock], queueID: UUID? = nil, queueStageID: UUID? = nil) {
         self.recipes = recipes
+        self.queueID = queueID
+        self.queueStageID = queueStageID
         _blocks = State(initialValue: blocks)
     }
 
@@ -472,6 +476,11 @@ struct MultiCookModeView: View {
 
     private func endSession() {
         tickTimer?.invalidate()
+        Task {
+            if let queueStageID {
+                await appState.completeCookQueueStage(queueStageID)
+            }
+        }
         for recipe in recipes {
             CookingSession.clear(recipeId: recipe.id)
         }

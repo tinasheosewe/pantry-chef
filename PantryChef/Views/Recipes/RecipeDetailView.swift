@@ -9,6 +9,7 @@ struct RecipeDetailView: View {
     @State private var showSubstitutions = false
     @State private var showShoppingList = false
     @State private var showPantryReview = false
+    @State private var showCookQueueManager = false
     @State private var substitutions: [SubstitutionSuggestion] = []
     @State private var healthierSuggestion: HealthierSuggestion?
     @State private var shoppingList: [ShoppingItem] = []
@@ -96,8 +97,15 @@ struct RecipeDetailView: View {
             }
         }
         .fullScreenCover(isPresented: $showCookMode) {
+            let queueContext = existingSession.flatMap { appState.cookQueueContext(for: $0) }
             if let session = existingSession {
-                CookModeView(recipe: scaledRecipe, resumeAtStep: session.currentStepIndex, isResuming: true)
+                CookModeView(
+                    recipe: scaledRecipe,
+                    resumeAtStep: session.currentStepIndex,
+                    isResuming: true,
+                    queueID: queueContext?.queueID,
+                    queueStageID: queueContext?.stageID
+                )
             } else {
                 CookModeView(recipe: scaledRecipe)
             }
@@ -119,6 +127,9 @@ struct RecipeDetailView: View {
                     await appState.applyPantryCookReview(items)
                 }
             )
+        }
+        .appNavigationSheet(isPresented: $showCookQueueManager) {
+            CookQueueView(appState: appState)
         }
         .appNavigationSheet(isPresented: $showEditor) {
             RecipeEditorView(
@@ -363,6 +374,13 @@ struct RecipeDetailView: View {
             }
 
             HStack(spacing: 12) {
+                ActionButton(icon: "list.number", title: "Add Queue", color: AppColors.accentBlue) {
+                    Task {
+                        await appState.addRecipesToCookQueue([scaledRecipe])
+                        showCookQueueManager = true
+                    }
+                }
+
                 ActionButton(icon: "cart", title: "What to Buy", color: AppColors.warmOrange) {
                 Task {
                     isLoadingAction = true

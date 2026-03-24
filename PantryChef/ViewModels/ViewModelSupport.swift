@@ -103,18 +103,19 @@ struct ShoppingActions {
         await appState.removeShoppingItem(item)
     }
 
+    func updateItem(_ item: ShoppingItem) async {
+        await appState.updateShoppingItem(item)
+    }
+
+    func completeCheckedToPantry(with items: [ShoppingItem]) async {
+        await appState.replaceShoppingItems(items)
+        await addCheckedToPantry()
+    }
+
     func addCheckedToPantry() async {
         let checkedItems = appState.shoppingItems.filter { $0.isChecked }
         for item in checkedItems {
-            let pantryItem = PantryItem(
-                name: item.name,
-                category: item.category,
-                quantity: item.quantity,
-                unit: item.unit,
-                catalogItemID: item.catalogItemID,
-                facets: item.facets
-            )
-            await appState.addPantryItem(pantryItem)
+            await appState.addPantryItem(item.pantryItemForTransfer())
         }
         await appState.removeCheckedShoppingItems()
     }
@@ -171,6 +172,11 @@ struct MealPlanActions {
 
     func addShoppingItems(_ items: [ShoppingItem]) async {
         await appState.addShoppingItems(items)
+    }
+
+    func addEntriesToCookQueue(_ entries: [MealPlanEntry], asParallelBatch: Bool) async {
+        let recipes = entries.compactMap(\.scaledRecipeForPlanning)
+        await appState.addRecipesToCookQueue(recipes, asParallelBatch: asParallelBatch, sourceEntries: entries)
     }
 }
 

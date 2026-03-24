@@ -5,7 +5,9 @@ struct PreparedDishesView: View {
     @FocusState private var isSearchFocused: Bool
     @State private var showMealPlanQuickAddSelection = false
     @State private var showMealPlanQuickAddReview = false
+    @State private var showHistoryPicker = false
     @State private var mealPlanQuickAddDrafts: [MealPlanPreparedDishReviewDraft] = []
+    @State private var historySeedItem: PreparedDishHistoryItem?
     private let isEmbedded: Bool
 
     init(appState: AppState, isEmbedded: Bool = false) {
@@ -22,6 +24,12 @@ struct PreparedDishesView: View {
             }
 
             searchAndFilters
+
+            if !viewModel.appState.preparedDishHistory.isEmpty {
+                historySummaryCard
+                    .padding(.horizontal)
+                    .padding(.top, 8)
+            }
 
             if viewModel.filteredDishes.isEmpty {
                 EmptyStateView(
@@ -109,6 +117,14 @@ struct PreparedDishesView: View {
                 viewModel.addDish(dish)
             }
         }
+        .sheet(isPresented: $showHistoryPicker) {
+            PreparedDishHistoryPickerView(appState: viewModel.appState) { item in
+                showHistoryPicker = false
+                Task { @MainActor in
+                    historySeedItem = item
+                }
+            }
+        }
         .sheet(isPresented: $showMealPlanQuickAddSelection) {
             PreparedDishMealPlanSelectionView(appState: viewModel.appState) { entries in
                 mealPlanQuickAddDrafts = entries.map(MealPlanPreparedDishReviewDraft.init)
@@ -131,6 +147,11 @@ struct PreparedDishesView: View {
         .sheet(item: $viewModel.editingDish) { dish in
             PreparedDishEditorView(appState: viewModel.appState, dish: dish) { updatedDish in
                 viewModel.updateDish(updatedDish)
+            }
+        }
+        .sheet(item: $historySeedItem) { item in
+            PreparedDishEditorView(appState: viewModel.appState, initialDraft: item.makeDraft()) { dish in
+                viewModel.addDish(dish)
             }
         }
         .appNavigationSheet(item: $viewModel.selectedDish) { dish in
@@ -198,6 +219,41 @@ struct PreparedDishesView: View {
         .padding(.horizontal)
         .padding(.vertical, 8)
         .background(AppColors.cardBackground)
+    }
+
+    private var historySummaryCard: some View {
+        Button {
+            showHistoryPicker = true
+        } label: {
+            HStack(spacing: 12) {
+                Image(systemName: "clock.arrow.trianglehead.counterclockwise.rotate.90")
+                    .font(.title3)
+                    .foregroundStyle(AppColors.accentBlue)
+                    .frame(width: 40, height: 40)
+                    .background(AppColors.accentBlue.opacity(0.12))
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Re-add Previous")
+                        .font(.subheadline)
+                        .fontWeight(.semibold)
+                        .foregroundStyle(AppColors.darkText)
+                    Text("\(viewModel.appState.preparedDishHistory.count) saved dishes ready to reuse")
+                        .font(.caption)
+                        .foregroundStyle(AppColors.subtleText)
+                }
+
+                Spacer()
+
+                Image(systemName: "chevron.right")
+                    .font(.caption)
+                    .foregroundStyle(AppColors.mediumGray)
+            }
+            .padding()
+            .background(AppColors.cardBackground)
+            .clipShape(RoundedRectangle(cornerRadius: 16))
+        }
+        .buttonStyle(.plain)
     }
 
     @ViewBuilder
@@ -478,16 +534,16 @@ struct PreparedDishEditorView: View {
     @State private var draft: PreparedDishDraft
     @State private var showRecipePicker = false
 
-    init(appState: AppState, dish: PreparedDish? = nil, seedRecipe: Recipe? = nil, onSave: @escaping (PreparedDish) -> Void) {
+    init(appState: AppState, dish: PreparedDish? = nil, initialDraft: PreparedDishDraft? = nil, seedRecipe: Recipe? = nil, onSave: @escaping (PreparedDish) -> Void) {
         self.appState = appState
         self.existingDish = dish
         self.onSave = onSave
-        var initialDraft = PreparedDishDraft(dish: dish)
-        if dish == nil, let seedRecipe {
-            initialDraft.recipeID = seedRecipe.id
-            initialDraft.syncLinkedRecipe(seedRecipe)
+        var resolvedInitialDraft = initialDraft ?? PreparedDishDraft(dish: dish)
+        if dish == nil, initialDraft == nil, let seedRecipe {
+            resolvedInitialDraft.recipeID = seedRecipe.id
+            resolvedInitialDraft.syncLinkedRecipe(seedRecipe)
         }
-        _draft = State(initialValue: initialDraft)
+        _draft = State(initialValue: resolvedInitialDraft)
     }
 
     private var linkedRecipe: Recipe? {
@@ -523,6 +579,128 @@ struct PreparedDishEditorView: View {
                 }
             }
         }
+    }
+}
+
+private struct PreparedDishHistoryPickerView: View {
+    @Environment(\.dismiss) private var dismiss
+
+    let appState: AppState
+    let onSelect: (PreparedDishHistoryItem) -> Void
+
+    @State private var searchText = ""
+    @State private var debouncedSearchText = ""
+    @State private var searchDebouncer = TaskDebouncer()
+
+    private var filteredItems: [PreparedDishHistoryItem] {
+        SearchQuerySupport.filtered(appState.preparedDishHistory, query: debouncedSearchText) { item in
+            [item.name, item.mealTypesSummary, item.notes ?? ""].joined(separator: " ")
+        }
+        .sorted { lhs, rhs in
+            if lhs.recipeID != rhs.recipeID {
+                return lhs.recipeID != nil
+            }
+            return lhs.lastUsedAt > rhs.lastUsedAt
+        }
+    }
+
+    var body: some View {
+        NavigationStack {
+            VStack(spacing: 0) {
+                if filteredItems.isEmpty {
+                    EmptyStateView(
+                        icon: "clock.badge.questionmark",
+                        title: appState.preparedDishHistory.isEmpty ? "No reusable history yet" : "No previous dishes found",
+                        message: appState.preparedDishHistory.isEmpty
+                            ? "Prepared dishes you add here will automatically become reusable templates for later."
+                            : "Try a different search to find a previous prepared dish."
+                    )
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                } else {
+                    AppList {
+                        Section {
+                            Text("Pick a previous dish to prefill a new Prepared Food entry. You can still adjust servings, storage, and freshness before saving.")
+                                .font(.subheadline)
+                                .foregroundStyle(AppColors.subtleText)
+                        }
+
+                        Section {
+                            ForEach(filteredItems) { item in
+                                Button {
+                                    onSelect(item)
+                                } label: {
+                                    historyRow(item)
+                                }
+                                .buttonStyle(.plain)
+                            }
+                        } header: {
+                            SectionHeader(
+                                title: "Previous Dishes",
+                                subtitle: "Recipe-linked dishes are shown first, then the most recent items."
+                            )
+                            .padding(.top, 8)
+                        }
+                    }
+                }
+            }
+            .searchable(text: $searchText, prompt: "Search previous dishes")
+            .onChange(of: searchText) {
+                SearchQuerySupport.schedule(text: searchText, debouncer: searchDebouncer) {
+                    debouncedSearchText = $0
+                }
+            }
+            .navigationTitle("Re-add Previous")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Close") { dismiss() }
+                }
+            }
+        }
+    }
+
+    private func historyRow(_ item: PreparedDishHistoryItem) -> some View {
+        HStack(spacing: 12) {
+            Image(systemName: "clock.arrow.trianglehead.counterclockwise.rotate.90")
+                .font(.title3)
+                .foregroundStyle(item.recipeID != nil ? AppColors.primaryGreen : AppColors.accentBlue)
+                .frame(width: 40, height: 40)
+                .background((item.recipeID != nil ? AppColors.primaryGreen : AppColors.accentBlue).opacity(0.12))
+                .clipShape(RoundedRectangle(cornerRadius: 10))
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text(item.name)
+                    .font(.subheadline)
+                    .fontWeight(.semibold)
+                    .foregroundStyle(AppColors.darkText)
+                Text("\(item.servingsText) • \(item.storage.rawValue) • \(item.mealTypesSummary)")
+                    .font(.caption)
+                    .foregroundStyle(AppColors.subtleText)
+                Text(item.timesPrepared == 1 ? "Used once" : "Used \(item.timesPrepared)x")
+                    .font(.caption2)
+                    .foregroundStyle(AppColors.subtleText)
+            }
+
+            Spacer()
+
+            VStack(alignment: .trailing, spacing: 4) {
+                if item.recipeID != nil {
+                    Text("Linked")
+                        .font(.caption2)
+                        .fontWeight(.semibold)
+                        .foregroundStyle(AppColors.primaryGreen)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(AppColors.primaryGreen.opacity(0.12))
+                        .clipShape(Capsule())
+                }
+
+                Text(item.lastUsedAt.formatted(date: .abbreviated, time: .omitted))
+                    .font(.caption2)
+                    .foregroundStyle(AppColors.subtleText)
+            }
+        }
+        .padding(.vertical, 4)
     }
 }
 

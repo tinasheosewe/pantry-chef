@@ -34,6 +34,10 @@ final class ShoppingViewModel: AsyncActionHandling {
         appState.shoppingItems.count
     }
 
+    var checkedItems: [ShoppingItem] {
+        appState.shoppingItems.filter { $0.isChecked }
+    }
+
     var progressText: String {
         "\(checkedCount)/\(totalCount) items"
     }
@@ -59,6 +63,18 @@ final class ShoppingViewModel: AsyncActionHandling {
     func removeItem(_ item: ShoppingItem) {
         runTask { [self] in
             await self.shoppingActions.removeItem(item)
+        }
+    }
+
+    func updateItem(_ item: ShoppingItem) {
+        runTask { [self] in
+            await self.shoppingActions.updateItem(item)
+        }
+    }
+
+    func completeCheckedToPantry(with items: [ShoppingItem]) {
+        runLoadingTask { [self] in
+            await self.shoppingActions.completeCheckedToPantry(with: items)
         }
     }
 

@@ -84,9 +84,142 @@ struct PreparedDish: Identifiable, Codable, Hashable {
         ),
     ]
 
-    private static func normalizedMealTypes(_ mealTypes: [MealType]) -> [MealType] {
+    fileprivate static func normalizedMealTypes(_ mealTypes: [MealType]) -> [MealType] {
         var seen = Set<MealType>()
         return mealTypes.filter { seen.insert($0).inserted }
+    }
+}
+
+struct PreparedDishHistoryItem: Identifiable, Codable, Hashable {
+    var id: UUID
+    var name: String
+    var mealTypes: [MealType]
+    var defaultServings: Int
+    var storage: PantryStorage
+    var notes: String?
+    var recipeID: UUID?
+    var nutrition: NutritionInfo?
+    var createdAt: Date
+    var lastPreparedAt: Date
+    var lastUsedAt: Date
+    var timesPrepared: Int
+
+    init(
+        id: UUID = UUID(),
+        name: String,
+        mealTypes: [MealType],
+        defaultServings: Int,
+        storage: PantryStorage,
+        notes: String? = nil,
+        recipeID: UUID? = nil,
+        nutrition: NutritionInfo? = nil,
+        createdAt: Date = Date(),
+        lastPreparedAt: Date,
+        lastUsedAt: Date,
+        timesPrepared: Int = 1
+    ) {
+        self.id = id
+        self.name = name.trimmed
+        self.mealTypes = PreparedDish.normalizedMealTypes(mealTypes)
+        self.defaultServings = max(1, defaultServings)
+        self.storage = storage
+        self.notes = notes?.trimmed.nilIfEmpty
+        self.recipeID = recipeID
+        self.nutrition = nutrition
+        self.createdAt = createdAt
+        self.lastPreparedAt = lastPreparedAt
+        self.lastUsedAt = lastUsedAt
+        self.timesPrepared = max(1, timesPrepared)
+    }
+
+    init(dish: PreparedDish, previousItem: PreparedDishHistoryItem? = nil, referenceDate: Date = Date()) {
+        self.init(
+            id: previousItem?.id ?? UUID(),
+            name: dish.name,
+            mealTypes: dish.mealTypes,
+            defaultServings: dish.servingsRemaining,
+            storage: dish.storage,
+            notes: dish.notes,
+            recipeID: dish.recipeID,
+            nutrition: dish.nutrition,
+            createdAt: previousItem?.createdAt ?? referenceDate,
+            lastPreparedAt: dish.dateAdded,
+            lastUsedAt: referenceDate,
+            timesPrepared: (previousItem?.timesPrepared ?? 0) + 1
+        )
+    }
+
+    var canonicalMatchKey: String {
+        if let recipeID {
+            return "recipe:\(recipeID.uuidString.lowercased())"
+        }
+
+        let normalizedMealTypes = mealTypes
+            .map(\.rawValue)
+            .sorted()
+            .joined(separator: "|")
+        return "name:\(name.trimmed.lowercased())|meals:\(normalizedMealTypes)"
+    }
+
+    var mealTypesSummary: String {
+        mealTypes.map(\.rawValue).joined(separator: " • ")
+    }
+
+    var servingsText: String {
+        defaultServings == 1 ? "1 serving" : "\(defaultServings) servings"
+    }
+
+    func matches(_ dish: PreparedDish) -> Bool {
+        canonicalMatchKey == PreparedDishHistoryItem(dish: dish, previousItem: self).canonicalMatchKey
+    }
+
+    func makeDraft(referenceDate: Date = Date()) -> PreparedDishDraft {
+        var draft = PreparedDishDraft(id: UUID())
+        draft.name = name
+        draft.mealTypes = Set(mealTypes)
+        draft.servingsRemaining = defaultServings
+        draft.storage = storage
+        draft.dateAdded = referenceDate
+        draft.manualUseByDate = PreparedDishFreshnessPolicy.estimatedUseByDate(for: storage, referenceDate: referenceDate)
+        draft.useByDateWasEdited = false
+        draft.notes = notes ?? ""
+        draft.recipeID = recipeID
+
+        if let nutrition {
+            let nutritionStrings = PreparedDishDraft.nutritionStrings(from: nutrition)
+            draft.caloriesText = String(nutrition.calories)
+            draft.proteinText = nutritionStrings.protein
+            draft.carbsText = nutritionStrings.carbs
+            draft.fatText = nutritionStrings.fat
+        } else {
+            draft.caloriesText = ""
+            draft.proteinText = ""
+            draft.carbsText = ""
+            draft.fatText = ""
+        }
+
+        return draft
+    }
+}
+
+extension PreparedDish {
+    var historyTemplateSignature: String {
+        let normalizedMealTypes = mealTypes.map(\.rawValue).sorted().joined(separator: "|")
+        let nutritionSignature: String
+        if let nutrition {
+            nutritionSignature = "\(nutrition.calories)|\(nutrition.protein)|\(nutrition.carbohydrates)|\(nutrition.fat)|\(nutrition.fiber ?? -1)|\(nutrition.sugar ?? -1)|\(nutrition.sodium ?? -1)"
+        } else {
+            nutritionSignature = "none"
+        }
+
+        return [
+            name.trimmed.lowercased(),
+            normalizedMealTypes,
+            storage.rawValue,
+            notes?.trimmed.lowercased() ?? "",
+            recipeID?.uuidString.lowercased() ?? "",
+            nutritionSignature,
+        ].joined(separator: "||")
     }
 }
 
