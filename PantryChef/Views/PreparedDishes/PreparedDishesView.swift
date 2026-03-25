@@ -17,10 +17,6 @@ struct PreparedDishesView: View {
         @Bindable var viewModel = viewModel
 
         let content = VStack(spacing: 0) {
-            if isEmbedded {
-                embeddedHeader
-            }
-
             searchAndFilters
 
             if !viewModel.appState.preparedDishHistory.isEmpty {
@@ -104,24 +100,22 @@ struct PreparedDishesView: View {
         }
         .animation(.easeInOut(duration: 0.2), value: viewModel.feedbackBanner)
         .toolbar {
-            if !isEmbedded {
-                ToolbarItem(placement: .primaryAction) {
-                    Menu {
-                        Button {
-                            presentSingleAdd()
-                        } label: {
-                            Label("Single Meal", systemImage: "plus.circle")
-                        }
-
-                        Button {
-                            showMealPlanQuickAdd = true
-                        } label: {
-                            Label("From Meal Plan", systemImage: "calendar.badge.plus")
-                        }
+            ToolbarItem(placement: .primaryAction) {
+                Menu {
+                    Button {
+                        presentSingleAdd()
                     } label: {
-                        Image(systemName: "plus.circle.fill")
-                            .font(.title3)
+                        Label("Single Meal", systemImage: "plus.circle")
                     }
+
+                    Button {
+                        showMealPlanQuickAdd = true
+                    } label: {
+                        Label("From Meal Plan", systemImage: "calendar.badge.plus")
+                    }
+                } label: {
+                    Image(systemName: "plus.circle.fill")
+                        .font(.title3)
                 }
             }
         }
@@ -166,32 +160,6 @@ struct PreparedDishesView: View {
             content
                 .navigationTitle("Prepared Dishes")
         }
-    }
-
-    private var embeddedHeader: some View {
-        HStack {
-            Spacer()
-
-            Menu {
-                Button {
-                    presentSingleAdd()
-                } label: {
-                    Label("Single Meal", systemImage: "plus.circle")
-                }
-
-                Button {
-                    showMealPlanQuickAdd = true
-                } label: {
-                    Label("From Meal Plan", systemImage: "calendar.badge.plus")
-                }
-            } label: {
-                Image(systemName: "plus.circle.fill")
-                    .font(.title3)
-            }
-        }
-        .padding(.horizontal)
-        .padding(.top, 8)
-        .padding(.bottom, 4)
     }
 
     private var searchAndFilters: some View {

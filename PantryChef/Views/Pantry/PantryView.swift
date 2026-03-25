@@ -35,14 +35,12 @@ struct PantryView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             .navigationTitle("Pantry")
             .toolbar {
-                if isEmbedded {
-                    ToolbarItem(placement: .primaryAction) {
-                        Button {
-                            viewModel.prepareBulkAdd()
-                        } label: {
-                            Image(systemName: "plus.circle.fill")
-                                .font(.title3)
-                        }
+                ToolbarItem(placement: .primaryAction) {
+                    Button {
+                        viewModel.prepareBulkAdd()
+                    } label: {
+                        Image(systemName: "plus.circle.fill")
+                            .font(.title3)
                     }
                 }
             }
