@@ -136,14 +136,12 @@ struct CookQueue: Identifiable, Codable, Hashable {
     }
 
     mutating func completeStage(_ stageID: UUID, updatedAt: Date = Date()) {
-        guard let index = stages.firstIndex(where: { $0.id == stageID }) else { return }
-        stages[index].status = .completed
+        stages.removeAll { $0.id == stageID }
         self.updatedAt = updatedAt
     }
 
     mutating func skipStage(_ stageID: UUID, updatedAt: Date = Date()) {
-        guard let index = stages.firstIndex(where: { $0.id == stageID }) else { return }
-        stages[index].status = .skipped
+        stages.removeAll { $0.id == stageID }
         self.updatedAt = updatedAt
     }
 

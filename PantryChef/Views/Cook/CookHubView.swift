@@ -33,7 +33,7 @@ struct CookHubView: View {
             return "Build a serial or parallel cooking run from your meal plan and recipes."
         }
 
-        return "\(queue.pendingStageCount) upcoming stages • \(queue.completedStageCount) completed"
+        return "\(queue.stages.count) \(queue.stages.count == 1 ? "stage" : "stages") remaining"
     }
 
     private var currentWeekPlannedRecipeEntries: [MealPlanEntry] {

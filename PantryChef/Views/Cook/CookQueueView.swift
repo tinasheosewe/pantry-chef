@@ -47,9 +47,7 @@ struct CookQueueView: View {
                             VStack(alignment: .leading, spacing: PCTokens.spacingSM) {
                                 SectionHeader(
                                     title: queue.name,
-                                    subtitle: queue.pendingStageCount == 0
-                                        ? "All stages are complete or skipped."
-                                        : "\(queue.pendingStageCount) stages remaining • \(queue.completedStageCount) finished"
+                                    subtitle: "\(queue.stages.count) \(queue.stages.count == 1 ? "stage" : "stages") remaining"
                                 )
                                 .padding(.horizontal)
 
