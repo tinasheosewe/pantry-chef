@@ -13,8 +13,7 @@ struct CookHubView: View {
     @State private var showSoloCookMode = false
     @State private var showMultiCookMode = false
     @State private var showMultiCookSelection = false
-    @State private var showMealPlanQueueSelection = false
-    @State private var mealPlanQueueReviewWorkspace: MealPlanCookQueueReviewWorkspace?
+    @State private var showMealPlanQueueFlow = false
     @State private var showNoPlannedMealsAlert = false
     @State private var showRecipeLibraryDrawer = false
     @State private var queueDraft = CookQueueDraft()
@@ -138,42 +137,10 @@ struct CookHubView: View {
                 MultiCookSelectionView()
                     .environment(appState)
             }
-            .sheet(isPresented: $showMealPlanQueueSelection) {
-                MealPlanCookQueueSelectionView(entries: currentWeekPlannedRecipeEntries) { entries in
-                    let sortedEntries = entries.sorted { lhs, rhs in
-                        if lhs.date == rhs.date {
-                            return lhs.mealType.rawValue < rhs.mealType.rawValue
-                        }
-                        return lhs.date < rhs.date
-                    }
-                    guard !sortedEntries.isEmpty else { return }
-                    showMealPlanQueueSelection = false
-                    DispatchQueue.main.async {
-                        mealPlanQueueReviewWorkspace = MealPlanCookQueueReviewWorkspace(entries: sortedEntries)
-                    }
-                }
-            }
-            .sheet(
-                isPresented: Binding(
-                    get: { mealPlanQueueReviewWorkspace != nil },
-                    set: { isPresented in
-                        if !isPresented {
-                            mealPlanQueueReviewWorkspace = nil
-                        }
-                    }
-                )
-            ) {
-                if mealPlanQueueReviewWorkspace != nil {
-                    MealPlanCookQueueReviewView(
-                        workspace: Binding(
-                            get: { mealPlanQueueReviewWorkspace ?? MealPlanCookQueueReviewWorkspace(entries: []) },
-                            set: { mealPlanQueueReviewWorkspace = $0 }
-                        )
-                    ) { workspace in
-                        Task {
-                            await appState.appendCookQueueStages(workspace.buildStages())
-                        }
-                        mealPlanQueueReviewWorkspace = nil
+            .sheet(isPresented: $showMealPlanQueueFlow) {
+                MealPlanCookQueueSelectionView(entries: currentWeekPlannedRecipeEntries) { workspace in
+                    Task {
+                        await appState.appendCookQueueStages(workspace.buildStages())
                     }
                 }
             }
@@ -264,7 +231,7 @@ struct CookHubView: View {
                     if currentWeekPlannedRecipeEntries.isEmpty {
                         showNoPlannedMealsAlert = true
                     } else {
-                        showMealPlanQueueSelection = true
+                        showMealPlanQueueFlow = true
                     }
                 } label: {
                     Label("Add From Meal Plan", systemImage: "calendar.badge.plus")
@@ -840,12 +807,14 @@ private struct MealPlanCookQueueSelectionView: View {
     @Environment(\.dismiss) private var dismiss
 
     let entries: [MealPlanEntry]
-    let onContinue: ([MealPlanEntry]) -> Void
+    let onSave: (MealPlanCookQueueReviewWorkspace) -> Void
 
     @State private var searchText = ""
     @State private var debouncedSearchText = ""
     @State private var selectedEntryIDs: Set<UUID> = []
     @State private var searchDebouncer = TaskDebouncer()
+    @State private var showingReview = false
+    @State private var reviewWorkspace = MealPlanCookQueueReviewWorkspace(entries: [])
 
     private var filteredEntries: [MealPlanEntry] {
         SearchQuerySupport.filtered(entries, query: debouncedSearchText) { entry in
@@ -917,43 +886,62 @@ private struct MealPlanCookQueueSelectionView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Close") { dismiss() }
+                    Button("Cancel") { dismiss() }
+                }
+                ToolbarItem(placement: .primaryAction) {
+                    if !selectedEntries.isEmpty {
+                        Button {
+                            let sorted = selectedEntries.sorted { lhs, rhs in
+                                if lhs.date == rhs.date {
+                                    return lhs.mealType.rawValue < rhs.mealType.rawValue
+                                }
+                                return lhs.date < rhs.date
+                            }
+                            reviewWorkspace = MealPlanCookQueueReviewWorkspace(entries: sorted)
+                            showingReview = true
+                        } label: {
+                            HStack(spacing: 4) {
+                                Text("Review")
+                                Text("\(selectedEntries.count)")
+                                    .font(.caption2)
+                                    .fontWeight(.bold)
+                                    .padding(.horizontal, 6)
+                                    .padding(.vertical, 2)
+                                    .background(PCColors.accent)
+                                    .foregroundStyle(.white)
+                                    .clipShape(Capsule())
+                            }
+                        }
+                    }
                 }
             }
             .safeAreaInset(edge: .bottom) {
-                VStack(spacing: 10) {
-                    Divider()
-                    HStack(spacing: 12) {
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(selectedEntries.isEmpty ? "Select meals to queue" : "\(selectedEntries.count) meals selected")
-                                .font(.subheadline)
-                                .fontWeight(.semibold)
-                                .foregroundStyle(PCColors.textPrimary)
-                            Text("Recipe scaling and meal-plan links carry into the queue.")
-                                .font(.caption)
-                                .foregroundStyle(PCColors.textSecondary)
+                if !selectedEntries.isEmpty {
+                    VStack(spacing: 0) {
+                        Divider()
+                        HStack(spacing: 12) {
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("\(selectedEntries.count) meals selected")
+                                    .font(.subheadline)
+                                    .fontWeight(.semibold)
+                                    .foregroundStyle(PCColors.textPrimary)
+                                Text("Recipe scaling and meal-plan links carry into the queue.")
+                                    .font(.caption)
+                                    .foregroundStyle(PCColors.textSecondary)
+                            }
+                            Spacer()
                         }
-
-                        Spacer()
-
-                        Button {
-                            onContinue(selectedEntries)
-                        } label: {
-                            Text("Review")
-                                .font(.subheadline)
-                                .fontWeight(.semibold)
-                                .padding(.horizontal, 16)
-                                .padding(.vertical, 12)
-                                .background(selectedEntries.isEmpty ? PCColors.textTertiary : PCColors.info)
-                                .foregroundStyle(.white)
-                                .clipShape(Capsule())
-                        }
-                        .disabled(selectedEntries.isEmpty)
+                        .padding(.horizontal)
+                        .padding(.vertical, 10)
                     }
-                    .padding(.horizontal)
-                    .padding(.bottom, 8)
+                    .background(.ultraThinMaterial)
                 }
-                .background(.ultraThinMaterial)
+            }
+            .navigationDestination(isPresented: $showingReview) {
+                MealPlanCookQueueReviewView(workspace: $reviewWorkspace) { workspace in
+                    onSave(workspace)
+                    dismiss()
+                }
             }
         }
     }
@@ -999,7 +987,6 @@ private struct MealPlanCookQueueSelectionView: View {
 }
 
 struct MealPlanCookQueueReviewView: View {
-    @Environment(\.dismiss) private var dismiss
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
 
     @Binding var workspace: MealPlanCookQueueReviewWorkspace
@@ -1010,32 +997,35 @@ struct MealPlanCookQueueReviewView: View {
     }
 
     var body: some View {
-        NavigationStack {
-            Group {
-                if horizontalSizeClass == .regular {
-                    NavigationSplitView {
-                        draftSidebar
-                    } detail: {
-                        draftDetail
-                    }
-                } else {
-                    VStack(spacing: 0) {
-                        draftSidebar
-                        Divider()
-                        draftDetail
-                    }
+        Group {
+            if horizontalSizeClass == .regular {
+                NavigationSplitView {
+                    draftSidebar
+                } detail: {
+                    draftDetail
+                }
+            } else {
+                VStack(spacing: 0) {
+                    draftSidebar
+                    Divider()
+                    draftDetail
                 }
             }
-            .navigationTitle("Review Queue")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Close") { dismiss() }
+        }
+        .navigationTitle("Review Queue")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .confirmationAction) {
+                Button {
+                    onSave(workspace)
+                } label: {
+                    Text("Add to Queue")
                 }
+                .disabled(!canSave)
             }
-            .safeAreaInset(edge: .bottom) {
-                summaryBar
-            }
+        }
+        .safeAreaInset(edge: .bottom) {
+            summaryBar
         }
     }
 
@@ -1189,7 +1179,7 @@ struct MealPlanCookQueueReviewView: View {
     }
 
     private var summaryBar: some View {
-        VStack(spacing: 10) {
+        VStack(spacing: 0) {
             Divider()
             HStack(spacing: 12) {
                 VStack(alignment: .leading, spacing: 2) {
@@ -1201,25 +1191,10 @@ struct MealPlanCookQueueReviewView: View {
                         .font(.caption)
                         .foregroundStyle(PCColors.textSecondary)
                 }
-
                 Spacer()
-
-                Button {
-                    onSave(workspace)
-                } label: {
-                    Text("Add to Queue")
-                        .font(.subheadline)
-                        .fontWeight(.semibold)
-                        .padding(.horizontal, 16)
-                        .padding(.vertical, 12)
-                        .background(canSave ? PCColors.accent : PCColors.textTertiary)
-                        .foregroundStyle(.white)
-                        .clipShape(Capsule())
-                }
-                .disabled(!canSave)
             }
             .padding(.horizontal)
-            .padding(.bottom, 8)
+            .padding(.vertical, 10)
         }
         .background(.ultraThinMaterial)
     }

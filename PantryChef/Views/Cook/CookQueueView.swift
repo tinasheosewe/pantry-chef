@@ -68,7 +68,7 @@ struct CookQueueView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Close") { dismiss() }
+                    Button("Cancel") { dismiss() }
                 }
                 if queue != nil {
                     ToolbarItem(placement: .primaryAction) {

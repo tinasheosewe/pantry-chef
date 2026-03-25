@@ -320,7 +320,7 @@ struct PantryCookReviewSheet: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .cancellationAction) {
-                Button("Close") {
+                Button("Cancel") {
                     dismiss()
                 }
             }

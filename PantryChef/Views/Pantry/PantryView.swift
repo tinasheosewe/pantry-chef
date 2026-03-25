@@ -338,54 +338,49 @@ struct BulkAddPantryView: View {
     let viewModel: PantryViewModel
     @State private var editingDraft: PantryIntakeRowDraft?
     @State private var isSaving = false
+    @State private var showingReview = false
     @FocusState private var isCatalogSearchFocused: Bool
 
     var body: some View {
         @Bindable var viewModel = viewModel
 
         NavigationStack {
-            VStack(spacing: 0) {
-                Picker("Mode", selection: $viewModel.bulkAdd.selectedTab) {
-                    ForEach(PantryBulkAddViewModel.Tab.allCases) { tab in
-                        Text(tab.rawValue).tag(tab)
+            addTab(viewModel: viewModel)
+                .background(PCColors.background)
+                .navigationTitle("Add To Pantry")
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .cancellationAction) {
+                        Button("Cancel") { dismiss() }
                     }
-                }
-                .pickerStyle(.segmented)
-                .padding(.horizontal)
-                .padding(.top, 12)
-
-                ZStack {
-                    addTab(viewModel: viewModel)
-                        .opacity(viewModel.bulkAdd.selectedTab == .search ? 1 : 0)
-                        .allowsHitTesting(viewModel.bulkAdd.selectedTab == .search)
-                        .accessibilityHidden(viewModel.bulkAdd.selectedTab != .search)
-                        .zIndex(viewModel.bulkAdd.selectedTab == .search ? 1 : 0)
-
-                    bulkStagingTab(viewModel: viewModel)
-                        .opacity(viewModel.bulkAdd.selectedTab == .review ? 1 : 0)
-                        .allowsHitTesting(viewModel.bulkAdd.selectedTab == .review)
-                        .accessibilityHidden(viewModel.bulkAdd.selectedTab != .review)
-                        .zIndex(viewModel.bulkAdd.selectedTab == .review ? 1 : 0)
-                }
-            }
-            .background(PCColors.background)
-            .navigationTitle("Add To Pantry")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Close") { dismiss() }
-                }
-                ToolbarItem(placement: .primaryAction) {
-                    if viewModel.bulkAdd.hasStagedRows {
-                        Button("Review") {
-                            viewModel.bulkAdd.selectedTab = .review
+                    ToolbarItem(placement: .primaryAction) {
+                        if viewModel.bulkAdd.hasStagedRows {
+                            Button {
+                                showingReview = true
+                            } label: {
+                                HStack(spacing: 4) {
+                                    Text("Review")
+                                    Text("\(viewModel.bulkAdd.stagedRows.count)")
+                                        .font(.caption2)
+                                        .fontWeight(.bold)
+                                        .padding(.horizontal, 6)
+                                        .padding(.vertical, 2)
+                                        .background(PCColors.accent)
+                                        .foregroundStyle(.white)
+                                        .clipShape(Capsule())
+                                }
+                            }
                         }
                     }
                 }
-            }
-            .safeAreaInset(edge: .bottom) {
-                bulkSummaryBar(viewModel: viewModel)
-            }
+                .safeAreaInset(edge: .bottom) {
+                    if viewModel.bulkAdd.hasStagedRows {
+                        searchSummaryBar(viewModel: viewModel)
+                    }
+                }
+                .navigationDestination(isPresented: $showingReview) {
+                    reviewDestination(viewModel: viewModel)
+                }
         }
         .sheet(item: $editingDraft) { draft in
             PantryDraftEditorView(
@@ -485,6 +480,7 @@ struct BulkAddPantryView: View {
                         if !viewModel.bulkAdd.catalogSearchText.trimmed.isEmpty {
                             Button {
                                 viewModel.bulkAdd.stageCustomItem(named: viewModel.bulkAdd.catalogSearchText)
+                                showingReview = true
                             } label: {
                                 Label("Add \"\(viewModel.bulkAdd.catalogSearchText.trimmed)\" as a custom pantry item", systemImage: "square.and.pencil")
                                     .font(.subheadline)
@@ -684,74 +680,79 @@ struct BulkAddPantryView: View {
         }
     }
 
-    private func bulkSummaryBar(viewModel: PantryViewModel) -> some View {
-        VStack(spacing: 10) {
-            Divider()
-            HStack(spacing: 12) {
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(viewModel.bulkAdd.hasStagedRows ? "\(viewModel.bulkAdd.stagedRows.count) items selected" : "Select items to build your batch")
-                        .font(.subheadline)
-                        .fontWeight(.semibold)
-                        .foregroundStyle(PCColors.textPrimary)
-                    Text(summarySubtitle(viewModel: viewModel))
-                        .font(.caption)
-                        .foregroundStyle(PCColors.textSecondary)
-                }
-
-                Spacer()
-
-                Button {
-                    if viewModel.bulkAdd.selectedTab == .search {
-                        viewModel.bulkAdd.selectedTab = .review
-                    } else {
+    private func reviewDestination(viewModel: PantryViewModel) -> some View {
+        bulkStagingTab(viewModel: viewModel)
+            .background(PCColors.background)
+            .navigationTitle("Review Items")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button {
                         Task {
                             isSaving = true
                             let validRows = viewModel.bulkAdd.stagedRows.filter { $0.rowState == .valid }
                             _ = await viewModel.addStagedItems(validRows)
                             viewModel.bulkAdd.stagedRows.removeAll { $0.rowState == .valid }
                             isSaving = false
-
                             if viewModel.bulkAdd.stagedRows.isEmpty {
                                 dismiss()
-                            } else {
-                                viewModel.bulkAdd.selectedTab = .review
                             }
                         }
-                    }
-                } label: {
-                    HStack(spacing: 8) {
-                        if isSaving && viewModel.bulkAdd.selectedTab == .review {
+                    } label: {
+                        if isSaving {
                             ProgressView()
-                                .tint(.white)
+                        } else {
+                            Text("Add to Pantry")
                         }
-                        Text(primaryButtonTitle(viewModel: viewModel))
                     }
-                    .font(.subheadline)
-                    .fontWeight(.semibold)
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 12)
-                    .background(primaryButtonColor(viewModel: viewModel))
-                    .foregroundStyle(.white)
-                    .clipShape(Capsule())
+                    .disabled(isSaving || viewModel.bulkAdd.validRowCount == 0)
                 }
-                .disabled(isPrimaryButtonDisabled(viewModel: viewModel))
+            }
+            .safeAreaInset(edge: .bottom) {
+                reviewSummaryBar(viewModel: viewModel)
+            }
+    }
+
+    private func searchSummaryBar(viewModel: PantryViewModel) -> some View {
+        VStack(spacing: 0) {
+            Divider()
+            HStack(spacing: 12) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("\(viewModel.bulkAdd.stagedRows.count) items selected")
+                        .font(.subheadline)
+                        .fontWeight(.semibold)
+                        .foregroundStyle(PCColors.textPrimary)
+                    Text("Review them before adding to your pantry")
+                        .font(.caption)
+                        .foregroundStyle(PCColors.textSecondary)
+                }
+                Spacer()
             }
             .padding(.horizontal)
-            .padding(.bottom, 8)
+            .padding(.vertical, 10)
         }
         .background(.ultraThinMaterial)
     }
 
-    private func summarySubtitle(viewModel: PantryViewModel) -> String {
-        if !viewModel.bulkAdd.hasStagedRows {
-            return "Browse categories or search the catalog, then review your selections"
+    private func reviewSummaryBar(viewModel: PantryViewModel) -> some View {
+        VStack(spacing: 0) {
+            Divider()
+            HStack(spacing: 12) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("\(viewModel.bulkAdd.stagedRows.count) items selected")
+                        .font(.subheadline)
+                        .fontWeight(.semibold)
+                        .foregroundStyle(PCColors.textPrimary)
+                    Text("\(viewModel.bulkAdd.validRowCount) ready to add now")
+                        .font(.caption)
+                        .foregroundStyle(PCColors.textSecondary)
+                }
+                Spacer()
+            }
+            .padding(.horizontal)
+            .padding(.vertical, 10)
         }
-
-        if viewModel.bulkAdd.selectedTab == .search {
-            return "Review them before adding to your pantry"
-        }
-
-        return "\(viewModel.bulkAdd.validRowCount) ready to add now"
+        .background(.ultraThinMaterial)
     }
 
     private func catalogDefaultLabel(for draft: PantryIntakeRowDraft, savedDefault: PantryItemDefaultPreference?) -> String? {
@@ -819,45 +820,6 @@ struct BulkAddPantryView: View {
             .split(separator: " ")
             .map { $0.prefix(1).uppercased() + $0.dropFirst().lowercased() }
             .joined(separator: " ")
-    }
-
-    private func primaryButtonTitle(viewModel: PantryViewModel) -> String {
-        viewModel.bulkAdd.selectedTab == .search ? "Review" : "Add to Pantry"
-    }
-
-    private func primaryButtonColor(viewModel: PantryViewModel) -> Color {
-        switch viewModel.bulkAdd.selectedTab {
-        case .search:
-            return viewModel.bulkAdd.hasStagedRows ? PCColors.info : PCColors.textTertiary
-        case .review:
-            return viewModel.bulkAdd.validRowCount > 0 ? PCColors.accent : PCColors.textTertiary
-        }
-    }
-
-    private func isPrimaryButtonDisabled(viewModel: PantryViewModel) -> Bool {
-        if isSaving {
-            return true
-        }
-
-        switch viewModel.bulkAdd.selectedTab {
-        case .search:
-            return !viewModel.bulkAdd.hasStagedRows
-        case .review:
-            return viewModel.bulkAdd.validRowCount == 0
-        }
-    }
-
-    private func borderColor(for state: PantryIntakeRowState) -> Color {
-        switch state {
-        case .valid:
-            return PCColors.accent.opacity(0.6)
-        case .invalid:
-            return PCColors.expired.opacity(0.55)
-        case .incomplete:
-            return PCColors.expiring.opacity(0.55)
-        case .empty:
-            return Color.clear
-        }
     }
 }
 

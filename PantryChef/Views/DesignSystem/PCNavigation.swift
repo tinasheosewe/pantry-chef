@@ -329,7 +329,7 @@ struct PCPantryCookReviewSheet: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .cancellationAction) {
-                Button("Close") { dismiss() }
+                Button("Cancel") { dismiss() }
             }
         }
     }

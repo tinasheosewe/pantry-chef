@@ -5,12 +5,8 @@ struct MealPlanView: View {
     @State private var selectedMealEntry: MealPlanEntry?
     @State private var selectedMealSlot: MealSlotPresentation?
     @State private var shoppingConfirmation: ShoppingListConfirmationRequest?
-    @State private var showPreparedFoodSelection = false
-    @State private var showPreparedFoodReview = false
-    @State private var preparedFoodDrafts: [MealPlanPreparedDishReviewDraft] = []
-    @State private var showMealLoggingSelection = false
-    @State private var showMealLoggingReview = false
-    @State private var mealLoggingDrafts: [MealPlanEatenReviewDraft] = []
+    @State private var showPreparedFoodFlow = false
+    @State private var showMealLoggingFlow = false
 
     init(appState: AppState) {
         _viewModel = State(initialValue: MealPlanViewModel(appState: appState))
@@ -37,47 +33,18 @@ struct MealPlanView: View {
             .shoppingListConfirmation($shoppingConfirmation) { itemsToAdd in
                 viewModel.addShoppingItems(itemsToAdd)
             }
-            .sheet(isPresented: $showPreparedFoodSelection) {
-                PreparedDishMealPlanSelectionView(appState: viewModel.appState) { entries in
-                    preparedFoodDrafts = entries.map(MealPlanPreparedDishReviewDraft.init)
-                    showPreparedFoodSelection = false
-                    Task { @MainActor in
-                        showPreparedFoodReview = true
-                    }
-                }
-            }
-            .sheet(isPresented: $showPreparedFoodReview, onDismiss: {
-                preparedFoodDrafts = []
-            }) {
-                PreparedDishMealPlanReviewView(appState: viewModel.appState, drafts: $preparedFoodDrafts) { dishes in
+            .sheet(isPresented: $showPreparedFoodFlow) {
+                PreparedDishMealPlanSelectionView(appState: viewModel.appState) { dishes in
                     Task {
                         for dish in dishes {
                             await viewModel.appState.addPreparedDish(dish)
                         }
                     }
-                    showPreparedFoodReview = false
                 }
             }
-            .sheet(isPresented: $showMealLoggingSelection) {
-                MealPlanEatenSelectionView(entries: mealEntriesEligibleForLogging) { entries in
-                    mealLoggingDrafts = entries.map {
-                        MealPlanEatenReviewDraft(
-                            entry: $0,
-                            candidatePreparedDishes: viewModel.appState.matchingPreparedDishes(for: $0)
-                        )
-                    }
-                    showMealLoggingSelection = false
-                    Task { @MainActor in
-                        showMealLoggingReview = true
-                    }
-                }
-            }
-            .sheet(isPresented: $showMealLoggingReview, onDismiss: {
-                mealLoggingDrafts = []
-            }) {
-                MealPlanEatenReviewView(appState: viewModel.appState, drafts: $mealLoggingDrafts) { selections in
+            .sheet(isPresented: $showMealLoggingFlow) {
+                MealPlanEatenSelectionView(appState: viewModel.appState, entries: mealEntriesEligibleForLogging) { selections in
                     viewModel.logEntriesEaten(selections)
-                    showMealLoggingReview = false
                 }
             }
             .sheet(isPresented: $viewModel.showMealPicker) {
@@ -165,7 +132,7 @@ struct MealPlanView: View {
                     tint: PCColors.accent,
                     isDisabled: preparedFoodSourceEntries.isEmpty,
                     action: {
-                        showPreparedFoodSelection = true
+                        showPreparedFoodFlow = true
                     }
                 )
 
@@ -175,7 +142,7 @@ struct MealPlanView: View {
                     tint: PCColors.expiring,
                     isDisabled: false,
                     action: {
-                        showMealLoggingSelection = true
+                        showMealLoggingFlow = true
                     }
                 )
 
@@ -622,13 +589,16 @@ private struct MealPlanEatenReviewDraft: Identifiable, Hashable {
 private struct MealPlanEatenSelectionView: View {
     @Environment(\.dismiss) private var dismiss
 
+    let appState: AppState
     let entries: [MealPlanEntry]
-    let onContinue: ([MealPlanEntry]) -> Void
+    let onSave: ([MealPlanEatenLoggingSelection]) -> Void
 
     @State private var searchText = ""
     @State private var debouncedSearchText = ""
     @State private var selectedEntryIDs: Set<UUID> = []
     @State private var searchDebouncer = TaskDebouncer()
+    @State private var showingReview = false
+    @State private var reviewDrafts: [MealPlanEatenReviewDraft] = []
 
     private var filteredEntries: [MealPlanEntry] {
         SearchQuerySupport.filtered(entries, query: debouncedSearchText) { entry in
@@ -694,11 +664,44 @@ private struct MealPlanEatenSelectionView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Close") { dismiss() }
+                    Button("Cancel") { dismiss() }
+                }
+                ToolbarItem(placement: .primaryAction) {
+                    if !selectedEntries.isEmpty {
+                        Button {
+                            reviewDrafts = selectedEntries.map {
+                                MealPlanEatenReviewDraft(
+                                    entry: $0,
+                                    candidatePreparedDishes: appState.matchingPreparedDishes(for: $0)
+                                )
+                            }
+                            showingReview = true
+                        } label: {
+                            HStack(spacing: 4) {
+                                Text("Review")
+                                Text("\(selectedEntries.count)")
+                                    .font(.caption2)
+                                    .fontWeight(.bold)
+                                    .padding(.horizontal, 6)
+                                    .padding(.vertical, 2)
+                                    .background(PCColors.accent)
+                                    .foregroundStyle(.white)
+                                    .clipShape(Capsule())
+                            }
+                        }
+                    }
                 }
             }
             .safeAreaInset(edge: .bottom) {
-                selectionSummaryBar
+                if !selectedEntries.isEmpty {
+                    selectionSummaryBar
+                }
+            }
+            .navigationDestination(isPresented: $showingReview) {
+                MealPlanEatenReviewView(appState: appState, drafts: $reviewDrafts) { selections in
+                    onSave(selections)
+                    dismiss()
+                }
             }
         }
     }
@@ -744,11 +747,11 @@ private struct MealPlanEatenSelectionView: View {
     }
 
     private var selectionSummaryBar: some View {
-        VStack(spacing: 10) {
+        VStack(spacing: 0) {
             Divider()
             HStack(spacing: 12) {
                 VStack(alignment: .leading, spacing: 2) {
-                    Text(selectedEntries.isEmpty ? "Select meals to update" : "\(selectedEntries.count) meals selected")
+                    Text("\(selectedEntries.count) meals selected")
                         .font(.subheadline)
                         .fontWeight(.semibold)
                         .foregroundStyle(PCColors.textPrimary)
@@ -756,25 +759,10 @@ private struct MealPlanEatenSelectionView: View {
                         .font(.caption)
                         .foregroundStyle(PCColors.textSecondary)
                 }
-
                 Spacer()
-
-                Button {
-                    onContinue(selectedEntries)
-                } label: {
-                    Text("Review")
-                        .font(.subheadline)
-                        .fontWeight(.semibold)
-                        .padding(.horizontal, 16)
-                        .padding(.vertical, 12)
-                        .background(selectedEntries.isEmpty ? PCColors.textTertiary : PCColors.info)
-                        .foregroundStyle(.white)
-                        .clipShape(Capsule())
-                }
-                .disabled(selectedEntries.isEmpty)
             }
             .padding(.horizontal)
-            .padding(.bottom, 8)
+            .padding(.vertical, 10)
         }
         .background(.ultraThinMaterial)
     }
@@ -809,8 +797,7 @@ private struct MealPlanEatenReviewView: View {
     }
 
     var body: some View {
-        NavigationStack {
-            VStack(spacing: 0) {
+        VStack(spacing: 0) {
                 if drafts.isEmpty {
                     EmptyStateView(
                         icon: "fork.knife.circle",
@@ -864,14 +851,18 @@ private struct MealPlanEatenReviewView: View {
             .navigationTitle("Log Eating")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Close") { dismiss() }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button {
+                        onSave(drafts.map(\.loggingSelection))
+                    } label: {
+                        Text("Save Eaten Amounts")
+                    }
+                    .disabled(!hasChanges || hasMissingSelections || !overdrawMessages.isEmpty)
                 }
             }
             .safeAreaInset(edge: .bottom) {
                 reviewSummaryBar
             }
-        }
     }
 
     private func reviewRow(_ draft: Binding<MealPlanEatenReviewDraft>) -> some View {
@@ -943,7 +934,7 @@ private struct MealPlanEatenReviewView: View {
     }
 
     private var reviewSummaryBar: some View {
-        VStack(spacing: 10) {
+        VStack(spacing: 0) {
             Divider()
             HStack(spacing: 12) {
                 VStack(alignment: .leading, spacing: 2) {
@@ -955,25 +946,10 @@ private struct MealPlanEatenReviewView: View {
                         .font(.caption)
                         .foregroundStyle(PCColors.textSecondary)
                 }
-
                 Spacer()
-
-                Button {
-                    onSave(drafts.map(\.loggingSelection))
-                } label: {
-                    Text("Save Eaten Amounts")
-                        .font(.subheadline)
-                        .fontWeight(.semibold)
-                        .padding(.horizontal, 16)
-                        .padding(.vertical, 12)
-                        .background(hasChanges && !hasMissingSelections && overdrawMessages.isEmpty ? PCColors.accent : PCColors.textTertiary)
-                        .foregroundStyle(.white)
-                        .clipShape(Capsule())
-                }
-                .disabled(!hasChanges || hasMissingSelections || !overdrawMessages.isEmpty)
             }
             .padding(.horizontal)
-            .padding(.bottom, 8)
+            .padding(.vertical, 10)
         }
         .background(.ultraThinMaterial)
     }

@@ -3,10 +3,8 @@ import SwiftUI
 struct PreparedDishesView: View {
     @State private var viewModel: PreparedDishViewModel
     @FocusState private var isSearchFocused: Bool
-    @State private var showMealPlanQuickAddSelection = false
-    @State private var showMealPlanQuickAddReview = false
+    @State private var showMealPlanQuickAdd = false
     @State private var showHistoryPicker = false
-    @State private var mealPlanQuickAddDrafts: [MealPlanPreparedDishReviewDraft] = []
     @State private var historySeedItem: PreparedDishHistoryItem?
     private let isEmbedded: Bool
 
@@ -125,23 +123,11 @@ struct PreparedDishesView: View {
                 }
             }
         }
-        .sheet(isPresented: $showMealPlanQuickAddSelection) {
-            PreparedDishMealPlanSelectionView(appState: viewModel.appState) { entries in
-                mealPlanQuickAddDrafts = entries.map(MealPlanPreparedDishReviewDraft.init)
-                showMealPlanQuickAddSelection = false
-                Task { @MainActor in
-                    showMealPlanQuickAddReview = true
-                }
-            }
-        }
-        .sheet(isPresented: $showMealPlanQuickAddReview, onDismiss: {
-            mealPlanQuickAddDrafts = []
-        }) {
-            PreparedDishMealPlanReviewView(appState: viewModel.appState, drafts: $mealPlanQuickAddDrafts) { dishes in
+        .sheet(isPresented: $showMealPlanQuickAdd) {
+            PreparedDishMealPlanSelectionView(appState: viewModel.appState) { dishes in
                 for dish in dishes {
                     viewModel.addDish(dish)
                 }
-                showMealPlanQuickAddReview = false
             }
         }
         .sheet(item: $viewModel.editingDish) { dish in
@@ -286,7 +272,7 @@ struct PreparedDishesView: View {
             }
 
             Button {
-                showMealPlanQuickAddSelection = true
+                showMealPlanQuickAdd = true
             } label: {
                 Label("From Meal Plan", systemImage: "calendar.badge.plus")
             }
@@ -653,7 +639,7 @@ private struct PreparedDishHistoryPickerView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Close") { dismiss() }
+                    Button("Cancel") { dismiss() }
                 }
             }
         }
@@ -938,12 +924,14 @@ struct PreparedDishMealPlanSelectionView: View {
     @Environment(\.dismiss) private var dismiss
 
     let appState: AppState
-    let onContinue: ([MealPlanEntry]) -> Void
+    let onSave: ([PreparedDish]) -> Void
 
     @State private var searchText = ""
     @State private var debouncedSearchText = ""
     @State private var selectedEntryIDs: Set<UUID> = []
     @State private var searchDebouncer = TaskDebouncer()
+    @State private var showingReview = false
+    @State private var reviewDrafts: [MealPlanPreparedDishReviewDraft] = []
 
     private var filteredEntries: [MealPlanEntry] {
         let plannedEntries = appState.preparedFoodSourceEntriesFromMealPlan()
@@ -1008,11 +996,39 @@ struct PreparedDishMealPlanSelectionView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Close") { dismiss() }
+                    Button("Cancel") { dismiss() }
+                }
+                ToolbarItem(placement: .primaryAction) {
+                    if !selectedEntries.isEmpty {
+                        Button {
+                            reviewDrafts = selectedEntries.map(MealPlanPreparedDishReviewDraft.init)
+                            showingReview = true
+                        } label: {
+                            HStack(spacing: 4) {
+                                Text("Review")
+                                Text("\(selectedEntries.count)")
+                                    .font(.caption2)
+                                    .fontWeight(.bold)
+                                    .padding(.horizontal, 6)
+                                    .padding(.vertical, 2)
+                                    .background(PCColors.accent)
+                                    .foregroundStyle(.white)
+                                    .clipShape(Capsule())
+                            }
+                        }
+                    }
                 }
             }
             .safeAreaInset(edge: .bottom) {
-                selectionSummaryBar
+                if !selectedEntries.isEmpty {
+                    selectionSummaryBar
+                }
+            }
+            .navigationDestination(isPresented: $showingReview) {
+                PreparedDishMealPlanReviewView(appState: appState, drafts: $reviewDrafts) { dishes in
+                    onSave(dishes)
+                    dismiss()
+                }
             }
         }
     }
@@ -1059,11 +1075,11 @@ struct PreparedDishMealPlanSelectionView: View {
     }
 
     private var selectionSummaryBar: some View {
-        VStack(spacing: 10) {
+        VStack(spacing: 0) {
             Divider()
             HStack(spacing: 12) {
                 VStack(alignment: .leading, spacing: 2) {
-                    Text(selectedEntries.isEmpty ? "Select meal-plan items" : "\(selectedEntries.count) items selected")
+                    Text("\(selectedEntries.count) items selected")
                         .font(.subheadline)
                         .fontWeight(.semibold)
                         .foregroundStyle(PCColors.textPrimary)
@@ -1071,25 +1087,10 @@ struct PreparedDishMealPlanSelectionView: View {
                         .font(.caption)
                         .foregroundStyle(PCColors.textSecondary)
                 }
-
                 Spacer()
-
-                Button {
-                    onContinue(selectedEntries)
-                } label: {
-                    Text("Review")
-                        .font(.subheadline)
-                        .fontWeight(.semibold)
-                        .padding(.horizontal, 16)
-                        .padding(.vertical, 12)
-                        .background(selectedEntries.isEmpty ? PCColors.textTertiary : PCColors.info)
-                        .foregroundStyle(.white)
-                        .clipShape(Capsule())
-                }
-                .disabled(selectedEntries.isEmpty)
             }
             .padding(.horizontal)
-            .padding(.bottom, 8)
+            .padding(.vertical, 10)
         }
         .background(.ultraThinMaterial)
     }
@@ -1110,45 +1111,56 @@ struct PreparedDishMealPlanReviewView: View {
     }
 
     var body: some View {
-        NavigationStack {
-            VStack(spacing: 0) {
-                if drafts.isEmpty {
-                    EmptyStateView(
-                        icon: "square.stack.3d.up.slash",
-                        title: "Nothing selected yet",
-                        message: "Pick meal-plan items first, then review them here."
-                    )
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                } else {
-                    AppList {
-                        Section {
-                            ForEach(drafts) { reviewDraft in
-                                reviewDraftRow(reviewDraft)
-                                    .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
-                            }
-                        } header: {
-                            SectionHeader(
-                                title: "Review Items",
-                                subtitle: "\(validDraftCount) ready • \(drafts.count - validDraftCount) need edits"
-                            )
-                            .padding(.top, 8)
+        VStack(spacing: 0) {
+            if drafts.isEmpty {
+                EmptyStateView(
+                    icon: "square.stack.3d.up.slash",
+                    title: "Nothing selected yet",
+                    message: "Pick meal-plan items first, then review them here."
+                )
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+            } else {
+                AppList {
+                    Section {
+                        ForEach(drafts) { reviewDraft in
+                            reviewDraftRow(reviewDraft)
+                                .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
                         }
+                    } header: {
+                        SectionHeader(
+                            title: "Review Items",
+                            subtitle: "\(validDraftCount) ready • \(drafts.count - validDraftCount) need edits"
+                        )
+                        .padding(.top, 8)
                     }
-                    .listStyle(.plain)
-                    .scrollContentBackground(.hidden)
-                    .background(PCColors.background)
                 }
+                .listStyle(.plain)
+                .scrollContentBackground(.hidden)
+                .background(PCColors.background)
             }
-            .navigationTitle("Review Prepared Food")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Close") { dismiss() }
+        }
+        .background(PCColors.background)
+        .navigationTitle("Review Prepared Food")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .confirmationAction) {
+                Button {
+                    let dishes = drafts.compactMap { $0.buildDish(in: appState) }
+                    guard dishes.count == drafts.count else { return }
+                    isSaving = true
+                    onSave(dishes)
+                } label: {
+                    if isSaving {
+                        ProgressView()
+                    } else {
+                        Text("Add to Prepared Food")
+                    }
                 }
+                .disabled(validDraftCount != drafts.count || drafts.isEmpty || isSaving)
             }
-            .safeAreaInset(edge: .bottom) {
-                reviewSummaryBar
-            }
+        }
+        .safeAreaInset(edge: .bottom) {
+            reviewSummaryBar
         }
         .sheet(item: $editingDraft) { reviewDraft in
             PreparedDishMealPlanDraftEditorView(appState: appState, reviewDraft: reviewDraft) { updatedDraft in
@@ -1201,7 +1213,7 @@ struct PreparedDishMealPlanReviewView: View {
     }
 
     private var reviewSummaryBar: some View {
-        VStack(spacing: 10) {
+        VStack(spacing: 0) {
             Divider()
             HStack(spacing: 12) {
                 VStack(alignment: .leading, spacing: 2) {
@@ -1213,34 +1225,10 @@ struct PreparedDishMealPlanReviewView: View {
                         .font(.caption)
                         .foregroundStyle(PCColors.textSecondary)
                 }
-
                 Spacer()
-
-                Button {
-                    let dishes = drafts.compactMap { $0.buildDish(in: appState) }
-                    guard dishes.count == drafts.count else { return }
-                    isSaving = true
-                    onSave(dishes)
-                } label: {
-                    HStack(spacing: 8) {
-                        if isSaving {
-                            ProgressView()
-                                .tint(.white)
-                        }
-                        Text("Add to Prepared Food")
-                    }
-                    .font(.subheadline)
-                    .fontWeight(.semibold)
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 12)
-                    .background(validDraftCount == drafts.count && !drafts.isEmpty ? PCColors.accent : PCColors.textTertiary)
-                    .foregroundStyle(.white)
-                    .clipShape(Capsule())
-                }
-                .disabled(validDraftCount != drafts.count || drafts.isEmpty || isSaving)
             }
             .padding(.horizontal)
-            .padding(.bottom, 8)
+            .padding(.vertical, 10)
         }
         .background(.ultraThinMaterial)
     }

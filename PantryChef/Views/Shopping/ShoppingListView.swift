@@ -482,6 +482,14 @@ private struct ShoppingPantryReviewView: View {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") { dismiss() }
                 }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button {
+                        onSave(items)
+                    } label: {
+                        Text("Add to Pantry")
+                    }
+                    .disabled(items.isEmpty)
+                }
             }
             .safeAreaInset(edge: .bottom) {
                 summaryBar
@@ -545,7 +553,7 @@ private struct ShoppingPantryReviewView: View {
     }
 
     private var summaryBar: some View {
-        VStack(spacing: 10) {
+        VStack(spacing: 0) {
             Divider()
             HStack(spacing: 12) {
                 VStack(alignment: .leading, spacing: 2) {
@@ -557,25 +565,10 @@ private struct ShoppingPantryReviewView: View {
                         .font(.caption)
                         .foregroundStyle(PCColors.textSecondary)
                 }
-
                 Spacer()
-
-                Button {
-                    onSave(items)
-                } label: {
-                    Text("Add to Pantry")
-                        .font(.subheadline)
-                        .fontWeight(.semibold)
-                        .padding(.horizontal, 16)
-                        .padding(.vertical, 12)
-                        .background(items.isEmpty ? PCColors.textTertiary : PCColors.accent)
-                        .foregroundStyle(.white)
-                        .clipShape(Capsule())
-                }
-                .disabled(items.isEmpty)
             }
             .padding(.horizontal)
-            .padding(.bottom, 8)
+            .padding(.vertical, 10)
         }
         .background(.ultraThinMaterial)
     }
