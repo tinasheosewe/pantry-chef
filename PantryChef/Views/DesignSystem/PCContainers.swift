@@ -16,6 +16,7 @@ struct PCScreen<Content: View>: View {
             content
                 .accessibilityIdentifier(screenID)
                 .background(PCColors.background)
+                .navigationBarTitleDisplayMode(.inline)
         }
     }
 }
@@ -32,6 +33,7 @@ struct PCSheet<Content: View>: View {
     var body: some View {
         NavigationStack {
             content
+                .navigationBarTitleDisplayMode(.inline)
         }
     }
 }

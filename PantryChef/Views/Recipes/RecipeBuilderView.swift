@@ -184,7 +184,6 @@ struct RecipeBuilderView: View {
             }
             .background(PCColors.background)
             .navigationTitle("Recipe Builder")
-            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") { dismiss() }

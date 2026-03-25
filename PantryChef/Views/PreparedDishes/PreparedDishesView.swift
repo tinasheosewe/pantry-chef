@@ -405,7 +405,6 @@ struct PreparedDishDetailView: View {
         }
         .background(PCColors.background)
         .navigationTitle(currentDish.name)
-        .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
                 Button("Edit") {
@@ -512,7 +511,6 @@ struct PreparedDishEditorView: View {
             }
             .background(PCColors.background)
             .navigationTitle(existingDish == nil ? "Add Prepared Dish" : "Edit Prepared Dish")
-            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") { dismiss() }
@@ -598,7 +596,6 @@ private struct PreparedDishHistoryPickerView: View {
                 }
             }
             .navigationTitle("Re-add Previous")
-            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") { dismiss() }
@@ -955,7 +952,6 @@ struct PreparedDishMealPlanSelectionView: View {
                 }
             }
             .navigationTitle("From Meal Plan")
-            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") { dismiss() }
@@ -1103,7 +1099,6 @@ struct PreparedDishMealPlanReviewView: View {
         }
         .background(PCColors.background)
         .navigationTitle("Review Prepared Food")
-        .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .confirmationAction) {
                 Button {
@@ -1228,7 +1223,6 @@ struct PreparedDishMealPlanDraftEditorView: View {
             }
             .background(PCColors.background)
             .navigationTitle("Edit Selected Item")
-            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") { dismiss() }

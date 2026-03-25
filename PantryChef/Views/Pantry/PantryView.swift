@@ -287,7 +287,6 @@ struct AddPantryItemView: View {
                 )
             }
             .navigationTitle(isEditing ? "Edit Item" : "Add Item")
-            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") { dismiss() }
@@ -325,7 +324,6 @@ struct BulkAddPantryView: View {
             addTab(viewModel: viewModel)
                 .background(PCColors.background)
                 .navigationTitle("Add To Pantry")
-                .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
                     ToolbarItem(placement: .cancellationAction) {
                         Button("Cancel") { dismiss() }
@@ -661,7 +659,6 @@ struct BulkAddPantryView: View {
         bulkStagingTab(viewModel: viewModel)
             .background(PCColors.background)
             .navigationTitle("Review Items")
-            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
                     Button {
@@ -918,7 +915,6 @@ struct PantryDraftEditorView: View {
                 )
             }
             .navigationTitle("Edit Selected Item")
-            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") { dismiss() }

@@ -871,7 +871,6 @@ private struct IngredientResolutionReviewView: View {
             }
         }
         .navigationTitle("Resolve Ingredients")
-        .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .cancellationAction) {
                 Button("Back") {

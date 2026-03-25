@@ -88,7 +88,6 @@ struct IngredientGatheringView: View {
             }
             .background(PCColors.background)
             .navigationTitle("Gather Ingredients")
-            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") { dismiss() }

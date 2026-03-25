@@ -37,7 +37,6 @@ struct ShoppingListView: View {
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             .navigationTitle("Shopping List")
-            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
                     Menu {
@@ -346,7 +345,6 @@ private struct ShoppingAddItemView: View {
             }
         }
         .navigationTitle("Add Shopping Item")
-        .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .cancellationAction) {
                 Button("Cancel") {
@@ -478,7 +476,6 @@ private struct ShoppingPantryReviewView: View {
                 }
             }
             .navigationTitle("Review Pantry Intake")
-            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") { dismiss() }
@@ -650,7 +647,6 @@ private struct ShoppingPantryPlanEditorView: View {
                 }
             }
             .navigationTitle("Pantry Plan")
-            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") { dismiss() }

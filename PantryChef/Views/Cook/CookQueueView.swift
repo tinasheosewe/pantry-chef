@@ -65,7 +65,6 @@ struct CookQueueView: View {
                 }
             }
             .navigationTitle("Cook Queue")
-            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") { dismiss() }

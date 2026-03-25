@@ -58,6 +58,7 @@ struct AppScreen<Content: View>: View {
                 content
                     .accessibilityIdentifier(screenID)
                     .background(PCColors.background)
+                    .navigationBarTitleDisplayMode(.inline)
             }
         }
     }
@@ -73,6 +74,7 @@ struct AppNavigationSheet<Content: View>: View {
     var body: some View {
         NavigationStack {
             content
+                .navigationBarTitleDisplayMode(.inline)
         }
     }
 }
@@ -279,7 +281,6 @@ struct PantryCookReviewSheet: View {
         }
         .background(AppColors.background)
         .navigationTitle("Pantry Review")
-        .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .cancellationAction) {
                 Button("Cancel") {

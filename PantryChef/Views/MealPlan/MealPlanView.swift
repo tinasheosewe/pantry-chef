@@ -455,7 +455,6 @@ private struct MealSlotEntriesView: View {
             }
         }
         .navigationTitle("Meal Slot")
-        .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItemGroup(placement: .primaryAction) {
                 Button("Replace") {
@@ -661,7 +660,6 @@ private struct MealPlanEatenSelectionView: View {
                 }
             }
             .navigationTitle("Log Eating")
-            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") { dismiss() }
@@ -849,7 +847,6 @@ private struct MealPlanEatenReviewView: View {
                 }
             }
             .navigationTitle("Log Eating")
-            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
                     Button {
@@ -1117,7 +1114,6 @@ struct MealPickerView: View {
                 }
             }
             .navigationTitle("Choose Meal")
-            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") { dismiss() }
@@ -1212,7 +1208,6 @@ struct MultiMealPickerView: View {
                 }
             }
             .navigationTitle("Add Multiple")
-            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") { dismiss() }

@@ -120,7 +120,6 @@ struct CookHubView: View {
                 recipeLibraryDrawer
             }
             .navigationTitle("Cook")
-            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 if appState.cookQueue != nil {
                     ToolbarItem(placement: .primaryAction) {
@@ -883,7 +882,6 @@ private struct MealPlanCookQueueSelectionView: View {
                 }
             }
             .navigationTitle("Add From Meal Plan")
-            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") { dismiss() }
@@ -1013,7 +1011,6 @@ struct MealPlanCookQueueReviewView: View {
             }
         }
         .navigationTitle("Review Queue")
-        .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .confirmationAction) {
                 Button {

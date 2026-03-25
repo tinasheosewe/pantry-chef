@@ -104,7 +104,6 @@ private struct RecipeMultiCookQueueSelectionView: View {
                 }
             }
             .navigationTitle("Queue Multi-Cook")
-            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") { dismiss() }
@@ -190,7 +189,6 @@ struct RecipeDetailView: View {
             }
         }
         .background(PCColors.background)
-        .navigationBarTitleDisplayMode(.inline)
         .onAppear {
             existingSession = CookingSession.load(recipeId: recipe.id)
         }
@@ -267,7 +265,6 @@ struct RecipeDetailView: View {
                 }
             )
             .navigationTitle("Edit Recipe")
-            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") { showEditor = false }
@@ -927,7 +924,6 @@ struct SubstitutionsView: View {
                 }
             }
             .navigationTitle("Substitutions")
-            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Done") { dismiss() }
@@ -1047,7 +1043,6 @@ struct HealthierView: View {
                 }
             }
             .navigationTitle("Make It Healthier")
-            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Done") { dismiss() }
@@ -1082,7 +1077,6 @@ struct ShoppingPreviewView: View {
                 }
             }
             .navigationTitle("What to Buy")
-            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Done") { dismiss() }
@@ -1131,7 +1125,6 @@ struct AddRecipeView: View {
             }
             .background(PCColors.background)
             .navigationTitle(importedRecipeDraft != nil ? "Review Recipe" : "Add Recipe")
-            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") { dismiss() }
@@ -1339,7 +1332,6 @@ struct ImportRecipeURLView: View {
                 Spacer()
             }
             .padding(.top, 40)
-            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") { dismiss() }

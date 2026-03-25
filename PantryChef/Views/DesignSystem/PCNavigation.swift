@@ -303,7 +303,6 @@ struct PCPantryCookReviewSheet: View {
         }
         .background(PCColors.background)
         .navigationTitle("Pantry Review")
-        .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .cancellationAction) {
                 Button("Cancel") {

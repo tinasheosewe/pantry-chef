@@ -136,7 +136,6 @@ struct RecipeListView: View {
                     viewModel.importedRecipeDraft = nil
                 }
                 .navigationTitle("Review Recipe")
-                .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
                     ToolbarItem(placement: .cancellationAction) {
                         Button("Cancel") {
@@ -774,7 +773,6 @@ struct WhatCanIMakeView: View {
                 }
             }
             .navigationTitle("What Can I Make?")
-            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Done") { dismiss() }

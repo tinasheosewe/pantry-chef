@@ -37,7 +37,6 @@ struct KitchenView: View {
                 }
             }
             .navigationTitle("Prepared Food")
-            .navigationBarTitleDisplayMode(.inline)
         }
     }
 

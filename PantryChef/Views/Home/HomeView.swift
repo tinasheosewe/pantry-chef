@@ -56,7 +56,6 @@ struct HomeView: View {
                 }
                 .padding()
             }
-            .navigationBarTitleDisplayMode(.inline)
             .refreshable {
                 await viewModel.appState.loadAllData()
                 viewModel.refresh()

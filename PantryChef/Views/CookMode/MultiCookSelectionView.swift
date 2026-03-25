@@ -121,7 +121,6 @@ struct MultiCookSelectionView: View {
                 .listStyle(.insetGrouped)
             }
             .navigationTitle("Multi-Cook")
-            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") { dismiss() }
