@@ -27,26 +27,33 @@ struct CookQueueView: View {
         NavigationStack {
             VStack(spacing: 0) {
                 if let queue, !queue.stages.isEmpty {
-                    AppList {
-                        Section {
+                    ScrollView {
+                        LazyVStack(spacing: PCTokens.spacingMD) {
                             Text("Queue recipes or meal-plan meals into solo or parallel stages. Finish a stage to unlock the next one without losing your place.")
                                 .font(.subheadline)
                                 .foregroundStyle(PCColors.textSecondary)
-                        }
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .padding(.horizontal)
+                                .padding(.top, PCTokens.spacingSM)
 
-                        Section {
-                            ForEach(queue.stages) { stage in
-                                queueStageRow(stage)
+                            VStack(alignment: .leading, spacing: PCTokens.spacingSM) {
+                                SectionHeader(
+                                    title: queue.name,
+                                    subtitle: queue.pendingStageCount == 0
+                                        ? "All stages are complete or skipped."
+                                        : "\(queue.pendingStageCount) stages remaining • \(queue.completedStageCount) finished"
+                                )
+                                .padding(.horizontal)
+
+                                ForEach(queue.stages) { stage in
+                                    queueStageRow(stage)
+                                        .padding(PCTokens.cardPadding)
+                                        .pcCard()
+                                        .padding(.horizontal)
+                                }
                             }
-                        } header: {
-                            SectionHeader(
-                                title: queue.name,
-                                subtitle: queue.pendingStageCount == 0
-                                    ? "All stages are complete or skipped."
-                                    : "\(queue.pendingStageCount) stages remaining • \(queue.completedStageCount) finished"
-                            )
-                            .padding(.top, 8)
                         }
+                        .padding(.bottom, PCTokens.spacingLG)
                     }
                 } else {
                     EmptyStateView(
@@ -255,7 +262,6 @@ struct CookQueueView: View {
                 }
             }
         }
-        .padding(.vertical, 6)
     }
 
     private func canMoveStage(_ stage: CookQueueStage, by offset: Int) -> Bool {

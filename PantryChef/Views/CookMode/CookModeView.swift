@@ -31,7 +31,7 @@ struct CookModeView: View {
 
     var body: some View {
         ZStack {
-            PCColors.background.ignoresSafeArea()
+            Color.black.ignoresSafeArea()
             if let viewModel {
                 cookContent(vm: viewModel)
             } else {
@@ -39,6 +39,7 @@ struct CookModeView: View {
                     .tint(PCColors.accent)
             }
         }
+        .preferredColorScheme(.dark)
         .onAppear {
             if viewModel == nil {
                 let realtime = RealtimeService()
