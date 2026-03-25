@@ -217,8 +217,8 @@ struct RecipeDetailView: View {
         }
         .sheet(isPresented: $showGathering) {
             IngredientGatheringView(recipes: [scaledRecipe]) {
-                showGathering = false
-                showCookMode = true
+                CookModeView(recipe: scaledRecipe)
+                    .environment(appState)
             }
         }
         .fullScreenCover(isPresented: $showCookMode) {

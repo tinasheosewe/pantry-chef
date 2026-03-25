@@ -10,8 +10,6 @@ struct CookHubView: View {
     @State private var debouncedSourceSearchText = ""
     @State private var sourceSearchDebouncer = TaskDebouncer()
     @State private var showGathering = false
-    @State private var showSoloCookMode = false
-    @State private var showMultiCookMode = false
     @State private var showMultiCookSelection = false
     @State private var showMealPlanQueueFlow = false
     @State private var showNoPlannedMealsAlert = false
@@ -150,11 +148,25 @@ struct CookHubView: View {
             }
             .sheet(isPresented: $showGathering) {
                 IngredientGatheringView(recipes: launchingRecipes) {
-                    showGathering = false
                     if launchingRecipes.count > 1 {
-                        showMultiCookMode = true
-                    } else {
-                        showSoloCookMode = true
+                        let blocks = MultiRecipeScheduler.schedule(recipes: launchingRecipes)
+                        MultiCookModeView(
+                            recipes: launchingRecipes,
+                            blocks: blocks,
+                            queueID: queueContext?.queueID,
+                            queueStageID: queueContext?.stageID
+                        )
+                        .environment(appState)
+                    } else if let recipe = launchingRecipes.first {
+                        let session = CookingSession.load(recipeId: recipe.id)
+                        CookModeView(
+                            recipe: recipe,
+                            resumeAtStep: session?.currentStepIndex ?? 0,
+                            isResuming: session != nil,
+                            queueID: queueContext?.queueID,
+                            queueStageID: queueContext?.stageID
+                        )
+                        .environment(appState)
                     }
                 }
             }
@@ -166,33 +178,6 @@ struct CookHubView: View {
                     recipe: recipe,
                     resumeAtStep: stepIndex,
                     isResuming: true,
-                    queueID: queueContext?.queueID,
-                    queueStageID: queueContext?.stageID
-                )
-                .environment(appState)
-            }
-            .fullScreenCover(isPresented: $showSoloCookMode, onDismiss: {
-                launchingStage = nil
-            }) {
-                if let recipe = launchingRecipes.first {
-                    let session = CookingSession.load(recipeId: recipe.id)
-                    CookModeView(
-                        recipe: recipe,
-                        resumeAtStep: session?.currentStepIndex ?? 0,
-                        isResuming: session != nil,
-                        queueID: queueContext?.queueID,
-                        queueStageID: queueContext?.stageID
-                    )
-                    .environment(appState)
-                }
-            }
-            .fullScreenCover(isPresented: $showMultiCookMode, onDismiss: {
-                launchingStage = nil
-            }) {
-                let blocks = MultiRecipeScheduler.schedule(recipes: launchingRecipes)
-                MultiCookModeView(
-                    recipes: launchingRecipes,
-                    blocks: blocks,
                     queueID: queueContext?.queueID,
                     queueStageID: queueContext?.stageID
                 )
@@ -688,8 +673,9 @@ struct CookHubView: View {
             let recipes = appState.resolvedRecipes(for: stage)
             guard !recipes.isEmpty else { return }
 
-            if recipes.count == 1, let recipe = recipes.first, CookingSession.load(recipeId: recipe.id) != nil {
-                showSoloCookMode = true
+            if recipes.count == 1, let recipe = recipes.first,
+               CookingSession.load(recipeId: recipe.id) != nil {
+                resumeRecipe = recipe
             } else {
                 showGathering = true
             }

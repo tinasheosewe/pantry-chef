@@ -41,8 +41,9 @@ final class RealtimeService: RealtimeServiceProtocol {
 
     // MARK: - Computed
 
-    /// Audio is ready once the SDK's WebRTC connection is established.
-    var isAudioReady: Bool { conversation?.status == .connected }
+    /// Audio preparation succeeded (audio session configured + ephemeral key fetched).
+    /// Checked after `prepareAudio()` and before `connect()`.
+    var isAudioReady: Bool { ephemeralKey != nil }
 
     // MARK: - Private
 

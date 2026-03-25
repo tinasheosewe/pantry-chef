@@ -14,7 +14,6 @@ struct MultiCookSelectionView: View {
     @State private var debouncedSearchText = ""
     @State private var searchDebouncer = TaskDebouncer()
     @State private var showGathering = false
-    @State private var showMultiCookMode = false
     @State private var scheduleSummary: ScheduleSummary?
 
     private var availableRecipes: [Recipe] {
@@ -136,18 +135,14 @@ struct MultiCookSelectionView: View {
             .sheet(isPresented: $showGathering) {
                 let selectedRecipes = availableRecipes.filter { selectedRecipeIds.contains($0.id) }
                 IngredientGatheringView(recipes: selectedRecipes) {
-                    showGathering = false
-                    showMultiCookMode = true
+                    let selectedRecipes = availableRecipes.filter { selectedRecipeIds.contains($0.id) }
+                    let blocks = MultiRecipeScheduler.schedule(recipes: selectedRecipes)
+                    MultiCookModeView(
+                        recipes: selectedRecipes,
+                        blocks: blocks
+                    )
+                    .environment(appState)
                 }
-            }
-            .fullScreenCover(isPresented: $showMultiCookMode) {
-                let selectedRecipes = availableRecipes.filter { selectedRecipeIds.contains($0.id) }
-                let blocks = MultiRecipeScheduler.schedule(recipes: selectedRecipes)
-                MultiCookModeView(
-                    recipes: selectedRecipes,
-                    blocks: blocks
-                )
-                .environment(appState)
             }
         }
     }

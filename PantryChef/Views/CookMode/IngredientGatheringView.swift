@@ -7,12 +7,13 @@ import SwiftUI
 // Ingredients are grouped by category so the user can work through
 // the kitchen efficiently.
 
-struct IngredientGatheringView: View {
+struct IngredientGatheringView<Destination: View>: View {
     let recipes: [Recipe]
-    let onStart: () -> Void
+    @ViewBuilder let destination: () -> Destination
 
     @Environment(\.dismiss) private var dismiss
     @State private var checkedIds: Set<UUID> = []
+    @State private var showDestination = false
 
     /// Merged & deduplicated ingredients across all selected recipes,
     /// grouped by `FoodCategory`.
@@ -102,6 +103,16 @@ struct IngredientGatheringView: View {
                     }
                     .font(.caption)
                 }
+            }
+            .navigationDestination(isPresented: $showDestination) {
+                destination()
+                    .toolbar(.hidden, for: .navigationBar)
+            }
+        }
+        .onChange(of: showDestination) { _, isShowing in
+            if !isShowing {
+                // Cook mode dismissed — close the entire gathering flow
+                dismiss()
             }
         }
     }
@@ -226,7 +237,7 @@ struct IngredientGatheringView: View {
         VStack(spacing: 0) {
             Divider()
             Button {
-                onStart()
+                showDestination = true
             } label: {
                 HStack(spacing: 8) {
                     Image(systemName: "flame.fill")

@@ -6,8 +6,6 @@ struct CookQueueView: View {
 
     @State private var launchingStage: CookQueueStage?
     @State private var showGathering = false
-    @State private var showSoloCookMode = false
-    @State private var showMultiCookMode = false
     @State private var resumingSession: CookingSession?
 
     private var queue: CookQueue? {
@@ -89,40 +87,30 @@ struct CookQueueView: View {
             }
             .sheet(isPresented: $showGathering) {
                 IngredientGatheringView(recipes: launchingRecipes) {
-                    showGathering = false
                     if launchingRecipes.count > 1 {
-                        showMultiCookMode = true
-                    } else {
-                        showSoloCookMode = true
+                        let blocks = MultiRecipeScheduler.schedule(recipes: launchingRecipes)
+                        MultiCookModeView(
+                            recipes: launchingRecipes,
+                            blocks: blocks,
+                            queueID: queueContext?.queueID,
+                            queueStageID: queueContext?.stageID
+                        )
+                        .environment(appState)
+                    } else if let recipe = launchingRecipes.first {
+                        let session = CookingSession.load(recipeId: recipe.id)
+                        CookModeView(
+                            recipe: recipe,
+                            resumeAtStep: session?.currentStepIndex ?? 0,
+                            isResuming: session != nil,
+                            queueID: queueContext?.queueID,
+                            queueStageID: queueContext?.stageID
+                        )
+                        .environment(appState)
                     }
                 }
             }
-            .fullScreenCover(isPresented: $showSoloCookMode, onDismiss: {
+            .onDisappear {
                 launchingStage = nil
-            }) {
-                if let recipe = launchingRecipes.first {
-                    let session = CookingSession.load(recipeId: recipe.id)
-                    CookModeView(
-                        recipe: recipe,
-                        resumeAtStep: session?.currentStepIndex ?? 0,
-                        isResuming: session != nil,
-                        queueID: queueContext?.queueID,
-                        queueStageID: queueContext?.stageID
-                    )
-                    .environment(appState)
-                }
-            }
-            .fullScreenCover(isPresented: $showMultiCookMode, onDismiss: {
-                launchingStage = nil
-            }) {
-                let blocks = MultiRecipeScheduler.schedule(recipes: launchingRecipes)
-                MultiCookModeView(
-                    recipes: launchingRecipes,
-                    blocks: blocks,
-                    queueID: queueContext?.queueID,
-                    queueStageID: queueContext?.stageID
-                )
-                .environment(appState)
             }
             .fullScreenCover(item: $resumingSession) { session in
                 if let recipe = appState.allRecipes.first(where: { $0.id == session.recipeId }) {
@@ -143,14 +131,16 @@ struct CookQueueView: View {
         let recipes = appState.resolvedRecipes(for: stage)
         let canStart = !recipes.isEmpty
         let hasActiveSession = recipes.contains { CookingSession.load(recipeId: $0.id) != nil }
+        let isActive = stage.status == .active
+        let stageColor = isActive ? PCColors.expiring : (stage.isParallelBatch ? PCColors.info : PCColors.accent)
 
         return VStack(alignment: .leading, spacing: 12) {
             HStack(alignment: .top, spacing: 12) {
                 Image(systemName: stage.isParallelBatch ? "square.stack.3d.up.fill" : "frying.pan.fill")
                     .font(.title3)
-                    .foregroundStyle(stage.isParallelBatch ? PCColors.info : PCColors.accent)
+                    .foregroundStyle(stageColor)
                     .frame(width: 40, height: 40)
-                    .background((stage.isParallelBatch ? PCColors.info : PCColors.accent).opacity(0.12))
+                    .background(stageColor.opacity(0.12))
                     .clipShape(RoundedRectangle(cornerRadius: 10))
 
                 VStack(alignment: .leading, spacing: 4) {
@@ -195,19 +185,20 @@ struct CookQueueView: View {
                             .fontWeight(.semibold)
                             .padding(.horizontal, 12)
                             .padding(.vertical, 8)
-                            .background(canStart ? PCColors.accent : PCColors.textTertiary)
+                            .background(canStart ? stageColor : PCColors.textTertiary)
                             .foregroundStyle(.white)
                             .clipShape(Capsule())
                     }
                     .disabled(!canStart)
 
-                    Button {
-                        Task {
-                            await appState.skipCookQueueStage(stage.id)
-                        }
-                    } label: {
-                        Text("Skip")
-                            .font(.caption)
+                    if !isActive {
+                        Button {
+                            Task {
+                                await appState.skipCookQueueStage(stage.id)
+                            }
+                        } label: {
+                            Text("Skip")
+                                .font(.caption)
                             .fontWeight(.semibold)
                             .padding(.horizontal, 12)
                             .padding(.vertical, 8)
@@ -215,7 +206,6 @@ struct CookQueueView: View {
                             .foregroundStyle(PCColors.textPrimary)
                             .clipShape(Capsule())
                     }
-                }
 
                 Menu {
                     Button {
@@ -278,6 +268,8 @@ struct CookQueueView: View {
                         .foregroundStyle(PCColors.expired)
                         .clipShape(Capsule())
                 }
+                    } // end if !isActive
+                }
             }
         }
     }
@@ -313,8 +305,9 @@ struct CookQueueView: View {
             let recipes = appState.resolvedRecipes(for: stage)
             guard !recipes.isEmpty else { return }
 
-            if recipes.count == 1, let recipe = recipes.first, CookingSession.load(recipeId: recipe.id) != nil {
-                showSoloCookMode = true
+            if recipes.count == 1, let recipe = recipes.first,
+               let session = CookingSession.load(recipeId: recipe.id) {
+                resumingSession = session
             } else {
                 showGathering = true
             }
@@ -339,7 +332,7 @@ struct CookQueueView: View {
         case .pending:
             return PCColors.info
         case .active:
-            return PCColors.accent
+            return PCColors.expiring
         case .completed:
             return PCColors.expiring
         case .skipped:
@@ -357,7 +350,7 @@ struct CookQueueView: View {
             HStack(spacing: 12) {
                 Image(systemName: "flame.fill")
                     .font(.title3)
-                    .foregroundStyle(PCColors.accent)
+                    .foregroundStyle(PCColors.expiring)
 
                 VStack(alignment: .leading, spacing: 2) {
                     Text(session.recipeName)
@@ -376,16 +369,16 @@ struct CookQueueView: View {
                     .fontWeight(.semibold)
                     .padding(.horizontal, 12)
                     .padding(.vertical, 6)
-                    .background(PCColors.accent)
+                    .background(PCColors.expiring)
                     .foregroundStyle(.white)
                     .clipShape(Capsule())
             }
             .padding(PCTokens.cardPadding)
-            .background(PCColors.accent.opacity(0.10))
+            .background(PCColors.expiring.opacity(0.10))
             .clipShape(RoundedRectangle(cornerRadius: PCTokens.cornerRadius))
             .overlay(
                 RoundedRectangle(cornerRadius: PCTokens.cornerRadius)
-                    .strokeBorder(PCColors.accent.opacity(0.3), lineWidth: 1)
+                    .strokeBorder(PCColors.expiring.opacity(0.3), lineWidth: 1)
             )
         }
         .buttonStyle(.plain)
