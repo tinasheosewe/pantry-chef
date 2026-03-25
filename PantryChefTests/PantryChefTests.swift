@@ -3534,8 +3534,8 @@ final class RecipeViewModelTests: XCTestCase {
         await appState.addRecipe(makeRecipe(title: "Beef Stew"))
         vm.searchText = "chicken"
         vm.applySearchTextImmediately()
-        XCTAssertEqual(vm.filteredRecipes.count, 1)
-        XCTAssertEqual(vm.filteredRecipes[0].title, "Chicken Soup")
+        XCTAssertEqual(vm.filteredUserRecipes.count, 1)
+        XCTAssertEqual(vm.filteredUserRecipes[0].title, "Chicken Soup")
     }
 
     func testFilterBySearchTextDescription() async {
@@ -3544,7 +3544,7 @@ final class RecipeViewModelTests: XCTestCase {
         await appState.addRecipe(recipe)
         vm.searchText = "pasta"
         vm.applySearchTextImmediately()
-        XCTAssertEqual(vm.filteredRecipes.count, 1)
+        XCTAssertEqual(vm.filteredUserRecipes.count, 1)
     }
 
     func testFilterByFavorites() async {
@@ -3552,8 +3552,8 @@ final class RecipeViewModelTests: XCTestCase {
         await appState.addRecipe(makeRecipe(title: "Fav", isFavorite: true))
         await appState.addRecipe(makeRecipe(title: "NotFav", isFavorite: false))
         vm.showOnlyFavorites = true
-        XCTAssertEqual(vm.filteredRecipes.count, 1)
-        XCTAssertEqual(vm.filteredRecipes[0].title, "Fav")
+        XCTAssertEqual(vm.filteredUserRecipes.count, 1)
+        XCTAssertEqual(vm.filteredUserRecipes[0].title, "Fav")
     }
 
     func testFilterByDifficulty() async {
@@ -3561,8 +3561,8 @@ final class RecipeViewModelTests: XCTestCase {
         await appState.addRecipe(makeRecipe(title: "Easy", difficulty: .easy))
         await appState.addRecipe(makeRecipe(title: "Hard", difficulty: .hard))
         vm.selectedDifficulty = .easy
-        XCTAssertEqual(vm.filteredRecipes.count, 1)
-        XCTAssertEqual(vm.filteredRecipes[0].title, "Easy")
+        XCTAssertEqual(vm.filteredUserRecipes.count, 1)
+        XCTAssertEqual(vm.filteredUserRecipes[0].title, "Easy")
     }
 
     func testFilterByMealType() async {
@@ -3570,8 +3570,8 @@ final class RecipeViewModelTests: XCTestCase {
         await appState.addRecipe(makeRecipe(title: "Breakfast", mealType: .breakfast))
         await appState.addRecipe(makeRecipe(title: "Dinner", mealType: .dinner))
         vm.selectedMealType = .breakfast
-        XCTAssertEqual(vm.filteredRecipes.count, 1)
-        XCTAssertEqual(vm.filteredRecipes[0].title, "Breakfast")
+        XCTAssertEqual(vm.filteredUserRecipes.count, 1)
+        XCTAssertEqual(vm.filteredUserRecipes[0].title, "Breakfast")
     }
 
     func testFilterByDietaryTags() async {
@@ -3579,8 +3579,8 @@ final class RecipeViewModelTests: XCTestCase {
         await appState.addRecipe(makeRecipe(title: "Vegan", dietaryTags: [.vegan, .glutenFree]))
         await appState.addRecipe(makeRecipe(title: "Regular", dietaryTags: []))
         vm.selectedDietaryTags = [.vegan]
-        XCTAssertEqual(vm.filteredRecipes.count, 1)
-        XCTAssertEqual(vm.filteredRecipes[0].title, "Vegan")
+        XCTAssertEqual(vm.filteredUserRecipes.count, 1)
+        XCTAssertEqual(vm.filteredUserRecipes[0].title, "Vegan")
     }
 
     func testFilterCombined() async {
@@ -3592,8 +3592,8 @@ final class RecipeViewModelTests: XCTestCase {
         vm.selectedDifficulty = .easy
         vm.selectedDietaryTags = [.vegan]
         vm.showOnlyFavorites = true
-        XCTAssertEqual(vm.filteredRecipes.count, 1)
-        XCTAssertEqual(vm.filteredRecipes[0].title, "Easy Vegan Dinner")
+        XCTAssertEqual(vm.filteredUserRecipes.count, 1)
+        XCTAssertEqual(vm.filteredUserRecipes[0].title, "Easy Vegan Dinner")
     }
 
     // MARK: - Sorting
@@ -3603,8 +3603,8 @@ final class RecipeViewModelTests: XCTestCase {
         await appState.addRecipe(makeRecipe(title: "Zebra Cake"))
         await appState.addRecipe(makeRecipe(title: "Apple Pie"))
         vm.sortOrder = .name
-        XCTAssertEqual(vm.filteredRecipes[0].title, "Apple Pie")
-        XCTAssertEqual(vm.filteredRecipes[1].title, "Zebra Cake")
+        XCTAssertEqual(vm.filteredUserRecipes[0].title, "Apple Pie")
+        XCTAssertEqual(vm.filteredUserRecipes[1].title, "Zebra Cake")
     }
 
     func testSortByDifficulty() async {
@@ -3612,7 +3612,7 @@ final class RecipeViewModelTests: XCTestCase {
         await appState.addRecipe(makeRecipe(title: "Hard", difficulty: .hard))
         await appState.addRecipe(makeRecipe(title: "Easy", difficulty: .easy))
         vm.sortOrder = .difficulty
-        XCTAssertEqual(vm.filteredRecipes[0].title, "Easy")
+        XCTAssertEqual(vm.filteredUserRecipes[0].title, "Easy")
     }
 
     func testSortByTime() async {
@@ -3620,7 +3620,7 @@ final class RecipeViewModelTests: XCTestCase {
         await appState.addRecipe(makeRecipe(title: "Long", prepTimeMinutes: 30, cookTimeMinutes: 60))
         await appState.addRecipe(makeRecipe(title: "Quick", prepTimeMinutes: 5, cookTimeMinutes: 10))
         vm.sortOrder = .time
-        XCTAssertEqual(vm.filteredRecipes[0].title, "Quick")
+        XCTAssertEqual(vm.filteredUserRecipes[0].title, "Quick")
     }
 
     func testShowCanMakeOnlyUpdatesWhenPantryItemChangesInPlace() async {
@@ -3635,13 +3635,13 @@ final class RecipeViewModelTests: XCTestCase {
         await appState.addPantryItem(pantryItem)
 
         vm.showCanMakeOnly = true
-        XCTAssertTrue(vm.filteredRecipes.isEmpty)
+        XCTAssertTrue(vm.filteredUserRecipes.isEmpty)
 
         var updatedPantryItem = pantryItem
         updatedPantryItem.quantity = 2
         await appState.updatePantryItem(updatedPantryItem)
 
-        XCTAssertEqual(vm.filteredRecipes.map(\.title), ["Milk Toast"])
+        XCTAssertEqual(vm.filteredUserRecipes.map(\.title), ["Milk Toast"])
     }
 
     func testShowCanMakeOnlyUpdatesWhenRecipeChangesInPlace() async {
@@ -3656,13 +3656,13 @@ final class RecipeViewModelTests: XCTestCase {
         await appState.addRecipe(recipe)
 
         vm.showCanMakeOnly = true
-        XCTAssertEqual(vm.filteredRecipes.map(\.title), ["Breakfast"])
+        XCTAssertEqual(vm.filteredUserRecipes.map(\.title), ["Breakfast"])
 
         var updatedRecipe = recipe
         updatedRecipe.ingredients = [Ingredient(name: "Flour", quantity: 1, unit: .cup, category: .grains)]
         await appState.updateRecipe(updatedRecipe)
 
-        XCTAssertTrue(vm.filteredRecipes.isEmpty)
+        XCTAssertTrue(vm.filteredUserRecipes.isEmpty)
     }
 
     // MARK: - Actions

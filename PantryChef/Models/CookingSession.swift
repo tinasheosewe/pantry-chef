@@ -596,11 +596,6 @@ struct CookingSession: Codable, Identifiable {
         loadAll().first { $0.recipeId == recipeId }
     }
 
-    /// Load any single active session (backward compatibility).
-    static func load() -> CookingSession? {
-        loadAll().first
-    }
-
     /// Remove a specific session.
     static func clear(recipeId: UUID) {
         var sessions = loadAll()
@@ -613,11 +608,6 @@ struct CookingSession: Codable, Identifiable {
     static func clearAll() {
         UserDefaults.standard.removeObject(forKey: storageKey)
         AppLog.info("[CookingSession] Cleared all sessions")
-    }
-
-    /// Backward-compatible clear (clears all).
-    static func clear() {
-        clearAll()
     }
 
     // MARK: - Internal

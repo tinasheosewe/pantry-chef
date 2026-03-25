@@ -1077,7 +1077,7 @@ final class AIService: AIServiceProtocol {
         }
     }
 
-    // MARK: - Step Duration Estimation (legacy backfill)
+    // MARK: - Step Duration Estimation
 
     /// One-shot AI call to estimate step durations for recipes that lack them.
     /// Returns updated steps with `estimatedDurationSeconds` populated.
@@ -1250,5 +1250,4 @@ final class AIService: AIServiceProtocol {
         return completedResult
     }
 
-    // MARK: - Response Parsing (legacy — kept for edge cases)
 }

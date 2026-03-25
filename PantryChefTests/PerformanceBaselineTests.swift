@@ -27,11 +27,11 @@ final class PerformanceBaselineTests: XCTestCase {
         viewModel.applySearchTextImmediately()
 
         measure(metrics: [XCTClockMetric()]) {
-            _ = viewModel.filteredRecipes
+            _ = viewModel.filteredUserRecipes
         }
 
         let average = averageRuntime {
-            _ = viewModel.filteredRecipes
+            _ = viewModel.filteredUserRecipes
         }
         XCTAssertLessThan(
             average,

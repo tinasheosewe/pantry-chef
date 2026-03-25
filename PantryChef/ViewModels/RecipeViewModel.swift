@@ -85,7 +85,6 @@ final class RecipeViewModel: AsyncActionHandling {
         }
 
         var recipes = appState.recipes
-        let pantryMatchCache = pantryMatchCacheIfNeeded(for: recipes)
 
         recipes = applyCommonFilters(recipes)
 
@@ -94,10 +93,10 @@ final class RecipeViewModel: AsyncActionHandling {
         }
 
         if showCanMakeOnly {
-            recipes = applyMakeabilityFilter(recipes, matchCache: pantryMatchCache)
+            recipes = applyMakeabilityFilter(recipes)
         }
 
-        let result = applySortOrder(recipes, matchCache: pantryMatchCache)
+        let result = applySortOrder(recipes)
         cachedUserFilterKey = key
         cachedUserFilterResult = result
         return result
@@ -124,25 +123,17 @@ final class RecipeViewModel: AsyncActionHandling {
 
         var recipes = appState.discoverRecipes
 
-        let pantryMatchCache = pantryMatchCacheIfNeeded(for: recipes)
-
         recipes = applyCommonFilters(recipes)
 
         if showCanMakeOnly {
-            recipes = applyMakeabilityFilter(recipes, matchCache: pantryMatchCache)
+            recipes = applyMakeabilityFilter(recipes)
         }
 
-        recipes = applySortOrder(recipes, matchCache: pantryMatchCache)
+        recipes = applySortOrder(recipes)
 
         cachedDiscoverFilterKey = key
         cachedDiscoverFilterResult = recipes
         return recipes
-    }
-
-    // MARK: - Legacy compatibility
-
-    var filteredRecipes: [Recipe] {
-        filteredUserRecipes
     }
 
     // MARK: - Common Filter Logic
@@ -184,13 +175,6 @@ final class RecipeViewModel: AsyncActionHandling {
         }
 
         return recipes
-    }
-
-    private func pantryMatchCacheIfNeeded(for recipes: [Recipe]) -> [UUID: PantryMatchResult]? {
-        // Filtering and sorting now use persisted lightweight metrics.
-        // Keep this hook for compatibility with callers that may still pass a map.
-        _ = recipes
-        return nil
     }
 
     func matchMetricsMap(for recipes: [Recipe]) -> [UUID: RecipeMatchMetrics] {
@@ -263,18 +247,17 @@ final class RecipeViewModel: AsyncActionHandling {
         return appStateCollectionKey(revision: appState.pantryRevision, count: appState.pantryItems.count)
     }
 
-    private func applyMakeabilityFilter(_ recipes: [Recipe], matchCache: [UUID: PantryMatchResult]? = nil) -> [Recipe] {
+    private func applyMakeabilityFilter(_ recipes: [Recipe]) -> [Recipe] {
         let metrics = matchMetricsMap(for: recipes)
         return recipes.filter { recipe in
-            let fallback = matchCache?[recipe.id].map(RecipeMatchMetrics.init(from:))
-            let matchMetrics = metrics[recipe.id] ?? fallback
+            let matchMetrics = metrics[recipe.id]
             if matchMetrics?.canMake == true { return true }
             if showWithSubstitutions && matchMetrics?.canMakeWithSubstitutions == true { return true }
             return false
         }
     }
 
-    private func applySortOrder(_ recipes: [Recipe], matchCache: [UUID: PantryMatchResult]? = nil) -> [Recipe] {
+    private func applySortOrder(_ recipes: [Recipe]) -> [Recipe] {
         var sorted = recipes
         switch sortOrder {
         case .recent:
@@ -291,8 +274,7 @@ final class RecipeViewModel: AsyncActionHandling {
             let metrics = matchMetricsMap(for: sorted)
             let percentages = Dictionary(uniqueKeysWithValues:
                 sorted.map { recipe in
-                    let fallback = matchCache?[recipe.id].map(RecipeMatchMetrics.init(from:))
-                    let pct = metrics[recipe.id]?.effectiveMatchPercentage ?? fallback?.effectiveMatchPercentage ?? 0
+                    let pct = metrics[recipe.id]?.effectiveMatchPercentage ?? 0
                     return (recipe.id, pct)
                 }
             )

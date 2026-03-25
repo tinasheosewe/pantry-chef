@@ -861,7 +861,7 @@ struct PantryMatchResult: Identifiable {
         return "\(Int(safe))%"
     }
 
-    /// Convenience init for backward compat (no substitution data)
+    /// Memberwise init with substitution defaults
     init(
         recipe: Recipe,
         matchedIngredients: [Ingredient],
