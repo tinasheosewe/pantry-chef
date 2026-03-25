@@ -22,11 +22,10 @@ struct HomeView: View {
 
     var body: some View {
         AppScreen("home.screen") {
-            AppScrollView {
-                VStack(spacing: 20) {
+            PCScrollView {
+                VStack(spacing: PCTokens.sectionSpacing) {
                     greetingHeader
 
-                    // Active cooking sessions banner
                     if viewModel.appState.activeCooks.hasActiveSessions {
                         activeCooksBanner
                     }
@@ -110,86 +109,87 @@ struct HomeView: View {
 
     // MARK: - Greeting Header
     private var greetingHeader: some View {
-        VStack(alignment: .leading, spacing: 4) {
+        VStack(alignment: .leading, spacing: PCTokens.spacingXS) {
             Text(viewModel.greetingMessage)
                 .font(.largeTitle)
                 .fontWeight(.bold)
-                .foregroundStyle(AppColors.darkText)
+                .foregroundStyle(PCColors.textPrimary)
 
             Text(Date(), format: .dateTime.weekday(.wide).month(.wide).day())
-                .font(.subheadline)
-                .foregroundStyle(AppColors.subtleText)
+                .font(PCFont.body)
+                .foregroundStyle(PCColors.textSecondary)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.top, 8)
+        .padding(.top, PCTokens.spacingSM)
     }
 
     // MARK: - Today's Meal Plan Card
     private var todaysMealPlanCard: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            SectionHeader(title: "Today's Plan", actionTitle: "View All") {
+        VStack(alignment: .leading, spacing: PCTokens.spacingMD) {
+            PCSectionHeader(title: "Today's Plan", actionTitle: "View All") {
                 onSwitchToPlan?()
             }
 
             if viewModel.todaysMeals.isEmpty {
-                HStack {
+                HStack(spacing: PCTokens.spacingMD) {
                     Image(systemName: "calendar.badge.plus")
                         .font(.title2)
-                        .foregroundStyle(AppColors.mediumGray)
-                    VStack(alignment: .leading) {
+                        .foregroundStyle(PCColors.separator)
+                    VStack(alignment: .leading, spacing: PCTokens.spacingXS) {
                         Text("No meals planned")
-                            .font(.subheadline)
-                            .fontWeight(.medium)
+                            .font(PCFont.headline)
+                            .foregroundStyle(PCColors.textPrimary)
                         Text("Tap to plan your day")
-                            .font(.caption)
-                            .foregroundStyle(AppColors.subtleText)
+                            .font(PCFont.caption)
+                            .foregroundStyle(PCColors.textSecondary)
                     }
                     Spacer()
                 }
-                .padding()
-                .background(AppColors.lightGray)
-                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .padding(PCTokens.cardPadding)
+                .background(PCColors.fillTertiary)
+                .clipShape(RoundedRectangle(cornerRadius: PCTokens.cornerRadius))
             } else {
                 ForEach(viewModel.todaysMeals) { entry in
                     todayMealRow(entry)
                 }
             }
         }
-        .padding()
-        .cardStyle()
+        .padding(PCTokens.cardPadding)
+        .pcCard()
     }
 
     // MARK: - Expiring Soon Card
     private var expiringSoonCard: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            SectionHeader(
+        VStack(alignment: .leading, spacing: PCTokens.spacingMD) {
+            PCSectionHeader(
                 title: "Expiring Soon",
                 subtitle: "\(viewModel.expiringItems.count) items need attention"
             )
 
             ForEach(viewModel.expiringItems.prefix(5)) { item in
-                HStack(spacing: 12) {
-                    CategoryIcon(category: item.category, size: 28)
+                HStack(spacing: PCTokens.spacingMD) {
+                    PCCategoryIcon(category: item.category)
                     Text(item.name)
-                        .font(.subheadline)
+                        .font(PCFont.body)
+                        .foregroundStyle(PCColors.textPrimary)
                     Spacer()
-                    ExpiryBadge(status: item.expiryStatus, daysLeft: item.daysUntilExpiry)
+                    PCExpiryBadge(status: item.expiryStatus, daysLeft: item.daysUntilExpiry)
                 }
             }
 
             if viewModel.expiringItems.count > 5 {
                 Text("+ \(viewModel.expiringItems.count - 5) more")
-                    .font(.caption)
-                    .foregroundStyle(AppColors.subtleText)
+                    .font(PCFont.caption)
+                    .foregroundStyle(PCColors.textSecondary)
             }
         }
-        .padding()
-        .cardStyle()
+        .padding(PCTokens.cardPadding)
+        .pcCard()
     }
 
     private var expiringPreparedDishesCard: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            SectionHeader(
+        VStack(alignment: .leading, spacing: PCTokens.spacingMD) {
+            PCSectionHeader(
                 title: "Use Prepared Dishes Soon",
                 subtitle: "\(viewModel.expiringPreparedDishes.count) dishes are close to their use-by date"
             )
@@ -198,26 +198,25 @@ struct HomeView: View {
                 Button {
                     selectedPreparedDish = dish
                 } label: {
-                    HStack(spacing: 12) {
+                    HStack(spacing: PCTokens.spacingMD) {
                         Image(systemName: "takeoutbag.and.cup.and.straw")
                             .font(.title3)
-                            .foregroundStyle(AppColors.warmOrange)
+                            .foregroundStyle(PCColors.expiring)
                             .frame(width: 28)
 
                         VStack(alignment: .leading, spacing: 2) {
                             Text(dish.name)
-                                .font(.subheadline)
-                                .fontWeight(.medium)
-                                .foregroundStyle(AppColors.darkText)
+                                .font(PCFont.headline)
+                                .foregroundStyle(PCColors.textPrimary)
 
                             Text("\(dish.servingsDisplay) • \(dish.mealTypesSummary)")
-                                .font(.caption)
-                                .foregroundStyle(AppColors.subtleText)
+                                .font(PCFont.caption)
+                                .foregroundStyle(PCColors.textSecondary)
                         }
 
                         Spacer()
 
-                        ExpiryBadge(status: dish.expiryStatus, daysLeft: dish.daysUntilUseBy)
+                        PCExpiryBadge(status: dish.expiryStatus, daysLeft: dish.daysUntilUseBy)
                     }
                 }
                 .buttonStyle(.plain)
@@ -225,35 +224,35 @@ struct HomeView: View {
 
             if viewModel.expiringPreparedDishes.count > 3 {
                 Text("+ \(viewModel.expiringPreparedDishes.count - 3) more")
-                    .font(.caption)
-                    .foregroundStyle(AppColors.subtleText)
+                    .font(PCFont.caption)
+                    .foregroundStyle(PCColors.textSecondary)
             }
         }
-        .padding()
-        .cardStyle()
+        .padding(PCTokens.cardPadding)
+        .pcCard()
     }
 
     // MARK: - Quick Actions Row
     private var quickActionsRow: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: PCTokens.spacingMD) {
             Text("Quick Actions")
-                .font(.headline)
-                .foregroundStyle(AppColors.darkText)
+                .font(PCFont.headline)
+                .foregroundStyle(PCColors.textPrimary)
 
             LazyVGrid(columns: [
                 GridItem(.flexible()),
                 GridItem(.flexible()),
                 GridItem(.flexible()),
-            ], spacing: 12) {
-                QuickActionButton(icon: "fork.knife", title: "What can\nI make?", color: AppColors.primaryGreen) {
+            ], spacing: PCTokens.spacingMD) {
+                QuickActionButton(icon: "fork.knife", title: "What can\nI make?", color: PCColors.fresh) {
                     onSwitchToRecipesCanMake?()
                 }
                 .accessibilityIdentifier("home.quickAction.canMake")
-                QuickActionButton(icon: "cart.fill", title: "What to\nbuy?", color: AppColors.warmOrange) {
+                QuickActionButton(icon: "cart.fill", title: "What to\nbuy?", color: PCColors.expiring) {
                     prepareShoppingConfirmation()
                 }
                 .accessibilityIdentifier("home.quickAction.shopping")
-                QuickActionButton(icon: "calendar", title: "Plan\nmeals", color: AppColors.accentBlue) {
+                QuickActionButton(icon: "calendar", title: "Plan\nmeals", color: PCColors.info) {
                     onSwitchToPlan?()
                 }
                 .accessibilityIdentifier("home.quickAction.plan")
@@ -269,24 +268,23 @@ struct HomeView: View {
     }
 
     private func todayMealRow(_ entry: MealPlanEntry) -> some View {
-        let row = HStack(spacing: 12) {
+        let row = HStack(spacing: PCTokens.spacingMD) {
             Image(systemName: entry.mealType.icon)
                 .font(.title3)
-                .foregroundStyle(AppColors.primaryGreen)
+                .foregroundStyle(PCColors.accent)
                 .frame(width: 32)
 
             VStack(alignment: .leading, spacing: 2) {
                 Text(entry.mealType.rawValue)
-                    .font(.caption)
-                    .foregroundStyle(AppColors.subtleText)
+                    .font(PCFont.micro)
+                    .foregroundStyle(PCColors.textTertiary)
                 Text(entry.displayName)
-                    .font(.subheadline)
-                    .fontWeight(.medium)
-                    .foregroundStyle(AppColors.darkText)
+                    .font(PCFont.headline)
+                    .foregroundStyle(PCColors.textPrimary)
                 if let planningSubtitle = entry.planningSubtitle {
                     Text(planningSubtitle)
-                        .font(.caption)
-                        .foregroundStyle(AppColors.subtleText)
+                        .font(PCFont.caption)
+                        .foregroundStyle(PCColors.textSecondary)
                 }
             }
 
@@ -295,14 +293,14 @@ struct HomeView: View {
             if entry.recipe != nil {
                 Image(systemName: "chevron.right")
                     .font(.caption)
-                    .foregroundStyle(AppColors.mediumGray)
+                    .foregroundStyle(PCColors.textTertiary)
             } else if entry.preparedDish != nil || entry.isPreparedFoodPlan {
                 Image(systemName: "chevron.right")
                     .font(.caption)
-                    .foregroundStyle(AppColors.mediumGray)
+                    .foregroundStyle(PCColors.textTertiary)
             }
         }
-        .padding(.vertical, 4)
+        .padding(.vertical, PCTokens.spacingXS)
 
         if entry.recipe != nil || entry.preparedDish != nil {
             return AnyView(
@@ -320,38 +318,37 @@ struct HomeView: View {
 
     // MARK: - Recipe Suggestion Card
     private func recipeSuggestionCard(_ recipe: Recipe) -> some View {
-        VStack(alignment: .leading, spacing: 12) {
-            SectionHeader(title: "Suggested for You", subtitle: "Based on your pantry")
+        VStack(alignment: .leading, spacing: PCTokens.spacingMD) {
+            PCSectionHeader(title: "Suggested for You", subtitle: "Based on your pantry")
 
             NavigationLink(destination: RecipeDetailView(recipe: recipe)) {
-                HStack(spacing: 16) {
-                    RoundedRectangle(cornerRadius: 12)
-                        .fill(AppColors.primaryGreen.opacity(0.15))
+                HStack(spacing: PCTokens.spacingLG) {
+                    RoundedRectangle(cornerRadius: PCTokens.cornerRadius)
+                        .fill(PCColors.accent.opacity(0.12))
                         .frame(width: 80, height: 80)
                         .overlay(
                             Image(systemName: "fork.knife")
                                 .font(.title2)
-                                .foregroundStyle(AppColors.primaryGreen)
+                                .foregroundStyle(PCColors.accent)
                         )
 
-                    VStack(alignment: .leading, spacing: 6) {
+                    VStack(alignment: .leading, spacing: PCTokens.spacingSM) {
                         Text(recipe.title)
-                            .font(.subheadline)
-                            .fontWeight(.semibold)
-                            .foregroundStyle(AppColors.darkText)
+                            .font(PCFont.headline)
+                            .foregroundStyle(PCColors.textPrimary)
 
                         if let desc = recipe.description {
                             Text(desc)
-                                .font(.caption)
-                                .foregroundStyle(AppColors.subtleText)
+                                .font(PCFont.caption)
+                                .foregroundStyle(PCColors.textSecondary)
                                 .lineLimit(2)
                         }
 
-                        HStack(spacing: 12) {
-                            DifficultyBadge(difficulty: recipe.difficulty)
+                        HStack(spacing: PCTokens.spacingMD) {
+                            PCDifficultyBadge(difficulty: recipe.difficulty)
                             Label(recipe.totalTimeDisplay, systemImage: "clock")
-                                .font(.caption)
-                                .foregroundStyle(AppColors.subtleText)
+                                .font(PCFont.caption)
+                                .foregroundStyle(PCColors.textSecondary)
                         }
                     }
 
@@ -359,70 +356,63 @@ struct HomeView: View {
 
                     Image(systemName: "chevron.right")
                         .font(.caption)
-                        .foregroundStyle(AppColors.mediumGray)
+                        .foregroundStyle(PCColors.textTertiary)
                 }
             }
         }
-        .padding()
-        .cardStyle()
+        .padding(PCTokens.cardPadding)
+        .pcCard()
     }
 
     // MARK: - Weekly Nutrition Card
     private func weeklyNutritionCard(_ nutrition: WeeklyNutritionSummary) -> some View {
-        VStack(alignment: .leading, spacing: 12) {
-            SectionHeader(
+        VStack(alignment: .leading, spacing: PCTokens.spacingMD) {
+            PCSectionHeader(
                 title: "This Week",
                 subtitle: "\(nutrition.mealsPlanned) meals planned"
             )
 
-            HStack(spacing: 20) {
-                NutritionCircle(label: "Avg Cal", value: nutrition.avgCaloriesPerMeal, unit: "kcal", color: AppColors.warmOrange)
-                NutritionCircle(label: "Protein", value: nutrition.avgProteinPerMeal, unit: "g", color: AppColors.softRed)
-                NutritionCircle(label: "Carbs", value: nutrition.avgCarbsPerMeal, unit: "g", color: AppColors.primaryGreen)
-                NutritionCircle(label: "Fat", value: nutrition.avgFatPerMeal, unit: "g", color: AppColors.accentBlue)
+            HStack(spacing: PCTokens.spacingLG) {
+                NutritionCircle(label: "Avg Cal", value: nutrition.avgCaloriesPerMeal, unit: "kcal", color: PCColors.expiring)
+                NutritionCircle(label: "Protein", value: nutrition.avgProteinPerMeal, unit: "g", color: PCColors.expired)
+                NutritionCircle(label: "Carbs", value: nutrition.avgCarbsPerMeal, unit: "g", color: PCColors.fresh)
+                NutritionCircle(label: "Fat", value: nutrition.avgFatPerMeal, unit: "g", color: PCColors.info)
             }
             .frame(maxWidth: .infinity)
         }
-        .padding()
-        .cardStyle()
+        .padding(PCTokens.cardPadding)
+        .pcCard()
     }
 
     // MARK: - Batch Prep Card
     private var batchPrepCard: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: PCTokens.spacingSM) {
             HStack {
                 Image(systemName: "clock.badge.checkmark")
                     .font(.title3)
-                    .foregroundStyle(AppColors.primaryGreen)
+                    .foregroundStyle(PCColors.fresh)
                 Text("Batch Prep Tip")
-                    .font(.headline)
+                    .font(PCFont.headline)
             }
             Text("It's the weekend! Consider prepping meals for the week. Check your meal plan and cook in batches to save time.")
-                .font(.subheadline)
-                .foregroundStyle(AppColors.subtleText)
+                .font(PCFont.body)
+                .foregroundStyle(PCColors.textSecondary)
         }
-        .padding()
-        .cardStyle()
+        .padding(PCTokens.cardPadding)
+        .pcCard()
     }
 
     // MARK: - Active Cooks Banner
     private var activeCooksBanner: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: PCTokens.spacingMD) {
             HStack {
                 Image(systemName: "flame.fill")
-                    .foregroundStyle(AppColors.warmOrange)
+                    .foregroundStyle(PCColors.expiring)
                 Text("Active Cooks")
-                    .font(.headline)
-                    .foregroundStyle(AppColors.darkText)
+                    .font(PCFont.headline)
+                    .foregroundStyle(PCColors.textPrimary)
                 Spacer()
-                Text("\(viewModel.appState.activeCooks.count)")
-                    .font(.caption)
-                    .fontWeight(.bold)
-                    .foregroundStyle(.white)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 4)
-                    .background(AppColors.warmOrange)
-                    .clipShape(Capsule())
+                PCBadge(text: "\(viewModel.appState.activeCooks.count)", color: PCColors.expiring)
             }
 
             ForEach(viewModel.appState.activeCooks.activeSessions) { session in
@@ -431,49 +421,46 @@ struct HomeView: View {
                         resumeRecipe = recipe
                     }
                 } label: {
-                    HStack(spacing: 12) {
-                        ZStack {
-                            Circle()
-                                .fill(AppColors.primaryGreen.opacity(0.15))
-                                .frame(width: 44, height: 44)
-                            Image(systemName: "frying.pan.fill")
-                                .foregroundStyle(AppColors.primaryGreen)
-                        }
+                    HStack(spacing: PCTokens.spacingMD) {
+                        Image(systemName: "frying.pan.fill")
+                            .font(.system(size: PCTokens.iconSize))
+                            .foregroundStyle(PCColors.accent)
+                            .frame(width: 44, height: 44)
+                            .background(PCColors.accent.opacity(0.12))
+                            .clipShape(Circle())
 
-                        VStack(alignment: .leading, spacing: 4) {
+                        VStack(alignment: .leading, spacing: PCTokens.spacingXS) {
                             Text(session.recipeName)
-                                .font(.subheadline)
-                                .fontWeight(.semibold)
-                                .foregroundStyle(AppColors.darkText)
+                                .font(PCFont.headline)
+                                .foregroundStyle(PCColors.textPrimary)
                             Text("Step \(session.currentStepIndex + 1) of \(session.totalSteps)")
-                                .font(.caption)
-                                .foregroundStyle(AppColors.subtleText)
+                                .font(PCFont.caption)
+                                .foregroundStyle(PCColors.textSecondary)
                         }
 
                         Spacer()
 
-                        // Elapsed time since backgrounded
                         let elapsed = Int(Date().timeIntervalSince(session.backgroundedAt))
                         let minutes = elapsed / 60
                         Text(minutes < 1 ? "Just now" : "\(minutes)m ago")
-                            .font(.caption2)
-                            .foregroundStyle(AppColors.subtleText)
+                            .font(PCFont.micro)
+                            .foregroundStyle(PCColors.textTertiary)
 
                         Image(systemName: "chevron.right")
                             .font(.caption)
-                            .foregroundStyle(AppColors.mediumGray)
+                            .foregroundStyle(PCColors.textTertiary)
                     }
-                    .padding(.vertical, 8)
+                    .padding(.vertical, PCTokens.spacingSM)
                 }
             }
         }
-        .padding()
+        .padding(PCTokens.cardPadding)
         .background(
-            RoundedRectangle(cornerRadius: 16)
-                .fill(AppColors.warmOrange.opacity(0.08))
+            RoundedRectangle(cornerRadius: PCTokens.cornerRadius)
+                .fill(PCColors.expiring.opacity(0.08))
                 .overlay(
-                    RoundedRectangle(cornerRadius: 16)
-                        .strokeBorder(AppColors.warmOrange.opacity(0.2), lineWidth: 1)
+                    RoundedRectangle(cornerRadius: PCTokens.cornerRadius)
+                        .strokeBorder(PCColors.expiring.opacity(0.2), lineWidth: 1)
                 )
         )
     }
@@ -486,43 +473,35 @@ struct HomeView: View {
         return Button {
             onSwitchToCook?()
         } label: {
-            VStack(alignment: .leading, spacing: 12) {
+            VStack(alignment: .leading, spacing: PCTokens.spacingMD) {
                 HStack {
                     Image(systemName: "list.number")
-                        .foregroundStyle(AppColors.accentBlue)
+                        .foregroundStyle(PCColors.info)
                     Text("Cook Queue")
-                        .font(.headline)
-                        .foregroundStyle(AppColors.darkText)
+                        .font(PCFont.headline)
+                        .foregroundStyle(PCColors.textPrimary)
                     Spacer()
-                    Text("\(remainingCount)")
-                        .font(.caption)
-                        .fontWeight(.bold)
-                        .foregroundStyle(.white)
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 4)
-                        .background(AppColors.accentBlue)
-                        .clipShape(Capsule())
+                    PCBadge(text: "\(remainingCount)", color: PCColors.info)
                 }
 
                 if let currentStage {
-                    VStack(alignment: .leading, spacing: 4) {
+                    VStack(alignment: .leading, spacing: PCTokens.spacingXS) {
                         Text(currentStage.title)
-                            .font(.subheadline)
-                            .fontWeight(.semibold)
-                            .foregroundStyle(AppColors.darkText)
+                            .font(PCFont.headline)
+                            .foregroundStyle(PCColors.textPrimary)
                         Text(currentStage.subtitle)
-                            .font(.caption)
-                            .foregroundStyle(AppColors.subtleText)
+                            .font(PCFont.caption)
+                            .foregroundStyle(PCColors.textSecondary)
                     }
                 }
             }
-            .padding()
+            .padding(PCTokens.cardPadding)
             .background(
-                RoundedRectangle(cornerRadius: 16)
-                    .fill(AppColors.accentBlue.opacity(0.08))
+                RoundedRectangle(cornerRadius: PCTokens.cornerRadius)
+                    .fill(PCColors.info.opacity(0.08))
                     .overlay(
-                        RoundedRectangle(cornerRadius: 16)
-                            .strokeBorder(AppColors.accentBlue.opacity(0.2), lineWidth: 1)
+                        RoundedRectangle(cornerRadius: PCTokens.cornerRadius)
+                            .strokeBorder(PCColors.info.opacity(0.2), lineWidth: 1)
                     )
             )
         }
@@ -539,22 +518,22 @@ struct QuickActionButton: View {
 
     var body: some View {
         Button(action: action) {
-            VStack(spacing: 8) {
+            VStack(spacing: PCTokens.spacingSM) {
                 Image(systemName: icon)
                     .font(.title2)
                     .foregroundStyle(color)
 
                 Text(title)
-                    .font(.caption)
+                    .font(PCFont.caption)
                     .fontWeight(.medium)
-                    .foregroundStyle(AppColors.darkText)
+                    .foregroundStyle(PCColors.textPrimary)
                     .multilineTextAlignment(.center)
                     .lineLimit(2)
             }
             .frame(maxWidth: .infinity)
-            .padding(.vertical, 16)
-            .background(AppColors.lightGray)
-            .clipShape(RoundedRectangle(cornerRadius: 12))
+            .padding(.vertical, PCTokens.cardPadding)
+            .background(color.opacity(0.08))
+            .clipShape(RoundedRectangle(cornerRadius: PCTokens.cornerRadius))
         }
     }
 }
@@ -567,17 +546,16 @@ struct NutritionCircle: View {
     let color: Color
 
     var body: some View {
-        VStack(spacing: 4) {
+        VStack(spacing: PCTokens.spacingXS) {
             Text("\(value)")
-                .font(.headline)
-                .fontWeight(.bold)
+                .font(PCFont.headline)
                 .foregroundStyle(color)
             Text(unit)
                 .font(.system(size: 10))
-                .foregroundStyle(AppColors.subtleText)
+                .foregroundStyle(PCColors.textTertiary)
             Text(label)
-                .font(.caption2)
-                .foregroundStyle(AppColors.subtleText)
+                .font(PCFont.micro)
+                .foregroundStyle(PCColors.textSecondary)
         }
     }
 }

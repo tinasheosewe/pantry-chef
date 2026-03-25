@@ -57,8 +57,8 @@ struct MultiCookSelectionView: View {
                                     ZStack {
                                         Circle()
                                             .fill(selectedRecipeIds.contains(recipe.id)
-                                                  ? AppColors.primaryGreen
-                                                  : AppColors.lightGray)
+                                                  ? PCColors.accent
+                                                  : PCColors.fillTertiary)
                                             .frame(width: 32, height: 32)
 
                                         if selectedRecipeIds.contains(recipe.id) {
@@ -73,15 +73,15 @@ struct MultiCookSelectionView: View {
                                         Text(recipe.title)
                                             .font(.subheadline)
                                             .fontWeight(.medium)
-                                            .foregroundStyle(AppColors.darkText)
+                                            .foregroundStyle(PCColors.textPrimary)
 
                                         HStack(spacing: 8) {
                                             Label(recipe.totalTimeDisplay, systemImage: "clock")
                                                 .font(.caption)
-                                                .foregroundStyle(AppColors.subtleText)
+                                                .foregroundStyle(PCColors.textSecondary)
                                             Text("\(recipe.steps.count) steps")
                                                 .font(.caption)
-                                                .foregroundStyle(AppColors.subtleText)
+                                                .foregroundStyle(PCColors.textSecondary)
                                         }
                                     }
 
@@ -95,16 +95,16 @@ struct MultiCookSelectionView: View {
                                             .foregroundStyle(.white)
                                             .padding(.horizontal, 6)
                                             .padding(.vertical, 2)
-                                            .background(AppColors.warmOrange)
+                                            .background(PCColors.expiring)
                                             .clipShape(Capsule())
                                     } else if !recipe.source.isUserRecipe {
                                         Text(recipe.source.label)
                                             .font(.caption2)
                                             .fontWeight(.bold)
-                                            .foregroundStyle(AppColors.accentTeal)
+                                            .foregroundStyle(PCColors.teal)
                                             .padding(.horizontal, 6)
                                             .padding(.vertical, 2)
-                                            .background(AppColors.accentTeal.opacity(0.12))
+                                            .background(PCColors.teal.opacity(0.12))
                                             .clipShape(Capsule())
                                     }
                                 }
@@ -164,45 +164,45 @@ struct MultiCookSelectionView: View {
                     Text("\(selectedRecipeIds.count)")
                         .font(.title2)
                         .fontWeight(.bold)
-                        .foregroundStyle(AppColors.primaryGreen)
+                        .foregroundStyle(PCColors.accent)
                     Text("Recipes")
                         .font(.caption)
-                        .foregroundStyle(AppColors.subtleText)
+                        .foregroundStyle(PCColors.textSecondary)
                 }
 
                 VStack(spacing: 2) {
                     Text("\(summary.blockCount)")
                         .font(.title2)
                         .fontWeight(.bold)
-                        .foregroundStyle(AppColors.accentBlue)
+                        .foregroundStyle(PCColors.info)
                     Text("Steps")
                         .font(.caption)
-                        .foregroundStyle(AppColors.subtleText)
+                        .foregroundStyle(PCColors.textSecondary)
                 }
 
                 VStack(spacing: 2) {
                     Text(formatDuration(summary.interleavedSeconds))
                         .font(.title2)
                         .fontWeight(.bold)
-                        .foregroundStyle(AppColors.darkText)
+                        .foregroundStyle(PCColors.textPrimary)
                     Text("Total Time")
                         .font(.caption)
-                        .foregroundStyle(AppColors.subtleText)
+                        .foregroundStyle(PCColors.textSecondary)
                 }
 
                 VStack(spacing: 2) {
                     Text(savedTimeText)
                         .font(.title2)
                         .fontWeight(.bold)
-                        .foregroundStyle(summary.savedSeconds > 0 ? AppColors.primaryGreen : AppColors.subtleText)
+                        .foregroundStyle(summary.savedSeconds > 0 ? PCColors.accent : PCColors.textSecondary)
                     Text("Saved")
                         .font(.caption)
-                        .foregroundStyle(AppColors.subtleText)
+                        .foregroundStyle(PCColors.textSecondary)
                 }
             }
             Text(schedulePreviewMessage)
                 .font(.caption)
-                .foregroundStyle(AppColors.subtleText)
+                .foregroundStyle(PCColors.textSecondary)
                 .lineLimit(1)
                 .minimumScaleFactor(0.85)
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -211,7 +211,7 @@ struct MultiCookSelectionView: View {
         }
         .padding()
         .frame(maxWidth: .infinity)
-        .background(AppColors.primaryGreen.opacity(0.08))
+        .background(PCColors.accent.opacity(0.08))
     }
 
     private var selectedRecipes: [Recipe] {

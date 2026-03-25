@@ -1932,21 +1932,17 @@ final class AppState {
 }
 
 enum RootTab: String, CaseIterable, Hashable {
-    case home = "Home"
-    case pantry = "Pantry"
+    case today = "Today"
     case recipes = "Recipes"
-    case cook = "Cook"
+    case kitchen = "Kitchen"
     case plan = "Plan"
-    case shop = "Shop"
 
     var icon: String {
         switch self {
-        case .home: return "house.fill"
-        case .pantry: return "refrigerator.fill"
-        case .recipes: return "book.fill"
-        case .cook: return "frying.pan.fill"
+        case .today: return "sun.max"
+        case .recipes: return "book"
+        case .kitchen: return "refrigerator"
         case .plan: return "calendar"
-        case .shop: return "cart.fill"
         }
     }
 }

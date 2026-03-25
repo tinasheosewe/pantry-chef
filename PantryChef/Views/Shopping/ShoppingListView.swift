@@ -7,12 +7,15 @@ struct ShoppingListView: View {
     @State private var pantryReviewItems: [ShoppingItem] = []
     @State private var editingPantryPlanItem: ShoppingItem?
 
-    init(appState: AppState) {
+    private let isEmbedded: Bool
+
+    init(appState: AppState, isEmbedded: Bool = false) {
         _viewModel = State(initialValue: ShoppingViewModel(appState: appState))
+        self.isEmbedded = isEmbedded
     }
 
     var body: some View {
-        AppScreen("shopping.screen") {
+        AppScreen("shopping.screen", isEmbedded: isEmbedded) {
             VStack(spacing: 0) {
                 if !viewModel.items.isEmpty {
                     progressHeader
@@ -76,7 +79,7 @@ struct ShoppingListView: View {
                 Text(viewModel.progressText)
                     .font(.subheadline)
                     .fontWeight(.medium)
-                    .foregroundStyle(AppColors.darkText)
+                    .foregroundStyle(PCColors.textPrimary)
                 Spacer()
                 if viewModel.checkedCount > 0 {
                     Button("Add to Pantry") {
@@ -84,16 +87,16 @@ struct ShoppingListView: View {
                     }
                     .font(.caption)
                     .fontWeight(.semibold)
-                    .foregroundStyle(AppColors.primaryGreen)
+                    .foregroundStyle(PCColors.accent)
                 }
             }
 
             GeometryReader { geo in
                 ZStack(alignment: .leading) {
                     RoundedRectangle(cornerRadius: 4)
-                        .fill(AppColors.lightGray)
+                        .fill(PCColors.fillTertiary)
                     RoundedRectangle(cornerRadius: 4)
-                        .fill(AppColors.primaryGreen)
+                        .fill(PCColors.accent)
                         .frame(width: viewModel.totalCount > 0 ?
                                geo.size.width * CGFloat(viewModel.checkedCount) / CGFloat(viewModel.totalCount) : 0)
                         .animation(.easeInOut, value: viewModel.checkedCount)
@@ -102,7 +105,7 @@ struct ShoppingListView: View {
             .frame(height: 6)
         }
         .padding()
-        .background(AppColors.cardBackground)
+        .background(PCColors.cardBackground)
     }
 
     // MARK: - Shopping List
@@ -128,7 +131,7 @@ struct ShoppingListView: View {
                             } label: {
                                 Label("Pantry Plan", systemImage: "slider.horizontal.3")
                             }
-                            .tint(AppColors.accentBlue)
+                            .tint(PCColors.info)
                         }
                     }
                 } header: {
@@ -207,11 +210,11 @@ private struct ShoppingAddItemView: View {
                                 if let facetSummary = viewModel.selectedFacetSummary {
                                     Text(facetSummary)
                                         .font(.caption)
-                                        .foregroundStyle(AppColors.subtleText)
+                                        .foregroundStyle(PCColors.textSecondary)
                                 }
                                 Text(selectedItem.category.rawValue)
                                     .font(.caption)
-                                    .foregroundStyle(AppColors.subtleText)
+                                    .foregroundStyle(PCColors.textSecondary)
                             }
                             Spacer()
                         }
@@ -269,7 +272,7 @@ private struct ShoppingAddItemView: View {
                             Text("Category")
                             Spacer()
                             Text(selectedItem.category.rawValue)
-                                .foregroundStyle(AppColors.subtleText)
+                                .foregroundStyle(PCColors.textSecondary)
                         }
                     }
                 } else {
@@ -285,11 +288,11 @@ private struct ShoppingAddItemView: View {
                                         Text(viewModel.suggestionBaseName(suggestion))
                                             .font(.subheadline)
                                             .fontWeight(.semibold)
-                                            .foregroundStyle(AppColors.darkText)
+                                            .foregroundStyle(PCColors.textPrimary)
                                         if let facetSummary = viewModel.suggestionFacetSummary(suggestion) {
                                             Text(facetSummary)
                                                 .font(.caption)
-                                                .foregroundStyle(AppColors.subtleText)
+                                                .foregroundStyle(PCColors.textSecondary)
                                                 .multilineTextAlignment(.leading)
                                         }
                                     }
@@ -373,32 +376,32 @@ struct ShoppingItemRow: View {
             HStack(spacing: 12) {
                 Image(systemName: item.isChecked ? "checkmark.circle.fill" : "circle")
                     .font(.title3)
-                    .foregroundStyle(item.isChecked ? AppColors.primaryGreen : AppColors.mediumGray)
+                    .foregroundStyle(item.isChecked ? PCColors.accent : PCColors.textTertiary)
 
                 VStack(alignment: .leading, spacing: 2) {
                     Text(item.displayName)
                         .font(.subheadline)
-                        .foregroundStyle(item.isChecked ? AppColors.subtleText : AppColors.darkText)
+                        .foregroundStyle(item.isChecked ? PCColors.textSecondary : PCColors.textPrimary)
                         .strikethrough(item.isChecked)
 
                     if let facetSummary = item.facetSummary {
                         Text(facetSummary)
                             .font(.caption)
-                            .foregroundStyle(AppColors.subtleText)
+                            .foregroundStyle(PCColors.textSecondary)
                             .strikethrough(item.isChecked)
                     }
 
                     if let requirementText = item.recipeRequirementText {
                         Text("Need: \(requirementText)")
                             .font(.caption)
-                            .foregroundStyle(AppColors.subtleText)
+                            .foregroundStyle(PCColors.textSecondary)
                     }
 
                     if item.isPantryPlanCustomized || item.recipeRequirementText == nil {
                         Text("Pantry: \(item.pantryPlanText)")
                             .font(.caption)
                             .fontWeight(.medium)
-                            .foregroundStyle(AppColors.accentBlue)
+                            .foregroundStyle(PCColors.info)
                     }
                 }
 
@@ -407,19 +410,19 @@ struct ShoppingItemRow: View {
                 if let source = item.recipeSource {
                     Text(source)
                         .font(.caption2)
-                        .foregroundStyle(AppColors.subtleText)
+                        .foregroundStyle(PCColors.textSecondary)
                         .padding(.horizontal, 6)
                         .padding(.vertical, 2)
-                        .background(AppColors.lightGray)
+                        .background(PCColors.fillTertiary)
                         .clipShape(Capsule())
                 }
 
                 Button(action: onAdjust) {
                     Image(systemName: "slider.horizontal.3")
                         .font(.subheadline)
-                        .foregroundStyle(AppColors.accentBlue)
+                        .foregroundStyle(PCColors.info)
                         .padding(8)
-                        .background(AppColors.accentBlue.opacity(0.12))
+                        .background(PCColors.info.opacity(0.12))
                         .clipShape(Circle())
                 }
                 .buttonStyle(.plain)
@@ -456,7 +459,7 @@ private struct ShoppingPantryReviewView: View {
                         Section {
                             Text("Review what should go into Pantry. Recipe amounts stay visible, but Pantry reflects what you actually bought.")
                                 .font(.subheadline)
-                                .foregroundStyle(AppColors.subtleText)
+                                .foregroundStyle(PCColors.textSecondary)
                         }
 
                         Section {
@@ -505,19 +508,19 @@ private struct ShoppingPantryReviewView: View {
                         Text(item.displayName)
                             .font(.subheadline)
                             .fontWeight(.semibold)
-                            .foregroundStyle(AppColors.darkText)
+                            .foregroundStyle(PCColors.textPrimary)
                         if let requirementText = item.recipeRequirementText {
                             Text("Recipe needs: \(requirementText)")
                                 .font(.caption)
-                                .foregroundStyle(AppColors.subtleText)
+                                .foregroundStyle(PCColors.textSecondary)
                         }
                         Text("Pantry add: \(item.pantryPlanText)")
                             .font(.caption)
-                            .foregroundStyle(item.isPantryPlanCustomized ? AppColors.accentBlue : AppColors.subtleText)
+                            .foregroundStyle(item.isPantryPlanCustomized ? PCColors.info : PCColors.textSecondary)
                         if let source = item.recipeSource {
                             Text(source)
                                 .font(.caption2)
-                                .foregroundStyle(AppColors.subtleText)
+                                .foregroundStyle(PCColors.textSecondary)
                         }
                     }
 
@@ -527,10 +530,10 @@ private struct ShoppingPantryReviewView: View {
                         Text("Adjusted")
                             .font(.caption2)
                             .fontWeight(.semibold)
-                            .foregroundStyle(AppColors.accentBlue)
+                            .foregroundStyle(PCColors.info)
                             .padding(.horizontal, 8)
                             .padding(.vertical, 4)
-                            .background(AppColors.accentBlue.opacity(0.12))
+                            .background(PCColors.info.opacity(0.12))
                             .clipShape(Capsule())
                     }
                 }
@@ -549,10 +552,10 @@ private struct ShoppingPantryReviewView: View {
                     Text(items.isEmpty ? "Nothing to add" : "Add \(items.count) item\(items.count == 1 ? "" : "s") to Pantry")
                         .font(.subheadline)
                         .fontWeight(.semibold)
-                        .foregroundStyle(AppColors.darkText)
+                        .foregroundStyle(PCColors.textPrimary)
                     Text("Adjusted Pantry amounts will be used when these items move out of Shopping.")
                         .font(.caption)
-                        .foregroundStyle(AppColors.subtleText)
+                        .foregroundStyle(PCColors.textSecondary)
                 }
 
                 Spacer()
@@ -565,7 +568,7 @@ private struct ShoppingPantryReviewView: View {
                         .fontWeight(.semibold)
                         .padding(.horizontal, 16)
                         .padding(.vertical, 12)
-                        .background(items.isEmpty ? AppColors.mediumGray : AppColors.primaryGreen)
+                        .background(items.isEmpty ? PCColors.textTertiary : PCColors.accent)
                         .foregroundStyle(.white)
                         .clipShape(Capsule())
                 }
@@ -596,11 +599,11 @@ private struct ShoppingPantryPlanEditorView: View {
                 Section {
                     Text(draft.item.displayName)
                         .font(.headline)
-                        .foregroundStyle(AppColors.darkText)
+                        .foregroundStyle(PCColors.textPrimary)
                     if let requirementText = draft.item.recipeRequirementText {
                         Text("Recipe needs: \(requirementText)")
                             .font(.caption)
-                            .foregroundStyle(AppColors.subtleText)
+                            .foregroundStyle(PCColors.textSecondary)
                     }
                 }
 

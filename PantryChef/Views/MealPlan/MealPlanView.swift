@@ -162,7 +162,7 @@ struct MealPlanView: View {
                 compactActionButton(
                     title: "Prepared Food",
                     systemImage: "calendar.badge.plus",
-                    tint: AppColors.primaryGreen,
+                    tint: PCColors.accent,
                     isDisabled: preparedFoodSourceEntries.isEmpty,
                     action: {
                         showPreparedFoodSelection = true
@@ -172,7 +172,7 @@ struct MealPlanView: View {
                 compactActionButton(
                     title: "Log Eating",
                     systemImage: "checklist.checked",
-                    tint: AppColors.warmOrange,
+                    tint: PCColors.expiring,
                     isDisabled: false,
                     action: {
                         showMealLoggingSelection = true
@@ -182,7 +182,7 @@ struct MealPlanView: View {
                 compactActionButton(
                     title: "Shopping List",
                     systemImage: "cart",
-                    tint: AppColors.accentBlue,
+                    tint: PCColors.info,
                     isDisabled: false,
                     accessibilityIdentifier: "mealplan.shoppingListButton",
                     action: {
@@ -193,7 +193,7 @@ struct MealPlanView: View {
             .padding(.horizontal)
             .padding(.vertical, 12)
         }
-        .background(AppColors.cardBackground)
+        .background(PCColors.cardBackground)
     }
 
     private func compactActionButton(
@@ -212,10 +212,10 @@ struct MealPlanView: View {
                     .font(.caption)
                     .fontWeight(.semibold)
             }
-            .foregroundStyle(isDisabled ? AppColors.mediumGray : tint)
+            .foregroundStyle(isDisabled ? PCColors.textTertiary : tint)
             .padding(.horizontal, 14)
             .padding(.vertical, 10)
-            .background(isDisabled ? AppColors.lightGray : tint.opacity(0.1))
+            .background(isDisabled ? PCColors.fillTertiary : tint.opacity(0.1))
             .clipShape(Capsule())
         }
         .buttonStyle(.plain)
@@ -231,7 +231,7 @@ struct MealPlanView: View {
             } label: {
                 Image(systemName: "chevron.left")
                     .font(.title3)
-                    .foregroundStyle(AppColors.primaryGreen)
+                    .foregroundStyle(PCColors.accent)
             }
 
             Spacer()
@@ -239,10 +239,10 @@ struct MealPlanView: View {
             VStack(spacing: 2) {
                 Text(viewModel.weekDateRangeText)
                     .font(.headline)
-                    .foregroundStyle(AppColors.darkText)
+                    .foregroundStyle(PCColors.textPrimary)
                 Text("\(viewModel.totalPlannedMeals) meals planned")
                     .font(.caption)
-                    .foregroundStyle(AppColors.subtleText)
+                    .foregroundStyle(PCColors.textSecondary)
             }
 
             Spacer()
@@ -252,18 +252,18 @@ struct MealPlanView: View {
             } label: {
                 Image(systemName: "chevron.right")
                     .font(.title3)
-                    .foregroundStyle(AppColors.primaryGreen)
+                    .foregroundStyle(PCColors.accent)
             }
         }
         .padding()
-        .background(AppColors.cardBackground)
+        .background(PCColors.cardBackground)
         .overlay(alignment: .bottom) {
             Button("Today") {
                 viewModel.goToCurrentWeek()
             }
             .font(.caption2)
             .fontWeight(.medium)
-            .foregroundStyle(AppColors.primaryGreen)
+            .foregroundStyle(PCColors.accent)
             .offset(y: 12)
         }
     }
@@ -276,10 +276,10 @@ struct MealPlanView: View {
                     Text(date, format: .dateTime.weekday(.wide))
                         .font(.subheadline)
                         .fontWeight(.semibold)
-                        .foregroundStyle(Calendar.current.isDateInToday(date) ? AppColors.primaryGreen : AppColors.darkText)
+                        .foregroundStyle(Calendar.current.isDateInToday(date) ? PCColors.accent : PCColors.textPrimary)
                     Text(date, format: .dateTime.month(.abbreviated).day())
                         .font(.caption)
-                        .foregroundStyle(AppColors.subtleText)
+                        .foregroundStyle(PCColors.textSecondary)
                 }
 
                 Spacer()
@@ -288,10 +288,10 @@ struct MealPlanView: View {
                     Text("Today")
                         .font(.caption)
                         .fontWeight(.semibold)
-                        .foregroundStyle(AppColors.primaryGreen)
+                        .foregroundStyle(PCColors.accent)
                         .padding(.horizontal, 8)
                         .padding(.vertical, 4)
-                        .background(AppColors.primaryGreen.opacity(0.1))
+                        .background(PCColors.accent.opacity(0.1))
                         .clipShape(Capsule())
                 }
             }
@@ -303,7 +303,7 @@ struct MealPlanView: View {
             }
         }
         .padding()
-        .background(Calendar.current.isDateInToday(date) ? AppColors.primaryGreen.opacity(0.03) : .clear)
+        .background(Calendar.current.isDateInToday(date) ? PCColors.accent.opacity(0.03) : .clear)
     }
 
     // MARK: - Meal Slot
@@ -326,17 +326,17 @@ struct MealPlanView: View {
             VStack(spacing: 6) {
                 Image(systemName: mealType.icon)
                     .font(.caption)
-                    .foregroundStyle(primaryEntry != nil ? AppColors.primaryGreen : AppColors.mediumGray)
+                    .foregroundStyle(primaryEntry != nil ? PCColors.accent : PCColors.textTertiary)
 
                 Text(mealType.rawValue)
                     .font(.system(size: 10))
-                    .foregroundStyle(AppColors.subtleText)
+                    .foregroundStyle(PCColors.textSecondary)
 
                 if let primaryEntry, primaryEntry.isPlanned {
                     Text(primaryEntry.displayName)
                         .font(.system(size: 10))
                         .fontWeight(.medium)
-                        .foregroundStyle(AppColors.darkText)
+                        .foregroundStyle(PCColors.textPrimary)
                         .lineLimit(2)
                         .multilineTextAlignment(.center)
 
@@ -344,24 +344,24 @@ struct MealPlanView: View {
                         Text("+\(entries.count - 1) more")
                             .font(.system(size: 9))
                             .fontWeight(.semibold)
-                            .foregroundStyle(AppColors.primaryGreen)
+                            .foregroundStyle(PCColors.accent)
                     } else if let statusSummary = primaryEntry.mealLoggingSummary ?? primaryEntry.planningSubtitle {
                         Text(statusSummary)
                             .font(.system(size: 8))
-                            .foregroundStyle(AppColors.subtleText)
+                            .foregroundStyle(PCColors.textSecondary)
                             .lineLimit(2)
                             .multilineTextAlignment(.center)
                     }
                 } else {
                     Image(systemName: "plus")
                         .font(.caption2)
-                        .foregroundStyle(AppColors.mediumGray)
+                        .foregroundStyle(PCColors.textTertiary)
                 }
             }
             .frame(maxWidth: .infinity)
             .padding(.vertical, 10)
             .padding(.horizontal, 4)
-            .background(primaryEntry?.isPlanned == true ? AppColors.primaryGreen.opacity(0.08) : AppColors.lightGray)
+            .background(primaryEntry?.isPlanned == true ? PCColors.accent.opacity(0.08) : PCColors.fillTertiary)
             .clipShape(RoundedRectangle(cornerRadius: 10))
         }
         .contextMenu {
@@ -420,331 +420,6 @@ struct MealPlanView: View {
     }
 }
 
-struct CookQueueView: View {
-    @Environment(\.dismiss) private var dismiss
-
-    let appState: AppState
-
-    @State private var launchingStage: CookQueueStage?
-    @State private var showGathering = false
-    @State private var showSoloCookMode = false
-    @State private var showMultiCookMode = false
-
-    private var queue: CookQueue? {
-        appState.cookQueue
-    }
-
-    private var launchingRecipes: [Recipe] {
-        guard let launchingStage else { return [] }
-        return appState.resolvedRecipes(for: launchingStage)
-    }
-
-    private var queueContext: (queueID: UUID, stageID: UUID)? {
-        guard let launchingStage else { return nil }
-        return appState.cookQueueContext(for: launchingStage.id)
-    }
-
-    var body: some View {
-        NavigationStack {
-            VStack(spacing: 0) {
-                if let queue, !queue.stages.isEmpty {
-                    AppList {
-                        Section {
-                            Text("Queue recipes or meal-plan meals into solo or parallel stages. Finish a stage to unlock the next one without losing your place.")
-                                .font(.subheadline)
-                                .foregroundStyle(AppColors.subtleText)
-                        }
-
-                        Section {
-                            ForEach(queue.stages) { stage in
-                                queueStageRow(stage)
-                            }
-                        } header: {
-                            SectionHeader(
-                                title: queue.name,
-                                subtitle: queue.pendingStageCount == 0
-                                    ? "All stages are complete or skipped."
-                                    : "\(queue.pendingStageCount) stages remaining • \(queue.completedStageCount) finished"
-                            )
-                            .padding(.top, 8)
-                        }
-                    }
-                } else {
-                    EmptyStateView(
-                        icon: "list.number",
-                        title: "Cook queue is empty",
-                        message: "Add recipes from Recipe detail or queue planned meals from Meal Plan to build your next cooking run."
-                    )
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                }
-            }
-            .navigationTitle("Cook Queue")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Close") { dismiss() }
-                }
-                if queue != nil {
-                    ToolbarItem(placement: .primaryAction) {
-                        Button("Clear") {
-                            Task {
-                                await appState.clearCookQueue()
-                            }
-                        }
-                        .foregroundStyle(AppColors.softRed)
-                    }
-                }
-            }
-            .sheet(isPresented: $showGathering) {
-                IngredientGatheringView(recipes: launchingRecipes) {
-                    showGathering = false
-                    if launchingRecipes.count > 1 {
-                        showMultiCookMode = true
-                    } else {
-                        showSoloCookMode = true
-                    }
-                }
-            }
-            .fullScreenCover(isPresented: $showSoloCookMode, onDismiss: {
-                launchingStage = nil
-            }) {
-                if let recipe = launchingRecipes.first {
-                    let session = CookingSession.load(recipeId: recipe.id)
-                    CookModeView(
-                        recipe: recipe,
-                        resumeAtStep: session?.currentStepIndex ?? 0,
-                        isResuming: session != nil,
-                        queueID: queueContext?.queueID,
-                        queueStageID: queueContext?.stageID
-                    )
-                    .environment(appState)
-                }
-            }
-            .fullScreenCover(isPresented: $showMultiCookMode, onDismiss: {
-                launchingStage = nil
-            }) {
-                let blocks = MultiRecipeScheduler.schedule(recipes: launchingRecipes)
-                MultiCookModeView(
-                    recipes: launchingRecipes,
-                    blocks: blocks,
-                    queueID: queueContext?.queueID,
-                    queueStageID: queueContext?.stageID
-                )
-                .environment(appState)
-            }
-        }
-    }
-
-    private func queueStageRow(_ stage: CookQueueStage) -> some View {
-        let recipes = appState.resolvedRecipes(for: stage)
-        let canStart = !recipes.isEmpty
-        let hasActiveSession = recipes.contains { CookingSession.load(recipeId: $0.id) != nil }
-
-        return VStack(alignment: .leading, spacing: 12) {
-            HStack(alignment: .top, spacing: 12) {
-                Image(systemName: stage.isParallelBatch ? "square.stack.3d.up.fill" : "frying.pan.fill")
-                    .font(.title3)
-                    .foregroundStyle(stage.isParallelBatch ? AppColors.accentBlue : AppColors.primaryGreen)
-                    .frame(width: 40, height: 40)
-                    .background((stage.isParallelBatch ? AppColors.accentBlue : AppColors.primaryGreen).opacity(0.12))
-                    .clipShape(RoundedRectangle(cornerRadius: 10))
-
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(stage.title)
-                        .font(.subheadline)
-                        .fontWeight(.semibold)
-                        .foregroundStyle(AppColors.darkText)
-                    Text(stage.subtitle)
-                        .font(.caption)
-                        .foregroundStyle(AppColors.subtleText)
-                    if !recipes.isEmpty {
-                        Text(recipes.map(\.totalTimeDisplay).joined(separator: " • "))
-                            .font(.caption2)
-                            .foregroundStyle(AppColors.subtleText)
-                    }
-                    if !canStart {
-                        Text("One or more recipes in this stage can no longer be found.")
-                            .font(.caption2)
-                            .foregroundStyle(AppColors.softRed)
-                    }
-                }
-
-                Spacer()
-
-                Text(statusTitle(for: stage.status))
-                    .font(.caption2)
-                    .fontWeight(.semibold)
-                    .foregroundStyle(statusColor(for: stage.status))
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 4)
-                    .background(statusColor(for: stage.status).opacity(0.12))
-                    .clipShape(Capsule())
-            }
-
-            HStack(spacing: 8) {
-                if stage.status == .pending || stage.status == .active {
-                    Button {
-                        launchStage(stage)
-                    } label: {
-                        Text(hasActiveSession ? "Resume" : "Start")
-                            .font(.caption)
-                            .fontWeight(.semibold)
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 8)
-                            .background(canStart ? AppColors.primaryGreen : AppColors.mediumGray)
-                            .foregroundStyle(.white)
-                            .clipShape(Capsule())
-                    }
-                    .disabled(!canStart)
-
-                    Button {
-                        Task {
-                            await appState.skipCookQueueStage(stage.id)
-                        }
-                    } label: {
-                        Text("Skip")
-                            .font(.caption)
-                            .fontWeight(.semibold)
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 8)
-                            .background(AppColors.lightGray)
-                            .foregroundStyle(AppColors.darkText)
-                            .clipShape(Capsule())
-                    }
-                }
-
-                Menu {
-                    Button {
-                        Task {
-                            await appState.moveCookQueueStage(stage.id, by: -1)
-                        }
-                    } label: {
-                        Label("Move Earlier", systemImage: "arrow.up")
-                    }
-                    .disabled(!canMoveStage(stage, by: -1))
-
-                    Button {
-                        Task {
-                            await appState.moveCookQueueStage(stage.id, by: 1)
-                        }
-                    } label: {
-                        Label("Move Later", systemImage: "arrow.down")
-                    }
-                    .disabled(!canMoveStage(stage, by: 1))
-
-                    Button {
-                        Task {
-                            await appState.bundleCookQueueStageWithNext(stage.id)
-                        }
-                    } label: {
-                        Label("Bundle With Next", systemImage: "square.stack.3d.up")
-                    }
-                    .disabled(!canBundleWithNext(stage))
-
-                    Button {
-                        Task {
-                            await appState.splitCookQueueStage(stage.id)
-                        }
-                    } label: {
-                        Label("Split Batch", systemImage: "square.split.2x1")
-                    }
-                    .disabled(!canSplit(stage))
-                } label: {
-                    Text("Edit")
-                        .font(.caption)
-                        .fontWeight(.semibold)
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 8)
-                        .background(AppColors.lightGray)
-                        .foregroundStyle(AppColors.darkText)
-                        .clipShape(Capsule())
-                }
-
-                Button {
-                    Task {
-                        await appState.removeCookQueueStage(stage.id)
-                    }
-                } label: {
-                    Text("Remove")
-                        .font(.caption)
-                        .fontWeight(.semibold)
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 8)
-                        .background(AppColors.softRed.opacity(0.12))
-                        .foregroundStyle(AppColors.softRed)
-                        .clipShape(Capsule())
-                }
-            }
-        }
-        .padding(.vertical, 6)
-    }
-
-    private func canMoveStage(_ stage: CookQueueStage, by offset: Int) -> Bool {
-        guard let queue,
-              let index = queue.stages.firstIndex(where: { $0.id == stage.id }) else {
-            return false
-        }
-
-        let destination = index + offset
-        return destination >= 0 && destination < queue.stages.count
-    }
-
-    private func canBundleWithNext(_ stage: CookQueueStage) -> Bool {
-        guard let queue,
-              let index = queue.stages.firstIndex(where: { $0.id == stage.id }),
-              index + 1 < queue.stages.count else {
-            return false
-        }
-
-        return stage.status == .pending && queue.stages[index + 1].status == .pending
-    }
-
-    private func canSplit(_ stage: CookQueueStage) -> Bool {
-        stage.status == .pending && stage.recipeIDs.count > 1
-    }
-
-    private func launchStage(_ stage: CookQueueStage) {
-        launchingStage = stage
-        Task {
-            await appState.startCookQueueStage(stage.id)
-            let recipes = appState.resolvedRecipes(for: stage)
-            guard !recipes.isEmpty else { return }
-
-            if recipes.count == 1, let recipe = recipes.first, CookingSession.load(recipeId: recipe.id) != nil {
-                showSoloCookMode = true
-            } else {
-                showGathering = true
-            }
-        }
-    }
-
-    private func statusTitle(for status: CookQueueStageStatus) -> String {
-        switch status {
-        case .pending:
-            return "Queued"
-        case .active:
-            return "Active"
-        case .completed:
-            return "Done"
-        case .skipped:
-            return "Skipped"
-        }
-    }
-
-    private func statusColor(for status: CookQueueStageStatus) -> Color {
-        switch status {
-        case .pending:
-            return AppColors.accentBlue
-        case .active:
-            return AppColors.primaryGreen
-        case .completed:
-            return AppColors.warmOrange
-        case .skipped:
-            return AppColors.mediumGray
-        }
-    }
-}
-
 private struct MealSlotPresentation: Identifiable {
     let id = UUID()
     let date: Date
@@ -785,7 +460,7 @@ private struct MealSlotEntriesView: View {
                             Stepper(value: plannedServingsBinding(for: entry), in: entry.editablePlannedServingsRange) {
                                 Text(entry.plannedServingsLabel ?? "1 serving planned")
                                     .font(.caption)
-                                    .foregroundStyle(AppColors.subtleText)
+                                    .foregroundStyle(PCColors.textSecondary)
                             }
                         }
 
@@ -793,10 +468,10 @@ private struct MealSlotEntriesView: View {
                             Text(eatenProgressLabel)
                                 .font(.caption)
                                 .fontWeight(.semibold)
-                                .foregroundStyle(entry.isFullyEaten ? AppColors.primaryGreen : AppColors.accentBlue)
+                                .foregroundStyle(entry.isFullyEaten ? PCColors.accent : PCColors.info)
                                 .padding(.horizontal, 10)
                                 .padding(.vertical, 6)
-                                .background((entry.isFullyEaten ? AppColors.primaryGreen : AppColors.accentBlue).opacity(0.12))
+                                .background((entry.isFullyEaten ? PCColors.accent : PCColors.info).opacity(0.12))
                                 .clipShape(Capsule())
                         }
                     }
@@ -831,16 +506,16 @@ private struct MealSlotEntriesView: View {
     private func mealEntryRow(title: String, subtitle: String?, systemImage: String) -> some View {
         HStack(spacing: 12) {
             Image(systemName: systemImage)
-                .foregroundStyle(AppColors.primaryGreen)
+                .foregroundStyle(PCColors.accent)
                 .frame(width: 28)
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(title)
-                    .foregroundStyle(AppColors.darkText)
+                    .foregroundStyle(PCColors.textPrimary)
                 if let subtitle, !subtitle.isEmpty {
                     Text(subtitle)
                         .font(.caption)
-                        .foregroundStyle(AppColors.subtleText)
+                        .foregroundStyle(PCColors.textSecondary)
                 }
             }
         }
@@ -996,7 +671,7 @@ private struct MealPlanEatenSelectionView: View {
                         Section {
                             Text("Select meals from this week, then choose the matching Prepared Food and how many servings were actually eaten before saving once.")
                                 .font(.subheadline)
-                                .foregroundStyle(AppColors.subtleText)
+                                .foregroundStyle(PCColors.textSecondary)
                         }
 
                         ForEach(entriesByDay, id: \.date) { group in
@@ -1030,7 +705,7 @@ private struct MealPlanEatenSelectionView: View {
 
     private func selectionRow(for entry: MealPlanEntry) -> some View {
         let isSelected = selectedEntryIDs.contains(entry.id)
-        let accent = entry.isPreparedFoodPlan ? AppColors.warmOrange : AppColors.primaryGreen
+        let accent = entry.isPreparedFoodPlan ? PCColors.expiring : PCColors.accent
 
         return Button {
             if isSelected {
@@ -1051,17 +726,17 @@ private struct MealPlanEatenSelectionView: View {
                     Text(entry.displayName)
                         .font(.subheadline)
                         .fontWeight(.semibold)
-                        .foregroundStyle(AppColors.darkText)
+                        .foregroundStyle(PCColors.textPrimary)
                     Text("\(entry.mealType.rawValue) • \(entry.mealLoggingSummary ?? entry.planningSubtitle ?? "1 planned")")
                         .font(.caption)
-                        .foregroundStyle(AppColors.subtleText)
+                        .foregroundStyle(PCColors.textSecondary)
                 }
 
                 Spacer()
 
                 Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
                     .font(.title3)
-                    .foregroundStyle(isSelected ? AppColors.primaryGreen : AppColors.mediumGray)
+                    .foregroundStyle(isSelected ? PCColors.accent : PCColors.textTertiary)
             }
             .padding(.vertical, 4)
         }
@@ -1076,10 +751,10 @@ private struct MealPlanEatenSelectionView: View {
                     Text(selectedEntries.isEmpty ? "Select meals to update" : "\(selectedEntries.count) meals selected")
                         .font(.subheadline)
                         .fontWeight(.semibold)
-                        .foregroundStyle(AppColors.darkText)
+                        .foregroundStyle(PCColors.textPrimary)
                     Text("You’ll set eaten amounts in the next step.")
                         .font(.caption)
-                        .foregroundStyle(AppColors.subtleText)
+                        .foregroundStyle(PCColors.textSecondary)
                 }
 
                 Spacer()
@@ -1092,7 +767,7 @@ private struct MealPlanEatenSelectionView: View {
                         .fontWeight(.semibold)
                         .padding(.horizontal, 16)
                         .padding(.vertical, 12)
-                        .background(selectedEntries.isEmpty ? AppColors.mediumGray : AppColors.accentBlue)
+                        .background(selectedEntries.isEmpty ? PCColors.textTertiary : PCColors.info)
                         .foregroundStyle(.white)
                         .clipShape(Capsule())
                 }
@@ -1167,7 +842,7 @@ private struct MealPlanEatenReviewView: View {
                                 ForEach(overdrawMessages, id: \.self) { message in
                                     Text(message)
                                         .font(.subheadline)
-                                        .foregroundStyle(AppColors.softRed)
+                                        .foregroundStyle(PCColors.expired)
                                 }
                             }
                         }
@@ -1200,7 +875,7 @@ private struct MealPlanEatenReviewView: View {
     }
 
     private func reviewRow(_ draft: Binding<MealPlanEatenReviewDraft>) -> some View {
-        let accent = draft.wrappedValue.entry.isPreparedFoodPlan ? AppColors.warmOrange : AppColors.primaryGreen
+        let accent = draft.wrappedValue.entry.isPreparedFoodPlan ? PCColors.expiring : PCColors.accent
 
         return VStack(alignment: .leading, spacing: 12) {
             HStack(alignment: .top, spacing: 12) {
@@ -1215,16 +890,16 @@ private struct MealPlanEatenReviewView: View {
                     Text(draft.wrappedValue.entry.displayName)
                         .font(.subheadline)
                         .fontWeight(.semibold)
-                        .foregroundStyle(AppColors.darkText)
+                        .foregroundStyle(PCColors.textPrimary)
                     Text(draft.wrappedValue.sourceSummary)
                         .font(.caption)
-                        .foregroundStyle(AppColors.subtleText)
+                        .foregroundStyle(PCColors.textSecondary)
                     Text(draft.wrappedValue.progressText)
                         .font(.caption)
-                        .foregroundStyle(AppColors.subtleText)
+                        .foregroundStyle(PCColors.textSecondary)
                     Text(draft.wrappedValue.preparedFoodSelectionSummary)
                         .font(.caption2)
-                        .foregroundStyle(draft.wrappedValue.requiresPreparedDishSelection ? AppColors.softRed : AppColors.subtleText)
+                        .foregroundStyle(draft.wrappedValue.requiresPreparedDishSelection ? PCColors.expired : PCColors.textSecondary)
                 }
             }
 
@@ -1260,7 +935,7 @@ private struct MealPlanEatenReviewView: View {
                 Stepper(value: draft.targetEatenServings, in: draft.wrappedValue.currentEatenServings...draft.wrappedValue.plannedServings) {
                     Text("Servings eaten: \(draft.wrappedValue.targetEatenServings) of \(draft.wrappedValue.plannedServings)")
                         .font(.caption)
-                        .foregroundStyle(AppColors.subtleText)
+                        .foregroundStyle(PCColors.textSecondary)
                 }
             }
         }
@@ -1275,10 +950,10 @@ private struct MealPlanEatenReviewView: View {
                     Text(hasChanges ? "Ready to save eaten amounts" : "Set at least one meal to save")
                         .font(.subheadline)
                         .fontWeight(.semibold)
-                        .foregroundStyle(AppColors.darkText)
+                        .foregroundStyle(PCColors.textPrimary)
                     Text(reviewSummaryText)
                         .font(.caption)
-                        .foregroundStyle(AppColors.subtleText)
+                        .foregroundStyle(PCColors.textSecondary)
                 }
 
                 Spacer()
@@ -1291,7 +966,7 @@ private struct MealPlanEatenReviewView: View {
                         .fontWeight(.semibold)
                         .padding(.horizontal, 16)
                         .padding(.vertical, 12)
-                        .background(hasChanges && !hasMissingSelections && overdrawMessages.isEmpty ? AppColors.primaryGreen : AppColors.mediumGray)
+                        .background(hasChanges && !hasMissingSelections && overdrawMessages.isEmpty ? PCColors.accent : PCColors.textTertiary)
                         .foregroundStyle(.white)
                         .clipShape(Capsule())
                 }
@@ -1340,8 +1015,8 @@ private struct MealPlanEatenReviewView: View {
                 .fontWeight(.semibold)
                 .padding(.horizontal, 12)
                 .padding(.vertical, 8)
-                .background(AppColors.lightGray)
-                .foregroundStyle(AppColors.darkText)
+                .background(PCColors.fillTertiary)
+                .foregroundStyle(PCColors.textPrimary)
                 .clipShape(Capsule())
         }
         .buttonStyle(.plain)
@@ -1354,14 +1029,15 @@ private struct MealPlanEatenReviewView: View {
                 .fontWeight(.semibold)
                 .padding(.horizontal, 10)
                 .padding(.vertical, 6)
-                .background(AppColors.lightGray)
-                .foregroundStyle(AppColors.darkText)
+                .background(PCColors.fillTertiary)
+                .foregroundStyle(PCColors.textPrimary)
                 .clipShape(Capsule())
         }
         .buttonStyle(.plain)
     }
 }
 
+// MARK: - Recipe Picker View
 // MARK: - Recipe Picker View
 struct MealPickerView: View {
     @Environment(\.dismiss) private var dismiss
@@ -1394,20 +1070,20 @@ struct MealPickerView: View {
                                 HStack(spacing: 12) {
                                     Image(systemName: "takeoutbag.and.cup.and.straw")
                                         .font(.title3)
-                                        .foregroundStyle(AppColors.warmOrange)
+                                        .foregroundStyle(PCColors.expiring)
                                         .frame(width: 40, height: 40)
-                                        .background(AppColors.warmOrange.opacity(0.12))
+                                        .background(PCColors.expiring.opacity(0.12))
                                         .clipShape(RoundedRectangle(cornerRadius: 8))
 
                                     VStack(alignment: .leading, spacing: 4) {
                                         Text(dish.name)
                                             .font(.subheadline)
                                             .fontWeight(.medium)
-                                            .foregroundStyle(AppColors.darkText)
+                                            .foregroundStyle(PCColors.textPrimary)
 
                                         Text("\(dish.servingsDisplay) • \(dish.mealTypesSummary)")
                                             .font(.caption2)
-                                            .foregroundStyle(AppColors.subtleText)
+                                            .foregroundStyle(PCColors.textSecondary)
                                     }
 
                                     Spacer()
@@ -1431,25 +1107,25 @@ struct MealPickerView: View {
                                 HStack(spacing: 12) {
                                     Image(systemName: recipe.mealType?.icon ?? "fork.knife")
                                         .font(.title3)
-                                        .foregroundStyle(AppColors.primaryGreen)
+                                        .foregroundStyle(PCColors.accent)
                                         .frame(width: 40, height: 40)
-                                        .background(AppColors.primaryGreen.opacity(0.1))
+                                        .background(PCColors.accent.opacity(0.1))
                                         .clipShape(RoundedRectangle(cornerRadius: 8))
 
                                     VStack(alignment: .leading, spacing: 4) {
                                         Text(recipe.title)
                                             .font(.subheadline)
                                             .fontWeight(.medium)
-                                            .foregroundStyle(AppColors.darkText)
+                                            .foregroundStyle(PCColors.textPrimary)
 
                                         HStack {
                                             Text(recipe.servings == 1 ? "1 serving" : "\(recipe.servings) servings")
                                                 .font(.caption2)
-                                                .foregroundStyle(AppColors.subtleText)
-                                            DifficultyBadge(difficulty: recipe.difficulty)
+                                                .foregroundStyle(PCColors.textSecondary)
+                                            PCDifficultyBadge(difficulty: recipe.difficulty)
                                             Text(recipe.totalTimeDisplay)
                                                 .font(.caption2)
-                                                .foregroundStyle(AppColors.subtleText)
+                                                .foregroundStyle(PCColors.textSecondary)
                                         }
                                     }
                                 }
@@ -1503,13 +1179,13 @@ struct MultiMealPickerView: View {
                         ForEach(Array(stagedSelections.enumerated()), id: \.offset) { index, item in
                             HStack {
                                 Text(item.displayName)
-                                    .foregroundStyle(AppColors.darkText)
+                                    .foregroundStyle(PCColors.textPrimary)
                                 Spacer()
                                 Button {
                                     stagedSelections.remove(at: index)
                                 } label: {
                                     Image(systemName: "minus.circle.fill")
-                                        .foregroundStyle(AppColors.softRed)
+                                        .foregroundStyle(PCColors.expired)
                                 }
                                 .buttonStyle(.plain)
                             }
@@ -1527,7 +1203,7 @@ struct MultiMealPickerView: View {
                                     title: dish.name,
                                     subtitle: "\(dish.servingsDisplay) • \(dish.mealTypesSummary)",
                                     systemImage: "takeoutbag.and.cup.and.straw",
-                                    accent: AppColors.warmOrange,
+                                    accent: PCColors.expiring,
                                     count: stagedSelections.filter { $0 == .preparedDish(dish) }.count
                                 )
                             }
@@ -1545,7 +1221,7 @@ struct MultiMealPickerView: View {
                                     title: recipe.title,
                                     subtitle: "\(recipe.servings == 1 ? "1 serving" : "\(recipe.servings) servings") • \(recipe.totalTimeDisplay)",
                                     systemImage: recipe.mealType?.icon ?? "fork.knife",
-                                    accent: AppColors.primaryGreen,
+                                    accent: PCColors.accent,
                                     count: stagedSelections.filter { $0 == .recipe(recipe) }.count
                                 )
                             }
@@ -1590,11 +1266,11 @@ struct MultiMealPickerView: View {
                 Text(title)
                     .font(.subheadline)
                     .fontWeight(.medium)
-                    .foregroundStyle(AppColors.darkText)
+                    .foregroundStyle(PCColors.textPrimary)
 
                 Text(subtitle)
                     .font(.caption2)
-                    .foregroundStyle(AppColors.subtleText)
+                    .foregroundStyle(PCColors.textSecondary)
             }
 
             Spacer()

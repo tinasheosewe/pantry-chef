@@ -31,12 +31,12 @@ struct CookModeView: View {
 
     var body: some View {
         ZStack {
-            AppColors.background.ignoresSafeArea()
+            PCColors.background.ignoresSafeArea()
             if let viewModel {
                 cookContent(vm: viewModel)
             } else {
                 ProgressView()
-                    .tint(AppColors.primaryGreen)
+                    .tint(PCColors.accent)
             }
         }
         .onAppear {
@@ -220,7 +220,7 @@ struct CookModeView: View {
             } label: {
                 Image(systemName: "chevron.down")
                     .font(.title3)
-                    .foregroundStyle(AppColors.darkText)
+                    .foregroundStyle(PCColors.textPrimary)
             }
 
             Spacer()
@@ -228,7 +228,7 @@ struct CookModeView: View {
             Text(vm.recipe.title)
                 .font(.subheadline)
                 .fontWeight(.semibold)
-                .foregroundStyle(AppColors.darkText)
+                .foregroundStyle(PCColors.textPrimary)
                 .lineLimit(1)
 
             Spacer()
@@ -240,7 +240,7 @@ struct CookModeView: View {
                 Text("End")
                     .font(.subheadline)
                     .fontWeight(.semibold)
-                    .foregroundStyle(AppColors.softRed)
+                    .foregroundStyle(PCColors.expired)
             }
 
             // Mute/unmute mic
@@ -249,7 +249,7 @@ struct CookModeView: View {
             } label: {
                 Image(systemName: vm.isMicMuted ? "mic.slash.fill" : "mic.fill")
                     .font(.title3)
-                    .foregroundStyle(vm.isMicMuted ? .gray : AppColors.primaryGreen)
+                    .foregroundStyle(vm.isMicMuted ? .gray : PCColors.accent)
             }
         }
         .padding()
@@ -257,10 +257,10 @@ struct CookModeView: View {
             if vm.isSchedulingBackground {
                 HStack(spacing: 8) {
                     ProgressView()
-                        .tint(AppColors.primaryGreen)
+                        .tint(PCColors.accent)
                     Text("Scheduling reminders…")
                         .font(.caption)
-                        .foregroundStyle(AppColors.darkText)
+                        .foregroundStyle(PCColors.textPrimary)
                 }
                 .padding(.horizontal, 16)
                 .padding(.vertical, 8)
@@ -277,9 +277,9 @@ struct CookModeView: View {
             GeometryReader { geo in
                 ZStack(alignment: .leading) {
                     RoundedRectangle(cornerRadius: 3)
-                        .fill(AppColors.primaryGreen.opacity(0.15))
+                        .fill(PCColors.accent.opacity(0.15))
                     RoundedRectangle(cornerRadius: 3)
-                        .fill(AppColors.primaryGreen)
+                        .fill(PCColors.accent)
                         .frame(width: geo.size.width * vm.progress)
                         .animation(.easeInOut(duration: 0.3), value: vm.progress)
                 }
@@ -288,7 +288,7 @@ struct CookModeView: View {
 
             Text("Step \(vm.currentStepIndex + 1) of \(vm.steps.count)")
                 .font(.caption2)
-                .foregroundStyle(AppColors.subtleText)
+                .foregroundStyle(PCColors.textSecondary)
         }
         .padding(.horizontal)
     }
@@ -304,12 +304,12 @@ struct CookModeView: View {
                     .font(.caption)
                     .fontWeight(.bold)
                     .tracking(2)
-                    .foregroundStyle(AppColors.primaryGreen)
+                    .foregroundStyle(PCColors.accent)
 
                 Text(step.instruction)
                     .font(.title2)
                     .fontWeight(.medium)
-                    .foregroundStyle(AppColors.darkText)
+                    .foregroundStyle(PCColors.textPrimary)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 24)
                     .lineSpacing(4)
@@ -317,14 +317,14 @@ struct CookModeView: View {
                 if let timer = step.timerMinutes {
                     HStack(spacing: 8) {
                         Image(systemName: "timer")
-                            .foregroundStyle(AppColors.warmOrange)
+                            .foregroundStyle(PCColors.expiring)
                         Text("\(timer) minutes")
                             .fontWeight(.medium)
-                            .foregroundStyle(AppColors.warmOrange)
+                            .foregroundStyle(PCColors.expiring)
                     }
                     .padding(.horizontal, 16)
                     .padding(.vertical, 10)
-                    .background(AppColors.warmOrange.opacity(0.15))
+                    .background(PCColors.expiring.opacity(0.15))
                     .clipShape(Capsule())
                 }
 
@@ -332,18 +332,18 @@ struct CookModeView: View {
                     VStack(alignment: .leading, spacing: 8) {
                         HStack {
                             Image(systemName: "lightbulb.fill")
-                                .foregroundStyle(AppColors.warmOrange)
+                                .foregroundStyle(PCColors.expiring)
                             Text("Beginner Tip")
                                 .font(.caption)
                                 .fontWeight(.semibold)
-                                .foregroundStyle(AppColors.warmOrange)
+                                .foregroundStyle(PCColors.expiring)
                         }
                         Text(tip)
                             .font(.subheadline)
-                            .foregroundStyle(AppColors.subtleText)
+                            .foregroundStyle(PCColors.textSecondary)
                     }
                     .padding()
-                    .background(AppColors.warmOrange.opacity(0.08))
+                    .background(PCColors.expiring.opacity(0.08))
                     .clipShape(RoundedRectangle(cornerRadius: 12))
                     .padding(.horizontal, 24)
                 }
@@ -359,28 +359,28 @@ struct CookModeView: View {
                 VStack(alignment: .leading, spacing: 6) {
                     Text("Ingredients")
                         .font(.headline)
-                        .foregroundStyle(AppColors.darkText)
+                        .foregroundStyle(PCColors.textPrimary)
 
                     ForEach(vm.recipe.ingredients) { ingredient in
                         HStack(alignment: .top, spacing: 10) {
                             Image(systemName: "circle.fill")
                                 .font(.system(size: 6))
-                                .foregroundStyle(AppColors.primaryGreen)
+                                .foregroundStyle(PCColors.accent)
                                 .padding(.top, 6)
                             Text(ingredient.displayText)
                                 .font(.subheadline)
-                                .foregroundStyle(AppColors.darkText)
+                                .foregroundStyle(PCColors.textPrimary)
                         }
                     }
                 }
                 .padding()
-                .background(AppColors.cardBackground)
+                .background(PCColors.cardBackground)
                 .clipShape(RoundedRectangle(cornerRadius: 16))
 
                 VStack(alignment: .leading, spacing: 12) {
                     Text("Steps")
                         .font(.headline)
-                        .foregroundStyle(AppColors.darkText)
+                        .foregroundStyle(PCColors.textPrimary)
 
                     ForEach(Array(vm.steps.enumerated()), id: \.element.id) { index, step in
                         Button {
@@ -391,15 +391,15 @@ struct CookModeView: View {
                                     Text("\(step.stepNumber)")
                                         .font(.caption)
                                         .fontWeight(.bold)
-                                        .foregroundStyle(index == vm.currentStepIndex ? .white : AppColors.primaryGreen)
+                                        .foregroundStyle(index == vm.currentStepIndex ? .white : PCColors.accent)
                                         .frame(width: 28, height: 28)
-                                        .background(index == vm.currentStepIndex ? AppColors.primaryGreen : AppColors.primaryGreen.opacity(0.12))
+                                        .background(index == vm.currentStepIndex ? PCColors.accent : PCColors.accent.opacity(0.12))
                                         .clipShape(Circle())
 
                                     Text(step.instruction)
                                         .font(.subheadline)
                                         .fontWeight(index == vm.currentStepIndex ? .semibold : .regular)
-                                        .foregroundStyle(AppColors.darkText)
+                                        .foregroundStyle(PCColors.textPrimary)
                                         .multilineTextAlignment(.leading)
 
                                     Spacer()
@@ -408,13 +408,13 @@ struct CookModeView: View {
                                 if let timerMinutes = step.timerMinutes {
                                     Label("\(timerMinutes) min", systemImage: "timer")
                                         .font(.caption)
-                                        .foregroundStyle(AppColors.warmOrange)
+                                        .foregroundStyle(PCColors.expiring)
                                         .padding(.leading, 38)
                                 }
                             }
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .padding()
-                            .background(index == vm.currentStepIndex ? AppColors.primaryGreen.opacity(0.08) : AppColors.cardBackground)
+                            .background(index == vm.currentStepIndex ? PCColors.accent.opacity(0.08) : PCColors.cardBackground)
                             .clipShape(RoundedRectangle(cornerRadius: 16))
                         }
                         .buttonStyle(.plain)
@@ -434,7 +434,7 @@ struct CookModeView: View {
                 HStack(spacing: 16) {
                     Text(vm.timerDisplay)
                         .font(.system(size: 48, weight: .light, design: .monospaced))
-                        .foregroundStyle(vm.timerSeconds <= 10 ? AppColors.softRed : AppColors.primaryGreen)
+                        .foregroundStyle(vm.timerSeconds <= 10 ? PCColors.expired : PCColors.accent)
 
                     VStack(spacing: 8) {
                         Button {
@@ -442,9 +442,9 @@ struct CookModeView: View {
                         } label: {
                             Image(systemName: vm.isPaused ? "play.fill" : "pause.fill")
                                 .font(.title3)
-                                .foregroundStyle(AppColors.darkText)
+                                .foregroundStyle(PCColors.textPrimary)
                                 .frame(width: 44, height: 44)
-                                .background(AppColors.lightGray)
+                                .background(PCColors.fillTertiary)
                                 .clipShape(Circle())
                         }
 
@@ -453,15 +453,15 @@ struct CookModeView: View {
                         } label: {
                             Image(systemName: "xmark")
                                 .font(.caption)
-                                .foregroundStyle(AppColors.subtleText)
+                                .foregroundStyle(PCColors.textSecondary)
                                 .frame(width: 32, height: 32)
-                                .background(AppColors.lightGray)
+                                .background(PCColors.fillTertiary)
                                 .clipShape(Circle())
                         }
                     }
                 }
                 .padding()
-                .background(AppColors.cardBackground)
+                .background(PCColors.cardBackground)
                 .clipShape(RoundedRectangle(cornerRadius: 16))
                 .shadow(color: Color.black.opacity(0.04), radius: 8, x: 0, y: 2)
             } else if vm.currentStep?.timerMinutes != nil {
@@ -474,7 +474,7 @@ struct CookModeView: View {
                         .foregroundStyle(Color.white)
                         .padding(.horizontal, 20)
                         .padding(.vertical, 10)
-                        .background(AppColors.warmOrange)
+                        .background(PCColors.expiring)
                         .clipShape(Capsule())
                 }
             }
@@ -492,10 +492,10 @@ struct CookModeView: View {
                 VStack(spacing: 4) {
                     Image(systemName: "chevron.left.circle.fill")
                         .font(.system(size: 44))
-                        .foregroundStyle(vm.isFirstStep ? AppColors.mediumGray.opacity(0.3) : AppColors.darkText)
+                        .foregroundStyle(vm.isFirstStep ? PCColors.textTertiary.opacity(0.3) : PCColors.textPrimary)
                     Text("Back")
                         .font(.caption2)
-                        .foregroundStyle(vm.isFirstStep ? AppColors.mediumGray.opacity(0.3) : AppColors.subtleText)
+                        .foregroundStyle(vm.isFirstStep ? PCColors.textTertiary.opacity(0.3) : PCColors.textSecondary)
                 }
             }
             .disabled(vm.isFirstStep)
@@ -506,10 +506,10 @@ struct CookModeView: View {
                 VStack(spacing: 4) {
                     Image(systemName: "arrow.counterclockwise.circle.fill")
                         .font(.system(size: 44))
-                        .foregroundStyle(AppColors.subtleText)
+                        .foregroundStyle(PCColors.textSecondary)
                     Text("Repeat")
                         .font(.caption2)
-                        .foregroundStyle(AppColors.subtleText)
+                        .foregroundStyle(PCColors.textSecondary)
                 }
             }
 
@@ -519,10 +519,10 @@ struct CookModeView: View {
                 VStack(spacing: 4) {
                     Image(systemName: vm.isLastStep ? "checkmark.circle.fill" : "chevron.right.circle.fill")
                         .font(.system(size: 44))
-                        .foregroundStyle(vm.isLastStep ? AppColors.primaryGreen : AppColors.darkText)
+                        .foregroundStyle(vm.isLastStep ? PCColors.accent : PCColors.textPrimary)
                     Text(vm.isLastStep ? "Done" : "Next")
                         .font(.caption2)
-                        .foregroundStyle(vm.isLastStep ? AppColors.primaryGreen : AppColors.subtleText)
+                        .foregroundStyle(vm.isLastStep ? PCColors.accent : PCColors.textSecondary)
                 }
             }
         }
@@ -539,19 +539,19 @@ struct CookModeView: View {
                 if vm.isUserSpeaking {
                     // User is speaking
                     Circle()
-                        .fill(AppColors.accentBlue)
+                        .fill(PCColors.info)
                         .frame(width: 10, height: 10)
                         .modifier(PulseAnimation())
                     Text("Listening to you…")
                         .font(.caption)
                         .fontWeight(.medium)
-                        .foregroundStyle(AppColors.accentBlue)
+                        .foregroundStyle(PCColors.info)
                 } else if vm.isModelSpeaking {
                     // AI is speaking — show waveform
                     HStack(spacing: 3) {
                         ForEach(0..<5, id: \.self) { i in
                             RoundedRectangle(cornerRadius: 2)
-                                .fill(AppColors.primaryGreen)
+                                .fill(PCColors.accent)
                                 .frame(width: 3, height: CGFloat.random(in: 8...20))
                         }
                     }
@@ -559,15 +559,15 @@ struct CookModeView: View {
                     Text("Speaking…")
                         .font(.caption)
                         .fontWeight(.medium)
-                        .foregroundStyle(AppColors.primaryGreen)
+                        .foregroundStyle(PCColors.accent)
                 } else {
                     Circle()
-                        .fill(AppColors.primaryGreen)
+                        .fill(PCColors.accent)
                         .frame(width: 8, height: 8)
                         .modifier(PulseAnimation())
                     Text(vm.conversationStatus.isEmpty ? "Ready — just talk!" : vm.conversationStatus)
                         .font(.caption)
-                        .foregroundStyle(AppColors.subtleText)
+                        .foregroundStyle(PCColors.textSecondary)
                 }
 
                 Spacer()
@@ -576,14 +576,14 @@ struct CookModeView: View {
             if !vm.conversationTranscript.isEmpty {
                 Text(vm.conversationTranscript)
                     .font(.caption)
-                    .foregroundStyle(AppColors.darkText)
+                    .foregroundStyle(PCColors.textPrimary)
                     .lineLimit(3)
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 10)
-        .background(AppColors.cardBackground)
+        .background(PCColors.cardBackground)
         .clipShape(RoundedRectangle(cornerRadius: 16))
         .shadow(color: Color.black.opacity(0.04), radius: 8, x: 0, y: 2)
         .padding(.horizontal, 16)
@@ -598,22 +598,22 @@ struct CookModeView: View {
 
             Image(systemName: "checkmark.circle.fill")
                 .font(.system(size: 80))
-                .foregroundStyle(AppColors.primaryGreen)
+                .foregroundStyle(PCColors.accent)
 
             Text("Well Done!")
                 .font(.largeTitle)
                 .fontWeight(.bold)
-                .foregroundStyle(AppColors.darkText)
+                .foregroundStyle(PCColors.textPrimary)
 
             Text("You've completed \(vm.recipe.title)")
                 .font(.subheadline)
-                .foregroundStyle(AppColors.subtleText)
+                .foregroundStyle(PCColors.textSecondary)
                 .multilineTextAlignment(.center)
 
             VStack(spacing: 8) {
                 Text("How was it?")
                     .font(.subheadline)
-                    .foregroundStyle(AppColors.subtleText)
+                    .foregroundStyle(PCColors.textSecondary)
 
                 HStack(spacing: 8) {
                     ForEach(1...5, id: \.self) { star in
@@ -622,7 +622,7 @@ struct CookModeView: View {
                         } label: {
                             Image(systemName: star <= (vm.selectedRating ?? 0) ? "star.fill" : "star")
                                 .font(.title2)
-                                .foregroundStyle(star <= (vm.selectedRating ?? 0) ? AppColors.warmOrange : AppColors.mediumGray.opacity(0.3))
+                                .foregroundStyle(star <= (vm.selectedRating ?? 0) ? PCColors.expiring : PCColors.textTertiary.opacity(0.3))
                         }
                     }
                 }
@@ -636,10 +636,10 @@ struct CookModeView: View {
                 } label: {
                     Text("Add to Prepared Food")
                         .fontWeight(.semibold)
-                        .foregroundStyle(AppColors.primaryGreen)
+                        .foregroundStyle(PCColors.accent)
                         .frame(maxWidth: .infinity)
                         .padding()
-                        .background(AppColors.primaryGreen.opacity(0.10))
+                        .background(PCColors.accent.opacity(0.10))
                         .clipShape(RoundedRectangle(cornerRadius: 14))
                 }
 
@@ -669,7 +669,7 @@ struct CookModeView: View {
                         .foregroundStyle(Color.white)
                         .frame(maxWidth: .infinity)
                         .padding()
-                        .background(AppColors.primaryGreen)
+                        .background(PCColors.accent)
                         .clipShape(RoundedRectangle(cornerRadius: 14))
                 }
 
@@ -686,7 +686,7 @@ struct CookModeView: View {
                     }
                 } label: {
                     Text(queueStageID == nil ? "Close" : "Close & Continue Queue")
-                        .foregroundStyle(AppColors.subtleText)
+                        .foregroundStyle(PCColors.textSecondary)
                 }
             }
             .padding(.horizontal, 24)

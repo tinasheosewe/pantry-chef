@@ -86,7 +86,7 @@ struct IngredientGatheringView: View {
 
                 startButton
             }
-            .background(AppColors.background)
+            .background(PCColors.background)
             .navigationTitle("Gather Ingredients")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -113,27 +113,27 @@ struct IngredientGatheringView: View {
         VStack(spacing: 6) {
             Image(systemName: "basket.fill")
                 .font(.title)
-                .foregroundStyle(AppColors.primaryGreen)
+                .foregroundStyle(PCColors.accent)
 
             Text("Get everything ready")
                 .font(.headline)
-                .foregroundStyle(AppColors.darkText)
+                .foregroundStyle(PCColors.textPrimary)
 
             if isMultiRecipe {
                 Text(recipes.map(\.title).joined(separator: " · "))
                     .font(.caption)
-                    .foregroundStyle(AppColors.subtleText)
+                    .foregroundStyle(PCColors.textSecondary)
                     .multilineTextAlignment(.center)
                     .lineLimit(2)
             } else if let title = recipes.first?.title {
                 Text(title)
                     .font(.subheadline)
-                    .foregroundStyle(AppColors.subtleText)
+                    .foregroundStyle(PCColors.textSecondary)
             }
         }
         .padding()
         .frame(maxWidth: .infinity)
-        .background(AppColors.primaryGreen.opacity(0.08))
+        .background(PCColors.accent.opacity(0.08))
     }
 
     // MARK: - Category Section
@@ -148,7 +148,7 @@ struct IngredientGatheringView: View {
                 Text(category.rawValue)
                     .font(.subheadline)
                     .fontWeight(.semibold)
-                    .foregroundStyle(AppColors.darkText)
+                    .foregroundStyle(PCColors.textPrimary)
             }
 
             // Items
@@ -161,7 +161,7 @@ struct IngredientGatheringView: View {
                     }
                 }
             }
-            .background(AppColors.cardBackground)
+            .background(PCColors.cardBackground)
             .clipShape(RoundedRectangle(cornerRadius: 10))
         }
     }
@@ -182,25 +182,25 @@ struct IngredientGatheringView: View {
                       : "circle")
                     .font(.title3)
                     .foregroundStyle(checkedIds.contains(item.id)
-                                    ? AppColors.primaryGreen
-                                    : AppColors.mediumGray)
+                                    ? PCColors.accent
+                                    : PCColors.textTertiary)
 
                 VStack(alignment: .leading, spacing: 2) {
                     HStack(spacing: 4) {
                         Text(item.displayText)
                             .font(.body)
                             .foregroundStyle(checkedIds.contains(item.id)
-                                            ? AppColors.subtleText
-                                            : AppColors.darkText)
+                                            ? PCColors.textSecondary
+                                            : PCColors.textPrimary)
                             .strikethrough(checkedIds.contains(item.id))
 
                         if item.isOptional {
                             Text("optional")
                                 .font(.caption2)
-                                .foregroundStyle(AppColors.warmOrange)
+                                .foregroundStyle(PCColors.expiring)
                                 .padding(.horizontal, 4)
                                 .padding(.vertical, 1)
-                                .background(AppColors.warmOrange.opacity(0.12))
+                                .background(PCColors.expiring.opacity(0.12))
                                 .clipShape(Capsule())
                         }
                     }
@@ -208,7 +208,7 @@ struct IngredientGatheringView: View {
                     if isMultiRecipe && item.recipeNames.count > 1 {
                         Text(item.recipeNames.joined(separator: ", "))
                             .font(.caption2)
-                            .foregroundStyle(AppColors.subtleText)
+                            .foregroundStyle(PCColors.textSecondary)
                     }
                 }
 
@@ -236,7 +236,7 @@ struct IngredientGatheringView: View {
                 }
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 14)
-                .background(AppColors.primaryGreen)
+                .background(PCColors.accent)
                 .foregroundStyle(.white)
                 .clipShape(RoundedRectangle(cornerRadius: 12))
             }

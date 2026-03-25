@@ -73,7 +73,7 @@ struct PreparedDishesView: View {
                             } label: {
                                 Label("Edit", systemImage: "pencil")
                             }
-                            .tint(AppColors.accentBlue)
+                            .tint(PCColors.info)
                         }
                         .swipeActions(edge: .leading, allowsFullSwipe: false) {
                             Button {
@@ -83,7 +83,7 @@ struct PreparedDishesView: View {
                             } label: {
                                 Label("Add Serving", systemImage: "plus")
                             }
-                            .tint(AppColors.primaryGreen)
+                            .tint(PCColors.accent)
                         }
                     }
                 }
@@ -94,10 +94,10 @@ struct PreparedDishesView: View {
             if let feedback = viewModel.feedbackBanner {
                 Text(feedback.message)
                     .font(.subheadline)
-                    .foregroundStyle(AppColors.darkText)
+                    .foregroundStyle(PCColors.textPrimary)
                     .padding(.horizontal, 14)
                     .padding(.vertical, 10)
-                    .background(AppColors.cardBackground)
+                    .background(PCColors.cardBackground)
                     .clipShape(Capsule())
                     .shadow(color: .black.opacity(0.08), radius: 10, y: 3)
                     .padding(.bottom, isEmbedded ? 10 : 12)
@@ -171,7 +171,7 @@ struct PreparedDishesView: View {
         HStack(alignment: .top, spacing: 12) {
             Text("Track leftovers, takeout, and ready-to-eat meals.")
                 .font(.caption)
-                .foregroundStyle(AppColors.subtleText)
+                .foregroundStyle(PCColors.textSecondary)
                 .frame(maxWidth: .infinity, alignment: .leading)
 
             Spacer()
@@ -181,7 +181,7 @@ struct PreparedDishesView: View {
         .padding(.horizontal)
         .padding(.top, 12)
         .padding(.bottom, 4)
-        .background(AppColors.cardBackground)
+        .background(PCColors.cardBackground)
     }
 
     private var searchAndFilters: some View {
@@ -218,7 +218,7 @@ struct PreparedDishesView: View {
         }
         .padding(.horizontal)
         .padding(.vertical, 8)
-        .background(AppColors.cardBackground)
+        .background(PCColors.cardBackground)
     }
 
     private var historySummaryCard: some View {
@@ -228,29 +228,29 @@ struct PreparedDishesView: View {
             HStack(spacing: 12) {
                 Image(systemName: "clock.arrow.trianglehead.counterclockwise.rotate.90")
                     .font(.title3)
-                    .foregroundStyle(AppColors.accentBlue)
+                    .foregroundStyle(PCColors.info)
                     .frame(width: 40, height: 40)
-                    .background(AppColors.accentBlue.opacity(0.12))
+                    .background(PCColors.info.opacity(0.12))
                     .clipShape(RoundedRectangle(cornerRadius: 12))
 
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Re-add Previous")
                         .font(.subheadline)
                         .fontWeight(.semibold)
-                        .foregroundStyle(AppColors.darkText)
+                        .foregroundStyle(PCColors.textPrimary)
                     Text("\(viewModel.appState.preparedDishHistory.count) saved dishes ready to reuse")
                         .font(.caption)
-                        .foregroundStyle(AppColors.subtleText)
+                        .foregroundStyle(PCColors.textSecondary)
                 }
 
                 Spacer()
 
                 Image(systemName: "chevron.right")
                     .font(.caption)
-                    .foregroundStyle(AppColors.mediumGray)
+                    .foregroundStyle(PCColors.textTertiary)
             }
             .padding()
-            .background(AppColors.cardBackground)
+            .background(PCColors.cardBackground)
             .clipShape(RoundedRectangle(cornerRadius: 16))
         }
         .buttonStyle(.plain)
@@ -267,8 +267,8 @@ struct PreparedDishesView: View {
         }
         .frame(width: 64)
         .padding(.vertical, 10)
-        .background((dish.servingsRemaining == 1 ? AppColors.softRed : AppColors.warmOrange).opacity(0.14))
-        .foregroundStyle(dish.servingsRemaining == 1 ? AppColors.softRed : AppColors.warmOrange)
+        .background((dish.servingsRemaining == 1 ? PCColors.expired : PCColors.expiring).opacity(0.14))
+        .foregroundStyle(dish.servingsRemaining == 1 ? PCColors.expired : PCColors.expiring)
         .clipShape(RoundedRectangle(cornerRadius: 12))
     }
 
@@ -294,10 +294,10 @@ struct PreparedDishesView: View {
             Label(title, systemImage: "plus")
                 .font(.subheadline)
                 .fontWeight(.semibold)
-                .foregroundStyle(AppColors.primaryGreen)
+                .foregroundStyle(PCColors.accent)
                 .padding(.horizontal, 12)
                 .padding(.vertical, 8)
-                .background(AppColors.primaryGreen.opacity(0.12))
+                .background(PCColors.accent.opacity(0.12))
                 .clipShape(Capsule())
         }
     }
@@ -310,24 +310,24 @@ struct PreparedDishRow: View {
         HStack(spacing: 12) {
             Image(systemName: "takeoutbag.and.cup.and.straw")
                 .font(.title3)
-                .foregroundStyle(AppColors.warmOrange)
+                .foregroundStyle(PCColors.expiring)
                 .frame(width: 36, height: 36)
-                .background(AppColors.warmOrange.opacity(0.12))
+                .background(PCColors.expiring.opacity(0.12))
                 .clipShape(RoundedRectangle(cornerRadius: 10))
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(dish.name)
                     .font(.subheadline)
                     .fontWeight(.medium)
-                    .foregroundStyle(AppColors.darkText)
+                    .foregroundStyle(PCColors.textPrimary)
 
                 Text("\(dish.servingsDisplay) • \(dish.mealTypesSummary)")
                     .font(.caption)
-                    .foregroundStyle(AppColors.subtleText)
+                    .foregroundStyle(PCColors.textSecondary)
 
                 Label(dish.storage.rawValue, systemImage: dish.storage.icon)
                     .font(.caption2)
-                    .foregroundStyle(AppColors.subtleText)
+                    .foregroundStyle(PCColors.textSecondary)
             }
 
             Spacer()
@@ -372,7 +372,7 @@ struct PreparedDishDetailView: View {
                 AppDetailCard("Adjust Servings") {
                     Text("Quickly update this dish as you eat through it.")
                         .font(.caption)
-                        .foregroundStyle(AppColors.subtleText)
+                        .foregroundStyle(PCColors.textSecondary)
 
                     HStack(spacing: 12) {
                         Button {
@@ -386,7 +386,7 @@ struct PreparedDishDetailView: View {
                             quickActionLabel(
                                 title: currentDish.servingsRemaining == 1 ? "Finish Dish" : "Use 1 Serving",
                                 systemImage: currentDish.servingsRemaining == 1 ? "checkmark.circle.fill" : "minus.circle.fill",
-                                color: currentDish.servingsRemaining == 1 ? AppColors.softRed : AppColors.warmOrange
+                                color: currentDish.servingsRemaining == 1 ? PCColors.expired : PCColors.expiring
                             )
                         }
                         .buttonStyle(.plain)
@@ -396,7 +396,7 @@ struct PreparedDishDetailView: View {
                                 _ = await appState.adjustPreparedDishServings(currentDish, delta: 1)
                             }
                         } label: {
-                            quickActionLabel(title: "Add 1 Serving", systemImage: "plus.circle.fill", color: AppColors.primaryGreen)
+                            quickActionLabel(title: "Add 1 Serving", systemImage: "plus.circle.fill", color: PCColors.accent)
                         }
                         .buttonStyle(.plain)
                     }
@@ -413,10 +413,10 @@ struct PreparedDishDetailView: View {
                         NavigationLink(destination: RecipeDetailView(recipe: linkedRecipe).environment(appState)) {
                             HStack {
                                 Text(linkedRecipe.title)
-                                    .foregroundStyle(AppColors.darkText)
+                                    .foregroundStyle(PCColors.textPrimary)
                                 Spacer()
                                 Image(systemName: "chevron.right")
-                                    .foregroundStyle(AppColors.mediumGray)
+                                    .foregroundStyle(PCColors.textTertiary)
                             }
                         }
                     }
@@ -449,13 +449,13 @@ struct PreparedDishDetailView: View {
                     AppDetailCard("Notes") {
                         Text(notes)
                             .font(.body)
-                            .foregroundStyle(AppColors.darkText)
+                            .foregroundStyle(PCColors.textPrimary)
                     }
                 }
             }
             .padding()
         }
-        .background(AppColors.background)
+        .background(PCColors.background)
         .navigationTitle(currentDish.name)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -479,13 +479,13 @@ struct PreparedDishDetailView: View {
             Text(currentDish.name)
                 .font(.largeTitle)
                 .fontWeight(.bold)
-                .foregroundStyle(AppColors.darkText)
+                .foregroundStyle(PCColors.textPrimary)
 
             HStack(spacing: 10) {
-                pill(text: currentDish.servingsDisplay, color: AppColors.warmOrange)
-                pill(text: currentDish.storage.rawValue, color: AppColors.accentBlue)
+                pill(text: currentDish.servingsDisplay, color: PCColors.expiring)
+                pill(text: currentDish.storage.rawValue, color: PCColors.info)
                 if currentDish.expiryStatus != .fresh {
-                    pill(text: currentDish.expiryStatus == .expired ? "Expired" : "Use soon", color: AppColors.softRed)
+                    pill(text: currentDish.expiryStatus == .expired ? "Expired" : "Use soon", color: PCColors.expired)
                 }
             }
         }
@@ -562,7 +562,7 @@ struct PreparedDishEditorView: View {
                 )
                 .padding()
             }
-            .background(AppColors.background)
+            .background(PCColors.background)
             .navigationTitle(existingDish == nil ? "Add Prepared Dish" : "Edit Prepared Dish")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -621,7 +621,7 @@ private struct PreparedDishHistoryPickerView: View {
                         Section {
                             Text("Pick a previous dish to prefill a new Prepared Food entry. You can still adjust servings, storage, and freshness before saving.")
                                 .font(.subheadline)
-                                .foregroundStyle(AppColors.subtleText)
+                                .foregroundStyle(PCColors.textSecondary)
                         }
 
                         Section {
@@ -663,22 +663,22 @@ private struct PreparedDishHistoryPickerView: View {
         HStack(spacing: 12) {
             Image(systemName: "clock.arrow.trianglehead.counterclockwise.rotate.90")
                 .font(.title3)
-                .foregroundStyle(item.recipeID != nil ? AppColors.primaryGreen : AppColors.accentBlue)
+                .foregroundStyle(item.recipeID != nil ? PCColors.accent : PCColors.info)
                 .frame(width: 40, height: 40)
-                .background((item.recipeID != nil ? AppColors.primaryGreen : AppColors.accentBlue).opacity(0.12))
+                .background((item.recipeID != nil ? PCColors.accent : PCColors.info).opacity(0.12))
                 .clipShape(RoundedRectangle(cornerRadius: 10))
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(item.name)
                     .font(.subheadline)
                     .fontWeight(.semibold)
-                    .foregroundStyle(AppColors.darkText)
+                    .foregroundStyle(PCColors.textPrimary)
                 Text("\(item.servingsText) • \(item.storage.rawValue) • \(item.mealTypesSummary)")
                     .font(.caption)
-                    .foregroundStyle(AppColors.subtleText)
+                    .foregroundStyle(PCColors.textSecondary)
                 Text(item.timesPrepared == 1 ? "Used once" : "Used \(item.timesPrepared)x")
                     .font(.caption2)
-                    .foregroundStyle(AppColors.subtleText)
+                    .foregroundStyle(PCColors.textSecondary)
             }
 
             Spacer()
@@ -688,16 +688,16 @@ private struct PreparedDishHistoryPickerView: View {
                     Text("Linked")
                         .font(.caption2)
                         .fontWeight(.semibold)
-                        .foregroundStyle(AppColors.primaryGreen)
+                        .foregroundStyle(PCColors.accent)
                         .padding(.horizontal, 8)
                         .padding(.vertical, 4)
-                        .background(AppColors.primaryGreen.opacity(0.12))
+                        .background(PCColors.accent.opacity(0.12))
                         .clipShape(Capsule())
                 }
 
                 Text(item.lastUsedAt.formatted(date: .abbreviated, time: .omitted))
                     .font(.caption2)
-                    .foregroundStyle(AppColors.subtleText)
+                    .foregroundStyle(PCColors.textSecondary)
             }
         }
         .padding(.vertical, 4)
@@ -742,7 +742,7 @@ private struct PreparedDishDraftForm: View {
         VStack(alignment: .leading, spacing: 16) {
             Text("Basics")
                 .font(.headline)
-                .foregroundStyle(AppColors.darkText)
+                .foregroundStyle(PCColors.textPrimary)
 
             TextField("Dish name", text: $draft.name)
                 .textFieldStyle(.roundedBorder)
@@ -750,14 +750,14 @@ private struct PreparedDishDraftForm: View {
             VStack(alignment: .leading, spacing: 8) {
                 Text("Meal types")
                     .font(.subheadline)
-                    .foregroundStyle(AppColors.subtleText)
+                    .foregroundStyle(PCColors.textSecondary)
 
                 FlexibleMealTypeChips(selectedMealTypes: $draft.mealTypes)
             }
 
             Stepper(value: $draft.servingsRemaining, in: 1...24) {
                 Text("Servings remaining: \(draft.servingsRemaining)")
-                    .foregroundStyle(AppColors.darkText)
+                    .foregroundStyle(PCColors.textPrimary)
             }
 
             Picker("Storage", selection: $draft.storage) {
@@ -768,14 +768,14 @@ private struct PreparedDishDraftForm: View {
             .pickerStyle(.segmented)
         }
         .padding()
-        .cardStyle()
+        .pcCard()
     }
 
     private var freshnessSection: some View {
         VStack(alignment: .leading, spacing: 16) {
             Text("Freshness")
                 .font(.headline)
-                .foregroundStyle(AppColors.darkText)
+                .foregroundStyle(PCColors.textPrimary)
 
             DatePicker("Use by date", selection: useByDateBinding, displayedComponents: .date)
 
@@ -785,34 +785,34 @@ private struct PreparedDishDraftForm: View {
                     : "Prepopulated from estimated freshness for \(draft.storage.rawValue.lowercased()) storage. Edit it if needed."
             )
             .font(.subheadline)
-            .foregroundStyle(AppColors.subtleText)
+            .foregroundStyle(PCColors.textSecondary)
         }
         .padding()
-        .cardStyle()
+        .pcCard()
     }
 
     private var recipeSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Recipe Link")
                 .font(.headline)
-                .foregroundStyle(AppColors.darkText)
+                .foregroundStyle(PCColors.textPrimary)
 
             Button {
                 showRecipePicker = true
             } label: {
                 HStack {
                     Text(linkedRecipe?.title ?? "Select recipe")
-                        .foregroundStyle(AppColors.darkText)
+                        .foregroundStyle(PCColors.textPrimary)
                     Spacer()
                     Image(systemName: "chevron.right")
-                        .foregroundStyle(AppColors.mediumGray)
+                        .foregroundStyle(PCColors.textTertiary)
                 }
             }
 
             if linkedRecipe != nil {
                 Text("Changing the linked recipe updates the name, meal type, servings, and nutrition to match it.")
                     .font(.caption)
-                    .foregroundStyle(AppColors.subtleText)
+                    .foregroundStyle(PCColors.textSecondary)
             }
 
             if draft.recipeID != nil {
@@ -820,22 +820,22 @@ private struct PreparedDishDraftForm: View {
                     draft.recipeID = nil
                 }
                 .font(.caption)
-                .foregroundStyle(AppColors.softRed)
+                .foregroundStyle(PCColors.expired)
             }
         }
         .padding()
-        .cardStyle()
+        .pcCard()
     }
 
     private var nutritionSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Nutrition")
                 .font(.headline)
-                .foregroundStyle(AppColors.darkText)
+                .foregroundStyle(PCColors.textPrimary)
 
             Text("Leave blank unless you want to track calories and macros for this prepared dish.")
                 .font(.caption)
-                .foregroundStyle(AppColors.subtleText)
+                .foregroundStyle(PCColors.textSecondary)
 
             TextField("Calories", text: $draft.caloriesText)
                 .keyboardType(.numberPad)
@@ -856,27 +856,27 @@ private struct PreparedDishDraftForm: View {
             if draft.nutritionIsInvalid {
                 Text("Enter all four nutrition fields with valid numbers, or leave them all blank.")
                     .font(.caption)
-                    .foregroundStyle(AppColors.softRed)
+                    .foregroundStyle(PCColors.expired)
             }
         }
         .padding()
-        .cardStyle()
+        .pcCard()
     }
 
     private var notesSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Notes")
                 .font(.headline)
-                .foregroundStyle(AppColors.darkText)
+                .foregroundStyle(PCColors.textPrimary)
 
             TextEditor(text: $draft.notes)
                 .frame(minHeight: 120)
                 .padding(8)
-                .background(AppColors.lightGray)
+                .background(PCColors.fillTertiary)
                 .clipShape(RoundedRectangle(cornerRadius: 12))
         }
         .padding()
-        .cardStyle()
+        .pcCard()
     }
 }
 
@@ -985,7 +985,7 @@ struct PreparedDishMealPlanSelectionView: View {
                         Section {
                             Text("Select one or more meal-plan entries, then review them before adding them to Prepared Food.")
                                 .font(.subheadline)
-                                .foregroundStyle(AppColors.subtleText)
+                                .foregroundStyle(PCColors.textSecondary)
                         }
 
                         ForEach(entriesByDay, id: \.date) { group in
@@ -1019,7 +1019,7 @@ struct PreparedDishMealPlanSelectionView: View {
 
     private func mealPlanEntryRow(_ entry: MealPlanEntry) -> some View {
         let isSelected = selectedEntryIDs.contains(entry.id)
-        let accent = entry.preparedDish != nil ? AppColors.warmOrange : AppColors.primaryGreen
+        let accent = entry.preparedDish != nil ? PCColors.expiring : PCColors.accent
         let icon = entry.recipe != nil ? (entry.recipe?.mealType?.icon ?? "book") : entry.preparedDish != nil ? "takeoutbag.and.cup.and.straw" : entry.mealType.icon
 
         return Button {
@@ -1041,17 +1041,17 @@ struct PreparedDishMealPlanSelectionView: View {
                     Text(entry.displayName)
                         .font(.subheadline)
                         .fontWeight(.semibold)
-                        .foregroundStyle(AppColors.darkText)
+                        .foregroundStyle(PCColors.textPrimary)
                     Text("\(entry.mealType.rawValue) • \(entry.planningSubtitle ?? entry.sourceDateText)")
                         .font(.caption)
-                        .foregroundStyle(AppColors.subtleText)
+                        .foregroundStyle(PCColors.textSecondary)
                 }
 
                 Spacer()
 
                 Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
                     .font(.title3)
-                    .foregroundStyle(isSelected ? AppColors.primaryGreen : AppColors.mediumGray)
+                    .foregroundStyle(isSelected ? PCColors.accent : PCColors.textTertiary)
             }
             .padding(.vertical, 4)
         }
@@ -1066,10 +1066,10 @@ struct PreparedDishMealPlanSelectionView: View {
                     Text(selectedEntries.isEmpty ? "Select meal-plan items" : "\(selectedEntries.count) items selected")
                         .font(.subheadline)
                         .fontWeight(.semibold)
-                        .foregroundStyle(AppColors.darkText)
+                        .foregroundStyle(PCColors.textPrimary)
                     Text("Selected meals open in a review step before anything is added.")
                         .font(.caption)
-                        .foregroundStyle(AppColors.subtleText)
+                        .foregroundStyle(PCColors.textSecondary)
                 }
 
                 Spacer()
@@ -1082,7 +1082,7 @@ struct PreparedDishMealPlanSelectionView: View {
                         .fontWeight(.semibold)
                         .padding(.horizontal, 16)
                         .padding(.vertical, 12)
-                        .background(selectedEntries.isEmpty ? AppColors.mediumGray : AppColors.accentBlue)
+                        .background(selectedEntries.isEmpty ? PCColors.textTertiary : PCColors.info)
                         .foregroundStyle(.white)
                         .clipShape(Capsule())
                 }
@@ -1136,7 +1136,7 @@ struct PreparedDishMealPlanReviewView: View {
                     }
                     .listStyle(.plain)
                     .scrollContentBackground(.hidden)
-                    .background(AppColors.background)
+                    .background(PCColors.background)
                 }
             }
             .navigationTitle("Review Prepared Food")
@@ -1160,7 +1160,7 @@ struct PreparedDishMealPlanReviewView: View {
     }
 
     private func reviewDraftRow(_ reviewDraft: MealPlanPreparedDishReviewDraft) -> some View {
-        let accent = reviewDraft.sourceEntry.preparedDish != nil ? AppColors.warmOrange : AppColors.primaryGreen
+        let accent = reviewDraft.sourceEntry.preparedDish != nil ? PCColors.expiring : PCColors.accent
 
         return Button {
             editingDraft = reviewDraft
@@ -1178,13 +1178,13 @@ struct PreparedDishMealPlanReviewView: View {
                         Text(reviewDraft.resolvedTitle(in: appState))
                             .font(.subheadline)
                             .fontWeight(.semibold)
-                            .foregroundStyle(AppColors.darkText)
+                            .foregroundStyle(PCColors.textPrimary)
                         Text(reviewDraft.sourceSummary)
                             .font(.caption)
-                            .foregroundStyle(AppColors.subtleText)
+                            .foregroundStyle(PCColors.textSecondary)
                         Text(reviewDraft.reviewSummary(in: appState))
                             .font(.caption2)
-                            .foregroundStyle(AppColors.subtleText)
+                            .foregroundStyle(PCColors.textSecondary)
                     }
 
                     Spacer()
@@ -1194,7 +1194,7 @@ struct PreparedDishMealPlanReviewView: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.horizontal, 16)
             .padding(.vertical, 14)
-            .background(AppColors.cardBackground)
+            .background(PCColors.cardBackground)
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
@@ -1208,10 +1208,10 @@ struct PreparedDishMealPlanReviewView: View {
                     Text(drafts.isEmpty ? "Nothing to add" : "\(drafts.count) dishes staged")
                         .font(.subheadline)
                         .fontWeight(.semibold)
-                        .foregroundStyle(AppColors.darkText)
+                        .foregroundStyle(PCColors.textPrimary)
                     Text(validDraftCount == drafts.count ? "Everything is ready to add." : "Review incomplete items before adding them.")
                         .font(.caption)
-                        .foregroundStyle(AppColors.subtleText)
+                        .foregroundStyle(PCColors.textSecondary)
                 }
 
                 Spacer()
@@ -1233,7 +1233,7 @@ struct PreparedDishMealPlanReviewView: View {
                     .fontWeight(.semibold)
                     .padding(.horizontal, 16)
                     .padding(.vertical, 12)
-                    .background(validDraftCount == drafts.count && !drafts.isEmpty ? AppColors.primaryGreen : AppColors.mediumGray)
+                    .background(validDraftCount == drafts.count && !drafts.isEmpty ? PCColors.accent : PCColors.textTertiary)
                     .foregroundStyle(.white)
                     .clipShape(Capsule())
                 }
@@ -1276,7 +1276,7 @@ struct PreparedDishMealPlanDraftEditorView: View {
                 )
                 .padding()
             }
-            .background(AppColors.background)
+            .background(PCColors.background)
             .navigationTitle("Edit Selected Item")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -1320,8 +1320,8 @@ private struct FlexibleMealTypeChips: View {
                         .frame(maxWidth: .infinity)
                         .padding(.horizontal, 10)
                         .padding(.vertical, 8)
-                        .background(selectedMealTypes.contains(mealType) ? AppColors.primaryGreen : AppColors.lightGray)
-                        .foregroundStyle(selectedMealTypes.contains(mealType) ? Color.white : AppColors.subtleText)
+                        .background(selectedMealTypes.contains(mealType) ? PCColors.accent : PCColors.fillTertiary)
+                        .foregroundStyle(selectedMealTypes.contains(mealType) ? Color.white : PCColors.textSecondary)
                         .clipShape(Capsule())
                 }
             }

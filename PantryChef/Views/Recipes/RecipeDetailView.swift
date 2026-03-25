@@ -52,10 +52,10 @@ private struct RecipeMultiCookQueueSelectionView: View {
                             Text(baseRecipe.title)
                                 .font(.subheadline)
                                 .fontWeight(.semibold)
-                                .foregroundStyle(AppColors.darkText)
+                                .foregroundStyle(PCColors.textPrimary)
                             Text("This recipe is always included. Add one or more other recipes to queue them as one parallel stage.")
                                 .font(.caption)
-                                .foregroundStyle(AppColors.subtleText)
+                                .foregroundStyle(PCColors.textSecondary)
                         }
                     } header: {
                         Text("Base Recipe")
@@ -69,22 +69,22 @@ private struct RecipeMultiCookQueueSelectionView: View {
                                 HStack(spacing: 12) {
                                     Image(systemName: selectedRecipeIDs.contains(recipe.id) ? "checkmark.circle.fill" : "circle")
                                         .font(.title3)
-                                        .foregroundStyle(selectedRecipeIDs.contains(recipe.id) ? AppColors.primaryGreen : AppColors.mediumGray)
+                                        .foregroundStyle(selectedRecipeIDs.contains(recipe.id) ? PCColors.accent : PCColors.textTertiary)
 
                                     VStack(alignment: .leading, spacing: 4) {
                                         Text(recipe.title)
                                             .font(.subheadline)
                                             .fontWeight(.medium)
-                                            .foregroundStyle(AppColors.darkText)
+                                            .foregroundStyle(PCColors.textPrimary)
                                         HStack(spacing: 8) {
                                             Text(recipe.totalTimeDisplay)
                                                 .font(.caption)
-                                                .foregroundStyle(AppColors.subtleText)
+                                                .foregroundStyle(PCColors.textSecondary)
                                             if !recipe.source.isUserRecipe {
                                                 Text(recipe.source.label)
                                                     .font(.caption2)
                                                     .fontWeight(.semibold)
-                                                    .foregroundStyle(AppColors.accentTeal)
+                                                    .foregroundStyle(PCColors.teal)
                                             }
                                         }
                                     }
@@ -188,7 +188,7 @@ struct RecipeDetailView: View {
                 .padding(.horizontal)
             }
         }
-        .background(AppColors.background)
+        .background(PCColors.background)
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {
             existingSession = CookingSession.load(recipeId: recipe.id)
@@ -202,7 +202,7 @@ struct RecipeDetailView: View {
                     }
                 } label: {
                     Image(systemName: recipe.isFavorite ? "heart.fill" : "heart")
-                        .foregroundStyle(recipe.isFavorite ? .red : AppColors.mediumGray)
+                        .foregroundStyle(recipe.isFavorite ? .red : PCColors.textTertiary)
                 }
                 .accessibilityIdentifier("recipe.detail.favoriteButton")
             }
@@ -211,7 +211,7 @@ struct RecipeDetailView: View {
                     showEditor = true
                 } label: {
                     Image(systemName: "pencil")
-                        .foregroundStyle(AppColors.accentTeal)
+                        .foregroundStyle(PCColors.teal)
                 }
                 .accessibilityIdentifier("recipe.detail.editButton")
             }
@@ -301,9 +301,9 @@ struct RecipeDetailView: View {
                 .fill(
                     LinearGradient(
                         colors: [
-                            AppColors.primaryGreen.opacity(0.18),
-                            AppColors.accentTeal.opacity(0.10),
-                            AppColors.warmOrange.opacity(0.06)
+                            PCColors.accent.opacity(0.18),
+                            PCColors.teal.opacity(0.10),
+                            PCColors.expiring.opacity(0.06)
                         ],
                         startPoint: .topLeading,
                         endPoint: .bottomTrailing
@@ -313,7 +313,7 @@ struct RecipeDetailView: View {
 
             Image(systemName: recipe.mealType?.icon ?? "fork.knife")
                 .font(.system(size: 56))
-                .foregroundStyle(AppColors.primaryGreen.opacity(0.35))
+                .foregroundStyle(PCColors.accent.opacity(0.35))
         }
     }
 
@@ -323,12 +323,12 @@ struct RecipeDetailView: View {
             Text(recipe.title)
                 .font(.title2)
                 .fontWeight(.bold)
-                .foregroundStyle(AppColors.darkText)
+                .foregroundStyle(PCColors.textPrimary)
 
             if let desc = recipe.description {
                 Text(desc)
                     .font(.subheadline)
-                    .foregroundStyle(AppColors.subtleText)
+                    .foregroundStyle(PCColors.textSecondary)
             }
 
             HStack(spacing: 16) {
@@ -336,18 +336,18 @@ struct RecipeDetailView: View {
 
                 Label(recipe.totalTimeDisplay, systemImage: "clock")
                     .font(.caption)
-                    .foregroundStyle(AppColors.subtleText)
+                    .foregroundStyle(PCColors.textSecondary)
 
                 if let prep = recipe.prepTimeMinutes {
                     Label("\(prep)m prep", systemImage: "hand.raised")
                         .font(.caption)
-                        .foregroundStyle(AppColors.subtleText)
+                        .foregroundStyle(PCColors.textSecondary)
                 }
 
                 if recipe.timesCooked > 0 {
                     Label("Cooked \(recipe.timesCooked)x", systemImage: "flame")
                         .font(.caption)
-                        .foregroundStyle(AppColors.subtleText)
+                        .foregroundStyle(PCColors.textSecondary)
                 }
             }
         }
@@ -359,20 +359,20 @@ struct RecipeDetailView: View {
             HStack {
                 Text("Coverage")
                     .font(.subheadline)
-                    .foregroundStyle(AppColors.subtleText)
+                    .foregroundStyle(PCColors.textSecondary)
                 Spacer()
                 Text(pantryMatch.displayPercentage)
                     .font(.subheadline)
                     .fontWeight(.bold)
-                    .foregroundStyle(pantryMatch.canMake ? AppColors.primaryGreen : AppColors.warmOrange)
+                    .foregroundStyle(pantryMatch.canMake ? PCColors.accent : PCColors.expiring)
             }
 
             GeometryReader { geo in
                 ZStack(alignment: .leading) {
                     RoundedRectangle(cornerRadius: 4)
-                        .fill(AppColors.lightGray)
+                        .fill(PCColors.fillTertiary)
                     RoundedRectangle(cornerRadius: 4)
-                        .fill(pantryMatch.canMake ? AppColors.primaryGreen : AppColors.warmOrange)
+                        .fill(pantryMatch.canMake ? PCColors.accent : PCColors.expiring)
                         .frame(width: geo.size.width * (pantryMatch.matchPercentage.isFinite ? max(0, min(pantryMatch.matchPercentage / 100, 1)) : 0))
                 }
             }
@@ -382,7 +382,7 @@ struct RecipeDetailView: View {
             if pantryMatch.canMake {
                 Label("You have everything!", systemImage: "checkmark.circle.fill")
                     .font(.caption)
-                    .foregroundStyle(AppColors.primaryGreen)
+                    .foregroundStyle(PCColors.accent)
             } else if pantryMatch.canMakeWithSubstitutions {
                 Label("Can make with substitutions", systemImage: "arrow.triangle.swap")
                     .font(.caption)
@@ -395,7 +395,7 @@ struct RecipeDetailView: View {
                     Text("Missing Ingredients")
                         .font(.caption)
                         .fontWeight(.medium)
-                        .foregroundStyle(AppColors.subtleText)
+                        .foregroundStyle(PCColors.textSecondary)
 
                     ForEach(pantryMatch.missingIngredients, id: \.name) { ingredient in
                         missingIngredientRow(ingredient)
@@ -412,10 +412,10 @@ struct RecipeDetailView: View {
             HStack(spacing: 6) {
                 Image(systemName: "xmark.circle.fill")
                     .font(.system(size: 10))
-                    .foregroundStyle(AppColors.softRed)
+                    .foregroundStyle(PCColors.expired)
                 Text(ingredient.name)
                     .font(.caption)
-                    .foregroundStyle(AppColors.darkText)
+                    .foregroundStyle(PCColors.textPrimary)
 
                 let qty = ingredient.displayText
                     .replacingOccurrences(of: ingredient.name, with: "")
@@ -423,7 +423,7 @@ struct RecipeDetailView: View {
                 if !qty.isEmpty {
                     Text("(\(qty))")
                         .font(.caption2)
-                        .foregroundStyle(AppColors.subtleText)
+                        .foregroundStyle(PCColors.textSecondary)
                 }
             }
 
@@ -432,23 +432,23 @@ struct RecipeDetailView: View {
                     HStack(spacing: 4) {
                         Image(systemName: sub.inPantry ? "checkmark.circle.fill" : "arrow.turn.down.right")
                             .font(.system(size: 8))
-                            .foregroundStyle(sub.inPantry ? AppColors.primaryGreen : Color(red: 0.60, green: 0.76, blue: 0.25))
+                            .foregroundStyle(sub.inPantry ? PCColors.accent : Color(red: 0.60, green: 0.76, blue: 0.25))
                         Text(sub.substituteName)
                             .font(.caption2)
                             .fontWeight(.medium)
-                            .foregroundStyle(sub.inPantry ? AppColors.primaryGreen : Color(red: 0.60, green: 0.76, blue: 0.25))
+                            .foregroundStyle(sub.inPantry ? PCColors.accent : Color(red: 0.60, green: 0.76, blue: 0.25))
                         if sub.inPantry {
                             Text("In pantry")
                                 .font(.system(size: 8))
                                 .padding(.horizontal, 4)
                                 .padding(.vertical, 1)
-                                .background(AppColors.primaryGreen.opacity(0.15))
-                                .foregroundStyle(AppColors.primaryGreen)
+                                .background(PCColors.accent.opacity(0.15))
+                                .foregroundStyle(PCColors.accent)
                                 .clipShape(Capsule())
                         }
                         Text("(\(sub.ratio))")
                             .font(.system(size: 9))
-                            .foregroundStyle(AppColors.subtleText)
+                            .foregroundStyle(PCColors.textSecondary)
                         if sub.cookingImpact != .none {
                             Text(sub.cookingImpact.rawValue.lowercased())
                                 .font(.system(size: 8))
@@ -492,19 +492,19 @@ struct RecipeDetailView: View {
                 .foregroundStyle(.white)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 14)
-                .background(existingSession != nil ? AppColors.warmOrange : AppColors.primaryGreen)
+                .background(existingSession != nil ? PCColors.expiring : PCColors.accent)
                 .clipShape(RoundedRectangle(cornerRadius: 14))
             }
 
             HStack(spacing: 12) {
-                ActionButton(icon: "list.number", title: "Add Queue", color: AppColors.accentBlue) {
+                ActionButton(icon: "list.number", title: "Add Queue", color: PCColors.info) {
                     Task {
                         await appState.addRecipesToCookQueue([scaledRecipe])
-                        appState.requestRootTab(.cook)
+                        appState.requestRootTab(.kitchen)
                     }
                 }
 
-                ActionButton(icon: "cart", title: "What to Buy", color: AppColors.warmOrange) {
+                ActionButton(icon: "cart", title: "What to Buy", color: PCColors.expiring) {
                     Task {
                         isLoadingAction = true
                         let result = await appState.getShoppingList(for: recipe)
@@ -518,7 +518,7 @@ struct RecipeDetailView: View {
                     }
                 }
 
-                ActionButton(icon: "arrow.triangle.2.circlepath", title: "Substitutes", color: AppColors.accentTeal) {
+                ActionButton(icon: "arrow.triangle.2.circlepath", title: "Substitutes", color: PCColors.teal) {
                     Task {
                         isLoadingAction = true
                         let result = await appState.getSubstitutions(for: recipe)
@@ -532,7 +532,7 @@ struct RecipeDetailView: View {
                     }
                 }
 
-                ActionButton(icon: "heart.circle", title: "Healthier", color: AppColors.primaryGreen) {
+                ActionButton(icon: "heart.circle", title: "Healthier", color: PCColors.accent) {
                     Task {
                         isLoadingAction = true
                         let result = await appState.getHealthierVersion(of: recipe)
@@ -552,10 +552,10 @@ struct RecipeDetailView: View {
                 Label("Cooked this? Update pantry", systemImage: "line.3.horizontal.decrease.circle")
                     .font(.subheadline)
                     .fontWeight(.semibold)
-                    .foregroundStyle(AppColors.accentBlue)
+                    .foregroundStyle(PCColors.info)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 12)
-                    .background(AppColors.accentBlue.opacity(0.08))
+                    .background(PCColors.info.opacity(0.08))
                     .clipShape(RoundedRectangle(cornerRadius: 12))
             }
         }
@@ -583,7 +583,7 @@ struct RecipeDetailView: View {
                 } label: {
                     Image(systemName: "minus.circle.fill")
                         .font(.title3)
-                        .foregroundStyle(servings > 1 ? AppColors.primaryGreen : AppColors.mediumGray)
+                        .foregroundStyle(servings > 1 ? PCColors.accent : PCColors.textTertiary)
                 }
                 .disabled(servings <= 1)
 
@@ -599,13 +599,13 @@ struct RecipeDetailView: View {
                 } label: {
                     Image(systemName: "plus.circle.fill")
                         .font(.title3)
-                        .foregroundStyle(servings < maxServings ? AppColors.primaryGreen : AppColors.mediumGray)
+                        .foregroundStyle(servings < maxServings ? PCColors.accent : PCColors.textTertiary)
                 }
                 .disabled(servings >= maxServings)
             }
         }
         .padding()
-        .background(AppColors.lightGray)
+        .background(PCColors.fillTertiary)
         .clipShape(RoundedRectangle(cornerRadius: 12))
     }
 
@@ -613,10 +613,10 @@ struct RecipeDetailView: View {
     private func nutritionSection(_ nutrition: NutritionInfo) -> some View {
         AppDetailCard("Nutrition", subtitle: "Per serving") {
             HStack(spacing: 16) {
-                NutritionCircle(label: "Calories", value: nutrition.calories, unit: "kcal", color: AppColors.warmOrange)
-                NutritionCircle(label: "Protein", value: Int(nutrition.protein), unit: "g", color: AppColors.softRed)
-                NutritionCircle(label: "Carbs", value: Int(nutrition.carbohydrates), unit: "g", color: AppColors.primaryGreen)
-                NutritionCircle(label: "Fat", value: Int(nutrition.fat), unit: "g", color: AppColors.accentBlue)
+                NutritionCircle(label: "Calories", value: nutrition.calories, unit: "kcal", color: PCColors.expiring)
+                NutritionCircle(label: "Protein", value: Int(nutrition.protein), unit: "g", color: PCColors.expired)
+                NutritionCircle(label: "Carbs", value: Int(nutrition.carbohydrates), unit: "g", color: PCColors.accent)
+                NutritionCircle(label: "Fat", value: Int(nutrition.fat), unit: "g", color: PCColors.info)
             }
             .frame(maxWidth: .infinity)
 
@@ -633,11 +633,11 @@ struct RecipeDetailView: View {
                         HStack(spacing: 4) {
                             Text(item.0)
                                 .font(.caption2)
-                                .foregroundStyle(AppColors.subtleText)
+                                .foregroundStyle(PCColors.textSecondary)
                             Text(item.1)
                                 .font(.caption2)
                                 .fontWeight(.semibold)
-                                .foregroundStyle(AppColors.darkText)
+                                .foregroundStyle(PCColors.textPrimary)
                         }
                     }
                 }
@@ -659,15 +659,15 @@ struct RecipeDetailView: View {
                 HStack(spacing: 8) {
                     Image(systemName: "wand.and.stars")
                         .font(.subheadline)
-                        .foregroundStyle(AppColors.accentTeal)
+                        .foregroundStyle(PCColors.teal)
                     Text("Modify Recipe")
                         .font(.subheadline)
                         .fontWeight(.medium)
-                        .foregroundStyle(AppColors.darkText)
+                        .foregroundStyle(PCColors.textPrimary)
                     Spacer()
                     Image(systemName: showModify ? "chevron.up" : "chevron.down")
                         .font(.caption)
-                        .foregroundStyle(AppColors.subtleText)
+                        .foregroundStyle(PCColors.textSecondary)
                 }
             }
 
@@ -675,7 +675,7 @@ struct RecipeDetailView: View {
                 VStack(alignment: .leading, spacing: 10) {
                     Text("Describe what you'd like changed — be as specific or vague as you want.")
                         .font(.caption)
-                        .foregroundStyle(AppColors.subtleText)
+                        .foregroundStyle(PCColors.textSecondary)
 
                     HStack(spacing: 4) {
                         ForEach(["Make it spicier", "Use my pantry", "Halve the carbs", "Make it faster"], id: \.self) { suggestion in
@@ -684,10 +684,10 @@ struct RecipeDetailView: View {
                             } label: {
                                 Text(suggestion)
                                     .font(.system(size: 10))
-                                    .foregroundStyle(AppColors.accentTeal)
+                                    .foregroundStyle(PCColors.teal)
                                     .padding(.horizontal, 8)
                                     .padding(.vertical, 5)
-                                    .background(AppColors.accentTeal.opacity(0.1))
+                                    .background(PCColors.teal.opacity(0.1))
                                     .clipShape(Capsule())
                             }
                         }
@@ -713,7 +713,7 @@ struct RecipeDetailView: View {
                         } label: {
                             Image(systemName: "plus.circle.fill")
                                 .font(.title3)
-                                .foregroundStyle(servings < maxServings ? AppColors.primaryGreen : AppColors.mediumGray)
+                                .foregroundStyle(servings < maxServings ? PCColors.accent : PCColors.textTertiary)
                         }
                         .disabled(servings >= maxServings)
                         Button {
@@ -730,7 +730,7 @@ struct RecipeDetailView: View {
                             }
                             .foregroundStyle(.white)
                             .frame(width: 44, height: 44)
-                            .background(modifyText.trimmingCharacters(in: .whitespaces).isEmpty ? AppColors.mediumGray : AppColors.accentTeal)
+                            .background(modifyText.trimmingCharacters(in: .whitespaces).isEmpty ? PCColors.textTertiary : PCColors.teal)
                             .clipShape(Circle())
                         }
                         .disabled(modifyText.trimmingCharacters(in: .whitespaces).isEmpty || isModifying)
@@ -804,21 +804,21 @@ struct RecipeDetailView: View {
                         .fontWeight(.bold)
                         .foregroundStyle(.white)
                         .frame(width: 24, height: 24)
-                        .background(AppColors.primaryGreen)
+                        .background(PCColors.accent)
                         .clipShape(Circle())
 
                     VStack(alignment: .leading, spacing: 6) {
                         Text(step.instruction)
                             .font(.subheadline)
-                            .foregroundStyle(AppColors.darkText)
+                            .foregroundStyle(PCColors.textPrimary)
 
                         if let timer = step.timerMinutes {
                             Label("\(timer) min", systemImage: "timer")
                                 .font(.caption)
-                                .foregroundStyle(AppColors.warmOrange)
+                                .foregroundStyle(PCColors.expiring)
                                 .padding(.horizontal, 8)
                                 .padding(.vertical, 4)
-                                .background(AppColors.warmOrange.opacity(0.1))
+                                .background(PCColors.expiring.opacity(0.1))
                                 .clipShape(Capsule())
                         }
 
@@ -826,13 +826,13 @@ struct RecipeDetailView: View {
                             HStack(alignment: .top, spacing: 6) {
                                 Image(systemName: "lightbulb.fill")
                                     .font(.caption2)
-                                    .foregroundStyle(AppColors.warmOrange)
+                                    .foregroundStyle(PCColors.expiring)
                                 Text(tip)
                                     .font(.caption)
-                                    .foregroundStyle(AppColors.subtleText)
+                                    .foregroundStyle(PCColors.textSecondary)
                             }
                             .padding(8)
-                            .background(AppColors.warmOrange.opacity(0.05))
+                            .background(PCColors.expiring.opacity(0.05))
                             .clipShape(RoundedRectangle(cornerRadius: 8))
                         }
                     }
@@ -869,7 +869,7 @@ struct ActionButton: View {
                 Text(title)
                     .font(.caption2)
                     .fontWeight(.medium)
-                    .foregroundStyle(AppColors.darkText)
+                    .foregroundStyle(PCColors.textPrimary)
             }
             .frame(maxWidth: .infinity)
             .padding(.vertical, 12)
@@ -915,7 +915,7 @@ struct SubstitutionsView: View {
                             Text(group.ingredient)
                                 .font(.subheadline)
                                 .fontWeight(.semibold)
-                                .foregroundStyle(AppColors.darkText)
+                                .foregroundStyle(PCColors.textPrimary)
                         }
                     }
                 }
@@ -937,7 +937,7 @@ struct SubstitutionsView: View {
                 Text(sub.substituteName)
                     .font(.subheadline)
                     .fontWeight(.semibold)
-                    .foregroundStyle(sub.inPantry ? AppColors.primaryGreen : AppColors.darkText)
+                    .foregroundStyle(sub.inPantry ? PCColors.accent : PCColors.textPrimary)
 
                 if sub.inPantry {
                     Text("In your pantry")
@@ -945,8 +945,8 @@ struct SubstitutionsView: View {
                         .fontWeight(.medium)
                         .padding(.horizontal, 6)
                         .padding(.vertical, 2)
-                        .background(AppColors.primaryGreen.opacity(0.15))
-                        .foregroundStyle(AppColors.primaryGreen)
+                        .background(PCColors.accent.opacity(0.15))
+                        .foregroundStyle(PCColors.accent)
                         .clipShape(Capsule())
                 }
                 Spacer()
@@ -954,7 +954,7 @@ struct SubstitutionsView: View {
 
             Text("Ratio: \(sub.ratio)")
                 .font(.caption)
-                .foregroundStyle(AppColors.subtleText)
+                .foregroundStyle(PCColors.textSecondary)
 
             HStack(spacing: 16) {
                 if sub.tasteImpact != "None" {
@@ -970,12 +970,12 @@ struct SubstitutionsView: View {
 
             Text(sub.nutritionImpact)
                 .font(.caption)
-                .foregroundStyle(AppColors.primaryGreen)
+                .foregroundStyle(PCColors.accent)
 
             if let notes = sub.notes, !notes.isEmpty {
                 Text(notes)
                     .font(.caption2)
-                    .foregroundStyle(AppColors.subtleText)
+                    .foregroundStyle(PCColors.textSecondary)
             }
         }
         .padding(.vertical, 4)
@@ -994,7 +994,7 @@ struct DetailChip: View {
             Text(text)
                 .font(.caption2)
         }
-        .foregroundStyle(AppColors.subtleText)
+        .foregroundStyle(PCColors.textSecondary)
     }
 }
 
@@ -1009,12 +1009,12 @@ struct HealthierView: View {
                 Section {
                     Text(suggestion.overallImpact)
                         .font(.subheadline)
-                        .foregroundStyle(AppColors.primaryGreen)
+                        .foregroundStyle(PCColors.accent)
 
                     if let reduction = suggestion.estimatedCalorieReduction {
                         HStack {
                             Image(systemName: "arrow.down.circle.fill")
-                                .foregroundStyle(AppColors.primaryGreen)
+                                .foregroundStyle(PCColors.accent)
                             Text("~\(reduction) fewer calories per serving")
                                 .font(.subheadline)
                                 .fontWeight(.medium)
@@ -1032,7 +1032,7 @@ struct HealthierView: View {
                                 .fontWeight(.medium)
                             Text(tweak.benefit)
                                 .font(.caption)
-                                .foregroundStyle(AppColors.primaryGreen)
+                                .foregroundStyle(PCColors.accent)
                         }
                         .padding(.vertical, 4)
                     }
@@ -1123,7 +1123,7 @@ struct AddRecipeView: View {
                     inputForm
                 }
             }
-            .background(AppColors.background)
+            .background(PCColors.background)
             .navigationTitle(importedRecipeDraft != nil ? "Review Recipe" : "Add Recipe")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -1155,7 +1155,7 @@ struct AddRecipeView: View {
                 VStack(spacing: 8) {
                     Image(systemName: "doc.text.magnifyingglass")
                         .font(.system(size: 44))
-                        .foregroundStyle(AppColors.primaryGreen)
+                        .foregroundStyle(PCColors.accent)
 
                     Text("Paste a recipe")
                         .font(.title3)
@@ -1163,7 +1163,7 @@ struct AddRecipeView: View {
 
                     Text("Paste a recipe URL, or type / paste the full recipe text and we'll turn it into a structured recipe for you.")
                         .font(.subheadline)
-                        .foregroundStyle(AppColors.subtleText)
+                        .foregroundStyle(PCColors.textSecondary)
                         .multilineTextAlignment(.center)
                         .padding(.horizontal, 24)
                 }
@@ -1173,15 +1173,15 @@ struct AddRecipeView: View {
                 VStack(alignment: .leading, spacing: 6) {
                     Text("Works with:")
                         .font(.caption)
-                        .foregroundStyle(AppColors.subtleText)
+                        .foregroundStyle(PCColors.textSecondary)
                     HStack(spacing: 6) {
                         ForEach(["Recipe URLs", "Copy-paste text", "Free-form notes"], id: \.self) { hint in
                             Text(hint)
                                 .font(.caption2)
-                                .foregroundStyle(AppColors.primaryGreen)
+                                .foregroundStyle(PCColors.accent)
                                 .padding(.horizontal, 8)
                                 .padding(.vertical, 4)
-                                .background(AppColors.primaryGreen.opacity(0.1))
+                                .background(PCColors.accent.opacity(0.1))
                                 .clipShape(Capsule())
                         }
                     }
@@ -1205,7 +1205,7 @@ struct AddRecipeView: View {
                             Text("URL detected — will fetch and parse")
                                 .font(.caption)
                         }
-                        .foregroundStyle(AppColors.primaryGreen)
+                        .foregroundStyle(PCColors.accent)
                     }
                 }
                 .padding(.horizontal)
@@ -1217,7 +1217,7 @@ struct AddRecipeView: View {
                         Text(errorMessage)
                             .font(.caption)
                     }
-                    .foregroundStyle(AppColors.softRed)
+                    .foregroundStyle(PCColors.expired)
                     .padding(.horizontal)
                 }
 
@@ -1243,7 +1243,7 @@ struct AddRecipeView: View {
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 14)
                     .foregroundStyle(.white)
-                    .background(inputText.trimmed.isEmpty || isParsing ? AppColors.mediumGray : AppColors.primaryGreen)
+                    .background(inputText.trimmed.isEmpty || isParsing ? PCColors.textTertiary : PCColors.accent)
                     .clipShape(RoundedRectangle(cornerRadius: 12))
                 }
                 .disabled(inputText.trimmed.isEmpty || isParsing)
@@ -1291,7 +1291,7 @@ struct ImportRecipeURLView: View {
             VStack(spacing: 24) {
                 Image(systemName: "link.circle.fill")
                     .font(.system(size: 56))
-                    .foregroundStyle(AppColors.primaryGreen)
+                    .foregroundStyle(PCColors.accent)
 
                 Text("Import from URL")
                     .font(.title3)
@@ -1299,7 +1299,7 @@ struct ImportRecipeURLView: View {
 
                 Text("Paste a recipe URL and we'll extract the recipe details for you.")
                     .font(.subheadline)
-                    .foregroundStyle(AppColors.subtleText)
+                    .foregroundStyle(PCColors.textSecondary)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 40)
 
@@ -1326,7 +1326,7 @@ struct ImportRecipeURLView: View {
                     }
                 }
                 .buttonStyle(.borderedProminent)
-                .tint(AppColors.primaryGreen)
+                .tint(PCColors.accent)
                 .padding(.horizontal)
                 .disabled(urlString.isEmpty || viewModel.isLoading)
 

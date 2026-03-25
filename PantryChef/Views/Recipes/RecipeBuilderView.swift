@@ -115,7 +115,7 @@ struct RecipeBuilderView: View {
                         if usePantry {
                             Text("\(appState.pantryItems.count) pantry items will be considered")
                                 .font(.caption)
-                                .foregroundStyle(AppColors.subtleText)
+                                .foregroundStyle(PCColors.textSecondary)
                                 .transition(.opacity)
                         }
                     }
@@ -124,7 +124,7 @@ struct RecipeBuilderView: View {
                     if let error = generationError {
                         Text(error)
                             .font(.caption)
-                            .foregroundStyle(AppColors.softRed)
+                            .foregroundStyle(PCColors.expired)
                             .padding(.horizontal)
                     }
 
@@ -133,19 +133,19 @@ struct RecipeBuilderView: View {
                         if isGenerating {
                             ProgressView()
                                 .scaleEffect(1.2)
-                                .tint(AppColors.primaryGreen)
+                                .tint(PCColors.accent)
 
                             Text(statusMessage)
                                 .font(.subheadline)
                                 .fontWeight(.medium)
-                                .foregroundStyle(AppColors.darkText)
+                                .foregroundStyle(PCColors.textPrimary)
                                 .multilineTextAlignment(.center)
                                 .id(statusMessage)
                                 .transition(.push(from: .bottom))
 
                             Text("Usually takes about 30 seconds")
                                 .font(.caption2)
-                                .foregroundStyle(AppColors.subtleText)
+                                .foregroundStyle(PCColors.textSecondary)
                         } else {
                             Button {
                                 Task { await generate() }
@@ -158,7 +158,7 @@ struct RecipeBuilderView: View {
                                 .foregroundStyle(.white)
                                 .frame(maxWidth: .infinity)
                                 .padding(.vertical, 14)
-                                .background(AppColors.primaryGreen)
+                                .background(PCColors.accent)
                                 .clipShape(RoundedRectangle(cornerRadius: 14))
                             }
                         }
@@ -176,13 +176,13 @@ struct RecipeBuilderView: View {
                         } label: {
                             Text("Just generate with defaults →")
                                 .font(.footnote)
-                                .foregroundStyle(AppColors.subtleText)
+                                .foregroundStyle(PCColors.textSecondary)
                         }
                     }
                 }
                 .padding(.vertical)
             }
-            .background(AppColors.background)
+            .background(PCColors.background)
             .navigationTitle("Recipe Builder")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -201,15 +201,15 @@ struct RecipeBuilderView: View {
             HStack(spacing: 8) {
                 Image(systemName: "sparkles")
                     .font(.title2)
-                    .foregroundStyle(AppColors.warmOrange)
+                    .foregroundStyle(PCColors.expiring)
                 Text(query.capitalized)
                     .font(.title2)
                     .fontWeight(.bold)
-                    .foregroundStyle(AppColors.darkText)
+                    .foregroundStyle(PCColors.textPrimary)
             }
             Text("Customize your recipe or tap Generate to go with smart defaults")
                 .font(.subheadline)
-                .foregroundStyle(AppColors.subtleText)
+                .foregroundStyle(PCColors.textSecondary)
                 .multilineTextAlignment(.center)
         }
         .padding(.horizontal)
@@ -222,7 +222,7 @@ struct RecipeBuilderView: View {
             Text(title)
                 .font(.subheadline)
                 .fontWeight(.semibold)
-                .foregroundStyle(AppColors.darkText)
+                .foregroundStyle(PCColors.textPrimary)
             content()
         }
         .padding(.horizontal)
@@ -251,15 +251,15 @@ struct RecipeBuilderView: View {
                         .font(.caption2)
                 }
             }
-            .foregroundStyle(isSelected ? .white : AppColors.darkText)
+            .foregroundStyle(isSelected ? .white : PCColors.textPrimary)
             .padding(.horizontal, 14)
             .padding(.vertical, 10)
             .frame(maxWidth: .infinity)
-            .background(isSelected ? AppColors.primaryGreen : AppColors.cardBackground)
+            .background(isSelected ? PCColors.accent : PCColors.cardBackground)
             .clipShape(RoundedRectangle(cornerRadius: 10))
             .overlay(
                 RoundedRectangle(cornerRadius: 10)
-                    .stroke(isSelected ? Color.clear : AppColors.mediumGray.opacity(0.3), lineWidth: 1)
+                    .stroke(isSelected ? Color.clear : PCColors.textTertiary.opacity(0.3), lineWidth: 1)
             )
         }
         .buttonStyle(.plain)
@@ -274,14 +274,14 @@ struct RecipeBuilderView: View {
                     .font(.caption)
                     .fontWeight(isSelected ? .semibold : .regular)
             }
-            .foregroundStyle(isSelected ? .white : AppColors.darkText)
+            .foregroundStyle(isSelected ? .white : PCColors.textPrimary)
             .frame(maxWidth: .infinity)
             .padding(.vertical, 14)
-            .background(isSelected ? AppColors.primaryGreen : AppColors.cardBackground)
+            .background(isSelected ? PCColors.accent : PCColors.cardBackground)
             .clipShape(RoundedRectangle(cornerRadius: 12))
             .overlay(
                 RoundedRectangle(cornerRadius: 12)
-                    .stroke(isSelected ? Color.clear : AppColors.mediumGray.opacity(0.3), lineWidth: 1)
+                    .stroke(isSelected ? Color.clear : PCColors.textTertiary.opacity(0.3), lineWidth: 1)
             )
         }
         .buttonStyle(.plain)

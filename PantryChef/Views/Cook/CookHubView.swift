@@ -66,7 +66,7 @@ struct CookHubView: View {
                     detail: "\(recipe.totalTimeDisplay) • \(recipe.steps.count) steps",
                     sourceEntryIDs: [],
                     badgeTitle: recipe.source.isUserRecipe ? "Library" : recipe.source.label,
-                    badgeColor: recipe.source.isUserRecipe ? AppColors.accentTeal : AppColors.warmOrange
+                    badgeColor: recipe.source.isUserRecipe ? PCColors.teal : PCColors.expiring
                 )
             }
     }
@@ -130,7 +130,7 @@ struct CookHubView: View {
                                 await appState.clearCookQueue()
                             }
                         }
-                        .foregroundStyle(AppColors.softRed)
+                        .foregroundStyle(PCColors.expired)
                     }
                 }
             }
@@ -247,16 +247,16 @@ struct CookHubView: View {
             Text("Cooking Workspace")
                 .font(.title2)
                 .fontWeight(.bold)
-                .foregroundStyle(AppColors.darkText)
+                .foregroundStyle(PCColors.textPrimary)
 
             Text("Import planned meals from Meal Plan, or open the recipe drawer on the right and drag recipes into the queue board without losing your place.")
                 .font(.subheadline)
-                .foregroundStyle(AppColors.subtleText)
+                .foregroundStyle(PCColors.textSecondary)
 
             HStack(spacing: 12) {
-                workspaceMetric(title: "Active", value: "\(appState.activeCooks.count)", color: AppColors.warmOrange)
-                workspaceMetric(title: "Queue", value: "\(appState.cookQueue?.stages.count ?? 0)", color: AppColors.accentBlue)
-                workspaceMetric(title: "Up Next", value: queueSummaryValue, color: AppColors.primaryGreen)
+                workspaceMetric(title: "Active", value: "\(appState.activeCooks.count)", color: PCColors.expiring)
+                workspaceMetric(title: "Queue", value: "\(appState.cookQueue?.stages.count ?? 0)", color: PCColors.info)
+                workspaceMetric(title: "Up Next", value: queueSummaryValue, color: PCColors.accent)
             }
 
             HStack(spacing: 12) {
@@ -273,7 +273,7 @@ struct CookHubView: View {
                         .foregroundStyle(Color.white)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 12)
-                        .background(AppColors.accentBlue)
+                        .background(PCColors.info)
                         .clipShape(RoundedRectangle(cornerRadius: 14))
                 }
 
@@ -286,7 +286,7 @@ struct CookHubView: View {
                         .foregroundStyle(Color.white)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 12)
-                        .background(AppColors.accentTeal)
+                        .background(PCColors.teal)
                         .clipShape(RoundedRectangle(cornerRadius: 14))
                 }
             }
@@ -301,13 +301,13 @@ struct CookHubView: View {
                         .foregroundStyle(Color.white)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 12)
-                        .background(AppColors.primaryGreen)
+                        .background(PCColors.accent)
                         .clipShape(RoundedRectangle(cornerRadius: 14))
                 }
             }
         }
         .padding()
-        .cardStyle()
+        .pcCard()
     }
 
     private var activeSessionsSection: some View {
@@ -326,31 +326,31 @@ struct CookHubView: View {
                     HStack(spacing: 14) {
                         ZStack {
                             Circle()
-                                .fill(AppColors.warmOrange.opacity(0.15))
+                                .fill(PCColors.expiring.opacity(0.15))
                                 .frame(width: 46, height: 46)
                             Image(systemName: "frying.pan.fill")
-                                .foregroundStyle(AppColors.warmOrange)
+                                .foregroundStyle(PCColors.expiring)
                         }
 
                         VStack(alignment: .leading, spacing: 4) {
                             Text(session.recipeName)
                                 .font(.subheadline)
                                 .fontWeight(.semibold)
-                                .foregroundStyle(AppColors.darkText)
+                                .foregroundStyle(PCColors.textPrimary)
 
                             Text("Step \(session.currentStepIndex + 1) of \(session.totalSteps)")
                                 .font(.caption)
-                                .foregroundStyle(AppColors.subtleText)
+                                .foregroundStyle(PCColors.textSecondary)
                         }
 
                         Spacer()
 
                         Image(systemName: "chevron.right")
                             .font(.caption)
-                            .foregroundStyle(AppColors.mediumGray)
+                            .foregroundStyle(PCColors.textTertiary)
                     }
                     .padding()
-                    .background(AppColors.cardBackground)
+                    .background(PCColors.cardBackground)
                     .clipShape(RoundedRectangle(cornerRadius: 16))
                 }
                 .buttonStyle(.plain)
@@ -382,27 +382,27 @@ struct CookHubView: View {
 
     private var emptyQueueBoard: some View {
         RoundedRectangle(cornerRadius: 18)
-            .fill(AppColors.cardBackground)
+            .fill(PCColors.cardBackground)
             .overlay {
                 VStack(spacing: 12) {
                     Image(systemName: "square.stack.3d.up.slash")
                         .font(.title)
-                        .foregroundStyle(AppColors.accentBlue)
+                        .foregroundStyle(PCColors.info)
                     Text("Cook queue is empty")
                         .font(.headline)
-                        .foregroundStyle(AppColors.darkText)
+                        .foregroundStyle(PCColors.textPrimary)
                     Text("Use Add From Meal Plan or drag a recipe from the library drawer and drop it here to create the first stage.")
                         .font(.subheadline)
-                        .foregroundStyle(AppColors.subtleText)
+                        .foregroundStyle(PCColors.textSecondary)
                         .multilineTextAlignment(.center)
                         .padding(.horizontal, 20)
                     Label("Drop Here To Create Stage", systemImage: "arrow.down.to.line")
                         .font(.caption)
                         .fontWeight(.semibold)
-                        .foregroundStyle(AppColors.accentBlue)
+                        .foregroundStyle(PCColors.info)
                         .padding(.horizontal, 12)
                         .padding(.vertical, 8)
-                        .background(AppColors.accentBlue.opacity(0.12))
+                        .background(PCColors.info.opacity(0.12))
                         .clipShape(Capsule())
                 }
                 .padding(.vertical, 36)
@@ -410,7 +410,7 @@ struct CookHubView: View {
             .overlay {
                 RoundedRectangle(cornerRadius: 18)
                     .strokeBorder(style: StrokeStyle(lineWidth: 1, dash: [8, 8]))
-                    .foregroundStyle(AppColors.accentBlue.opacity(0.45))
+                    .foregroundStyle(PCColors.info.opacity(0.45))
             }
             .dropDestination(for: String.self) { items, _ in
                 handleDrop(items: items, placement: .afterStage(nil))
@@ -425,10 +425,10 @@ struct CookHubView: View {
                         VStack(alignment: .leading, spacing: 4) {
                             Text("Recipe Library")
                                 .font(.headline)
-                                .foregroundStyle(AppColors.darkText)
+                                .foregroundStyle(PCColors.textPrimary)
                             Text("Search, browse, and drag recipes into the queue without scrolling away from the board.")
                                 .font(.caption)
-                                .foregroundStyle(AppColors.subtleText)
+                                .foregroundStyle(PCColors.textSecondary)
                         }
 
                         Spacer()
@@ -440,9 +440,9 @@ struct CookHubView: View {
                         } label: {
                             Image(systemName: "sidebar.right")
                                 .font(.title3)
-                                .foregroundStyle(AppColors.accentBlue)
+                                .foregroundStyle(PCColors.info)
                                 .frame(width: 36, height: 36)
-                                .background(AppColors.accentBlue.opacity(0.1))
+                                .background(PCColors.info.opacity(0.1))
                                 .clipShape(Circle())
                         }
                     }
@@ -480,7 +480,7 @@ struct CookHubView: View {
                 .padding(16)
                 .frame(width: recipeLibraryDrawerWidth)
                 .frame(maxHeight: .infinity)
-                .background(AppColors.cardBackground)
+                .background(PCColors.cardBackground)
                 .clipShape(UnevenRoundedRectangle(topLeadingRadius: 22, bottomLeadingRadius: 22, bottomTrailingRadius: 0, topTrailingRadius: 0))
                 .shadow(color: Color.black.opacity(0.1), radius: 20, x: 0, y: 10)
                 .padding(.vertical, 4)
@@ -503,10 +503,10 @@ struct CookHubView: View {
                             .rotationEffect(.degrees(-90))
                             .frame(height: horizontalSizeClass == .regular ? 92 : 82)
                     }
-                    .foregroundStyle(AppColors.accentBlue)
+                    .foregroundStyle(PCColors.info)
                     .frame(width: recipeDrawerHandleWidth)
                     .padding(.vertical, horizontalSizeClass == .regular ? 14 : 12)
-                    .background(AppColors.cardBackground)
+                    .background(PCColors.cardBackground)
                     .clipShape(UnevenRoundedRectangle(topLeadingRadius: 18, bottomLeadingRadius: 18, bottomTrailingRadius: 0, topTrailingRadius: 0))
                     .shadow(color: Color.black.opacity(0.08), radius: 12, x: 0, y: 6)
                 }
@@ -525,7 +525,7 @@ struct CookHubView: View {
                 .foregroundStyle(color)
             Text(title)
                 .font(.caption)
-                .foregroundStyle(AppColors.subtleText)
+                .foregroundStyle(PCColors.textSecondary)
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 10)
@@ -539,7 +539,7 @@ struct CookHubView: View {
                 Text(source.displayTitle)
                     .font(.subheadline)
                     .fontWeight(.semibold)
-                    .foregroundStyle(AppColors.darkText)
+                    .foregroundStyle(PCColors.textPrimary)
                     .lineLimit(2)
 
                 Spacer(minLength: 8)
@@ -556,11 +556,11 @@ struct CookHubView: View {
 
             Text(source.subtitle)
                 .font(.caption)
-                .foregroundStyle(AppColors.subtleText)
+                .foregroundStyle(PCColors.textSecondary)
 
             Text(source.detail)
                 .font(.caption2)
-                .foregroundStyle(AppColors.subtleText)
+                .foregroundStyle(PCColors.textSecondary)
 
             HStack(spacing: 6) {
                 Image(systemName: "hand.draw.fill")
@@ -569,15 +569,15 @@ struct CookHubView: View {
                     .font(.caption2)
                     .fontWeight(.semibold)
             }
-            .foregroundStyle(AppColors.accentBlue)
+            .foregroundStyle(PCColors.info)
         }
         .padding(14)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(AppColors.lightGray)
+        .background(PCColors.fillTertiary)
         .clipShape(RoundedRectangle(cornerRadius: 16))
         .overlay {
             RoundedRectangle(cornerRadius: 16)
-                .strokeBorder(AppColors.accentBlue.opacity(0.14), lineWidth: 1)
+                .strokeBorder(PCColors.info.opacity(0.14), lineWidth: 1)
         }
         .onDrag {
             let provider = NSItemProvider(object: CookDragPayload.source(source.id).rawValue as NSString)
@@ -599,10 +599,10 @@ struct CookHubView: View {
                     Text(stage.recipeTiles.count > 1 ? "Parallel Stage" : "Solo Stage")
                         .font(.subheadline)
                         .fontWeight(.semibold)
-                        .foregroundStyle(AppColors.darkText)
+                        .foregroundStyle(PCColors.textPrimary)
                     Text(stageStatusSubtitle(stage))
                         .font(.caption)
-                        .foregroundStyle(AppColors.subtleText)
+                        .foregroundStyle(PCColors.textSecondary)
                 }
 
                 Spacer()
@@ -624,7 +624,7 @@ struct CookHubView: View {
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(14)
-            .background(AppColors.lightGray)
+            .background(PCColors.fillTertiary)
             .clipShape(RoundedRectangle(cornerRadius: 16))
             .dropDestination(for: String.self) { items, _ in
                 handleDrop(items: items, placement: .intoStage(stage.id))
@@ -641,7 +641,7 @@ struct CookHubView: View {
                             .foregroundStyle(.white)
                             .padding(.horizontal, 12)
                             .padding(.vertical, 8)
-                            .background(AppColors.primaryGreen)
+                            .background(PCColors.accent)
                             .clipShape(Capsule())
                     }
 
@@ -653,10 +653,10 @@ struct CookHubView: View {
                         Text("Skip")
                             .font(.caption)
                             .fontWeight(.semibold)
-                            .foregroundStyle(AppColors.darkText)
+                            .foregroundStyle(PCColors.textPrimary)
                             .padding(.horizontal, 12)
                             .padding(.vertical, 8)
-                            .background(AppColors.lightGray)
+                            .background(PCColors.fillTertiary)
                             .clipShape(Capsule())
                     }
                 }
@@ -670,17 +670,17 @@ struct CookHubView: View {
                         Text("Remove Stage")
                             .font(.caption)
                             .fontWeight(.semibold)
-                            .foregroundStyle(AppColors.softRed)
+                            .foregroundStyle(PCColors.expired)
                             .padding(.horizontal, 12)
                             .padding(.vertical, 8)
-                            .background(AppColors.softRed.opacity(0.12))
+                            .background(PCColors.expired.opacity(0.12))
                             .clipShape(Capsule())
                     }
                 }
             }
         }
         .padding()
-        .background(AppColors.cardBackground)
+        .background(PCColors.cardBackground)
         .clipShape(RoundedRectangle(cornerRadius: 18))
     }
 
@@ -691,13 +691,13 @@ struct CookHubView: View {
                     Text(tile.displayTitle)
                         .font(.subheadline)
                         .fontWeight(.semibold)
-                        .foregroundStyle(AppColors.darkText)
+                        .foregroundStyle(PCColors.textPrimary)
                         .lineLimit(2)
 
                     if let recipe = appState.allRecipes.first(where: { $0.id == tile.recipeID }) {
                         Text(recipe.totalTimeDisplay)
                             .font(.caption2)
-                            .foregroundStyle(AppColors.subtleText)
+                            .foregroundStyle(PCColors.textSecondary)
                     }
                 }
 
@@ -709,7 +709,7 @@ struct CookHubView: View {
                     } label: {
                         Image(systemName: "xmark.circle.fill")
                             .font(.caption)
-                            .foregroundStyle(AppColors.mediumGray)
+                            .foregroundStyle(PCColors.textTertiary)
                     }
                     .buttonStyle(.plain)
                 }
@@ -717,15 +717,15 @@ struct CookHubView: View {
 
             Text(stage.recipeTiles.count > 1 ? "Drop onto another row to make this serial." : "Drop onto a row to make it parallel.")
                 .font(.caption2)
-                .foregroundStyle(AppColors.subtleText)
+                .foregroundStyle(PCColors.textSecondary)
         }
         .padding(12)
         .frame(width: 170, alignment: .leading)
-        .background(AppColors.cardBackground)
+        .background(PCColors.cardBackground)
         .clipShape(RoundedRectangle(cornerRadius: 14))
         .overlay {
             RoundedRectangle(cornerRadius: 14)
-                .strokeBorder(AppColors.mediumGray.opacity(0.18), lineWidth: 1)
+                .strokeBorder(PCColors.textTertiary.opacity(0.18), lineWidth: 1)
         }
         .draggable(CookDragPayload.tile(tile.id).rawValue)
     }
@@ -733,13 +733,13 @@ struct CookHubView: View {
     private func stageInsertionZone(afterStageID: UUID?) -> some View {
         RoundedRectangle(cornerRadius: 14)
             .strokeBorder(style: StrokeStyle(lineWidth: 1, dash: [6, 6]))
-            .foregroundStyle(AppColors.accentBlue.opacity(0.45))
+            .foregroundStyle(PCColors.info.opacity(0.45))
             .frame(height: 44)
             .overlay {
                 Label("Drop Here For Next Stage", systemImage: "arrow.down.to.line")
                     .font(.caption)
                     .fontWeight(.semibold)
-                    .foregroundStyle(AppColors.accentBlue)
+                    .foregroundStyle(PCColors.info)
             }
             .dropDestination(for: String.self) { items, _ in
                 handleDrop(items: items, placement: .afterStage(afterStageID))
@@ -894,7 +894,7 @@ private struct MealPlanCookQueueSelectionView: View {
                         Section {
                             Text("Select the meal-plan recipes you want to add to the cook queue. Dates stay visible here so you can import the right meals in the right order.")
                                 .font(.subheadline)
-                                .foregroundStyle(AppColors.subtleText)
+                                .foregroundStyle(PCColors.textSecondary)
                         }
 
                         ForEach(entriesByDay, id: \.date) { group in
@@ -928,10 +928,10 @@ private struct MealPlanCookQueueSelectionView: View {
                             Text(selectedEntries.isEmpty ? "Select meals to queue" : "\(selectedEntries.count) meals selected")
                                 .font(.subheadline)
                                 .fontWeight(.semibold)
-                                .foregroundStyle(AppColors.darkText)
+                                .foregroundStyle(PCColors.textPrimary)
                             Text("Recipe scaling and meal-plan links carry into the queue.")
                                 .font(.caption)
-                                .foregroundStyle(AppColors.subtleText)
+                                .foregroundStyle(PCColors.textSecondary)
                         }
 
                         Spacer()
@@ -944,7 +944,7 @@ private struct MealPlanCookQueueSelectionView: View {
                                 .fontWeight(.semibold)
                                 .padding(.horizontal, 16)
                                 .padding(.vertical, 12)
-                                .background(selectedEntries.isEmpty ? AppColors.mediumGray : AppColors.accentBlue)
+                                .background(selectedEntries.isEmpty ? PCColors.textTertiary : PCColors.info)
                                 .foregroundStyle(.white)
                                 .clipShape(Capsule())
                         }
@@ -971,26 +971,26 @@ private struct MealPlanCookQueueSelectionView: View {
             HStack(spacing: 12) {
                 Image(systemName: entry.recipe?.mealType?.icon ?? entry.mealType.icon)
                     .font(.title3)
-                    .foregroundStyle(AppColors.primaryGreen)
+                    .foregroundStyle(PCColors.accent)
                     .frame(width: 40, height: 40)
-                    .background(AppColors.primaryGreen.opacity(0.12))
+                    .background(PCColors.accent.opacity(0.12))
                     .clipShape(RoundedRectangle(cornerRadius: 10))
 
                 VStack(alignment: .leading, spacing: 4) {
                     Text(entry.displayName)
                         .font(.subheadline)
                         .fontWeight(.semibold)
-                        .foregroundStyle(AppColors.darkText)
+                        .foregroundStyle(PCColors.textPrimary)
                     Text("\(entry.mealType.rawValue) • \(entry.planningSubtitle ?? "Planned")")
                         .font(.caption)
-                        .foregroundStyle(AppColors.subtleText)
+                        .foregroundStyle(PCColors.textSecondary)
                 }
 
                 Spacer()
 
                 Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
                     .font(.title3)
-                    .foregroundStyle(isSelected ? AppColors.primaryGreen : AppColors.mediumGray)
+                    .foregroundStyle(isSelected ? PCColors.accent : PCColors.textTertiary)
             }
             .padding(.vertical, 4)
         }
@@ -1044,7 +1044,7 @@ struct MealPlanCookQueueReviewView: View {
             Section {
                 Text("Review each selected meal, keep or remove it, and decide whether it starts a new stage or cooks in parallel with the previous one.")
                     .font(.subheadline)
-                    .foregroundStyle(AppColors.subtleText)
+                    .foregroundStyle(PCColors.textSecondary)
             }
 
             Section {
@@ -1061,7 +1061,7 @@ struct MealPlanCookQueueReviewView: View {
         }
         .listStyle(.plain)
         .scrollContentBackground(.hidden)
-        .background(AppColors.background)
+        .background(PCColors.background)
     }
 
     @ViewBuilder
@@ -1071,7 +1071,7 @@ struct MealPlanCookQueueReviewView: View {
                 draftEditor(binding(for: focusedDraft))
                     .padding()
             }
-            .background(AppColors.background)
+            .background(PCColors.background)
         } else {
             EmptyStateView(
                 icon: "list.bullet.rectangle.portrait",
@@ -1079,7 +1079,7 @@ struct MealPlanCookQueueReviewView: View {
                 message: "Choose a meal from the list to review its queue placement."
             )
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(AppColors.background)
+            .background(PCColors.background)
         }
     }
 
@@ -1092,29 +1092,29 @@ struct MealPlanCookQueueReviewView: View {
             HStack(spacing: 12) {
                 Image(systemName: draft.entry.recipe?.mealType?.icon ?? draft.entry.mealType.icon)
                     .font(.title3)
-                    .foregroundStyle(AppColors.primaryGreen)
+                    .foregroundStyle(PCColors.accent)
                     .frame(width: 40, height: 40)
-                    .background(AppColors.primaryGreen.opacity(0.12))
+                    .background(PCColors.accent.opacity(0.12))
                     .clipShape(RoundedRectangle(cornerRadius: 10))
 
                 VStack(alignment: .leading, spacing: 4) {
                     Text(draft.entry.displayName)
                         .font(.subheadline)
                         .fontWeight(.semibold)
-                        .foregroundStyle(AppColors.darkText)
+                        .foregroundStyle(PCColors.textPrimary)
                     Text(draft.sourceSummary)
                         .font(.caption)
-                        .foregroundStyle(AppColors.subtleText)
+                        .foregroundStyle(PCColors.textSecondary)
                     Text(draft.isIncluded ? draft.stagePlacement.title : "Removed from queue")
                         .font(.caption2)
-                        .foregroundStyle(draft.isIncluded ? AppColors.subtleText : AppColors.softRed)
+                        .foregroundStyle(draft.isIncluded ? PCColors.textSecondary : PCColors.expired)
                 }
 
                 Spacer()
 
                 if isFocused {
                     Image(systemName: "chevron.right.circle.fill")
-                        .foregroundStyle(AppColors.accentBlue)
+                        .foregroundStyle(PCColors.info)
                 }
             }
             .padding(.vertical, 6)
@@ -1129,16 +1129,16 @@ struct MealPlanCookQueueReviewView: View {
             Text(draft.wrappedValue.entry.displayName)
                 .font(.title3)
                 .fontWeight(.bold)
-                .foregroundStyle(AppColors.darkText)
+                .foregroundStyle(PCColors.textPrimary)
 
             Text("\(draft.wrappedValue.sourceSummary) • \(draft.wrappedValue.entry.planningSubtitle ?? "Planned")")
                 .font(.subheadline)
-                .foregroundStyle(AppColors.subtleText)
+                .foregroundStyle(PCColors.textSecondary)
 
             VStack(alignment: .leading, spacing: 10) {
                 Text("Queue Inclusion")
                     .font(.headline)
-                    .foregroundStyle(AppColors.darkText)
+                    .foregroundStyle(PCColors.textPrimary)
 
                 Toggle("Include this meal in the cook queue", isOn: Binding(
                     get: { draft.wrappedValue.isIncluded },
@@ -1150,13 +1150,13 @@ struct MealPlanCookQueueReviewView: View {
                 ))
             }
             .padding()
-            .background(AppColors.cardBackground)
+            .background(PCColors.cardBackground)
             .clipShape(RoundedRectangle(cornerRadius: 16))
 
             VStack(alignment: .leading, spacing: 10) {
                 Text("Stage Placement")
                     .font(.headline)
-                    .foregroundStyle(AppColors.darkText)
+                    .foregroundStyle(PCColors.textPrimary)
 
                 if canCookWithPrevious {
                     Picker("Stage Placement", selection: Binding(
@@ -1175,15 +1175,15 @@ struct MealPlanCookQueueReviewView: View {
 
                     Text(draft.wrappedValue.stagePlacement.subtitle)
                         .font(.caption)
-                        .foregroundStyle(AppColors.subtleText)
+                        .foregroundStyle(PCColors.textSecondary)
                 } else {
                     Text("This meal starts a new stage because nothing earlier in the selection is currently included.")
                         .font(.caption)
-                        .foregroundStyle(AppColors.subtleText)
+                        .foregroundStyle(PCColors.textSecondary)
                 }
             }
             .padding()
-            .background(AppColors.cardBackground)
+            .background(PCColors.cardBackground)
             .clipShape(RoundedRectangle(cornerRadius: 16))
         }
     }
@@ -1196,10 +1196,10 @@ struct MealPlanCookQueueReviewView: View {
                     Text(canSave ? "Add \(workspace.projectedStageCount) stages to cook queue" : "Include at least one meal to continue")
                         .font(.subheadline)
                         .fontWeight(.semibold)
-                        .foregroundStyle(AppColors.darkText)
+                        .foregroundStyle(PCColors.textPrimary)
                     Text("You can still start, skip, remove, or rearrange stages later from Cook.")
                         .font(.caption)
-                        .foregroundStyle(AppColors.subtleText)
+                        .foregroundStyle(PCColors.textSecondary)
                 }
 
                 Spacer()
@@ -1212,7 +1212,7 @@ struct MealPlanCookQueueReviewView: View {
                         .fontWeight(.semibold)
                         .padding(.horizontal, 16)
                         .padding(.vertical, 12)
-                        .background(canSave ? AppColors.primaryGreen : AppColors.mediumGray)
+                        .background(canSave ? PCColors.accent : PCColors.textTertiary)
                         .foregroundStyle(.white)
                         .clipShape(Capsule())
                 }
@@ -1313,13 +1313,13 @@ private struct CookQueueDraft: Equatable {
         var statusColor: Color {
             switch status {
             case .pending:
-                return AppColors.accentBlue
+                return PCColors.info
             case .active:
-                return AppColors.primaryGreen
+                return PCColors.accent
             case .completed:
-                return AppColors.warmOrange
+                return PCColors.expiring
             case .skipped:
-                return AppColors.mediumGray
+                return PCColors.textTertiary
             }
         }
     }

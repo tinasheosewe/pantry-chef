@@ -13,13 +13,16 @@ struct PantryView: View {
     @State private var contentMode: ContentMode = .pantry
     @FocusState private var isSearchFieldFocused: Bool
 
-    init(appState: AppState) {
+    private let isEmbedded: Bool
+
+    init(appState: AppState, isEmbedded: Bool = false) {
         _viewModel = State(initialValue: PantryViewModel(appState: appState))
+        self.isEmbedded = isEmbedded
     }
 
     var body: some View {
         @Bindable var viewModel = viewModel
-        AppScreen("pantry.screen") {
+        AppScreen("pantry.screen", isEmbedded: isEmbedded) {
             VStack(spacing: 0) {
                 Picker("Mode", selection: $contentMode) {
                     ForEach(ContentMode.allCases) { mode in
@@ -80,17 +83,17 @@ struct PantryView: View {
         HStack(alignment: .top, spacing: 12) {
             Text(description)
                 .font(.caption)
-                .foregroundStyle(AppColors.subtleText)
+                .foregroundStyle(PCColors.textSecondary)
                 .frame(maxWidth: .infinity, alignment: .leading)
 
             Button(action: action) {
                 Label(addTitle, systemImage: "plus")
                     .font(.subheadline)
                     .fontWeight(.semibold)
-                    .foregroundStyle(AppColors.primaryGreen)
+                    .foregroundStyle(PCColors.accent)
                     .padding(.horizontal, 12)
                     .padding(.vertical, 8)
-                    .background(AppColors.primaryGreen.opacity(0.12))
+                    .background(PCColors.accent.opacity(0.12))
                     .clipShape(Capsule())
             }
             .buttonStyle(.plain)
@@ -98,7 +101,7 @@ struct PantryView: View {
         .padding(.horizontal)
         .padding(.top, 12)
         .padding(.bottom, 4)
-        .background(AppColors.cardBackground)
+        .background(PCColors.cardBackground)
     }
 
     // MARK: - Search & Sort
@@ -135,7 +138,7 @@ struct PantryView: View {
         }
         .padding(.horizontal)
         .padding(.vertical, 8)
-        .background(AppColors.cardBackground)
+        .background(PCColors.cardBackground)
     }
 
     // MARK: - Pantry List
@@ -192,7 +195,7 @@ struct InputMethodButton: View {
                     .foregroundStyle(color)
                 Text(title)
                     .font(.caption2)
-                    .foregroundStyle(AppColors.darkText)
+                    .foregroundStyle(PCColors.textPrimary)
             }
             .frame(width: 70, height: 56)
             .background(color.opacity(0.1))
@@ -215,8 +218,8 @@ struct CategoryPill: View {
                 .fontWeight(.medium)
                 .padding(.horizontal, 12)
                 .padding(.vertical, 6)
-                .background(isSelected ? AppColors.primaryGreen : AppColors.lightGray)
-                .foregroundStyle(isSelected ? .white : AppColors.subtleText)
+                .background(isSelected ? PCColors.accent : PCColors.fillTertiary)
+                .foregroundStyle(isSelected ? .white : PCColors.textSecondary)
                 .clipShape(Capsule())
         }
     }
@@ -240,7 +243,7 @@ struct PantryItemRow: View {
 
                     Label(item.storage.rawValue, systemImage: item.storage.icon)
                         .font(.caption)
-                        .foregroundStyle(AppColors.subtleText)
+                        .foregroundStyle(PCColors.textSecondary)
                 }
             }
 
@@ -387,7 +390,7 @@ struct BulkAddPantryView: View {
                         .zIndex(viewModel.bulkAdd.selectedTab == .review ? 1 : 0)
                 }
             }
-            .background(AppColors.background)
+            .background(PCColors.background)
             .navigationTitle("Add To Pantry")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -433,15 +436,15 @@ struct BulkAddPantryView: View {
                                     Text(category.rawValue)
                                         .font(.subheadline)
                                         .fontWeight(.semibold)
-                                        .foregroundStyle(AppColors.darkText)
+                                        .foregroundStyle(PCColors.textPrimary)
                                         .multilineTextAlignment(.leading)
                                     Text("\(count) items")
                                         .font(.caption)
-                                        .foregroundStyle(AppColors.subtleText)
+                                        .foregroundStyle(PCColors.textSecondary)
                                 }
                                 .frame(maxWidth: .infinity, minHeight: 96, alignment: .leading)
                                 .padding(14)
-                                .background(AppColors.cardBackground)
+                                .background(PCColors.cardBackground)
                                 .clipShape(RoundedRectangle(cornerRadius: 18))
                                 .shadow(color: Color.black.opacity(0.04), radius: 10, x: 0, y: 4)
                                 .contentShape(RoundedRectangle(cornerRadius: 18))
@@ -471,16 +474,16 @@ struct BulkAddPantryView: View {
                                 Label("Back", systemImage: "chevron.left")
                                     .font(.subheadline)
                                     .fontWeight(.semibold)
-                                    .foregroundStyle(AppColors.darkText)
+                                    .foregroundStyle(PCColors.textPrimary)
                             }
 
                             VStack(alignment: .leading, spacing: 2) {
                                 Text(category.rawValue)
                                     .font(.headline)
-                                    .foregroundStyle(AppColors.darkText)
+                                    .foregroundStyle(PCColors.textPrimary)
                                 Text(viewModel.bulkAdd.debouncedCatalogSearchText.isEmpty ? "Browse this category" : "Search scoped to this category")
                                     .font(.caption)
-                                    .foregroundStyle(AppColors.subtleText)
+                                    .foregroundStyle(PCColors.textSecondary)
                             }
 
                             Spacer()
@@ -493,7 +496,7 @@ struct BulkAddPantryView: View {
                         if viewModel.bulkAdd.filteredCatalogItems.isEmpty {
                             Text("No catalog items matched that filter.")
                                 .font(.caption)
-                                .foregroundStyle(AppColors.subtleText)
+                                .foregroundStyle(PCColors.textSecondary)
                         }
                         VStack(spacing: 10) {
                             ForEach(viewModel.bulkAdd.filteredCatalogItems) { item in
@@ -508,10 +511,10 @@ struct BulkAddPantryView: View {
                                 Label("Add \"\(viewModel.bulkAdd.catalogSearchText.trimmed)\" as a custom pantry item", systemImage: "square.and.pencil")
                                     .font(.subheadline)
                                     .fontWeight(.semibold)
-                                    .foregroundStyle(AppColors.darkText)
+                                    .foregroundStyle(PCColors.textPrimary)
                                     .frame(maxWidth: .infinity, alignment: .leading)
                                     .padding(14)
-                                    .background(AppColors.cardBackground)
+                                    .background(PCColors.cardBackground)
                                     .clipShape(RoundedRectangle(cornerRadius: 16))
                             }
                             .buttonStyle(.plain)
@@ -544,7 +547,7 @@ struct BulkAddPantryView: View {
                 }
             ),
             focus: $isCatalogSearchFocused,
-            background: AppColors.cardBackground,
+            background: PCColors.cardBackground,
             cornerRadius: 14,
             padding: 12
         )
@@ -563,22 +566,22 @@ struct BulkAddPantryView: View {
                 Text(item.name)
                     .font(.subheadline)
                     .fontWeight(.semibold)
-                    .foregroundStyle(AppColors.darkText)
+                    .foregroundStyle(PCColors.textPrimary)
                 Text(item.category.rawValue)
                     .font(.caption)
-                    .foregroundStyle(AppColors.subtleText)
+                    .foregroundStyle(PCColors.textSecondary)
 
                 if let defaultLabel = catalogDefaultLabel(for: previewDraft, savedDefault: savedDefault) {
                     Text(defaultLabel)
                         .font(.caption2)
-                        .foregroundStyle(AppColors.accentBlue)
+                        .foregroundStyle(PCColors.info)
                         .lineLimit(1)
                 }
 
                 ForEach(catalogFacetOptions(for: item), id: \.self) { facetLine in
                     Text(facetLine)
                         .font(.caption2)
-                        .foregroundStyle(AppColors.subtleText)
+                        .foregroundStyle(PCColors.textSecondary)
                         .lineLimit(1)
                 }
             }
@@ -594,15 +597,15 @@ struct BulkAddPantryView: View {
             }
             .padding(.horizontal, 12)
             .padding(.vertical, 8)
-            .background(isSelected ? AppColors.primaryGreen : AppColors.lightGray)
-            .foregroundStyle(isSelected ? Color.white : AppColors.darkText)
+            .background(isSelected ? PCColors.accent : PCColors.fillTertiary)
+            .foregroundStyle(isSelected ? Color.white : PCColors.textPrimary)
             .clipShape(Capsule())
         }
         .padding(14)
-        .background(isSelected ? AppColors.primaryGreen.opacity(0.12) : AppColors.cardBackground)
+        .background(isSelected ? PCColors.accent.opacity(0.12) : PCColors.cardBackground)
         .overlay(
             RoundedRectangle(cornerRadius: 18)
-                .stroke(isSelected ? AppColors.primaryGreen.opacity(0.55) : Color.clear, lineWidth: 1.5)
+                .stroke(isSelected ? PCColors.accent.opacity(0.55) : Color.clear, lineWidth: 1.5)
         )
         .clipShape(RoundedRectangle(cornerRadius: 18))
         .shadow(color: Color.black.opacity(0.04), radius: 10, x: 0, y: 4)
@@ -639,7 +642,7 @@ struct BulkAddPantryView: View {
                 }
                 .listStyle(.plain)
                 .scrollContentBackground(.hidden)
-                .background(AppColors.background)
+                .background(PCColors.background)
             }
         }
     }
@@ -655,20 +658,20 @@ struct BulkAddPantryView: View {
                         Text(draft.displayName.isEmpty ? "Unresolved item" : draft.displayName)
                             .font(.subheadline)
                             .fontWeight(.semibold)
-                            .foregroundStyle(AppColors.darkText)
+                            .foregroundStyle(PCColors.textPrimary)
 
                         Text(draft.selectedItem?.category.rawValue ?? (draft.isCustomItem ? draft.customCategory.rawValue : "Needs catalog match"))
                             .font(.caption)
-                            .foregroundStyle(AppColors.subtleText)
+                            .foregroundStyle(PCColors.textSecondary)
 
                         Text(reviewSummary(for: draft))
                             .font(.caption2)
-                            .foregroundStyle(AppColors.subtleText)
+                            .foregroundStyle(PCColors.textSecondary)
 
                         if let facetSummary = reviewFacetSummary(for: draft) {
                             Text(facetSummary)
                                 .font(.caption2)
-                                .foregroundStyle(AppColors.subtleText)
+                                .foregroundStyle(PCColors.textSecondary)
                         }
                     }
 
@@ -679,17 +682,17 @@ struct BulkAddPantryView: View {
                 if let warning = draft.warnings.first {
                     HStack(spacing: 8) {
                         Image(systemName: warning.severity == .blocking ? "exclamationmark.octagon.fill" : "exclamationmark.triangle.fill")
-                            .foregroundStyle(warning.severity == .blocking ? AppColors.softRed : AppColors.warmOrange)
+                            .foregroundStyle(warning.severity == .blocking ? PCColors.expired : PCColors.expiring)
                         Text(warning.message)
                             .font(.caption)
-                            .foregroundStyle(AppColors.subtleText)
+                            .foregroundStyle(PCColors.textSecondary)
                     }
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.horizontal, 16)
             .padding(.vertical, 14)
-            .background(AppColors.cardBackground)
+            .background(PCColors.cardBackground)
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
@@ -711,10 +714,10 @@ struct BulkAddPantryView: View {
                     Text(viewModel.bulkAdd.hasStagedRows ? "\(viewModel.bulkAdd.stagedRows.count) items selected" : "Select items to build your batch")
                         .font(.subheadline)
                         .fontWeight(.semibold)
-                        .foregroundStyle(AppColors.darkText)
+                        .foregroundStyle(PCColors.textPrimary)
                     Text(summarySubtitle(viewModel: viewModel))
                         .font(.caption)
-                        .foregroundStyle(AppColors.subtleText)
+                        .foregroundStyle(PCColors.textSecondary)
                 }
 
                 Spacer()
@@ -847,9 +850,9 @@ struct BulkAddPantryView: View {
     private func primaryButtonColor(viewModel: PantryViewModel) -> Color {
         switch viewModel.bulkAdd.selectedTab {
         case .search:
-            return viewModel.bulkAdd.hasStagedRows ? AppColors.accentBlue : AppColors.mediumGray
+            return viewModel.bulkAdd.hasStagedRows ? PCColors.info : PCColors.textTertiary
         case .review:
-            return viewModel.bulkAdd.validRowCount > 0 ? AppColors.primaryGreen : AppColors.mediumGray
+            return viewModel.bulkAdd.validRowCount > 0 ? PCColors.accent : PCColors.textTertiary
         }
     }
 
@@ -869,11 +872,11 @@ struct BulkAddPantryView: View {
     private func borderColor(for state: PantryIntakeRowState) -> Color {
         switch state {
         case .valid:
-            return AppColors.primaryGreen.opacity(0.6)
+            return PCColors.accent.opacity(0.6)
         case .invalid:
-            return AppColors.softRed.opacity(0.55)
+            return PCColors.expired.opacity(0.55)
         case .incomplete:
-            return AppColors.warmOrange.opacity(0.55)
+            return PCColors.expiring.opacity(0.55)
         case .empty:
             return Color.clear
         }
@@ -905,10 +908,10 @@ struct PantryDraftStateBadge: View {
 
     private var color: Color {
         switch state {
-        case .valid: return AppColors.primaryGreen
-        case .invalid: return AppColors.softRed
-        case .incomplete: return AppColors.warmOrange
-        case .empty: return AppColors.mediumGray
+        case .valid: return PCColors.accent
+        case .invalid: return PCColors.expired
+        case .incomplete: return PCColors.expiring
+        case .empty: return PCColors.textTertiary
         }
     }
 }
@@ -924,8 +927,8 @@ struct FlexibleTokenWrap: View {
                     .fontWeight(.medium)
                     .padding(.horizontal, 10)
                     .padding(.vertical, 6)
-                    .background(AppColors.cardBackground)
-                    .foregroundStyle(AppColors.darkText)
+                    .background(PCColors.cardBackground)
+                    .foregroundStyle(PCColors.textPrimary)
                     .clipShape(Capsule())
             }
         }
@@ -1072,7 +1075,7 @@ struct PantryIntakeFormSections: View {
 
                     Text("Custom pantry items are stored without catalog identity and only satisfy identical unresolved recipe ingredients.")
                         .font(.caption)
-                        .foregroundStyle(AppColors.subtleText)
+                        .foregroundStyle(PCColors.textSecondary)
                 } else {
                     ForEach(Array(draft.matchingItems.prefix(8))) { item in
                         Button {
@@ -1082,10 +1085,10 @@ struct PantryIntakeFormSections: View {
                                 CategoryIcon(category: item.category, size: 28)
                                 VStack(alignment: .leading, spacing: 2) {
                                     Text(item.name)
-                                        .foregroundStyle(AppColors.darkText)
+                                        .foregroundStyle(PCColors.textPrimary)
                                     Text(item.category.rawValue)
                                         .font(.caption)
-                                        .foregroundStyle(AppColors.subtleText)
+                                        .foregroundStyle(PCColors.textSecondary)
                                 }
                                 Spacer()
                             }
@@ -1098,7 +1101,7 @@ struct PantryIntakeFormSections: View {
                             draft.enableCustomItemMode()
                         } label: {
                             Label("Add as Custom Pantry Item", systemImage: "square.and.pencil")
-                                .foregroundStyle(AppColors.darkText)
+                                .foregroundStyle(PCColors.textPrimary)
                         }
                         .buttonStyle(.plain)
                     }
@@ -1106,7 +1109,7 @@ struct PantryIntakeFormSections: View {
                     if draft.matchingItems.isEmpty && !draft.searchText.trimmed.isEmpty {
                         Text("No exact catalog items match this search. Add it as a custom pantry item if you still want to track it.")
                             .font(.caption)
-                            .foregroundStyle(AppColors.subtleText)
+                            .foregroundStyle(PCColors.textSecondary)
                     }
                 }
             }
@@ -1156,19 +1159,19 @@ struct PantryIntakeFormSections: View {
             } else {
                 LabeledContent("Expires on") {
                     Text(" ")
-                        .foregroundStyle(AppColors.subtleText)
+                        .foregroundStyle(PCColors.textSecondary)
                 }
             }
 
             if let summary = draft.freshnessSummaryText() {
                 Text(summary)
                     .font(.caption)
-                    .foregroundStyle(AppColors.subtleText)
+                    .foregroundStyle(PCColors.textSecondary)
             }
             if let expiryDate = draft.estimatedExpiryDate {
                 Text("Estimated expiry: \(expiryDate.shortDisplay)")
                     .font(.caption)
-                    .foregroundStyle(AppColors.subtleText)
+                    .foregroundStyle(PCColors.textSecondary)
             }
         }
 
@@ -1195,11 +1198,11 @@ struct PantryIntakeFormSections: View {
             if draft.quantityIsInvalid {
                 Text("Enter a valid number for quantity")
                     .font(.caption)
-                    .foregroundStyle(AppColors.softRed)
+                    .foregroundStyle(PCColors.expired)
             } else {
                 Text("Leave this blank to track the item by presence only. Enter an amount only when you want exact shortage detection.")
                     .font(.caption)
-                    .foregroundStyle(AppColors.subtleText)
+                    .foregroundStyle(PCColors.textSecondary)
             }
         }
 
@@ -1229,7 +1232,7 @@ struct PantryIntakeFormSections: View {
             } footer: {
                 Text("These defaults will be reused the next time you add this catalog item.")
                     .font(.caption)
-                    .foregroundStyle(AppColors.subtleText)
+                    .foregroundStyle(PCColors.textSecondary)
             }
         }
 
@@ -1241,7 +1244,7 @@ struct PantryIntakeFormSections: View {
                             .foregroundStyle(warningColor(for: warning.severity))
                         Text(warning.message)
                             .font(.caption)
-                            .foregroundStyle(AppColors.subtleText)
+                            .foregroundStyle(PCColors.textSecondary)
                     }
                 }
             }
@@ -1258,7 +1261,7 @@ struct PantryIntakeFormSections: View {
                     .fontWeight(.semibold)
                 Text(selectedItem.category.rawValue)
                     .font(.caption)
-                    .foregroundStyle(AppColors.subtleText)
+                    .foregroundStyle(PCColors.textSecondary)
             }
             Spacer()
         }
@@ -1274,9 +1277,9 @@ struct PantryIntakeFormSections: View {
 
     private func warningColor(for severity: PantryIntakeWarningSeverity) -> Color {
         switch severity {
-        case .blocking: return AppColors.softRed
-        case .warning: return AppColors.warmOrange
-        case .informational: return AppColors.accentBlue
+        case .blocking: return PCColors.expired
+        case .warning: return PCColors.expiring
+        case .informational: return PCColors.info
         }
     }
 }

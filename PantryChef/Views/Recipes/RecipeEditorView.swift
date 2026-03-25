@@ -70,7 +70,7 @@ struct RecipeEditorView: View {
             }
             .padding()
         }
-        .background(AppColors.background)
+        .background(PCColors.background)
         .appNavigationSheet(item: $resolutionDraft) { draft in
             IngredientResolutionReviewView(draft: draft) { resolvedRecipe in
                 resolutionDraft = nil
@@ -97,7 +97,7 @@ struct RecipeEditorView: View {
             ZStack(alignment: .topLeading) {
                 if recipe.description?.isEmpty ?? true {
                     Text("Add a description (optional)")
-                        .foregroundStyle(AppColors.mediumGray)
+                        .foregroundStyle(PCColors.textTertiary)
                         .padding(.horizontal, 12)
                         .padding(.vertical, 12)
                 }
@@ -111,7 +111,7 @@ struct RecipeEditorView: View {
             .appInputSurface()
         }
         .padding()
-        .cardStyle()
+        .pcCard()
     }
 
     private var descriptionBinding: Binding<String> {
@@ -131,7 +131,7 @@ struct RecipeEditorView: View {
             HStack {
                 Label("Servings", systemImage: "person.2")
                     .font(.subheadline)
-                    .foregroundStyle(AppColors.darkText)
+                    .foregroundStyle(PCColors.textPrimary)
                 Spacer()
                 HStack(spacing: 14) {
                     Button {
@@ -139,7 +139,7 @@ struct RecipeEditorView: View {
                     } label: {
                         Image(systemName: "minus.circle.fill")
                             .font(.title3)
-                            .foregroundStyle(recipe.servings > 1 ? AppColors.primaryGreen : AppColors.mediumGray)
+                            .foregroundStyle(recipe.servings > 1 ? PCColors.accent : PCColors.textTertiary)
                     }
                     .disabled(recipe.servings <= 1)
 
@@ -153,7 +153,7 @@ struct RecipeEditorView: View {
                     } label: {
                         Image(systemName: "plus.circle.fill")
                             .font(.title3)
-                            .foregroundStyle(recipe.servings < maxServings ? AppColors.primaryGreen : AppColors.mediumGray)
+                            .foregroundStyle(recipe.servings < maxServings ? PCColors.accent : PCColors.textTertiary)
                     }
                     .disabled(recipe.servings >= maxServings)
                 }
@@ -175,7 +175,7 @@ struct RecipeEditorView: View {
             HStack {
                 Label("Difficulty", systemImage: "chart.bar")
                     .font(.subheadline)
-                    .foregroundStyle(AppColors.darkText)
+                    .foregroundStyle(PCColors.textPrimary)
                 Spacer()
                 Picker("", selection: $recipe.difficulty) {
                     ForEach(DifficultyLevel.allCases) { level in
@@ -183,18 +183,18 @@ struct RecipeEditorView: View {
                     }
                 }
                 .pickerStyle(.menu)
-                .tint(AppColors.primaryGreen)
+                .tint(PCColors.accent)
             }
         }
         .padding()
-        .cardStyle()
+        .pcCard()
     }
 
     private func timeRow(label: String, icon: String, binding: Binding<String>) -> some View {
         HStack {
             Label(label, systemImage: icon)
                 .font(.subheadline)
-                .foregroundStyle(AppColors.darkText)
+                .foregroundStyle(PCColors.textPrimary)
             Spacer()
             TextField("—", text: binding)
                 .keyboardType(.numberPad)
@@ -202,11 +202,11 @@ struct RecipeEditorView: View {
                 .frame(width: 50)
                 .padding(.vertical, 6)
                 .padding(.horizontal, 10)
-                .background(AppColors.lightGray)
+                .background(PCColors.fillTertiary)
                 .clipShape(RoundedRectangle(cornerRadius: 8))
             Text("min")
                 .font(.caption)
-                .foregroundStyle(AppColors.subtleText)
+                .foregroundStyle(PCColors.textSecondary)
         }
     }
 
@@ -226,7 +226,7 @@ struct RecipeEditorView: View {
             HStack {
                 Label("Meal Type", systemImage: "fork.knife")
                     .font(.subheadline)
-                    .foregroundStyle(AppColors.darkText)
+                    .foregroundStyle(PCColors.textPrimary)
                 Spacer()
                 Picker("", selection: $recipe.mealType) {
                     Text("None").tag(nil as MealType?)
@@ -235,7 +235,7 @@ struct RecipeEditorView: View {
                     }
                 }
                 .pickerStyle(.menu)
-                .tint(AppColors.primaryGreen)
+                .tint(PCColors.accent)
             }
 
             Divider()
@@ -243,7 +243,7 @@ struct RecipeEditorView: View {
             HStack {
                 Label("Cuisine", systemImage: "globe")
                     .font(.subheadline)
-                    .foregroundStyle(AppColors.darkText)
+                    .foregroundStyle(PCColors.textPrimary)
                 Spacer()
                 Picker("", selection: $recipe.cuisine) {
                     Text("None").tag(nil as CuisineType?)
@@ -252,7 +252,7 @@ struct RecipeEditorView: View {
                     }
                 }
                 .pickerStyle(.menu)
-                .tint(AppColors.primaryGreen)
+                .tint(PCColors.accent)
             }
 
             Divider()
@@ -260,7 +260,7 @@ struct RecipeEditorView: View {
             VStack(alignment: .leading, spacing: 8) {
                 Text("Dietary Tags")
                     .font(.subheadline)
-                    .foregroundStyle(AppColors.darkText)
+                    .foregroundStyle(PCColors.textPrimary)
 
                 FlowLayout(spacing: 8) {
                     ForEach(DietaryTag.allCases) { tag in
@@ -279,8 +279,8 @@ struct RecipeEditorView: View {
                             }
                             .padding(.horizontal, 10)
                             .padding(.vertical, 6)
-                            .background(recipe.dietaryTags.contains(tag) ? AppColors.primaryGreen.opacity(0.2) : AppColors.lightGray)
-                            .foregroundStyle(recipe.dietaryTags.contains(tag) ? AppColors.primaryGreen : AppColors.subtleText)
+                            .background(recipe.dietaryTags.contains(tag) ? PCColors.accent.opacity(0.2) : PCColors.fillTertiary)
+                            .foregroundStyle(recipe.dietaryTags.contains(tag) ? PCColors.accent : PCColors.textSecondary)
                             .clipShape(Capsule())
                         }
                     }
@@ -288,7 +288,7 @@ struct RecipeEditorView: View {
             }
         }
         .padding()
-        .cardStyle()
+        .pcCard()
     }
 
     // MARK: - Ingredients
@@ -312,13 +312,13 @@ struct RecipeEditorView: View {
             if recipe.ingredients.isEmpty {
                 Text("No ingredients yet. Tap + Add above.")
                     .font(.caption)
-                    .foregroundStyle(AppColors.subtleText)
+                    .foregroundStyle(PCColors.textSecondary)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 20)
             }
         }
         .padding()
-        .cardStyle()
+        .pcCard()
     }
 
     private func ingredientRow(ingredient: Binding<Ingredient>) -> some View {
@@ -330,7 +330,7 @@ struct RecipeEditorView: View {
                     .frame(width: 55)
                     .multilineTextAlignment(.center)
                     .padding(8)
-                    .background(AppColors.background)
+                    .background(PCColors.background)
                     .clipShape(RoundedRectangle(cornerRadius: 8))
 
                 // Unit picker
@@ -341,7 +341,7 @@ struct RecipeEditorView: View {
                     }
                 }
                 .pickerStyle(.menu)
-                .tint(AppColors.darkText)
+                .tint(PCColors.textPrimary)
 
                 // Name
                 TextField("Ingredient name", text: ingredient.name)
@@ -356,7 +356,7 @@ struct RecipeEditorView: View {
                 } label: {
                     Image(systemName: "xmark.circle.fill")
                         .font(.subheadline)
-                        .foregroundStyle(AppColors.softRed.opacity(0.7))
+                        .foregroundStyle(PCColors.expired.opacity(0.7))
                 }
             }
 
@@ -382,14 +382,14 @@ struct RecipeEditorView: View {
                 Toggle(isOn: ingredient.isOptional) {
                     Text("Optional")
                         .font(.caption)
-                        .foregroundStyle(AppColors.subtleText)
+                        .foregroundStyle(PCColors.textSecondary)
                 }
                 .toggleStyle(.switch)
                 .controlSize(.mini)
             }
         }
         .padding(10)
-        .background(AppColors.lightGray)
+        .background(PCColors.fillTertiary)
         .clipShape(RoundedRectangle(cornerRadius: 10))
     }
 
@@ -417,13 +417,13 @@ struct RecipeEditorView: View {
             if recipe.steps.isEmpty {
                 Text("No steps yet. Tap + Add above.")
                     .font(.caption)
-                    .foregroundStyle(AppColors.subtleText)
+                    .foregroundStyle(PCColors.textSecondary)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 20)
             }
         }
         .padding()
-        .cardStyle()
+        .pcCard()
     }
 
     private func stepRow(index: Int) -> some View {
@@ -435,7 +435,7 @@ struct RecipeEditorView: View {
                     .fontWeight(.bold)
                     .foregroundStyle(.white)
                     .frame(width: 24, height: 24)
-                    .background(AppColors.primaryGreen)
+                    .background(PCColors.accent)
                     .clipShape(Circle())
 
                 // Instruction
@@ -457,7 +457,7 @@ struct RecipeEditorView: View {
                     } label: {
                         Image(systemName: "arrow.up")
                             .font(.caption2)
-                            .foregroundStyle(index > 0 ? AppColors.subtleText : AppColors.mediumGray.opacity(0.4))
+                            .foregroundStyle(index > 0 ? PCColors.textSecondary : PCColors.textTertiary.opacity(0.4))
                     }
                     .disabled(index == 0)
 
@@ -470,7 +470,7 @@ struct RecipeEditorView: View {
                     } label: {
                         Image(systemName: "arrow.down")
                             .font(.caption2)
-                            .foregroundStyle(index < recipe.steps.count - 1 ? AppColors.subtleText : AppColors.mediumGray.opacity(0.4))
+                            .foregroundStyle(index < recipe.steps.count - 1 ? PCColors.textSecondary : PCColors.textTertiary.opacity(0.4))
                     }
                     .disabled(index >= recipe.steps.count - 1)
 
@@ -482,7 +482,7 @@ struct RecipeEditorView: View {
                     } label: {
                         Image(systemName: "xmark.circle.fill")
                             .font(.caption)
-                            .foregroundStyle(AppColors.softRed.opacity(0.7))
+                            .foregroundStyle(PCColors.expired.opacity(0.7))
                     }
                 }
             }
@@ -492,26 +492,26 @@ struct RecipeEditorView: View {
                 HStack(spacing: 8) {
                     Image(systemName: "timer")
                         .font(.caption)
-                        .foregroundStyle(AppColors.warmOrange)
+                        .foregroundStyle(PCColors.expiring)
                     Text("Timer:")
                         .font(.caption)
-                        .foregroundStyle(AppColors.subtleText)
+                        .foregroundStyle(PCColors.textSecondary)
                     TextField("—", text: optionalStepIntBinding(index: index, keyPath: \.timerMinutes))
                         .keyboardType(.numberPad)
                         .frame(width: 40)
                         .multilineTextAlignment(.center)
                         .padding(.vertical, 4)
                         .padding(.horizontal, 6)
-                        .background(AppColors.background)
+                        .background(PCColors.background)
                         .clipShape(RoundedRectangle(cornerRadius: 6))
                     Text("min")
                         .font(.caption2)
-                        .foregroundStyle(AppColors.subtleText)
+                        .foregroundStyle(PCColors.textSecondary)
                 }
             }
         }
         .padding(10)
-        .background(AppColors.lightGray)
+        .background(PCColors.fillTertiary)
         .clipShape(RoundedRectangle(cornerRadius: 10))
     }
 
@@ -549,14 +549,14 @@ struct RecipeEditorView: View {
                 HStack {
                     Text("Nutrition")
                         .font(.headline)
-                        .foregroundStyle(AppColors.darkText)
+                        .foregroundStyle(PCColors.textPrimary)
                     Text("Per serving")
                         .font(.caption)
-                        .foregroundStyle(AppColors.subtleText)
+                        .foregroundStyle(PCColors.textSecondary)
                     Spacer()
                     Image(systemName: showNutrition ? "chevron.up" : "chevron.down")
                         .font(.caption)
-                        .foregroundStyle(AppColors.subtleText)
+                        .foregroundStyle(PCColors.textSecondary)
                 }
             }
 
@@ -582,12 +582,12 @@ struct RecipeEditorView: View {
                 } label: {
                     Text("Remove Nutrition Info")
                         .font(.caption)
-                        .foregroundStyle(AppColors.softRed)
+                        .foregroundStyle(PCColors.expired)
                 }
             }
         }
         .padding()
-        .cardStyle()
+        .pcCard()
     }
 
     private func nutritionField(_ label: String, unit: String, binding: Binding<String>) -> some View {
@@ -596,11 +596,11 @@ struct RecipeEditorView: View {
                 .keyboardType(.numberPad)
                 .multilineTextAlignment(.center)
                 .padding(6)
-                .background(AppColors.background)
+                .background(PCColors.background)
                 .clipShape(RoundedRectangle(cornerRadius: 8))
             Text("\(label) (\(unit))")
                 .font(.caption2)
-                .foregroundStyle(AppColors.subtleText)
+                .foregroundStyle(PCColors.textSecondary)
         }
     }
 
@@ -610,11 +610,11 @@ struct RecipeEditorView: View {
                 .keyboardType(.numberPad)
                 .multilineTextAlignment(.center)
                 .padding(6)
-                .background(AppColors.background)
+                .background(PCColors.background)
                 .clipShape(RoundedRectangle(cornerRadius: 8))
             Text("\(label) (\(unit))")
                 .font(.caption2)
-                .foregroundStyle(AppColors.subtleText)
+                .foregroundStyle(PCColors.textSecondary)
         }
     }
 
@@ -676,7 +676,7 @@ struct RecipeEditorView: View {
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 14)
                 .foregroundStyle(.white)
-                .background(canSave && !isResolving ? AppColors.primaryGreen : AppColors.mediumGray)
+                .background(canSave && !isResolving ? PCColors.accent : PCColors.textTertiary)
                 .clipShape(RoundedRectangle(cornerRadius: 12))
             }
             .disabled(!canSave || isResolving)
@@ -684,7 +684,7 @@ struct RecipeEditorView: View {
             if let resolutionErrorMessage {
                 Text(resolutionErrorMessage)
                     .font(.caption)
-                    .foregroundStyle(AppColors.softRed)
+                    .foregroundStyle(PCColors.expired)
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
 
@@ -698,8 +698,8 @@ struct RecipeEditorView: View {
                         .fontWeight(.medium)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 14)
-                        .foregroundStyle(AppColors.primaryGreen)
-                        .background(AppColors.primaryGreen.opacity(0.1))
+                        .foregroundStyle(PCColors.accent)
+                        .background(PCColors.accent.opacity(0.1))
                         .clipShape(RoundedRectangle(cornerRadius: 12))
                 }
                 .disabled(!canSave || isResolving)
@@ -822,7 +822,7 @@ private struct IngredientResolutionReviewView: View {
             Section {
                 Text("Choose a registry match for each ambiguous ingredient before saving this recipe.")
                     .font(.subheadline)
-                    .foregroundStyle(AppColors.subtleText)
+                    .foregroundStyle(PCColors.textSecondary)
             }
 
             ForEach(draft.ingredients.indices, id: \.self) { index in
@@ -835,16 +835,16 @@ private struct IngredientResolutionReviewView: View {
                             } label: {
                                 HStack(alignment: .top, spacing: 10) {
                                     Image(systemName: draft.ingredients[index].selectedCandidateID == candidate.id ? "largecircle.fill.circle" : "circle")
-                                        .foregroundStyle(draft.ingredients[index].selectedCandidateID == candidate.id ? AppColors.primaryGreen : AppColors.mediumGray)
+                                        .foregroundStyle(draft.ingredients[index].selectedCandidateID == candidate.id ? PCColors.accent : PCColors.textTertiary)
 
                                     VStack(alignment: .leading, spacing: 4) {
                                         Text(candidate.displayName)
                                             .font(.subheadline)
-                                            .foregroundStyle(AppColors.darkText)
+                                            .foregroundStyle(PCColors.textPrimary)
 
                                         Text(candidate.rationale)
                                             .font(.caption)
-                                            .foregroundStyle(AppColors.subtleText)
+                                            .foregroundStyle(PCColors.textSecondary)
                                     }
 
                                     Spacer()
@@ -864,7 +864,7 @@ private struct IngredientResolutionReviewView: View {
                                 .font(.subheadline)
                             Text("This ingredient will stay unresolved and keep its original text.")
                                 .font(.caption)
-                                .foregroundStyle(AppColors.subtleText)
+                                .foregroundStyle(PCColors.textSecondary)
                         }
                     }
                 }

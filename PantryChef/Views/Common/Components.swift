@@ -1,37 +1,32 @@
 import SwiftUI
 
-// MARK: - App Colors
+// MARK: - App Colors (bridged to PCColors)
 struct AppColors {
-    @Environment(\.colorScheme) static var colorScheme
+    static let primary = PCColors.accent
 
-    static let primary = Color("AccentColor")
+    // Brand palette — mapped to design system
+    static let primaryGreen = PCColors.fresh
+    static let warmOrange  = PCColors.expiring
+    static let softRed     = PCColors.expired
 
-    // Brand palette — bright & warm
-    static let primaryGreen = Color(red: 0.13, green: 0.77, blue: 0.37)   // #22C55E — vivid emerald
-    static let warmOrange  = Color(red: 0.98, green: 0.62, blue: 0.20)    // #FA9E33 — sunny amber
-    static let softRed     = Color(red: 0.96, green: 0.40, blue: 0.40)    // #F56565 — warm coral
-
-    // Neutral palette — clean & airy
-    static let lightGray   = Color(red: 0.965, green: 0.969, blue: 0.976) // #F7F8F9 — near-white
-    static let mediumGray  = Color(.systemGray3)
-    static let darkText    = Color(red: 0.15, green: 0.16, blue: 0.18)    // #262A2E — soft black
-    static let subtleText  = Color(red: 0.44, green: 0.47, blue: 0.52)    // #707884 — muted slate
-    static let cardBackground = Color.white
-    static let background  = Color(red: 0.965, green: 0.969, blue: 0.976) // #F7F8F9
+    // Neutral palette — adaptive via PCColors
+    static let lightGray   = PCColors.fillTertiary
+    static let mediumGray  = PCColors.separator
+    static let darkText    = PCColors.textPrimary
+    static let subtleText  = PCColors.textSecondary
+    static let cardBackground = PCColors.cardBackground
+    static let background  = PCColors.background
 
     // Accent helpers
-    static let accentTeal  = Color(red: 0.06, green: 0.73, blue: 0.70)    // #0FBAB3 — teal pop
-    static let accentBlue  = Color(red: 0.24, green: 0.51, blue: 0.96)    // #3D82F5 — vibrant blue
-
+    static let accentTeal  = PCColors.teal
+    static let accentBlue  = PCColors.info
 }
 
-// MARK: - Card Style Modifier
+// MARK: - Card Style Modifier (bridged to pcCard)
 struct CardStyle: ViewModifier {
     func body(content: Content) -> some View {
         content
-            .background(AppColors.cardBackground)
-            .clipShape(RoundedRectangle(cornerRadius: 16))
-            .shadow(color: Color(red: 0.15, green: 0.16, blue: 0.18).opacity(0.06), radius: 12, x: 0, y: 4)
+            .pcCard()
     }
 }
 
@@ -41,21 +36,29 @@ extension View {
     }
 }
 
-// MARK: - Screen Shells
+// MARK: - Screen Shells (bridged to PCScreen)
 struct AppScreen<Content: View>: View {
     private let screenID: String
+    private let isEmbedded: Bool
     private let content: Content
 
-    init(_ screenID: String, @ViewBuilder content: () -> Content) {
+    init(_ screenID: String, isEmbedded: Bool = false, @ViewBuilder content: () -> Content) {
         self.screenID = screenID
+        self.isEmbedded = isEmbedded
         self.content = content()
     }
 
     var body: some View {
-        NavigationStack {
+        if isEmbedded {
             content
                 .accessibilityIdentifier(screenID)
-                .background(AppColors.background)
+                .background(PCColors.background)
+        } else {
+            NavigationStack {
+                content
+                    .accessibilityIdentifier(screenID)
+                    .background(PCColors.background)
+            }
         }
     }
 }
@@ -470,7 +473,7 @@ private struct AppTextEntryModifier: ViewModifier {
 }
 
 extension View {
-    func appInputSurface(background: Color = AppColors.lightGray, cornerRadius: CGFloat = 10) -> some View {
+    func appInputSurface(background: Color = PCColors.fillTertiary, cornerRadius: CGFloat = 10) -> some View {
         modifier(AppInputSurfaceModifier(background: background, cornerRadius: cornerRadius))
     }
 
@@ -542,7 +545,7 @@ struct AppSearchField: View {
         _ placeholder: String,
         text: Binding<String>,
         focus: FocusState<Bool>.Binding? = nil,
-        background: Color = AppColors.lightGray,
+        background: Color = PCColors.fillTertiary,
         cornerRadius: CGFloat = 10,
         padding: CGFloat = 10,
         onTextChange: ((String) -> Void)? = nil

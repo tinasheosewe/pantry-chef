@@ -189,45 +189,22 @@ struct RecipeListView: View {
     // MARK: - Section Picker
 
     private func sectionPicker(discoverCount: Int?) -> some View {
-        HStack(spacing: 0) {
-            ForEach(RecipeSection.allCases, id: \.self) { section in
-                Button {
-                    if section == .discover { discoverTapStartedAt = CFAbsoluteTimeGetCurrent() }
-                    selectedSection = section
-                    // No-op on section switch — state is preserved
-                } label: {
-                    VStack(spacing: 6) {
-                        HStack(spacing: 4) {
-                            Text(section.rawValue)
-                                .font(.subheadline)
-                                .fontWeight(selectedSection == section ? .semibold : .regular)
-
-                            if section == .discover && selectedSection == .discover {
-                                let count = discoverCount ?? 0
-                                if count > 0 {
-                                    Text("\(count)")
-                                        .font(.caption2)
-                                        .fontWeight(.bold)
-                                        .foregroundStyle(.white)
-                                        .padding(.horizontal, 5)
-                                        .padding(.vertical, 1)
-                                        .background(AppColors.primaryGreen)
-                                        .clipShape(Capsule())
-                                }
-                            }
-                        }
-                        .foregroundStyle(selectedSection == section ? AppColors.darkText : AppColors.subtleText)
-
-                        Rectangle()
-                            .fill(selectedSection == section ? AppColors.primaryGreen : .clear)
-                            .frame(height: 2)
-                    }
+        PCSegmentedPicker(
+            items: RecipeSection.allCases,
+            selection: $selectedSection,
+            label: { $0.rawValue },
+            badge: { section in
+                if section == .discover, let count = discoverCount, count > 0 {
+                    return count
                 }
-                .frame(maxWidth: .infinity)
+                return nil
+            },
+            onSelect: { section in
+                if section == .discover { discoverTapStartedAt = CFAbsoluteTimeGetCurrent() }
             }
-        }
+        )
         .padding(.horizontal)
-        .padding(.top, 4)
+        .padding(.top, PCTokens.spacingXS)
     }
 
     // MARK: - Search Bar
@@ -309,9 +286,9 @@ struct RecipeListView: View {
                         viewModel.clearFilters()
                     } label: {
                         Text("Clear")
-                            .font(.caption)
+                            .font(PCFont.caption)
                             .fontWeight(.medium)
-                            .foregroundStyle(AppColors.softRed)
+                            .foregroundStyle(PCColors.expired)
                     }
                 }
             }
@@ -334,13 +311,13 @@ struct RecipeListView: View {
                         Spacer()
                         if viewModel.selectedCuisine == nil {
                             Image(systemName: "checkmark")
-                                .foregroundStyle(AppColors.primaryGreen)
+                                .foregroundStyle(PCColors.accent)
                         }
                     }
                     .padding(.horizontal, 16)
                     .padding(.vertical, 10)
                 }
-                .foregroundStyle(AppColors.darkText)
+                .foregroundStyle(PCColors.textPrimary)
 
                 Divider()
 
@@ -355,13 +332,13 @@ struct RecipeListView: View {
                             Spacer()
                             if viewModel.selectedCuisine == cuisine {
                                 Image(systemName: "checkmark")
-                                    .foregroundStyle(AppColors.primaryGreen)
+                                    .foregroundStyle(PCColors.accent)
                             }
                         }
                         .padding(.horizontal, 16)
                         .padding(.vertical, 8)
                     }
-                    .foregroundStyle(AppColors.darkText)
+                    .foregroundStyle(PCColors.textPrimary)
                 }
             }
             .padding(.vertical, 8)
@@ -440,7 +417,7 @@ struct RecipeListView: View {
     /// so it fills the available space with the correct background.
     private func centeredEmptyState<Content: View>(@ViewBuilder content: () -> Content) -> some View {
         ZStack {
-            AppColors.background
+            PCColors.background
                 .ignoresSafeArea()
             content()
         }
@@ -524,19 +501,19 @@ struct FilterPill: View {
 
     var body: some View {
         Button(action: action) {
-            HStack(spacing: 4) {
+            HStack(spacing: PCTokens.spacingXS) {
                 if let icon {
                     Image(systemName: icon)
                         .font(.caption2)
                 }
                 Text(title)
-                    .font(.caption)
+                    .font(PCFont.caption)
                     .fontWeight(.medium)
             }
-            .padding(.horizontal, 12)
-            .padding(.vertical, 6)
-            .background(isSelected ? AppColors.primaryGreen : AppColors.lightGray)
-            .foregroundStyle(isSelected ? .white : AppColors.subtleText)
+            .padding(.horizontal, PCTokens.spacingMD)
+            .padding(.vertical, PCTokens.spacingSM)
+            .background(isSelected ? PCColors.accent : PCColors.fillTertiary)
+            .foregroundStyle(isSelected ? .white : PCColors.textSecondary)
             .clipShape(Capsule())
         }
     }
@@ -555,24 +532,24 @@ struct RecipeCardView: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: PCTokens.spacingSM) {
             ZStack(alignment: .topTrailing) {
-                RoundedRectangle(cornerRadius: 12)
-                    .fill(AppColors.primaryGreen.opacity(0.1))
+                RoundedRectangle(cornerRadius: PCTokens.cornerRadius)
+                    .fill(PCColors.accent.opacity(0.08))
                     .aspectRatio(4/3, contentMode: .fit)
                     .overlay(
-                        VStack(spacing: 4) {
+                        VStack(spacing: PCTokens.spacingXS) {
                             Image(systemName: recipe.mealType?.icon ?? "fork.knife")
                                 .font(.title)
-                                .foregroundStyle(AppColors.primaryGreen.opacity(0.5))
+                                .foregroundStyle(PCColors.accent.opacity(0.4))
                             if let cuisine = recipe.cuisine {
                                 Text(cuisine.icon)
-                                    .font(.caption)
+                                    .font(PCFont.caption)
                             }
                         }
                     )
 
-                VStack(alignment: .trailing, spacing: 4) {
+                VStack(alignment: .trailing, spacing: PCTokens.spacingXS) {
                     if recipe.isFavorite {
                         Image(systemName: "heart.fill")
                             .font(.caption)
@@ -582,16 +559,14 @@ struct RecipeCardView: View {
                             .clipShape(Circle())
                     }
 
-                    // Match percentage badge
                     if !pantry.isEmpty {
                         matchBadge
                     }
                 }
-                .padding(8)
+                .padding(PCTokens.spacingSM)
             }
 
-            HStack(spacing: 4) {
-                // Source tag
+            HStack(spacing: PCTokens.spacingXS) {
                 if !recipe.source.isUserRecipe {
                     Text(recipe.source.label)
                         .font(.system(size: 9, weight: .bold))
@@ -604,28 +579,26 @@ struct RecipeCardView: View {
                 }
 
                 Text(recipe.title)
-                    .font(.subheadline)
-                    .fontWeight(.semibold)
-                    .foregroundStyle(AppColors.darkText)
+                    .font(PCFont.headline)
+                    .foregroundStyle(PCColors.textPrimary)
                     .lineLimit(2)
                     .accessibilityIdentifier("recipes.card.title.\(recipe.id.uuidString)")
             }
 
-            HStack(spacing: 8) {
+            HStack(spacing: PCTokens.spacingSM) {
                 Label(recipe.totalTimeDisplay, systemImage: "clock")
-                    .font(.caption2)
-                    .foregroundStyle(AppColors.subtleText)
-                DifficultyBadge(difficulty: recipe.difficulty)
+                    .font(PCFont.micro)
+                    .foregroundStyle(PCColors.textSecondary)
+                PCDifficultyBadge(difficulty: recipe.difficulty)
             }
 
-            // Pantry match status
             pantryMatchStatus
 
             Spacer(minLength: 0)
         }
-        .padding(12)
+        .padding(PCTokens.spacingMD)
         .frame(maxHeight: .infinity, alignment: .top)
-        .cardStyle()
+        .pcCard()
     }
 
     private var matchBadge: some View {
@@ -640,48 +613,42 @@ struct RecipeCardView: View {
     }
 
     private func matchBadgeColor(_ pct: Int) -> Color {
-        if pct >= 100 { return AppColors.primaryGreen }
+        if pct >= 100 { return PCColors.fresh }
         if pct >= 75 { return Color(red: 0.60, green: 0.76, blue: 0.25) }
-        if pct >= 50 { return AppColors.warmOrange }
-        return AppColors.softRed
+        if pct >= 50 { return PCColors.expiring }
+        return PCColors.expired
     }
 
     private var pantryMatchStatus: some View {
-        HStack(spacing: 4) {
+        HStack(spacing: PCTokens.spacingXS) {
             if metrics.canMake {
-                Circle()
-                    .fill(AppColors.primaryGreen)
-                    .frame(width: 6, height: 6)
+                PCStatusDot(PCColors.fresh)
                 Text("Ready to cook")
-                    .font(.caption2)
-                    .foregroundStyle(AppColors.primaryGreen)
+                    .font(PCFont.micro)
+                    .foregroundStyle(PCColors.fresh)
             } else if metrics.canMakeWithSubstitutions {
-                Circle()
-                    .fill(Color(red: 0.60, green: 0.76, blue: 0.25))
-                    .frame(width: 6, height: 6)
+                PCStatusDot(Color(red: 0.60, green: 0.76, blue: 0.25))
                 Text("With subs")
-                    .font(.caption2)
+                    .font(PCFont.micro)
                     .foregroundStyle(Color(red: 0.60, green: 0.76, blue: 0.25))
                 Image(systemName: "arrow.triangle.swap")
                     .font(.system(size: 8))
                     .foregroundStyle(Color(red: 0.60, green: 0.76, blue: 0.25))
             } else {
-                Circle()
-                    .fill(AppColors.warmOrange)
-                    .frame(width: 6, height: 6)
+                PCStatusDot(PCColors.expiring)
                 Text("Need \(metrics.missingIngredientCount) item\(metrics.missingIngredientCount == 1 ? "" : "s")")
-                    .font(.caption2)
-                    .foregroundStyle(AppColors.warmOrange)
+                    .font(PCFont.micro)
+                    .foregroundStyle(PCColors.expiring)
             }
         }
     }
 
     private var sourceColor: Color {
         switch recipe.source {
-        case .user: return AppColors.primaryGreen
-        case .bundled: return AppColors.warmOrange
+        case .user: return PCColors.fresh
+        case .bundled: return PCColors.expiring
         case .imported: return Color(red: 0.72, green: 0.56, blue: 0.41)
-        case .aiGenerated: return AppColors.accentTeal
+        case .aiGenerated: return PCColors.teal
         }
     }
 }
@@ -691,14 +658,14 @@ struct AIGenerateTileView: View {
     let query: String
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: PCTokens.spacingSM) {
             ZStack {
-                RoundedRectangle(cornerRadius: 12)
+                RoundedRectangle(cornerRadius: PCTokens.cornerRadius)
                     .fill(
                         LinearGradient(
                             colors: [
-                                AppColors.warmOrange.opacity(0.15),
-                                AppColors.accentTeal.opacity(0.12),
+                                PCColors.expiring.opacity(0.15),
+                                PCColors.teal.opacity(0.12),
                             ],
                             startPoint: .topLeading,
                             endPoint: .bottomTrailing
@@ -706,60 +673,59 @@ struct AIGenerateTileView: View {
                     )
                     .aspectRatio(4/3, contentMode: .fit)
 
-                VStack(spacing: 8) {
+                VStack(spacing: PCTokens.spacingSM) {
                     Image(systemName: "sparkles")
                         .font(.largeTitle)
                         .foregroundStyle(
                             LinearGradient(
-                                colors: [AppColors.warmOrange, AppColors.accentTeal],
+                                colors: [PCColors.expiring, PCColors.teal],
                                 startPoint: .topLeading,
                                 endPoint: .bottomTrailing
                             )
                         )
                     Text("Chef")
-                        .font(.caption)
+                        .font(PCFont.caption)
                         .fontWeight(.semibold)
-                        .foregroundStyle(AppColors.subtleText)
+                        .foregroundStyle(PCColors.textSecondary)
                 }
             }
 
-            HStack(spacing: 4) {
+            HStack(spacing: PCTokens.spacingXS) {
                 Text("Chef")
                     .font(.system(size: 9, weight: .bold))
                     .textCase(.uppercase)
                     .foregroundStyle(.white)
                     .padding(.horizontal, 5)
                     .padding(.vertical, 2)
-                    .background(AppColors.accentTeal)
+                    .background(PCColors.teal)
                     .clipShape(Capsule())
 
                 Text("Create \"\(query)\"")
-                    .font(.subheadline)
-                    .fontWeight(.semibold)
-                    .foregroundStyle(AppColors.darkText)
+                    .font(PCFont.headline)
+                    .foregroundStyle(PCColors.textPrimary)
                     .lineLimit(2)
             }
 
-            HStack(spacing: 8) {
+            HStack(spacing: PCTokens.spacingSM) {
                 Label("Custom", systemImage: "slider.horizontal.3")
-                    .font(.caption2)
-                    .foregroundStyle(AppColors.subtleText)
+                    .font(PCFont.micro)
+                    .foregroundStyle(PCColors.textSecondary)
             }
 
-            HStack(spacing: 4) {
+            HStack(spacing: PCTokens.spacingXS) {
                 Image(systemName: "sparkles")
                     .font(.system(size: 8))
-                    .foregroundStyle(AppColors.warmOrange)
+                    .foregroundStyle(PCColors.expiring)
                 Text("Tap to customize & generate")
-                    .font(.caption2)
-                    .foregroundStyle(AppColors.warmOrange)
+                    .font(PCFont.micro)
+                    .foregroundStyle(PCColors.expiring)
             }
 
             Spacer(minLength: 0)
         }
-        .padding(12)
+        .padding(PCTokens.spacingMD)
         .frame(maxHeight: .infinity, alignment: .top)
-        .cardStyle()
+        .pcCard()
     }
 }
 
@@ -834,13 +800,13 @@ struct WhatCanIMakeView: View {
                 Text(result.displayPercentage)
                     .font(.caption)
                     .fontWeight(.bold)
-                    .foregroundStyle(result.canMake ? AppColors.primaryGreen : AppColors.warmOrange)
+                    .foregroundStyle(result.canMake ? PCColors.fresh : PCColors.expiring)
             }
 
             if !result.missingIngredients.isEmpty {
                 Text("Missing: \(result.missingIngredients.map { $0.name }.joined(separator: ", "))")
                     .font(.caption)
-                    .foregroundStyle(AppColors.subtleText)
+                    .foregroundStyle(PCColors.textSecondary)
             }
 
             if !result.substitutableIngredients.isEmpty {
@@ -852,9 +818,9 @@ struct WhatCanIMakeView: View {
             GeometryReader { geo in
                 ZStack(alignment: .leading) {
                     RoundedRectangle(cornerRadius: 3)
-                        .fill(AppColors.lightGray)
+                        .fill(PCColors.fillTertiary)
                     RoundedRectangle(cornerRadius: 3)
-                        .fill(result.canMake ? AppColors.primaryGreen : AppColors.warmOrange)
+                        .fill(result.canMake ? PCColors.fresh : PCColors.expiring)
                         .frame(width: geo.size.width * (result.matchPercentage.isFinite ? max(0, min(result.matchPercentage / 100, 1)) : 0))
                 }
             }
