@@ -24,7 +24,7 @@ final class ScenarioBaselineTests: XCTestCase {
         viewModel.searchText = " chicken "
         viewModel.applySearchTextImmediately()
 
-        XCTAssertEqual(viewModel.filteredRecipes.map(\ .title), ["Chicken Soup"])
+        XCTAssertEqual(viewModel.filteredUserRecipes.map(\ .title), ["Chicken Soup"])
     }
 
     func testMealPlanToShoppingScenarioGeneratesOnlyMissingIngredients() async {
@@ -77,7 +77,7 @@ final class ScenarioBaselineTests: XCTestCase {
         ))
 
         viewModel.activateWhatCanIMake()
-        let titles = viewModel.filteredRecipes.map(\ .title)
+        let titles = viewModel.filteredUserRecipes.map(\ .title)
 
         XCTAssertEqual(titles, ["Toast"])
     }

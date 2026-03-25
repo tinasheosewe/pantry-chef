@@ -4,7 +4,6 @@ struct PreparedDishesView: View {
     @State private var viewModel: PreparedDishViewModel
     @State private var showMealPlanQuickAdd = false
     @State private var showHistoryPicker = false
-    @State private var historySeedItem: PreparedDishHistoryItem?
     private let isEmbedded: Bool
 
     init(appState: AppState, isEmbedded: Bool = false) {
@@ -124,11 +123,8 @@ struct PreparedDishesView: View {
             }
         }
         .sheet(isPresented: $showHistoryPicker) {
-            PreparedDishHistoryPickerView(appState: viewModel.appState) { item in
-                showHistoryPicker = false
-                Task { @MainActor in
-                    historySeedItem = item
-                }
+            PreparedDishHistoryPickerView(appState: viewModel.appState) { dish in
+                viewModel.addDish(dish)
             }
         }
         .sheet(isPresented: $showMealPlanQuickAdd) {
@@ -141,11 +137,6 @@ struct PreparedDishesView: View {
         .sheet(item: $viewModel.editingDish) { dish in
             PreparedDishEditorView(appState: viewModel.appState, dish: dish) { updatedDish in
                 viewModel.updateDish(updatedDish)
-            }
-        }
-        .sheet(item: $historySeedItem) { item in
-            PreparedDishEditorView(appState: viewModel.appState, initialDraft: item.makeDraft()) { dish in
-                viewModel.addDish(dish)
             }
         }
         .appNavigationSheet(item: $viewModel.selectedDish) { dish in
@@ -520,11 +511,14 @@ private struct PreparedDishHistoryPickerView: View {
     @Environment(\.dismiss) private var dismiss
 
     let appState: AppState
-    let onSelect: (PreparedDishHistoryItem) -> Void
+    let onSave: (PreparedDish) -> Void
 
     @State private var searchText = ""
     @State private var debouncedSearchText = ""
     @State private var searchDebouncer = TaskDebouncer()
+    @State private var draft = PreparedDishDraft()
+    @State private var showRecipePicker = false
+    @State private var showingEditor = false
 
     private var filteredItems: [PreparedDishHistoryItem] {
         SearchQuerySupport.filtered(appState.preparedDishHistory, query: debouncedSearchText) { item in
@@ -561,7 +555,8 @@ private struct PreparedDishHistoryPickerView: View {
                         Section {
                             ForEach(filteredItems) { item in
                                 Button {
-                                    onSelect(item)
+                                    draft = item.makeDraft()
+                                    showingEditor = true
                                 } label: {
                                     historyRow(item)
                                 }
@@ -588,6 +583,39 @@ private struct PreparedDishHistoryPickerView: View {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") { dismiss() }
                 }
+            }
+            .navigationDestination(isPresented: $showingEditor) {
+                historyDraftEditor
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var historyDraftEditor: some View {
+        let linkedRecipe: Recipe? = {
+            guard let recipeID = draft.recipeID else { return nil }
+            return appState.allRecipes.first { $0.id == recipeID }
+        }()
+
+        AppScrollView {
+            PreparedDishDraftForm(
+                appState: appState,
+                draft: $draft,
+                linkedRecipe: linkedRecipe,
+                showRecipePicker: $showRecipePicker
+            )
+            .padding()
+        }
+        .background(PCColors.background)
+        .navigationTitle("Adjust & Save")
+        .toolbar {
+            ToolbarItem(placement: .confirmationAction) {
+                Button("Save") {
+                    guard let dish = draft.buildDish(using: linkedRecipe) else { return }
+                    onSave(dish)
+                    dismiss()
+                }
+                .disabled(!draft.isValid(using: linkedRecipe))
             }
         }
     }

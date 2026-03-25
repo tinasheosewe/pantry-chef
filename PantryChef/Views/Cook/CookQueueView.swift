@@ -45,13 +45,14 @@ struct CookQueueView: View {
                                 .padding(.top, PCTokens.spacingSM)
 
                             VStack(alignment: .leading, spacing: PCTokens.spacingSM) {
+                                let pendingStages = queue.stages.filter { $0.status == .pending || $0.status == .active }
                                 SectionHeader(
                                     title: queue.name,
-                                    subtitle: "\(queue.stages.count) \(queue.stages.count == 1 ? "stage" : "stages") remaining"
+                                    subtitle: "\(pendingStages.count) \(pendingStages.count == 1 ? "stage" : "stages") remaining"
                                 )
                                 .padding(.horizontal)
 
-                                ForEach(queue.stages) { stage in
+                                ForEach(pendingStages) { stage in
                                     queueStageRow(stage)
                                         .padding(PCTokens.cardPadding)
                                         .pcCard()

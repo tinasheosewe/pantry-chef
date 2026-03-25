@@ -107,6 +107,7 @@ struct CookModeView: View {
                     Task { await appState.skipCookQueueStage(queueStageID) }
                 }
                 viewModel?.endCookingSession()
+                appState.activeCooks.refresh()
             }
             Button("Cancel", role: .cancel) { }
         } message: {

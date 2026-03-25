@@ -26,10 +26,6 @@ struct HomeView: View {
                 VStack(spacing: PCTokens.sectionSpacing) {
                     greetingHeader
 
-                    if viewModel.appState.activeCooks.hasActiveSessions {
-                        activeCooksBanner
-                    }
-
                     todaysMealPlanCard
 
                     if !viewModel.expiringItems.isEmpty {

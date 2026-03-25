@@ -202,9 +202,13 @@ final class CookModeViewModel {
             // Now it's safe for the sync timer to check connection state
             isPreparing = false
 
-            // Start mic capture (installs tap — engine is already running)
-            realtimeService.startCapture()
-            AppLog.info("[CookMode] Mic capture started")
+            // Start mic capture unless user pre-muted
+            if !isMuted {
+                realtimeService.startCapture()
+                AppLog.info("[CookMode] Mic capture started")
+            } else {
+                AppLog.info("[CookMode] Skipping mic capture — user pre-muted")
+            }
 
             // Greet the user or resume at the right step
             let greeting: String
