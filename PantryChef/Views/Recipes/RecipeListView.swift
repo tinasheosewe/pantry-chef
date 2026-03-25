@@ -35,8 +35,8 @@ struct RecipeListView: View {
 
         AppScreen("recipes.screen") {
             VStack(spacing: 0) {
-                searchBar
                 sectionPicker(discoverCount: selectedSection == .discover ? filteredDiscoverRecipes.count : nil)
+                searchBar
                 filterPills
 
                 if selectedSection == .myRecipes {
