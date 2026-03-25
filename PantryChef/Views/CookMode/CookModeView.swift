@@ -15,6 +15,7 @@ struct CookModeView: View {
     @State private var pantryReviewItems: [PantryCookReviewItem] = []
     @State private var displayMode: CookDisplayMode = .step
     @State private var tabStepIndex: Int = 0
+    @State private var showNoPantryMatchAlert = false
 
     private let recipe: Recipe
     private let resumeAtStep: Int
@@ -140,6 +141,11 @@ struct CookModeView: View {
         } message: {
             Text(viewModel?.conversationError ?? "Connection lost")
         }
+        .alert("Nothing to Update", isPresented: $showNoPantryMatchAlert) {
+            Button("OK") { }
+        } message: {
+            Text("None of this recipe's ingredients matched items in your pantry. Add ingredients to your pantry to track usage.")
+        }
         .appNavigationSheet(isPresented: $showPantryReview) {
             if let viewModel {
                 PantryCookReviewSheet(
@@ -148,9 +154,7 @@ struct CookModeView: View {
                     onApply: { items in
                         await appState.applyPantryCookReview(items)
                     },
-                    onCompletion: {
-                        dismiss()
-                    }
+                    onCompletion: { }
                 )
             }
         }
@@ -676,13 +680,12 @@ struct CookModeView: View {
                         }
 
                         let reviewItems = appState.pantryCookReviewItems(for: vm.recipe)
-                        guard !reviewItems.isEmpty else {
-                            dismiss()
-                            return
+                        if reviewItems.isEmpty {
+                            showNoPantryMatchAlert = true
+                        } else {
+                            pantryReviewItems = reviewItems
+                            showPantryReview = true
                         }
-
-                        pantryReviewItems = reviewItems
-                        showPantryReview = true
                     }
                 } label: {
                     Text(queueStageID == nil ? "Done — Update Pantry" : "Done — Update Pantry & Queue")
