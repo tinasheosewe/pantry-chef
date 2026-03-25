@@ -36,8 +36,13 @@ struct RecipeListView: View {
         AppScreen("recipes.screen") {
             VStack(spacing: 0) {
                 sectionPicker(discoverCount: selectedSection == .discover ? filteredDiscoverRecipes.count : nil)
-                searchBar
-                filterPills
+
+                VStack(spacing: 8) {
+                    searchBar
+                    filterPills
+                }
+                .padding(.horizontal)
+                .padding(.vertical, 8)
 
                 if selectedSection == .myRecipes {
                     userRecipesContent(recipes: filteredUserRecipes)
@@ -203,7 +208,8 @@ struct RecipeListView: View {
             }
         )
         .padding(.horizontal)
-        .padding(.top, PCTokens.spacingXS)
+        .padding(.top, PCTokens.spacingMD)
+        .padding(.bottom, PCTokens.spacingSM)
     }
 
     // MARK: - Search Bar
@@ -218,8 +224,6 @@ struct RecipeListView: View {
             }
         )
         .accessibilityIdentifier("recipes.searchField")
-        .padding(.horizontal)
-        .padding(.top, 8)
     }
 
     // MARK: - Filter Pills
@@ -291,8 +295,6 @@ struct RecipeListView: View {
                     }
                 }
             }
-            .padding(.horizontal)
-            .padding(.vertical, 8)
         }
     }
 
