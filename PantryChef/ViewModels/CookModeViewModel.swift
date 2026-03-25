@@ -23,8 +23,8 @@ final class CookModeViewModel {
     var isUserSpeaking = false
     var conversationStatus = ""
     var conversationError: String?
-    /// Whether the mic is muted (user can still hear the AI)
-    var isMicMuted = false
+    /// Whether the session is fully muted (mic + AI speaker)
+    var isMuted = false
 
     /// Continue in Background state
     var isSchedulingBackground = false
@@ -144,12 +144,13 @@ final class CookModeViewModel {
         realtimeService.sendUserMessage(msg)
     }
 
-    // MARK: - Mic Mute
+    // MARK: - Mute (both mic and AI speaker)
 
-    func toggleMicMute() {
-        isMicMuted.toggle()
-        if isMicMuted {
+    func toggleMute() {
+        isMuted.toggle()
+        if isMuted {
             realtimeService.stopCapture()
+            realtimeService.silenceAI()
         } else {
             realtimeService.startCapture()
         }
@@ -222,7 +223,7 @@ final class CookModeViewModel {
         conversationError = nil
         isModelSpeaking = false
         isUserSpeaking = false
-        isMicMuted = false
+        isMuted = false
     }
 
     // MARK: - Mic Permission

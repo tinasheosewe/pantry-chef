@@ -591,11 +591,11 @@ struct CookModeView: View {
 
                 // Mute/unmute mic
                 Button {
-                    vm.toggleMicMute()
+                    vm.toggleMute()
                 } label: {
-                    Image(systemName: vm.isMicMuted ? "mic.slash.fill" : "mic.fill")
+                    Image(systemName: vm.isMuted ? "speaker.slash.fill" : "mic.fill")
                         .font(.subheadline)
-                        .foregroundStyle(vm.isMicMuted ? PCColors.textTertiary : PCColors.accent)
+                        .foregroundStyle(vm.isMuted ? PCColors.textTertiary : PCColors.accent)
                         .frame(width: 32, height: 32)
                         .background(PCColors.fillTertiary)
                         .clipShape(Circle())

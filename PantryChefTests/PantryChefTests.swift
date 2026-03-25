@@ -5810,6 +5810,7 @@ final class MockRealtimeService: RealtimeServiceProtocol {
     private(set) var disconnectCallCount = 0
     private(set) var startCaptureCallCount = 0
     private(set) var stopCaptureCallCount = 0
+    private(set) var silenceAICallCount = 0
     var sentMessages: [String] = []
 
     private(set) var lastConnectInstructions: String?
@@ -5851,6 +5852,10 @@ final class MockRealtimeService: RealtimeServiceProtocol {
         stopCaptureCallCount += 1
     }
 
+    func silenceAI() {
+        silenceAICallCount += 1
+    }
+
     func sendUserMessage(_ text: String) {
         sentMessages.append(text)
     }
@@ -5870,6 +5875,7 @@ final class MockRealtimeService: RealtimeServiceProtocol {
         disconnectCallCount = 0
         startCaptureCallCount = 0
         stopCaptureCallCount = 0
+        silenceAICallCount = 0
         sentMessages = []
         lastConnectInstructions = nil
         lastConnectTools = nil
@@ -6260,55 +6266,56 @@ final class CookModeInteractionTests: XCTestCase {
     }
 
     // ================================================================
-    // MARK: - Mic Mute/Unmute
+    // MARK: - Mute/Unmute
     // ================================================================
 
-    func testToggleMicMuteToMuted() {
+    func testToggleMuteToMuted() {
         let (vm, mock) = makeSUT()
-        XCTAssertFalse(vm.isMicMuted)
+        XCTAssertFalse(vm.isMuted)
 
-        vm.toggleMicMute()
+        vm.toggleMute()
 
-        XCTAssertTrue(vm.isMicMuted)
+        XCTAssertTrue(vm.isMuted)
         XCTAssertEqual(mock.stopCaptureCallCount, 1)
+        XCTAssertEqual(mock.silenceAICallCount, 1)
         XCTAssertEqual(mock.startCaptureCallCount, 0)
     }
 
-    func testToggleMicMuteToUnmuted() {
+    func testToggleMuteToUnmuted() {
         let (vm, mock) = makeSUT()
-        vm.isMicMuted = true
+        vm.isMuted = true
 
-        vm.toggleMicMute()
+        vm.toggleMute()
 
-        XCTAssertFalse(vm.isMicMuted)
+        XCTAssertFalse(vm.isMuted)
         XCTAssertEqual(mock.startCaptureCallCount, 1)
         XCTAssertEqual(mock.stopCaptureCallCount, 0)
     }
 
-    func testToggleMicMuteCycle() {
+    func testToggleMuteCycle() {
         let (vm, mock) = makeSUT()
 
-        vm.toggleMicMute()  // mute
-        XCTAssertTrue(vm.isMicMuted)
+        vm.toggleMute()  // mute
+        XCTAssertTrue(vm.isMuted)
         XCTAssertEqual(mock.stopCaptureCallCount, 1)
 
-        vm.toggleMicMute()  // unmute
-        XCTAssertFalse(vm.isMicMuted)
+        vm.toggleMute()  // unmute
+        XCTAssertFalse(vm.isMuted)
         XCTAssertEqual(mock.startCaptureCallCount, 1)
 
-        vm.toggleMicMute()  // mute again
-        XCTAssertTrue(vm.isMicMuted)
+        vm.toggleMute()  // mute again
+        XCTAssertTrue(vm.isMuted)
         XCTAssertEqual(mock.stopCaptureCallCount, 2)
     }
 
-    func testStopConversationResetsMicMute() {
+    func testStopConversationResetsMute() {
         let (vm, _) = makeSUT()
-        vm.isMicMuted = true
+        vm.isMuted = true
         vm.isConversationActive = true
 
         vm.stopConversation()
 
-        XCTAssertFalse(vm.isMicMuted)
+        XCTAssertFalse(vm.isMuted)
     }
 
     // ================================================================
@@ -6333,7 +6340,7 @@ final class CookModeInteractionTests: XCTestCase {
         vm.isUserSpeaking = true
         vm.conversationStatus = "Listening..."
         vm.conversationError = "Some error"
-        vm.isMicMuted = true
+        vm.isMuted = true
 
         vm.stopConversation()
 
@@ -6343,7 +6350,7 @@ final class CookModeInteractionTests: XCTestCase {
         XCTAssertFalse(vm.isUserSpeaking)
         XCTAssertTrue(vm.conversationStatus.isEmpty)
         XCTAssertNil(vm.conversationError)
-        XCTAssertFalse(vm.isMicMuted)
+        XCTAssertFalse(vm.isMuted)
         XCTAssertEqual(mock.disconnectCallCount, 1)
     }
 

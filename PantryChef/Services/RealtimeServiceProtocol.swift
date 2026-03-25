@@ -29,6 +29,9 @@ protocol RealtimeServiceProtocol: AnyObject {
     func startCapture()
     func stopCapture()
 
+    /// Cancel any in-progress AI response and clear buffered audio output.
+    func silenceAI()
+
     // MARK: - Messaging
     func sendUserMessage(_ text: String)
 }

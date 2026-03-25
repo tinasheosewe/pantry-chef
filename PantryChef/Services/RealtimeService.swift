@@ -238,6 +238,19 @@ final class RealtimeService: RealtimeServiceProtocol {
         AppLog.debug("stopCapture (muted)")
     }
 
+    /// Cancel any in-progress AI response and clear the output audio buffer
+    /// so the speaker goes silent immediately.
+    func silenceAI() {
+        guard let conv = conversation else { return }
+        do {
+            try conv.send(event: .cancelResponse(eventId: nil, responseId: nil))
+            try conv.send(event: .outputAudioBufferClear(eventId: nil))
+            AppLog.debug("silenceAI: cancelled response + cleared audio buffer")
+        } catch {
+            AppLog.warn("silenceAI failed: \(error.localizedDescription)")
+        }
+    }
+
     // MARK: - Send User Message
 
     func sendUserMessage(_ text: String) {

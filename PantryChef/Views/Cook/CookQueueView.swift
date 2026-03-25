@@ -8,6 +8,7 @@ struct CookQueueView: View {
     @State private var showGathering = false
     @State private var showSoloCookMode = false
     @State private var showMultiCookMode = false
+    @State private var resumingSession: CookingSession?
 
     private var queue: CookQueue? {
         appState.cookQueue
@@ -29,6 +30,13 @@ struct CookQueueView: View {
                 if let queue, !queue.stages.isEmpty {
                     ScrollView {
                         LazyVStack(spacing: PCTokens.spacingMD) {
+                            // Active cook banner
+                            if let session = appState.activeCooks.activeSessions.first {
+                                activeCookBanner(session)
+                                    .padding(.horizontal)
+                                    .padding(.top, PCTokens.spacingSM)
+                            }
+
                             Text("Queue recipes or meal-plan meals into solo or parallel stages. Finish a stage to unlock the next one without losing your place.")
                                 .font(.subheadline)
                                 .foregroundStyle(PCColors.textSecondary)
@@ -116,6 +124,18 @@ struct CookQueueView: View {
                     queueStageID: queueContext?.stageID
                 )
                 .environment(appState)
+            }
+            .fullScreenCover(item: $resumingSession) { session in
+                if let recipe = appState.allRecipes.first(where: { $0.id == session.recipeId }) {
+                    CookModeView(
+                        recipe: recipe,
+                        resumeAtStep: session.currentStepIndex,
+                        isResuming: true,
+                        queueID: session.queueId,
+                        queueStageID: session.queueStageId
+                    )
+                    .environment(appState)
+                }
             }
         }
     }
@@ -326,6 +346,50 @@ struct CookQueueView: View {
         case .skipped:
             return PCColors.textTertiary
         }
+    }
+
+    @ViewBuilder
+    private func activeCookBanner(_ session: CookingSession) -> some View {
+        let stepProgress = "Step \(session.currentStepIndex + 1) of \(session.totalSteps)"
+
+        Button {
+            resumingSession = session
+        } label: {
+            HStack(spacing: 12) {
+                Image(systemName: "flame.fill")
+                    .font(.title3)
+                    .foregroundStyle(PCColors.accent)
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(session.recipeName)
+                        .font(.subheadline)
+                        .fontWeight(.semibold)
+                        .foregroundStyle(PCColors.textPrimary)
+                    Text(stepProgress)
+                        .font(.caption)
+                        .foregroundStyle(PCColors.textSecondary)
+                }
+
+                Spacer()
+
+                Text("Return")
+                    .font(.caption)
+                    .fontWeight(.semibold)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 6)
+                    .background(PCColors.accent)
+                    .foregroundStyle(.white)
+                    .clipShape(Capsule())
+            }
+            .padding(PCTokens.cardPadding)
+            .background(PCColors.accent.opacity(0.10))
+            .clipShape(RoundedRectangle(cornerRadius: PCTokens.cornerRadius))
+            .overlay(
+                RoundedRectangle(cornerRadius: PCTokens.cornerRadius)
+                    .strokeBorder(PCColors.accent.opacity(0.3), lineWidth: 1)
+            )
+        }
+        .buttonStyle(.plain)
     }
 }
 
