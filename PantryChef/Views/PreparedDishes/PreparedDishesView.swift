@@ -154,12 +154,8 @@ struct PreparedDishesView: View {
                 .environment(viewModel.appState)
         }
 
-        if isEmbedded {
-            content
-        } else {
-            content
-                .navigationTitle("Prepared Dishes")
-        }
+        content
+            .navigationTitle("Prepared Dishes")
     }
 
     private var searchAndFilters: some View {
