@@ -18,31 +18,33 @@ struct ContentView: View {
             PCColors.background
                 .ignoresSafeArea()
 
-            ZStack {
-                ForEach(RootTab.allCases, id: \.self) { tab in
-                    rootTabContent(for: tab)
-                        .opacity(selectedTab == tab ? 1 : 0)
-                        .allowsHitTesting(selectedTab == tab)
-                        .accessibilityHidden(selectedTab != tab)
-                        .zIndex(selectedTab == tab ? 1 : 0)
+            VStack(spacing: 0) {
+                ZStack {
+                    ForEach(RootTab.allCases, id: \.self) { tab in
+                        rootTabContent(for: tab)
+                            .opacity(selectedTab == tab ? 1 : 0)
+                            .allowsHitTesting(selectedTab == tab)
+                            .accessibilityHidden(selectedTab != tab)
+                            .zIndex(selectedTab == tab ? 1 : 0)
+                    }
+                }
+                .frame(maxHeight: .infinity)
+
+                VStack(spacing: 0) {
+                    if let miniPlayerData = activeCookMiniPlayerData {
+                        PCMiniPlayer(
+                            recipeName: miniPlayerData.recipeName,
+                            stepProgress: miniPlayerData.stepProgress,
+                            progress: miniPlayerData.progress,
+                            onTap: { showCookQueueSheet = true }
+                        )
+                    }
+
+                    PCTabBar(selectedTab: $selectedTab)
                 }
             }
         }
         .accessibilityIdentifier("root.tabHost")
-        .safeAreaInset(edge: .bottom, spacing: 0) {
-            VStack(spacing: 0) {
-                if let miniPlayerData = activeCookMiniPlayerData {
-                    PCMiniPlayer(
-                        recipeName: miniPlayerData.recipeName,
-                        stepProgress: miniPlayerData.stepProgress,
-                        progress: miniPlayerData.progress,
-                        onTap: { showCookQueueSheet = true }
-                    )
-                }
-
-                PCTabBar(selectedTab: $selectedTab)
-            }
-        }
         .fullScreenCover(item: $deepLinkRecipe) { recipe in
             let session = CookingSession.load(recipeId: recipe.id)
             let stepIndex = session?.currentStepIndex ?? 0

@@ -24,16 +24,18 @@ struct PantryView: View {
         @Bindable var viewModel = viewModel
         AppScreen("pantry.screen", isEmbedded: isEmbedded) {
             VStack(spacing: 0) {
-                Picker("Mode", selection: $contentMode) {
-                    ForEach(ContentMode.allCases) { mode in
-                        Text(mode.rawValue).tag(mode)
+                if !isEmbedded {
+                    Picker("Mode", selection: $contentMode) {
+                        ForEach(ContentMode.allCases) { mode in
+                            Text(mode.rawValue).tag(mode)
+                        }
                     }
+                    .pickerStyle(.segmented)
+                    .padding(.horizontal)
+                    .padding(.top, 12)
                 }
-                .pickerStyle(.segmented)
-                .padding(.horizontal)
-                .padding(.top, 12)
 
-                if contentMode == .pantry {
+                if isEmbedded || contentMode == .pantry {
                     modeSummaryBar(
                         description: "Browse ingredients and update stock in one place.",
                         addTitle: "Add"

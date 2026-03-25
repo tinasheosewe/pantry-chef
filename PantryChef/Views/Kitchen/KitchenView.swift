@@ -25,6 +25,7 @@ struct KitchenView: View {
                 )
                 .padding(.horizontal)
                 .padding(.top, PCTokens.spacingMD)
+                .padding(.bottom, PCTokens.spacingSM)
 
                 switch segment {
                 case .pantry:

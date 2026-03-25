@@ -30,10 +30,6 @@ struct HomeView: View {
                         activeCooksBanner
                     }
 
-                    if viewModel.appState.cookQueue?.stages.isEmpty == false {
-                        cookQueueBanner
-                    }
-
                     todaysMealPlanCard
 
                     if !viewModel.expiringItems.isEmpty {
@@ -131,23 +127,28 @@ struct HomeView: View {
             }
 
             if viewModel.todaysMeals.isEmpty {
-                HStack(spacing: PCTokens.spacingMD) {
-                    Image(systemName: "calendar.badge.plus")
-                        .font(.title2)
-                        .foregroundStyle(PCColors.separator)
-                    VStack(alignment: .leading, spacing: PCTokens.spacingXS) {
-                        Text("No meals planned")
-                            .font(PCFont.headline)
-                            .foregroundStyle(PCColors.textPrimary)
-                        Text("Tap to plan your day")
-                            .font(PCFont.caption)
-                            .foregroundStyle(PCColors.textSecondary)
+                Button {
+                    onSwitchToPlan?()
+                } label: {
+                    HStack(spacing: PCTokens.spacingMD) {
+                        Image(systemName: "calendar.badge.plus")
+                            .font(.title2)
+                            .foregroundStyle(PCColors.separator)
+                        VStack(alignment: .leading, spacing: PCTokens.spacingXS) {
+                            Text("No meals planned")
+                                .font(PCFont.headline)
+                                .foregroundStyle(PCColors.textPrimary)
+                            Text("Tap to plan your day")
+                                .font(PCFont.caption)
+                                .foregroundStyle(PCColors.textSecondary)
+                        }
+                        Spacer()
                     }
-                    Spacer()
+                    .padding(PCTokens.cardPadding)
+                    .background(PCColors.fillTertiary)
+                    .clipShape(RoundedRectangle(cornerRadius: PCTokens.cornerRadius))
                 }
-                .padding(PCTokens.cardPadding)
-                .background(PCColors.fillTertiary)
-                .clipShape(RoundedRectangle(cornerRadius: PCTokens.cornerRadius))
+                .buttonStyle(.plain)
             } else {
                 ForEach(viewModel.todaysMeals) { entry in
                     todayMealRow(entry)
@@ -463,49 +464,6 @@ struct HomeView: View {
                         .strokeBorder(PCColors.expiring.opacity(0.2), lineWidth: 1)
                 )
         )
-    }
-
-    private var cookQueueBanner: some View {
-        let queue = viewModel.appState.cookQueue
-        let currentStage = queue?.currentStage
-        let remainingCount = queue?.pendingStageCount ?? 0
-
-        return Button {
-            onSwitchToCook?()
-        } label: {
-            VStack(alignment: .leading, spacing: PCTokens.spacingMD) {
-                HStack {
-                    Image(systemName: "list.number")
-                        .foregroundStyle(PCColors.info)
-                    Text("Cook Queue")
-                        .font(PCFont.headline)
-                        .foregroundStyle(PCColors.textPrimary)
-                    Spacer()
-                    PCBadge(text: "\(remainingCount)", color: PCColors.info)
-                }
-
-                if let currentStage {
-                    VStack(alignment: .leading, spacing: PCTokens.spacingXS) {
-                        Text(currentStage.title)
-                            .font(PCFont.headline)
-                            .foregroundStyle(PCColors.textPrimary)
-                        Text(currentStage.subtitle)
-                            .font(PCFont.caption)
-                            .foregroundStyle(PCColors.textSecondary)
-                    }
-                }
-            }
-            .padding(PCTokens.cardPadding)
-            .background(
-                RoundedRectangle(cornerRadius: PCTokens.cornerRadius)
-                    .fill(PCColors.info.opacity(0.08))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: PCTokens.cornerRadius)
-                            .strokeBorder(PCColors.info.opacity(0.2), lineWidth: 1)
-                    )
-            )
-        }
-        .buttonStyle(.plain)
     }
 }
 
