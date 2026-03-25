@@ -564,7 +564,7 @@ final class CookModeViewModel {
     /// then disconnects voice and saves the session.
     /// Safe to call multiple times — guards against double-scheduling.
     func continueInBackground() {
-        guard isConversationActive, !didContinueInBackground, !isEndingSession else { return }
+        guard isConversationActive, !didContinueInBackground, !isEndingSession, !showCompletionScreen else { return }
         isSchedulingBackground = true
 
         Task {

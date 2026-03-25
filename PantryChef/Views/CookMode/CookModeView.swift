@@ -682,6 +682,8 @@ struct CookModeView: View {
                         if let queueStageID {
                             await appState.completeCookQueueStage(queueStageID)
                         }
+                        CookingSession.clear(recipeId: vm.recipe.id)
+                        appState.activeCooks.refresh()
 
                         let reviewItems = appState.pantryCookReviewItems(for: vm.recipe)
                         if reviewItems.isEmpty {
@@ -710,6 +712,8 @@ struct CookModeView: View {
                         if let queueStageID {
                             await appState.completeCookQueueStage(queueStageID)
                         }
+                        CookingSession.clear(recipeId: vm.recipe.id)
+                        appState.activeCooks.refresh()
                         dismiss()
                     }
                 } label: {
