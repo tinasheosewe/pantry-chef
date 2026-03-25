@@ -236,293 +236,85 @@ struct PCSecondaryButton: View {
     }
 }
 
-// MARK: - Pantry Cook Review (migrated from Components.swift)
+// MARK: - PCTintedButton
 
-struct PCPantryCookReviewSheet: View {
-    @Environment(\.dismiss) private var dismiss
+struct PCTintedButton: View {
+    let title: String
+    var icon: String?
+    var color: Color
+    let action: () -> Void
 
-    let recipeTitle: String
-    let onApply: ([PantryCookReviewItem]) async -> Void
-    let onCompletion: () -> Void
-
-    @Binding private var items: [PantryCookReviewItem]
-    @State private var isApplying = false
-
-    init(
-        recipeTitle: String,
-        items: Binding<[PantryCookReviewItem]>,
-        onApply: @escaping ([PantryCookReviewItem]) async -> Void,
-        onCompletion: @escaping () -> Void = {}
-    ) {
-        self.recipeTitle = recipeTitle
-        self.onApply = onApply
-        self.onCompletion = onCompletion
-        _items = items
-    }
-
-    private var exactItems: [PantryCookReviewItem] {
-        items.filter { $0.quantityMode == .exact }
-    }
-
-    private var presenceOnlyItems: [PantryCookReviewItem] {
-        items.filter { $0.quantityMode == .presenceOnly }
+    init(_ title: String, icon: String? = nil, color: Color = PCColors.accent, action: @escaping () -> Void) {
+        self.title = title
+        self.icon = icon
+        self.color = color
+        self.action = action
     }
 
     var body: some View {
-        VStack(spacing: 0) {
-            PCScrollView {
-                VStack(alignment: .leading, spacing: PCTokens.spacingXL) {
-                    VStack(alignment: .leading, spacing: PCTokens.spacingSM) {
-                        Text("Update Pantry?")
-                            .font(PCFont.title)
-                            .foregroundStyle(PCColors.textPrimary)
-
-                        Text("Mark what you finished while cooking \(recipeTitle). Nothing is removed automatically.")
-                            .font(PCFont.body)
-                            .foregroundStyle(PCColors.textSecondary)
-                    }
-
-                    if !exactItems.isEmpty {
-                        reviewSection(
-                            title: "Tracked Exactly",
-                            subtitle: "You can subtract the recipe amount or mark the item as used up.",
-                            items: exactItems
-                        )
-                    }
-
-                    if !presenceOnlyItems.isEmpty {
-                        reviewSection(
-                            title: "Tracked By Presence",
-                            subtitle: "These items can only be kept or removed.",
-                            items: presenceOnlyItems
-                        )
-                    }
-                }
-                .padding()
-            }
-        }
-        .background(PCColors.background)
-        .navigationTitle("Pantry Review")
-        .toolbar {
-            ToolbarItem(placement: .cancellationAction) {
-                Button("Cancel") {
-                    dismiss()
-                    onCompletion()
+        Button(action: action) {
+            Label {
+                Text(title)
+            } icon: {
+                if let icon {
+                    Image(systemName: icon)
                 }
             }
-            ToolbarItem(placement: .confirmationAction) {
-                Button("Update") {
-                    Task {
-                        isApplying = true
-                        await onApply(items)
-                        isApplying = false
-                        dismiss()
-                        onCompletion()
-                    }
-                }
-                .fontWeight(.semibold)
-                .disabled(isApplying)
-            }
+            .font(PCFont.captionBold)
+            .foregroundStyle(.white)
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, PCTokens.spacingMD)
+            .background(color)
+            .clipShape(RoundedRectangle(cornerRadius: PCTokens.cornerRadius - 2))
         }
-    }
-
-    private func reviewSection(title: String, subtitle: String, items: [PantryCookReviewItem]) -> some View {
-        VStack(alignment: .leading, spacing: PCTokens.spacingMD) {
-            PCSectionHeader(title: title, subtitle: subtitle)
-
-            ForEach(items) { item in
-                PCPantryCookReviewRow(item: binding(for: item))
-            }
-        }
-    }
-
-    private func binding(for item: PantryCookReviewItem) -> Binding<PantryCookReviewItem> {
-        Binding(
-            get: { items.first(where: { $0.id == item.id }) ?? item },
-            set: { updated in
-                guard let index = items.firstIndex(where: { $0.id == updated.id }) else { return }
-                items[index] = updated
-            }
-        )
     }
 }
 
-private struct PCPantryCookReviewRow: View {
-    @Binding var item: PantryCookReviewItem
+// MARK: - PCCapsuleButton
+
+struct PCCapsuleButton: View {
+    let title: String
+    var color: Color = PCColors.accent
+    var style: Style = .filled
+    let action: () -> Void
+
+    enum Style {
+        case filled, tinted, plain
+    }
+
+    init(_ title: String, color: Color = PCColors.accent, style: Style = .filled, action: @escaping () -> Void) {
+        self.title = title
+        self.color = color
+        self.style = style
+        self.action = action
+    }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: PCTokens.spacingMD) {
-            HStack(spacing: PCTokens.spacingSM) {
-                ForEach(item.availableSelections) { selection in
-                    Button {
-                        item.selection = selection
-                    } label: {
-                        HStack(spacing: PCTokens.spacingXS) {
-                            Image(systemName: selection.systemImage)
-                                .font(PCFont.caption)
-                            Text(selection.title)
-                                .font(PCFont.captionBold)
-                        }
-                        .foregroundStyle(
-                            item.selection == selection
-                                ? Color.white
-                                : selectionColor(for: selection)
-                        )
-                        .padding(.horizontal, PCTokens.spacingMD)
-                        .padding(.vertical, PCTokens.spacingSM)
-                        .background(
-                            item.selection == selection
-                                ? selectionColor(for: selection)
-                                : selectionColor(for: selection).opacity(0.12)
-                        )
-                        .clipShape(Capsule())
-                    }
-                    .buttonStyle(.plain)
-                }
-            }
-
-            HStack(alignment: .top, spacing: PCTokens.spacingMD) {
-                VStack(alignment: .leading, spacing: PCTokens.spacingXS) {
-                    Text(item.pantryItem.name)
-                        .font(PCFont.headline)
-                        .foregroundStyle(PCColors.textPrimary)
-
-                    Text(item.pantryDetailText)
-                        .font(PCFont.body)
-                        .foregroundStyle(PCColors.textSecondary)
-
-                    Text(item.recipeUsageText)
-                        .font(PCFont.caption)
-                        .foregroundStyle(PCColors.textPrimary)
-
-                    if !item.matchedIngredientNames.isEmpty {
-                        Text(item.matchedIngredientNames.joined(separator: ", "))
-                            .font(PCFont.micro)
-                            .foregroundStyle(PCColors.textSecondary)
-                    }
-                }
-
-                Spacer(minLength: PCTokens.spacingMD)
-
-                PCBadge(
-                    text: item.quantityMode.title,
-                    color: item.quantityMode == .exact ? PCColors.info : PCColors.expiring
-                )
-            }
+        Button(action: action) {
+            Text(title)
+                .font(PCFont.captionBold)
+                .foregroundStyle(foregroundColor)
+                .padding(.horizontal, PCTokens.spacingMD)
+                .padding(.vertical, PCTokens.spacingSM)
+                .background(backgroundColor)
+                .clipShape(Capsule())
         }
-        .padding(PCTokens.cardPadding)
-        .pcCard()
     }
 
-    private func selectionColor(for selection: PantryCookReviewSelection) -> Color {
-        switch selection {
-        case .keep: return PCColors.fresh
-        case .remove: return PCColors.expired
-        case .subtractRecipeAmount: return PCColors.info
+    private var foregroundColor: Color {
+        switch style {
+        case .filled: return .white
+        case .tinted, .plain: return color
+        }
+    }
+
+    private var backgroundColor: Color {
+        switch style {
+        case .filled: return color
+        case .tinted: return color.opacity(0.12)
+        case .plain: return PCColors.fillTertiary
         }
     }
 }
 
-// MARK: - Shopping List Confirmation (migrated from Components.swift)
 
-struct PCShoppingConfirmationRequest {
-    enum Context {
-        case generic
-        case mealPlan
-    }
-
-    let items: [ShoppingItem]
-    let context: Context
-
-    init(items: [ShoppingItem], context: Context = .generic) {
-        self.items = items
-        self.context = context
-    }
-
-    var title: String {
-        if items.isEmpty {
-            return "Nothing to Add"
-        }
-        switch context {
-        case .generic:
-            return "Add \(items.count) Item\(items.count == 1 ? "" : "s")?"
-        case .mealPlan:
-            return "Add Missing Ingredients?"
-        }
-    }
-
-    var message: String {
-        if items.isEmpty {
-            switch context {
-            case .generic:
-                return "Everything needed is already in your pantry."
-            case .mealPlan:
-                return "Your meal plan is already covered by what you have on hand."
-            }
-        }
-        switch context {
-        case .generic:
-            return "This will add these items to your cart and exclude ingredients you already have in your pantry."
-        case .mealPlan:
-            return "We'll add the ingredients you're still missing from your meal plan to your shopping list."
-        }
-    }
-}
-
-private struct PCShoppingConfirmationModifier: ViewModifier {
-    @Binding var request: PCShoppingConfirmationRequest?
-    let onConfirm: ([ShoppingItem]) -> Void
-
-    private var isPresented: Binding<Bool> {
-        Binding(
-            get: { request != nil },
-            set: { isShowing in if !isShowing { request = nil } }
-        )
-    }
-
-    func body(content: Content) -> some View {
-        let currentRequest = request
-
-        return content.alert(currentRequest?.title ?? "", isPresented: isPresented) {
-            if let currentRequest, currentRequest.items.isEmpty {
-                Button("OK", role: .cancel) { request = nil }
-            } else if let currentRequest {
-                Button("Cancel", role: .cancel) { request = nil }
-                Button(currentRequest.context == .mealPlan ? "Add to Shopping List" : "Add Items") {
-                    onConfirm(currentRequest.items)
-                    request = nil
-                }
-            }
-        } message: {
-            Text(currentRequest?.message ?? "")
-        }
-    }
-}
-
-extension View {
-    func pcShoppingConfirmation(
-        _ request: Binding<PCShoppingConfirmationRequest?>,
-        onConfirm: @escaping ([ShoppingItem]) -> Void
-    ) -> some View {
-        modifier(PCShoppingConfirmationModifier(request: request, onConfirm: onConfirm))
-    }
-}
-
-// MARK: - Input Styling (migrated)
-
-private struct PCInputSurfaceModifier: ViewModifier {
-    let background: Color
-    let cornerRadius: CGFloat
-
-    func body(content: Content) -> some View {
-        content
-            .background(background)
-            .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
-    }
-}
-
-extension View {
-    func pcInputSurface(background: Color = PCColors.fillTertiary, cornerRadius: CGFloat = PCTokens.cornerRadiusSmall) -> some View {
-        modifier(PCInputSurfaceModifier(background: background, cornerRadius: cornerRadius))
-    }
-}

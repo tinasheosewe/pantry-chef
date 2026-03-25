@@ -3070,9 +3070,10 @@ final class AppStateTests: XCTestCase {
         await appState.startCookQueueStage(firstStageID)
         await appState.completeCookQueueStage(firstStageID)
 
-        XCTAssertEqual(appState.cookQueue?.stages.first?.status, .completed)
-        XCTAssertEqual(appState.cookQueue?.currentStage?.id, secondStageID)
-        XCTAssertEqual(appState.cookQueue?.currentStage?.status, .pending)
+        // Completed stage is removed; second stage is now first
+        XCTAssertEqual(appState.cookQueue?.stages.count, 1)
+        XCTAssertEqual(appState.cookQueue?.stages.first?.id, secondStageID)
+        XCTAssertEqual(appState.cookQueue?.stages.first?.status, .pending)
     }
 
     func testReplaceCookQueueStagesPreservesQueueIdentityAndOrdering() async throws {

@@ -62,21 +62,11 @@ struct PantryItem: Identifiable, Codable, Hashable {
     }
 
     var expiryStatus: ExpiryStatus {
-        guard let expiryDate else { return .fresh }
-        let now = Date()
-        if expiryDate < now {
-            return .expired
-        }
-        let threeDaysFromNow = Calendar.current.date(byAdding: .day, value: 3, to: now) ?? now
-        if expiryDate <= threeDaysFromNow {
-            return .expiringSoon
-        }
-        return .fresh
+        .from(date: expiryDate)
     }
 
     var daysUntilExpiry: Int? {
-        guard let expiryDate else { return nil }
-        return Calendar.current.dateComponents([.day], from: Date(), to: expiryDate).day
+        ExpiryStatus.daysRemaining(until: expiryDate)
     }
 
     var displayQuantity: String {

@@ -733,7 +733,7 @@ struct BulkAddPantryView: View {
 
     private func catalogFacetOptions(for item: PantryCatalogItemDefinition) -> [String] {
         item.facets.map { definition in
-            let options = Array(definition.options.prefix(3)).map(humanizedFacetValue)
+            let options = Array(definition.options.prefix(AppConfig.facetOptionsMaxShown)).map(humanizedFacetValue)
             let hiddenCount = max(definition.options.count - options.count, 0)
             let suffix = hiddenCount > 0 ? ", +\(hiddenCount) more" : ""
             return "\(definition.key.title): \(options.joined(separator: ", "))\(suffix)"
@@ -978,7 +978,7 @@ struct PantryIntakeFormSections: View {
                         .font(.caption)
                         .foregroundStyle(PCColors.textSecondary)
                 } else {
-                    ForEach(Array(draft.matchingItems.prefix(8))) { item in
+                    ForEach(Array(draft.matchingItems.prefix(AppConfig.matchingItemsDropdownMax))) { item in
                         Button {
                             draft.selectItem(item)
                         } label: {

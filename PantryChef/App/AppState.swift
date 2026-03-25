@@ -431,7 +431,9 @@ final class AppState {
 
     /// Resolve a recipe by UUID string across all known sources.
     func recipeByIdString(_ id: String) -> Recipe? {
-        allRecipes.first { $0.id.uuidString == id }
+        guard let uuid = UUID(uuidString: id) else { return nil }
+        return recipes.first(where: { $0.id == uuid })
+            ?? discoverRecipeStore.first(where: { $0.recipe.id == uuid })?.recipe
     }
 
     /// Reload discover recipes from the repository (call after caching new recipes)

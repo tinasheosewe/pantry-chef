@@ -15,7 +15,7 @@ struct KitchenView: View {
     }
 
     var body: some View {
-        PCScreen("kitchen.screen") {
+        AppScreen("kitchen.screen") {
             VStack(spacing: 0) {
                 PCSegmentedPicker(
                     items: Segment.allCases,

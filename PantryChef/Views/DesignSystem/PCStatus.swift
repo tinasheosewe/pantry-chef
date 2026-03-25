@@ -29,6 +29,44 @@ struct PCStatusDot: View {
 
 // MARK: - PCProgressRing
 
+// MARK: - PCProgressBar
+
+struct PCProgressBar: View {
+    let progress: Double
+    let label: String
+    var trailingLabel: String?
+    var height: CGFloat = 4
+    var tintColor: Color = PCColors.accent
+
+    var body: some View {
+        VStack(spacing: 4) {
+            GeometryReader { geo in
+                ZStack(alignment: .leading) {
+                    RoundedRectangle(cornerRadius: height / 2)
+                        .fill(tintColor.opacity(0.15))
+                    RoundedRectangle(cornerRadius: height / 2)
+                        .fill(tintColor)
+                        .frame(width: geo.size.width * max(0, min(progress, 1)))
+                        .animation(.easeInOut(duration: 0.3), value: progress)
+                }
+            }
+            .frame(height: height)
+
+            HStack {
+                Text(label)
+                    .font(.caption2)
+                    .foregroundStyle(PCColors.textSecondary)
+                if let trailingLabel {
+                    Spacer()
+                    Text(trailingLabel)
+                        .font(.caption2)
+                        .foregroundStyle(PCColors.textSecondary)
+                }
+            }
+        }
+    }
+}
+
 struct PCProgressRing: View {
     let progress: Double
     var size: CGFloat = 40

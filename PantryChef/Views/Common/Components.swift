@@ -1,42 +1,6 @@
 import SwiftUI
 
-// MARK: - App Colors (bridged to PCColors)
-struct AppColors {
-    static let primary = PCColors.accent
-
-    // Brand palette — mapped to design system
-    static let primaryGreen = PCColors.fresh
-    static let warmOrange  = PCColors.expiring
-    static let softRed     = PCColors.expired
-
-    // Neutral palette — adaptive via PCColors
-    static let lightGray   = PCColors.fillTertiary
-    static let mediumGray  = PCColors.separator
-    static let darkText    = PCColors.textPrimary
-    static let subtleText  = PCColors.textSecondary
-    static let cardBackground = PCColors.cardBackground
-    static let background  = PCColors.background
-
-    // Accent helpers
-    static let accentTeal  = PCColors.teal
-    static let accentBlue  = PCColors.info
-}
-
-// MARK: - Card Style Modifier (bridged to pcCard)
-struct CardStyle: ViewModifier {
-    func body(content: Content) -> some View {
-        content
-            .pcCard()
-    }
-}
-
-extension View {
-    func cardStyle() -> some View {
-        modifier(CardStyle())
-    }
-}
-
-// MARK: - Screen Shells (bridged to PCScreen)
+// MARK: - Screen Shells
 struct AppScreen<Content: View>: View {
     private let screenID: String
     private let isEmbedded: Bool
@@ -118,7 +82,7 @@ struct AppDetailCard<Content: View>: View {
             content
         }
         .padding()
-        .cardStyle()
+        .pcCard()
     }
 }
 
@@ -134,12 +98,12 @@ struct AppDetailRow: View {
     var body: some View {
         HStack(alignment: .firstTextBaseline, spacing: 12) {
             Text(title)
-                .foregroundStyle(AppColors.subtleText)
+                .foregroundStyle(PCColors.textSecondary)
 
             Spacer(minLength: 12)
 
             Text(value)
-                .foregroundStyle(AppColors.darkText)
+                .foregroundStyle(PCColors.textPrimary)
                 .multilineTextAlignment(.trailing)
         }
         .font(.subheadline)
@@ -171,29 +135,29 @@ struct AppIngredientDetailRow: View {
     var body: some View {
         HStack(alignment: .top, spacing: 12) {
             Image(systemName: isAvailable ? "checkmark.circle.fill" : "circle")
-                .foregroundStyle(isAvailable ? AppColors.primaryGreen : AppColors.mediumGray)
+                .foregroundStyle(isAvailable ? PCColors.fresh : PCColors.separator)
                 .font(.subheadline)
 
             VStack(alignment: .leading, spacing: 6) {
                 Text(ingredientText)
                     .font(.subheadline)
-                    .foregroundStyle(AppColors.darkText)
+                    .foregroundStyle(PCColors.textPrimary)
 
                 HStack(spacing: 8) {
                     if isOptional {
                         Text("optional")
                             .font(.caption2)
-                            .foregroundStyle(AppColors.subtleText)
+                            .foregroundStyle(PCColors.textSecondary)
                             .padding(.horizontal, 6)
                             .padding(.vertical, 2)
-                            .background(AppColors.lightGray)
+                            .background(PCColors.fillTertiary)
                             .clipShape(Capsule())
                     }
 
                     if let accessoryText, !accessoryText.isEmpty {
                         Text(accessoryText)
                             .font(.caption2)
-                            .foregroundStyle(AppColors.subtleText)
+                            .foregroundStyle(PCColors.textSecondary)
                     }
                 }
             }
@@ -261,11 +225,11 @@ struct PantryCookReviewSheet: View {
                         Text("Update Pantry?")
                             .font(.title2)
                             .fontWeight(.bold)
-                            .foregroundStyle(AppColors.darkText)
+                            .foregroundStyle(PCColors.textPrimary)
 
                         Text("Mark what you finished while cooking \(recipeTitle). Nothing is removed automatically.")
                             .font(.subheadline)
-                            .foregroundStyle(AppColors.subtleText)
+                            .foregroundStyle(PCColors.textSecondary)
                     }
 
                     if !exactItems.isEmpty {
@@ -279,7 +243,7 @@ struct PantryCookReviewSheet: View {
                 .padding()
             }
         }
-        .background(AppColors.background)
+        .background(PCColors.background)
         .navigationTitle("Pantry Review")
         .toolbar {
             ToolbarItem(placement: .cancellationAction) {
@@ -356,20 +320,20 @@ private struct PantryCookReviewRow: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(item.pantryItem.name)
                         .font(.headline)
-                        .foregroundStyle(AppColors.darkText)
+                        .foregroundStyle(PCColors.textPrimary)
 
                     Text(item.pantryDetailText)
                         .font(.subheadline)
-                        .foregroundStyle(AppColors.subtleText)
+                        .foregroundStyle(PCColors.textSecondary)
 
                     Text(item.recipeUsageText)
                         .font(.caption)
-                        .foregroundStyle(AppColors.darkText)
+                        .foregroundStyle(PCColors.textPrimary)
 
                     if !item.matchedIngredientNames.isEmpty {
                         Text(item.matchedIngredientNames.joined(separator: ", "))
                             .font(.caption2)
-                            .foregroundStyle(AppColors.subtleText)
+                            .foregroundStyle(PCColors.textSecondary)
                     }
                 }
 
@@ -386,34 +350,34 @@ private struct PantryCookReviewRow: View {
             }
         }
         .padding(14)
-        .background(AppColors.cardBackground)
+        .background(PCColors.cardBackground)
         .clipShape(RoundedRectangle(cornerRadius: 16))
         .shadow(color: Color.black.opacity(0.04), radius: 10, x: 0, y: 2)
     }
 
     private var quantityModeColor: Color {
-        item.quantityMode == .exact ? AppColors.accentBlue : AppColors.warmOrange
+        item.quantityMode == .exact ? PCColors.info : PCColors.expiring
     }
 
     private func buttonBackground(for selection: PantryCookReviewSelection) -> Color {
         switch selection {
         case .keep:
-            return AppColors.primaryGreen
+            return PCColors.fresh
         case .remove:
-            return AppColors.softRed
+            return PCColors.expired
         case .subtractRecipeAmount:
-            return AppColors.accentBlue
+            return PCColors.info
         }
     }
 
     private func buttonForeground(for selection: PantryCookReviewSelection) -> Color {
         switch selection {
         case .keep:
-            return AppColors.primaryGreen
+            return PCColors.fresh
         case .remove:
-            return AppColors.softRed
+            return PCColors.expired
         case .subtractRecipeAmount:
-            return AppColors.accentBlue
+            return PCColors.info
         }
     }
 }
@@ -492,7 +456,7 @@ struct AppMultilineInput: View {
             if text.isEmpty {
                 Text(prompt)
                     .font(.subheadline)
-                    .foregroundStyle(AppColors.mediumGray)
+                    .foregroundStyle(PCColors.separator)
                     .padding(.horizontal, 12)
                     .padding(.vertical, 12)
             }
@@ -539,7 +503,7 @@ struct AppSearchField: View {
     var body: some View {
         HStack(spacing: 10) {
             Image(systemName: "magnifyingglass")
-                .foregroundStyle(AppColors.mediumGray)
+                .foregroundStyle(PCColors.separator)
 
             searchField
 
@@ -548,7 +512,7 @@ struct AppSearchField: View {
                     trackedText.wrappedValue = ""
                 } label: {
                     Image(systemName: "xmark.circle.fill")
-                        .foregroundStyle(AppColors.mediumGray)
+                        .foregroundStyle(PCColors.separator)
                 }
             }
         }
@@ -739,11 +703,11 @@ struct DifficultyBadge: View {
             ForEach(1...5, id: \.self) { index in
                 Image(systemName: "circle.fill")
                     .font(.system(size: 6))
-                    .foregroundStyle(index <= difficulty.rawValue ? AppColors.warmOrange : AppColors.mediumGray)
+                    .foregroundStyle(index <= difficulty.rawValue ? PCColors.expiring : PCColors.separator)
             }
             Text(difficulty.label)
                 .font(.caption2)
-                .foregroundStyle(AppColors.subtleText)
+                .foregroundStyle(PCColors.textSecondary)
         }
     }
 }
@@ -763,8 +727,8 @@ struct DietaryTagChip: View {
         }
         .padding(.horizontal, 10)
         .padding(.vertical, 6)
-        .background(isSelected ? AppColors.primaryGreen.opacity(0.15) : AppColors.lightGray)
-        .foregroundStyle(isSelected ? AppColors.primaryGreen : AppColors.subtleText)
+        .background(isSelected ? PCColors.fresh.opacity(0.15) : PCColors.fillTertiary)
+        .foregroundStyle(isSelected ? PCColors.fresh : PCColors.textSecondary)
         .clipShape(Capsule())
     }
 }
@@ -779,7 +743,7 @@ struct LoadingView: View {
                 .scaleEffect(1.2)
             Text(message)
                 .font(.subheadline)
-                .foregroundStyle(AppColors.subtleText)
+                .foregroundStyle(PCColors.textSecondary)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
@@ -797,16 +761,16 @@ struct EmptyStateView: View {
         VStack(spacing: 16) {
             Image(systemName: icon)
                 .font(.system(size: 48))
-                .foregroundStyle(AppColors.mediumGray)
+                .foregroundStyle(PCColors.separator)
 
             Text(title)
                 .font(.title3)
                 .fontWeight(.semibold)
-                .foregroundStyle(AppColors.darkText)
+                .foregroundStyle(PCColors.textPrimary)
 
             Text(message)
                 .font(.subheadline)
-                .foregroundStyle(AppColors.subtleText)
+                .foregroundStyle(PCColors.textSecondary)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 40)
 
@@ -840,11 +804,11 @@ struct SectionHeader: View {
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)
                     .font(.headline)
-                    .foregroundStyle(AppColors.darkText)
+                    .foregroundStyle(PCColors.textPrimary)
                 if let subtitle {
                     Text(subtitle)
                         .font(.caption)
-                        .foregroundStyle(AppColors.subtleText)
+                        .foregroundStyle(PCColors.textSecondary)
                 }
             }
             Spacer()
@@ -873,17 +837,17 @@ struct NutritionBar: View {
             HStack {
                 Text(label)
                     .font(.caption)
-                    .foregroundStyle(AppColors.subtleText)
+                    .foregroundStyle(PCColors.textSecondary)
                 Spacer()
                 Text("\(Int(value))\(unit)")
                     .font(.caption)
                     .fontWeight(.medium)
-                    .foregroundStyle(AppColors.darkText)
+                    .foregroundStyle(PCColors.textPrimary)
             }
             GeometryReader { geometry in
                 ZStack(alignment: .leading) {
                     RoundedRectangle(cornerRadius: 4)
-                        .fill(AppColors.lightGray)
+                        .fill(PCColors.fillTertiary)
                         .frame(height: 6)
 
                     RoundedRectangle(cornerRadius: 4)

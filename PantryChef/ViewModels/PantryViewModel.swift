@@ -55,7 +55,7 @@ final class PantryBulkAddViewModel {
     var searchPreviewResults: [PantryCatalogItemDefinition] {
         let token = trailingSearchToken
         guard !token.isEmpty else { return [] }
-        return Array(PantryCatalog.search(token).prefix(6))
+        return Array(PantryCatalog.search(token).prefix(AppConfig.pantrySearchMaxResults))
     }
 
     var trailingSearchToken: String {

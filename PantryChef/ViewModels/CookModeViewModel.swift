@@ -185,6 +185,14 @@ final class CookModeViewModel {
             await realtimeService.prepareAudio()
             AppLog.info("[CookMode] Audio engine ready, isRunning=\(realtimeService.isAudioReady)")
 
+            guard realtimeService.isAudioReady else {
+                isPreparing = false
+                isConversationActive = false
+                conversationError = "Audio engine failed to start. Please check your device's audio settings."
+                AppLog.error("[CookMode] Audio engine failed to initialize")
+                return
+            }
+
             // Connect WebSocket (audio engine is ready for playback now)
             let instructions = buildConversationInstructions()
             let tools = buildConversationTools()
@@ -646,7 +654,7 @@ final class CookModeViewModel {
         }
 
         // Schedule session expiry (2 hours after last notification)
-        let expiryDelay = cumulativeDelay + 7200
+        let expiryDelay = cumulativeDelay + AppConfig.sessionExpiryTimeout
         notificationService.scheduleSessionExpiry(
             recipeId: recipeId,
             recipeName: recipe.title,

@@ -442,6 +442,22 @@ enum ExpiryStatus {
     case expiringSoon // within 3 days
     case expired
 
+    /// Compute expiry status from an optional date. Returns `.fresh` when no date is set.
+    static func from(date: Date?) -> ExpiryStatus {
+        guard let date else { return .fresh }
+        let now = Date()
+        if date < now { return .expired }
+        let threshold = Calendar.current.date(byAdding: .day, value: 3, to: now) ?? now
+        if date <= threshold { return .expiringSoon }
+        return .fresh
+    }
+
+    /// Days remaining until the given date. Nil when no date is set.
+    static func daysRemaining(until date: Date?) -> Int? {
+        guard let date else { return nil }
+        return Calendar.current.dateComponents([.day], from: Date(), to: date).day
+    }
+
     var color: Color {
         switch self {
         case .fresh: return Color(red: 0.30, green: 0.69, blue: 0.31)

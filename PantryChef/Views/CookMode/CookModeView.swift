@@ -284,23 +284,10 @@ struct CookModeView: View {
     // MARK: - Progress Bar
 
     private func progressBar(vm: CookModeViewModel) -> some View {
-        VStack(spacing: 4) {
-            GeometryReader { geo in
-                ZStack(alignment: .leading) {
-                    RoundedRectangle(cornerRadius: 3)
-                        .fill(PCColors.accent.opacity(0.15))
-                    RoundedRectangle(cornerRadius: 3)
-                        .fill(PCColors.accent)
-                        .frame(width: geo.size.width * vm.progress)
-                        .animation(.easeInOut(duration: 0.3), value: vm.progress)
-                }
-            }
-            .frame(height: 4)
-
-            Text("Step \(vm.currentStepIndex + 1) of \(vm.steps.count)")
-                .font(.caption2)
-                .foregroundStyle(PCColors.textSecondary)
-        }
+        PCProgressBar(
+            progress: vm.progress,
+            label: "Step \(vm.currentStepIndex + 1) of \(vm.steps.count)"
+        )
         .padding(.horizontal)
     }
 
@@ -445,7 +432,7 @@ struct CookModeView: View {
                 HStack(spacing: 16) {
                     Text(vm.timerDisplay)
                         .font(.system(size: 48, weight: .light, design: .monospaced))
-                        .foregroundStyle(vm.timerSeconds <= 10 ? PCColors.expired : PCColors.accent)
+                        .foregroundStyle(vm.timerSeconds <= AppConfig.timerExpiryThresholdSeconds ? PCColors.expired : PCColors.accent)
 
                     VStack(spacing: 8) {
                         Button {

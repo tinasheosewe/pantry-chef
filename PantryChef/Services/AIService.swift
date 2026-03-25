@@ -127,7 +127,7 @@ final class AIService: AIServiceProtocol {
 
         for ingredient in matchResult.missingIngredients {
             let subs = SubstitutionRepository.shared.substitutions(for: ingredient, pantry: pantry)
-            let top3 = Array(subs.prefix(3))
+            let top3 = Array(subs.prefix(AppConfig.aiTopSubstitutionCount))
             for sub in top3 {
                 localSuggestions.append(SubstitutionSuggestion(
                     originalIngredient: ingredient.displayName,
@@ -234,7 +234,7 @@ final class AIService: AIServiceProtocol {
         guard let pageURL = URL(string: url) else { return nil }
 
         var request = URLRequest(url: pageURL)
-        request.timeoutInterval = 15
+        request.timeoutInterval = AppConfig.aiURLFetchTimeoutSeconds
         // Desktop Chrome UA — many recipe sites block mobile UAs
         request.setValue(
             "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
@@ -257,7 +257,7 @@ final class AIService: AIServiceProtocol {
 
         // 2) Fall back to full-page text extraction
         let text = stripHTML(html)
-        let trimmed = String(text.prefix(12_000))
+        let trimmed = String(text.prefix(AppConfig.aiMaxRecipeTextChars))
         guard !trimmed.isEmpty else { return nil }
 
         return await parseRecipeFromText(trimmed)
@@ -1126,7 +1126,7 @@ final class AIService: AIServiceProtocol {
     // MARK: - Networking (with retry)
 
     /// Maximum number of retry attempts for transient failures.
-    private let maxRetries = 3
+    private let maxRetries = AppConfig.aiMaxRetries
 
     /// Sends a prompt to OpenAI with automatic retry + exponential backoff.
     /// Retries on network errors and 5xx / 429 responses. Gives up on 4xx client errors.
@@ -1142,7 +1142,7 @@ final class AIService: AIServiceProtocol {
 
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
-        request.timeoutInterval = 30
+        request.timeoutInterval = AppConfig.aiChatTimeoutSeconds
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         request.addValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
 
@@ -1185,7 +1185,7 @@ final class AIService: AIServiceProtocol {
                         let body = String(data: data, encoding: .utf8) ?? "<non-utf8 body>"
                         AppLog.warn("[AIService] Retryable HTTP \(httpResponse.statusCode), attempt \(attempt)/\(maxRetries): \(body)")
                         if attempt < maxRetries {
-                            let delay = Double(attempt) * 1.5 // 1.5s, 3s
+                            let delay = Double(attempt) * AppConfig.aiBackoffMultiplier
                             try await Task.sleep(for: .seconds(delay))
                             continue
                         }
@@ -1200,7 +1200,7 @@ final class AIService: AIServiceProtocol {
             } catch {
                 // Network error — retry with backoff
                 if attempt < maxRetries {
-                    let delay = Double(attempt) * 1.5
+                    let delay = Double(attempt) * AppConfig.aiBackoffMultiplier
                     try? await Task.sleep(for: .seconds(delay))
                     continue
                 }

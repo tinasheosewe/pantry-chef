@@ -1,6 +1,22 @@
 import Foundation
 
+// MARK: - Resolution Scoring Thresholds
+
+private enum ResolutionThresholds {
+    /// Min score for exact facet template token matches.
+    static let exactTemplateToken = 0.985
+    /// Min containment score for lexical substring overlap.
+    static let containment = 0.9
+    /// Min combined (token + containment) score for lexical candidates.
+    static let combinedLexical = 0.48
+    /// Min fuzzy similarity score for fuzzy candidates.
+    static let fuzzy = 0.78
+    /// Min score for a facet-specific candidate to be considered strong.
+    static let facetCandidate = 0.9
+}
+
 final class IngredientCandidateParser: IngredientCandidateParserProtocol {
+
     private struct CacheKey: Hashable {
         let rawName: String
         let catalogItemID: String?
@@ -102,7 +118,7 @@ final class IngredientCandidateParser: IngredientCandidateParserProtocol {
             register(
                 phrases: phraseIndex.templatePhrases(matchingTokenSet: queryLookupTokenSet, excludingLookupKey: query.lookupKey),
                 stage: .exactTemplate,
-                score: 0.985,
+                score: ResolutionThresholds.exactTemplateToken,
                 rationale: { phrase in "Exact facet template token match for \(phrase.text)." },
                 into: &candidatesByID
             )
@@ -136,13 +152,13 @@ final class IngredientCandidateParser: IngredientCandidateParserProtocol {
 
                 let containmentScore: Double
                 if phrase.lookupKey.contains(query.lookupKey) || query.lookupKey.contains(phrase.lookupKey) {
-                    containmentScore = 0.9
+                    containmentScore = ResolutionThresholds.containment
                 } else {
                     containmentScore = 0
                 }
 
                 let combinedScore = max(tokenScore, containmentScore)
-                guard combinedScore >= 0.48 else { continue }
+                guard combinedScore >= ResolutionThresholds.combinedLexical else { continue }
 
                 register(
                     phrase: phrase,
@@ -164,7 +180,7 @@ final class IngredientCandidateParser: IngredientCandidateParserProtocol {
 
         for phrase in phraseIndex.fuzzyCandidates(normalized: query.normalized, queryTokens: query.tokens) {
             let fuzzyScore = IngredientLexicon.fuzzySimilarity(query.normalized, phrase.normalized)
-            guard fuzzyScore >= 0.78 else { continue }
+            guard fuzzyScore >= ResolutionThresholds.fuzzy else { continue }
 
             register(
                 phrase: phrase,
@@ -234,7 +250,7 @@ final class IngredientCandidateParser: IngredientCandidateParserProtocol {
                 let candidate = scoredCandidate.candidate
                 guard scoredCandidate.stage == .exactTemplate,
                       !candidate.facets.isEmpty,
-                      candidate.score >= 0.985 else {
+                      candidate.score >= ResolutionThresholds.exactTemplateToken else {
                     return nil
                 }
                 return candidate.catalogItemID
@@ -265,7 +281,7 @@ final class IngredientCandidateParser: IngredientCandidateParserProtocol {
         let explicitlyMatchedItemIDs = Set(
             candidatesByID.values.compactMap { scoredCandidate -> String? in
                 let candidate = scoredCandidate.candidate
-                guard !candidate.facets.isEmpty, candidate.score >= 0.9 else {
+                guard !candidate.facets.isEmpty, candidate.score >= ResolutionThresholds.facetCandidate else {
                     return nil
                 }
 
@@ -297,7 +313,7 @@ final class IngredientCandidateParser: IngredientCandidateParserProtocol {
         let itemIDsWithFacetSpecificCandidates = Set(
             candidatesByID.values.compactMap { scoredCandidate -> String? in
                 let candidate = scoredCandidate.candidate
-                guard !candidate.facets.isEmpty, candidate.score >= 0.9 else {
+                guard !candidate.facets.isEmpty, candidate.score >= ResolutionThresholds.facetCandidate else {
                     return nil
                 }
                 return candidate.catalogItemID
@@ -674,7 +690,7 @@ final class RecipeIngredientResolver: RecipeIngredientResolverProtocol {
         }
 
         if let exactTemplateCandidate = candidates.first(where: {
-            $0.score >= 0.985 && $0.rationale.contains("Exact facet template")
+            $0.score >= ResolutionThresholds.exactTemplateToken && $0.rationale.contains("Exact facet template")
         }) {
             return exactTemplateCandidate
         }
@@ -692,7 +708,7 @@ final class RecipeIngredientResolver: RecipeIngredientResolverProtocol {
         }
 
         if let fallbackCandidate,
-           fallbackCandidate.score >= 0.985,
+           fallbackCandidate.score >= ResolutionThresholds.exactTemplateToken,
            fallbackCandidate.rationale.contains("Exact facet template") {
             return .resolved
         }
@@ -704,7 +720,7 @@ final class RecipeIngredientResolver: RecipeIngredientResolverProtocol {
             return .resolved
         }
 
-        if candidates.count == 1 && bestCandidate.score >= 0.9 {
+        if candidates.count == 1 && bestCandidate.score >= ResolutionThresholds.facetCandidate {
             return .resolved
         }
 

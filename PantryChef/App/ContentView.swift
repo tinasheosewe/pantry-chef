@@ -51,7 +51,7 @@ struct ContentView: View {
             CookModeView(recipe: recipe, resumeAtStep: stepIndex, isResuming: true)
                 .environment(appState)
         }
-        .pcSheet(isPresented: $showCookQueueSheet) {
+        .appNavigationSheet(isPresented: $showCookQueueSheet) {
             CookQueueView(appState: appState)
         }
         .task {
@@ -67,12 +67,13 @@ struct ContentView: View {
             appState.deepLinkCookModeRecipeId = nil
 
             Task { @MainActor in
-                for _ in 0..<20 {
+                for _ in 0..<AppConfig.deepLinkMaxRetries {
+                    guard !Task.isCancelled else { return }
                     if let recipe = appState.recipeByIdString(recipeId) {
                         deepLinkRecipe = recipe
                         return
                     }
-                    try await Task.sleep(for: .milliseconds(200))
+                    try? await Task.sleep(for: .milliseconds(AppConfig.deepLinkRetryDelayMs))
                 }
                 AppLog.warn("[ContentView] Deep-link recipe \(recipeId.prefix(8))… not found in known recipes")
             }

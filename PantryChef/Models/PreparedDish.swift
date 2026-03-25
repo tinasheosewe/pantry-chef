@@ -45,21 +45,11 @@ struct PreparedDish: Identifiable, Codable, Hashable {
     }
 
     var expiryStatus: ExpiryStatus {
-        guard let useByDate else { return .fresh }
-        let now = Date()
-        if useByDate < now {
-            return .expired
-        }
-        let threeDaysFromNow = Calendar.current.date(byAdding: .day, value: 3, to: now) ?? now
-        if useByDate <= threeDaysFromNow {
-            return .expiringSoon
-        }
-        return .fresh
+        .from(date: useByDate)
     }
 
     var daysUntilUseBy: Int? {
-        guard let useByDate else { return nil }
-        return Calendar.current.dateComponents([.day], from: Date(), to: useByDate).day
+        ExpiryStatus.daysRemaining(until: useByDate)
     }
 
     var servingsDisplay: String {

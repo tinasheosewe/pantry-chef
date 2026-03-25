@@ -131,30 +131,12 @@ struct MultiCookModeView: View {
     // MARK: - Progress Bar
 
     private var progressBar: some View {
-        VStack(spacing: 4) {
-            GeometryReader { geo in
-                ZStack(alignment: .leading) {
-                    RoundedRectangle(cornerRadius: 3)
-                        .fill(PCColors.accent.opacity(0.15))
-                    RoundedRectangle(cornerRadius: 3)
-                        .fill(PCColors.accent)
-                        .frame(width: geo.size.width * progress)
-                        .animation(.easeInOut(duration: 0.3), value: progress)
-                }
-            }
-            .frame(height: 6)
-
-            HStack {
-                Text("Step \(min(currentBlockIndex + 1, blocks.count)) of \(blocks.count)")
-                    .font(.caption2)
-                    .foregroundStyle(PCColors.textSecondary)
-                Spacer()
-                let totalSeconds = blocks.map(\.totalDurationSeconds).reduce(0, +)
-                Text("~\(totalSeconds / 60) min total")
-                    .font(.caption2)
-                    .foregroundStyle(PCColors.textSecondary)
-            }
-        }
+        PCProgressBar(
+            progress: progress,
+            label: "Step \(min(currentBlockIndex + 1, blocks.count)) of \(blocks.count)",
+            trailingLabel: "~\(blocks.map(\.totalDurationSeconds).reduce(0, +) / 60) min total",
+            height: 6
+        )
         .padding(.horizontal)
         .padding(.top, 8)
     }

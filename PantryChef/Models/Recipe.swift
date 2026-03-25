@@ -117,7 +117,7 @@ struct RecipeStep: Identifiable, Codable, Hashable {
     var effectiveDurationSeconds: Int {
         if let est = estimatedDurationSeconds { return est }
         if let timer = timerMinutes { return timer * 60 }
-        return 90 // sensible default for an untimed prep step
+        return AppConfig.defaultStepDurationSeconds
     }
 }
 

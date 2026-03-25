@@ -20,7 +20,7 @@ import Foundation
 struct MultiRecipeScheduler {
 
     /// Maximum attention points the cook can handle simultaneously.
-    static let effortBudget = 3
+    static let effortBudget = AppConfig.effortBudget
 
     // MARK: - Output Types
 

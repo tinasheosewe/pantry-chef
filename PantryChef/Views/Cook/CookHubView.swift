@@ -226,49 +226,22 @@ struct CookHubView: View {
             }
 
             HStack(spacing: 12) {
-                Button {
+                PCTintedButton("Add From Meal Plan", icon: "calendar.badge.plus", color: PCColors.info) {
                     if currentWeekPlannedRecipeEntries.isEmpty {
                         showNoPlannedMealsAlert = true
                     } else {
                         showMealPlanQueueFlow = true
                     }
-                } label: {
-                    Label("Add From Meal Plan", systemImage: "calendar.badge.plus")
-                        .font(.subheadline)
-                        .fontWeight(.semibold)
-                        .foregroundStyle(Color.white)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 12)
-                        .background(PCColors.info)
-                        .clipShape(RoundedRectangle(cornerRadius: 14))
                 }
 
-                Button {
+                PCTintedButton("Multi-Cook Search", icon: "magnifyingglass", color: PCColors.teal) {
                     showMultiCookSelection = true
-                } label: {
-                    Label("Multi-Cook Search", systemImage: "magnifyingglass")
-                        .font(.subheadline)
-                        .fontWeight(.semibold)
-                        .foregroundStyle(Color.white)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 12)
-                        .background(PCColors.teal)
-                        .clipShape(RoundedRectangle(cornerRadius: 14))
                 }
             }
 
             if appState.cookQueue?.currentStage != nil {
-                Button {
+                PCTintedButton("Start Next Stage", icon: "play.fill", color: PCColors.accent) {
                     launchCurrentStage()
-                } label: {
-                    Label("Start Next Stage", systemImage: "play.fill")
-                        .font(.subheadline)
-                        .fontWeight(.semibold)
-                        .foregroundStyle(Color.white)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 12)
-                        .background(PCColors.accent)
-                        .clipShape(RoundedRectangle(cornerRadius: 14))
                 }
             }
         }
@@ -598,49 +571,22 @@ struct CookHubView: View {
 
             HStack(spacing: 10) {
                 if let actualStage, stage.isEditable {
-                    Button {
+                    PCCapsuleButton(hasActiveSession ? "Resume" : "Start", color: PCColors.accent) {
                         launchStage(actualStage)
-                    } label: {
-                        Text(hasActiveSession ? "Resume" : "Start")
-                            .font(.caption)
-                            .fontWeight(.semibold)
-                            .foregroundStyle(.white)
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 8)
-                            .background(PCColors.accent)
-                            .clipShape(Capsule())
                     }
 
-                    Button {
+                    PCCapsuleButton("Skip", color: PCColors.textPrimary, style: .plain) {
                         Task {
                             await appState.skipCookQueueStage(actualStage.id)
                         }
-                    } label: {
-                        Text("Skip")
-                            .font(.caption)
-                            .fontWeight(.semibold)
-                            .foregroundStyle(PCColors.textPrimary)
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 8)
-                            .background(PCColors.fillTertiary)
-                            .clipShape(Capsule())
                     }
                 }
 
                 Spacer()
 
                 if stage.isEditable {
-                    Button {
+                    PCCapsuleButton("Remove Stage", color: PCColors.expired, style: .tinted) {
                         removeStage(stage.id)
-                    } label: {
-                        Text("Remove Stage")
-                            .font(.caption)
-                            .fontWeight(.semibold)
-                            .foregroundStyle(PCColors.expired)
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 8)
-                            .background(PCColors.expired.opacity(0.12))
-                            .clipShape(Capsule())
                     }
                 }
             }

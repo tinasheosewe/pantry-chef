@@ -94,10 +94,6 @@ struct CookQueue: Identifiable, Codable, Hashable {
         stages.isEmpty
     }
 
-    var completedStageCount: Int {
-        stages.filter { $0.status == .completed }.count
-    }
-
     var pendingStageCount: Int {
         stages.filter { $0.status == .pending || $0.status == .active }.count
     }
@@ -446,7 +442,7 @@ struct CookingSession: Codable, Identifiable {
         startedAt         = try c.decode(Date.self,              forKey: .startedAt)
         backgroundedAt    = try c.decode(Date.self,              forKey: .backgroundedAt)
         isActive          = try c.decodeIfPresent(Bool.self,     forKey: .isActive) ?? true
-        expiryTimeoutSeconds = try c.decodeIfPresent(TimeInterval.self, forKey: .expiryTimeoutSeconds) ?? 7200
+        expiryTimeoutSeconds = try c.decodeIfPresent(TimeInterval.self, forKey: .expiryTimeoutSeconds) ?? AppConfig.sessionExpiryTimeout
         multiCookSessionId   = try c.decodeIfPresent(UUID.self,  forKey: .multiCookSessionId)
         queueId             = try c.decodeIfPresent(UUID.self,   forKey: .queueId)
         queueStageId        = try c.decodeIfPresent(UUID.self,   forKey: .queueStageId)
@@ -462,7 +458,7 @@ struct CookingSession: Codable, Identifiable {
         startedAt: Date,
         backgroundedAt: Date,
         isActive: Bool,
-        expiryTimeoutSeconds: TimeInterval = 7200,
+        expiryTimeoutSeconds: TimeInterval = AppConfig.sessionExpiryTimeout,
         multiCookSessionId: UUID? = nil,
         queueId: UUID? = nil,
         queueStageId: UUID? = nil
