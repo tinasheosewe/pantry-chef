@@ -276,44 +276,6 @@ struct PantryCookReviewSheet: View {
                 }
                 .padding()
             }
-
-            VStack(spacing: 10) {
-                Button {
-                    Task {
-                        isApplying = true
-                        await onApply(items)
-                        isApplying = false
-                        dismiss()
-                        onCompletion()
-                    }
-                } label: {
-                    HStack(spacing: 8) {
-                        if isApplying {
-                            ProgressView()
-                                .tint(.white)
-                        }
-                        Text("Update Pantry")
-                            .fontWeight(.semibold)
-                    }
-                    .foregroundStyle(Color.white)
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    .background(AppColors.primaryGreen)
-                    .clipShape(RoundedRectangle(cornerRadius: 14))
-                }
-                .disabled(isApplying)
-
-                Button("Skip") {
-                    dismiss()
-                    onCompletion()
-                }
-                .foregroundStyle(AppColors.subtleText)
-                .disabled(isApplying)
-            }
-            .padding(.horizontal, 24)
-            .padding(.top, 12)
-            .padding(.bottom, 24)
-            .background(AppColors.cardBackground)
         }
         .background(AppColors.background)
         .navigationTitle("Pantry Review")
@@ -322,7 +284,21 @@ struct PantryCookReviewSheet: View {
             ToolbarItem(placement: .cancellationAction) {
                 Button("Cancel") {
                     dismiss()
+                    onCompletion()
                 }
+            }
+            ToolbarItem(placement: .confirmationAction) {
+                Button("Update") {
+                    Task {
+                        isApplying = true
+                        await onApply(items)
+                        isApplying = false
+                        dismiss()
+                        onCompletion()
+                    }
+                }
+                .fontWeight(.semibold)
+                .disabled(isApplying)
             }
         }
     }

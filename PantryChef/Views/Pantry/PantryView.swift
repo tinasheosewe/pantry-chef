@@ -16,13 +16,6 @@ struct PantryView: View {
         @Bindable var viewModel = viewModel
         AppScreen("pantry.screen", isEmbedded: isEmbedded) {
             VStack(spacing: 0) {
-                modeSummaryBar(
-                    description: "Browse ingredients and update stock in one place.",
-                    addTitle: "Add"
-                ) {
-                    viewModel.prepareBulkAdd()
-                }
-
                 searchAndSortBar
 
                 if viewModel.appState.pantryItems.isEmpty {
@@ -41,6 +34,18 @@ struct PantryView: View {
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             .navigationTitle("Pantry")
+            .toolbar {
+                if isEmbedded {
+                    ToolbarItem(placement: .primaryAction) {
+                        Button {
+                            viewModel.prepareBulkAdd()
+                        } label: {
+                            Image(systemName: "plus.circle.fill")
+                                .font(.title3)
+                        }
+                    }
+                }
+            }
             .sheet(isPresented: $viewModel.showAddItem) {
                 BulkAddPantryView(viewModel: viewModel)
             }
@@ -55,31 +60,6 @@ struct PantryView: View {
                 }
             }
         }
-    }
-
-    private func modeSummaryBar(description: String, addTitle: String, action: @escaping () -> Void) -> some View {
-        HStack(alignment: .top, spacing: 12) {
-            Text(description)
-                .font(.caption)
-                .foregroundStyle(PCColors.textSecondary)
-                .frame(maxWidth: .infinity, alignment: .leading)
-
-            Button(action: action) {
-                Label(addTitle, systemImage: "plus")
-                    .font(.subheadline)
-                    .fontWeight(.semibold)
-                    .foregroundStyle(PCColors.accent)
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 8)
-                    .background(PCColors.accent.opacity(0.12))
-                    .clipShape(Capsule())
-            }
-            .buttonStyle(.plain)
-        }
-        .padding(.horizontal)
-        .padding(.top, 12)
-        .padding(.bottom, 4)
-        .background(PCColors.cardBackground)
     }
 
     // MARK: - Search & Sort
@@ -116,7 +96,6 @@ struct PantryView: View {
         }
         .padding(.horizontal)
         .padding(.vertical, 8)
-        .background(PCColors.cardBackground)
     }
 
     // MARK: - Pantry List

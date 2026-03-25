@@ -100,6 +100,9 @@ struct CookModeView: View {
             titleVisibility: .visible
         ) {
             Button("End Session", role: .destructive) {
+                if let queueStageID {
+                    Task { await appState.skipCookQueueStage(queueStageID) }
+                }
                 viewModel?.endCookingSession()
             }
             Button("Cancel", role: .cancel) { }
@@ -234,23 +237,30 @@ struct CookModeView: View {
 
             Spacer()
 
-            // End Session (explicit kill)
-            Button {
-                showEndConfirm = true
-            } label: {
-                Text("End")
-                    .font(.subheadline)
-                    .fontWeight(.semibold)
-                    .foregroundStyle(PCColors.expired)
-            }
-
             // Mute/unmute mic
             Button {
                 vm.toggleMicMute()
             } label: {
                 Image(systemName: vm.isMicMuted ? "mic.slash.fill" : "mic.fill")
-                    .font(.title3)
-                    .foregroundStyle(vm.isMicMuted ? .gray : PCColors.accent)
+                    .font(.subheadline)
+                    .foregroundStyle(vm.isMicMuted ? PCColors.textTertiary : PCColors.accent)
+                    .padding(8)
+                    .background(PCColors.fillTertiary)
+                    .clipShape(Circle())
+            }
+
+            // End Session (explicit kill)
+            Button {
+                showEndConfirm = true
+            } label: {
+                Text("End")
+                    .font(.caption)
+                    .fontWeight(.semibold)
+                    .foregroundStyle(PCColors.expired)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 6)
+                    .background(PCColors.expired.opacity(0.12))
+                    .clipShape(Capsule())
             }
         }
         .padding()
@@ -486,45 +496,51 @@ struct CookModeView: View {
     // MARK: - Navigation Controls
 
     private func navigationControls(vm: CookModeViewModel) -> some View {
-        HStack(spacing: 32) {
+        HStack(spacing: 12) {
             Button {
                 vm.previousStep()
             } label: {
-                VStack(spacing: 4) {
-                    Image(systemName: "chevron.left.circle.fill")
-                        .font(.system(size: 44))
-                        .foregroundStyle(vm.isFirstStep ? PCColors.textTertiary.opacity(0.3) : PCColors.textPrimary)
+                HStack(spacing: 4) {
+                    Image(systemName: "chevron.left")
+                        .font(.subheadline)
                     Text("Back")
-                        .font(.caption2)
-                        .foregroundStyle(vm.isFirstStep ? PCColors.textTertiary.opacity(0.3) : PCColors.textSecondary)
+                        .font(.subheadline)
+                        .fontWeight(.medium)
                 }
+                .foregroundStyle(vm.isFirstStep ? PCColors.textTertiary.opacity(0.3) : PCColors.textPrimary)
+                .padding(.vertical, 12)
+                .padding(.horizontal, 16)
+                .background(PCColors.fillTertiary)
+                .clipShape(Capsule())
             }
             .disabled(vm.isFirstStep)
 
             Button {
                 vm.repeatCurrentStep()
             } label: {
-                VStack(spacing: 4) {
-                    Image(systemName: "arrow.counterclockwise.circle.fill")
-                        .font(.system(size: 44))
-                        .foregroundStyle(PCColors.textSecondary)
-                    Text("Repeat")
-                        .font(.caption2)
-                        .foregroundStyle(PCColors.textSecondary)
-                }
+                Image(systemName: "arrow.counterclockwise")
+                    .font(.subheadline)
+                    .foregroundStyle(PCColors.textSecondary)
+                    .padding(12)
+                    .background(PCColors.fillTertiary)
+                    .clipShape(Circle())
             }
 
             Button {
                 vm.nextStep()
             } label: {
-                VStack(spacing: 4) {
-                    Image(systemName: vm.isLastStep ? "checkmark.circle.fill" : "chevron.right.circle.fill")
-                        .font(.system(size: 44))
-                        .foregroundStyle(vm.isLastStep ? PCColors.accent : PCColors.textPrimary)
+                HStack(spacing: 4) {
                     Text(vm.isLastStep ? "Done" : "Next")
-                        .font(.caption2)
-                        .foregroundStyle(vm.isLastStep ? PCColors.accent : PCColors.textSecondary)
+                        .font(.subheadline)
+                        .fontWeight(.semibold)
+                    Image(systemName: vm.isLastStep ? "checkmark" : "chevron.right")
+                        .font(.subheadline)
                 }
+                .foregroundStyle(.white)
+                .padding(.vertical, 12)
+                .padding(.horizontal, 20)
+                .background(vm.isLastStep ? PCColors.accent : PCColors.accent)
+                .clipShape(Capsule())
             }
         }
         .padding()

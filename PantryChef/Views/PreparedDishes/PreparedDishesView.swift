@@ -106,7 +106,22 @@ struct PreparedDishesView: View {
         .toolbar {
             if !isEmbedded {
                 ToolbarItem(placement: .primaryAction) {
-                    addMenuLabel(title: "Add Prepared Dish")
+                    Menu {
+                        Button {
+                            presentSingleAdd()
+                        } label: {
+                            Label("Single Meal", systemImage: "plus.circle")
+                        }
+
+                        Button {
+                            showMealPlanQuickAdd = true
+                        } label: {
+                            Label("From Meal Plan", systemImage: "calendar.badge.plus")
+                        }
+                    } label: {
+                        Image(systemName: "plus.circle.fill")
+                            .font(.title3)
+                    }
                 }
             }
         }
@@ -154,20 +169,29 @@ struct PreparedDishesView: View {
     }
 
     private var embeddedHeader: some View {
-        HStack(alignment: .top, spacing: 12) {
-            Text("Track leftovers, takeout, and ready-to-eat meals.")
-                .font(.caption)
-                .foregroundStyle(PCColors.textSecondary)
-                .frame(maxWidth: .infinity, alignment: .leading)
-
+        HStack {
             Spacer()
 
-            addMenuLabel(title: "Add")
+            Menu {
+                Button {
+                    presentSingleAdd()
+                } label: {
+                    Label("Single Meal", systemImage: "plus.circle")
+                }
+
+                Button {
+                    showMealPlanQuickAdd = true
+                } label: {
+                    Label("From Meal Plan", systemImage: "calendar.badge.plus")
+                }
+            } label: {
+                Image(systemName: "plus.circle.fill")
+                    .font(.title3)
+            }
         }
         .padding(.horizontal)
-        .padding(.top, 12)
+        .padding(.top, 8)
         .padding(.bottom, 4)
-        .background(PCColors.cardBackground)
     }
 
     private var searchAndFilters: some View {
@@ -204,7 +228,6 @@ struct PreparedDishesView: View {
         }
         .padding(.horizontal)
         .padding(.vertical, 8)
-        .background(PCColors.cardBackground)
     }
 
     private var historySummaryCard: some View {
@@ -262,31 +285,6 @@ struct PreparedDishesView: View {
         viewModel.showAddDish = true
     }
 
-    @ViewBuilder
-    private func addMenuLabel(title: String) -> some View {
-        Menu {
-            Button {
-                presentSingleAdd()
-            } label: {
-                Label("Single Meal", systemImage: "plus.circle")
-            }
-
-            Button {
-                showMealPlanQuickAdd = true
-            } label: {
-                Label("From Meal Plan", systemImage: "calendar.badge.plus")
-            }
-        } label: {
-            Label(title, systemImage: "plus")
-                .font(.subheadline)
-                .fontWeight(.semibold)
-                .foregroundStyle(PCColors.accent)
-                .padding(.horizontal, 12)
-                .padding(.vertical, 8)
-                .background(PCColors.accent.opacity(0.12))
-                .clipShape(Capsule())
-        }
-    }
 }
 
 struct PreparedDishRow: View {

@@ -37,6 +37,7 @@ struct ShoppingListView: View {
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             .navigationTitle("Shopping List")
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
                     Menu {
@@ -626,7 +627,7 @@ private struct ShoppingPantryPlanEditorView: View {
                     Text("Use this when the amount you buy differs from what the recipe needs, like buying a bottle of soy sauce instead of 2 tbsp.")
                 }
 
-                if let catalogItem = draft.catalogItem {
+                if let catalogItem = draft.catalogItem, !catalogItem.facets.isEmpty {
                     Section {
                         ForEach(catalogItem.facets, id: \.key) { definition in
                             Picker(

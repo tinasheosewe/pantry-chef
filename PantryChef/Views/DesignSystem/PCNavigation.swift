@@ -300,9 +300,19 @@ struct PCPantryCookReviewSheet: View {
                 }
                 .padding()
             }
-
-            VStack(spacing: PCTokens.spacingMD) {
-                PCPrimaryButton(title: "Update Pantry", isLoading: isApplying) {
+        }
+        .background(PCColors.background)
+        .navigationTitle("Pantry Review")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .cancellationAction) {
+                Button("Cancel") {
+                    dismiss()
+                    onCompletion()
+                }
+            }
+            ToolbarItem(placement: .confirmationAction) {
+                Button("Update") {
                     Task {
                         isApplying = true
                         await onApply(items)
@@ -311,25 +321,8 @@ struct PCPantryCookReviewSheet: View {
                         onCompletion()
                     }
                 }
-
-                Button("Skip") {
-                    dismiss()
-                    onCompletion()
-                }
-                .foregroundStyle(PCColors.textSecondary)
+                .fontWeight(.semibold)
                 .disabled(isApplying)
-            }
-            .padding(.horizontal, PCTokens.spacingXL)
-            .padding(.top, PCTokens.spacingMD)
-            .padding(.bottom, PCTokens.spacingXL)
-            .background(PCColors.cardBackground)
-        }
-        .background(PCColors.background)
-        .navigationTitle("Pantry Review")
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItem(placement: .cancellationAction) {
-                Button("Cancel") { dismiss() }
             }
         }
     }

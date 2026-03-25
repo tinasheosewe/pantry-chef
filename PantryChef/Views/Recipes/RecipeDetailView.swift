@@ -183,6 +183,7 @@ struct RecipeDetailView: View {
 
                     if !recipe.dietaryTags.isEmpty {
                         dietaryTagsSection
+                            .padding(.bottom, 16)
                     }
                 }
                 .padding(.horizontal)
@@ -500,7 +501,6 @@ struct RecipeDetailView: View {
                 ActionButton(icon: "list.number", title: "Add Queue", color: PCColors.info) {
                     Task {
                         await appState.addRecipesToCookQueue([scaledRecipe])
-                        appState.requestRootTab(.kitchen)
                     }
                 }
 

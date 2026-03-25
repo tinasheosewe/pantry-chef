@@ -126,7 +126,6 @@ final class CookModeViewModel {
         stopTimer()
         currentStepIndex = index
         notifyStepChanged()
-        autoStartTimerIfNeeded()
     }
 
     /// Tell the Realtime API model about the new step so it reads it aloud.

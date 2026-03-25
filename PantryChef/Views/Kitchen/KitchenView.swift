@@ -36,7 +36,7 @@ struct KitchenView: View {
                     ShoppingListView(appState: appState, isEmbedded: true)
                 }
             }
-            .navigationTitle("Kitchen")
+            .navigationTitle("Prepared Food")
         }
     }
 

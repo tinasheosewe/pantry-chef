@@ -325,7 +325,7 @@ struct MealPlanView: View {
                         .foregroundStyle(PCColors.textTertiary)
                 }
             }
-            .frame(maxWidth: .infinity)
+            .frame(maxWidth: .infinity, minHeight: 100)
             .padding(.vertical, 10)
             .padding(.horizontal, 4)
             .background(primaryEntry?.isPlanned == true ? PCColors.accent.opacity(0.08) : PCColors.fillTertiary)

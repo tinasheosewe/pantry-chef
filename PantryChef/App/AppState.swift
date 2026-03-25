@@ -775,7 +775,11 @@ final class AppState {
 
     // MARK: - AI Actions
     func getShoppingList(for recipe: Recipe) async -> [ShoppingItem] {
-        await aiService.generateShoppingList(recipe: recipe, pantry: pantryItems)
+        var items = await aiService.generateShoppingList(recipe: recipe, pantry: pantryItems)
+        for i in items.indices {
+            items[i].recipeSource = recipe.title
+        }
+        return items
     }
 
     func getRecipeSuggestions() async -> [NormalizedAIRecipe] {

@@ -252,28 +252,34 @@ struct MultiCookModeView: View {
                 Spacer()
 
                 // Navigation buttons
-                HStack(spacing: 20) {
+                HStack(spacing: 12) {
                     if currentBlockIndex > 0 {
                         Button {
-                            withAnimation { currentBlockIndex -= 1 }
+                            withAnimation {
+                                currentBlockIndex -= 1
+                                // Remove passive timers started from blocks after the new position
+                                let validBlockIDs = Set(blocks.prefix(currentBlockIndex).map(\.id))
+                                runningTimers.removeAll { !validBlockIDs.contains($0.blockId) }
+                            }
                         } label: {
-                            HStack {
+                            HStack(spacing: 4) {
                                 Image(systemName: "chevron.left")
                                 Text("Previous")
                             }
-                            .font(.headline)
+                            .font(.subheadline)
+                            .fontWeight(.medium)
                             .foregroundStyle(PCColors.textPrimary)
-                            .padding(.vertical, 14)
-                            .padding(.horizontal, 24)
+                            .padding(.vertical, 12)
+                            .padding(.horizontal, 16)
                             .background(PCColors.fillTertiary)
-                            .clipShape(RoundedRectangle(cornerRadius: 14))
+                            .clipShape(Capsule())
                         }
                     }
 
                     Button {
                         advanceBlock()
                     } label: {
-                        HStack {
+                        HStack(spacing: 4) {
                             Text(currentBlockIndex < blocks.count - 1
                                  ? (block.type == .passive ? "Start & Next" : "Next")
                                  : "Finish")
@@ -281,12 +287,13 @@ struct MultiCookModeView: View {
                                   ? (block.type == .passive ? "timer" : "chevron.right")
                                   : "checkmark")
                         }
-                        .font(.headline)
+                        .font(.subheadline)
+                        .fontWeight(.semibold)
                         .foregroundStyle(Color.white)
                         .frame(maxWidth: .infinity)
-                        .padding(.vertical, 14)
+                        .padding(.vertical, 12)
                         .background(block.type == .passive ? PCColors.expiring : PCColors.accent)
-                        .clipShape(RoundedRectangle(cornerRadius: 14))
+                        .clipShape(Capsule())
                     }
                 }
                 .padding(.horizontal)
@@ -439,7 +446,7 @@ struct MultiCookModeView: View {
             Spacer()
 
             Button {
-                endSession()
+                endSession(completed: true)
             } label: {
                 Text("Done")
                     .font(.headline)
@@ -474,11 +481,15 @@ struct MultiCookModeView: View {
 
     // MARK: - Session Management
 
-    private func endSession() {
+    private func endSession(completed: Bool = false) {
         tickTimer?.invalidate()
         Task {
             if let queueStageID {
-                await appState.completeCookQueueStage(queueStageID)
+                if completed {
+                    await appState.completeCookQueueStage(queueStageID)
+                } else {
+                    await appState.skipCookQueueStage(queueStageID)
+                }
             }
         }
         for recipe in recipes {
