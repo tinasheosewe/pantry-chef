@@ -140,7 +140,7 @@ struct RecipeDetailView: View {
     @State private var healthierSuggestion: HealthierSuggestion?
     @State private var shoppingList: [ShoppingItem] = []
     @State private var pantryReviewItems: [PantryCookReviewItem] = []
-    @State private var isLoadingAction = false
+    @State private var loadingActions: Set<RecipeAction> = []
     @State private var actionErrorMessage: String?
     @State private var existingSession: CookingSession?
     @State private var showModify = false
@@ -504,11 +504,11 @@ struct RecipeDetailView: View {
                     }
                 }
 
-                ActionButton(icon: "cart", title: "What to Buy", color: PCColors.expiring) {
+                ActionButton(icon: "cart", title: "What to Buy", color: PCColors.expiring, isLoading: loadingActions.contains(.shopping)) {
                     Task {
-                        isLoadingAction = true
+                        loadingActions.insert(.shopping)
                         let result = await appState.getShoppingList(for: recipe)
-                        isLoadingAction = false
+                        loadingActions.remove(.shopping)
                         if result.isEmpty {
                             actionErrorMessage = "Couldn't generate shopping list. Please check your internet connection and try again."
                         } else {
@@ -518,11 +518,11 @@ struct RecipeDetailView: View {
                     }
                 }
 
-                ActionButton(icon: "arrow.triangle.2.circlepath", title: "Substitutes", color: PCColors.teal) {
+                ActionButton(icon: "arrow.triangle.2.circlepath", title: "Substitutes", color: PCColors.teal, isLoading: loadingActions.contains(.substitutions)) {
                     Task {
-                        isLoadingAction = true
+                        loadingActions.insert(.substitutions)
                         let result = await appState.getSubstitutions(for: recipe)
-                        isLoadingAction = false
+                        loadingActions.remove(.substitutions)
                         if result.isEmpty {
                             actionErrorMessage = "No local substitutions are available for the missing ingredients in this recipe."
                         } else {
@@ -532,11 +532,11 @@ struct RecipeDetailView: View {
                     }
                 }
 
-                ActionButton(icon: "heart.circle", title: "Healthier", color: PCColors.accent) {
+                ActionButton(icon: "heart.circle", title: "Healthier", color: PCColors.accent, isLoading: loadingActions.contains(.healthier)) {
                     Task {
-                        isLoadingAction = true
+                        loadingActions.insert(.healthier)
                         let result = await appState.getHealthierVersion(of: recipe)
-                        isLoadingAction = false
+                        loadingActions.remove(.healthier)
                         if let result {
                             healthierSuggestion = result
                         } else {
@@ -557,13 +557,6 @@ struct RecipeDetailView: View {
                     .padding(.vertical, 12)
                     .background(PCColors.info.opacity(0.08))
                     .clipShape(RoundedRectangle(cornerRadius: 12))
-            }
-        }
-        .overlay {
-            if isLoadingAction {
-                RoundedRectangle(cornerRadius: 12)
-                    .fill(.ultraThinMaterial)
-                    .overlay(ProgressView())
             }
         }
     }
@@ -853,19 +846,32 @@ struct RecipeDetailView: View {
     }
 }
 
+// MARK: - Recipe Action
+private enum RecipeAction: Equatable {
+    case shopping, substitutions, healthier
+}
+
 // MARK: - Action Button
 struct ActionButton: View {
     let icon: String
     let title: String
     let color: Color
+    var isLoading: Bool = false
     let action: () -> Void
 
     var body: some View {
         Button(action: action) {
             VStack(spacing: 6) {
-                Image(systemName: icon)
-                    .font(.title3)
-                    .foregroundStyle(color)
+                if isLoading {
+                    ProgressView()
+                        .controlSize(.small)
+                        .tint(color)
+                        .frame(height: 24)
+                } else {
+                    Image(systemName: icon)
+                        .font(.title3)
+                        .foregroundStyle(color)
+                }
                 Text(title)
                     .font(.caption2)
                     .fontWeight(.medium)
