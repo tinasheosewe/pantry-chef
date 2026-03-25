@@ -1,16 +1,8 @@
 import SwiftUI
 
 struct PantryView: View {
-    private enum ContentMode: String, CaseIterable, Identifiable {
-        case pantry = "Pantry"
-        case prepared = "Prepared"
-
-        var id: String { rawValue }
-    }
-
     @State private var viewModel: PantryViewModel
     @State private var editingItem: PantryItem?
-    @State private var contentMode: ContentMode = .pantry
     @FocusState private var isSearchFieldFocused: Bool
 
     private let isEmbedded: Bool
@@ -24,47 +16,31 @@ struct PantryView: View {
         @Bindable var viewModel = viewModel
         AppScreen("pantry.screen", isEmbedded: isEmbedded) {
             VStack(spacing: 0) {
-                if !isEmbedded {
-                    Picker("Mode", selection: $contentMode) {
-                        ForEach(ContentMode.allCases) { mode in
-                            Text(mode.rawValue).tag(mode)
-                        }
-                    }
-                    .pickerStyle(.segmented)
-                    .padding(.horizontal)
-                    .padding(.top, 12)
+                modeSummaryBar(
+                    description: "Browse ingredients and update stock in one place.",
+                    addTitle: "Add"
+                ) {
+                    viewModel.prepareBulkAdd()
                 }
 
-                if isEmbedded || contentMode == .pantry {
-                    modeSummaryBar(
-                        description: "Browse ingredients and update stock in one place.",
-                        addTitle: "Add"
+                searchAndSortBar
+
+                if viewModel.appState.pantryItems.isEmpty {
+                    EmptyStateView(
+                        icon: "refrigerator",
+                        title: "Your pantry is empty",
+                        message: "Browse the catalog, set your preferences, then review everything before adding it.",
+                        actionTitle: "Start Adding"
                     ) {
                         viewModel.prepareBulkAdd()
                     }
-
-                    searchAndSortBar
-
-                    if viewModel.appState.pantryItems.isEmpty {
-                        EmptyStateView(
-                            icon: "refrigerator",
-                            title: "Your pantry is empty",
-                            message: "Browse the catalog, set your preferences, then review everything before adding it.",
-                            actionTitle: "Start Adding"
-                        ) {
-                            viewModel.prepareBulkAdd()
-                        }
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    } else {
-                        pantryList
-                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
                 } else {
-                    PreparedDishesView(appState: viewModel.appState, isEmbedded: true)
-                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+                    pantryList
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-            .navigationTitle(contentMode == .pantry ? "Pantry" : "Prepared Food")
+            .navigationTitle("Pantry")
             .sheet(isPresented: $viewModel.showAddItem) {
                 BulkAddPantryView(viewModel: viewModel)
             }

@@ -159,7 +159,7 @@ struct RecipeDetailView: View {
     }
 
     private var pantryMatch: PantryMatchResult {
-        recipe.pantryMatch(pantry: appState.pantryItems)
+        scaledRecipe.pantryMatch(pantry: appState.pantryItems)
     }
 
     var body: some View {
