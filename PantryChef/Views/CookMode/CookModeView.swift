@@ -233,42 +233,34 @@ struct CookModeView: View {
     // MARK: - Top Bar
 
     private func topBar(vm: CookModeViewModel) -> some View {
-        HStack {
-            // Minimize — auto-backgrounds and dismisses
-            Button {
-                dismiss()
-            } label: {
-                Image(systemName: "chevron.down")
-                    .font(.title3)
-                    .foregroundStyle(PCColors.textPrimary)
-            }
-
-            Spacer()
-
+        ZStack {
+            // Center title
             Text(vm.recipe.title)
                 .font(.subheadline)
                 .fontWeight(.semibold)
                 .foregroundStyle(PCColors.textPrimary)
                 .lineLimit(1)
 
-            Spacer()
+            HStack {
+                // Close — offers background or end
+                Menu {
+                    Button {
+                        dismiss()
+                    } label: {
+                        Label("Continue in Background", systemImage: "arrow.down.to.line")
+                    }
+                    Button(role: .destructive) {
+                        showEndConfirm = true
+                    } label: {
+                        Label("End Session", systemImage: "xmark.circle")
+                    }
+                } label: {
+                    Image(systemName: "chevron.down")
+                        .font(.title3)
+                        .foregroundStyle(PCColors.textPrimary)
+                }
 
-            // Mute/unmute mic
-            Button {
-                vm.toggleMicMute()
-            } label: {
-                Image(systemName: vm.isMicMuted ? "mic.slash.fill" : "mic.fill")
-                    .font(.body)
-                    .foregroundStyle(vm.isMicMuted ? PCColors.textTertiary : PCColors.accent)
-            }
-
-            // End Session (explicit kill)
-            Button {
-                showEndConfirm = true
-            } label: {
-                Text("End")
-                    .font(.subheadline)
-                    .foregroundStyle(PCColors.expired)
+                Spacer()
             }
         }
         .padding()
@@ -596,6 +588,18 @@ struct CookModeView: View {
                 }
 
                 Spacer()
+
+                // Mute/unmute mic
+                Button {
+                    vm.toggleMicMute()
+                } label: {
+                    Image(systemName: vm.isMicMuted ? "mic.slash.fill" : "mic.fill")
+                        .font(.subheadline)
+                        .foregroundStyle(vm.isMicMuted ? PCColors.textTertiary : PCColors.accent)
+                        .frame(width: 32, height: 32)
+                        .background(PCColors.fillTertiary)
+                        .clipShape(Circle())
+                }
             }
 
             if !vm.conversationTranscript.isEmpty {
