@@ -330,6 +330,28 @@ private struct PantryCookReviewRow: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
+            HStack(spacing: 8) {
+                ForEach(item.availableSelections) { selection in
+                    Button {
+                        item.selection = selection
+                    } label: {
+                        HStack(spacing: 6) {
+                            Image(systemName: selection.systemImage)
+                                .font(.caption)
+                            Text(selection.title)
+                                .font(.caption)
+                                .fontWeight(.semibold)
+                        }
+                        .foregroundStyle(item.selection == selection ? Color.white : buttonForeground(for: selection))
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 8)
+                        .background(item.selection == selection ? buttonBackground(for: selection) : buttonBackground(for: selection).opacity(0.12))
+                        .clipShape(Capsule())
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+
             HStack(alignment: .top, spacing: 12) {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(item.pantryItem.name)
@@ -361,28 +383,6 @@ private struct PantryCookReviewRow: View {
                     .background(quantityModeColor.opacity(0.14))
                     .foregroundStyle(quantityModeColor)
                     .clipShape(Capsule())
-            }
-
-            HStack(spacing: 8) {
-                ForEach(item.availableSelections) { selection in
-                    Button {
-                        item.selection = selection
-                    } label: {
-                        HStack(spacing: 6) {
-                            Image(systemName: selection.systemImage)
-                                .font(.caption)
-                            Text(selection.title)
-                                .font(.caption)
-                                .fontWeight(.semibold)
-                        }
-                        .foregroundStyle(item.selection == selection ? Color.white : buttonForeground(for: selection))
-                        .padding(.horizontal, 10)
-                        .padding(.vertical, 8)
-                        .background(item.selection == selection ? buttonBackground(for: selection) : buttonBackground(for: selection).opacity(0.12))
-                        .clipShape(Capsule())
-                    }
-                    .buttonStyle(.plain)
-                }
             }
         }
         .padding(14)
@@ -818,7 +818,7 @@ struct EmptyStateView: View {
                         .foregroundStyle(.white)
                         .padding(.horizontal, 24)
                         .padding(.vertical, 12)
-                        .background(AppColors.primaryGreen)
+                        .background(PCColors.accent)
                         .clipShape(Capsule())
                 }
                 .padding(.top, 8)
@@ -853,7 +853,7 @@ struct SectionHeader: View {
                     Text(actionTitle)
                         .font(.subheadline)
                         .fontWeight(.medium)
-                        .foregroundStyle(AppColors.primaryGreen)
+                        .foregroundStyle(PCColors.accent)
                 }
             }
         }

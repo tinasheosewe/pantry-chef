@@ -244,7 +244,7 @@ struct HomeView: View {
                 GridItem(.flexible()),
                 GridItem(.flexible()),
             ], spacing: PCTokens.spacingMD) {
-                QuickActionButton(icon: "fork.knife", title: "What can\nI make?", color: PCColors.fresh) {
+                QuickActionButton(icon: "fork.knife", title: "What can\nI make?", color: PCColors.accent) {
                     onSwitchToRecipesCanMake?()
                 }
                 .accessibilityIdentifier("home.quickAction.canMake")
@@ -390,7 +390,7 @@ struct HomeView: View {
             HStack {
                 Image(systemName: "clock.badge.checkmark")
                     .font(.title3)
-                    .foregroundStyle(PCColors.fresh)
+                    .foregroundStyle(PCColors.accent)
                 Text("Batch Prep Tip")
                     .font(PCFont.headline)
             }

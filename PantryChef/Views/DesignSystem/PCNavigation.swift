@@ -352,35 +352,6 @@ private struct PCPantryCookReviewRow: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: PCTokens.spacingMD) {
-            HStack(alignment: .top, spacing: PCTokens.spacingMD) {
-                VStack(alignment: .leading, spacing: PCTokens.spacingXS) {
-                    Text(item.pantryItem.name)
-                        .font(PCFont.headline)
-                        .foregroundStyle(PCColors.textPrimary)
-
-                    Text(item.pantryDetailText)
-                        .font(PCFont.body)
-                        .foregroundStyle(PCColors.textSecondary)
-
-                    Text(item.recipeUsageText)
-                        .font(PCFont.caption)
-                        .foregroundStyle(PCColors.textPrimary)
-
-                    if !item.matchedIngredientNames.isEmpty {
-                        Text(item.matchedIngredientNames.joined(separator: ", "))
-                            .font(PCFont.micro)
-                            .foregroundStyle(PCColors.textSecondary)
-                    }
-                }
-
-                Spacer(minLength: PCTokens.spacingMD)
-
-                PCBadge(
-                    text: item.quantityMode.title,
-                    color: item.quantityMode == .exact ? PCColors.info : PCColors.expiring
-                )
-            }
-
             HStack(spacing: PCTokens.spacingSM) {
                 ForEach(item.availableSelections) { selection in
                     Button {
@@ -408,6 +379,35 @@ private struct PCPantryCookReviewRow: View {
                     }
                     .buttonStyle(.plain)
                 }
+            }
+
+            HStack(alignment: .top, spacing: PCTokens.spacingMD) {
+                VStack(alignment: .leading, spacing: PCTokens.spacingXS) {
+                    Text(item.pantryItem.name)
+                        .font(PCFont.headline)
+                        .foregroundStyle(PCColors.textPrimary)
+
+                    Text(item.pantryDetailText)
+                        .font(PCFont.body)
+                        .foregroundStyle(PCColors.textSecondary)
+
+                    Text(item.recipeUsageText)
+                        .font(PCFont.caption)
+                        .foregroundStyle(PCColors.textPrimary)
+
+                    if !item.matchedIngredientNames.isEmpty {
+                        Text(item.matchedIngredientNames.joined(separator: ", "))
+                            .font(PCFont.micro)
+                            .foregroundStyle(PCColors.textSecondary)
+                    }
+                }
+
+                Spacer(minLength: PCTokens.spacingMD)
+
+                PCBadge(
+                    text: item.quantityMode.title,
+                    color: item.quantityMode == .exact ? PCColors.info : PCColors.expiring
+                )
             }
         }
         .padding(PCTokens.cardPadding)

@@ -14,6 +14,7 @@ struct CookModeView: View {
     @State private var showPreparedDishEditor = false
     @State private var pantryReviewItems: [PantryCookReviewItem] = []
     @State private var displayMode: CookDisplayMode = .step
+    @State private var tabStepIndex: Int = 0
 
     private let recipe: Recipe
     private let resumeAtStep: Int
@@ -53,6 +54,7 @@ struct CookModeView: View {
                     queueStageId: queueStageID
                 )
                 viewModel = vm
+                tabStepIndex = resumeAtStep
                 // Auto-start conversational cook mode
                 vm.startConversation()
             }
@@ -187,13 +189,23 @@ struct CookModeView: View {
 
                 Group {
                     if displayMode == .step {
-                        TabView(selection: Bindable(vm).currentStepIndex) {
+                        TabView(selection: $tabStepIndex) {
                             ForEach(Array(vm.steps.enumerated()), id: \.element.id) { index, step in
                                 stepView(step)
                                     .tag(index)
                             }
                         }
                         .tabViewStyle(.page(indexDisplayMode: .never))
+                        .onChange(of: tabStepIndex) { _, newIndex in
+                            if newIndex != vm.currentStepIndex {
+                                vm.goToStep(newIndex)
+                            }
+                        }
+                        .onChange(of: vm.currentStepIndex) { _, newIndex in
+                            if newIndex != tabStepIndex {
+                                tabStepIndex = newIndex
+                            }
+                        }
                     } else {
                         fullRecipeView(vm: vm)
                     }
@@ -242,11 +254,8 @@ struct CookModeView: View {
                 vm.toggleMicMute()
             } label: {
                 Image(systemName: vm.isMicMuted ? "mic.slash.fill" : "mic.fill")
-                    .font(.subheadline)
+                    .font(.body)
                     .foregroundStyle(vm.isMicMuted ? PCColors.textTertiary : PCColors.accent)
-                    .padding(8)
-                    .background(PCColors.fillTertiary)
-                    .clipShape(Circle())
             }
 
             // End Session (explicit kill)
@@ -254,13 +263,8 @@ struct CookModeView: View {
                 showEndConfirm = true
             } label: {
                 Text("End")
-                    .font(.caption)
-                    .fontWeight(.semibold)
+                    .font(.subheadline)
                     .foregroundStyle(PCColors.expired)
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 6)
-                    .background(PCColors.expired.opacity(0.12))
-                    .clipShape(Capsule())
             }
         }
         .padding()
