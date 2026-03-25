@@ -2,7 +2,6 @@ import SwiftUI
 
 struct PreparedDishesView: View {
     @State private var viewModel: PreparedDishViewModel
-    @FocusState private var isSearchFocused: Bool
     @State private var showMealPlanQuickAdd = false
     @State private var showHistoryPicker = false
     @State private var historySeedItem: PreparedDishHistoryItem?
@@ -161,37 +160,26 @@ struct PreparedDishesView: View {
     private var searchAndFilters: some View {
         @Bindable var viewModel = viewModel
 
-        return VStack(spacing: 8) {
-            AppSearchField(
-                "Search prepared dishes...",
-                text: $viewModel.searchText,
-                focus: $isSearchFocused,
-                onTextChange: { _ in
-                    viewModel.onSearchTextChanged()
-                }
-            )
+        return PCSearchFilterBar(
+            placeholder: "Search prepared dishes...",
+            searchText: $viewModel.searchText,
+            onTextChange: { _ in viewModel.onSearchTextChanged() }
+        ) {
+            CategoryPill(title: "All", isSelected: viewModel.selectedMealType == nil) {
+                viewModel.selectedMealType = nil
+            }
 
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 8) {
-                    CategoryPill(title: "All", isSelected: viewModel.selectedMealType == nil) {
-                        viewModel.selectedMealType = nil
-                    }
-
-                    ForEach(MealType.allCases) { mealType in
-                        if let count = viewModel.mealTypeCounts[mealType], count > 0 {
-                            CategoryPill(
-                                title: "\(mealType.rawValue) (\(count))",
-                                isSelected: viewModel.selectedMealType == mealType
-                            ) {
-                                viewModel.selectedMealType = viewModel.selectedMealType == mealType ? nil : mealType
-                            }
-                        }
+            ForEach(MealType.allCases) { mealType in
+                if let count = viewModel.mealTypeCounts[mealType], count > 0 {
+                    CategoryPill(
+                        title: "\(mealType.rawValue) (\(count))",
+                        isSelected: viewModel.selectedMealType == mealType
+                    ) {
+                        viewModel.selectedMealType = viewModel.selectedMealType == mealType ? nil : mealType
                     }
                 }
             }
         }
-        .padding(.horizontal)
-        .padding(.vertical, 8)
     }
 
     private var historySummaryCard: some View {

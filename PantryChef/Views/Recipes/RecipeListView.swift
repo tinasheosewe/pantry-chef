@@ -14,7 +14,6 @@ struct RecipeListView: View {
     @State private var generatedRecipe: Recipe?
     @State private var launchRecipe: Recipe?
     @Binding var activateCanMakeFilter: Bool
-    @FocusState private var isSearchFocused: Bool
 
     enum RecipeSection: String, CaseIterable {
         case myRecipes = "My Recipes"
@@ -36,13 +35,7 @@ struct RecipeListView: View {
         AppScreen("recipes.screen") {
             VStack(spacing: 0) {
                 sectionPicker(discoverCount: selectedSection == .discover ? filteredDiscoverRecipes.count : nil)
-
-                VStack(spacing: 8) {
-                    searchBar
-                    filterPills
-                }
-                .padding(.horizontal)
-                .padding(.vertical, 8)
+                searchAndFilterBar
 
                 if selectedSection == .myRecipes {
                     userRecipesContent(recipes: filteredUserRecipes)
@@ -207,92 +200,78 @@ struct RecipeListView: View {
                 if section == .discover { discoverTapStartedAt = CFAbsoluteTimeGetCurrent() }
             }
         )
-        .padding(.horizontal)
-        .padding(.top, PCTokens.spacingMD)
-        .padding(.bottom, PCTokens.spacingSM)
+        .pickerPadding()
     }
 
-    // MARK: - Search Bar
-    private var searchBar: some View {
+    // MARK: - Search & Filter Bar
+    private var searchAndFilterBar: some View {
         @Bindable var viewModel = viewModel
-        return AppSearchField(
-            "Search recipes...",
-            text: $viewModel.searchText,
-            focus: $isSearchFocused,
-            onTextChange: { _ in
-                viewModel.onSearchTextChanged(isDiscoverTab: selectedSection == .discover)
-            }
-        )
-        .accessibilityIdentifier("recipes.searchField")
-    }
-
-    // MARK: - Filter Pills
-    private var filterPills: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 8) {
-                // Can Make toggle
-                FilterPill(
-                    title: "Can Make",
-                    icon: "checkmark.circle.fill",
-                    isSelected: viewModel.showCanMakeOnly
-                ) {
-                    viewModel.showCanMakeOnly.toggle()
-                    if viewModel.showCanMakeOnly {
-                        viewModel.sortOrder = .matchPercent
-                    }
-                }
-
+        return PCSearchFilterBar(
+            placeholder: "Search recipes...",
+            searchText: $viewModel.searchText,
+            accessibilityID: "recipes.searchField",
+            onTextChange: { _ in viewModel.onSearchTextChanged(isDiscoverTab: selectedSection == .discover) }
+        ) {
+            FilterPill(
+                title: "Can Make",
+                icon: "checkmark.circle.fill",
+                isSelected: viewModel.showCanMakeOnly
+            ) {
+                viewModel.showCanMakeOnly.toggle()
                 if viewModel.showCanMakeOnly {
-                    FilterPill(
-                        title: "+ Subs",
-                        icon: "arrow.triangle.swap",
-                        isSelected: viewModel.showWithSubstitutions
-                    ) {
-                        viewModel.showWithSubstitutions.toggle()
-                    }
+                    viewModel.sortOrder = .matchPercent
                 }
+            }
 
-                if selectedSection == .myRecipes {
-                    FilterPill(
-                        title: "Favorites",
-                        icon: "heart.fill",
-                        isSelected: viewModel.showOnlyFavorites
-                    ) {
-                        viewModel.showOnlyFavorites.toggle()
-                    }
-                }
-
-                // Cuisine pill
+            if viewModel.showCanMakeOnly {
                 FilterPill(
-                    title: viewModel.selectedCuisine?.rawValue ?? "Cuisine",
-                    icon: nil,
-                    isSelected: viewModel.selectedCuisine != nil
+                    title: "+ Subs",
+                    icon: "arrow.triangle.swap",
+                    isSelected: viewModel.showWithSubstitutions
                 ) {
-                    showCuisinePicker.toggle()
+                    viewModel.showWithSubstitutions.toggle()
                 }
-                .popover(isPresented: $showCuisinePicker) {
-                    cuisinePickerContent
-                }
+            }
 
-                ForEach(MealType.allCases) { type in
-                    FilterPill(
-                        title: type.rawValue,
-                        icon: type.icon,
-                        isSelected: viewModel.selectedMealType == type
-                    ) {
-                        viewModel.selectedMealType = viewModel.selectedMealType == type ? nil : type
-                    }
+            if selectedSection == .myRecipes {
+                FilterPill(
+                    title: "Favorites",
+                    icon: "heart.fill",
+                    isSelected: viewModel.showOnlyFavorites
+                ) {
+                    viewModel.showOnlyFavorites.toggle()
                 }
+            }
 
-                if viewModel.hasActiveFilters {
-                    Button {
-                        viewModel.clearFilters()
-                    } label: {
-                        Text("Clear")
-                            .font(PCFont.caption)
-                            .fontWeight(.medium)
-                            .foregroundStyle(PCColors.expired)
-                    }
+            FilterPill(
+                title: viewModel.selectedCuisine?.rawValue ?? "Cuisine",
+                icon: nil,
+                isSelected: viewModel.selectedCuisine != nil
+            ) {
+                showCuisinePicker.toggle()
+            }
+            .popover(isPresented: $showCuisinePicker) {
+                cuisinePickerContent
+            }
+
+            ForEach(MealType.allCases) { type in
+                FilterPill(
+                    title: type.rawValue,
+                    icon: type.icon,
+                    isSelected: viewModel.selectedMealType == type
+                ) {
+                    viewModel.selectedMealType = viewModel.selectedMealType == type ? nil : type
+                }
+            }
+
+            if viewModel.hasActiveFilters {
+                Button {
+                    viewModel.clearFilters()
+                } label: {
+                    Text("Clear")
+                        .font(PCFont.caption)
+                        .fontWeight(.medium)
+                        .foregroundStyle(PCColors.expired)
                 }
             }
         }

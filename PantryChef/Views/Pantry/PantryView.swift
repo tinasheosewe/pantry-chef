@@ -3,7 +3,6 @@ import SwiftUI
 struct PantryView: View {
     @State private var viewModel: PantryViewModel
     @State private var editingItem: PantryItem?
-    @FocusState private var isSearchFieldFocused: Bool
 
     private let isEmbedded: Bool
 
@@ -63,37 +62,26 @@ struct PantryView: View {
     // MARK: - Search & Sort
     private var searchAndSortBar: some View {
         @Bindable var viewModel = viewModel
-        return VStack(spacing: 8) {
-            AppSearchField(
-                "Search pantry...",
-                text: $viewModel.searchText,
-                focus: $isSearchFieldFocused,
-                onTextChange: { _ in
-                    viewModel.onSearchTextChanged()
-                }
-            )
-            .accessibilityIdentifier("pantry.searchField")
-
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 8) {
-                    CategoryPill(title: "All", isSelected: viewModel.selectedCategory == nil) {
-                        viewModel.selectedCategory = nil
-                    }
-                    ForEach(FoodCategory.allCases) { category in
-                        if let count = viewModel.activeCategoryCount[category], count > 0 {
-                            CategoryPill(
-                                title: "\(category.rawValue) (\(count))",
-                                isSelected: viewModel.selectedCategory == category
-                            ) {
-                                viewModel.selectedCategory = viewModel.selectedCategory == category ? nil : category
-                            }
-                        }
+        return PCSearchFilterBar(
+            placeholder: "Search pantry...",
+            searchText: $viewModel.searchText,
+            accessibilityID: "pantry.searchField",
+            onTextChange: { _ in viewModel.onSearchTextChanged() }
+        ) {
+            CategoryPill(title: "All", isSelected: viewModel.selectedCategory == nil) {
+                viewModel.selectedCategory = nil
+            }
+            ForEach(FoodCategory.allCases) { category in
+                if let count = viewModel.activeCategoryCount[category], count > 0 {
+                    CategoryPill(
+                        title: "\(category.rawValue) (\(count))",
+                        isSelected: viewModel.selectedCategory == category
+                    ) {
+                        viewModel.selectedCategory = viewModel.selectedCategory == category ? nil : category
                     }
                 }
             }
         }
-        .padding(.horizontal)
-        .padding(.vertical, 8)
     }
 
     // MARK: - Pantry List

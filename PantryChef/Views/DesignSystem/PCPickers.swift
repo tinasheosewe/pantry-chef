@@ -48,6 +48,46 @@ struct PCSegmentedPicker<Item: Hashable>: View {
         .background(PCColors.fillTertiary)
         .clipShape(RoundedRectangle(cornerRadius: PCTokens.cornerRadiusSmall + 3))
     }
+
+    /// Standard layout padding for tab-bar positioning at the top of a screen.
+    func pickerPadding() -> some View {
+        self
+            .padding(.horizontal)
+            .padding(.top, PCTokens.spacingMD)
+            .padding(.bottom, PCTokens.spacingSM)
+    }
+}
+
+// MARK: - PCSearchFilterBar
+
+/// Shared search + horizontal filter pills layout.
+/// All views that show a search bar with scrolling pills beneath it
+/// should use this to ensure consistent spacing across the app.
+struct PCSearchFilterBar<Pills: View>: View {
+    let placeholder: String
+    @Binding var searchText: String
+    var accessibilityID: String?
+    var onTextChange: ((String) -> Void)?
+    @ViewBuilder var pills: () -> Pills
+
+    var body: some View {
+        VStack(spacing: 8) {
+            AppSearchField(
+                placeholder,
+                text: $searchText,
+                onTextChange: onTextChange
+            )
+            .accessibilityIdentifier(accessibilityID ?? "")
+
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 8) {
+                    pills()
+                }
+            }
+        }
+        .padding(.horizontal)
+        .padding(.vertical, 8)
+    }
 }
 
 // MARK: - PCChipPicker (Single Select)

@@ -23,9 +23,7 @@ struct KitchenView: View {
                     label: { $0.rawValue },
                     badge: { badgeCount(for: $0) }
                 )
-                .padding(.horizontal)
-                .padding(.top, PCTokens.spacingMD)
-                .padding(.bottom, PCTokens.spacingSM)
+                .pickerPadding()
 
                 switch segment {
                 case .pantry:
