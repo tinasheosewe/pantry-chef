@@ -1188,6 +1188,13 @@ final class AppState {
         await persistCookQueue()
     }
 
+    func stampCookedMealPlanEntriesByRecipe(_ recipeID: UUID) async {
+        let entryIDs = mealPlan
+            .filter { $0.recipe?.id == recipeID && $0.cookedAt == nil }
+            .map(\.id)
+        await stampCookedMealPlanEntries(entryIDs)
+    }
+
     private func stampCookedMealPlanEntries(_ entryIDs: [UUID]) async {
         guard !entryIDs.isEmpty else { return }
         let now = Date()

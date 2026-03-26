@@ -68,6 +68,7 @@ final class CookModeViewModel {
         self.currentStepIndex = initialStepIndex
         self.queueId = queueId
         self.queueStageId = queueStageId
+        self.isMuted = UserDefaults.standard.bool(forKey: "cookMode.isMuted")
         setupRealtimeCallbacks()
     }
 
@@ -106,12 +107,14 @@ final class CookModeViewModel {
     func nextStep() {
         guard !isLastStep else {
             showCompletionScreen = true
+            stopConversation()
             return
         }
         stopTimer()
         currentStepIndex += 1
         notifyStepChanged()
         autoStartTimerIfNeeded()
+        persistSession()
     }
 
     func previousStep() {
@@ -119,6 +122,7 @@ final class CookModeViewModel {
         stopTimer()
         currentStepIndex -= 1
         notifyStepChanged()
+        persistSession()
     }
 
     func goToStep(_ index: Int) {
@@ -126,11 +130,12 @@ final class CookModeViewModel {
         stopTimer()
         currentStepIndex = index
         notifyStepChanged()
+        persistSession()
     }
 
     /// Tell the Realtime API model about the new step so it reads it aloud.
     private func notifyStepChanged() {
-        guard isConversationActive, let step = currentStep else { return }
+        guard !isMuted, isConversationActive, let step = currentStep else { return }
         var msg = "The user moved to step \(step.stepNumber): \(step.instruction)."
         if let tip = step.tip { msg += " Tip: \(tip)." }
         msg += " Read this step aloud for them, briefly."
@@ -148,6 +153,7 @@ final class CookModeViewModel {
 
     func toggleMute() {
         isMuted.toggle()
+        UserDefaults.standard.set(isMuted, forKey: "cookMode.isMuted")
         if isMuted {
             realtimeService.stopCapture()
             realtimeService.silenceAI()
@@ -225,6 +231,9 @@ final class CookModeViewModel {
                 realtimeService.sendUserMessage(greeting)
                 AppLog.info("[CookMode] Greeting sent (resume=\(isResuming), step=\(currentStepIndex + 1))")
             }
+
+            // Persist session so ActiveCooksManager and mini player can see it
+            persistSession()
         }
     }
 
@@ -237,7 +246,6 @@ final class CookModeViewModel {
         conversationError = nil
         isModelSpeaking = false
         isUserSpeaking = false
-        isMuted = false
     }
 
     // MARK: - Mic Permission
@@ -581,6 +589,10 @@ final class CookModeViewModel {
         guard isConversationActive, !didContinueInBackground, !isEndingSession, !showCompletionScreen else { return }
         isSchedulingBackground = true
 
+        // Silence audio immediately — don't wait for notifications to finish scheduling
+        realtimeService.silenceAI()
+        realtimeService.stopCapture()
+
         Task {
             // Use cached permission when available (fast path for auto-background).
             let authorized: Bool
@@ -707,6 +719,33 @@ final class CookModeViewModel {
         CookingSession.clear(recipeId: recipe.id)
         didContinueInBackground = false
         cleanup()
+    }
+
+    // MARK: - Session Persistence
+
+    /// Save the current session to UserDefaults so the mini player and
+    /// active-cook guards can see it even while cooking in the foreground.
+    func persistSession() {
+        let session = CookingSession(
+            recipeId: recipe.id,
+            recipeName: recipe.title,
+            totalSteps: steps.count,
+            stepSummaries: steps.map {
+                CookingSession.StepSummary(
+                    stepNumber: $0.stepNumber,
+                    instruction: $0.instruction,
+                    timerMinutes: $0.timerMinutes
+                )
+            },
+            currentStepIndex: currentStepIndex,
+            startedAt: Date(),
+            backgroundedAt: Date(),
+            isActive: true,
+            expiryTimeoutSeconds: AppConfig.sessionExpiryTimeout,
+            queueId: queueId,
+            queueStageId: queueStageId
+        )
+        session.save()
     }
 
     // MARK: - Cleanup

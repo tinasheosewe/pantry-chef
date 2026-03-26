@@ -182,15 +182,6 @@ struct MealPlanView: View {
         }
         .padding()
         .background(PCColors.cardBackground)
-        .overlay(alignment: .bottom) {
-            Button("Today") {
-                viewModel.goToCurrentWeek()
-            }
-            .font(.caption2)
-            .fontWeight(.medium)
-            .foregroundStyle(PCColors.accent)
-            .offset(y: 12)
-        }
     }
 
     // MARK: - Day Row
@@ -208,17 +199,6 @@ struct MealPlanView: View {
                 }
 
                 Spacer()
-
-                if Calendar.current.isDateInToday(date) {
-                    Text("Today")
-                        .font(.caption)
-                        .fontWeight(.semibold)
-                        .foregroundStyle(PCColors.accent)
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 4)
-                        .background(PCColors.accent.opacity(0.1))
-                        .clipShape(Capsule())
-                }
             }
 
             HStack(spacing: 8) {

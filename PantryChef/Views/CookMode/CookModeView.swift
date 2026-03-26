@@ -41,7 +41,6 @@ struct CookModeView: View {
                     .tint(PCColors.accent)
             }
         }
-        .preferredColorScheme(.dark)
         .onAppear {
             if viewModel == nil {
                 let realtime = RealtimeService()
@@ -95,6 +94,15 @@ struct CookModeView: View {
         .onChange(of: viewModel?.isEndingSession ?? false) { _, isEnding in
             if isEnding {
                 dismiss()
+            }
+        }
+        .onChange(of: viewModel?.currentStepIndex) { _, _ in
+            appState.activeCooks.refresh()
+        }
+        .onChange(of: viewModel?.isConversationActive) { _, active in
+            if active == true {
+                // Session was just persisted in startConversation — pick it up
+                appState.activeCooks.refresh()
             }
         }
         .confirmationDialog(
@@ -668,6 +676,8 @@ struct CookModeView: View {
                         }
                         if let queueStageID {
                             await appState.completeCookQueueStage(queueStageID)
+                        } else {
+                            await appState.stampCookedMealPlanEntriesByRecipe(vm.recipe.id)
                         }
                         CookingSession.clear(recipeId: vm.recipe.id)
                         appState.activeCooks.refresh()
@@ -697,6 +707,8 @@ struct CookModeView: View {
                         }
                         if let queueStageID {
                             await appState.completeCookQueueStage(queueStageID)
+                        } else {
+                            await appState.stampCookedMealPlanEntriesByRecipe(vm.recipe.id)
                         }
                         CookingSession.clear(recipeId: vm.recipe.id)
                         appState.activeCooks.refresh()
