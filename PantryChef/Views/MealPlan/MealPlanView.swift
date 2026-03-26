@@ -35,7 +35,7 @@ struct MealPlanView: View {
                         Button {
                             showPreparedFoodFlow = true
                         } label: {
-                            Label("Prepared Food", systemImage: "calendar.badge.plus")
+                            Label("Add to Prepared Food", systemImage: "calendar.badge.plus")
                         }
                         .disabled(preparedFoodSourceEntries.isEmpty)
 
@@ -48,7 +48,7 @@ struct MealPlanView: View {
                         Button {
                             prepareShoppingConfirmation()
                         } label: {
-                            Label("Shopping List", systemImage: "cart")
+                            Label("Add to Shopping List", systemImage: "cart")
                         }
                     } label: {
                         Image(systemName: "ellipsis.circle")
