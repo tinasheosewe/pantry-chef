@@ -39,7 +39,6 @@
 		7A6DC2A6BFD6CD5A6C24A629 /* input_audio_transcription_completed_multilingual.json in Resources */ = {isa = PBXBuildFile; fileRef = 877E52465510E708BA84311A /* input_audio_transcription_completed_multilingual.json */; };
 		7E916317C189D58C4B2E423F /* MultiCookModeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C5141EDE2DF8A7E7FE5272F /* MultiCookModeView.swift */; };
 		7E9E0EC8D2DF08744A3DA912 /* RecipeBuilderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F620C25FCD846DF01FBA6193 /* RecipeBuilderView.swift */; };
-		83DAC754ED407EC58B68CF61 /* CookHubView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A140787A9C523D741D13C298 /* CookHubView.swift */; };
 		8701F19CA8F33EBF5341CF13 /* RecipeIngredientResolution.swift in Sources */ = {isa = PBXBuildFile; fileRef = D163F4169A50AA35EA50126A /* RecipeIngredientResolution.swift */; };
 		8940817B4ECB43E57B1E9436 /* AudioPipelineHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = A583969D363695B85BA85C0A /* AudioPipelineHelper.swift */; };
 		8A83DC607C8342D82632581C /* AIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9D6320911E5D93399FD4833 /* AIService.swift */; };
@@ -166,7 +165,6 @@
 		9C94A57E1096BD67BA6E03A0 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		A0382EF98C03B29B3D9B560F /* ActiveCooksManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActiveCooksManager.swift; sourceTree = "<group>"; };
 		A078E82E845BCC2B8C09E291 /* PantryChefTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = PantryChefTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		A140787A9C523D741D13C298 /* CookHubView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CookHubView.swift; sourceTree = "<group>"; };
 		A2D6EB6860064D974915E9B1 /* ViewSnapshotBaselineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewSnapshotBaselineTests.swift; sourceTree = "<group>"; };
 		A583969D363695B85BA85C0A /* AudioPipelineHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPipelineHelper.swift; sourceTree = "<group>"; };
 		A690A6DFC4505930CDD76AF7 /* PreparedDishViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreparedDishViewModel.swift; sourceTree = "<group>"; };
@@ -270,7 +268,6 @@
 		2F5EE4ADE0609C4D1D7A5C1A /* Cook */ = {
 			isa = PBXGroup;
 			children = (
-				A140787A9C523D741D13C298 /* CookHubView.swift */,
 				EB200457CB002483DFEA797C /* CookQueueView.swift */,
 			);
 			path = Cook;
@@ -684,7 +681,6 @@
 				8940817B4ECB43E57B1E9436 /* AudioPipelineHelper.swift in Sources */,
 				DD9DA71A8A0D1E8A532CA2F7 /* Components.swift in Sources */,
 				EC0338B74FC96D604A0D4696 /* ContentView.swift in Sources */,
-				83DAC754ED407EC58B68CF61 /* CookHubView.swift in Sources */,
 				B605C039128842205B22C467 /* CookModeView.swift in Sources */,
 				F8BF10D5E967874C8FE95144 /* CookModeViewModel.swift in Sources */,
 				E65689240EF156179AF2AA65 /* CookQueueView.swift in Sources */,

@@ -106,6 +106,7 @@ final class CookModeViewModel {
 
     func nextStep() {
         guard !isLastStep else {
+            stopTimer()
             showCompletionScreen = true
             stopConversation()
             return
@@ -586,15 +587,18 @@ final class CookModeViewModel {
     /// then disconnects voice and saves the session.
     /// Safe to call multiple times — guards against double-scheduling.
     func continueInBackground() {
-        guard isConversationActive, !didContinueInBackground, !isEndingSession, !showCompletionScreen else { return }
+        guard isConversationActive, !didContinueInBackground, !isEndingSession, !showCompletionScreen, !isSchedulingBackground else { return }
         isSchedulingBackground = true
 
         // Persist session synchronously so mini player/queue see it immediately
         persistSession()
 
-        // Silence audio immediately — don't wait for notifications to finish scheduling
+        // Silence audio and disconnect voice immediately — notifications take over.
+        // This frees the AVAudioSession right away so other apps aren't blocked.
         realtimeService.silenceAI()
         realtimeService.stopCapture()
+        stopConversation()
+        didContinueInBackground = true
 
         Task {
             // Use cached permission when available (fast path for auto-background).
@@ -706,12 +710,8 @@ final class CookModeViewModel {
 
         AppLog.info("[CookMode] ✅ Background notifications scheduled deterministically (\(remaining.count) steps, total \(Int(cumulativeDelay))s)")
 
-        // Complete the background transition
+        // Scheduling complete
         isSchedulingBackground = false
-        didContinueInBackground = true
-
-        // Disconnect voice — notifications take over
-        stopConversation()
     }
 
     /// End the cooking session — clears notifications and persisted session.

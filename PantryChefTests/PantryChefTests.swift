@@ -6629,4 +6629,182 @@ final class CookModeInteractionTests: XCTestCase {
         // Step 1 has no timer, we're already there
         XCTAssertFalse(vm.isTimerRunning)
     }
+
+    // ================================================================
+    // MARK: - Mute Persistence
+    // ================================================================
+
+    func testToggleMuteWritesToUserDefaults() {
+        let (vm, _) = makeSUT()
+        XCTAssertFalse(vm.isMuted)
+
+        vm.toggleMute()
+
+        XCTAssertTrue(vm.isMuted)
+        XCTAssertTrue(UserDefaults.standard.bool(forKey: "cookMode.isMuted"))
+
+        vm.toggleMute()
+
+        XCTAssertFalse(vm.isMuted)
+        XCTAssertFalse(UserDefaults.standard.bool(forKey: "cookMode.isMuted"))
+    }
+
+    func testMuteStateRestoredOnInit() {
+        UserDefaults.standard.set(true, forKey: "cookMode.isMuted")
+
+        let recipe = makeRecipe(
+            title: "Test",
+            ingredients: [Ingredient(name: "A", quantity: 1, unit: .piece)],
+            steps: [RecipeStep(stepNumber: 1, instruction: "Go")]
+        )
+        let mock = MockRealtimeService()
+        let vm = CookModeViewModel(recipe: recipe, realtimeService: mock)
+
+        XCTAssertTrue(vm.isMuted, "Mute should be restored from UserDefaults on init")
+
+        // Clean up
+        UserDefaults.standard.removeObject(forKey: "cookMode.isMuted")
+    }
+
+    // ================================================================
+    // MARK: - Continue-in-Background Guards
+    // ================================================================
+
+    func testContinueInBackgroundRequiresActiveConversation() {
+        let (vm, mock) = makeSUT()
+        // Conversation not started — isConversationActive = false
+        vm.continueInBackground()
+
+        XCTAssertFalse(vm.didContinueInBackground)
+        XCTAssertEqual(mock.silenceAICallCount, 0, "Should not silence when conversation inactive")
+    }
+
+    func testContinueInBackgroundBlockedWhenAlreadyScheduling() async {
+        let (vm, mock) = makeSUT()
+        await simulateStartConversation(vm, mock)
+
+        // First call — should proceed
+        vm.continueInBackground()
+        XCTAssertTrue(vm.didContinueInBackground)
+        XCTAssertEqual(mock.silenceAICallCount, 1)
+
+        // Reset to simulate re-entry attempt while still scheduling
+        // (didContinueInBackground is already true, so guard blocks)
+        let silenceCountBefore = mock.silenceAICallCount
+        vm.continueInBackground()
+        XCTAssertEqual(mock.silenceAICallCount, silenceCountBefore,
+                       "Second call should be blocked by guard")
+    }
+
+    func testContinueInBackgroundBlockedOnCompletionScreen() async {
+        let (vm, mock) = makeSUT()
+        await simulateStartConversation(vm, mock)
+        vm.showCompletionScreen = true
+
+        vm.continueInBackground()
+
+        XCTAssertFalse(vm.didContinueInBackground,
+                       "Should not background when completion screen is showing")
+    }
+
+    func testContinueInBackgroundBlockedWhenEndingSession() async {
+        let (vm, mock) = makeSUT()
+        await simulateStartConversation(vm, mock)
+        vm.isEndingSession = true
+
+        vm.continueInBackground()
+
+        XCTAssertFalse(vm.didContinueInBackground)
+    }
+
+    func testContinueInBackgroundDisconnectsVoiceSynchronously() async {
+        let (vm, mock) = makeSUT()
+        await simulateStartConversation(vm, mock)
+
+        vm.continueInBackground()
+
+        // disconnect() should have been called immediately (not delayed in async task)
+        XCTAssertEqual(mock.disconnectCallCount, 1, "Voice should disconnect synchronously")
+        XCTAssertFalse(vm.isConversationActive, "Conversation should be inactive immediately")
+        XCTAssertTrue(vm.didContinueInBackground, "Flag should be set synchronously")
+    }
+
+    // ================================================================
+    // MARK: - Last-Step Timer Cleanup
+    // ================================================================
+
+    func testNextStepAtLastStepStopsRunningTimer() {
+        let (vm, _) = makeSUT()
+        vm.isConversationActive = false
+
+        // Navigate to step 3 (index 2), which has timerMinutes: 8
+        vm.nextStep()  // → step 2 (index 1), timer 10
+        vm.nextStep()  // → step 3 (index 2), timer 8
+        XCTAssertTrue(vm.isTimerRunning, "Timer should auto-start on step with timer")
+
+        // Now advance past last step → completion
+        vm.nextStep()  // → last step (index 3), no timer auto-start since step 4 has none
+        vm.nextStep()  // → completion screen (isLastStep was true)
+
+        XCTAssertTrue(vm.showCompletionScreen)
+        XCTAssertFalse(vm.isTimerRunning, "Timer should be stopped on completion")
+    }
+
+    // ================================================================
+    // MARK: - endCookingSession Cleanup
+    // ================================================================
+
+    func testEndCookingSessionSetsIsEndingSession() async {
+        let (vm, mock) = makeSUT()
+        await simulateStartConversation(vm, mock)
+
+        vm.endCookingSession()
+
+        XCTAssertTrue(vm.isEndingSession)
+        XCTAssertFalse(vm.isConversationActive)
+        XCTAssertFalse(vm.didContinueInBackground)
+        XCTAssertEqual(mock.disconnectCallCount, 1, "cleanup() should disconnect voice")
+    }
+
+    func testEndCookingSessionStopsTimer() {
+        let (vm, _) = makeSUT()
+        vm.isConversationActive = false
+        vm.nextStep()  // step 2 with timer
+        XCTAssertTrue(vm.isTimerRunning)
+
+        vm.endCookingSession()
+
+        XCTAssertFalse(vm.isTimerRunning, "Timer should be stopped by cleanup()")
+    }
+
+    func testEndCookingSessionIsIdempotent() async {
+        let (vm, mock) = makeSUT()
+        await simulateStartConversation(vm, mock)
+
+        vm.endCookingSession()
+        vm.endCookingSession()
+
+        // Should not crash or produce unexpected state
+        XCTAssertTrue(vm.isEndingSession)
+        // disconnect called twice (once per cleanup) — idempotent
+        XCTAssertEqual(mock.disconnectCallCount, 2)
+    }
+
+    // ================================================================
+    // MARK: - Session Persistence on Foreground
+    // ================================================================
+
+    func testPersistSessionCreatesCookingSession() {
+        let (vm, _) = makeSUT()
+
+        vm.persistSession()
+
+        let session = CookingSession.load(recipeId: vm.recipe.id)
+        XCTAssertNotNil(session, "persistSession should save a CookingSession")
+        XCTAssertEqual(session?.recipeId, vm.recipe.id)
+        XCTAssertEqual(session?.totalSteps, vm.steps.count)
+
+        // Clean up
+        CookingSession.clear(recipeId: vm.recipe.id)
+    }
 }

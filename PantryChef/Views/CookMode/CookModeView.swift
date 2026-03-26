@@ -669,6 +669,7 @@ struct CookModeView: View {
                         }
                         await appState.addPreparedDishForRecipe(vm.recipe)
                         CookingSession.clear(recipeId: vm.recipe.id)
+                        vm.endCookingSession()
                         appState.activeCooks.refresh()
 
                         let reviewItems = appState.pantryCookReviewItems(for: vm.recipe)
@@ -702,6 +703,7 @@ struct CookModeView: View {
                         }
                         await appState.addPreparedDishForRecipe(vm.recipe)
                         CookingSession.clear(recipeId: vm.recipe.id)
+                        vm.endCookingSession()
                         appState.activeCooks.refresh()
                         dismiss()
                     }

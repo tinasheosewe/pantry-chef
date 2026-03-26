@@ -108,6 +108,9 @@ final class RealtimeService: RealtimeServiceProtocol {
         } catch {
             errorMessage = "Audio setup failed: \(error.localizedDescription)"
             AppLog.error("Ephemeral key fetch failed: \(error.localizedDescription)")
+            // Deactivate audio session on failure to avoid blocking other apps'
+            // audio when the user never progresses to an active conversation.
+            try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
         }
     }
 

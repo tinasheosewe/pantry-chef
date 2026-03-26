@@ -221,4 +221,92 @@ final class ScenarioBaselineTests: XCTestCase {
         let afterEntry = try XCTUnwrap(appState.mealPlan.first(where: { $0.id == entry.id }))
         XCTAssertTrue(afterEntry.planningSubtitle?.contains("Cooked ✓") ?? false, "Planning subtitle should show 'Cooked ✓' after stamping")
     }
+
+    // ================================================================
+    // MARK: - Audio Exit Path Scenarios
+    // ================================================================
+
+    /// Scenario: User reaches last step via nextStep(), then taps "Done".
+    /// Audio should be fully disconnected by the time completion screen shows.
+    func testCompletionViaLastStepDisconnectsAudioBeforeDoneButton() {
+        let recipe = makeRecipe(
+            title: "Quick Soup",
+            ingredients: [Ingredient(name: "Broth", quantity: 1, unit: .liter)],
+            steps: [
+                RecipeStep(stepNumber: 1, instruction: "Heat broth", timerMinutes: 5),
+                RecipeStep(stepNumber: 2, instruction: "Serve"),
+            ]
+        )
+        let mock = MockRealtimeService()
+        let vm = CookModeViewModel(recipe: recipe, realtimeService: mock)
+
+        // Simulate active conversation
+        vm.isConversationActive = true
+        mock.isConnected = true
+        mock._isAudioReady = true
+
+        // Advance to last step
+        vm.nextStep()
+        // Advance past last step → completion
+        vm.nextStep()
+
+        XCTAssertTrue(vm.showCompletionScreen)
+        XCTAssertFalse(vm.isConversationActive, "Voice should disconnect on completion")
+        XCTAssertEqual(mock.disconnectCallCount, 1, "disconnect should be called once")
+    }
+
+    /// Scenario: AI calls finish_cooking tool → session ends cleanly.
+    func testAIFinishCookingToolCleansUpAudio() {
+        let recipe = makeRecipe(
+            title: "AI Finish Test",
+            ingredients: [Ingredient(name: "Item", quantity: 1, unit: .piece)],
+            steps: [
+                RecipeStep(stepNumber: 1, instruction: "Do something"),
+                RecipeStep(stepNumber: 2, instruction: "Do more"),
+            ]
+        )
+        let mock = MockRealtimeService()
+        let vm = CookModeViewModel(recipe: recipe, realtimeService: mock)
+
+        vm.isConversationActive = true
+        mock.isConnected = true
+        mock._isAudioReady = true
+
+        // Simulate AI calling finish_cooking
+        vm.handleRealtimeFunctionCall(name: "finish_cooking", args: [:])
+
+        XCTAssertTrue(vm.isEndingSession, "endCookingSession should set isEndingSession")
+        XCTAssertTrue(vm.showCompletionScreen)
+        XCTAssertFalse(vm.isConversationActive)
+        XCTAssertEqual(mock.disconnectCallCount, 1)
+    }
+
+    /// Scenario: User backgrounds app mid-cook → voice disconnects immediately,
+    /// didContinueInBackground is set synchronously before any async work.
+    func testBackgroundTransitionDisconnectsVoiceImmediately() {
+        let recipe = makeRecipe(
+            title: "Background Test",
+            ingredients: [Ingredient(name: "Item", quantity: 1, unit: .piece)],
+            steps: [
+                RecipeStep(stepNumber: 1, instruction: "Step one", timerMinutes: 5),
+                RecipeStep(stepNumber: 2, instruction: "Step two", timerMinutes: 3),
+            ]
+        )
+        let mock = MockRealtimeService()
+        let vm = CookModeViewModel(recipe: recipe, realtimeService: mock)
+
+        vm.isConversationActive = true
+        mock.isConnected = true
+        mock._isAudioReady = true
+
+        // Simulate app backgrounding
+        vm.continueInBackground()
+
+        // These should all happen synchronously (before async task)
+        XCTAssertTrue(vm.didContinueInBackground, "Flag should be set synchronously")
+        XCTAssertFalse(vm.isConversationActive, "Voice should disconnect synchronously")
+        XCTAssertEqual(mock.silenceAICallCount, 1)
+        XCTAssertEqual(mock.stopCaptureCallCount, 1)
+        XCTAssertEqual(mock.disconnectCallCount, 1)
+    }
 }
