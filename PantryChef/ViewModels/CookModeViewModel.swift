@@ -202,27 +202,29 @@ final class CookModeViewModel {
             // Now it's safe for the sync timer to check connection state
             isPreparing = false
 
-            // Start mic capture unless user pre-muted
-            if !isMuted {
+            // If the user muted while audio was preparing, stay silent
+            if isMuted {
+                realtimeService.stopCapture()
+                realtimeService.silenceAI()
+                AppLog.info("[CookMode] User muted during setup — skipping greeting")
+            } else {
                 realtimeService.startCapture()
                 AppLog.info("[CookMode] Mic capture started")
-            } else {
-                AppLog.info("[CookMode] Skipping mic capture — user pre-muted")
-            }
 
-            // Greet the user or resume at the right step
-            let greeting: String
-            if isResuming {
-                greeting = "The user is resuming cooking \(recipe.title) from step \(currentStepIndex + 1). "
-                    + "Welcome them back briefly and read step \(currentStepIndex + 1): "
-                    + "\(currentStep?.instruction ?? ""). Keep it concise — no need to re-introduce the recipe."
-            } else {
-                greeting = "The user just started cooking \(recipe.title). "
-                    + "Greet them warmly and briefly read step \(currentStepIndex + 1): "
-                    + "\(currentStep?.instruction ?? ""). Keep it concise."
+                // Greet the user or resume at the right step
+                let greeting: String
+                if isResuming {
+                    greeting = "The user is resuming cooking \(recipe.title) from step \(currentStepIndex + 1). "
+                        + "Welcome them back briefly and read step \(currentStepIndex + 1): "
+                        + "\(currentStep?.instruction ?? ""). Keep it concise — no need to re-introduce the recipe."
+                } else {
+                    greeting = "The user just started cooking \(recipe.title). "
+                        + "Greet them warmly and briefly read step \(currentStepIndex + 1): "
+                        + "\(currentStep?.instruction ?? ""). Keep it concise."
+                }
+                realtimeService.sendUserMessage(greeting)
+                AppLog.info("[CookMode] Greeting sent (resume=\(isResuming), step=\(currentStepIndex + 1))")
             }
-            realtimeService.sendUserMessage(greeting)
-            AppLog.info("[CookMode] Greeting sent (resume=\(isResuming), step=\(currentStepIndex + 1))")
         }
     }
 

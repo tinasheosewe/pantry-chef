@@ -43,10 +43,10 @@ struct CookQueueView: View {
                                 .padding(.top, PCTokens.spacingSM)
 
                             VStack(alignment: .leading, spacing: PCTokens.spacingSM) {
-                                let pendingStages = queue.stages.filter { $0.status == .pending || $0.status == .active }
+                                let pendingStages = queue.stages.filter { $0.status == .pending }
                                 SectionHeader(
                                     title: queue.name,
-                                    subtitle: "\(pendingStages.count) \(pendingStages.count == 1 ? "stage" : "stages") remaining"
+                                    subtitle: "\(pendingStages.count) \(pendingStages.count == 1 ? "stage" : "stages") queued"
                                 )
                                 .padding(.horizontal)
 
@@ -131,16 +131,14 @@ struct CookQueueView: View {
         let recipes = appState.resolvedRecipes(for: stage)
         let canStart = !recipes.isEmpty
         let hasActiveSession = recipes.contains { CookingSession.load(recipeId: $0.id) != nil }
-        let isActive = stage.status == .active
-        let stageColor = isActive ? PCColors.expiring : (stage.isParallelBatch ? PCColors.info : PCColors.accent)
 
         return VStack(alignment: .leading, spacing: 12) {
             HStack(alignment: .top, spacing: 12) {
                 Image(systemName: stage.isParallelBatch ? "square.stack.3d.up.fill" : "frying.pan.fill")
                     .font(.title3)
-                    .foregroundStyle(stageColor)
+                    .foregroundStyle(stage.isParallelBatch ? PCColors.info : PCColors.accent)
                     .frame(width: 40, height: 40)
-                    .background(stageColor.opacity(0.12))
+                    .background((stage.isParallelBatch ? PCColors.info : PCColors.accent).opacity(0.12))
                     .clipShape(RoundedRectangle(cornerRadius: 10))
 
                 VStack(alignment: .leading, spacing: 4) {
@@ -176,7 +174,6 @@ struct CookQueueView: View {
             }
 
             HStack(spacing: 8) {
-                if stage.status == .pending || stage.status == .active {
                     Button {
                         launchStage(stage)
                     } label: {
@@ -185,20 +182,19 @@ struct CookQueueView: View {
                             .fontWeight(.semibold)
                             .padding(.horizontal, 12)
                             .padding(.vertical, 8)
-                            .background(canStart ? stageColor : PCColors.textTertiary)
+                            .background(canStart ? PCColors.accent : PCColors.textTertiary)
                             .foregroundStyle(.white)
                             .clipShape(Capsule())
                     }
                     .disabled(!canStart)
 
-                    if !isActive {
-                        Button {
-                            Task {
-                                await appState.skipCookQueueStage(stage.id)
-                            }
-                        } label: {
-                            Text("Skip")
-                                .font(.caption)
+                    Button {
+                        Task {
+                            await appState.skipCookQueueStage(stage.id)
+                        }
+                    } label: {
+                        Text("Skip")
+                            .font(.caption)
                             .fontWeight(.semibold)
                             .padding(.horizontal, 12)
                             .padding(.vertical, 8)
@@ -268,8 +264,6 @@ struct CookQueueView: View {
                         .foregroundStyle(PCColors.expired)
                         .clipShape(Capsule())
                 }
-                    } // end if !isActive
-                }
             }
         }
     }
@@ -332,7 +326,7 @@ struct CookQueueView: View {
         case .pending:
             return PCColors.info
         case .active:
-            return PCColors.expiring
+            return PCColors.accent
         case .completed:
             return PCColors.expiring
         case .skipped:
@@ -350,7 +344,7 @@ struct CookQueueView: View {
             HStack(spacing: 12) {
                 Image(systemName: "flame.fill")
                     .font(.title3)
-                    .foregroundStyle(PCColors.expiring)
+                    .foregroundStyle(PCColors.accent)
 
                 VStack(alignment: .leading, spacing: 2) {
                     Text(session.recipeName)
@@ -364,21 +358,21 @@ struct CookQueueView: View {
 
                 Spacer()
 
-                Text("Return")
+                Text("Continue")
                     .font(.caption)
                     .fontWeight(.semibold)
                     .padding(.horizontal, 12)
                     .padding(.vertical, 6)
-                    .background(PCColors.expiring)
+                    .background(PCColors.accent)
                     .foregroundStyle(.white)
                     .clipShape(Capsule())
             }
             .padding(PCTokens.cardPadding)
-            .background(PCColors.expiring.opacity(0.10))
+            .background(PCColors.accent.opacity(0.10))
             .clipShape(RoundedRectangle(cornerRadius: PCTokens.cornerRadius))
             .overlay(
                 RoundedRectangle(cornerRadius: PCTokens.cornerRadius)
-                    .strokeBorder(PCColors.expiring.opacity(0.3), lineWidth: 1)
+                    .strokeBorder(PCColors.accent.opacity(0.3), lineWidth: 1)
             )
         }
         .buttonStyle(.plain)
