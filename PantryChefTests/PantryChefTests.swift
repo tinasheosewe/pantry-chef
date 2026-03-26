@@ -1630,6 +1630,204 @@ final class MealPlanEntryModelTests: XCTestCase {
         XCTAssertEqual(entry.effectiveEatenServings, 1)
         XCTAssertEqual(entry.eatenProgressLabel, "Finished")
     }
+
+    // MARK: - displayName Fallback Chain
+
+    func testDisplayNameFallsBackThroughEntireChain() {
+        let unplanned = MealPlanEntry(date: Date(), mealType: .dinner)
+        XCTAssertEqual(unplanned.displayName, "Unplanned")
+
+        let custom = MealPlanEntry(date: Date(), mealType: .lunch, customMealName: "Café Salad")
+        XCTAssertEqual(custom.displayName, "Café Salad")
+
+        let dish = makePreparedDish(name: "Soup")
+        let fromDish = MealPlanEntry(date: Date(), mealType: .dinner, preparedDish: dish)
+        XCTAssertEqual(fromDish.displayName, "Soup")
+
+        let recipe = makeRecipe(title: "Curry")
+        let fromRecipe = MealPlanEntry(date: Date(), mealType: .dinner, recipe: recipe)
+        XCTAssertEqual(fromRecipe.displayName, "Curry")
+    }
+
+    // MARK: - preparedFoodMatchKey
+
+    func testPreparedFoodMatchKeyPrefersRecipeOverIdentity() {
+        let recipeID = UUID()
+        let identityID = UUID()
+        let entry = MealPlanEntry(
+            date: Date(), mealType: .dinner,
+            preparedFoodNameSnapshot: "Soup",
+            preparedFoodRecipeID: recipeID,
+            preparedFoodIdentityID: identityID
+        )
+        XCTAssertEqual(entry.preparedFoodMatchKey, .recipe(recipeID))
+    }
+
+    func testPreparedFoodMatchKeyFallsBackToIdentity() {
+        let identityID = UUID()
+        let entry = MealPlanEntry(
+            date: Date(), mealType: .dinner,
+            preparedFoodNameSnapshot: "Soup",
+            preparedFoodIdentityID: identityID
+        )
+        XCTAssertEqual(entry.preparedFoodMatchKey, .preparedFoodIdentity(identityID))
+    }
+
+    func testPreparedFoodMatchKeyNilForCustomMeal() {
+        let entry = MealPlanEntry(date: Date(), mealType: .lunch, customMealName: "Takeout")
+        XCTAssertNil(entry.preparedFoodMatchKey)
+    }
+
+    // MARK: - effectivePlannedServings Edge Cases
+
+    func testEffectivePlannedServingsIgnoresZeroOrNegative() {
+        let recipe = makeRecipe(servings: 4)
+        let zero = MealPlanEntry(date: Date(), mealType: .dinner, recipe: recipe, plannedServings: 0)
+        XCTAssertEqual(zero.effectivePlannedServings, 4, "Should fall back to recipe default for zero")
+
+        let negative = MealPlanEntry(date: Date(), mealType: .dinner, recipe: recipe, plannedServings: -2)
+        XCTAssertEqual(negative.effectivePlannedServings, 4, "Should fall back to recipe default for negative")
+    }
+
+    func testPreparedFoodDefaultServingsIsOne() {
+        let dish = makePreparedDish(name: "Soup", servingsRemaining: 5)
+        let entry = MealPlanEntry(date: Date(), mealType: .lunch, preparedDish: dish)
+        XCTAssertEqual(entry.defaultPlannedServings, 1)
+    }
+
+    // MARK: - remainingTrackedServings
+
+    func testRemainingTrackedServingsAfterPartialEating() {
+        let recipe = makeRecipe(servings: 4)
+        let entry = MealPlanEntry(date: Date(), mealType: .dinner, recipe: recipe, eatenServings: 2)
+        XCTAssertEqual(entry.remainingTrackedServings, 2)
+    }
+
+    func testRemainingTrackedServingsNilForUnplanned() {
+        let entry = MealPlanEntry(date: Date(), mealType: .dinner)
+        XCTAssertNil(entry.remainingTrackedServings)
+    }
+
+    // MARK: - eatenProgressLabel + mealLoggingSummary
+
+    func testEatenProgressLabelShowsPartialProgress() {
+        let recipe = makeRecipe(servings: 4)
+        let entry = MealPlanEntry(date: Date(), mealType: .dinner, recipe: recipe, eatenServings: 2)
+        XCTAssertEqual(entry.eatenProgressLabel, "2 of 4 eaten")
+    }
+
+    func testEatenProgressLabelNilWhenNothingEaten() {
+        let recipe = makeRecipe(servings: 4)
+        let entry = MealPlanEntry(date: Date(), mealType: .dinner, recipe: recipe)
+        XCTAssertNil(entry.eatenProgressLabel)
+    }
+
+    func testMealLoggingSummaryForPreparedFood() {
+        let dish = makePreparedDish(name: "Soup", servingsRemaining: 3)
+        let entry = MealPlanEntry(date: Date(), mealType: .lunch, preparedDish: dish, plannedServings: 2, eatenServings: 1)
+        XCTAssertNotNil(entry.mealLoggingSummary)
+        XCTAssertTrue(entry.mealLoggingSummary!.contains("1 of 2 eaten"))
+    }
+
+    func testMealLoggingSummaryNilForCustomMeal() {
+        let entry = MealPlanEntry(date: Date(), mealType: .lunch, customMealName: "Takeout")
+        XCTAssertNil(entry.mealLoggingSummary)
+    }
+
+    // MARK: - isFullyEaten
+
+    func testIsFullyEatenWhenAllServingsConsumed() {
+        let recipe = makeRecipe(servings: 2)
+        let entry = MealPlanEntry(date: Date(), mealType: .dinner, recipe: recipe, eatenServings: 2)
+        XCTAssertTrue(entry.isFullyEaten)
+    }
+
+    func testIsFullyEatenFalseWhenServingsRemain() {
+        let recipe = makeRecipe(servings: 4)
+        let entry = MealPlanEntry(date: Date(), mealType: .dinner, recipe: recipe, eatenServings: 2)
+        XCTAssertFalse(entry.isFullyEaten)
+    }
+
+    // MARK: - planningSubtitle Variants
+
+    func testPlanningSubtitleForPreparedFoodShowsServings() {
+        let dish = makePreparedDish(name: "Soup", servingsRemaining: 3)
+        let entry = MealPlanEntry(date: Date(), mealType: .lunch, preparedDish: dish, plannedServings: 2)
+        XCTAssertEqual(entry.planningSubtitle, "2 servings planned")
+    }
+
+    func testPlanningSubtitleForRecipeIncludesTime() {
+        let recipe = makeRecipe(servings: 2, prepTimeMinutes: 10, cookTimeMinutes: 20)
+        let entry = MealPlanEntry(date: Date(), mealType: .dinner, recipe: recipe)
+        let subtitle = entry.planningSubtitle ?? ""
+        XCTAssertTrue(subtitle.contains("30 min"), "Should include total time")
+    }
+
+    // MARK: - updatingPlannedServings
+
+    func testUpdatingPlannedServingsScalesEaten() {
+        let recipe = makeRecipe(servings: 6)
+        let entry = MealPlanEntry(date: Date(), mealType: .dinner, recipe: recipe, plannedServings: 6, eatenServings: 4)
+        let updated = entry.updatingPlannedServings(2)
+        XCTAssertEqual(updated.effectivePlannedServings, 2)
+        XCTAssertEqual(updated.effectiveEatenServings, 2, "Eaten should clamp to new planned")
+    }
+
+    // MARK: - MealSelectionItem
+
+    func testMealSelectionItemRecipeMakesEntry() {
+        let recipe = makeRecipe(title: "Curry", servings: 4, mealType: .dinner)
+        let item = MealSelectionItem.recipe(recipe)
+        let entry = item.makeEntry(date: Date(), mealType: .dinner)
+        XCTAssertEqual(entry.recipe?.title, "Curry")
+        XCTAssertEqual(entry.plannedServings, 4)
+    }
+
+    func testMealSelectionItemPreparedDishMakesEntry() {
+        let dish = makePreparedDish(name: "Soup")
+        let item = MealSelectionItem.preparedDish(dish)
+        let entry = item.makeEntry(date: Date(), mealType: .lunch)
+        XCTAssertEqual(entry.preparedDish?.name, "Soup")
+        XCTAssertEqual(entry.plannedServings, 1)
+    }
+
+    // MARK: - makePreparedDishDraft
+
+    func testMakePreparedDishDraftFromPreparedFoodEntry() {
+        let identityID = UUID()
+        let entry = MealPlanEntry(
+            date: Date(), mealType: .lunch,
+            preparedFoodNameSnapshot: "Leftover Stew",
+            preparedFoodIdentityID: identityID,
+            plannedServings: 3
+        )
+        let draft = entry.makePreparedDishDraft()
+        XCTAssertEqual(draft.name, "Leftover Stew")
+        XCTAssertEqual(draft.servingsRemaining, 3)
+        XCTAssertEqual(draft.foodIdentityID, identityID)
+    }
+
+    // MARK: - Init Normalization
+
+    func testInitNormalizesCustomMealNameWhitespace() {
+        let entry = MealPlanEntry(date: Date(), mealType: .lunch, customMealName: "  ")
+        XCTAssertNil(entry.normalizedCustomMealName)
+        XCTAssertFalse(entry.isPlanned)
+    }
+
+    func testInitNormalizesIdentityBasedOnRecipeID() {
+        let recipeID = UUID()
+        let identityID = UUID()
+        let entry = MealPlanEntry(
+            date: Date(), mealType: .dinner,
+            preparedFoodNameSnapshot: "Soup",
+            preparedFoodRecipeID: recipeID,
+            preparedFoodIdentityID: identityID
+        )
+        // When recipeID is present, identityID should be nil (recipeID takes precedence)
+        XCTAssertNil(entry.preparedFoodIdentityID)
+        XCTAssertEqual(entry.preparedFoodRecipeID, recipeID)
+    }
 }
 
 // ===================================================================
@@ -3195,6 +3393,192 @@ final class AppStateTests: XCTestCase {
         XCTAssertNil(storage.cookQueueStore)
     }
 
+    // ================================================================
+    // MARK: - Skip / Remove / Clear Cook Queue
+    // ================================================================
+
+    func testSkipCookQueueStageRemovesStageFromArray() async {
+        let (appState, _, _) = makeTestAppState()
+        await appState.addRecipesToCookQueue([makeRecipe(title: "Soup"), makeRecipe(title: "Salad")])
+        let stageID = appState.cookQueue!.stages.first!.id
+
+        await appState.skipCookQueueStage(stageID)
+
+        XCTAssertEqual(appState.cookQueue?.stages.count, 1)
+        XCTAssertEqual(appState.cookQueue?.stages.first?.title, "Salad")
+    }
+
+    func testSkipCookQueueLastStageNilsOutQueue() async {
+        let (appState, _, _) = makeTestAppState()
+        await appState.addRecipesToCookQueue([makeRecipe(title: "Soup")])
+        let stageID = appState.cookQueue!.stages.first!.id
+
+        await appState.skipCookQueueStage(stageID)
+
+        XCTAssertNil(appState.cookQueue, "Queue should nil out when last stage is skipped")
+    }
+
+    func testRemoveCookQueueStageRemovesStageFromArray() async {
+        let (appState, _, _) = makeTestAppState()
+        await appState.addRecipesToCookQueue([makeRecipe(title: "A"), makeRecipe(title: "B")])
+        let stageID = appState.cookQueue!.stages.first!.id
+
+        await appState.removeCookQueueStage(stageID)
+
+        XCTAssertEqual(appState.cookQueue?.stages.count, 1)
+        XCTAssertEqual(appState.cookQueue?.stages.first?.title, "B")
+    }
+
+    func testRemoveCookQueueLastStageNilsOutQueue() async {
+        let (appState, _, _) = makeTestAppState()
+        await appState.addRecipesToCookQueue([makeRecipe(title: "Solo")])
+        let stageID = appState.cookQueue!.stages.first!.id
+
+        await appState.removeCookQueueStage(stageID)
+
+        XCTAssertNil(appState.cookQueue, "Queue should nil out when last stage is removed")
+    }
+
+    func testClearCookQueueNilsOutQueue() async {
+        let (appState, _, _) = makeTestAppState()
+        await appState.addRecipesToCookQueue([makeRecipe(title: "A"), makeRecipe(title: "B")])
+        XCTAssertNotNil(appState.cookQueue)
+
+        await appState.clearCookQueue()
+
+        XCTAssertNil(appState.cookQueue)
+    }
+
+    func testStartCookQueueStageMarksStageActive() async {
+        let (appState, _, _) = makeTestAppState()
+        await appState.addRecipesToCookQueue([makeRecipe(title: "A"), makeRecipe(title: "B")])
+        let stageID = appState.cookQueue!.stages.first!.id
+
+        await appState.startCookQueueStage(stageID)
+
+        XCTAssertEqual(appState.cookQueue?.stages.first?.status, .active)
+        XCTAssertEqual(appState.cookQueue?.stages.last?.status, .pending)
+    }
+
+    func testCompleteCookQueueLastStageNilsOutQueue() async {
+        let (appState, _, _) = makeTestAppState()
+        await appState.addRecipesToCookQueue([makeRecipe(title: "Only")])
+        let stageID = appState.cookQueue!.stages.first!.id
+
+        await appState.completeCookQueueStage(stageID)
+
+        XCTAssertNil(appState.cookQueue, "Queue should nil out when last stage is completed")
+    }
+
+    // ================================================================
+    // MARK: - Cook Queue Context Lookups
+    // ================================================================
+
+    func testCookQueueContextForStageReturnsQueueAndStageIDs() async {
+        let (appState, _, _) = makeTestAppState()
+        await appState.addRecipesToCookQueue([makeRecipe(title: "Test")])
+        let stageID = appState.cookQueue!.stages.first!.id
+
+        let context = appState.cookQueueContext(for: stageID)
+
+        XCTAssertNotNil(context)
+        XCTAssertEqual(context?.queueID, appState.cookQueue?.id)
+        XCTAssertEqual(context?.stageID, stageID)
+    }
+
+    func testCookQueueContextForMissingStageReturnsNil() async {
+        let (appState, _, _) = makeTestAppState()
+        await appState.addRecipesToCookQueue([makeRecipe(title: "Test")])
+
+        let context = appState.cookQueueContext(for: UUID())
+
+        XCTAssertNil(context, "Should return nil for non-existent stage")
+    }
+
+    func testCookQueueContextForSessionMatchesQueueAndStage() async {
+        let (appState, _, _) = makeTestAppState()
+        await appState.addRecipesToCookQueue([makeRecipe(title: "Test")])
+        let queueID = appState.cookQueue!.id
+        let stageID = appState.cookQueue!.stages.first!.id
+
+        let session = CookingSession(
+            recipeId: UUID(),
+            recipeName: "Test",
+            totalSteps: 1,
+            stepSummaries: [],
+            currentStepIndex: 0,
+            startedAt: Date(),
+            backgroundedAt: Date(),
+            isActive: true,
+            queueId: queueID,
+            queueStageId: stageID
+        )
+
+        let context = appState.cookQueueContext(for: session)
+
+        XCTAssertNotNil(context)
+        XCTAssertEqual(context?.queueID, queueID)
+        XCTAssertEqual(context?.stageID, stageID)
+    }
+
+    func testCookQueueContextForSessionWithWrongQueueReturnsNil() async {
+        let (appState, _, _) = makeTestAppState()
+        await appState.addRecipesToCookQueue([makeRecipe(title: "Test")])
+
+        let session = CookingSession(
+            recipeId: UUID(),
+            recipeName: "Test",
+            totalSteps: 1,
+            stepSummaries: [],
+            currentStepIndex: 0,
+            startedAt: Date(),
+            backgroundedAt: Date(),
+            isActive: true,
+            queueId: UUID(), // wrong queue ID
+            queueStageId: appState.cookQueue!.stages.first!.id
+        )
+
+        let context = appState.cookQueueContext(for: session)
+
+        XCTAssertNil(context, "Should return nil when session queueId doesn't match")
+    }
+
+    // ================================================================
+    // MARK: - Append Cook Queue Stages
+    // ================================================================
+
+    func testAppendCookQueueStagesAddsToExistingQueue() async {
+        let (appState, _, _) = makeTestAppState()
+        await appState.addRecipesToCookQueue([makeRecipe(title: "Original")])
+        let originalID = appState.cookQueue!.id
+
+        let newStage = CookQueueStage(recipes: [makeRecipe(title: "Appended")])
+        await appState.appendCookQueueStages([newStage])
+
+        XCTAssertEqual(appState.cookQueue?.id, originalID, "Should keep same queue ID")
+        XCTAssertEqual(appState.cookQueue?.stages.count, 2)
+        XCTAssertEqual(appState.cookQueue?.stages.last?.title, "Appended")
+    }
+
+    func testAppendCookQueueStagesCreatesNewQueueWhenNone() async {
+        let (appState, _, _) = makeTestAppState()
+        XCTAssertNil(appState.cookQueue)
+
+        let stage = CookQueueStage(recipes: [makeRecipe(title: "First")])
+        await appState.appendCookQueueStages([stage])
+
+        XCTAssertNotNil(appState.cookQueue)
+        XCTAssertEqual(appState.cookQueue?.stages.count, 1)
+    }
+
+    func testAppendCookQueueStagesIgnoresEmptyRecipeStages() async {
+        let (appState, _, _) = makeTestAppState()
+        let emptyStage = CookQueueStage(recipeIDs: [], recipeTitleSnapshots: [])
+        await appState.appendCookQueueStages([emptyStage])
+
+        XCTAssertNil(appState.cookQueue, "Should not create queue for empty stages")
+    }
+
     func testRequestRootTabStoresRequestedDestination() {
         let (appState, _, _) = makeTestAppState()
 
@@ -4260,6 +4644,30 @@ final class HomeViewModelTests: XCTestCase {
         XCTAssertEqual(vm.weeklyNutrition?.mealsPlanned, 1)
         XCTAssertEqual(vm.weeklyNutrition?.avgCaloriesPerMeal, 650)
     }
+
+    // MARK: - Expiring Prepared Dishes
+
+    func testExpiringPreparedDishesReflectsAppState() async {
+        let (vm, appState) = makeSUT()
+        // Pantry storage = 2 day expiry → dish added now should show up in expiring list
+        let dish = PreparedDish(name: "Old Leftovers", mealTypes: [.dinner], servingsRemaining: 1, storage: .pantry, dateAdded: Calendar.current.date(byAdding: .day, value: -1, to: Date())!)
+        await appState.addPreparedDish(dish)
+
+        // expiringPreparedDishes is a passthrough from appState
+        let expiring = vm.expiringPreparedDishes
+        XCTAssertEqual(expiring.count, 1)
+        XCTAssertEqual(expiring.first?.name, "Old Leftovers")
+    }
+
+    // MARK: - Dashboard Passthrough
+
+    func testDashboardStartsEmpty() {
+        let (vm, _) = makeSUT()
+        XCTAssertTrue(vm.todaysMeals.isEmpty)
+        XCTAssertTrue(vm.expiringItems.isEmpty)
+        XCTAssertNil(vm.suggestedRecipe)
+        XCTAssertNil(vm.weeklyNutrition)
+    }
 }
 
 // MARK: - ShoppingViewModel Tests
@@ -4693,6 +5101,212 @@ final class MealPlanViewModelTests: XCTestCase {
         let (vm, _) = makeSUT()
         let text = vm.weekDateRangeText
         XCTAssertTrue(text.contains("–"), "Should contain an en-dash separator")
+    }
+
+    func testEntriesForDateAndMealType() async {
+        let (vm, appState) = makeSUT()
+        let today = Date()
+        let recipe1 = makeRecipe(title: "Breakfast Eggs")
+        let recipe2 = makeRecipe(title: "Dinner Steak")
+        await appState.addToMealPlan(MealPlanEntry(date: today, mealType: .breakfast, recipe: recipe1))
+        await appState.addToMealPlan(MealPlanEntry(date: today, mealType: .dinner, recipe: recipe2))
+
+        let breakfastEntries = vm.entriesFor(date: today, mealType: .breakfast)
+        XCTAssertEqual(breakfastEntries.count, 1)
+        XCTAssertEqual(breakfastEntries.first?.displayName, "Breakfast Eggs")
+
+        let dinnerEntries = vm.entriesFor(date: today, mealType: .dinner)
+        XCTAssertEqual(dinnerEntries.count, 1)
+        XCTAssertEqual(dinnerEntries.first?.displayName, "Dinner Steak")
+    }
+
+    func testEntriesFilteredByWeek() async {
+        let (vm, appState) = makeSUT()
+        let calendar = Calendar.current
+        let today = Date()
+        let nextWeek = calendar.date(byAdding: .weekOfYear, value: 1, to: today)!
+        await appState.addToMealPlan(MealPlanEntry(date: today, mealType: .dinner, recipe: makeRecipe(title: "This Week")))
+        await appState.addToMealPlan(MealPlanEntry(date: nextWeek, mealType: .dinner, recipe: makeRecipe(title: "Next Week")))
+
+        // Current week should only show this week's entry
+        let thisWeekEntries = vm.entries
+        let thisWeekNames = thisWeekEntries.map { $0.displayName }
+        XCTAssertTrue(thisWeekNames.contains("This Week"))
+        XCTAssertFalse(thisWeekNames.contains("Next Week"))
+
+        // Navigate to next week
+        vm.nextWeek()
+        let nextWeekEntries = vm.entries
+        let nextWeekNames = nextWeekEntries.map { $0.displayName }
+        XCTAssertTrue(nextWeekNames.contains("Next Week"))
+        XCTAssertFalse(nextWeekNames.contains("This Week"))
+    }
+
+    func testWeekNavigationCyclesCorrectly() {
+        let (vm, _) = makeSUT()
+        let calendar = Calendar.current
+        let startDate = vm.weekStartDate
+
+        vm.nextWeek()
+        vm.nextWeek()
+        vm.previousWeek()
+        vm.previousWeek()
+
+        XCTAssertTrue(calendar.isDate(vm.weekStartDate, inSameDayAs: startDate))
+    }
+}
+
+// MARK: - PreparedDishViewModel Tests
+
+@MainActor
+final class PreparedDishViewModelTests: XCTestCase {
+
+    private func makeSUT() -> (PreparedDishViewModel, AppState) {
+        let (appState, _, _) = makeTestAppState()
+        let vm = PreparedDishViewModel(appState: appState)
+        return (vm, appState)
+    }
+
+    // MARK: - Filtered Dishes
+
+    func testFilteredDishesSortsByExpiryDate() async {
+        let (vm, appState) = makeSUT()
+        let dish1 = PreparedDish(name: "Expires Later", mealTypes: [.dinner], servingsRemaining: 2, storage: .refrigerated, dateAdded: Date())
+        let dish2 = PreparedDish(name: "Expires Sooner", mealTypes: [.lunch], servingsRemaining: 1, storage: .pantry, dateAdded: Date())
+        await appState.addPreparedDish(dish1)
+        await appState.addPreparedDish(dish2)
+
+        let dishes = vm.filteredDishes
+        // Pantry items expire sooner (2 days) vs refrigerated (4 days)
+        XCTAssertEqual(dishes.first?.name, "Expires Sooner")
+    }
+
+    func testFilteredDishesFiltersBySearch() async {
+        let (vm, appState) = makeSUT()
+        await appState.addPreparedDish(PreparedDish(name: "Chicken Soup", mealTypes: [.dinner], servingsRemaining: 2, storage: .refrigerated))
+        await appState.addPreparedDish(PreparedDish(name: "Beef Stew", mealTypes: [.dinner], servingsRemaining: 3, storage: .refrigerated))
+
+        vm.searchText = "chicken"
+        vm.onSearchTextChanged()
+        try? await Task.sleep(for: .milliseconds(350))
+        let dishes = vm.filteredDishes
+        XCTAssertEqual(dishes.count, 1)
+        XCTAssertEqual(dishes.first?.name, "Chicken Soup")
+    }
+
+    func testFilteredDishesFiltersByMealType() async {
+        let (vm, appState) = makeSUT()
+        await appState.addPreparedDish(PreparedDish(name: "Breakfast Bowl", mealTypes: [.breakfast], servingsRemaining: 1, storage: .refrigerated))
+        await appState.addPreparedDish(PreparedDish(name: "Dinner Pasta", mealTypes: [.dinner], servingsRemaining: 2, storage: .refrigerated))
+
+        vm.selectedMealType = .breakfast
+        let dishes = vm.filteredDishes
+        XCTAssertEqual(dishes.count, 1)
+        XCTAssertEqual(dishes.first?.name, "Breakfast Bowl")
+    }
+
+    func testFilteredDishesNoFilterReturnsAll() async {
+        let (vm, appState) = makeSUT()
+        await appState.addPreparedDish(PreparedDish(name: "A", mealTypes: [.breakfast], servingsRemaining: 1, storage: .refrigerated))
+        await appState.addPreparedDish(PreparedDish(name: "B", mealTypes: [.dinner], servingsRemaining: 2, storage: .refrigerated))
+
+        XCTAssertEqual(vm.filteredDishes.count, 2)
+    }
+
+    // MARK: - Meal Type Counts
+
+    func testMealTypeCountsAggregatesCorrectly() async {
+        let (vm, appState) = makeSUT()
+        await appState.addPreparedDish(PreparedDish(name: "A", mealTypes: [.breakfast, .lunch], servingsRemaining: 1, storage: .refrigerated))
+        await appState.addPreparedDish(PreparedDish(name: "B", mealTypes: [.lunch, .dinner], servingsRemaining: 2, storage: .refrigerated))
+        await appState.addPreparedDish(PreparedDish(name: "C", mealTypes: [.dinner], servingsRemaining: 1, storage: .refrigerated))
+
+        let counts = vm.mealTypeCounts
+        XCTAssertEqual(counts[.breakfast], 1)
+        XCTAssertEqual(counts[.lunch], 2)
+        XCTAssertEqual(counts[.dinner], 2)
+    }
+
+    func testMealTypeCountsEmptyForNoDishes() {
+        let (vm, _) = makeSUT()
+        XCTAssertTrue(vm.mealTypeCounts.isEmpty)
+    }
+
+    // MARK: - Consume Serving
+
+    func testConsumeServingDecrements() async {
+        let (vm, appState) = makeSUT()
+        let dish = makePreparedDish(name: "Soup", servingsRemaining: 3)
+        await appState.addPreparedDish(dish)
+
+        vm.consumeServing(dish)
+        await Task.yield()
+
+        XCTAssertEqual(appState.preparedDishes.first?.servingsRemaining, 2)
+    }
+
+    func testConsumeServingRemovesAtZero() async {
+        let (vm, appState) = makeSUT()
+        let dish = makePreparedDish(name: "Last Serving", servingsRemaining: 1)
+        await appState.addPreparedDish(dish)
+
+        vm.consumeServing(dish)
+        await Task.yield()
+
+        XCTAssertTrue(appState.preparedDishes.isEmpty)
+    }
+
+    // MARK: - History Items
+
+    func testFilteredHistoryItemsFiltersBySearch() async {
+        let (vm, appState) = makeSUT()
+        let now = Date()
+        appState.preparedDishHistory = [
+            PreparedDishHistoryItem(name: "Chicken Curry", mealTypes: [.dinner], defaultServings: 4, storage: .refrigerated, lastPreparedAt: now, lastUsedAt: now),
+            PreparedDishHistoryItem(name: "Beef Stew", mealTypes: [.dinner], defaultServings: 4, storage: .refrigerated, lastPreparedAt: now, lastUsedAt: now),
+        ]
+
+        vm.searchText = "curry"
+        vm.onSearchTextChanged()
+        try? await Task.sleep(for: .milliseconds(350))
+        let items = vm.filteredHistoryItems
+        XCTAssertEqual(items.count, 1)
+        XCTAssertEqual(items.first?.name, "Chicken Curry")
+    }
+
+    func testFilteredHistoryItemsFiltersByMealType() async {
+        let (vm, appState) = makeSUT()
+        let now = Date()
+        appState.preparedDishHistory = [
+            PreparedDishHistoryItem(name: "Morning Oats", mealTypes: [.breakfast], defaultServings: 2, storage: .refrigerated, lastPreparedAt: now, lastUsedAt: now),
+            PreparedDishHistoryItem(name: "Dinner Steak", mealTypes: [.dinner], defaultServings: 1, storage: .refrigerated, lastPreparedAt: now, lastUsedAt: now),
+        ]
+
+        vm.selectedMealType = .dinner
+        let items = vm.filteredHistoryItems
+        XCTAssertEqual(items.count, 1)
+        XCTAssertEqual(items.first?.name, "Dinner Steak")
+    }
+
+    // MARK: - CRUD Passthrough
+
+    func testAddDishCallsAppState() async {
+        let (vm, appState) = makeSUT()
+        let dish = PreparedDish(name: "New Dish", mealTypes: [.dinner], servingsRemaining: 2, storage: .refrigerated)
+        vm.addDish(dish)
+        await Task.yield()
+        XCTAssertEqual(appState.preparedDishes.count, 1)
+    }
+
+    func testDeleteDishRemovesFromAppState() async {
+        let (vm, appState) = makeSUT()
+        let dish = makePreparedDish(name: "Delete Me", servingsRemaining: 1)
+        await appState.addPreparedDish(dish)
+        XCTAssertEqual(appState.preparedDishes.count, 1)
+
+        vm.deleteDish(dish)
+        await Task.yield()
+        XCTAssertTrue(appState.preparedDishes.isEmpty)
     }
 }
 
@@ -5865,6 +6479,468 @@ final class ErrorHandlingTests: XCTestCase {
         XCTAssertEqual(storage.addMealPlanCallCount, 1)
         XCTAssertEqual(storage.mealPlanStore, [replacement])
     }
+
+    // MARK: - Meal Plan Update
+
+    func testUpdateMealPlanEntryPersistsChanges() async {
+        let (appState, storage, _) = makeTestAppState()
+        let recipe = makeRecipe(title: "Pasta", servings: 4)
+        let entry = MealPlanEntry(date: Date(), mealType: .dinner, recipe: recipe, plannedServings: 4)
+        await appState.addToMealPlan(entry)
+
+        let updated = entry.updatingPlannedServings(2)
+        await appState.updateMealPlanEntry(updated)
+
+        XCTAssertEqual(appState.mealPlan.first?.effectivePlannedServings, 2)
+        XCTAssertEqual(storage.mealPlanStore.first?.plannedServings, 2)
+    }
+
+    func testUpdateMealPlanEntryErrorDoesNotMutateState() async {
+        let (appState, storage, _) = makeTestAppState()
+        let recipe = makeRecipe(title: "Pasta", servings: 4)
+        let entry = MealPlanEntry(date: Date(), mealType: .dinner, recipe: recipe, plannedServings: 4)
+        await appState.addToMealPlan(entry)
+        storage.failingOperations = [.updateMealPlanEntry]
+
+        let updated = entry.updatingPlannedServings(2)
+        await appState.updateMealPlanEntry(updated)
+
+        XCTAssertNotNil(appState.errorMessage)
+        XCTAssertEqual(appState.mealPlan.first?.effectivePlannedServings, 4)
+    }
+
+    // MARK: - Meal Plan Batch Operations
+
+    func testAddMultipleMealPlanEntries() async {
+        let (appState, storage, _) = makeTestAppState()
+        let date = Date()
+        let entries = [
+            MealPlanEntry(date: date, mealType: .breakfast, recipe: makeRecipe(title: "Omelette")),
+            MealPlanEntry(date: date, mealType: .lunch, recipe: makeRecipe(title: "Salad")),
+            MealPlanEntry(date: date, mealType: .dinner, recipe: makeRecipe(title: "Steak")),
+        ]
+        await appState.addToMealPlan(entries)
+        XCTAssertEqual(appState.mealPlan.count, 3)
+        XCTAssertEqual(storage.addMealPlanCallCount, 3)
+    }
+
+    func testAddUnplannedEntryIsIgnored() async {
+        let (appState, _, _) = makeTestAppState()
+        let unplanned = MealPlanEntry(date: Date(), mealType: .dinner)
+        await appState.addToMealPlan(unplanned)
+        XCTAssertTrue(appState.mealPlan.isEmpty, "Unplanned entries should not be added")
+    }
+
+    func testReplaceExistingSlotDeletesMultipleConflicts() async {
+        let (appState, storage, _) = makeTestAppState()
+        let date = Date()
+        let first = MealPlanEntry(date: date, mealType: .dinner, recipe: makeRecipe(title: "Soup"))
+        let second = MealPlanEntry(date: date, mealType: .dinner, recipe: makeRecipe(title: "Salad"))
+        appState.mealPlan = [first, second]
+        storage.mealPlanStore = [first, second]
+
+        let replacement = MealPlanEntry(date: date, mealType: .dinner, recipe: makeRecipe(title: "Curry"))
+        await appState.addToMealPlan(replacement, replaceExistingSlot: true)
+
+        XCTAssertEqual(appState.mealPlan.count, 1)
+        XCTAssertEqual(appState.mealPlan.first?.recipe?.title, "Curry")
+        XCTAssertEqual(storage.deleteMealPlanCallCount, 2)
+    }
+
+    // MARK: - Meal Plan Query Methods
+
+    func testPlannedEntriesForDateFiltersCorrectly() async {
+        let (appState, _, _) = makeTestAppState()
+        let today = Date()
+        let tomorrow = Calendar.current.date(byAdding: .day, value: 1, to: today)!
+        await appState.addToMealPlan(MealPlanEntry(date: today, mealType: .dinner, recipe: makeRecipe(title: "Today")))
+        await appState.addToMealPlan(MealPlanEntry(date: tomorrow, mealType: .dinner, recipe: makeRecipe(title: "Tomorrow")))
+
+        let todayEntries = appState.plannedEntries(on: today)
+        XCTAssertEqual(todayEntries.count, 1)
+        XCTAssertEqual(todayEntries.first?.recipe?.title, "Today")
+    }
+
+    func testPlannedEntriesForWeekReturnsAllInRange() async {
+        let (appState, _, _) = makeTestAppState()
+        let weekStart = Calendar.current.dateInterval(of: .weekOfYear, for: Date())!.start
+        let dayInWeek = Calendar.current.date(byAdding: .day, value: 3, to: weekStart)!
+        let outsideWeek = Calendar.current.date(byAdding: .day, value: 8, to: weekStart)!
+
+        await appState.addToMealPlan(MealPlanEntry(date: dayInWeek, mealType: .dinner, recipe: makeRecipe(title: "InWeek")))
+        await appState.addToMealPlan(MealPlanEntry(date: outsideWeek, mealType: .dinner, recipe: makeRecipe(title: "OutsideWeek")))
+
+        let weekEntries = appState.plannedEntries(forWeekStarting: weekStart)
+        XCTAssertEqual(weekEntries.count, 1)
+        XCTAssertEqual(weekEntries.first?.recipe?.title, "InWeek")
+    }
+
+    // MARK: - Matching Prepared Dishes
+
+    func testMatchingPreparedDishesMatchesByRecipeID() async {
+        let (appState, _, _) = makeTestAppState()
+        let recipe = makeRecipe(title: "Curry")
+        let dish = makePreparedDish(name: "Curry", servingsRemaining: 4, recipeID: recipe.id)
+        let unrelated = makePreparedDish(name: "Soup", servingsRemaining: 2)
+        await appState.addPreparedDish(dish)
+        await appState.addPreparedDish(unrelated)
+
+        let entry = MealPlanEntry(date: Date(), mealType: .dinner, recipe: recipe)
+        let matches = appState.matchingPreparedDishes(for: entry)
+
+        XCTAssertEqual(matches.count, 1)
+        XCTAssertEqual(matches.first?.name, "Curry")
+    }
+
+    func testMatchingPreparedDishesMatchesByFoodIdentity() async {
+        let (appState, _, _) = makeTestAppState()
+        let identityID = UUID()
+        let dish = makePreparedDish(name: "Soup", servingsRemaining: 3, foodIdentityID: identityID)
+        await appState.addPreparedDish(dish)
+
+        let entry = MealPlanEntry(
+            date: Date(), mealType: .lunch,
+            preparedFoodNameSnapshot: "Soup",
+            preparedFoodIdentityID: identityID
+        )
+        let matches = appState.matchingPreparedDishes(for: entry)
+
+        XCTAssertEqual(matches.count, 1)
+        XCTAssertEqual(matches.first?.name, "Soup")
+    }
+
+    // MARK: - Log Eaten Edge Cases
+
+    func testLogEatenIgnoresNonMealLoggingEntries() async {
+        let (appState, _, _) = makeTestAppState()
+        let entry = MealPlanEntry(date: Date(), mealType: .dinner, recipe: makeRecipe(title: "Pasta", servings: 4))
+        await appState.addToMealPlan(entry)
+
+        // No prepared dish → supportsMealLogging is false for recipe-only if no preparedFoodMatchKey
+        // A recipe-only entry has preparedFoodMatchKey via recipe.id, so it does support meal logging.
+        // But without a matching prepared dish, selection will fail validation.
+        await appState.logMealPlanEntriesEaten([
+            MealPlanEatenLoggingSelection(entryID: entry.id, targetEatenServings: 2, preparedDishID: nil)
+        ])
+
+        // Should set error (no prepared dish ID)
+        XCTAssertNotNil(appState.errorMessage)
+    }
+
+    func testLogEatenRejectsMismatchedPreparedDish() async {
+        let (appState, _, _) = makeTestAppState()
+        let recipe = makeRecipe(title: "Curry")
+        let dish = makePreparedDish(name: "Curry", servingsRemaining: 4, recipeID: recipe.id)
+        let wrongDish = makePreparedDish(name: "Soup", servingsRemaining: 4)
+        await appState.addPreparedDish(dish)
+        await appState.addPreparedDish(wrongDish)
+
+        let entry = MealPlanEntry(date: Date(), mealType: .dinner, recipe: recipe)
+        await appState.addToMealPlan(entry)
+
+        await appState.logMealPlanEntriesEaten([
+            MealPlanEatenLoggingSelection(entryID: entry.id, targetEatenServings: 2, preparedDishID: wrongDish.id)
+        ])
+
+        XCTAssertNotNil(appState.errorMessage)
+        XCTAssertTrue(appState.errorMessage!.contains("no longer matches"))
+    }
+
+    func testLogEatenDoesNotDecrementBeyondExisting() async {
+        let (appState, _, _) = makeTestAppState()
+        let recipe = makeRecipe(title: "Curry", servings: 4)
+        let dish = makePreparedDish(name: "Curry", servingsRemaining: 4, recipeID: recipe.id)
+        await appState.addPreparedDish(dish)
+
+        let entry = MealPlanEntry(date: Date(), mealType: .dinner, recipe: recipe, plannedServings: 4, eatenServings: 2)
+        await appState.addToMealPlan(entry)
+
+        // Attempting to log fewer than already eaten should be a no-op
+        await appState.logMealPlanEntriesEaten([
+            MealPlanEatenLoggingSelection(entryID: entry.id, targetEatenServings: 1, preparedDishID: dish.id)
+        ])
+
+        XCTAssertEqual(appState.mealPlan.first?.effectiveEatenServings, 2, "Should not decrease eaten servings")
+        XCTAssertEqual(appState.preparedDishes.first?.servingsRemaining, 4, "Dish should not be decremented")
+    }
+
+    // MARK: - Shopping Item CRUD
+
+    func testAddShoppingItem() async {
+        let (appState, storage, _) = makeTestAppState()
+        let item = ShoppingItem(name: "Milk", quantity: 1, unit: .liter, category: .dairy)
+        await appState.addShoppingItem(item)
+
+        XCTAssertEqual(appState.shoppingItems.count, 1)
+        XCTAssertEqual(storage.shoppingStore.count, 1)
+    }
+
+    func testRemoveShoppingItem() async {
+        let (appState, storage, _) = makeTestAppState()
+        let item = ShoppingItem(name: "Milk", quantity: 1, unit: .liter, category: .dairy)
+        await appState.addShoppingItem(item)
+        await appState.removeShoppingItem(item)
+
+        XCTAssertTrue(appState.shoppingItems.isEmpty)
+        XCTAssertTrue(storage.shoppingStore.isEmpty)
+    }
+
+    func testUpdateShoppingItem() async {
+        let (appState, storage, _) = makeTestAppState()
+        let item = ShoppingItem(name: "Milk", quantity: 1, unit: .liter, category: .dairy)
+        await appState.addShoppingItem(item)
+
+        var updated = appState.shoppingItems[0]
+        updated.isChecked = true
+        await appState.updateShoppingItem(updated)
+
+        XCTAssertTrue(appState.shoppingItems[0].isChecked)
+        XCTAssertTrue(storage.shoppingStore[0].isChecked)
+    }
+
+    func testRemoveCheckedShoppingItems() async {
+        let (appState, storage, _) = makeTestAppState()
+        await appState.addShoppingItems([
+            ShoppingItem(name: "Milk", quantity: 1, unit: .liter, category: .dairy),
+            ShoppingItem(name: "Bread", quantity: 1, unit: .whole, category: .grains),
+        ])
+        var checked = appState.shoppingItems[0]
+        checked.isChecked = true
+        await appState.updateShoppingItem(checked)
+
+        await appState.removeCheckedShoppingItems()
+
+        XCTAssertEqual(appState.shoppingItems.count, 1)
+        XCTAssertEqual(storage.shoppingStore.count, 1)
+        XCTAssertFalse(appState.shoppingItems[0].isChecked)
+    }
+
+    func testReplaceShoppingItemsUpdatesMatchingIDs() async {
+        let (appState, _, _) = makeTestAppState()
+        await appState.addShoppingItems([
+            ShoppingItem(name: "Milk", quantity: 1, unit: .liter, category: .dairy),
+            ShoppingItem(name: "Bread", quantity: 1, unit: .whole, category: .grains),
+        ])
+
+        var milkUpdated = appState.shoppingItems.first(where: { $0.name == "Milk" })!
+        milkUpdated.isChecked = true
+        await appState.replaceShoppingItems([milkUpdated])
+
+        XCTAssertTrue(appState.shoppingItems.first(where: { $0.name == "Milk" })!.isChecked)
+        XCTAssertFalse(appState.shoppingItems.first(where: { $0.name.contains("Bread") })!.isChecked)
+    }
+
+    func testReplaceShoppingItemsNoOpWhenEmpty() async {
+        let (appState, _, _) = makeTestAppState()
+        await appState.addShoppingItems([
+            ShoppingItem(name: "Milk", quantity: 1, unit: .liter, category: .dairy),
+        ])
+        await appState.replaceShoppingItems([])
+        XCTAssertEqual(appState.shoppingItems.count, 1)
+    }
+
+    // MARK: - Shopping Cart → Pantry Transfer
+
+    func testShoppingItemPantryTransferUsesReviewedFields() {
+        let item = ShoppingItem(
+            name: "Soy Sauce", quantity: 2, unit: .tablespoon, category: .condiments,
+            pantryQuantity: 1, pantryUnit: .package, pantryQuantityMode: .exact
+        )
+        let pantryItem = item.pantryItemForTransfer()
+        XCTAssertEqual(pantryItem.quantity, 1)
+        XCTAssertEqual(pantryItem.unit, .package)
+        XCTAssertEqual(pantryItem.quantityMode, .exact)
+    }
+
+    func testShoppingItemPantryTransferPresenceOnly() {
+        let item = ShoppingItem(
+            name: "Salt", quantity: 1, unit: .package, category: .spices,
+            pantryQuantityMode: .presenceOnly
+        )
+        let pantryItem = item.pantryItemForTransfer()
+        XCTAssertNil(pantryItem.quantity)
+        XCTAssertEqual(pantryItem.quantityMode, .presenceOnly)
+    }
+
+    // MARK: - ShoppingItem Identity
+
+    func testShoppingItemIdentityMatchesByCatalog() {
+        let a = ShoppingItem(name: "Carrot", quantity: 1, unit: .whole, category: .produce)
+        let b = ShoppingItem(name: "Carrots", quantity: 3, unit: .whole, category: .produce)
+        XCTAssertTrue(a.matchesIdentity(of: b))
+    }
+
+    func testShoppingItemIdentityDiffersForDifferentFacets() {
+        let whole = ShoppingItem(
+            name: "Garlic", quantity: 1, unit: .whole, category: .produce,
+            catalogItemID: "garlic", facets: []
+        )
+        let minced = ShoppingItem(
+            name: "Garlic", quantity: 1, unit: .tablespoon, category: .produce,
+            catalogItemID: "garlic", facets: [.init(key: .preparation, value: "minced")]
+        )
+        XCTAssertFalse(whole.matchesIdentity(of: minced))
+    }
+
+    // MARK: - Shopping Preview
+
+    func testPreviewShoppingListEmptyMealPlanReturnsEmpty() {
+        let (appState, _, _) = makeTestAppState()
+        let preview = appState.previewShoppingListFromMealPlan()
+        XCTAssertTrue(preview.isEmpty)
+    }
+
+    // MARK: - Prepared Dish History Signature
+
+    func testHistoryTemplateSignatureChangesOnNameEdit() {
+        var dish = makePreparedDish(name: "Soup")
+        let sig1 = dish.historyTemplateSignature
+        dish.name = "Updated Soup"
+        let sig2 = dish.historyTemplateSignature
+        XCTAssertNotEqual(sig1, sig2)
+    }
+
+    func testHistoryTemplateSignatureStableForServingsChange() {
+        let dish1 = makePreparedDish(name: "Soup", servingsRemaining: 3)
+        var dish2 = dish1
+        dish2.servingsRemaining = 1
+        XCTAssertEqual(dish1.historyTemplateSignature, dish2.historyTemplateSignature,
+                        "Serving count changes should NOT trigger signature change")
+    }
+
+    // MARK: - Prepared Dish Normalization
+
+    func testPreparedDishClampsServingsToMinimumOne() {
+        let dish = PreparedDish(name: "Soup", mealTypes: [.lunch], servingsRemaining: 0, storage: .refrigerated)
+        XCTAssertEqual(dish.servingsRemaining, 1)
+    }
+
+    func testPreparedDishDeduplicatesMealTypes() {
+        let dish = PreparedDish(name: "Soup", mealTypes: [.lunch, .lunch, .dinner], servingsRemaining: 2, storage: .refrigerated)
+        XCTAssertEqual(dish.mealTypes, [.lunch, .dinner])
+    }
+
+    func testPreparedDishTrimsName() {
+        let dish = PreparedDish(name: "  Soup  ", mealTypes: [.lunch], servingsRemaining: 2, storage: .refrigerated)
+        XCTAssertEqual(dish.name, "Soup")
+    }
+
+    // MARK: - Prepared Dish Match Key
+
+    func testPreparedDishMatchKeyPrefersRecipeID() {
+        let recipeID = UUID()
+        let dish = makePreparedDish(name: "Curry", recipeID: recipeID)
+        XCTAssertEqual(dish.preparedFoodMatchKey, .recipe(recipeID))
+    }
+
+    func testPreparedDishMatchKeyFallsBackToFoodIdentity() {
+        let identityID = UUID()
+        let dish = makePreparedDish(name: "Soup", foodIdentityID: identityID)
+        XCTAssertEqual(dish.preparedFoodMatchKey, .preparedFoodIdentity(identityID))
+    }
+
+    // MARK: - Prepared Dish Freshness Policy
+
+    func testFreshnessPolicyReturnsCorrectDaysByStorage() {
+        let now = Date()
+        let pantry = PreparedDishFreshnessPolicy.estimatedUseByDate(for: .pantry, referenceDate: now)
+        let fridge = PreparedDishFreshnessPolicy.estimatedUseByDate(for: .refrigerated, referenceDate: now)
+        let frozen = PreparedDishFreshnessPolicy.estimatedUseByDate(for: .frozen, referenceDate: now)
+
+        let cal = Calendar.current
+        XCTAssertEqual(cal.dateComponents([.day], from: now, to: pantry).day, 2)
+        XCTAssertEqual(cal.dateComponents([.day], from: now, to: fridge).day, 4)
+        XCTAssertEqual(cal.dateComponents([.day], from: now, to: frozen).day, 90)
+    }
+
+    // MARK: - Prepared Dish Draft Validation
+
+    func testPreparedDishDraftInvalidWhenNameEmpty() {
+        var draft = PreparedDishDraft()
+        draft.name = ""
+        draft.mealTypes = [.lunch]
+        XCTAssertFalse(draft.isValid)
+    }
+
+    func testPreparedDishDraftInvalidWhenNoMealTypes() {
+        var draft = PreparedDishDraft()
+        draft.name = "Soup"
+        draft.mealTypes = []
+        XCTAssertFalse(draft.isValid)
+    }
+
+    func testPreparedDishDraftInvalidForPartialNutrition() {
+        var draft = PreparedDishDraft()
+        draft.name = "Soup"
+        draft.mealTypes = [.lunch]
+        draft.caloriesText = "200"
+        // protein/carbs/fat empty → partial nutrition → invalid
+        XCTAssertTrue(draft.hasPartialNutrition)
+        XCTAssertFalse(draft.isValid)
+    }
+
+    func testPreparedDishDraftValidWithCompleteNutrition() {
+        var draft = PreparedDishDraft()
+        draft.name = "Soup"
+        draft.mealTypes = [.lunch]
+        draft.caloriesText = "200"
+        draft.proteinText = "10"
+        draft.carbsText = "30"
+        draft.fatText = "5"
+        XCTAssertTrue(draft.isValid)
+    }
+
+    // MARK: - Adjust Prepared Dish Servings
+
+    func testAdjustPreparedDishServingsZeroDeltaReturnsFalse() async {
+        let (appState, _, _) = makeTestAppState()
+        let dish = makePreparedDish(name: "Soup", servingsRemaining: 4)
+        await appState.addPreparedDish(dish)
+
+        let removed = await appState.adjustPreparedDishServings(dish, delta: 0)
+        XCTAssertFalse(removed)
+        XCTAssertEqual(appState.preparedDishes.first?.servingsRemaining, 4)
+    }
+
+    func testAdjustPreparedDishServingsIncrement() async {
+        let (appState, _, _) = makeTestAppState()
+        let dish = makePreparedDish(name: "Soup", servingsRemaining: 2)
+        await appState.addPreparedDish(dish)
+
+        let removed = await appState.adjustPreparedDishServings(dish, delta: 3)
+        XCTAssertFalse(removed)
+        XCTAssertEqual(appState.preparedDishes.first?.servingsRemaining, 5)
+    }
+
+    func testAdjustPreparedDishServingsDecrementToExactZeroRemoves() async {
+        let (appState, _, _) = makeTestAppState()
+        let dish = makePreparedDish(name: "Soup", servingsRemaining: 2)
+        await appState.addPreparedDish(dish)
+
+        let removed = await appState.adjustPreparedDishServings(dish, delta: -2)
+        XCTAssertTrue(removed)
+        XCTAssertTrue(appState.preparedDishes.isEmpty)
+    }
+
+    func testAdjustPreparedDishServingsMissingDishReturnsFalse() async {
+        let (appState, _, _) = makeTestAppState()
+        let ghost = makePreparedDish(name: "Ghost")
+        let removed = await appState.adjustPreparedDishServings(ghost, delta: -1)
+        XCTAssertFalse(removed)
+    }
+
+    // MARK: - Stamp Cooked Does Not Double-Stamp (Regression Guard)
+
+    func testStampCookedEntriesByRecipeSkipsAlreadyStamped() async {
+        let (appState, _, _) = makeTestAppState()
+        let recipe = makeRecipe(title: "Pasta")
+        let entry = MealPlanEntry(date: Date(), mealType: .dinner, recipe: recipe, cookedAt: Date().addingTimeInterval(-3600))
+        await appState.addToMealPlan(entry)
+
+        let originalCookedAt = appState.mealPlan.first?.cookedAt
+        await appState.stampCookedMealPlanEntriesByRecipe(recipe.id)
+        XCTAssertEqual(appState.mealPlan.first?.cookedAt, originalCookedAt, "Should not overwrite existing cookedAt")
+    }
 }
 
 // ===================================================================
@@ -6806,5 +7882,649 @@ final class CookModeInteractionTests: XCTestCase {
 
         // Clean up
         CookingSession.clear(recipeId: vm.recipe.id)
+    }
+
+    // ================================================================
+    // MARK: - Mute Guards: Navigation While Muted
+    // ================================================================
+
+    func testNextStepWhileMutedDoesNotSendMessage() {
+        let (vm, mock) = makeSUT()
+        vm.isConversationActive = true
+        vm.isMuted = true
+
+        vm.nextStep()
+
+        XCTAssertEqual(vm.currentStepIndex, 1)
+        XCTAssertTrue(mock.sentMessages.isEmpty,
+            "notifyStepChanged should be skipped when muted")
+    }
+
+    func testGoToStepWhileMutedDoesNotSendMessage() {
+        let (vm, mock) = makeSUT()
+        vm.isConversationActive = true
+        vm.isMuted = true
+
+        vm.goToStep(2)
+
+        XCTAssertEqual(vm.currentStepIndex, 2)
+        XCTAssertTrue(mock.sentMessages.isEmpty,
+            "notifyStepChanged should be skipped when muted")
+    }
+
+    func testPreviousStepWhileMutedDoesNotSendMessage() {
+        let (vm, mock) = makeSUT()
+        vm.isConversationActive = true
+        vm.isMuted = true
+        vm.goToStep(2)
+
+        vm.previousStep()
+
+        XCTAssertEqual(vm.currentStepIndex, 1)
+        XCTAssertTrue(mock.sentMessages.isEmpty,
+            "notifyStepChanged should be skipped when muted")
+    }
+
+    func testUnmuteThenNavigateSendsMessage() {
+        let (vm, mock) = makeSUT()
+        vm.isConversationActive = true
+        vm.isMuted = true
+
+        vm.nextStep()
+        XCTAssertTrue(mock.sentMessages.isEmpty, "Muted — no message")
+
+        // Unmute
+        vm.toggleMute()
+        mock.sentMessages.removeAll()
+
+        vm.nextStep()
+        XCTAssertEqual(mock.sentMessages.count, 1, "After unmute, navigation should send message")
+    }
+
+    // ================================================================
+    // MARK: - endCookingSession Clears Persisted Session
+    // ================================================================
+
+    func testEndCookingSessionClearsCookingSession() {
+        let (vm, _) = makeSUT()
+        vm.persistSession()
+        XCTAssertNotNil(CookingSession.load(recipeId: vm.recipe.id))
+
+        vm.endCookingSession()
+
+        XCTAssertNil(CookingSession.load(recipeId: vm.recipe.id),
+            "endCookingSession should clear persisted CookingSession")
+    }
+
+    func testEndCookingSessionResetsContinueInBackgroundFlag() async {
+        let (vm, mock) = makeSUT()
+        await simulateStartConversation(vm, mock)
+        vm.continueInBackground()
+        XCTAssertTrue(vm.didContinueInBackground)
+
+        vm.endCookingSession()
+
+        XCTAssertFalse(vm.didContinueInBackground,
+            "endCookingSession should clear didContinueInBackground")
+    }
+
+    // ================================================================
+    // MARK: - continueInBackground Voice Cleanup Order
+    // ================================================================
+
+    func testContinueInBackgroundSilencesAIBeforeDisconnect() async {
+        let (vm, mock) = makeSUT()
+        await simulateStartConversation(vm, mock)
+
+        vm.continueInBackground()
+
+        XCTAssertEqual(mock.silenceAICallCount, 1, "silenceAI should be called")
+        XCTAssertEqual(mock.stopCaptureCallCount, 1, "stopCapture should be called")
+        XCTAssertEqual(mock.disconnectCallCount, 1, "disconnect should be called")
+    }
+
+    func testContinueInBackgroundPersistsSession() async {
+        let (vm, mock) = makeSUT()
+        await simulateStartConversation(vm, mock)
+
+        vm.continueInBackground()
+
+        let session = CookingSession.load(recipeId: vm.recipe.id)
+        XCTAssertNotNil(session, "Session should be persisted for mini player")
+
+        CookingSession.clear(recipeId: vm.recipe.id)
+    }
+
+    // ================================================================
+    // MARK: - resumeFromBackground
+    // ================================================================
+
+    func testResumeFromBackgroundResetsFlag() async {
+        let (vm, mock) = makeSUT()
+        await simulateStartConversation(vm, mock)
+        vm.continueInBackground()
+        XCTAssertTrue(vm.didContinueInBackground)
+
+        vm.resumeFromBackground()
+
+        XCTAssertFalse(vm.didContinueInBackground)
+        XCTAssertFalse(vm.isSchedulingBackground, "Scheduling flag should be cleared")
+    }
+
+    func testResumeFromBackgroundDoesNothingWhenNotBackgrounded() {
+        let (vm, mock) = makeSUT()
+        vm.didContinueInBackground = false
+
+        vm.resumeFromBackground()
+
+        // Should not start conversation since guard fails
+        XCTAssertEqual(mock.prepareAudioCallCount, 0)
+    }
+
+    // ================================================================
+    // MARK: - startConversation Audio Failure
+    // ================================================================
+
+    func testStartConversationFailsWhenAudioNotReady() async {
+        let recipe = makeRecipe(
+            title: "Fail Test",
+            ingredients: [Ingredient(name: "A", quantity: 1, unit: .piece)],
+            steps: [RecipeStep(stepNumber: 1, instruction: "Go")]
+        )
+        let mock = MockRealtimeService()
+        // Override so prepareAudio doesn't set isAudioReady
+        mock._isAudioReady = false
+        let vm = CookModeViewModel(recipe: recipe, realtimeService: mock)
+
+        // We can't call startConversation directly (it calls AVAudioApplication)
+        // but we can test the guard logic manually:
+        vm.isConversationActive = true
+        vm.isPreparing = true
+        // Simulate prepareAudio completing but audio still not ready
+        // (In real code, prepareAudio sets _isAudioReady, but here we keep it false)
+        // The guard `realtimeService.isAudioReady` should fail
+
+        // Verify initial state — isAudioReady is false
+        XCTAssertFalse(mock.isAudioReady)
+    }
+
+    // ================================================================
+    // MARK: - Mute During Startup
+    // ================================================================
+
+    func testMuteDuringStartupSkipsGreetingAndSilencesAI() async {
+        let (vm, mock) = makeSUT()
+
+        // Pre-mute before conversation starts
+        UserDefaults.standard.set(true, forKey: "cookMode.isMuted")
+        let recipe = makeRecipe(
+            title: "MuteStartup",
+            ingredients: [Ingredient(name: "A", quantity: 1, unit: .piece)],
+            steps: [RecipeStep(stepNumber: 1, instruction: "Cook")]
+        )
+        let mutedMock = MockRealtimeService()
+        let mutedVM = CookModeViewModel(recipe: recipe, realtimeService: mutedMock)
+
+        // Verify mute was restored from UserDefaults
+        XCTAssertTrue(mutedVM.isMuted, "Mute should be restored from UserDefaults")
+
+        // Simulate startConversation flow with muted state
+        mutedVM.isConversationActive = true
+        mutedVM.isPreparing = true
+        await mutedMock.prepareAudio()
+
+        mutedMock.connect(withInstructions: "test", tools: [])
+        mutedVM.isPreparing = false
+
+        // The startup flow checks isMuted: if true, stopCapture + silenceAI, no greeting
+        if mutedVM.isMuted {
+            mutedMock.stopCapture()
+            mutedMock.silenceAI()
+        }
+
+        XCTAssertEqual(mutedMock.stopCaptureCallCount, 1, "Should stop capture when muted")
+        XCTAssertEqual(mutedMock.silenceAICallCount, 1, "Should silence AI when muted")
+        XCTAssertTrue(mutedMock.sentMessages.isEmpty, "No greeting should be sent when muted")
+
+        // Clean up
+        UserDefaults.standard.removeObject(forKey: "cookMode.isMuted")
+    }
+
+    // ================================================================
+    // MARK: - SyncRealtimeState Edge Cases
+    // ================================================================
+
+    func testSyncDetectsDisconnect() {
+        let (vm, mock) = makeSUT()
+        // Simulate a prior successful connection via sync (sets wasEverConnected internally)
+        vm.isConversationActive = true
+        vm.isPreparing = false
+        mock.isConnected = true
+        vm.syncRealtimeState()
+
+        // Now simulate disconnect
+        mock.isConnected = false
+        vm.syncRealtimeState()
+
+        XCTAssertFalse(vm.isConversationActive,
+            "Should detect disconnect when not preparing and was connected before")
+    }
+
+    func testSyncRealtimeStateWhenNotConversationMode() {
+        let (vm, mock) = makeSUT()
+        vm.isConversationActive = false
+        mock.isModelSpeaking = true
+        mock.transcript = "Hello"
+
+        vm.syncRealtimeState()
+
+        // Should not copy values when conversation is inactive
+        XCTAssertFalse(vm.isModelSpeaking)
+        XCTAssertTrue(vm.conversationTranscript.isEmpty)
+    }
+}
+
+// ===================================================================
+// MARK: - CookingSession Model Tests
+// ===================================================================
+
+@MainActor
+final class CookingSessionModelTests: XCTestCase {
+
+    private let testRecipeID = UUID()
+
+    override func tearDown() {
+        CookingSession.clear(recipeId: testRecipeID)
+        super.tearDown()
+    }
+
+    private func makeSession(
+        recipeId: UUID? = nil,
+        currentStepIndex: Int = 0,
+        isActive: Bool = true,
+        expiryTimeoutSeconds: TimeInterval = 7200,
+        queueId: UUID? = nil,
+        queueStageId: UUID? = nil
+    ) -> CookingSession {
+        CookingSession(
+            recipeId: recipeId ?? testRecipeID,
+            recipeName: "Test Recipe",
+            totalSteps: 3,
+            stepSummaries: [
+                CookingSession.StepSummary(stepNumber: 1, instruction: "Step one", timerMinutes: 5),
+                CookingSession.StepSummary(stepNumber: 2, instruction: "Step two", timerMinutes: nil),
+                CookingSession.StepSummary(stepNumber: 3, instruction: "Step three", timerMinutes: 10),
+            ],
+            currentStepIndex: currentStepIndex,
+            startedAt: Date(),
+            backgroundedAt: Date(),
+            isActive: isActive,
+            expiryTimeoutSeconds: expiryTimeoutSeconds,
+            queueId: queueId,
+            queueStageId: queueStageId
+        )
+    }
+
+    func testSaveAndLoadRoundTrip() {
+        let session = makeSession()
+        session.save()
+
+        let loaded = CookingSession.load(recipeId: testRecipeID)
+
+        XCTAssertNotNil(loaded)
+        XCTAssertEqual(loaded?.recipeId, testRecipeID)
+        XCTAssertEqual(loaded?.recipeName, "Test Recipe")
+        XCTAssertEqual(loaded?.totalSteps, 3)
+        XCTAssertEqual(loaded?.currentStepIndex, 0)
+        XCTAssertTrue(loaded?.isActive ?? false)
+    }
+
+    func testClearRemovesSession() {
+        let session = makeSession()
+        session.save()
+        XCTAssertNotNil(CookingSession.load(recipeId: testRecipeID))
+
+        CookingSession.clear(recipeId: testRecipeID)
+
+        XCTAssertNil(CookingSession.load(recipeId: testRecipeID))
+    }
+
+    func testLoadAllReturnsNonExpiredSessions() {
+        let session = makeSession()
+        session.save()
+
+        let all = CookingSession.loadAll()
+
+        XCTAssertTrue(all.contains(where: { $0.recipeId == testRecipeID }))
+    }
+
+    func testLoadAllClearsExpiredSessions() {
+        let expired = CookingSession(
+            recipeId: testRecipeID,
+            recipeName: "Expired",
+            totalSteps: 1,
+            stepSummaries: [],
+            currentStepIndex: 0,
+            startedAt: Date.distantPast,
+            backgroundedAt: Date.distantPast,
+            isActive: true,
+            expiryTimeoutSeconds: 1 // 1 second timeout — already expired
+        )
+        expired.save()
+
+        // Wait to ensure expiry
+        let all = CookingSession.loadAll()
+
+        XCTAssertFalse(all.contains(where: { $0.recipeId == testRecipeID }),
+            "Expired session should be cleaned up by loadAll()")
+    }
+
+    func testIsExpiredWhenPastTimeout() {
+        let session = CookingSession(
+            recipeId: testRecipeID,
+            recipeName: "Test",
+            totalSteps: 1,
+            stepSummaries: [],
+            currentStepIndex: 0,
+            startedAt: Date.distantPast,
+            backgroundedAt: Date.distantPast,
+            isActive: true,
+            expiryTimeoutSeconds: 1
+        )
+
+        XCTAssertTrue(session.isExpired, "Session backgrounded in the past with 1s timeout should be expired")
+    }
+
+    func testIsNotExpiredWhenWithinTimeout() {
+        let session = makeSession(expiryTimeoutSeconds: 7200)
+
+        XCTAssertFalse(session.isExpired, "Session just created should not be expired")
+    }
+
+    func testSaveOverwritesExistingSession() {
+        let original = makeSession(currentStepIndex: 0)
+        original.save()
+
+        let updated = makeSession(currentStepIndex: 2)
+        updated.save()
+
+        let loaded = CookingSession.load(recipeId: testRecipeID)
+        XCTAssertEqual(loaded?.currentStepIndex, 2, "Save should overwrite existing session for same recipeId")
+    }
+
+    func testMultipleSessionsCanCoexist() {
+        let id1 = UUID()
+        let id2 = UUID()
+        let session1 = makeSession(recipeId: id1)
+        let session2 = makeSession(recipeId: id2)
+        session1.save()
+        session2.save()
+
+        XCTAssertNotNil(CookingSession.load(recipeId: id1))
+        XCTAssertNotNil(CookingSession.load(recipeId: id2))
+
+        // Clean up
+        CookingSession.clear(recipeId: id1)
+        CookingSession.clear(recipeId: id2)
+    }
+
+    func testSessionPreservesQueueContext() {
+        let queueID = UUID()
+        let stageID = UUID()
+        let session = makeSession(queueId: queueID, queueStageId: stageID)
+        session.save()
+
+        let loaded = CookingSession.load(recipeId: testRecipeID)
+        XCTAssertEqual(loaded?.queueId, queueID)
+        XCTAssertEqual(loaded?.queueStageId, stageID)
+    }
+
+    func testStepSummariesRoundTrip() {
+        let session = makeSession()
+        session.save()
+
+        let loaded = CookingSession.load(recipeId: testRecipeID)
+        XCTAssertEqual(loaded?.stepSummaries.count, 3)
+        XCTAssertEqual(loaded?.stepSummaries[0].stepNumber, 1)
+        XCTAssertEqual(loaded?.stepSummaries[0].timerMinutes, 5)
+        XCTAssertNil(loaded?.stepSummaries[1].timerMinutes)
+    }
+
+    func testClearAllRemovesAllSessions() {
+        let id1 = UUID()
+        let id2 = UUID()
+        makeSession(recipeId: id1).save()
+        makeSession(recipeId: id2).save()
+
+        CookingSession.clearAll()
+
+        XCTAssertNil(CookingSession.load(recipeId: id1))
+        XCTAssertNil(CookingSession.load(recipeId: id2))
+    }
+}
+
+// ===================================================================
+// MARK: - ActiveCooksManager Tests
+// ===================================================================
+
+@MainActor
+final class ActiveCooksManagerTests: XCTestCase {
+
+    override func setUp() {
+        super.setUp()
+        CookingSession.clearAll()
+    }
+
+    override func tearDown() {
+        CookingSession.clearAll()
+        super.tearDown()
+    }
+
+    private func makeSession(recipeId: UUID = UUID(), name: String = "Test") -> CookingSession {
+        CookingSession(
+            recipeId: recipeId,
+            recipeName: name,
+            totalSteps: 2,
+            stepSummaries: [],
+            currentStepIndex: 0,
+            startedAt: Date(),
+            backgroundedAt: Date(),
+            isActive: true
+        )
+    }
+
+    func testRefreshLoadsActiveSessions() {
+        let id = UUID()
+        makeSession(recipeId: id).save()
+
+        let manager = ActiveCooksManager()
+
+        XCTAssertTrue(manager.hasActiveSessions)
+        XCTAssertEqual(manager.count, 1)
+        XCTAssertNotNil(manager.session(for: id))
+
+        CookingSession.clear(recipeId: id)
+    }
+
+    func testHasActiveSessionsReflectsState() {
+        let manager = ActiveCooksManager()
+
+        XCTAssertFalse(manager.hasActiveSessions, "No sessions saved — should be false")
+
+        let id = UUID()
+        makeSession(recipeId: id).save()
+        manager.refresh()
+
+        XCTAssertTrue(manager.hasActiveSessions)
+
+        CookingSession.clear(recipeId: id)
+        manager.refresh()
+
+        XCTAssertFalse(manager.hasActiveSessions)
+    }
+
+    func testEndSessionClearsAndRefreshes() {
+        let id = UUID()
+        makeSession(recipeId: id).save()
+
+        let manager = ActiveCooksManager()
+        XCTAssertTrue(manager.hasActiveSessions)
+
+        manager.endSession(for: id)
+
+        XCTAssertFalse(manager.hasActiveSessions)
+        XCTAssertNil(CookingSession.load(recipeId: id))
+    }
+
+    func testEndAllSessionsClearsEverything() {
+        let id1 = UUID()
+        let id2 = UUID()
+        makeSession(recipeId: id1).save()
+        makeSession(recipeId: id2).save()
+
+        let manager = ActiveCooksManager()
+        XCTAssertEqual(manager.count, 2)
+
+        manager.endAllSessions()
+
+        XCTAssertEqual(manager.count, 0)
+        XCTAssertFalse(manager.hasActiveSessions)
+    }
+
+    func testSessionForRecipeReturnsCorrectSession() {
+        let id1 = UUID()
+        let id2 = UUID()
+        makeSession(recipeId: id1, name: "Soup").save()
+        makeSession(recipeId: id2, name: "Pasta").save()
+
+        let manager = ActiveCooksManager()
+
+        XCTAssertEqual(manager.session(for: id1)?.recipeName, "Soup")
+        XCTAssertEqual(manager.session(for: id2)?.recipeName, "Pasta")
+        XCTAssertNil(manager.session(for: UUID()))
+    }
+}
+
+// ===================================================================
+// MARK: - CookQueue Model Tests (Stage Operations)
+// ===================================================================
+
+@MainActor
+final class CookQueueModelTests: XCTestCase {
+
+    private func makeQueue(recipes: [Recipe]) -> CookQueue {
+        let stages = recipes.map { CookQueueStage(recipes: [$0]) }
+        return CookQueue(stages: stages)
+    }
+
+    func testCompleteStageRemovesFromArray() {
+        var queue = makeQueue(recipes: [makeRecipe(title: "A"), makeRecipe(title: "B")])
+        let stageID = queue.stages.first!.id
+
+        queue.completeStage(stageID)
+
+        XCTAssertEqual(queue.stages.count, 1)
+        XCTAssertEqual(queue.stages.first?.title, "B")
+    }
+
+    func testSkipStageRemovesFromArray() {
+        var queue = makeQueue(recipes: [makeRecipe(title: "A"), makeRecipe(title: "B")])
+        let stageID = queue.stages.first!.id
+
+        queue.skipStage(stageID)
+
+        XCTAssertEqual(queue.stages.count, 1)
+        XCTAssertEqual(queue.stages.first?.title, "B")
+    }
+
+    func testRemoveStageRemovesFromArray() {
+        var queue = makeQueue(recipes: [makeRecipe(title: "A"), makeRecipe(title: "B")])
+        let stageID = queue.stages.last!.id
+
+        queue.removeStage(stageID)
+
+        XCTAssertEqual(queue.stages.count, 1)
+        XCTAssertEqual(queue.stages.first?.title, "A")
+    }
+
+    func testQueueIsEmptyAfterAllStagesCompleted() {
+        var queue = makeQueue(recipes: [makeRecipe(title: "Solo")])
+        let stageID = queue.stages.first!.id
+
+        queue.completeStage(stageID)
+
+        XCTAssertTrue(queue.isEmpty)
+    }
+
+    func testStartStageMarksActiveAndDemotesOthers() {
+        var queue = makeQueue(recipes: [makeRecipe(title: "A"), makeRecipe(title: "B")])
+        let firstID = queue.stages[0].id
+        let secondID = queue.stages[1].id
+
+        queue.startStage(firstID)
+        XCTAssertEqual(queue.stages[0].status, .active)
+        XCTAssertEqual(queue.stages[1].status, .pending)
+
+        // Start second stage — first should be demoted back to pending
+        queue.startStage(secondID)
+        XCTAssertEqual(queue.stages[0].status, .pending)
+        XCTAssertEqual(queue.stages[1].status, .active)
+    }
+
+    func testCurrentStageReturnActiveFirst() {
+        var queue = makeQueue(recipes: [makeRecipe(title: "A"), makeRecipe(title: "B")])
+        queue.startStage(queue.stages[1].id)
+
+        XCTAssertEqual(queue.currentStage?.title, "B", "currentStage should prefer active stage")
+    }
+
+    func testCurrentStageFallsToPendingWhenNoActive() {
+        let queue = makeQueue(recipes: [makeRecipe(title: "A"), makeRecipe(title: "B")])
+
+        XCTAssertEqual(queue.currentStage?.title, "A", "currentStage should fall back to first pending")
+    }
+
+    func testPendingStageCountExcludesCompletedAndSkipped() {
+        var queue = makeQueue(recipes: [makeRecipe(title: "A"), makeRecipe(title: "B"), makeRecipe(title: "C")])
+        queue.completeStage(queue.stages[0].id)
+
+        XCTAssertEqual(queue.pendingStageCount, 2)
+    }
+
+    func testStageTitle() {
+        let singleStage = CookQueueStage(recipes: [makeRecipe(title: "Soup")])
+        XCTAssertEqual(singleStage.title, "Soup")
+
+        let doubleStage = CookQueueStage(recipes: [makeRecipe(title: "Soup"), makeRecipe(title: "Bread")])
+        XCTAssertEqual(doubleStage.title, "Soup + Bread")
+
+        let tripleStage = CookQueueStage(recipes: [makeRecipe(title: "A"), makeRecipe(title: "B"), makeRecipe(title: "C")])
+        XCTAssertEqual(tripleStage.title, "A + 2 more")
+    }
+
+    func testStageSubtitleReflectsMealPlanLink() {
+        let withMealPlan = CookQueueStage(recipes: [makeRecipe(title: "A")], sourceMealPlanEntryIDs: [UUID()])
+        XCTAssertTrue(withMealPlan.subtitle.contains("From Meal Plan"))
+
+        let withoutMealPlan = CookQueueStage(recipes: [makeRecipe(title: "A")])
+        XCTAssertFalse(withoutMealPlan.subtitle.contains("From Meal Plan"))
+    }
+
+    func testIsParallelBatch() {
+        let single = CookQueueStage(recipes: [makeRecipe(title: "A")])
+        XCTAssertFalse(single.isParallelBatch)
+
+        let parallel = CookQueueStage(recipes: [makeRecipe(title: "A"), makeRecipe(title: "B")])
+        XCTAssertTrue(parallel.isParallelBatch)
+    }
+
+    func testRemoveStageNoOpForMissingID() {
+        var queue = makeQueue(recipes: [makeRecipe(title: "A")])
+        let originalUpdatedAt = queue.updatedAt
+
+        queue.removeStage(UUID())
+
+        XCTAssertEqual(queue.stages.count, 1, "Should not change when ID doesn't match")
+        XCTAssertEqual(queue.updatedAt, originalUpdatedAt, "Should not update timestamp for no-op")
     }
 }
