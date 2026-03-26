@@ -11,7 +11,7 @@ struct CookModeView: View {
     @State private var syncTask: Task<Void, Never>?
     @State private var showEndConfirm = false
     @State private var showPantryReview = false
-    @State private var showPreparedDishEditor = false
+
     @State private var pantryReviewItems: [PantryCookReviewItem] = []
     @State private var displayMode: CookDisplayMode = .step
     @State private var tabStepIndex: Int = 0
@@ -41,7 +41,12 @@ struct CookModeView: View {
                     .tint(PCColors.accent)
             }
         }
+        .environment(\.colorScheme, .dark)
         .onAppear {
+            // Cancel any lingering background notifications for this recipe
+            // (handles re-entering from mini player / queue after backgrounding)
+            NotificationService.shared.cancelAllNotifications(recipeId: recipe.id.uuidString)
+
             if viewModel == nil {
                 let realtime = RealtimeService()
                 realtimeService = realtime
@@ -75,6 +80,8 @@ struct CookModeView: View {
             if let vm = viewModel, !vm.isEndingSession, !vm.didContinueInBackground {
                 vm.continueInBackground()
             }
+            // Refresh so mini player / queue see the persisted session
+            appState.activeCooks.refresh()
         }
         .onChange(of: scenePhase) { _, newPhase in
             switch newPhase {
@@ -167,15 +174,7 @@ struct CookModeView: View {
                 )
             }
         }
-        .sheet(isPresented: $showPreparedDishEditor) {
-            if let viewModel {
-                PreparedDishEditorView(appState: appState, seedRecipe: viewModel.recipe) { dish in
-                    Task {
-                        await appState.addPreparedDish(dish)
-                    }
-                }
-            }
-        }
+
     }
 
     // MARK: - Cook Content
@@ -657,28 +656,18 @@ struct CookModeView: View {
 
             VStack(spacing: 12) {
                 Button {
-                    showPreparedDishEditor = true
-                } label: {
-                    Text("Add to Prepared Food")
-                        .fontWeight(.semibold)
-                        .foregroundStyle(PCColors.accent)
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(PCColors.accent.opacity(0.10))
-                        .clipShape(RoundedRectangle(cornerRadius: 14))
-                }
-
-                Button {
                     Task {
                         // Save rating if set, then mark as cooked
                         if vm.selectedRating != nil {
                             await appState.updateRecipe(vm.ratedRecipe)
                         }
+                        NotificationService.shared.cancelAllNotifications(recipeId: vm.recipe.id.uuidString)
                         if let queueStageID {
                             await appState.completeCookQueueStage(queueStageID)
                         } else {
                             await appState.stampCookedMealPlanEntriesByRecipe(vm.recipe.id)
                         }
+                        await appState.addPreparedDishForRecipe(vm.recipe)
                         CookingSession.clear(recipeId: vm.recipe.id)
                         appState.activeCooks.refresh()
 
@@ -705,11 +694,13 @@ struct CookModeView: View {
                         if vm.selectedRating != nil {
                             await appState.updateRecipe(vm.ratedRecipe)
                         }
+                        NotificationService.shared.cancelAllNotifications(recipeId: vm.recipe.id.uuidString)
                         if let queueStageID {
                             await appState.completeCookQueueStage(queueStageID)
                         } else {
                             await appState.stampCookedMealPlanEntriesByRecipe(vm.recipe.id)
                         }
+                        await appState.addPreparedDishForRecipe(vm.recipe)
                         CookingSession.clear(recipeId: vm.recipe.id)
                         appState.activeCooks.refresh()
                         dismiss()

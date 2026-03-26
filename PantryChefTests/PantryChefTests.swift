@@ -3044,6 +3044,125 @@ final class AppStateTests: XCTestCase {
         XCTAssertEqual(appState.cookQueue?.stages.first?.status, .pending)
     }
 
+    // MARK: - Cook Completion → Cooked Indicator + Prepared Dish
+
+    func testCompleteCookQueueStageWithMealPlanEntryStampsCookedAt() async throws {
+        let (appState, _, _) = makeTestAppState()
+        let recipe = makeRecipe(title: "Soup", mealType: .dinner)
+        await appState.addRecipe(recipe)
+
+        let entry = MealPlanEntry(date: Date(), mealType: .dinner, recipe: recipe)
+        await appState.addToMealPlan(entry)
+
+        await appState.addRecipesToCookQueue([recipe], sourceEntries: [entry])
+        let stageID = try XCTUnwrap(appState.cookQueue?.stages.first?.id)
+
+        await appState.completeCookQueueStage(stageID)
+
+        let updatedEntry = try XCTUnwrap(appState.mealPlan.first(where: { $0.id == entry.id }))
+        XCTAssertNotNil(updatedEntry.cookedAt, "Entry should have cookedAt stamped after completing queue stage")
+    }
+
+    func testStampCookedMealPlanEntriesByRecipeDoesNotDoubleStamp() async throws {
+        let (appState, _, _) = makeTestAppState()
+        let recipe = makeRecipe(title: "Pasta")
+        await appState.addRecipe(recipe)
+
+        let entry = MealPlanEntry(date: Date(), mealType: .dinner, recipe: recipe)
+        await appState.addToMealPlan(entry)
+
+        // First stamp
+        await appState.stampCookedMealPlanEntriesByRecipe(recipe.id)
+        let firstStamp = try XCTUnwrap(appState.mealPlan.first?.cookedAt)
+
+        // Second stamp — should not change the timestamp
+        await appState.stampCookedMealPlanEntriesByRecipe(recipe.id)
+        let secondStamp = try XCTUnwrap(appState.mealPlan.first?.cookedAt)
+
+        XCTAssertEqual(firstStamp, secondStamp, "cookedAt should not be overwritten on second stamp")
+    }
+
+    func testStampCookedMealPlanEntriesDoesNotCreatePreparedDish() async throws {
+        let (appState, storage, _) = makeTestAppState()
+        let recipe = makeRecipe(title: "Tacos")
+        await appState.addRecipe(recipe)
+
+        let entry = MealPlanEntry(date: Date(), mealType: .dinner, recipe: recipe)
+        await appState.addToMealPlan(entry)
+
+        // Stamp cooked — should NOT auto-create prepared dish (that's the caller's job now)
+        await appState.stampCookedMealPlanEntriesByRecipe(recipe.id)
+
+        XCTAssertEqual(appState.preparedDishes.count, 0, "stampCookedMealPlanEntries should not create PreparedDish")
+        XCTAssertEqual(storage.addPreparedDishCallCount, 0)
+    }
+
+    func testAddPreparedDishForRecipeCreatesLinkedDish() async throws {
+        let (appState, storage, _) = makeTestAppState()
+        let recipe = makeRecipe(title: "Chicken Tikka", servings: 4, mealType: .dinner)
+
+        await appState.addPreparedDishForRecipe(recipe)
+
+        XCTAssertEqual(appState.preparedDishes.count, 1)
+        let dish = try XCTUnwrap(appState.preparedDishes.first)
+        XCTAssertEqual(dish.name, "Chicken Tikka")
+        XCTAssertEqual(dish.servingsRemaining, 4)
+        XCTAssertEqual(dish.recipeID, recipe.id)
+        XCTAssertEqual(dish.storage, .refrigerated)
+        XCTAssertEqual(dish.mealTypes, [.dinner])
+        XCTAssertEqual(storage.addPreparedDishCallCount, 1)
+    }
+
+    func testAddPreparedDishForRecipeWithNilMealTypeSkipsMealType() async throws {
+        let (appState, _, _) = makeTestAppState()
+        let recipe = makeRecipe(title: "Mystery Dish", mealType: nil)
+
+        await appState.addPreparedDishForRecipe(recipe)
+
+        let dish = try XCTUnwrap(appState.preparedDishes.first)
+        XCTAssertEqual(dish.mealTypes, [], "Nil mealType should result in empty mealTypes")
+    }
+
+    func testAddRecipesToCookQueueWithSourceEntriesLinksMealPlanEntryIDs() async throws {
+        let (appState, _, _) = makeTestAppState()
+        let recipe = makeRecipe(title: "Soup")
+        let entry = MealPlanEntry(date: Date(), mealType: .dinner, recipe: recipe)
+
+        await appState.addRecipesToCookQueue([recipe], sourceEntries: [entry])
+
+        let stage = try XCTUnwrap(appState.cookQueue?.stages.first)
+        XCTAssertEqual(stage.sourceMealPlanEntryIDs, [entry.id], "Stage should carry the meal plan entry ID")
+    }
+
+    func testAddRecipesToCookQueueWithoutSourceEntriesHasEmptyMealPlanIDs() async throws {
+        let (appState, _, _) = makeTestAppState()
+        let recipe = makeRecipe(title: "Soup")
+
+        await appState.addRecipesToCookQueue([recipe])
+
+        let stage = try XCTUnwrap(appState.cookQueue?.stages.first)
+        XCTAssertTrue(stage.sourceMealPlanEntryIDs.isEmpty, "Stage without source entries should have empty IDs")
+    }
+
+    // MARK: - Cooked Indicator in Planning Subtitle
+
+    func testMealPlanEntryPlanningSubtitleShowsCookedWhenStamped() {
+        let recipe = makeRecipe(title: "Salmon", prepTimeMinutes: 5, cookTimeMinutes: 15)
+        var entry = MealPlanEntry(date: Date(), mealType: .dinner, recipe: recipe)
+        entry.cookedAt = Date()
+
+        let subtitle = entry.planningSubtitle ?? ""
+        XCTAssertTrue(subtitle.hasPrefix("Cooked ✓"), "Planning subtitle should start with 'Cooked ✓' when cookedAt is set, got: \(subtitle)")
+    }
+
+    func testMealPlanEntryPlanningSubtitleOmitsCookedWhenNotStamped() {
+        let recipe = makeRecipe(title: "Salmon", prepTimeMinutes: 5, cookTimeMinutes: 15)
+        let entry = MealPlanEntry(date: Date(), mealType: .dinner, recipe: recipe)
+
+        let subtitle = entry.planningSubtitle ?? ""
+        XCTAssertFalse(subtitle.contains("Cooked"), "Planning subtitle should not mention 'Cooked' before stamping")
+    }
+
     func testReplaceCookQueueStagesPreservesQueueIdentityAndOrdering() async throws {
         let (appState, storage, _) = makeTestAppState()
         let recipes = [
@@ -5865,6 +5984,8 @@ final class CookModeInteractionTests: XCTestCase {
     private func makeSUT(
         title: String = "Spaghetti Bolognese"
     ) -> (CookModeViewModel, MockRealtimeService) {
+        // Clear persisted mute state so tests start fresh
+        UserDefaults.standard.removeObject(forKey: "cookMode.isMuted")
         let recipe = makeRecipe(
             title: title,
             ingredients: [
@@ -6284,7 +6405,8 @@ final class CookModeInteractionTests: XCTestCase {
 
         vm.stopConversation()
 
-        XCTAssertFalse(vm.isMuted)
+        // Mute now persists across sessions — stopConversation does NOT reset it
+        XCTAssertTrue(vm.isMuted)
     }
 
     // ================================================================
@@ -6319,7 +6441,8 @@ final class CookModeInteractionTests: XCTestCase {
         XCTAssertFalse(vm.isUserSpeaking)
         XCTAssertTrue(vm.conversationStatus.isEmpty)
         XCTAssertNil(vm.conversationError)
-        XCTAssertFalse(vm.isMuted)
+        // Mute now persists across sessions — stopConversation does NOT reset it
+        XCTAssertTrue(vm.isMuted)
         XCTAssertEqual(mock.disconnectCallCount, 1)
     }
 

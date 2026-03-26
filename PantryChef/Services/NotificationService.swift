@@ -178,7 +178,15 @@ final class NotificationService: NSObject {
                 .map(\.identifier)
                 .filter { $0.hasPrefix(prefix) }
             UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: ids)
-            AppLog.info("[NotificationService] Cancelled \(ids.count) notifications for recipe \(recipeId.prefix(8))…")
+            AppLog.info("[NotificationService] Cancelled \(ids.count) pending notifications for recipe \(recipeId.prefix(8))…")
+        }
+        center.getDeliveredNotifications { notifications in
+            let ids = notifications
+                .map(\.request.identifier)
+                .filter { $0.hasPrefix(prefix) }
+            guard !ids.isEmpty else { return }
+            UNUserNotificationCenter.current().removeDeliveredNotifications(withIdentifiers: ids)
+            AppLog.info("[NotificationService] Removed \(ids.count) delivered notifications for recipe \(recipeId.prefix(8))…")
         }
     }
 

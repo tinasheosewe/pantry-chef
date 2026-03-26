@@ -148,10 +148,12 @@ struct RecipeDetailView: View {
     @State private var isModifying = false
     @State private var showEditor = false
     private let maxServings = 100
+    private let sourceMealPlanEntry: MealPlanEntry?
 
-    init(recipe: Recipe) {
+    init(recipe: Recipe, sourceMealPlanEntry: MealPlanEntry? = nil) {
         _recipe = State(initialValue: recipe)
         _servings = State(initialValue: recipe.servings)
+        self.sourceMealPlanEntry = sourceMealPlanEntry
     }
 
     private var scaledRecipe: Recipe {
@@ -509,7 +511,7 @@ struct RecipeDetailView: View {
             HStack(spacing: 12) {
                 ActionButton(icon: "list.number", title: "Add Queue", color: PCColors.info) {
                     Task {
-                        await appState.addRecipesToCookQueue([scaledRecipe])
+                        await appState.addRecipesToCookQueue([scaledRecipe], sourceEntries: [sourceMealPlanEntry].compactMap { $0 })
                     }
                 }
 

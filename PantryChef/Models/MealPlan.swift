@@ -182,10 +182,11 @@ struct MealPlanEntry: Identifiable, Codable, Hashable {
 
     var planningSubtitle: String? {
         if let recipe {
-            if let plannedServingsLabel {
-                return "\(plannedServingsLabel) • \(recipe.totalTimeDisplay)"
-            }
-            return recipe.totalTimeDisplay
+            var parts: [String] = []
+            if cookedAt != nil { parts.append("Cooked ✓") }
+            if let plannedServingsLabel { parts.append(plannedServingsLabel) }
+            parts.append(recipe.totalTimeDisplay)
+            return parts.joined(separator: " • ")
         }
 
         if preparedFoodMatchKey != nil {

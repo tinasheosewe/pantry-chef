@@ -121,4 +121,104 @@ final class ScenarioBaselineTests: XCTestCase {
         XCTAssertEqual(stages[0].recipeTitleSnapshots, ["Eggs", "Soup"])
         XCTAssertEqual(stages[1].recipeTitleSnapshots, ["Pasta"])
     }
+
+    // MARK: - Cook Completion → Prepared Dish + Cooked Indicator Scenarios
+
+    /// Scenario: Cook a recipe via queue that came from meal plan → expect cookedAt stamped AND prepared dish created.
+    func testCookQueueFromMealPlanScenarioStampsCookedAndCreatesPreparedDish() async throws {
+        let (appState, storage, _) = makeTestAppState()
+        let recipe = makeRecipe(title: "Chicken Curry", servings: 4, mealType: .dinner)
+        await appState.addRecipe(recipe)
+
+        // Plan it
+        let entry = MealPlanEntry(date: Date(), mealType: .dinner, recipe: recipe)
+        await appState.addToMealPlan(entry)
+        XCTAssertNil(appState.mealPlan.first?.cookedAt, "Not yet cooked")
+
+        // Add to queue with meal plan entry link (simulates RecipeDetailView → "Add Queue")
+        await appState.addRecipesToCookQueue([recipe], sourceEntries: [entry])
+        let stageID = try XCTUnwrap(appState.cookQueue?.stages.first?.id)
+
+        // Complete the stage (simulates Done button with queueStageID)
+        await appState.completeCookQueueStage(stageID)
+
+        // Verify cookedAt was stamped on the meal plan entry
+        let updatedEntry = try XCTUnwrap(appState.mealPlan.first(where: { $0.id == entry.id }))
+        XCTAssertNotNil(updatedEntry.cookedAt, "Meal plan entry should be stamped as cooked")
+
+        // The Done button also calls addPreparedDishForRecipe — simulate that
+        await appState.addPreparedDishForRecipe(recipe)
+
+        // Verify prepared dish was created
+        XCTAssertEqual(appState.preparedDishes.count, 1)
+        XCTAssertEqual(appState.preparedDishes.first?.name, "Chicken Curry")
+        XCTAssertEqual(appState.preparedDishes.first?.recipeID, recipe.id)
+        XCTAssertEqual(storage.addPreparedDishCallCount, 1)
+    }
+
+    /// Scenario: Cook a recipe via queue that did NOT come from meal plan → still creates prepared dish.
+    func testCookQueueFromLibraryScenarioStillCreatesPreparedDish() async throws {
+        let (appState, storage, _) = makeTestAppState()
+        let recipe = makeRecipe(title: "Beef Stew", servings: 6, mealType: .dinner)
+        await appState.addRecipe(recipe)
+
+        // Add to queue directly (no meal plan entries)
+        await appState.addRecipesToCookQueue([recipe])
+        let stageID = try XCTUnwrap(appState.cookQueue?.stages.first?.id)
+
+        // Complete stage + add prepared dish (simulates Done button)
+        await appState.completeCookQueueStage(stageID)
+        await appState.addPreparedDishForRecipe(recipe)
+
+        // Verify prepared dish created even without meal plan
+        XCTAssertEqual(appState.preparedDishes.count, 1)
+        XCTAssertEqual(appState.preparedDishes.first?.name, "Beef Stew")
+        XCTAssertEqual(storage.addPreparedDishCallCount, 1)
+    }
+
+    /// Scenario: Cook a standalone recipe (no queue) → stamps cookedAt on matching meal plan entries AND creates prepared dish.
+    func testStandaloneCookScenarioStampsCookedAndCreatesPreparedDish() async throws {
+        let (appState, _, _) = makeTestAppState()
+        let recipe = makeRecipe(title: "Pasta Carbonara", servings: 2, mealType: .dinner)
+        await appState.addRecipe(recipe)
+
+        // Plan multiple meals with same recipe
+        let entry1 = MealPlanEntry(date: Date(), mealType: .dinner, recipe: recipe)
+        let entry2 = MealPlanEntry(date: Calendar.current.date(byAdding: .day, value: 1, to: Date())!, mealType: .lunch, recipe: recipe)
+        await appState.addToMealPlan(entry1)
+        await appState.addToMealPlan(entry2)
+
+        // Standalone cook (no queue) — simulates Done button without queueStageID
+        await appState.stampCookedMealPlanEntriesByRecipe(recipe.id)
+        await appState.addPreparedDishForRecipe(recipe)
+
+        // Both entries should be stamped
+        let stamped = appState.mealPlan.filter { $0.recipe?.id == recipe.id && $0.cookedAt != nil }
+        XCTAssertEqual(stamped.count, 2, "All matching meal plan entries should be stamped cooked")
+
+        // Prepared dish created
+        XCTAssertEqual(appState.preparedDishes.count, 1)
+        XCTAssertEqual(appState.preparedDishes.first?.name, "Pasta Carbonara")
+    }
+
+    /// Scenario: Full round-trip — plan a recipe, add to cook queue from meal plan, complete cook, verify cooked indicator text.
+    func testCookedIndicatorAppearsInPlanningSubtitleAfterCook() async throws {
+        let (appState, _, _) = makeTestAppState()
+        let recipe = makeRecipe(title: "Grilled Salmon", servings: 2, prepTimeMinutes: 5, cookTimeMinutes: 15, mealType: .dinner)
+        await appState.addRecipe(recipe)
+
+        let entry = MealPlanEntry(date: Date(), mealType: .dinner, recipe: recipe)
+        await appState.addToMealPlan(entry)
+
+        // Before cooking — subtitle should NOT contain "Cooked"
+        let beforeEntry = try XCTUnwrap(appState.mealPlan.first(where: { $0.id == entry.id }))
+        XCTAssertFalse(beforeEntry.planningSubtitle?.contains("Cooked") ?? false)
+
+        // Stamp as cooked
+        await appState.stampCookedMealPlanEntriesByRecipe(recipe.id)
+
+        // After cooking — subtitle should contain "Cooked ✓"
+        let afterEntry = try XCTUnwrap(appState.mealPlan.first(where: { $0.id == entry.id }))
+        XCTAssertTrue(afterEntry.planningSubtitle?.contains("Cooked ✓") ?? false, "Planning subtitle should show 'Cooked ✓' after stamping")
+    }
 }

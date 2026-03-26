@@ -589,6 +589,9 @@ final class CookModeViewModel {
         guard isConversationActive, !didContinueInBackground, !isEndingSession, !showCompletionScreen else { return }
         isSchedulingBackground = true
 
+        // Persist session synchronously so mini player/queue see it immediately
+        persistSession()
+
         // Silence audio immediately — don't wait for notifications to finish scheduling
         realtimeService.silenceAI()
         realtimeService.stopCapture()

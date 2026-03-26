@@ -1203,18 +1203,18 @@ final class AppState {
                   entry.cookedAt == nil else { continue }
             entry.cookedAt = now
             await updateMealPlanEntry(entry)
-
-            if let recipe = entry.recipe {
-                let dish = PreparedDish(
-                    name: recipe.title,
-                    mealTypes: [entry.mealType],
-                    servingsRemaining: entry.effectivePlannedServings ?? recipe.servings,
-                    storage: .refrigerated,
-                    recipeID: recipe.id
-                )
-                await addPreparedDish(dish)
-            }
         }
+    }
+
+    func addPreparedDishForRecipe(_ recipe: Recipe) async {
+        let dish = PreparedDish(
+            name: recipe.title,
+            mealTypes: [recipe.mealType].compactMap { $0 },
+            servingsRemaining: recipe.servings,
+            storage: .refrigerated,
+            recipeID: recipe.id
+        )
+        await addPreparedDish(dish)
     }
 
     func skipCookQueueStage(_ stageID: UUID) async {

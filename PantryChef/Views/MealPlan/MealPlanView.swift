@@ -99,7 +99,7 @@ struct MealPlanView: View {
             }
             .appNavigationSheet(item: $selectedMealEntry) { entry in
                 if let recipe = entry.recipe {
-                    RecipeDetailView(recipe: recipe)
+                    RecipeDetailView(recipe: recipe, sourceMealPlanEntry: entry)
                     .environment(viewModel.appState)
                 } else if let preparedDish = entry.preparedDish {
                     PreparedDishDetailView(dish: preparedDish)
@@ -229,9 +229,18 @@ struct MealPlanView: View {
             }
         } label: {
             VStack(spacing: 6) {
-                Image(systemName: mealType.icon)
-                    .font(.caption)
-                    .foregroundStyle(primaryEntry != nil ? PCColors.accent : PCColors.textTertiary)
+                ZStack(alignment: .topTrailing) {
+                    Image(systemName: mealType.icon)
+                        .font(.caption)
+                        .foregroundStyle(primaryEntry != nil ? PCColors.accent : PCColors.textTertiary)
+
+                    if primaryEntry?.cookedAt != nil {
+                        Image(systemName: "checkmark.circle.fill")
+                            .font(.system(size: 8))
+                            .foregroundStyle(PCColors.accent)
+                            .offset(x: 6, y: -4)
+                    }
+                }
 
                 Text(mealType.rawValue)
                     .font(.system(size: 10))
@@ -350,7 +359,7 @@ private struct MealSlotEntriesView: View {
                 ForEach(entries) { entry in
                     VStack(alignment: .leading, spacing: 10) {
                         if let recipe = entry.recipe {
-                            NavigationLink(destination: RecipeDetailView(recipe: recipe).environment(appState)) {
+                            NavigationLink(destination: RecipeDetailView(recipe: recipe, sourceMealPlanEntry: entry).environment(appState)) {
                                 mealEntryRow(title: recipe.title, subtitle: mealEntrySubtitle(for: entry), systemImage: recipe.mealType?.icon ?? "book")
                             }
                         } else if let preparedDish = entry.preparedDish {
