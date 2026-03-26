@@ -14,6 +14,8 @@ struct CookHubView: View {
     @State private var showMealPlanQueueFlow = false
     @State private var showNoPlannedMealsAlert = false
     @State private var showRecipeLibraryDrawer = false
+    @State private var showEndOtherCookAlert = false
+    @State private var pendingLaunchStage: CookQueueStage?
     @State private var queueDraft = CookQueueDraft()
 
     private var launchingRecipes: [Recipe] {
@@ -145,6 +147,20 @@ struct CookHubView: View {
                 Button("OK", role: .cancel) {}
             } message: {
                 Text("There are no planned recipe meals available to import into Cook right now.")
+            }
+            .alert("End Current Cook?", isPresented: $showEndOtherCookAlert) {
+                Button("End & Start New", role: .destructive) {
+                    appState.activeCooks.endAllSessions()
+                    if let stage = pendingLaunchStage {
+                        pendingLaunchStage = nil
+                        performLaunchStage(stage)
+                    }
+                }
+                Button("Cancel", role: .cancel) {
+                    pendingLaunchStage = nil
+                }
+            } message: {
+                Text("You already have an active cooking session. End it to start a new one.")
             }
             .sheet(isPresented: $showGathering) {
                 IngredientGatheringView(recipes: launchingRecipes) {
@@ -667,6 +683,17 @@ struct CookHubView: View {
     }
 
     private func launchStage(_ stage: CookQueueStage) {
+        let stageRecipeIDs = Set(stage.recipeIDs)
+        let hasConflict = appState.activeCooks.activeSessions.contains { !stageRecipeIDs.contains($0.recipeId) }
+        if hasConflict {
+            pendingLaunchStage = stage
+            showEndOtherCookAlert = true
+            return
+        }
+        performLaunchStage(stage)
+    }
+
+    private func performLaunchStage(_ stage: CookQueueStage) {
         launchingStage = stage
         Task {
             await appState.startCookQueueStage(stage.id)

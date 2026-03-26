@@ -1177,9 +1177,37 @@ final class AppState {
 
     func completeCookQueueStage(_ stageID: UUID) async {
         guard var queue = cookQueue else { return }
+
+        // Stamp cookedAt on linked meal plan entries and auto-create prepared dishes
+        if let stage = queue.stages.first(where: { $0.id == stageID }) {
+            await stampCookedMealPlanEntries(stage.sourceMealPlanEntryIDs)
+        }
+
         queue.completeStage(stageID)
         setCookQueueValue(queue.isEmpty ? nil : queue)
         await persistCookQueue()
+    }
+
+    private func stampCookedMealPlanEntries(_ entryIDs: [UUID]) async {
+        guard !entryIDs.isEmpty else { return }
+        let now = Date()
+        for entryID in entryIDs {
+            guard var entry = mealPlan.first(where: { $0.id == entryID }),
+                  entry.cookedAt == nil else { continue }
+            entry.cookedAt = now
+            await updateMealPlanEntry(entry)
+
+            if let recipe = entry.recipe {
+                let dish = PreparedDish(
+                    name: recipe.title,
+                    mealTypes: [entry.mealType],
+                    servingsRemaining: entry.effectivePlannedServings ?? recipe.servings,
+                    storage: .refrigerated,
+                    recipeID: recipe.id
+                )
+                await addPreparedDish(dish)
+            }
+        }
     }
 
     func skipCookQueueStage(_ stageID: UUID) async {
@@ -1260,9 +1288,6 @@ final class AppState {
     }
 
     // MARK: - Cook Mode
-    func markRecipeAsCooked(_ recipe: Recipe) async {
-        // Pantry stock is user-maintained. Cooking a recipe does not decrement pantry items.
-    }
 
     func pantryCookReviewItems(for recipe: Recipe) -> [PantryCookReviewItem] {
         let ingredients = recipe.ingredients.filter { !$0.isOptional }

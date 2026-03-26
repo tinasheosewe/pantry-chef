@@ -13,6 +13,7 @@ struct MealPlanEntry: Identifiable, Codable, Hashable {
     var plannedServings: Int?
     var eatenServings: Int?
     var notes: String?
+    var cookedAt: Date?
 
     init(
         id: UUID = UUID(),
@@ -26,7 +27,8 @@ struct MealPlanEntry: Identifiable, Codable, Hashable {
         customMealName: String? = nil,
         plannedServings: Int? = nil,
         eatenServings: Int? = nil,
-        notes: String? = nil
+        notes: String? = nil,
+        cookedAt: Date? = nil
     ) {
         let normalizedCustomMealName = customMealName?.trimmed.nilIfEmpty
         let normalizedPlannedServings = plannedServings.flatMap { $0 > 0 ? $0 : nil }
@@ -59,6 +61,7 @@ struct MealPlanEntry: Identifiable, Codable, Hashable {
             plannedServings: normalizedPlannedServings
         )
         self.notes = notes
+        self.cookedAt = cookedAt
     }
 
     var displayName: String {

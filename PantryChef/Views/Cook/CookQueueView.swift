@@ -7,6 +7,8 @@ struct CookQueueView: View {
     @State private var launchingStage: CookQueueStage?
     @State private var showGathering = false
     @State private var resumingSession: CookingSession?
+    @State private var showEndOtherCookAlert = false
+    @State private var pendingLaunchStage: CookQueueStage?
 
     private var queue: CookQueue? {
         appState.cookQueue
@@ -84,6 +86,20 @@ struct CookQueueView: View {
                         .foregroundStyle(PCColors.expired)
                     }
                 }
+            }
+            .alert("End Current Cook?", isPresented: $showEndOtherCookAlert) {
+                Button("End & Start New", role: .destructive) {
+                    appState.activeCooks.endAllSessions()
+                    if let stage = pendingLaunchStage {
+                        pendingLaunchStage = nil
+                        performLaunchStage(stage)
+                    }
+                }
+                Button("Cancel", role: .cancel) {
+                    pendingLaunchStage = nil
+                }
+            } message: {
+                Text("You already have an active cooking session. End it to start a new one.")
             }
             .sheet(isPresented: $showGathering) {
                 IngredientGatheringView(recipes: launchingRecipes) {
@@ -293,6 +309,17 @@ struct CookQueueView: View {
     }
 
     private func launchStage(_ stage: CookQueueStage) {
+        let stageRecipeIDs = Set(stage.recipeIDs)
+        let hasConflict = appState.activeCooks.activeSessions.contains { !stageRecipeIDs.contains($0.recipeId) }
+        if hasConflict {
+            pendingLaunchStage = stage
+            showEndOtherCookAlert = true
+            return
+        }
+        performLaunchStage(stage)
+    }
+
+    private func performLaunchStage(_ stage: CookQueueStage) {
         launchingStage = stage
         Task {
             await appState.startCookQueueStage(stage.id)

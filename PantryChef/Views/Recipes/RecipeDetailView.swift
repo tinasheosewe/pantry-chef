@@ -142,6 +142,7 @@ struct RecipeDetailView: View {
     @State private var loadingActions: Set<RecipeAction> = []
     @State private var actionErrorMessage: String?
     @State private var existingSession: CookingSession?
+    @State private var showEndOtherCookAlert = false
     @State private var showModify = false
     @State private var modifyText = ""
     @State private var isModifying = false
@@ -278,6 +279,15 @@ struct RecipeDetailView: View {
             Button("OK", role: .cancel) { }
         } message: {
             Text(actionErrorMessage ?? "Something went wrong. Please try again.")
+        }
+        .alert("End Current Cook?", isPresented: $showEndOtherCookAlert) {
+            Button("End & Start New", role: .destructive) {
+                appState.activeCooks.endAllSessions()
+                showGathering = true
+            }
+            Button("Cancel", role: .cancel) { }
+        } message: {
+            Text("You already have an active cooking session. End it to start a new one.")
         }
     }
 
@@ -472,6 +482,8 @@ struct RecipeDetailView: View {
                 existingSession = CookingSession.load(recipeId: recipe.id)
                 if existingSession != nil {
                     showCookMode = true       // resume — skip gathering
+                } else if appState.activeCooks.hasActiveSessions {
+                    showEndOtherCookAlert = true
                 } else {
                     showGathering = true   // new session — show ingredients first
                 }

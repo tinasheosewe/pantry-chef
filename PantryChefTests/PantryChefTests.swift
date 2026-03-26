@@ -2884,38 +2884,6 @@ final class AppStateTests: XCTestCase {
 
     // MARK: - Cook Completion
 
-    func testMarkRecipeAsCookedDoesNotDeductIngredients() async {
-        let (appState, _, _) = makeTestAppState()
-        await appState.addPantryItem(makePantryItem(name: "Chicken Breast", category: .protein, quantity: 600, unit: .gram))
-        await appState.addPantryItem(makePantryItem(name: "Rice", category: .grains, quantity: 3, unit: .cup))
-
-        let recipe = makeRecipe(ingredients: [
-            Ingredient(name: "Chicken", quantity: 500, unit: .gram, category: .protein),
-            Ingredient(name: "Rice", quantity: 2, unit: .cup, category: .grains),
-        ])
-        await appState.markRecipeAsCooked(recipe)
-
-        let chicken = appState.pantryItems.first { $0.name == "Chicken Breast" }
-        XCTAssertNotNil(chicken)
-        XCTAssertEqual(chicken?.quantity, 600)
-
-        let rice = appState.pantryItems.first { $0.name == "Rice" }
-        XCTAssertNotNil(rice)
-        XCTAssertEqual(rice?.quantity, 3)
-    }
-
-    func testMarkRecipeAsCookedDoesNotRemoveDepletedItem() async {
-        let (appState, _, _) = makeTestAppState()
-        await appState.addPantryItem(makePantryItem(name: "Eggs", category: .dairy, quantity: 3, unit: .piece))
-        let recipe = makeRecipe(ingredients: [
-            Ingredient(name: "Eggs", quantity: 3, unit: .piece),
-        ])
-        await appState.markRecipeAsCooked(recipe)
-        XCTAssertEqual(appState.pantryItems.count, 1)
-        XCTAssertTrue(appState.pantryItems.contains { $0.catalogItemID == "egg" || $0.name == "Egg" || $0.name == "Eggs" },
-                        "Cooking a recipe should not remove pantry items")
-    }
-
     func testPantryCookReviewItemsIncludeExactAndPresenceOnlyMatches() async {
         let (appState, _, _) = makeTestAppState()
         await appState.addPantryItem(PantryItem(name: "Flour", category: .grains, catalogItemID: "flour"))

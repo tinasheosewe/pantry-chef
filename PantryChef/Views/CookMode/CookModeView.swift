@@ -666,7 +666,6 @@ struct CookModeView: View {
                         if vm.selectedRating != nil {
                             await appState.updateRecipe(vm.ratedRecipe)
                         }
-                        await appState.markRecipeAsCooked(vm.recipe)
                         if let queueStageID {
                             await appState.completeCookQueueStage(queueStageID)
                         }
@@ -696,7 +695,6 @@ struct CookModeView: View {
                         if vm.selectedRating != nil {
                             await appState.updateRecipe(vm.ratedRecipe)
                         }
-                        await appState.markRecipeAsCooked(vm.recipe)
                         if let queueStageID {
                             await appState.completeCookQueueStage(queueStageID)
                         }

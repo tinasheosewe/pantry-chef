@@ -17,7 +17,6 @@ struct MealPlanView: View {
         AppScreen("mealplan.screen") {
             VStack(spacing: 0) {
                 weekNavigation
-                compactActionBar
 
                 AppScrollView {
                     VStack(spacing: 0) {
@@ -30,6 +29,32 @@ struct MealPlanView: View {
                 }
             }
             .navigationTitle("Meal Plan")
+            .toolbar {
+                ToolbarItem(placement: .primaryAction) {
+                    Menu {
+                        Button {
+                            showPreparedFoodFlow = true
+                        } label: {
+                            Label("Prepared Food", systemImage: "calendar.badge.plus")
+                        }
+                        .disabled(preparedFoodSourceEntries.isEmpty)
+
+                        Button {
+                            showMealLoggingFlow = true
+                        } label: {
+                            Label("Log Eating", systemImage: "checklist.checked")
+                        }
+
+                        Button {
+                            prepareShoppingConfirmation()
+                        } label: {
+                            Label("Shopping List", systemImage: "cart")
+                        }
+                    } label: {
+                        Image(systemName: "ellipsis.circle")
+                    }
+                }
+            }
             .shoppingListConfirmation($shoppingConfirmation) { itemsToAdd in
                 viewModel.addShoppingItems(itemsToAdd)
             }
@@ -121,73 +146,6 @@ struct MealPlanView: View {
                 && !entry.isFullyEaten
                 && !viewModel.appState.matchingPreparedDishes(for: entry).isEmpty
         }
-    }
-
-    private var compactActionBar: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 10) {
-                compactActionButton(
-                    title: "Prepared Food",
-                    systemImage: "calendar.badge.plus",
-                    tint: PCColors.accent,
-                    isDisabled: preparedFoodSourceEntries.isEmpty,
-                    action: {
-                        showPreparedFoodFlow = true
-                    }
-                )
-
-                compactActionButton(
-                    title: "Log Eating",
-                    systemImage: "checklist.checked",
-                    tint: PCColors.expiring,
-                    isDisabled: false,
-                    action: {
-                        showMealLoggingFlow = true
-                    }
-                )
-
-                compactActionButton(
-                    title: "Shopping List",
-                    systemImage: "cart",
-                    tint: PCColors.info,
-                    isDisabled: false,
-                    accessibilityIdentifier: "mealplan.shoppingListButton",
-                    action: {
-                        prepareShoppingConfirmation()
-                    }
-                )
-            }
-            .padding(.horizontal)
-            .padding(.vertical, 12)
-        }
-        .background(PCColors.cardBackground)
-    }
-
-    private func compactActionButton(
-        title: String,
-        systemImage: String,
-        tint: Color,
-        isDisabled: Bool,
-        accessibilityIdentifier: String? = nil,
-        action: @escaping () -> Void
-    ) -> some View {
-        Button(action: action) {
-            HStack(spacing: 8) {
-                Image(systemName: systemImage)
-                    .font(.caption)
-                Text(title)
-                    .font(.caption)
-                    .fontWeight(.semibold)
-            }
-            .foregroundStyle(isDisabled ? PCColors.textTertiary : tint)
-            .padding(.horizontal, 14)
-            .padding(.vertical, 10)
-            .background(isDisabled ? PCColors.fillTertiary : tint.opacity(0.1))
-            .clipShape(Capsule())
-        }
-        .buttonStyle(.plain)
-        .disabled(isDisabled)
-        .accessibilityIdentifier(accessibilityIdentifier ?? "")
     }
 
     // MARK: - Week Navigation
