@@ -1,7 +1,7 @@
 import SwiftUI
 
 /// Compact recipe configurator sheet — all taps, no typing.
-/// Pre-filled from the user's search query; recipe creation runs through the shared recipe gateway.
+/// Pre-filled from the user's search query; "Just generate" skips straight to AI.
 struct RecipeBuilderView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(AppState.self) private var appState
@@ -151,8 +151,8 @@ struct RecipeBuilderView: View {
                                 Task { await generate() }
                             } label: {
                                 HStack(spacing: 8) {
-                                    Image(systemName: "wand.and.stars")
-                                    Text("Create Recipe")
+                                    Image(systemName: "sparkles")
+                                    Text("Generate Recipe")
                                         .fontWeight(.semibold)
                                 }
                                 .foregroundStyle(.white)
@@ -174,7 +174,7 @@ struct RecipeBuilderView: View {
                         Button {
                             Task { await generate() }
                         } label: {
-                            Text("Use smart defaults →")
+                            Text("Just generate with defaults →")
                                 .font(.footnote)
                                 .foregroundStyle(PCColors.textSecondary)
                         }
@@ -198,7 +198,7 @@ struct RecipeBuilderView: View {
     private var headerSection: some View {
         VStack(spacing: 8) {
             HStack(spacing: 8) {
-                Image(systemName: "wand.and.stars")
+                Image(systemName: "sparkles")
                     .font(.title2)
                     .foregroundStyle(PCColors.expiring)
                 Text(query.capitalized)
@@ -206,7 +206,7 @@ struct RecipeBuilderView: View {
                     .fontWeight(.bold)
                     .foregroundStyle(PCColors.textPrimary)
             }
-            Text("Shape the outcome, then let PantryChef build it with smart defaults.")
+            Text("Customize your recipe or tap Generate to go with smart defaults")
                 .font(.subheadline)
                 .foregroundStyle(PCColors.textSecondary)
                 .multilineTextAlignment(.center)
@@ -331,7 +331,7 @@ struct RecipeBuilderView: View {
             onGenerated(normalizedRecipe.recipe)
         } else {
             tickerTask.cancel()
-            generationError = appState.errorMessage ?? "Couldn't create a recipe right now. Please try again."
+            generationError = appState.errorMessage ?? "Failed to generate recipe. Please try again."
         }
         isGenerating = false
         statusMessage = ""

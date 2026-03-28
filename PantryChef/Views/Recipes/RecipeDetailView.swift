@@ -651,7 +651,7 @@ struct RecipeDetailView: View {
 
     // MARK: - Modify Section
     private var modifySection: some View {
-        AppDetailCard("Recipe Refinement", subtitle: "Tune this recipe without leaving the flow") {
+        AppDetailCard("Recipe Adjustments", subtitle: "Prompt PantryChef to revise this recipe") {
             Button {
                 withAnimation(.easeInOut(duration: 0.25)) {
                     showModify.toggle()
@@ -664,7 +664,7 @@ struct RecipeDetailView: View {
                     Image(systemName: "wand.and.stars")
                         .font(.subheadline)
                         .foregroundStyle(PCColors.teal)
-                    Text("Refine Recipe")
+                    Text("Modify Recipe")
                         .font(.subheadline)
                         .fontWeight(.medium)
                         .foregroundStyle(PCColors.textPrimary)
@@ -677,7 +677,7 @@ struct RecipeDetailView: View {
 
             if showModify {
                 VStack(alignment: .leading, spacing: 10) {
-                    Text("Set the direction and PantryChef will revise the recipe for you.")
+                    Text("Describe what you'd like changed — be as specific or vague as you want.")
                         .font(.caption)
                         .foregroundStyle(PCColors.textSecondary)
 
@@ -1243,12 +1243,12 @@ struct AddRecipeView: View {
                             HStack(spacing: 8) {
                                 ProgressView()
                                     .tint(.white)
-                                Text("Building recipe...")
+                                Text("Parsing recipe...")
                             }
                         } else {
                             HStack(spacing: 6) {
-                                Image(systemName: "wand.and.stars")
-                                Text("Build Recipe")
+                                Image(systemName: "sparkles")
+                                Text("Parse Recipe")
                             }
                         }
                     }

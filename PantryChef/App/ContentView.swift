@@ -5,22 +5,8 @@ struct ContentView: View {
 
     var body: some View {
         ZStack {
-            PCColors.shellGradient
+            PCColors.background
                 .ignoresSafeArea()
-
-            Circle()
-                .fill(PCColors.shellGlow)
-                .frame(width: 320, height: 320)
-                .blur(radius: 40)
-                .offset(x: 140, y: -260)
-                .allowsHitTesting(false)
-
-            Circle()
-                .fill(PCColors.teal.opacity(0.12))
-                .frame(width: 260, height: 260)
-                .blur(radius: 55)
-                .offset(x: -170, y: 310)
-                .allowsHitTesting(false)
 
             VStack(spacing: 0) {
                 ZStack {
@@ -42,8 +28,6 @@ struct ContentView: View {
                             progress: miniPlayerData.progress,
                             onTap: { appState.navigator.requestCookQueueSheet() }
                         )
-                        .padding(.horizontal, PCTokens.spacingSM)
-                        .padding(.bottom, PCTokens.spacingXS)
                     }
 
                     PCTabBar(selectedTab: Binding(

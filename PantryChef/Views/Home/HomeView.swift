@@ -28,10 +28,6 @@ struct HomeView: View {
 
                     todaysMealPlanCard
 
-                    if viewModel.appState.activeCooks.count > 0 {
-                        activeCooksBanner
-                    }
-
                     if !viewModel.expiringItems.isEmpty {
                         expiringSoonCard
                     }
@@ -105,42 +101,17 @@ struct HomeView: View {
     // MARK: - Greeting Header
     private var greetingHeader: some View {
         VStack(alignment: .leading, spacing: PCTokens.spacingXS) {
-            Text("PantryChef")
-                .font(PCFont.micro)
-                .fontWeight(.bold)
-                .textCase(.uppercase)
-                .foregroundStyle(PCColors.accentSecondary)
-
             Text(viewModel.greetingMessage)
-                .font(.system(size: 32, weight: .bold, design: .rounded))
+                .font(.largeTitle)
+                .fontWeight(.bold)
                 .foregroundStyle(PCColors.textPrimary)
 
-            Text("Your kitchen at a glance, with today’s cooking, waste risk, and planning signals in one place.")
+            Text(Date(), format: .dateTime.weekday(.wide).month(.wide).day())
                 .font(PCFont.body)
                 .foregroundStyle(PCColors.textSecondary)
-
-            HStack(spacing: PCTokens.spacingSM) {
-                HomeStatPill(label: Date().formatted(.dateTime.weekday(.wide).month(.abbreviated).day()), value: "Today")
-                HomeStatPill(label: "Planned meals", value: "\(viewModel.todaysMeals.count)")
-                HomeStatPill(label: "Expiring", value: "\(viewModel.expiringItems.count + viewModel.expiringPreparedDishes.count)")
-            }
-            .padding(.top, PCTokens.spacingSM)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(PCTokens.cardPadding)
-        .background(
-            LinearGradient(
-                colors: [PCColors.cardBackground, PCColors.surfaceSecondary],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-        )
-        .clipShape(RoundedRectangle(cornerRadius: PCTokens.cornerRadius))
-        .overlay(
-            RoundedRectangle(cornerRadius: PCTokens.cornerRadius)
-                .stroke(PCColors.glassStroke, lineWidth: 1)
-        )
-        .pcCardShadow()
+        .padding(.top, PCTokens.spacingSM)
     }
 
     // MARK: - Today's Meal Plan Card
@@ -283,8 +254,6 @@ struct HomeView: View {
                 .accessibilityIdentifier("home.quickAction.plan")
             }
         }
-        .padding(PCTokens.cardPadding)
-        .pcCard()
     }
 
     private func prepareShoppingConfirmation() {
@@ -505,10 +474,7 @@ struct QuickActionButton: View {
             VStack(spacing: PCTokens.spacingSM) {
                 Image(systemName: icon)
                     .font(.title2)
-                    .foregroundStyle(.white)
-                    .frame(width: 44, height: 44)
-                    .background(color.opacity(0.9))
-                    .clipShape(RoundedRectangle(cornerRadius: 14))
+                    .foregroundStyle(color)
 
                 Text(title)
                     .font(PCFont.caption)
@@ -519,34 +485,9 @@ struct QuickActionButton: View {
             }
             .frame(maxWidth: .infinity)
             .padding(.vertical, PCTokens.cardPadding)
-            .background(PCColors.fillTertiary)
+            .background(color.opacity(0.08))
             .clipShape(RoundedRectangle(cornerRadius: PCTokens.cornerRadius))
-            .overlay(
-                RoundedRectangle(cornerRadius: PCTokens.cornerRadius)
-                    .stroke(PCColors.glassStroke, lineWidth: 1)
-            )
         }
-    }
-}
-
-private struct HomeStatPill: View {
-    let label: String
-    let value: String
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 2) {
-            Text(value)
-                .font(PCFont.captionBold)
-                .foregroundStyle(PCColors.textPrimary)
-            Text(label)
-                .font(PCFont.micro)
-                .foregroundStyle(PCColors.textSecondary)
-                .lineLimit(1)
-        }
-        .padding(.horizontal, 12)
-        .padding(.vertical, 10)
-        .background(PCColors.fillTertiary)
-        .clipShape(RoundedRectangle(cornerRadius: 12))
     }
 }
 

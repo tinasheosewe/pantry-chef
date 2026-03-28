@@ -409,7 +409,7 @@ struct RecipeListView: View {
     private func recipeGrid(recipes: [Recipe], isUserSection: Bool, trimmedQuery: String?) -> some View {
         let pantry = viewModel.appState.pantryItems
         let query = trimmedQuery ?? ""
-        let showIdeaTile = !isUserSection && query.count >= 3
+        let showAIGenerateTile = !isUserSection && query.count >= 3
         let displayedRecipes = isUserSection ? recipes : Array(recipes.prefix(discoverVisibleCount))
         let matchMetrics = viewModel.matchMetricsMap(for: displayedRecipes)
         return AppScrollView {
@@ -417,8 +417,8 @@ struct RecipeListView: View {
                 GridItem(.flexible(), spacing: 16),
                 GridItem(.flexible(), spacing: 16),
             ], spacing: 16) {
-                // Recipe idea tile — first card in Discover when query is 3+ chars
-                if showIdeaTile {
+                // AI Generate tile — first card in Discover when query is 3+ chars
+                if showAIGenerateTile {
                     Button {
                         showRecipeBuilder = true
                     } label: {
@@ -654,7 +654,7 @@ struct RecipeIdeaTileView: View {
                     .aspectRatio(4/3, contentMode: .fit)
 
                 VStack(spacing: PCTokens.spacingSM) {
-                    Image(systemName: "wand.and.stars")
+                    Image(systemName: "sparkles")
                         .font(.largeTitle)
                         .foregroundStyle(
                             LinearGradient(
@@ -663,7 +663,7 @@ struct RecipeIdeaTileView: View {
                                 endPoint: .bottomTrailing
                             )
                         )
-                    Text("Studio")
+                    Text("Chef")
                         .font(PCFont.caption)
                         .fontWeight(.semibold)
                         .foregroundStyle(PCColors.textSecondary)
@@ -671,7 +671,7 @@ struct RecipeIdeaTileView: View {
             }
 
             HStack(spacing: PCTokens.spacingXS) {
-                Text("Studio")
+                Text("Chef")
                     .font(.system(size: 9, weight: .bold))
                     .textCase(.uppercase)
                     .foregroundStyle(.white)
@@ -680,23 +680,23 @@ struct RecipeIdeaTileView: View {
                     .background(PCColors.teal)
                     .clipShape(Capsule())
 
-                Text("Shape \"\(query)\"")
+                Text("Create \"\(query)\"")
                     .font(PCFont.headline)
                     .foregroundStyle(PCColors.textPrimary)
                     .lineLimit(2)
             }
 
             HStack(spacing: PCTokens.spacingSM) {
-                Label("Tailored", systemImage: "slider.horizontal.3")
+                Label("Custom", systemImage: "slider.horizontal.3")
                     .font(PCFont.micro)
                     .foregroundStyle(PCColors.textSecondary)
             }
 
             HStack(spacing: PCTokens.spacingXS) {
-                Image(systemName: "wand.and.stars")
+                Image(systemName: "sparkles")
                     .font(.system(size: 8))
                     .foregroundStyle(PCColors.expiring)
-                Text("Tap to shape the result")
+                Text("Tap to customize & generate")
                     .font(PCFont.micro)
                     .foregroundStyle(PCColors.expiring)
             }

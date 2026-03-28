@@ -19,12 +19,13 @@ struct MealPlanView: View {
                 weekNavigation
 
                 AppScrollView {
-                    VStack(spacing: PCTokens.spacingMD) {
+                    VStack(spacing: 0) {
                         ForEach(viewModel.weekDays, id: \.self) { date in
                             dayRow(date)
+                            Divider()
+                                .padding(.horizontal)
                         }
                     }
-                    .padding()
                 }
             }
             .navigationTitle("Meal Plan")
@@ -145,68 +146,38 @@ struct MealPlanView: View {
 
     // MARK: - Week Navigation
     private var weekNavigation: some View {
-        VStack(alignment: .leading, spacing: PCTokens.spacingMD) {
-            Text("Week Planner")
-                .font(.system(size: 30, weight: .bold, design: .rounded))
-                .foregroundStyle(PCColors.textPrimary)
-
-            Text("Balance recipes, prepared food, and shopping decisions across the week without losing context.")
-                .font(PCFont.body)
-                .foregroundStyle(PCColors.textSecondary)
-
-            HStack {
-                Button {
-                    viewModel.previousWeek()
-                } label: {
-                    Image(systemName: "chevron.left")
-                        .font(.title3)
-                        .foregroundStyle(PCColors.accent)
-                        .frame(width: 40, height: 40)
-                        .background(PCColors.fillTertiary)
-                        .clipShape(RoundedRectangle(cornerRadius: 12))
-                }
-
-                Spacer()
-
-                VStack(spacing: 2) {
-                    Text(viewModel.weekDateRangeText)
-                        .font(.headline)
-                        .foregroundStyle(PCColors.textPrimary)
-                    Text("\(viewModel.totalPlannedMeals) meals planned")
-                        .font(.caption)
-                        .foregroundStyle(PCColors.textSecondary)
-                }
-
-                Spacer()
-
-                HStack(spacing: 8) {
-                    Button("Today") {
-                        viewModel.goToCurrentWeek()
-                    }
-                    .font(PCFont.captionBold)
+        HStack {
+            Button {
+                viewModel.previousWeek()
+            } label: {
+                Image(systemName: "chevron.left")
+                    .font(.title3)
                     .foregroundStyle(PCColors.accent)
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 10)
-                    .background(PCColors.fillTertiary)
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
+            }
 
-                    Button {
-                        viewModel.nextWeek()
-                    } label: {
-                        Image(systemName: "chevron.right")
-                            .font(.title3)
-                            .foregroundStyle(PCColors.accent)
-                            .frame(width: 40, height: 40)
-                            .background(PCColors.fillTertiary)
-                            .clipShape(RoundedRectangle(cornerRadius: 12))
-                    }
-                }
+            Spacer()
+
+            VStack(spacing: 2) {
+                Text(viewModel.weekDateRangeText)
+                    .font(.headline)
+                    .foregroundStyle(PCColors.textPrimary)
+                Text("\(viewModel.totalPlannedMeals) meals planned")
+                    .font(.caption)
+                    .foregroundStyle(PCColors.textSecondary)
+            }
+
+            Spacer()
+
+            Button {
+                viewModel.nextWeek()
+            } label: {
+                Image(systemName: "chevron.right")
+                    .font(.title3)
+                    .foregroundStyle(PCColors.accent)
             }
         }
         .padding()
-        .pcCard()
-        .padding(.horizontal)
-        .padding(.top, PCTokens.spacingSM)
+        .background(PCColors.cardBackground)
     }
 
     // MARK: - Day Row
@@ -233,17 +204,7 @@ struct MealPlanView: View {
             }
         }
         .padding()
-        .background(Calendar.current.isDateInToday(date) ? PCColors.surfaceSecondary : PCColors.cardBackground)
-        .clipShape(RoundedRectangle(cornerRadius: PCTokens.cornerRadius))
-        .overlay {
-            if Calendar.current.isDateInToday(date) {
-                RoundedRectangle(cornerRadius: PCTokens.cornerRadius)
-                    .stroke(PCColors.accent.opacity(0.35), lineWidth: 1)
-            } else {
-                RoundedRectangle(cornerRadius: PCTokens.cornerRadius)
-                    .stroke(PCColors.glassStroke, lineWidth: 1)
-            }
-        }
+        .background(Calendar.current.isDateInToday(date) ? PCColors.accent.opacity(0.03) : .clear)
     }
 
     // MARK: - Meal Slot
@@ -310,12 +271,8 @@ struct MealPlanView: View {
             .frame(maxWidth: .infinity, minHeight: 100)
             .padding(.vertical, 10)
             .padding(.horizontal, 4)
-            .background(primaryEntry?.isPlanned == true ? PCColors.accent.opacity(0.12) : PCColors.fillTertiary)
+            .background(primaryEntry?.isPlanned == true ? PCColors.accent.opacity(0.08) : PCColors.fillTertiary)
             .clipShape(RoundedRectangle(cornerRadius: 10))
-            .overlay(
-                RoundedRectangle(cornerRadius: 10)
-                    .stroke(PCColors.glassStroke, lineWidth: 1)
-            )
         }
         .contextMenu {
             if entries.count > 1 {

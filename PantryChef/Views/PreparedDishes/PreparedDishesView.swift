@@ -16,18 +16,12 @@ struct PreparedDishesView: View {
 
         let content = AppScreen("preparedDishes.screen", isEmbedded: isEmbedded) {
             VStack(spacing: 0) {
-                preparedHeader(viewModel: viewModel)
-                    .padding(.horizontal)
-                    .padding(.top, 12)
-
                 searchAndFilters
-                    .padding(.horizontal)
-                    .padding(.top, 12)
 
                 if !viewModel.appState.preparedDishHistory.isEmpty {
                     historySummaryCard
                         .padding(.horizontal)
-                        .padding(.top, 12)
+                        .padding(.top, 8)
                 }
 
                 if viewModel.filteredDishes.isEmpty {
@@ -152,56 +146,6 @@ struct PreparedDishesView: View {
 
         content
             .navigationTitle("Prepared Dishes")
-    }
-
-    private func preparedHeader(viewModel: PreparedDishViewModel) -> some View {
-        let totalDishes = viewModel.appState.preparedDishes.count
-        let totalServings = viewModel.appState.preparedDishes.reduce(0) { $0 + $1.servingsRemaining }
-        let useSoonCount = viewModel.appState.preparedDishes.filter { $0.expiryStatus != .fresh }.count
-
-        return VStack(alignment: .leading, spacing: 18) {
-            VStack(alignment: .leading, spacing: 8) {
-                Text("Ready To Eat")
-                    .font(.caption)
-                    .fontWeight(.semibold)
-                    .foregroundStyle(PCColors.textSecondary)
-                    .textCase(.uppercase)
-                    .tracking(1.2)
-
-                Text("Prepared Dishes")
-                    .font(.system(size: 30, weight: .semibold, design: .rounded))
-                    .foregroundStyle(PCColors.textPrimary)
-
-                Text("Keep leftovers, prepped meals, and takeout visible so the next dinner decision starts from what is already ready.")
-                    .font(.subheadline)
-                    .foregroundStyle(PCColors.textSecondary)
-            }
-
-            HStack(spacing: 10) {
-                PreparedDishStatPill(value: "\(totalDishes)", label: "Dishes", tint: PCColors.expiring)
-                PreparedDishStatPill(value: "\(totalServings)", label: "Servings", tint: PCColors.accent)
-                PreparedDishStatPill(value: "\(useSoonCount)", label: "Use Soon", tint: useSoonCount == 0 ? PCColors.fresh : PCColors.expired)
-            }
-        }
-        .padding(20)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(
-            LinearGradient(
-                colors: [
-                    PCColors.cardBackground,
-                    PCColors.expiring.opacity(0.14),
-                    PCColors.accent.opacity(0.08)
-                ],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-        )
-        .clipShape(RoundedRectangle(cornerRadius: 28, style: .continuous))
-        .overlay(
-            RoundedRectangle(cornerRadius: 28, style: .continuous)
-                .stroke(PCColors.glassStroke, lineWidth: 1)
-        )
-        .shadow(color: Color.black.opacity(0.22), radius: 24, x: 0, y: 14)
     }
 
     private var searchAndFilters: some View {
@@ -506,28 +450,6 @@ struct PreparedDishDetailView: View {
         .background(color.opacity(0.14))
         .foregroundStyle(color)
         .clipShape(RoundedRectangle(cornerRadius: 12))
-    }
-}
-
-private struct PreparedDishStatPill: View {
-    let value: String
-    let label: String
-    let tint: Color
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 3) {
-            Text(value)
-                .font(.headline)
-                .foregroundStyle(PCColors.textPrimary)
-            Text(label)
-                .font(.caption2)
-                .foregroundStyle(PCColors.textSecondary)
-        }
-        .padding(.horizontal, 12)
-        .padding(.vertical, 10)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(tint.opacity(0.12))
-        .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
     }
 }
 
