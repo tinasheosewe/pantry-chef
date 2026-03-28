@@ -3,15 +3,21 @@ import Foundation
 final class AIService: AIServiceProtocol {
     private let apiKey: String
     private let substitutionRepository: any SubstitutionProviding
+    private let urlSession: URLSession
+    private let telemetryReporter: any TelemetryReporting
     private let baseURL = "https://api.openai.com/v1/chat/completions"
     private let model = "gpt-4o"
 
     init(
         apiKey: String = AppConfig.openAIAPIKey,
-        substitutionRepository: any SubstitutionProviding = SubstitutionRepository.shared
+        substitutionRepository: any SubstitutionProviding = SubstitutionRepository.shared,
+        urlSession: URLSession = .shared,
+        telemetryReporter: any TelemetryReporting = AppTelemetryReporter()
     ) {
         self.apiKey = apiKey
         self.substitutionRepository = substitutionRepository
+        self.urlSession = urlSession
+        self.telemetryReporter = telemetryReporter
     }
 
     // MARK: - Core Feature 1: What to Buy
@@ -248,8 +254,11 @@ final class AIService: AIServiceProtocol {
         request.setValue("text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8", forHTTPHeaderField: "Accept")
         request.setValue("en-US,en;q=0.9", forHTTPHeaderField: "Accept-Language")
 
-        guard let (data, response) = try? await URLSession.shared.data(for: request),
-              let httpResponse = response as? HTTPURLResponse,
+        guard let (data, httpResponse) = await performDataRequest(
+            operation: "parse_recipe_url_fetch",
+            request: request,
+            successStatusCodes: Set(200...399)
+        ),
               (200...399).contains(httpResponse.statusCode),
               let html = String(data: data, encoding: .utf8) ?? String(data: data, encoding: .ascii) else {
             return nil
@@ -1140,6 +1149,7 @@ final class AIService: AIServiceProtocol {
         guard !apiKey.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
               !AppConfig.isMissing(apiKey) else {
             AppLog.info("[AIService] Missing OpenAI API key")
+                        telemetryReporter.record(TelemetryEvent(name: "ai.request.skipped", severity: .warning, metadata: ["reason": "missing_api_key"]))
             return nil
         }
 
@@ -1167,50 +1177,139 @@ final class AIService: AIServiceProtocol {
 
         request.httpBody = try? JSONSerialization.data(withJSONObject: body)
 
+        guard let (data, _) = await performDataRequest(
+            operation: "chat_completion",
+            request: request,
+            successStatusCodes: [200]
+        ) else {
+            return nil
+        }
+
+        if let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+           let choices = json["choices"] as? [[String: Any]],
+           let firstChoice = choices.first,
+           let message = firstChoice["message"] as? [String: Any],
+           let content = message["content"] as? String {
+            return content
+        }
+
+        AppLog.warn("[AIService] Received HTTP 200 with unexpected response shape")
+        telemetryReporter.record(TelemetryEvent(
+            name: "ai.request.invalid_response_shape",
+            severity: .warning,
+            metadata: ["operation": "chat_completion"]
+        ))
+
+        return nil
+    }
+
+    private func performDataRequest(
+        operation: String,
+        request: URLRequest,
+        successStatusCodes: Set<Int>
+    ) async -> (Data, HTTPURLResponse)? {
+        let requestID = UUID().uuidString
+
         for attempt in 1...maxRetries {
+            if Task.isCancelled {
+                telemetryReporter.record(TelemetryEvent(
+                    name: "ai.request.cancelled",
+                    severity: .info,
+                    metadata: [
+                        "operation": operation,
+                        "request_id": requestID,
+                        "attempt": String(attempt)
+                    ]
+                ))
+                return nil
+            }
+
+            let startedAt = Date()
+
             do {
-                let (data, response) = try await URLSession.shared.data(for: request)
+                let (data, response) = try await urlSession.data(for: request)
+                guard let httpResponse = response as? HTTPURLResponse else {
+                    telemetryReporter.record(TelemetryEvent(
+                        name: "ai.request.invalid_response",
+                        severity: .error,
+                        metadata: [
+                            "operation": operation,
+                            "request_id": requestID,
+                            "attempt": String(attempt)
+                        ]
+                    ))
+                    return nil
+                }
 
-                if let httpResponse = response as? HTTPURLResponse {
-                    // Success
-                    if httpResponse.statusCode == 200 {
-                        if let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
-                           let choices = json["choices"] as? [[String: Any]],
-                           let firstChoice = choices.first,
-                           let message = firstChoice["message"] as? [String: Any],
-                           let content = message["content"] as? String {
-                            return content
-                        }
-                        AppLog.warn("[AIService] Received HTTP 200 with unexpected response shape")
-                        return nil // valid 200 but unexpected shape — don't retry
-                    }
+                let durationMs = String(Int(Date().timeIntervalSince(startedAt) * 1000))
+                let statusCode = httpResponse.statusCode
 
-                    // Rate limited or server error — retryable
-                    if httpResponse.statusCode == 429 || httpResponse.statusCode >= 500 {
-                        let body = String(data: data, encoding: .utf8) ?? "<non-utf8 body>"
-                        AppLog.warn("[AIService] Retryable HTTP \(httpResponse.statusCode), attempt \(attempt)/\(maxRetries): \(body)")
-                        if attempt < maxRetries {
-                            let delay = Double(attempt) * AppConfig.aiBackoffMultiplier
-                            try await Task.sleep(for: .seconds(delay))
-                            continue
-                        }
-                        return nil
-                    }
+                if successStatusCodes.contains(statusCode) {
+                    telemetryReporter.record(TelemetryEvent(
+                        name: "ai.request.completed",
+                        severity: attempt == 1 ? .debug : .info,
+                        metadata: [
+                            "operation": operation,
+                            "request_id": requestID,
+                            "attempt": String(attempt),
+                            "status_code": String(statusCode),
+                            "duration_ms": durationMs
+                        ]
+                    ))
+                    return (data, httpResponse)
+                }
 
-                    // 4xx client error (bad key, etc.) — not retryable
-                    let body = String(data: data, encoding: .utf8) ?? "<non-utf8 body>"
-                    AppLog.error("[AIService] Non-retryable HTTP \(httpResponse.statusCode): \(body)")
+                let bodyPreview = String(data: data, encoding: .utf8) ?? "<non-utf8 body>"
+                let isRetryable = statusCode == 429 || statusCode >= 500
+
+                telemetryReporter.record(TelemetryEvent(
+                    name: isRetryable ? "ai.request.retryable_http_error" : "ai.request.http_error",
+                    severity: isRetryable ? .warning : .error,
+                    metadata: [
+                        "operation": operation,
+                        "request_id": requestID,
+                        "attempt": String(attempt),
+                        "status_code": String(statusCode),
+                        "duration_ms": durationMs,
+                        "body_preview": String(bodyPreview.prefix(200))
+                    ]
+                ))
+
+                guard isRetryable, attempt < maxRetries else {
                     return nil
                 }
             } catch {
-                // Network error — retry with backoff
-                if attempt < maxRetries {
-                    let delay = Double(attempt) * AppConfig.aiBackoffMultiplier
-                    try? await Task.sleep(for: .seconds(delay))
-                    continue
+                let durationMs = String(Int(Date().timeIntervalSince(startedAt) * 1000))
+                telemetryReporter.record(TelemetryEvent(
+                    name: attempt < maxRetries ? "ai.request.retryable_transport_error" : "ai.request.transport_error",
+                    severity: attempt < maxRetries ? .warning : .error,
+                    metadata: [
+                        "operation": operation,
+                        "request_id": requestID,
+                        "attempt": String(attempt),
+                        "duration_ms": durationMs,
+                        "error": error.localizedDescription
+                    ]
+                ))
+
+                guard attempt < maxRetries else {
+                    AppLog.error("AI Service Error after \(maxRetries) attempts: \(error.localizedDescription)")
+                    return nil
                 }
-                AppLog.error("AI Service Error after \(maxRetries) attempts: \(error.localizedDescription)")
             }
+
+            let delaySeconds = Double(attempt) * AppConfig.aiBackoffMultiplier
+            telemetryReporter.record(TelemetryEvent(
+                name: "ai.request.backoff",
+                severity: .info,
+                metadata: [
+                    "operation": operation,
+                    "request_id": requestID,
+                    "attempt": String(attempt),
+                    "delay_seconds": String(format: "%.2f", delaySeconds)
+                ]
+            ))
+            try? await Task.sleep(for: .seconds(delaySeconds))
         }
 
         return nil

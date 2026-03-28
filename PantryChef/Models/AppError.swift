@@ -24,4 +24,17 @@ enum AppError: Sendable {
         case .ai(_, let message): return message
         }
     }
+
+    var telemetryType: String {
+        switch self {
+        case .storage:
+            return "storage"
+        case .validation:
+            return "validation"
+        case .loadFailure:
+            return "load_failure"
+        case .ai(let operation, _):
+            return "ai_\(operation.replacingOccurrences(of: " ", with: "_"))"
+        }
+    }
 }

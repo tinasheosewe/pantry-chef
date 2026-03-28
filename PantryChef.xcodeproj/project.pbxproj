@@ -38,6 +38,7 @@
 		508A8C15F4C812E456420B25 /* PantryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B585DE3DA29960A7CB2860B /* PantryView.swift */; };
 		577489D1FDE099174E3B155D /* PCCards.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB6A25657C4CC1FCAB95F7F2 /* PCCards.swift */; };
 		59E7344CE47BB5BDC9272C27 /* StorageService.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3D174F06F17C2D1BFB041DA /* StorageService.swift */; };
+		64F2B5992FF1EB74F106E85D /* TelemetryReporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A16DF6ABA8E8C73E7BB93F32 /* TelemetryReporter.swift */; };
 		680C4DEF01146537AFA0035E /* SpeechService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 187A2FC90EF58530B2FF9242 /* SpeechService.swift */; };
 		68A7B7D96FAEDCD1CA63510C /* RecipeEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFE7240F13AA0933BA294B63 /* RecipeEditorView.swift */; };
 		69F60B663B95A83DCECBB89D /* AppConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFBB7D0A309C7FD4311B669D /* AppConfig.swift */; };
@@ -194,6 +195,7 @@
 		9F5FF8369CF1F096EF54AC6B /* MealPlanGateway.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MealPlanGateway.swift; sourceTree = "<group>"; };
 		A0382EF98C03B29B3D9B560F /* ActiveCooksManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActiveCooksManager.swift; sourceTree = "<group>"; };
 		A078E82E845BCC2B8C09E291 /* PantryChefTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = PantryChefTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		A16DF6ABA8E8C73E7BB93F32 /* TelemetryReporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TelemetryReporter.swift; sourceTree = "<group>"; };
 		A2D6EB6860064D974915E9B1 /* ViewSnapshotBaselineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewSnapshotBaselineTests.swift; sourceTree = "<group>"; };
 		A583969D363695B85BA85C0A /* AudioPipelineHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPipelineHelper.swift; sourceTree = "<group>"; };
 		A690A6DFC4505930CDD76AF7 /* PreparedDishViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreparedDishViewModel.swift; sourceTree = "<group>"; };
@@ -581,6 +583,7 @@
 				229E0C49040C5DEDB1C58497 /* StorageRecords.swift */,
 				E3D174F06F17C2D1BFB041DA /* StorageService.swift */,
 				ECB3F6705AF4F41CD3F95E39 /* SubstitutionRepository.swift */,
+				A16DF6ABA8E8C73E7BB93F32 /* TelemetryReporter.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -846,6 +849,7 @@
 				D2EB2D4DE02AC5A87EC4E61C /* StorageRecords.swift in Sources */,
 				59E7344CE47BB5BDC9272C27 /* StorageService.swift in Sources */,
 				BCB39B304C3B8E1F67FC0F28 /* SubstitutionRepository.swift in Sources */,
+				64F2B5992FF1EB74F106E85D /* TelemetryReporter.swift in Sources */,
 				987236F06382EB09A69A05BC /* ViewModelSupport.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

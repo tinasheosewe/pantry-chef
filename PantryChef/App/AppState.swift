@@ -94,6 +94,7 @@ final class AppState {
     let cookingSessionStore: CookingSessionStoreProtocol
     let cookModePreferenceStore: CookModePreferenceStoreProtocol
     let notificationService: CookNotificationServiceProtocol
+    let telemetryReporter: any TelemetryReporting
 
     // MARK: - Shared State
     var pantryItems: [PantryItem] = []
@@ -358,13 +359,14 @@ final class AppState {
         let substitutionRepository = SubstitutionRepository.shared
         let cookingSessionStore = UserDefaultsCookingSessionStore()
         let cookModePreferenceStore = UserDefaultsCookModePreferenceStore()
+        let telemetryReporter = AppTelemetryReporter()
         self.pantryItemPreferenceStore = PantryItemPreferenceStore()
         self.storageService = StorageService(
             isStoredInMemoryOnly: launchOptions.useInMemoryStorage,
             shouldBootstrap: launchOptions.shouldBootstrapStorage,
             resetPersistentStore: launchOptions.resetPersistentStore
         )
-        self.aiService = AIService(substitutionRepository: substitutionRepository)
+        self.aiService = AIService(substitutionRepository: substitutionRepository, telemetryReporter: telemetryReporter)
         self.ingredientCandidateParser = IngredientCandidateParser()
         self.recipeIngredientResolver = RecipeIngredientResolver(candidateParser: ingredientCandidateParser, aiService: aiService)
         self.recipeRepository = RecipeRepository.shared
@@ -373,6 +375,7 @@ final class AppState {
         self.cookModePreferenceStore = cookModePreferenceStore
         self.activeCooks = ActiveCooksManager(sessionStore: cookingSessionStore)
         self.notificationService = NotificationService()
+        self.telemetryReporter = telemetryReporter
         IngredientMatcher.substitutionRepository = substitutionRepository
         pantryItems = launchOptions.seedPantryItems ? PantryItem.samples : []
         preparedDishes = []
@@ -397,6 +400,7 @@ final class AppState {
         cookModePreferenceStore: CookModePreferenceStoreProtocol? = nil,
         activeCooks: ActiveCooksManaging? = nil,
         notificationService: CookNotificationServiceProtocol? = nil,
+        telemetryReporter: any TelemetryReporting = AppTelemetryReporter(),
         shouldLoadOnInit: Bool = true
     ) {
         self.storageService = storageService
@@ -412,6 +416,7 @@ final class AppState {
         self.cookModePreferenceStore = resolvedCookModePreferenceStore
         self.activeCooks = activeCooks ?? ActiveCooksManager(sessionStore: resolvedCookingSessionStore)
         self.notificationService = notificationService ?? NotificationService()
+        self.telemetryReporter = telemetryReporter
         IngredientMatcher.substitutionRepository = substitutionRepository
         pantryItems = PantryItem.samples
         preparedDishes = []
@@ -443,6 +448,15 @@ final class AppState {
     // MARK: - Error Handling
 
     func pushError(_ error: AppError) {
+        telemetryReporter.record(TelemetryEvent(
+            name: "app.error.presented",
+            severity: .error,
+            metadata: [
+                "type": error.telemetryType,
+                "message": error.localizedDescription
+            ]
+        ))
+
         let presentedError = PresentedAppError(error: error)
         if lastError == nil {
             lastError = presentedError
