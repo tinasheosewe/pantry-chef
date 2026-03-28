@@ -21,6 +21,7 @@
 - **Receipt OCR and barcode pantry intake** are still research-only. The product ships with manual pantry entry and structured bulk-add flows, not camera-based intake.
 - **Supabase-backed sync or cloud persistence** is not active. The shipping app is local-first and runs entirely on SwiftData plus lightweight local caches/preferences.
 - **Realtime voice cook mode** is the primary shipped voice experience. The AVSpeechSynthesizer/SFSpeechRecognizer stack exists as fallback infrastructure, but it is not the main cook-mode path.
+- **Sentry crash reporting** is wired in but remains opt-in at runtime. The app only initializes Sentry when `SENTRY_DSN` is configured.
 
 ---
 
@@ -1208,11 +1209,18 @@ The recipe filtering system maintains a multi-layer caching architecture:
 | Key | Source | Description |
 |-----|--------|-------------|
 | `openAIAPIKey` | Environment variable → Info.plist | Required for all AI features |
+| `sentryDSN` | Environment variable → Info.plist | Optional DSN for crash reporting and telemetry |
+| `runtimeEnvironment` | Compile-time build configuration | `debug` or `release`, forwarded into crash reporting |
 | `expiryWarningDays` | Hardcoded: 3 | Days before expiry to show warnings |
 | `maxRecipeSuggestions` | Hardcoded: 5 | AI suggestions per request |
 | `defaultServings` | Hardcoded: 4 | Default recipe servings |
 
 API key lookup: environment variables are checked first (for CI/testing), then Info.plist (for production). Missing keys are marked with a `__MISSING_CONFIG__` prefix.
+
+### Crash Reporting And Telemetry
+- `PantryChefApp` starts `SentryCrashReporter` during app initialization.
+- If no `SENTRY_DSN` is configured, crash reporting stays disabled and the app logs that state instead of failing startup.
+- `AppTelemetryReporter` always logs locally through `AppLog`, and forwards warning/error breadcrumbs or error messages to Sentry when enabled.
 
 ### Launch Options (`AppLaunchOptions`)
 Configurable via process arguments (for UI testing):
