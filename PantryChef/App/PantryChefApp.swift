@@ -54,7 +54,7 @@ struct PantryChefApp: App {
                 session.currentStepIndex = stepIndex
                 session.save()
             }
-            appState.deepLinkCookModeRecipeId = recipeId
+            appState.navigator.deepLinkToCookMode(recipeId: recipeId)
             AppLog.info("[PantryChefApp] Deep-link to cook mode for recipe \(recipeId.prefix(8))… step \(stepIndex + 1)")
         }
     }

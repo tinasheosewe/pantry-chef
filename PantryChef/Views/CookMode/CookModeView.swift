@@ -45,7 +45,7 @@ struct CookModeView: View {
         .onAppear {
             // Cancel any lingering background notifications for this recipe
             // (handles re-entering from mini player / queue after backgrounding)
-            NotificationService.shared.cancelAllNotifications(recipeId: recipe.id.uuidString)
+            appState.notificationService.cancelAllNotifications(recipeId: recipe.id.uuidString)
 
             if viewModel == nil {
                 let realtime = RealtimeService()
@@ -53,6 +53,7 @@ struct CookModeView: View {
                 let vm = CookModeViewModel(
                     recipe: recipe,
                     realtimeService: realtime,
+                    notificationService: appState.notificationService,
                     initialStepIndex: resumeAtStep,
                     isResuming: isResuming,
                     queueId: queueID,
@@ -663,7 +664,7 @@ struct CookModeView: View {
                         if vm.selectedRating != nil {
                             await recipeGateway.updateRecipe(vm.ratedRecipe)
                         }
-                        NotificationService.shared.cancelAllNotifications(recipeId: vm.recipe.id.uuidString)
+                        appState.notificationService.cancelAllNotifications(recipeId: vm.recipe.id.uuidString)
                         if let queueStageID {
                             await cookGateway.completeStage(queueStageID)
                         } else {
@@ -699,7 +700,7 @@ struct CookModeView: View {
                         if vm.selectedRating != nil {
                             await recipeGateway.updateRecipe(vm.ratedRecipe)
                         }
-                        NotificationService.shared.cancelAllNotifications(recipeId: vm.recipe.id.uuidString)
+                        appState.notificationService.cancelAllNotifications(recipeId: vm.recipe.id.uuidString)
                         if let queueStageID {
                             await cookGateway.completeStage(queueStageID)
                         } else {

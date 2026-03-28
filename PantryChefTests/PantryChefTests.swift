@@ -3608,7 +3608,7 @@ final class AppStateTests: XCTestCase {
 
         appState.requestRootTab(.kitchen)
 
-        XCTAssertEqual(appState.requestedRootTab, .kitchen)
+        XCTAssertEqual(appState.navigator.requestedRootTab, .kitchen)
     }
 
     func testPantryPresenceOnlyMergeDominatesExactQuantity() async {

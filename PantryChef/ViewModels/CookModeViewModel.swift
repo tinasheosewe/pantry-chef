@@ -42,6 +42,7 @@ final class CookModeViewModel {
 
     let recipe: Recipe
     let realtimeService: any RealtimeServiceProtocol
+    let notificationService: CookNotificationServiceProtocol
     let queueId: UUID?
     let queueStageId: UUID?
 
@@ -57,6 +58,7 @@ final class CookModeViewModel {
     init(
         recipe: Recipe,
         realtimeService: any RealtimeServiceProtocol,
+        notificationService: CookNotificationServiceProtocol? = nil,
         initialStepIndex: Int = 0,
         isResuming: Bool = false,
         queueId: UUID? = nil,
@@ -64,6 +66,7 @@ final class CookModeViewModel {
     ) {
         self.recipe = recipe
         self.realtimeService = realtimeService
+        self.notificationService = notificationService ?? NotificationService.shared
         self.isResuming = isResuming
         self.currentStepIndex = initialStepIndex
         self.queueId = queueId
@@ -174,11 +177,11 @@ final class CookModeViewModel {
             }
 
             // Pre-request notification permission so auto-background works
-            cachedNotificationPermission = await NotificationService.shared.requestPermission()
+            cachedNotificationPermission = await notificationService.requestPermission()
 
             // If resuming from background, cancel pending notifications (we're live again)
             if isResuming {
-                NotificationService.shared.cancelAllNotifications(recipeId: recipe.id.uuidString)
+                notificationService.cancelAllNotifications(recipeId: recipe.id.uuidString)
             }
 
             isConversationActive = true
@@ -606,7 +609,7 @@ final class CookModeViewModel {
             if cachedNotificationPermission {
                 authorized = true
             } else {
-                authorized = await NotificationService.shared.requestPermission()
+                authorized = await notificationService.requestPermission()
             }
 
             if !authorized {
@@ -628,7 +631,7 @@ final class CookModeViewModel {
         isSchedulingBackground = false
         isResuming = true
 
-        NotificationService.shared.cancelAllNotifications(recipeId: recipe.id.uuidString)
+        notificationService.cancelAllNotifications(recipeId: recipe.id.uuidString)
         AppLog.info("[CookMode] Resuming from background — cancelled pending notifications")
 
         // Reconnect voice
@@ -639,7 +642,6 @@ final class CookModeViewModel {
     private func scheduleBackgroundNotifications() async {
         let remaining = steps.enumerated().filter { $0.offset >= currentStepIndex }
         let recipeId = recipe.id.uuidString
-        let notificationService = NotificationService.shared
 
         // Cancel any existing notifications for this recipe
         notificationService.cancelAllNotifications(recipeId: recipeId)
@@ -718,7 +720,7 @@ final class CookModeViewModel {
     /// This is the ONLY way to fully stop background mode.
     func endCookingSession() {
         isEndingSession = true
-        NotificationService.shared.cancelAllNotifications(recipeId: recipe.id.uuidString)
+        notificationService.cancelAllNotifications(recipeId: recipe.id.uuidString)
         CookingSession.clear(recipeId: recipe.id)
         didContinueInBackground = false
         cleanup()

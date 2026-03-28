@@ -1,6 +1,26 @@
 import Foundation
 import UserNotifications
 
+// MARK: - Cook Notification Protocol
+
+@MainActor
+protocol CookNotificationServiceProtocol: AnyObject {
+    func requestPermission() async -> Bool
+    func isAuthorized() async -> Bool
+    func scheduleStepNotification(
+        recipeId: String,
+        stepIndex: Int,
+        totalSteps: Int,
+        recipeName: String,
+        message: String,
+        nextStepPreview: String?,
+        delaySeconds: TimeInterval
+    )
+    func scheduleSessionExpiry(recipeId: String, recipeName: String, delaySeconds: TimeInterval)
+    func cancelAllNotifications(recipeId: String)
+    func cancelAllCookModeNotifications()
+}
+
 // MARK: - Notification Service
 //
 // Manages local notifications for cook mode's "Continue in Background" feature.
@@ -9,7 +29,7 @@ import UserNotifications
 // from) and deep-link back to cook mode on tap.
 
 @MainActor
-final class NotificationService: NSObject {
+final class NotificationService: NSObject, CookNotificationServiceProtocol {
 
     static let shared = NotificationService()
 

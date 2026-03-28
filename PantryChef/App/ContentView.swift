@@ -73,14 +73,14 @@ struct ContentView: View {
         .task {
             appState.scheduleInitialLoadIfNeeded()
         }
-        .onChange(of: appState.requestedRootTab) { _, newTab in
+        .onChange(of: appState.navigator.requestedRootTab) { _, newTab in
             guard let newTab else { return }
             selectedTab = newTab
-            appState.requestedRootTab = nil
+            appState.navigator.requestedRootTab = nil
         }
-        .onChange(of: appState.deepLinkCookModeRecipeId) { _, newId in
+        .onChange(of: appState.navigator.deepLinkCookModeRecipeId) { _, newId in
             guard let recipeId = newId else { return }
-            appState.deepLinkCookModeRecipeId = nil
+            appState.navigator.deepLinkCookModeRecipeId = nil
 
             Task { @MainActor in
                 for _ in 0..<AppConfig.deepLinkMaxRetries {

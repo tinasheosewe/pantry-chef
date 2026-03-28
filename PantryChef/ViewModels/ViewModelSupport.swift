@@ -51,7 +51,7 @@ extension AsyncActionHandling {
     }
 
     func captureError(_ error: any Error) {
-        appState.errorMessage = error.localizedDescription
+        appState.pushError(.storage(error))
     }
 }
 

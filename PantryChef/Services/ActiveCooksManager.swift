@@ -1,5 +1,18 @@
 import SwiftUI
 
+// MARK: - Active Cooks Protocol
+
+@MainActor
+protocol ActiveCooksManaging: AnyObject {
+    var activeSessions: [CookingSession] { get }
+    var hasActiveSessions: Bool { get }
+    var count: Int { get }
+    func refresh()
+    func session(for recipeId: UUID) -> CookingSession?
+    func endSession(for recipeId: UUID)
+    func endAllSessions()
+}
+
 // MARK: - Active Cooks Manager
 //
 // Observable object that provides the current list of active cooking sessions
@@ -7,7 +20,7 @@ import SwiftUI
 
 @Observable
 @MainActor
-final class ActiveCooksManager {
+final class ActiveCooksManager: ActiveCooksManaging {
     /// All active (non-expired) cooking sessions.
     var activeSessions: [CookingSession] = []
 
