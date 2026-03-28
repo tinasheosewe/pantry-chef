@@ -193,7 +193,7 @@ struct RecipeDetailView: View {
         }
         .background(PCColors.background)
         .onAppear {
-            existingSession = CookingSession.load(recipeId: recipe.id)
+            existingSession = appState.cookingSessionStore.load(recipeId: recipe.id)
         }
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
@@ -417,7 +417,7 @@ struct RecipeDetailView: View {
     }
 
     private func missingIngredientRow(_ ingredient: Ingredient) -> some View {
-        let subs = SubstitutionRepository.shared.substitutions(for: ingredient.name, pantry: appState.pantryItems)
+        let subs = appState.substitutionRepository.substitutions(for: ingredient.name, pantry: appState.pantryItems)
         return VStack(alignment: .leading, spacing: 3) {
             HStack(spacing: 6) {
                 Image(systemName: "xmark.circle.fill")
@@ -481,7 +481,7 @@ struct RecipeDetailView: View {
         VStack(spacing: 12) {
             // Prominent Cook button
             Button {
-                existingSession = CookingSession.load(recipeId: recipe.id)
+                existingSession = appState.cookingSessionStore.load(recipeId: recipe.id)
                 if existingSession != nil {
                     showCookMode = true       // resume — skip gathering
                 } else if appState.activeCooks.hasActiveSessions {

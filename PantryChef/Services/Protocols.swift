@@ -39,6 +39,35 @@ protocol StorageServiceProtocol: AnyObject {
     func saveCookQueue(_ queue: CookQueue?) async throws
 }
 
+protocol StartupSnapshotLoading: AnyObject {
+    func fetchStartupSnapshot() async throws -> StorageStartupSnapshot
+}
+
+@MainActor
+protocol CookingSessionStoreProtocol: AnyObject {
+    func loadAll() -> [CookingSession]
+    func load(recipeId: UUID) -> CookingSession?
+    func save(_ session: CookingSession)
+    func clear(recipeId: UUID)
+    func clearAll()
+}
+
+@MainActor
+protocol CookModePreferenceStoreProtocol: AnyObject {
+    var isMuted: Bool { get set }
+    func reset()
+}
+
+@MainActor
+protocol RecipeCatalogProviding: AnyObject {
+    var seedRecipes: [Recipe] { get }
+}
+
+protocol SubstitutionProviding: AnyObject, Sendable {
+    func substitutions(for ingredientName: String, pantry: [PantryItem]) -> [SubstitutionEntry]
+    func substitutions(for ingredient: Ingredient, pantry: [PantryItem]) -> [SubstitutionEntry]
+}
+
 protocol PantryItemPreferenceStoreProtocol: AnyObject {
     func preference(for catalogItemID: String) -> PantryItemDefaultPreference?
     func savePreference(_ preference: PantryItemDefaultPreference)

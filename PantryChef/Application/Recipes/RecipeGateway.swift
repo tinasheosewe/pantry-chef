@@ -68,7 +68,7 @@ struct RecipeGateway: RecipeGatewayProtocol {
 
 @MainActor
 extension AppState {
-    var recipeGateway: RecipeGateway {
+    var recipeGateway: any RecipeGatewayProtocol {
         RecipeGateway(appState: self)
     }
 }

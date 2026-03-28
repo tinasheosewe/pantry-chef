@@ -589,6 +589,8 @@ actor StorageService: StorageServiceProtocol {
     }
 }
 
+extension StorageService: StartupSnapshotLoading {}
+
 struct StorageStartupSnapshot {
     let pantryItems: [PantryItem]
     let preparedDishes: [PreparedDish]

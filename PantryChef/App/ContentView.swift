@@ -2,16 +2,6 @@ import SwiftUI
 
 struct ContentView: View {
     @Environment(AppState.self) private var appState
-    @State private var selectedTab: RootTab = .today
-
-    /// Recipe resolved from a deep-link notification tap.
-    @State private var deepLinkRecipe: Recipe?
-
-    /// When true, the Recipes tab should activate "Can Make" filter on appear.
-    @State private var activateCanMakeFilter = false
-
-    /// Controls expansion of cook queue management view.
-    @State private var showCookQueueSheet = false
 
     var body: some View {
         ZStack {
@@ -36,10 +26,10 @@ struct ContentView: View {
                 ZStack {
                     ForEach(RootTab.allCases, id: \.self) { tab in
                         rootTabContent(for: tab)
-                            .opacity(selectedTab == tab ? 1 : 0)
-                            .allowsHitTesting(selectedTab == tab)
-                            .accessibilityHidden(selectedTab != tab)
-                            .zIndex(selectedTab == tab ? 1 : 0)
+                            .opacity(appState.navigator.selectedRootTab == tab ? 1 : 0)
+                            .allowsHitTesting(appState.navigator.selectedRootTab == tab)
+                            .accessibilityHidden(appState.navigator.selectedRootTab != tab)
+                            .zIndex(appState.navigator.selectedRootTab == tab ? 1 : 0)
                     }
                 }
                 .frame(maxHeight: .infinity)
@@ -50,49 +40,37 @@ struct ContentView: View {
                             recipeName: miniPlayerData.recipeName,
                             stepProgress: miniPlayerData.stepProgress,
                             progress: miniPlayerData.progress,
-                            onTap: { showCookQueueSheet = true }
+                            onTap: { appState.navigator.requestCookQueueSheet() }
                         )
                         .padding(.horizontal, PCTokens.spacingSM)
                         .padding(.bottom, PCTokens.spacingXS)
                     }
 
-                    PCTabBar(selectedTab: $selectedTab)
+                    PCTabBar(selectedTab: Binding(
+                        get: { appState.navigator.selectedRootTab },
+                        set: { appState.navigator.selectedRootTab = $0 }
+                    ))
                 }
             }
         }
         .accessibilityIdentifier("root.tabHost")
-        .fullScreenCover(item: $deepLinkRecipe) { recipe in
-            let session = CookingSession.load(recipeId: recipe.id)
+        .fullScreenCover(item: Binding(
+            get: { appState.navigator.deepLinkedCookRecipe },
+            set: { appState.navigator.deepLinkedCookRecipe = $0 }
+        )) { recipe in
+            let session = appState.cookingSessionStore.load(recipeId: recipe.id)
             let stepIndex = session?.currentStepIndex ?? 0
             CookModeView(recipe: recipe, resumeAtStep: stepIndex, isResuming: true)
                 .environment(appState)
         }
-        .appNavigationSheet(isPresented: $showCookQueueSheet) {
+        .appNavigationSheet(isPresented: Binding(
+            get: { appState.navigator.showCookQueueSheet },
+            set: { appState.navigator.showCookQueueSheet = $0 }
+        )) {
             CookQueueView(appState: appState)
         }
         .task {
             appState.scheduleInitialLoadIfNeeded()
-        }
-        .onChange(of: appState.navigator.requestedRootTab) { _, newTab in
-            guard let newTab else { return }
-            selectedTab = newTab
-            appState.navigator.requestedRootTab = nil
-        }
-        .onChange(of: appState.navigator.deepLinkCookModeRecipeId) { _, newId in
-            guard let recipeId = newId else { return }
-            appState.navigator.deepLinkCookModeRecipeId = nil
-
-            Task { @MainActor in
-                for _ in 0..<AppConfig.deepLinkMaxRetries {
-                    guard !Task.isCancelled else { return }
-                    if let recipe = appState.recipeByIdString(recipeId) {
-                        deepLinkRecipe = recipe
-                        return
-                    }
-                    try? await Task.sleep(for: .milliseconds(AppConfig.deepLinkRetryDelayMs))
-                }
-                AppLog.warn("[ContentView] Deep-link recipe \(recipeId.prefix(8))… not found in known recipes")
-            }
         }
     }
 
@@ -128,17 +106,19 @@ struct ContentView: View {
         switch tab {
         case .today:
             HomeView(appState: appState, onSwitchToShopping: {
-                selectedTab = .kitchen
+                appState.navigator.requestTab(.kitchen)
             }, onSwitchToPlan: {
-                selectedTab = .plan
+                appState.navigator.requestTab(.plan)
             }, onSwitchToRecipesCanMake: {
-                activateCanMakeFilter = true
-                selectedTab = .recipes
+                appState.navigator.requestRecipesCanMake()
             }, onSwitchToCook: {
-                showCookQueueSheet = true
+                appState.navigator.requestCookQueueSheet()
             })
         case .recipes:
-            RecipeListView(appState: appState, activateCanMakeFilter: $activateCanMakeFilter)
+            RecipeListView(appState: appState, activateCanMakeFilter: Binding(
+                get: { appState.navigator.activateRecipesCanMakeFilter },
+                set: { appState.navigator.activateRecipesCanMakeFilter = $0 }
+            ))
         case .kitchen:
             KitchenView(appState: appState)
         case .plan:

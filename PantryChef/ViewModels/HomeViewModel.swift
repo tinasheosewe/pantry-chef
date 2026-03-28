@@ -8,7 +8,7 @@ final class HomeViewModel {
     var isLoading = false
 
     let appState: AppState
-    @ObservationIgnored private let inventoryGateway: InventoryGateway
+    @ObservationIgnored private let inventoryGateway: any InventoryGatewayProtocol
 
     init(appState: AppState) {
         self.appState = appState

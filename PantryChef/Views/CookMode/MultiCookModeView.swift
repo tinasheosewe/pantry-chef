@@ -475,7 +475,7 @@ struct MultiCookModeView: View {
             }
         }
         for recipe in recipes {
-            CookingSession.clear(recipeId: recipe.id)
+            appState.cookingSessionStore.clear(recipeId: recipe.id)
         }
         appState.activeCooks.refresh()
         dismiss()

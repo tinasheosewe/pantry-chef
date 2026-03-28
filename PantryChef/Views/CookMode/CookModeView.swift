@@ -54,6 +54,8 @@ struct CookModeView: View {
                     recipe: recipe,
                     realtimeService: realtime,
                     notificationService: appState.notificationService,
+                    sessionStore: appState.cookingSessionStore,
+                    preferenceStore: appState.cookModePreferenceStore,
                     initialStepIndex: resumeAtStep,
                     isResuming: isResuming,
                     queueId: queueID,
@@ -671,7 +673,7 @@ struct CookModeView: View {
                             await cookGateway.stampCookedMealPlanEntries(recipeID: vm.recipe.id)
                         }
                         await cookGateway.addPreparedDishForRecipe(vm.recipe)
-                        CookingSession.clear(recipeId: vm.recipe.id)
+                        appState.cookingSessionStore.clear(recipeId: vm.recipe.id)
                         vm.endCookingSession()
                         appState.activeCooks.refresh()
 
@@ -707,7 +709,7 @@ struct CookModeView: View {
                             await cookGateway.stampCookedMealPlanEntries(recipeID: vm.recipe.id)
                         }
                         await cookGateway.addPreparedDishForRecipe(vm.recipe)
-                        CookingSession.clear(recipeId: vm.recipe.id)
+                        appState.cookingSessionStore.clear(recipeId: vm.recipe.id)
                         vm.endCookingSession()
                         appState.activeCooks.refresh()
                         dismiss()

@@ -2,11 +2,16 @@ import Foundation
 
 final class AIService: AIServiceProtocol {
     private let apiKey: String
+    private let substitutionRepository: any SubstitutionProviding
     private let baseURL = "https://api.openai.com/v1/chat/completions"
     private let model = "gpt-4o"
 
-    init(apiKey: String = AppConfig.openAIAPIKey) {
+    init(
+        apiKey: String = AppConfig.openAIAPIKey,
+        substitutionRepository: any SubstitutionProviding = SubstitutionRepository.shared
+    ) {
         self.apiKey = apiKey
+        self.substitutionRepository = substitutionRepository
     }
 
     // MARK: - Core Feature 1: What to Buy
@@ -126,7 +131,7 @@ final class AIService: AIServiceProtocol {
         var localSuggestions: [SubstitutionSuggestion] = []
 
         for ingredient in matchResult.missingIngredients {
-            let subs = SubstitutionRepository.shared.substitutions(for: ingredient, pantry: pantry)
+            let subs = substitutionRepository.substitutions(for: ingredient, pantry: pantry)
             let top3 = Array(subs.prefix(AppConfig.aiTopSubstitutionCount))
             for sub in top3 {
                 localSuggestions.append(SubstitutionSuggestion(

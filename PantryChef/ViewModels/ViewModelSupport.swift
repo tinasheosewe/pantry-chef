@@ -59,7 +59,7 @@ extension AsyncActionHandling {
 struct PantryActions {
     let appState: AppState
 
-    private var inventoryGateway: InventoryGateway {
+    private var inventoryGateway: any InventoryGatewayProtocol {
         appState.inventoryGateway
     }
 
@@ -91,7 +91,7 @@ struct PantryActions {
 struct ShoppingActions {
     let appState: AppState
 
-    private var inventoryGateway: InventoryGateway {
+    private var inventoryGateway: any InventoryGatewayProtocol {
         appState.inventoryGateway
     }
 
@@ -129,7 +129,7 @@ struct ShoppingActions {
 struct MealPlanActions {
     let appState: AppState
 
-    private var mealPlanGateway: MealPlanGateway {
+    private var mealPlanGateway: any MealPlanGatewayProtocol {
         appState.mealPlanGateway
     }
 
@@ -179,7 +179,7 @@ struct MealPlanActions {
 struct RecipeActions {
     let appState: AppState
 
-    private var recipeGateway: RecipeGateway {
+    private var recipeGateway: any RecipeGatewayProtocol {
         appState.recipeGateway
     }
 
@@ -200,7 +200,7 @@ struct RecipeActions {
 struct PreparedDishActions {
     let appState: AppState
 
-    private var inventoryGateway: InventoryGateway {
+    private var inventoryGateway: any InventoryGatewayProtocol {
         appState.inventoryGateway
     }
 

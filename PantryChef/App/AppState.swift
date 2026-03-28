@@ -1,107 +1,5 @@
 import SwiftUI
 
-enum PantryCookReviewSelection: String, CaseIterable, Identifiable, Hashable, Sendable {
-    case keep
-    case remove
-    case subtractRecipeAmount
-
-    var id: Self { self }
-
-    var title: String {
-        switch self {
-        case .keep:
-            return "Keep"
-        case .remove:
-            return "Used up"
-        case .subtractRecipeAmount:
-            return "Subtract"
-        }
-    }
-
-    var systemImage: String {
-        switch self {
-        case .keep:
-            return "checkmark.circle"
-        case .remove:
-            return "trash"
-        case .subtractRecipeAmount:
-            return "minus.circle"
-        }
-    }
-}
-
-struct PantryCookReviewItem: Identifiable, Hashable, Sendable {
-    var id: UUID { pantryItem.id }
-
-    let pantryItem: PantryItem
-    let matchedIngredientNames: [String]
-    let matchedIngredientTexts: [String]
-    let subtractQuantity: Double?
-    let subtractUnit: MeasurementUnit?
-    var selection: PantryCookReviewSelection
-
-    init(
-        pantryItem: PantryItem,
-        matchedIngredientNames: [String],
-        matchedIngredientTexts: [String],
-        subtractQuantity: Double?,
-        subtractUnit: MeasurementUnit?,
-        selection: PantryCookReviewSelection = .keep
-    ) {
-        self.pantryItem = pantryItem
-        self.matchedIngredientNames = matchedIngredientNames
-        self.matchedIngredientTexts = matchedIngredientTexts
-        self.subtractQuantity = subtractQuantity
-        self.subtractUnit = subtractUnit
-        self.selection = selection
-    }
-
-    var quantityMode: PantryQuantityMode {
-        pantryItem.quantityMode
-    }
-
-    var supportsSubtraction: Bool {
-        pantryItem.isTrackingExactQuantity && subtractQuantity != nil && subtractUnit != nil
-    }
-
-    var availableSelections: [PantryCookReviewSelection] {
-        supportsSubtraction ? [.keep, .subtractRecipeAmount, .remove] : [.keep, .remove]
-    }
-
-    var pantryDetailText: String {
-        switch pantryItem.quantityMode {
-        case .presenceOnly:
-            return PantryQuantityMode.presenceOnly.title
-        case .exact:
-            guard let quantity = pantryItem.quantity,
-                  let unit = pantryItem.unit else {
-                return PantryQuantityMode.exact.title
-            }
-            return "Tracked: \(Self.formattedQuantity(quantity)) \(unit.rawValue)"
-        }
-    }
-
-    var recipeUsageText: String {
-        if let subtractQuantity,
-           let subtractUnit {
-            return "Recipe uses \(Self.formattedQuantity(subtractQuantity)) \(subtractUnit.rawValue)"
-        }
-
-        if matchedIngredientTexts.count == 1, let ingredientText = matchedIngredientTexts.first {
-            return ingredientText
-        }
-
-        return matchedIngredientTexts.joined(separator: " • ")
-    }
-
-    private static func formattedQuantity(_ value: Double) -> String {
-        if value == value.rounded() {
-            return String(Int(value))
-        }
-        return String(format: "%.1f", value)
-    }
-}
-
 @Observable
 @MainActor
 final class AppState {
@@ -191,7 +89,10 @@ final class AppState {
     let pantryItemPreferenceStore: PantryItemPreferenceStoreProtocol
     let ingredientCandidateParser: IngredientCandidateParserProtocol
     let recipeIngredientResolver: RecipeIngredientResolverProtocol
-    let recipeRepository = RecipeRepository.shared
+    let recipeRepository: RecipeCatalogProviding
+    let substitutionRepository: any SubstitutionProviding
+    let cookingSessionStore: CookingSessionStoreProtocol
+    let cookModePreferenceStore: CookModePreferenceStoreProtocol
     let notificationService: CookNotificationServiceProtocol
 
     // MARK: - Shared State
@@ -203,7 +104,8 @@ final class AppState {
     var shoppingItems: [ShoppingItem] = []
     var cookQueue: CookQueue?
     var isLoading = false
-    private(set) var lastError: AppError?
+    private(set) var lastError: PresentedAppError?
+    private var pendingErrors: [PresentedAppError] = []
     var errorMessage: String?
     var hasScheduledInitialLoad = false
     private(set) var pantryRevision = 0
@@ -453,17 +355,25 @@ final class AppState {
     // MARK: - Init (DI-friendly)
     init() {
         let launchOptions = Self.launchOptions
+        let substitutionRepository = SubstitutionRepository.shared
+        let cookingSessionStore = UserDefaultsCookingSessionStore()
+        let cookModePreferenceStore = UserDefaultsCookModePreferenceStore()
         self.pantryItemPreferenceStore = PantryItemPreferenceStore()
         self.storageService = StorageService(
             isStoredInMemoryOnly: launchOptions.useInMemoryStorage,
             shouldBootstrap: launchOptions.shouldBootstrapStorage,
             resetPersistentStore: launchOptions.resetPersistentStore
         )
-        self.aiService = AIService()
+        self.aiService = AIService(substitutionRepository: substitutionRepository)
         self.ingredientCandidateParser = IngredientCandidateParser()
         self.recipeIngredientResolver = RecipeIngredientResolver(candidateParser: ingredientCandidateParser, aiService: aiService)
-        self.activeCooks = ActiveCooksManager()
-        self.notificationService = NotificationService.shared
+        self.recipeRepository = RecipeRepository.shared
+        self.substitutionRepository = substitutionRepository
+        self.cookingSessionStore = cookingSessionStore
+        self.cookModePreferenceStore = cookModePreferenceStore
+        self.activeCooks = ActiveCooksManager(sessionStore: cookingSessionStore)
+        self.notificationService = NotificationService()
+        IngredientMatcher.substitutionRepository = substitutionRepository
         pantryItems = launchOptions.seedPantryItems ? PantryItem.samples : []
         preparedDishes = []
         preparedDishHistory = []
@@ -481,6 +391,10 @@ final class AppState {
         ingredientCandidateParser: IngredientCandidateParserProtocol = IngredientCandidateParser(),
         pantryItemPreferenceStore: PantryItemPreferenceStoreProtocol = PantryItemPreferenceStore(),
         recipeIngredientResolver: RecipeIngredientResolverProtocol? = nil,
+        recipeRepository: RecipeCatalogProviding? = nil,
+        substitutionRepository: any SubstitutionProviding = SubstitutionRepository.shared,
+        cookingSessionStore: CookingSessionStoreProtocol? = nil,
+        cookModePreferenceStore: CookModePreferenceStoreProtocol? = nil,
         activeCooks: ActiveCooksManaging? = nil,
         notificationService: CookNotificationServiceProtocol? = nil,
         shouldLoadOnInit: Bool = true
@@ -490,8 +404,15 @@ final class AppState {
         self.ingredientCandidateParser = ingredientCandidateParser
         self.pantryItemPreferenceStore = pantryItemPreferenceStore
         self.recipeIngredientResolver = recipeIngredientResolver ?? RecipeIngredientResolver(candidateParser: ingredientCandidateParser, aiService: aiService)
-        self.activeCooks = activeCooks ?? ActiveCooksManager()
-        self.notificationService = notificationService ?? NotificationService.shared
+        let resolvedCookingSessionStore = cookingSessionStore ?? UserDefaultsCookingSessionStore()
+        let resolvedCookModePreferenceStore = cookModePreferenceStore ?? UserDefaultsCookModePreferenceStore()
+        self.recipeRepository = recipeRepository ?? RecipeRepository.shared
+        self.substitutionRepository = substitutionRepository
+        self.cookingSessionStore = resolvedCookingSessionStore
+        self.cookModePreferenceStore = resolvedCookModePreferenceStore
+        self.activeCooks = activeCooks ?? ActiveCooksManager(sessionStore: resolvedCookingSessionStore)
+        self.notificationService = notificationService ?? NotificationService()
+        IngredientMatcher.substitutionRepository = substitutionRepository
         pantryItems = PantryItem.samples
         preparedDishes = []
         preparedDishHistory = []
@@ -522,13 +443,26 @@ final class AppState {
     // MARK: - Error Handling
 
     func pushError(_ error: AppError) {
-        lastError = error
-        errorMessage = error.localizedDescription
+        let presentedError = PresentedAppError(error: error)
+        if lastError == nil {
+            lastError = presentedError
+            errorMessage = presentedError.localizedDescription
+            return
+        }
+
+        pendingErrors.append(presentedError)
     }
 
     func clearError() {
-        lastError = nil
-        errorMessage = nil
+        if pendingErrors.isEmpty {
+            lastError = nil
+            errorMessage = nil
+            return
+        }
+
+        let nextError = pendingErrors.removeFirst()
+        lastError = nextError
+        errorMessage = nextError.localizedDescription
     }
 
     func requestRootTab(_ tab: RootTab) {

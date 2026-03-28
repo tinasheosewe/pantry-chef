@@ -1,6 +1,6 @@
 import Foundation
 
-final class SubstitutionRepository: @unchecked Sendable {
+final class SubstitutionRepository: SubstitutionProviding, @unchecked Sendable {
 
     static let shared = SubstitutionRepository()
 

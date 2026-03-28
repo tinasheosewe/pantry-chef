@@ -103,7 +103,7 @@ struct InventoryGateway: InventoryGatewayProtocol {
 
 @MainActor
 extension AppState {
-    var inventoryGateway: InventoryGateway {
+    var inventoryGateway: any InventoryGatewayProtocol {
         InventoryGateway(appState: self)
     }
 }

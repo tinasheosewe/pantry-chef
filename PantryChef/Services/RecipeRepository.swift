@@ -3,7 +3,7 @@ import Foundation
 /// Loads bundled seed recipes and manages the on-device recipe cache.
 /// Lazy caching: API results are cached on detail view; enriched on first cook.
 @MainActor
-final class RecipeRepository {
+final class RecipeRepository: RecipeCatalogProviding {
 
     static let shared = RecipeRepository()
 

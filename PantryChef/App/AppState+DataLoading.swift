@@ -13,9 +13,9 @@ extension AppState {
 
         var failures: [String] = []
 
-        if let storageService = storageService as? StorageService {
+        if let snapshotLoader = storageService as? any StartupSnapshotLoading {
             do {
-                let snapshot = try await storageService.fetchStartupSnapshot()
+            let snapshot = try await snapshotLoader.fetchStartupSnapshot()
                 setPantryItems(snapshot.pantryItems)
                 setPreparedDishes(snapshot.preparedDishes)
                 setPreparedDishHistoryItems(snapshot.preparedDishHistory)

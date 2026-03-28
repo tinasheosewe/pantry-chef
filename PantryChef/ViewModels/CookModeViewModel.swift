@@ -43,6 +43,8 @@ final class CookModeViewModel {
     let recipe: Recipe
     let realtimeService: any RealtimeServiceProtocol
     let notificationService: CookNotificationServiceProtocol
+    let sessionStore: CookingSessionStoreProtocol
+    let preferenceStore: CookModePreferenceStoreProtocol
     let queueId: UUID?
     let queueStageId: UUID?
 
@@ -59,6 +61,8 @@ final class CookModeViewModel {
         recipe: Recipe,
         realtimeService: any RealtimeServiceProtocol,
         notificationService: CookNotificationServiceProtocol? = nil,
+        sessionStore: CookingSessionStoreProtocol? = nil,
+        preferenceStore: CookModePreferenceStoreProtocol? = nil,
         initialStepIndex: Int = 0,
         isResuming: Bool = false,
         queueId: UUID? = nil,
@@ -66,12 +70,14 @@ final class CookModeViewModel {
     ) {
         self.recipe = recipe
         self.realtimeService = realtimeService
-        self.notificationService = notificationService ?? NotificationService.shared
+        self.notificationService = notificationService ?? NotificationService()
+        self.sessionStore = sessionStore ?? UserDefaultsCookingSessionStore()
+        self.preferenceStore = preferenceStore ?? UserDefaultsCookModePreferenceStore()
         self.isResuming = isResuming
         self.currentStepIndex = initialStepIndex
         self.queueId = queueId
         self.queueStageId = queueStageId
-        self.isMuted = UserDefaults.standard.bool(forKey: "cookMode.isMuted")
+        self.isMuted = self.preferenceStore.isMuted
         setupRealtimeCallbacks()
     }
 
@@ -157,7 +163,7 @@ final class CookModeViewModel {
 
     func toggleMute() {
         isMuted.toggle()
-        UserDefaults.standard.set(isMuted, forKey: "cookMode.isMuted")
+        preferenceStore.isMuted = isMuted
         if isMuted {
             realtimeService.stopCapture()
             realtimeService.silenceAI()
@@ -708,7 +714,7 @@ final class CookModeViewModel {
             queueId: queueId,
             queueStageId: queueStageId
         )
-        session.save()
+        sessionStore.save(session)
 
         AppLog.info("[CookMode] ✅ Background notifications scheduled deterministically (\(remaining.count) steps, total \(Int(cumulativeDelay))s)")
 
@@ -721,7 +727,7 @@ final class CookModeViewModel {
     func endCookingSession() {
         isEndingSession = true
         notificationService.cancelAllNotifications(recipeId: recipe.id.uuidString)
-        CookingSession.clear(recipeId: recipe.id)
+        sessionStore.clear(recipeId: recipe.id)
         didContinueInBackground = false
         cleanup()
     }
@@ -750,7 +756,7 @@ final class CookModeViewModel {
             queueId: queueId,
             queueStageId: queueStageId
         )
-        session.save()
+        sessionStore.save(session)
     }
 
     // MARK: - Cleanup

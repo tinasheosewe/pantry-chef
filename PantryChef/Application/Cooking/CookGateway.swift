@@ -77,7 +77,7 @@ struct CookGateway: CookGatewayProtocol {
 
 @MainActor
 extension AppState {
-    var cookGateway: CookGateway {
+    var cookGateway: any CookGatewayProtocol {
         CookGateway(appState: self)
     }
 }

@@ -66,7 +66,7 @@ struct MealPlanGateway: MealPlanGatewayProtocol {
 
 @MainActor
 extension AppState {
-    var mealPlanGateway: MealPlanGateway {
+    var mealPlanGateway: any MealPlanGatewayProtocol {
         MealPlanGateway(appState: self)
     }
 }

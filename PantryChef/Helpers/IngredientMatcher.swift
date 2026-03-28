@@ -5,6 +5,8 @@ import Foundation
 /// category-aware fallback, quantity checking, and substitution integration.
 enum IngredientMatcher {
 
+    static var substitutionRepository: any SubstitutionProviding = SubstitutionRepository.shared
+
     private struct PantryCandidate {
         let facets: Set<PantryFacetSelection>
         let quantityMode: PantryQuantityMode
@@ -41,11 +43,10 @@ enum IngredientMatcher {
         let matchPct = required.isEmpty ? 0 : Double(matched.count) / Double(required.count) * 100
 
         // Look up substitutions for missing ingredients
-        let subRepo = SubstitutionRepository.shared
         var substitutable: [(ingredient: Ingredient, substitutions: [SubstitutionEntry])] = []
 
         for ingredient in missing {
-            let subs = subRepo.substitutions(for: ingredient, pantry: pantry)
+            let subs = substitutionRepository.substitutions(for: ingredient, pantry: pantry)
             let availableSubs = subs.filter(\.inPantry)
             if !availableSubs.isEmpty {
                 substitutable.append((ingredient: ingredient, substitutions: availableSubs))

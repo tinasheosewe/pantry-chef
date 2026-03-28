@@ -3,6 +3,77 @@ import Foundation
 // MARK: - Meal Plan Actions
 
 extension AppState {
+    func mealLoggingRequests(from selections: [MealPlanEatenLoggingSelection]) -> [MealPlanEatenLoggingRequest] {
+        selections.compactMap { selection -> MealPlanEatenLoggingRequest? in
+            guard let currentEntry = mealPlan.first(where: { $0.id == selection.entryID }) else { return nil }
+            guard currentEntry.supportsMealLogging else { return nil }
+
+            let currentEatenServings = currentEntry.effectiveEatenServings
+            let targetEatenServings = Swift.max(currentEatenServings, selection.targetEatenServings)
+            guard targetEatenServings > currentEatenServings else { return nil }
+
+            return MealPlanEatenLoggingRequest(
+                entry: currentEntry,
+                targetEatenServings: targetEatenServings,
+                preparedDishID: selection.preparedDishID
+            )
+        }
+    }
+
+    func validateMealLoggingRequests(_ requests: [MealPlanEatenLoggingRequest]) -> Bool {
+        let requestedServingsByPreparedDishID = requests.reduce(into: [UUID: Int]()) { partialResult, request in
+            guard request.additionalServings > 0 else { return }
+            guard let preparedDishID = request.preparedDishID else { return }
+            partialResult[preparedDishID, default: 0] += request.additionalServings
+        }
+
+        for request in requests where request.additionalServings > 0 {
+            guard let preparedDishID = request.preparedDishID else {
+                pushError(.validation("Choose which Prepared Food item was eaten before saving."))
+                return false
+            }
+
+            let matchingDishIDs = Set(matchingPreparedDishes(for: request.entry).map(\.id))
+            guard matchingDishIDs.contains(preparedDishID) else {
+                pushError(.validation("The selected Prepared Food item no longer matches \(request.entry.displayName)."))
+                return false
+            }
+        }
+
+        for (preparedDishID, requestedServings) in requestedServingsByPreparedDishID {
+            guard let preparedDish = preparedDishById(preparedDishID) else { continue }
+            guard requestedServings <= preparedDish.servingsRemaining else {
+                pushError(.validation("Not enough servings remain in \(preparedDish.name) to log those meals as eaten."))
+                return false
+            }
+        }
+
+        return true
+    }
+
+    func applyMealLoggingRequests(_ requests: [MealPlanEatenLoggingRequest]) async -> Bool {
+        for request in requests {
+            if request.additionalServings > 0, let preparedDishID = request.preparedDishID {
+                if let currentPreparedDish = preparedDishById(preparedDishID) {
+                    _ = await adjustPreparedDishServings(currentPreparedDish, delta: -request.additionalServings)
+                }
+            }
+
+            do {
+                let updatedEntry = request.entry.updatingEatenServings(request.targetEatenServings)
+                let saved = try await storageService.updateMealPlanEntry(updatedEntry)
+                if let index = mealPlan.firstIndex(where: { $0.id == saved.id }) {
+                    mealPlan[index] = saved
+                }
+            } catch {
+                pushError(.storage(error))
+                return false
+            }
+        }
+
+        return true
+    }
+
     func addToMealPlan(_ entry: MealPlanEntry, replaceExistingSlot: Bool = false) async {
         await addToMealPlan([entry], replaceExistingSlot: replaceExistingSlot)
     }
@@ -57,68 +128,12 @@ extension AppState {
     }
 
     func logMealPlanEntriesEaten(_ selections: [MealPlanEatenLoggingSelection]) async {
-        let requests = selections.compactMap { selection -> MealPlanEatenLoggingRequest? in
-            guard let currentEntry = mealPlan.first(where: { $0.id == selection.entryID }) else { return nil }
-            guard currentEntry.supportsMealLogging else { return nil }
-
-            let currentEatenServings = currentEntry.effectiveEatenServings
-            let targetEatenServings = Swift.max(currentEatenServings, selection.targetEatenServings)
-            guard targetEatenServings > currentEatenServings else { return nil }
-
-            return MealPlanEatenLoggingRequest(
-                entry: currentEntry,
-                targetEatenServings: targetEatenServings,
-                preparedDishID: selection.preparedDishID
-            )
-        }
+        let requests = mealLoggingRequests(from: selections)
 
         guard !requests.isEmpty else { return }
 
-        let requestedServingsByPreparedDishID = requests.reduce(into: [UUID: Int]()) { partialResult, request in
-            guard request.additionalServings > 0 else { return }
-            guard let preparedDishID = request.preparedDishID else { return }
-            partialResult[preparedDishID, default: 0] += request.additionalServings
-        }
-
-        for request in requests where request.additionalServings > 0 {
-            guard let preparedDishID = request.preparedDishID else {
-                pushError(.validation("Choose which Prepared Food item was eaten before saving."))
-                return
-            }
-
-            let matchingDishIDs = Set(matchingPreparedDishes(for: request.entry).map(\.id))
-            guard matchingDishIDs.contains(preparedDishID) else {
-                pushError(.validation("The selected Prepared Food item no longer matches \(request.entry.displayName)."))
-                return
-            }
-        }
-
-        for (preparedDishID, requestedServings) in requestedServingsByPreparedDishID {
-            guard let preparedDish = preparedDishById(preparedDishID) else { continue }
-            guard requestedServings <= preparedDish.servingsRemaining else {
-                pushError(.validation("Not enough servings remain in \(preparedDish.name) to log those meals as eaten."))
-                return
-            }
-        }
-
-        for request in requests {
-            if request.additionalServings > 0, let preparedDishID = request.preparedDishID {
-                if let currentPreparedDish = preparedDishById(preparedDishID) {
-                    _ = await adjustPreparedDishServings(currentPreparedDish, delta: -request.additionalServings)
-                }
-            }
-
-            do {
-                let updatedEntry = request.entry.updatingEatenServings(request.targetEatenServings)
-                let saved = try await storageService.updateMealPlanEntry(updatedEntry)
-                if let index = mealPlan.firstIndex(where: { $0.id == saved.id }) {
-                    mealPlan[index] = saved
-                }
-            } catch {
-                pushError(.storage(error))
-                return
-            }
-        }
+        guard validateMealLoggingRequests(requests) else { return }
+        guard await applyMealLoggingRequests(requests) else { return }
 
         setMealPlanEntries(sanitizeMealPlanEntries(mealPlan).visibleEntries)
     }

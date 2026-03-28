@@ -87,7 +87,7 @@ struct HomeView: View {
                     .environment(viewModel.appState)
             }
             .fullScreenCover(item: $resumeRecipe) { recipe in
-                let session = CookingSession.load(recipeId: recipe.id)
+                let session = viewModel.appState.cookingSessionStore.load(recipeId: recipe.id)
                 let stepIndex = session?.currentStepIndex ?? 0
                 let queueContext = session.flatMap { viewModel.appState.cookQueueContext(for: $0) }
                 CookModeView(

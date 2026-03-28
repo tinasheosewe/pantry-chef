@@ -10,7 +10,7 @@ final class MealPlanViewModel: AsyncActionHandling {
     var isLoading = false
 
     let appState: AppState
-    @ObservationIgnored private let mealPlanGateway: MealPlanGateway
+    @ObservationIgnored private let mealPlanGateway: any MealPlanGatewayProtocol
 
     struct MealSlot: Identifiable {
         let id = UUID()

@@ -21,6 +21,8 @@ protocol ActiveCooksManaging: AnyObject {
 @Observable
 @MainActor
 final class ActiveCooksManager: ActiveCooksManaging {
+    private let sessionStore: CookingSessionStoreProtocol
+
     /// All active (non-expired) cooking sessions.
     var activeSessions: [CookingSession] = []
 
@@ -30,13 +32,14 @@ final class ActiveCooksManager: ActiveCooksManaging {
     /// Number of currently active sessions.
     var count: Int { activeSessions.count }
 
-    init() {
+    init(sessionStore: CookingSessionStoreProtocol? = nil) {
+        self.sessionStore = sessionStore ?? UserDefaultsCookingSessionStore()
         refresh()
     }
 
     /// Reload from UserDefaults.
     func refresh() {
-        activeSessions = CookingSession.loadAll()
+        activeSessions = sessionStore.loadAll()
     }
 
     /// Check if a specific recipe has an active session.
@@ -46,13 +49,13 @@ final class ActiveCooksManager: ActiveCooksManaging {
 
     /// End a specific session.
     func endSession(for recipeId: UUID) {
-        CookingSession.clear(recipeId: recipeId)
+        sessionStore.clear(recipeId: recipeId)
         refresh()
     }
 
     /// End all sessions.
     func endAllSessions() {
-        CookingSession.clearAll()
+        sessionStore.clearAll()
         refresh()
     }
 }

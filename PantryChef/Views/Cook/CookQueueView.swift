@@ -113,7 +113,7 @@ struct CookQueueView: View {
                         )
                         .environment(appState)
                     } else if let recipe = launchingRecipes.first {
-                        let session = CookingSession.load(recipeId: recipe.id)
+                        let session = appState.cookingSessionStore.load(recipeId: recipe.id)
                         CookModeView(
                             recipe: recipe,
                             resumeAtStep: session?.currentStepIndex ?? 0,
@@ -146,7 +146,7 @@ struct CookQueueView: View {
     private func queueStageRow(_ stage: CookQueueStage) -> some View {
         let recipes = appState.resolvedRecipes(for: stage)
         let canStart = !recipes.isEmpty
-        let hasActiveSession = recipes.contains { CookingSession.load(recipeId: $0.id) != nil }
+        let hasActiveSession = recipes.contains { appState.cookingSessionStore.load(recipeId: $0.id) != nil }
 
         return VStack(alignment: .leading, spacing: 12) {
             HStack(alignment: .top, spacing: 12) {
@@ -327,7 +327,7 @@ struct CookQueueView: View {
             guard !recipes.isEmpty else { return }
 
             if recipes.count == 1, let recipe = recipes.first,
-               let session = CookingSession.load(recipeId: recipe.id) {
+               let session = appState.cookingSessionStore.load(recipeId: recipe.id) {
                 resumingSession = session
             } else {
                 showGathering = true
