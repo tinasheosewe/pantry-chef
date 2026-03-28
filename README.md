@@ -101,6 +101,29 @@ That script:
 
 See `TESTING.md` for direct `xcodebuild` commands, coverage details, performance budgets, and release checklists.
 
+## External Orchestrator
+
+The repository also contains an external GPT-backed recipe and ingredient corpus pipeline under `Scripts/recipe_ingredient_orchestrator/`.
+
+It supports:
+
+- natural-language request planning into recipe campaigns
+- zero-base generation with `--empty-catalog`
+- first-class ingredient enrichment and promotion
+- corpus EDA plus large-scale ingredient and recipe corpus growth
+
+Useful entrypoints:
+
+```bash
+python3 Scripts/recipe_ingredient_orchestrator/orchestrator.py print-config
+python3 Scripts/recipe_ingredient_orchestrator/orchestrator.py run-eda
+python3 Scripts/recipe_ingredient_orchestrator/orchestrator.py run-request --request "generate 10 french recipes" --empty-catalog
+python3 Scripts/recipe_ingredient_orchestrator/orchestrator.py build-ingredient-corpus --target-count 1000 --batch-size 100 --empty-catalog
+python3 Scripts/recipe_ingredient_orchestrator/orchestrator.py build-recipe-corpus --target-count 1000 --batch-size 25 --max-concurrency 3 --empty-catalog
+```
+
+See `Scripts/recipe_ingredient_orchestrator/README.md` for the full command surface and runtime layout.
+
 ## Repository Map
 
 ```text

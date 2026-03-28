@@ -38,3 +38,9 @@ TestResults*
 
 # Raw MISKG data (large, not needed in repo — only processed output is committed)
 Scripts/miskg_data/
+
+# Orchestrator runtime artifacts
+Scripts/recipe_ingredient_orchestrator/runtime/
+Scripts/recipe_ingredient_orchestrator/accepted/
+Scripts/recipe_ingredient_orchestrator/runtime_*/
+Scripts/recipe_ingredient_orchestrator/accepted_*/

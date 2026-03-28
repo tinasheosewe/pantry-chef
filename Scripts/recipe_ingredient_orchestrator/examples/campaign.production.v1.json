@@ -1,0 +1,70 @@
+{
+  "name": "production-launch-batch-v1",
+  "max_concurrency": 3,
+  "dishes": [
+    {
+      "title": "Creamy Garlic Chicken Pasta",
+      "cuisine": "Italian",
+      "meal_type": "Dinner",
+      "servings": 4,
+      "goals": ["weeknight friendly", "comfort food"],
+      "pantry_focus": ["chicken", "pasta", "garlic", "parmesan"]
+    },
+    {
+      "title": "Lemon Herb Salmon Rice Bowl",
+      "cuisine": "Mediterranean",
+      "meal_type": "Dinner",
+      "servings": 4,
+      "goals": ["high protein", "fresh", "meal prep friendly"],
+      "pantry_focus": ["salmon", "rice", "spinach", "lemon", "dill"]
+    },
+    {
+      "title": "Weeknight Butter Chicken",
+      "cuisine": "Indian",
+      "meal_type": "Dinner",
+      "servings": 4,
+      "goals": ["crowd pleasing", "freezer friendly"],
+      "pantry_focus": ["chicken", "rice", "tomato paste", "cream", "garlic", "ginger"]
+    },
+    {
+      "title": "Ground Beef Bibimbap Bowls",
+      "cuisine": "Korean",
+      "meal_type": "Dinner",
+      "servings": 4,
+      "goals": ["high protein", "balanced"],
+      "pantry_focus": ["ground beef", "rice", "spinach", "carrot", "sesame oil", "soy sauce"]
+    },
+    {
+      "title": "Vegetarian Black Bean Chili",
+      "cuisine": "American",
+      "meal_type": "Dinner",
+      "servings": 6,
+      "goals": ["budget friendly", "batch cooking"],
+      "pantry_focus": ["black beans", "onion", "bell pepper", "tomato paste", "paprika", "cumin"]
+    },
+    {
+      "title": "French Onion Soup",
+      "cuisine": "French",
+      "meal_type": "Lunch",
+      "servings": 4,
+      "goals": ["restaurant feel", "cold weather"],
+      "pantry_focus": ["onion", "beef broth", "bread", "thyme", "butter"]
+    },
+    {
+      "title": "Spinach Mushroom Frittata",
+      "cuisine": "Mediterranean",
+      "meal_type": "Breakfast",
+      "servings": 4,
+      "goals": ["high protein", "low effort"],
+      "pantry_focus": ["eggs", "spinach", "mushroom", "cheddar", "onion"]
+    },
+    {
+      "title": "Shrimp Fried Rice",
+      "cuisine": "Chinese",
+      "meal_type": "Dinner",
+      "servings": 4,
+      "goals": ["takeout style", "use up leftovers"],
+      "pantry_focus": ["shrimp", "rice", "eggs", "soy sauce", "scallion", "sesame oil"]
+    }
+  ]
+}
