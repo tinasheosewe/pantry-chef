@@ -17,6 +17,17 @@ struct TelemetryEvent: Sendable {
         self.severity = severity
         self.metadata = metadata
     }
+
+    func formattedMessage(prefix: String) -> String {
+        let details = metadata
+            .sorted { $0.key < $1.key }
+            .map { "\($0.key)=\($0.value)" }
+            .joined(separator: " ")
+
+        return details.isEmpty
+            ? "\(prefix) \(name)"
+            : "\(prefix) \(name) \(details)"
+    }
 }
 
 protocol TelemetryReporting: Sendable {
@@ -24,15 +35,14 @@ protocol TelemetryReporting: Sendable {
 }
 
 struct AppTelemetryReporter: TelemetryReporting {
-    func record(_ event: TelemetryEvent) {
-        let details = event.metadata
-            .sorted { $0.key < $1.key }
-            .map { "\($0.key)=\($0.value)" }
-            .joined(separator: " ")
+    private let crashReporter: any CrashReporting
 
-        let message = details.isEmpty
-            ? "[Telemetry] \(event.name)"
-            : "[Telemetry] \(event.name) \(details)"
+    init(crashReporter: any CrashReporting = SentryCrashReporter()) {
+        self.crashReporter = crashReporter
+    }
+
+    func record(_ event: TelemetryEvent) {
+        let message = event.formattedMessage(prefix: "[Telemetry]")
 
         switch event.severity {
         case .debug:
@@ -44,5 +54,7 @@ struct AppTelemetryReporter: TelemetryReporting {
         case .error:
             AppLog.error(message)
         }
+
+        crashReporter.record(event)
     }
 }

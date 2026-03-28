@@ -6,6 +6,13 @@ enum AppConfig {
 
     // OpenAI
     static let openAIAPIKey = requiredConfigValue("OPENAI_API_KEY")
+    static let sentryDSN = optionalConfigValue("SENTRY_DSN")
+
+    #if DEBUG
+    static let runtimeEnvironment = "debug"
+    #else
+    static let runtimeEnvironment = "release"
+    #endif
 
     // App Settings
     static let expiryWarningDays = 3
@@ -58,5 +65,22 @@ enum AppConfig {
         }
 
         return "\(missingPrefix):\(key)"
+    }
+
+    private static func optionalConfigValue(_ key: String) -> String? {
+        if let env = ProcessInfo.processInfo.environment[key] {
+            let trimmed = env.trimmingCharacters(in: .whitespacesAndNewlines)
+            return trimmed.isEmpty ? nil : trimmed
+        }
+
+        if let plist = Bundle.main.object(forInfoDictionaryKey: key) as? String {
+            let trimmed = plist.trimmingCharacters(in: .whitespacesAndNewlines)
+            guard !trimmed.isEmpty, !trimmed.hasPrefix("$(") else {
+                return nil
+            }
+            return trimmed
+        }
+
+        return nil
     }
 }

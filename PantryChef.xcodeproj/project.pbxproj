@@ -23,9 +23,11 @@
 		2964163BF95AFA9D43BB0502 /* ActiveCooksManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0382EF98C03B29B3D9B560F /* ActiveCooksManager.swift */; };
 		30536BC0C62621CE2CB4B15C /* input_audio_transcription_completed_sparse_usage.json in Resources */ = {isa = PBXBuildFile; fileRef = 62F4E42A0869501AB92F81F2 /* input_audio_transcription_completed_sparse_usage.json */; };
 		32619AA975C27D286F37C39B /* CookGateway.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DAA3D315E2C74E76EF39CA6 /* CookGateway.swift */; };
+		33E785251DCE416DBD76BC9A /* TelemetryReporterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C72DB3A2FD92EEFEF85F27C4 /* TelemetryReporterTests.swift */; };
 		34A0BED59021842776059CD5 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA3FEFC1D069640D0CCBC291 /* NotificationService.swift */; };
 		36338DBD21E24BFD8E128018 /* RealtimeServiceProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF4ACDEB952F0E92FF5A2FF7 /* RealtimeServiceProtocol.swift */; };
 		374154CB4A50C7B8F13BB7B6 /* AppState+AI.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7C356229D8B81C55AF86BF9 /* AppState+AI.swift */; };
+		384BBCD0526D4E1C72B78481 /* RealtimeAPI in Frameworks */ = {isa = PBXBuildFile; productRef = 4A6232C1ECDD3D484F41AF09 /* RealtimeAPI */; };
 		3EDDE63220993866A47B95CB /* AIOutputValidator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4B939ADD2D7D4027983E1CE /* AIOutputValidator.swift */; };
 		416981F3959EE90E575EB7A3 /* RecipeListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22B0009FB6945B57184CD3F9 /* RecipeListView.swift */; };
 		4209855AE41E88CABEC911CD /* AppError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EAF4BBB6D4452027050DF1E /* AppError.swift */; };
@@ -54,8 +56,9 @@
 		8D96E85E9FC95BBD66485E3D /* RealtimeServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19A32D7F1BF7F07193B5D135 /* RealtimeServiceTests.swift */; };
 		918A6C89024CC030236565CD /* PCTokens.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4837E6CAAC96B8EBCC3F4AA5 /* PCTokens.swift */; };
 		91A5BFABB50C47C670FB37F7 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28C5AD9227107BB812ED3728 /* Extensions.swift */; };
+		91EA1E2C22DF8B809919B728 /* SentryCrashReporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B4D57647D30ABDB98AC89E0 /* SentryCrashReporter.swift */; };
 		92ECEDE860EDA33AD03B60AC /* MealPlan.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6871CCC4A1E586AE0BDC6A91 /* MealPlan.swift */; };
-		94A15C8DA60B29DCBCBCA9B4 /* RealtimeAPI in Frameworks */ = {isa = PBXBuildFile; productRef = 4A6232C1ECDD3D484F41AF09 /* RealtimeAPI */; };
+		94A15C8DA60B29DCBCBCA9B4 /* Sentry in Frameworks */ = {isa = PBXBuildFile; productRef = 89A23A09254EE6E4E5510F16 /* Sentry */; };
 		94D352105D9F5C1AA73C7123 /* AppState+MealPlan.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AE5096459C65D0DBE558523 /* AppState+MealPlan.swift */; };
 		97D5ADC3AC965A13945718D3 /* MealPlanViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32047EE127BD9837C9FAA049 /* MealPlanViewModel.swift */; };
 		983A42DABB177E748E2EC2DC /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1DC8288BBCA0F36FAC20468 /* AppState.swift */; };
@@ -184,6 +187,7 @@
 		874C22D016C1CE93B53C735B /* RecipeDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeDetailView.swift; sourceTree = "<group>"; };
 		877E52465510E708BA84311A /* input_audio_transcription_completed_multilingual.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_audio_transcription_completed_multilingual.json; sourceTree = "<group>"; };
 		896275EB19EF8D062E8C4CF2 /* RecipeIngredientResolutionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeIngredientResolutionTests.swift; sourceTree = "<group>"; };
+		8B4D57647D30ABDB98AC89E0 /* SentryCrashReporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SentryCrashReporter.swift; sourceTree = "<group>"; };
 		8C9E10465104BC5BD4168B1A /* ScenarioBaselineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScenarioBaselineTests.swift; sourceTree = "<group>"; };
 		8E2364793F34BF75678EDA72 /* StorageServiceIntegrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageServiceIntegrationTests.swift; sourceTree = "<group>"; };
 		901D7319E7C60C7CEB9042E5 /* RecipeGateway.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeGateway.swift; sourceTree = "<group>"; };
@@ -209,6 +213,7 @@
 		BF4ACDEB952F0E92FF5A2FF7 /* RealtimeServiceProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealtimeServiceProtocol.swift; sourceTree = "<group>"; };
 		C03CAD07000A5F75BB029B1C /* Protocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Protocols.swift; sourceTree = "<group>"; };
 		C0C49A659EE21F5019A9DF94 /* AppLaunchOptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLaunchOptions.swift; sourceTree = "<group>"; };
+		C72DB3A2FD92EEFEF85F27C4 /* TelemetryReporterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TelemetryReporterTests.swift; sourceTree = "<group>"; };
 		C9B0EE388F85446F2B6D4442 /* PantryCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PantryCatalog.swift; sourceTree = "<group>"; };
 		CA3FEFC1D069640D0CCBC291 /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
 		CA7710DAEA864CA8E70D8332 /* StepTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StepTask.swift; sourceTree = "<group>"; };
@@ -245,7 +250,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				94A15C8DA60B29DCBCBCA9B4 /* RealtimeAPI in Frameworks */,
+				94A15C8DA60B29DCBCBCA9B4 /* Sentry in Frameworks */,
+				384BBCD0526D4E1C72B78481 /* RealtimeAPI in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -353,6 +359,7 @@
 				896275EB19EF8D062E8C4CF2 /* RecipeIngredientResolutionTests.swift */,
 				8C9E10465104BC5BD4168B1A /* ScenarioBaselineTests.swift */,
 				8E2364793F34BF75678EDA72 /* StorageServiceIntegrationTests.swift */,
+				C72DB3A2FD92EEFEF85F27C4 /* TelemetryReporterTests.swift */,
 				A2D6EB6860064D974915E9B1 /* ViewSnapshotBaselineTests.swift */,
 				53D47F614E8CFA1AAE6CC643 /* Fixtures */,
 			);
@@ -579,6 +586,7 @@
 				76DFA2EE9B6B77FB3CEAD7C7 /* RecipeIngredientResolutionService.swift */,
 				0836E92C4D025C2D0E81F199 /* RecipeRepository.swift */,
 				CF043648CCB725C24B0A51F2 /* RuntimeStores.swift */,
+				8B4D57647D30ABDB98AC89E0 /* SentryCrashReporter.swift */,
 				187A2FC90EF58530B2FF9242 /* SpeechService.swift */,
 				229E0C49040C5DEDB1C58497 /* StorageRecords.swift */,
 				E3D174F06F17C2D1BFB041DA /* StorageService.swift */,
@@ -666,6 +674,7 @@
 			);
 			name = PantryChef;
 			packageProductDependencies = (
+				89A23A09254EE6E4E5510F16 /* Sentry */,
 				4A6232C1ECDD3D484F41AF09 /* RealtimeAPI */,
 			);
 			productName = PantryChef;
@@ -725,6 +734,7 @@
 			mainGroup = A22465A4168DFF95B3524998;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
+				0F2AC8A3248D0B8DAA17CAB0 /* XCRemoteSwiftPackageReference "sentry-cocoa" */,
 				9BB078DA81E794BEBD06DCC6 /* XCLocalSwiftPackageReference "Vendor/swift-realtime-openai" */,
 			);
 			preferredProjectObjectVersion = 77;
@@ -841,6 +851,7 @@
 				F2C76FAA903C936049E45B29 /* RecipeRepository.swift in Sources */,
 				BE43AD4B9F8D485819C04CF7 /* RecipeViewModel.swift in Sources */,
 				D4BA98D0B99FF6C34D32168B /* RuntimeStores.swift in Sources */,
+				91EA1E2C22DF8B809919B728 /* SentryCrashReporter.swift in Sources */,
 				443F0D0BF460F08823C1EFE9 /* ShoppingItem.swift in Sources */,
 				2262A21B75ECD4E7527C1ABB /* ShoppingListView.swift in Sources */,
 				1588E06654785C6B237251C8 /* ShoppingViewModel.swift in Sources */,
@@ -875,6 +886,7 @@
 				A60697B00B0962F79098D956 /* RecipeIngredientResolutionTests.swift in Sources */,
 				9B19567AF81DDBD85DE3D7D3 /* ScenarioBaselineTests.swift in Sources */,
 				1CE718C0191821123FF258A3 /* StorageServiceIntegrationTests.swift in Sources */,
+				33E785251DCE416DBD76BC9A /* TelemetryReporterTests.swift in Sources */,
 				09CF1A5EB148B30F22DEDBF7 /* ViewSnapshotBaselineTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1172,10 +1184,26 @@
 		};
 /* End XCLocalSwiftPackageReference section */
 
+/* Begin XCRemoteSwiftPackageReference section */
+		0F2AC8A3248D0B8DAA17CAB0 /* XCRemoteSwiftPackageReference "sentry-cocoa" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/getsentry/sentry-cocoa.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 9.8.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
 /* Begin XCSwiftPackageProductDependency section */
 		4A6232C1ECDD3D484F41AF09 /* RealtimeAPI */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = RealtimeAPI;
+		};
+		89A23A09254EE6E4E5510F16 /* Sentry */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0F2AC8A3248D0B8DAA17CAB0 /* XCRemoteSwiftPackageReference "sentry-cocoa" */;
+			productName = Sentry;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

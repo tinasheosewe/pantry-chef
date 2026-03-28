@@ -15,6 +15,9 @@ settings:
     CODE_SIGN_STYLE: Automatic
 
 packages:
+  sentry:
+    url: https://github.com/getsentry/sentry-cocoa.git
+    from: 9.8.0
   swift-realtime-openai:
     path: Vendor/swift-realtime-openai
 
@@ -28,6 +31,8 @@ targets:
       Debug: Config/Secrets.xcconfig
       Release: Config/Secrets.xcconfig
     dependencies:
+      - package: sentry
+        product: Sentry
       - package: swift-realtime-openai
         product: RealtimeAPI
     info:
@@ -41,6 +46,7 @@ targets:
         UILaunchScreen:
           BackgroundColor: LaunchBG
         OPENAI_API_KEY: $(OPENAI_API_KEY)
+        SENTRY_DSN: $(SENTRY_DSN)
         NSSpeechRecognitionUsageDescription: "Pantry Chef uses speech recognition for voice commands in cook mode"
         NSMicrophoneUsageDescription: "Pantry Chef needs microphone access for voice input"
 
