@@ -21,9 +21,11 @@ protocol InventoryGatewayProtocol {
 @MainActor
 struct InventoryGateway: InventoryGatewayProtocol {
     private unowned let appState: AppState
+    private let shoppingDomainService: any ShoppingDomainServicing
 
-    init(appState: AppState) {
+    init(appState: AppState, shoppingDomainService: any ShoppingDomainServicing) {
         self.appState = appState
+        self.shoppingDomainService = shoppingDomainService
     }
 
     func upsertPantryItem(_ item: PantryItem) async {
@@ -40,30 +42,30 @@ struct InventoryGateway: InventoryGatewayProtocol {
 
     func upsertShoppingItem(_ item: ShoppingItem) async {
         if appState.shoppingItems.contains(where: { $0.id == item.id }) {
-            await appState.updateShoppingItem(item)
+            await shoppingDomainService.updateShoppingItem(item, state: appState)
         } else {
-            await appState.addShoppingItem(item)
+            await shoppingDomainService.addShoppingItem(item, state: appState)
         }
     }
 
     func addShoppingItems(_ items: [ShoppingItem]) async {
-        await appState.addShoppingItems(items)
+        await shoppingDomainService.addShoppingItems(items, state: appState)
     }
 
     func toggleShoppingItem(_ item: ShoppingItem) async {
-        await appState.toggleShoppingItem(item)
+        await shoppingDomainService.toggleShoppingItem(item, state: appState)
     }
 
     func removeShoppingItem(_ item: ShoppingItem) async {
-        await appState.removeShoppingItem(item)
+        await shoppingDomainService.removeShoppingItem(item, state: appState)
     }
 
     func removeCheckedShoppingItems() async {
-        await appState.removeCheckedShoppingItems()
+        await shoppingDomainService.removeCheckedShoppingItems(state: appState)
     }
 
     func replaceShoppingItems(_ items: [ShoppingItem]) async {
-        await appState.replaceShoppingItems(items)
+        await shoppingDomainService.replaceShoppingItems(items, state: appState)
     }
 
     func transferCheckedShoppingItemsToPantry() async {
@@ -104,6 +106,6 @@ struct InventoryGateway: InventoryGatewayProtocol {
 @MainActor
 extension AppState {
     var inventoryGateway: any InventoryGatewayProtocol {
-        InventoryGateway(appState: self)
+        InventoryGateway(appState: self, shoppingDomainService: shoppingDomainService)
     }
 }

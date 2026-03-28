@@ -16,38 +16,40 @@ protocol MealPlanGatewayProtocol {
 @MainActor
 struct MealPlanGateway: MealPlanGatewayProtocol {
     private unowned let appState: AppState
+    private let mealPlanDomainService: any MealPlanDomainServicing
 
-    init(appState: AppState) {
+    init(appState: AppState, mealPlanDomainService: any MealPlanDomainServicing) {
         self.appState = appState
+        self.mealPlanDomainService = mealPlanDomainService
     }
 
     func planRecipe(_ recipe: Recipe, on date: Date, mealType: MealType, replaceExisting: Bool) async {
         let entry = MealPlanEntry(date: date, mealType: mealType, recipe: recipe)
-        await appState.addToMealPlan(entry, replaceExistingSlot: replaceExisting)
+        await mealPlanDomainService.addToMealPlan(entry, replaceExistingSlot: replaceExisting, state: appState)
     }
 
     func planPreparedDish(_ dish: PreparedDish, on date: Date, mealType: MealType, replaceExisting: Bool) async {
         let entry = MealPlanEntry(date: date, mealType: mealType, preparedDish: dish, plannedServings: 1)
-        await appState.addToMealPlan(entry, replaceExistingSlot: replaceExisting)
+        await mealPlanDomainService.addToMealPlan(entry, replaceExistingSlot: replaceExisting, state: appState)
     }
 
     func planSelections(_ selections: [MealSelectionItem], on date: Date, mealType: MealType, replaceExisting: Bool) async {
         let entries = selections.map { $0.makeEntry(date: date, mealType: mealType) }
-        await appState.addToMealPlan(entries, replaceExistingSlot: replaceExisting)
+        await mealPlanDomainService.addToMealPlan(entries, replaceExistingSlot: replaceExisting, state: appState)
     }
 
     func removeEntries(_ entries: [MealPlanEntry]) async {
         for entry in entries {
-            await appState.removeFromMealPlan(entry)
+            await mealPlanDomainService.removeFromMealPlan(entry, state: appState)
         }
     }
 
     func updateEntry(_ entry: MealPlanEntry) async {
-        await appState.updateMealPlanEntry(entry)
+        await mealPlanDomainService.updateMealPlanEntry(entry, state: appState)
     }
 
     func logEntriesEaten(_ selections: [MealPlanEatenLoggingSelection]) async {
-        await appState.logMealPlanEntriesEaten(selections)
+        await mealPlanDomainService.logMealPlanEntriesEaten(selections, state: appState)
     }
 
     func addShoppingItems(_ items: [ShoppingItem]) async {
@@ -67,6 +69,6 @@ struct MealPlanGateway: MealPlanGatewayProtocol {
 @MainActor
 extension AppState {
     var mealPlanGateway: any MealPlanGatewayProtocol {
-        MealPlanGateway(appState: self)
+        MealPlanGateway(appState: self, mealPlanDomainService: mealPlanDomainService)
     }
 }

@@ -95,6 +95,8 @@ final class AppState {
     let cookModePreferenceStore: CookModePreferenceStoreProtocol
     let notificationService: CookNotificationServiceProtocol
     let telemetryReporter: any TelemetryReporting
+    let shoppingDomainService: any ShoppingDomainServicing
+    let mealPlanDomainService: any MealPlanDomainServicing
 
     // MARK: - Shared State
     var pantryItems: [PantryItem] = []
@@ -360,6 +362,8 @@ final class AppState {
         let cookingSessionStore = UserDefaultsCookingSessionStore()
         let cookModePreferenceStore = UserDefaultsCookModePreferenceStore()
         let telemetryReporter = AppTelemetryReporter()
+        let shoppingDomainService = ShoppingDomainService()
+        let mealPlanDomainService = MealPlanDomainService()
         self.pantryItemPreferenceStore = PantryItemPreferenceStore()
         self.storageService = StorageService(
             isStoredInMemoryOnly: launchOptions.useInMemoryStorage,
@@ -376,6 +380,8 @@ final class AppState {
         self.activeCooks = ActiveCooksManager(sessionStore: cookingSessionStore)
         self.notificationService = NotificationService()
         self.telemetryReporter = telemetryReporter
+        self.shoppingDomainService = shoppingDomainService
+        self.mealPlanDomainService = mealPlanDomainService
         IngredientMatcher.substitutionRepository = substitutionRepository
         pantryItems = launchOptions.seedPantryItems ? PantryItem.samples : []
         preparedDishes = []
@@ -401,6 +407,8 @@ final class AppState {
         activeCooks: ActiveCooksManaging? = nil,
         notificationService: CookNotificationServiceProtocol? = nil,
         telemetryReporter: any TelemetryReporting = AppTelemetryReporter(),
+        shoppingDomainService: (any ShoppingDomainServicing)? = nil,
+        mealPlanDomainService: (any MealPlanDomainServicing)? = nil,
         shouldLoadOnInit: Bool = true
     ) {
         self.storageService = storageService
@@ -417,6 +425,8 @@ final class AppState {
         self.activeCooks = activeCooks ?? ActiveCooksManager(sessionStore: resolvedCookingSessionStore)
         self.notificationService = notificationService ?? NotificationService()
         self.telemetryReporter = telemetryReporter
+        self.shoppingDomainService = shoppingDomainService ?? ShoppingDomainService()
+        self.mealPlanDomainService = mealPlanDomainService ?? MealPlanDomainService()
         IngredientMatcher.substitutionRepository = substitutionRepository
         pantryItems = PantryItem.samples
         preparedDishes = []

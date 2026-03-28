@@ -4,83 +4,43 @@ import Foundation
 
 extension AppState {
     func previewShoppingListFromMealPlan() -> [ShoppingItem] {
-        let recipes = mealPlan.compactMap(\.scaledRecipeForPlanning)
-        let candidates = recipes.flatMap { recipe in
-            recipe.ingredients.compactMap { ingredient -> ShoppingItem? in
-                guard shouldIncludeInShoppingList(ingredient) else { return nil }
-                return ShoppingItem(ingredient: ingredient, recipeSource: recipe.title)
-            }
-        }
-
-        return mergeShoppingItems(existing: [], additions: candidates)
+        shoppingDomainService.previewShoppingListFromMealPlan(state: self)
     }
 
     func generateShoppingListFromMealPlan() async {
-        await addShoppingItems(previewShoppingListFromMealPlan())
+        await shoppingDomainService.generateShoppingListFromMealPlan(state: self)
     }
 
     func addShoppingItems(_ items: [ShoppingItem]) async {
-        setShoppingItemsValue(mergeShoppingItems(existing: shoppingItems, additions: items))
-        await persistShoppingItems()
+        await shoppingDomainService.addShoppingItems(items, state: self)
     }
 
     func toggleShoppingItem(_ item: ShoppingItem) async {
-        if let index = shoppingItems.firstIndex(where: { $0.id == item.id }) {
-            shoppingItems[index].isChecked.toggle()
-            markShoppingChanged()
-            await persistShoppingItems()
-        }
+        await shoppingDomainService.toggleShoppingItem(item, state: self)
     }
 
     func setShoppingItems(_ items: [ShoppingItem]) async {
-        setShoppingItemsValue(items)
-        await persistShoppingItems()
+        await shoppingDomainService.setShoppingItems(items, state: self)
     }
 
     func addShoppingItem(_ item: ShoppingItem) async {
-        await addShoppingItems([item])
+        await shoppingDomainService.addShoppingItem(item, state: self)
     }
 
     func removeShoppingItem(_ item: ShoppingItem) async {
-        let originalCount = shoppingItems.count
-        shoppingItems.removeAll { $0.id == item.id }
-        if shoppingItems.count != originalCount {
-            markShoppingChanged()
-        }
-        await persistShoppingItems()
+        await shoppingDomainService.removeShoppingItem(item, state: self)
     }
 
     func updateShoppingItem(_ item: ShoppingItem) async {
-        guard let index = shoppingItems.firstIndex(where: { $0.id == item.id }) else { return }
-        shoppingItems[index] = item
-        markShoppingChanged()
-        await persistShoppingItems()
+        await shoppingDomainService.updateShoppingItem(item, state: self)
     }
 
     func replaceShoppingItems(_ items: [ShoppingItem]) async {
-        guard !items.isEmpty else { return }
-
-        let itemsByID = Dictionary(uniqueKeysWithValues: items.map { ($0.id, $0) })
-        var didChange = false
-
-        for index in shoppingItems.indices {
-            guard let updated = itemsByID[shoppingItems[index].id] else { continue }
-            shoppingItems[index] = updated
-            didChange = true
-        }
-
-        guard didChange else { return }
-        markShoppingChanged()
-        await persistShoppingItems()
+        await shoppingDomainService.replaceShoppingItems(items, state: self)
     }
 
     func removeCheckedShoppingItems() async {
-        let originalCount = shoppingItems.count
-        shoppingItems.removeAll { $0.isChecked }
-        if shoppingItems.count != originalCount {
-            markShoppingChanged()
-        }
-        await persistShoppingItems()
+        await shoppingDomainService.removeCheckedShoppingItems(state: self)
     }
 
     func persistShoppingItems() async {
@@ -163,7 +123,7 @@ extension AppState {
             addedQuantity: addition.quantity,
             addedUnit: addition.unit
         ) {
-        case let (.merged(quantity, unit)):
+        case let .merged(quantity, unit):
             merged.quantity = quantity
             merged.unit = unit
         case .keepExisting:
