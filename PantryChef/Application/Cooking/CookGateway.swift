@@ -21,63 +21,79 @@ protocol CookGatewayProtocol {
 @MainActor
 struct CookGateway: CookGatewayProtocol {
     private unowned let appState: AppState
+    private let cookQueueDomainService: any CookQueueDomainServicing
+    private let mealPlanDomainService: any MealPlanDomainServicing
+    private let preparedDishDomainService: any PreparedDishDomainServicing
 
-    init(appState: AppState) {
+    init(
+        appState: AppState,
+        cookQueueDomainService: any CookQueueDomainServicing,
+        mealPlanDomainService: any MealPlanDomainServicing,
+        preparedDishDomainService: any PreparedDishDomainServicing
+    ) {
         self.appState = appState
+        self.cookQueueDomainService = cookQueueDomainService
+        self.mealPlanDomainService = mealPlanDomainService
+        self.preparedDishDomainService = preparedDishDomainService
     }
 
     // MARK: - Queue Management
 
     func addRecipesToQueue(_ recipes: [Recipe], asParallelBatch: Bool = false, sourceEntries: [MealPlanEntry] = []) async {
-        await appState.addRecipesToCookQueue(recipes, asParallelBatch: asParallelBatch, sourceEntries: sourceEntries)
+        await cookQueueDomainService.addRecipesToCookQueue(recipes, asParallelBatch: asParallelBatch, sourceEntries: sourceEntries, state: appState)
     }
 
     func removeStage(_ stageID: UUID) async {
-        await appState.removeCookQueueStage(stageID)
+        await cookQueueDomainService.removeCookQueueStage(stageID, state: appState)
     }
 
     func clearQueue() async {
-        await appState.clearCookQueue()
+        await cookQueueDomainService.clearCookQueue(state: appState)
     }
 
     func skipStage(_ stageID: UUID) async {
-        await appState.skipCookQueueStage(stageID)
+        await cookQueueDomainService.skipCookQueueStage(stageID, state: appState)
     }
 
     func moveStage(_ stageID: UUID, by offset: Int) async {
-        await appState.moveCookQueueStage(stageID, by: offset)
+        await cookQueueDomainService.moveCookQueueStage(stageID, by: offset, state: appState)
     }
 
     func bundleStageWithNext(_ stageID: UUID) async {
-        await appState.bundleCookQueueStageWithNext(stageID)
+        await cookQueueDomainService.bundleCookQueueStageWithNext(stageID, state: appState)
     }
 
     func splitStage(_ stageID: UUID) async {
-        await appState.splitCookQueueStage(stageID)
+        await cookQueueDomainService.splitCookQueueStage(stageID, state: appState)
     }
 
     func startStage(_ stageID: UUID) async {
-        await appState.startCookQueueStage(stageID)
+        await cookQueueDomainService.startCookQueueStage(stageID, state: appState)
     }
 
     func completeStage(_ stageID: UUID) async {
-        await appState.completeCookQueueStage(stageID)
+        await cookQueueDomainService.completeCookQueueStage(stageID, state: appState)
     }
 
     // MARK: - Cook Completion
 
     func stampCookedMealPlanEntries(recipeID: UUID) async {
-        await appState.stampCookedMealPlanEntriesByRecipe(recipeID)
+        await mealPlanDomainService.stampCookedMealPlanEntriesByRecipe(recipeID, state: appState)
     }
 
     func addPreparedDishForRecipe(_ recipe: Recipe) async {
-        await appState.addPreparedDishForRecipe(recipe)
+        await preparedDishDomainService.addPreparedDishForRecipe(recipe, state: appState)
     }
 }
 
 @MainActor
 extension AppState {
     var cookGateway: any CookGatewayProtocol {
-        CookGateway(appState: self)
+        CookGateway(
+            appState: self,
+            cookQueueDomainService: cookQueueDomainService,
+            mealPlanDomainService: mealPlanDomainService,
+            preparedDishDomainService: preparedDishDomainService
+        )
     }
 }

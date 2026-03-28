@@ -21,23 +21,32 @@ protocol InventoryGatewayProtocol {
 @MainActor
 struct InventoryGateway: InventoryGatewayProtocol {
     private unowned let appState: AppState
+    private let pantryDomainService: any PantryDomainServicing
+    private let preparedDishDomainService: any PreparedDishDomainServicing
     private let shoppingDomainService: any ShoppingDomainServicing
 
-    init(appState: AppState, shoppingDomainService: any ShoppingDomainServicing) {
+    init(
+        appState: AppState,
+        pantryDomainService: any PantryDomainServicing,
+        preparedDishDomainService: any PreparedDishDomainServicing,
+        shoppingDomainService: any ShoppingDomainServicing
+    ) {
         self.appState = appState
+        self.pantryDomainService = pantryDomainService
+        self.preparedDishDomainService = preparedDishDomainService
         self.shoppingDomainService = shoppingDomainService
     }
 
     func upsertPantryItem(_ item: PantryItem) async {
         if appState.pantryItems.contains(where: { $0.id == item.id }) {
-            await appState.updatePantryItem(item)
+            await pantryDomainService.updatePantryItem(item, state: appState)
         } else {
-            await appState.addPantryItem(item)
+            await pantryDomainService.addPantryItem(item, state: appState)
         }
     }
 
     func removePantryItem(_ item: PantryItem) async {
-        await appState.removePantryItem(item)
+        await pantryDomainService.removePantryItem(item, state: appState)
     }
 
     func upsertShoppingItem(_ item: ShoppingItem) async {
@@ -78,9 +87,9 @@ struct InventoryGateway: InventoryGatewayProtocol {
 
     func upsertPreparedDish(_ dish: PreparedDish) async {
         if appState.preparedDishes.contains(where: { $0.id == dish.id }) {
-            await appState.updatePreparedDish(dish)
+            await preparedDishDomainService.updatePreparedDish(dish, state: appState)
         } else {
-            await appState.addPreparedDish(dish)
+            await preparedDishDomainService.addPreparedDish(dish, state: appState)
         }
     }
 
@@ -91,21 +100,26 @@ struct InventoryGateway: InventoryGatewayProtocol {
     }
 
     func removePreparedDish(_ dish: PreparedDish) async {
-        await appState.removePreparedDish(dish)
+        await preparedDishDomainService.removePreparedDish(dish, state: appState)
     }
 
     func adjustPreparedDishServings(_ dish: PreparedDish, delta: Int) async -> Bool {
-        await appState.adjustPreparedDishServings(dish, delta: delta)
+        await preparedDishDomainService.adjustPreparedDishServings(dish, delta: delta, state: appState)
     }
 
     func applyCookReview(_ items: [PantryCookReviewItem]) async {
-        await appState.applyPantryCookReview(items)
+        await pantryDomainService.applyPantryCookReview(items, state: appState)
     }
 }
 
 @MainActor
 extension AppState {
     var inventoryGateway: any InventoryGatewayProtocol {
-        InventoryGateway(appState: self, shoppingDomainService: shoppingDomainService)
+        InventoryGateway(
+            appState: self,
+            pantryDomainService: pantryDomainService,
+            preparedDishDomainService: preparedDishDomainService,
+            shoppingDomainService: shoppingDomainService
+        )
     }
 }

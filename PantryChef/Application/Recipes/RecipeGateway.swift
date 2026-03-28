@@ -16,59 +16,61 @@ protocol RecipeGatewayProtocol {
 @MainActor
 struct RecipeGateway: RecipeGatewayProtocol {
     private unowned let appState: AppState
+    private let recipeDomainService: any RecipeDomainServicing
 
-    init(appState: AppState) {
+    init(appState: AppState, recipeDomainService: any RecipeDomainServicing) {
         self.appState = appState
+        self.recipeDomainService = recipeDomainService
     }
 
     // MARK: - CRUD
 
     func addRecipe(_ recipe: Recipe) async {
-        await appState.addRecipe(recipe)
+        await recipeDomainService.addRecipe(recipe, state: appState)
     }
 
     func updateRecipe(_ recipe: Recipe) async {
-        await appState.updateRecipe(recipe)
+        await recipeDomainService.updateRecipe(recipe, state: appState)
     }
 
     func deleteRecipe(_ recipe: Recipe) async {
-        await appState.deleteRecipe(recipe)
+        await recipeDomainService.deleteRecipe(recipe, state: appState)
     }
 
     func toggleFavoriteWithSave(_ recipe: Recipe) async {
-        await appState.toggleFavoriteWithSave(recipe)
+        await recipeDomainService.toggleFavoriteWithSave(recipe, state: appState)
     }
 
     // MARK: - AI / Import
 
     func generateRecipe(query: String, preferences: RecipeGenerationPreferences) async -> AppState.NormalizedAIRecipe? {
-        guard let recipe = await appState.generateRecipe(query: query, preferences: preferences) else {
+        guard let recipe = await recipeDomainService.generateRecipe(query: query, preferences: preferences, state: appState) else {
             return nil
         }
 
-        return await appState.cacheDiscoverRecipe(recipe)
+        return await recipeDomainService.cacheDiscoverRecipe(recipe, state: appState)
     }
 
     func importRecipeFromURL(_ urlString: String) async -> AppState.ReviewableImportedRecipe? {
-        await appState.importRecipeFromURL(urlString)
+        await recipeDomainService.importRecipeFromURL(urlString, state: appState)
     }
 
     func importRecipeFromText(_ text: String) async -> AppState.ReviewableImportedRecipe? {
-        await appState.importRecipeFromText(text)
+        await recipeDomainService.importRecipeFromText(text, state: appState)
     }
 
     func modifyRecipe(_ recipe: Recipe, feedback: String) async -> AppState.NormalizedAIRecipe? {
-        await appState.modifyRecipe(recipe, feedback: feedback)
+        await recipeDomainService.modifyRecipe(recipe, feedback: feedback, state: appState)
     }
 
     func cacheDiscoverRecipe(_ recipe: Recipe) async -> Recipe? {
-        await appState.cacheDiscoverRecipe(recipe)
+        await recipeDomainService.cacheDiscoverRecipe(recipe, state: appState)
     }
 }
 
 @MainActor
 extension AppState {
     var recipeGateway: any RecipeGatewayProtocol {
-        RecipeGateway(appState: self)
+        RecipeGateway(appState: self, recipeDomainService: recipeDomainService)
     }
 }

@@ -89,14 +89,18 @@ final class AppState {
     let pantryItemPreferenceStore: PantryItemPreferenceStoreProtocol
     let ingredientCandidateParser: IngredientCandidateParserProtocol
     let recipeIngredientResolver: RecipeIngredientResolverProtocol
+    let recipeDomainService: any RecipeDomainServicing
     let recipeRepository: RecipeCatalogProviding
     let substitutionRepository: any SubstitutionProviding
     let cookingSessionStore: CookingSessionStoreProtocol
     let cookModePreferenceStore: CookModePreferenceStoreProtocol
     let notificationService: CookNotificationServiceProtocol
     let telemetryReporter: any TelemetryReporting
+    let pantryDomainService: any PantryDomainServicing
+    let preparedDishDomainService: any PreparedDishDomainServicing
     let shoppingDomainService: any ShoppingDomainServicing
     let mealPlanDomainService: any MealPlanDomainServicing
+    let cookQueueDomainService: any CookQueueDomainServicing
 
     // MARK: - Shared State
     var pantryItems: [PantryItem] = []
@@ -127,42 +131,6 @@ final class AppState {
 
     /// Tracks all active cooking sessions for the UI.
     let activeCooks: ActiveCooksManaging
-
-    struct PantryCookReviewAccumulator {
-        let pantryItem: PantryItem
-        var matchedIngredientNames: [String] = []
-        var matchedIngredientTexts: [String] = []
-        var subtractQuantity: Double = 0
-        var subtractionFailed = false
-
-        mutating func append(_ ingredient: Ingredient, subtractableAmount: Double?) {
-            if !matchedIngredientNames.contains(ingredient.displayName) {
-                matchedIngredientNames.append(ingredient.displayName)
-            }
-            matchedIngredientTexts.append(ingredient.displayText)
-
-            guard pantryItem.isTrackingExactQuantity else {
-                return
-            }
-
-            guard let subtractableAmount else {
-                subtractionFailed = true
-                return
-            }
-
-            subtractQuantity += subtractableAmount
-        }
-
-        func build() -> PantryCookReviewItem {
-            PantryCookReviewItem(
-                pantryItem: pantryItem,
-                matchedIngredientNames: matchedIngredientNames,
-                matchedIngredientTexts: matchedIngredientTexts,
-                subtractQuantity: pantryItem.isTrackingExactQuantity && !subtractionFailed ? subtractQuantity : nil,
-                subtractUnit: pantryItem.isTrackingExactQuantity ? pantryItem.unit : nil
-            )
-        }
-    }
 
     // MARK: - Computed
     var expiringItems: [PantryItem] {
@@ -362,8 +330,12 @@ final class AppState {
         let cookingSessionStore = UserDefaultsCookingSessionStore()
         let cookModePreferenceStore = UserDefaultsCookModePreferenceStore()
         let telemetryReporter = AppTelemetryReporter()
+        let pantryDomainService = PantryDomainService()
+        let preparedDishDomainService = PreparedDishDomainService()
         let shoppingDomainService = ShoppingDomainService()
         let mealPlanDomainService = MealPlanDomainService()
+        let cookQueueDomainService = CookQueueDomainService()
+        let recipeDomainService = RecipeDomainService()
         self.pantryItemPreferenceStore = PantryItemPreferenceStore()
         self.storageService = StorageService(
             isStoredInMemoryOnly: launchOptions.useInMemoryStorage,
@@ -373,6 +345,7 @@ final class AppState {
         self.aiService = AIService(substitutionRepository: substitutionRepository, telemetryReporter: telemetryReporter)
         self.ingredientCandidateParser = IngredientCandidateParser()
         self.recipeIngredientResolver = RecipeIngredientResolver(candidateParser: ingredientCandidateParser, aiService: aiService)
+        self.recipeDomainService = recipeDomainService
         self.recipeRepository = RecipeRepository.shared
         self.substitutionRepository = substitutionRepository
         self.cookingSessionStore = cookingSessionStore
@@ -380,8 +353,11 @@ final class AppState {
         self.activeCooks = ActiveCooksManager(sessionStore: cookingSessionStore)
         self.notificationService = NotificationService()
         self.telemetryReporter = telemetryReporter
+        self.pantryDomainService = pantryDomainService
+        self.preparedDishDomainService = preparedDishDomainService
         self.shoppingDomainService = shoppingDomainService
         self.mealPlanDomainService = mealPlanDomainService
+        self.cookQueueDomainService = cookQueueDomainService
         IngredientMatcher.substitutionRepository = substitutionRepository
         pantryItems = launchOptions.seedPantryItems ? PantryItem.samples : []
         preparedDishes = []
@@ -400,6 +376,7 @@ final class AppState {
         ingredientCandidateParser: IngredientCandidateParserProtocol = IngredientCandidateParser(),
         pantryItemPreferenceStore: PantryItemPreferenceStoreProtocol = PantryItemPreferenceStore(),
         recipeIngredientResolver: RecipeIngredientResolverProtocol? = nil,
+        recipeDomainService: (any RecipeDomainServicing)? = nil,
         recipeRepository: RecipeCatalogProviding? = nil,
         substitutionRepository: any SubstitutionProviding = SubstitutionRepository.shared,
         cookingSessionStore: CookingSessionStoreProtocol? = nil,
@@ -407,8 +384,11 @@ final class AppState {
         activeCooks: ActiveCooksManaging? = nil,
         notificationService: CookNotificationServiceProtocol? = nil,
         telemetryReporter: any TelemetryReporting = AppTelemetryReporter(),
+        pantryDomainService: (any PantryDomainServicing)? = nil,
+        preparedDishDomainService: (any PreparedDishDomainServicing)? = nil,
         shoppingDomainService: (any ShoppingDomainServicing)? = nil,
         mealPlanDomainService: (any MealPlanDomainServicing)? = nil,
+        cookQueueDomainService: (any CookQueueDomainServicing)? = nil,
         shouldLoadOnInit: Bool = true
     ) {
         self.storageService = storageService
@@ -416,6 +396,7 @@ final class AppState {
         self.ingredientCandidateParser = ingredientCandidateParser
         self.pantryItemPreferenceStore = pantryItemPreferenceStore
         self.recipeIngredientResolver = recipeIngredientResolver ?? RecipeIngredientResolver(candidateParser: ingredientCandidateParser, aiService: aiService)
+        self.recipeDomainService = recipeDomainService ?? RecipeDomainService()
         let resolvedCookingSessionStore = cookingSessionStore ?? UserDefaultsCookingSessionStore()
         let resolvedCookModePreferenceStore = cookModePreferenceStore ?? UserDefaultsCookModePreferenceStore()
         self.recipeRepository = recipeRepository ?? RecipeRepository.shared
@@ -425,8 +406,11 @@ final class AppState {
         self.activeCooks = activeCooks ?? ActiveCooksManager(sessionStore: resolvedCookingSessionStore)
         self.notificationService = notificationService ?? NotificationService()
         self.telemetryReporter = telemetryReporter
+        self.pantryDomainService = pantryDomainService ?? PantryDomainService()
+        self.preparedDishDomainService = preparedDishDomainService ?? PreparedDishDomainService()
         self.shoppingDomainService = shoppingDomainService ?? ShoppingDomainService()
         self.mealPlanDomainService = mealPlanDomainService ?? MealPlanDomainService()
+        self.cookQueueDomainService = cookQueueDomainService ?? CookQueueDomainService()
         IngredientMatcher.substitutionRepository = substitutionRepository
         pantryItems = PantryItem.samples
         preparedDishes = []
