@@ -14,72 +14,70 @@ struct PreparedDishesView: View {
     var body: some View {
         @Bindable var viewModel = viewModel
 
-        let content = AppScreen("preparedDishes.screen", isEmbedded: isEmbedded) {
-            VStack(spacing: 0) {
-                searchAndFilters
+        let content = VStack(spacing: 0) {
+            searchAndFilters
 
-                if !viewModel.appState.preparedDishHistory.isEmpty {
-                    historySummaryCard
-                        .padding(.horizontal)
-                        .padding(.top, 8)
+            if !viewModel.appState.preparedDishHistory.isEmpty {
+                historySummaryCard
+                    .padding(.horizontal)
+                    .padding(.top, 8)
+            }
+
+            if viewModel.filteredDishes.isEmpty {
+                EmptyStateView(
+                    icon: "takeoutbag.and.cup.and.straw",
+                    title: "No prepared dishes",
+                    message: "Track leftovers, takeout, and ready-to-eat meals.",
+                    actionTitle: "Add Prepared Dish"
+                ) {
+                    presentSingleAdd()
                 }
-
-                if viewModel.filteredDishes.isEmpty {
-                    EmptyStateView(
-                        icon: "takeoutbag.and.cup.and.straw",
-                        title: "No prepared dishes",
-                        message: "Track leftovers, takeout, and ready-to-eat meals.",
-                        actionTitle: "Add Prepared Dish"
-                    ) {
-                        presentSingleAdd()
-                    }
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                } else {
-                    AppList {
-                        ForEach(viewModel.filteredDishes) { dish in
-                            HStack(spacing: 12) {
-                                Button {
-                                    viewModel.selectedDish = dish
-                                } label: {
-                                    PreparedDishRow(dish: dish)
-                                        .contentShape(Rectangle())
-                                }
-                                .buttonStyle(.plain)
-
-                                Button {
-                                    viewModel.consumeServing(dish)
-                                } label: {
-                                    quickAdjustButton(for: dish)
-                                }
-                                .buttonStyle(.plain)
-                                .accessibilityLabel(dish.servingsRemaining == 1 ? "Finish prepared dish" : "Use one serving")
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+            } else {
+                AppList {
+                    ForEach(viewModel.filteredDishes) { dish in
+                        HStack(spacing: 12) {
+                            Button {
+                                viewModel.selectedDish = dish
+                            } label: {
+                                PreparedDishRow(dish: dish)
+                                    .contentShape(Rectangle())
                             }
-                            .swipeActions(edge: .trailing) {
-                                Button(role: .destructive) {
-                                    viewModel.deleteDish(dish)
-                                } label: {
-                                    Label("Delete", systemImage: "trash")
-                                }
+                            .buttonStyle(.plain)
 
-                                Button {
-                                    viewModel.editingDish = dish
-                                } label: {
-                                    Label("Edit", systemImage: "pencil")
-                                }
-                                .tint(PCColors.info)
+                            Button {
+                                viewModel.consumeServing(dish)
+                            } label: {
+                                quickAdjustButton(for: dish)
                             }
-                            .swipeActions(edge: .leading, allowsFullSwipe: false) {
-                                Button {
-                                    viewModel.addServing(dish)
-                                } label: {
-                                    Label("Add Serving", systemImage: "plus")
-                                }
-                                .tint(PCColors.accent)
+                            .buttonStyle(.plain)
+                            .accessibilityLabel(dish.servingsRemaining == 1 ? "Finish prepared dish" : "Use one serving")
+                        }
+                        .swipeActions(edge: .trailing) {
+                            Button(role: .destructive) {
+                                viewModel.deleteDish(dish)
+                            } label: {
+                                Label("Delete", systemImage: "trash")
                             }
+
+                            Button {
+                                viewModel.editingDish = dish
+                            } label: {
+                                Label("Edit", systemImage: "pencil")
+                            }
+                            .tint(PCColors.info)
+                        }
+                        .swipeActions(edge: .leading, allowsFullSwipe: false) {
+                            Button {
+                                viewModel.addServing(dish)
+                            } label: {
+                                Label("Add Serving", systemImage: "plus")
+                            }
+                            .tint(PCColors.accent)
                         }
                     }
-                    .listStyle(.insetGrouped)
                 }
+                .listStyle(.insetGrouped)
             }
         }
         .overlay(alignment: .bottom) {
