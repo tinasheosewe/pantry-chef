@@ -17,8 +17,14 @@ struct ShoppingListView: View {
     var body: some View {
         AppScreen("shopping.screen", isEmbedded: isEmbedded) {
             VStack(spacing: 0) {
+                shoppingHeader
+                    .padding(.horizontal)
+                    .padding(.top, 12)
+
                 if !viewModel.items.isEmpty {
                     progressHeader
+                        .padding(.horizontal)
+                        .padding(.top, 12)
                 }
 
                 if viewModel.items.isEmpty {
@@ -104,8 +110,63 @@ struct ShoppingListView: View {
             }
             .frame(height: 6)
         }
-        .padding()
+        .padding(16)
         .background(PCColors.cardBackground)
+        .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: 20, style: .continuous)
+                .stroke(PCColors.glassStroke, lineWidth: 1)
+        )
+    }
+
+    private var shoppingHeader: some View {
+        let totalItems = viewModel.totalCount
+        let checkedItems = viewModel.checkedCount
+        let categories = Set(viewModel.items.map(\.category)).count
+
+        return VStack(alignment: .leading, spacing: 18) {
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Provisioning")
+                    .font(.caption)
+                    .fontWeight(.semibold)
+                    .foregroundStyle(PCColors.textSecondary)
+                    .textCase(.uppercase)
+                    .tracking(1.2)
+
+                Text("Shopping")
+                    .font(.system(size: 30, weight: .semibold, design: .rounded))
+                    .foregroundStyle(PCColors.textPrimary)
+
+                Text("Build the next pantry refill from catalog-backed items and convert checked purchases into clean inventory records.")
+                    .font(.subheadline)
+                    .foregroundStyle(PCColors.textSecondary)
+            }
+
+            HStack(spacing: 10) {
+                ShoppingStatPill(value: "\(totalItems)", label: "Queued", tint: PCColors.accent)
+                ShoppingStatPill(value: "\(checkedItems)", label: "Picked", tint: PCColors.fresh)
+                ShoppingStatPill(value: "\(categories)", label: "Aisles", tint: PCColors.info)
+            }
+        }
+        .padding(20)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(
+            LinearGradient(
+                colors: [
+                    PCColors.cardBackground,
+                    PCColors.accent.opacity(0.14),
+                    PCColors.fresh.opacity(0.08)
+                ],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+        )
+        .clipShape(RoundedRectangle(cornerRadius: 28, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: 28, style: .continuous)
+                .stroke(PCColors.glassStroke, lineWidth: 1)
+        )
+        .shadow(color: Color.black.opacity(0.22), radius: 24, x: 0, y: 14)
     }
 
     // MARK: - Shopping List
@@ -163,6 +224,28 @@ struct ShoppingListView: View {
     private func presentPantryReview() {
         pantryReviewItems = viewModel.checkedItems
         showPantryReview = !pantryReviewItems.isEmpty
+    }
+}
+
+private struct ShoppingStatPill: View {
+    let value: String
+    let label: String
+    let tint: Color
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 3) {
+            Text(value)
+                .font(.headline)
+                .foregroundStyle(PCColors.textPrimary)
+            Text(label)
+                .font(.caption2)
+                .foregroundStyle(PCColors.textSecondary)
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 10)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(tint.opacity(0.12))
+        .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
     }
 }
 

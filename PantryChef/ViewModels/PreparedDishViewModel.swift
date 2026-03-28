@@ -100,11 +100,23 @@ final class PreparedDishViewModel: AsyncActionHandling {
         }
     }
 
+    func addServing(_ dish: PreparedDish) {
+        runTask { [self] in
+            guard let currentDish = appState.preparedDishById(dish.id) else { return }
+
+            _ = await preparedDishActions.adjustServings(currentDish, delta: 1)
+            if let updatedDish = appState.preparedDishById(dish.id) {
+                let remainingText = updatedDish.servingsRemaining == 1 ? "1 serving ready" : "\(updatedDish.servingsRemaining) servings ready"
+                presentFeedback("Added 1 serving to \(updatedDish.name). \(remainingText).")
+            }
+        }
+    }
+
     func consumeServing(_ dish: PreparedDish) {
         runTask { [self] in
             guard let currentDish = appState.preparedDishById(dish.id) else { return }
 
-            let removed = await appState.adjustPreparedDishServings(currentDish, delta: -1)
+            let removed = await preparedDishActions.adjustServings(currentDish, delta: -1)
             if removed {
                 presentFeedback("Finished \(currentDish.name). Removed from Prepared Food.")
             } else if let updatedDish = appState.preparedDishById(dish.id) {

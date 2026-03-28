@@ -162,7 +162,6 @@ struct Recipe: Identifiable, Codable, Hashable {
     var cuisine: CuisineType?
     var source: RecipeSource
     var nutrition: NutritionInfo?
-    var imageURL: String?
     var sourceURL: String?
     var isFavorite: Bool
     var dateAdded: Date
@@ -184,7 +183,6 @@ struct Recipe: Identifiable, Codable, Hashable {
         cuisine: CuisineType? = nil,
         source: RecipeSource = .user,
         nutrition: NutritionInfo? = nil,
-        imageURL: String? = nil,
         sourceURL: String? = nil,
         isFavorite: Bool = false,
         dateAdded: Date = Date(),
@@ -205,7 +203,6 @@ struct Recipe: Identifiable, Codable, Hashable {
         self.cuisine = cuisine
         self.source = source
         self.nutrition = nutrition
-        self.imageURL = imageURL
         self.sourceURL = sourceURL
         self.isFavorite = isFavorite
         self.dateAdded = dateAdded

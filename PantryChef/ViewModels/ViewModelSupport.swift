@@ -59,16 +59,20 @@ extension AsyncActionHandling {
 struct PantryActions {
     let appState: AppState
 
+    private var inventoryGateway: InventoryGateway {
+        appState.inventoryGateway
+    }
+
     func addItem(_ item: PantryItem) async {
-        await appState.addPantryItem(item)
+        await inventoryGateway.upsertPantryItem(item)
     }
 
     func deleteItem(_ item: PantryItem) async {
-        await appState.removePantryItem(item)
+        await inventoryGateway.removePantryItem(item)
     }
 
     func updateItem(_ item: PantryItem) async {
-        await appState.updatePantryItem(item)
+        await inventoryGateway.upsertPantryItem(item)
     }
 
     @discardableResult
@@ -76,7 +80,7 @@ struct PantryActions {
         var addedCount = 0
         for draft in drafts {
             guard let item = draft.buildItem() else { continue }
-            await appState.addPantryItem(item)
+            await inventoryGateway.upsertPantryItem(item)
             addedCount += 1
         }
         return addedCount
@@ -87,37 +91,37 @@ struct PantryActions {
 struct ShoppingActions {
     let appState: AppState
 
+    private var inventoryGateway: InventoryGateway {
+        appState.inventoryGateway
+    }
+
     func toggleItem(_ item: ShoppingItem) async {
-        await appState.toggleShoppingItem(item)
+        await inventoryGateway.toggleShoppingItem(item)
     }
 
     func removeCheckedItems() async {
-        await appState.removeCheckedShoppingItems()
+        await inventoryGateway.removeCheckedShoppingItems()
     }
 
     func addItem(_ item: ShoppingItem) async {
-        await appState.addShoppingItem(item)
+        await inventoryGateway.upsertShoppingItem(item)
     }
 
     func removeItem(_ item: ShoppingItem) async {
-        await appState.removeShoppingItem(item)
+        await inventoryGateway.removeShoppingItem(item)
     }
 
     func updateItem(_ item: ShoppingItem) async {
-        await appState.updateShoppingItem(item)
+        await inventoryGateway.upsertShoppingItem(item)
     }
 
     func completeCheckedToPantry(with items: [ShoppingItem]) async {
-        await appState.replaceShoppingItems(items)
+        await inventoryGateway.replaceShoppingItems(items)
         await addCheckedToPantry()
     }
 
     func addCheckedToPantry() async {
-        let checkedItems = appState.shoppingItems.filter { $0.isChecked }
-        for item in checkedItems {
-            await appState.addPantryItem(item.pantryItemForTransfer())
-        }
-        await appState.removeCheckedShoppingItems()
+        await inventoryGateway.transferCheckedShoppingItemsToPantry()
     }
 }
 
@@ -125,59 +129,49 @@ struct ShoppingActions {
 struct MealPlanActions {
     let appState: AppState
 
+    private var mealPlanGateway: MealPlanGateway {
+        appState.mealPlanGateway
+    }
+
     func assignRecipe(_ recipe: Recipe, to slot: MealPlanViewModel.MealSlot) async {
-        let entry = MealPlanEntry(
-            date: slot.date,
-            mealType: slot.mealType,
-            recipe: recipe
-        )
-        await appState.addToMealPlan(entry, replaceExistingSlot: slot.replaceExisting)
+        await mealPlanGateway.planRecipe(recipe, on: slot.date, mealType: slot.mealType, replaceExisting: slot.replaceExisting)
     }
 
     func assignPreparedDish(_ dish: PreparedDish, to slot: MealPlanViewModel.MealSlot) async {
-        let entry = MealPlanEntry(
-            date: slot.date,
-            mealType: slot.mealType,
-            preparedDish: dish,
-            plannedServings: 1
-        )
-        await appState.addToMealPlan(entry, replaceExistingSlot: slot.replaceExisting)
+        await mealPlanGateway.planPreparedDish(dish, on: slot.date, mealType: slot.mealType, replaceExisting: slot.replaceExisting)
     }
 
     func assignSelections(_ selections: [MealSelectionItem], to slot: MealPlanViewModel.MealSlot) async {
-        let entries = selections.map { $0.makeEntry(date: slot.date, mealType: slot.mealType) }
-        await appState.addToMealPlan(entries, replaceExistingSlot: slot.replaceExisting)
+        await mealPlanGateway.planSelections(selections, on: slot.date, mealType: slot.mealType, replaceExisting: slot.replaceExisting)
     }
 
     func removeEntry(_ entry: MealPlanEntry) async {
-        await appState.removeFromMealPlan(entry)
+        await mealPlanGateway.removeEntries([entry])
     }
 
     func removeEntries(_ entries: [MealPlanEntry]) async {
-        for entry in entries {
-            await appState.removeFromMealPlan(entry)
-        }
+        await mealPlanGateway.removeEntries(entries)
     }
 
     func updateEntry(_ entry: MealPlanEntry) async {
-        await appState.updateMealPlanEntry(entry)
+        await mealPlanGateway.updateEntry(entry)
     }
 
     func logEntriesEaten(_ selections: [MealPlanEatenLoggingSelection]) async {
-        await appState.logMealPlanEntriesEaten(selections)
+        await mealPlanGateway.logEntriesEaten(selections)
     }
 
     func generateShoppingList() async {
-        await appState.generateShoppingListFromMealPlan()
+        let items = appState.previewShoppingListFromMealPlan()
+        await mealPlanGateway.addShoppingItems(items)
     }
 
     func addShoppingItems(_ items: [ShoppingItem]) async {
-        await appState.addShoppingItems(items)
+        await mealPlanGateway.addShoppingItems(items)
     }
 
     func addEntriesToCookQueue(_ entries: [MealPlanEntry], asParallelBatch: Bool) async {
-        let recipes = entries.compactMap(\.scaledRecipeForPlanning)
-        await appState.addRecipesToCookQueue(recipes, asParallelBatch: asParallelBatch, sourceEntries: entries)
+        await mealPlanGateway.addEntriesToCookQueue(entries, asParallelBatch: asParallelBatch)
     }
 }
 
@@ -185,16 +179,20 @@ struct MealPlanActions {
 struct RecipeActions {
     let appState: AppState
 
+    private var recipeGateway: RecipeGateway {
+        appState.recipeGateway
+    }
+
     func addRecipe(_ recipe: Recipe) async {
-        await appState.addRecipe(recipe)
+        await recipeGateway.addRecipe(recipe)
     }
 
     func deleteRecipe(_ recipe: Recipe) async {
-        await appState.deleteRecipe(recipe)
+        await recipeGateway.deleteRecipe(recipe)
     }
 
     func toggleFavorite(_ recipe: Recipe) async {
-        await appState.toggleFavoriteWithSave(recipe)
+        await recipeGateway.toggleFavoriteWithSave(recipe)
     }
 }
 
@@ -202,15 +200,23 @@ struct RecipeActions {
 struct PreparedDishActions {
     let appState: AppState
 
+    private var inventoryGateway: InventoryGateway {
+        appState.inventoryGateway
+    }
+
     func addDish(_ dish: PreparedDish) async {
-        await appState.addPreparedDish(dish)
+        await inventoryGateway.upsertPreparedDish(dish)
     }
 
     func updateDish(_ dish: PreparedDish) async {
-        await appState.updatePreparedDish(dish)
+        await inventoryGateway.upsertPreparedDish(dish)
     }
 
     func deleteDish(_ dish: PreparedDish) async {
-        await appState.removePreparedDish(dish)
+        await inventoryGateway.removePreparedDish(dish)
+    }
+
+    func adjustServings(_ dish: PreparedDish, delta: Int) async -> Bool {
+        await inventoryGateway.adjustPreparedDishServings(dish, delta: delta)
     }
 }

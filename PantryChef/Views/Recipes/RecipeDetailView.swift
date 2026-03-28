@@ -200,7 +200,7 @@ struct RecipeDetailView: View {
                 Button {
                     recipe.isFavorite.toggle()
                     Task {
-                        await appState.toggleFavoriteWithSave(recipe)
+                        await appState.recipeGateway.toggleFavoriteWithSave(recipe)
                     }
                 } label: {
                     Image(systemName: recipe.isFavorite ? "heart.fill" : "heart")
@@ -511,7 +511,7 @@ struct RecipeDetailView: View {
             HStack(spacing: 12) {
                 ActionButton(icon: "list.number", title: "Add Queue", color: PCColors.info) {
                     Task {
-                        await appState.addRecipesToCookQueue([scaledRecipe], sourceEntries: [sourceMealPlanEntry].compactMap { $0 })
+                        await appState.cookGateway.addRecipesToQueue([scaledRecipe], asParallelBatch: false, sourceEntries: [sourceMealPlanEntry].compactMap { $0 })
                     }
                 }
 
@@ -651,7 +651,7 @@ struct RecipeDetailView: View {
 
     // MARK: - Modify Section
     private var modifySection: some View {
-        AppDetailCard("Recipe Adjustments", subtitle: "Prompt PantryChef to revise this recipe") {
+        AppDetailCard("Recipe Refinement", subtitle: "Tune this recipe without leaving the flow") {
             Button {
                 withAnimation(.easeInOut(duration: 0.25)) {
                     showModify.toggle()
@@ -664,7 +664,7 @@ struct RecipeDetailView: View {
                     Image(systemName: "wand.and.stars")
                         .font(.subheadline)
                         .foregroundStyle(PCColors.teal)
-                    Text("Modify Recipe")
+                    Text("Refine Recipe")
                         .font(.subheadline)
                         .fontWeight(.medium)
                         .foregroundStyle(PCColors.textPrimary)
@@ -677,7 +677,7 @@ struct RecipeDetailView: View {
 
             if showModify {
                 VStack(alignment: .leading, spacing: 10) {
-                    Text("Describe what you'd like changed — be as specific or vague as you want.")
+                    Text("Set the direction and PantryChef will revise the recipe for you.")
                         .font(.caption)
                         .foregroundStyle(PCColors.textSecondary)
 
@@ -748,7 +748,7 @@ struct RecipeDetailView: View {
     private func performModify() async {
         hideKeyboard()
         isModifying = true
-        if let normalizedRecipe = await appState.modifyRecipe(recipe, feedback: modifyText) {
+        if let normalizedRecipe = await appState.recipeGateway.modifyRecipe(recipe, feedback: modifyText) {
             withAnimation {
                 recipe = normalizedRecipe.recipe
                 servings = normalizedRecipe.recipe.servings
@@ -757,7 +757,7 @@ struct RecipeDetailView: View {
             showModify = false
             // Persist if it's a saved recipe
             if appState.recipes.contains(where: { $0.id == recipe.id }) {
-                await appState.updateRecipe(normalizedRecipe.recipe)
+                await appState.recipeGateway.updateRecipe(normalizedRecipe.recipe)
             }
         } else {
             actionErrorMessage = "Couldn't modify the recipe. Please try again."
@@ -770,14 +770,14 @@ struct RecipeDetailView: View {
         servings = saved.servings
         showEditor = false
         Task {
-            await appState.updateRecipe(saved)
+            await appState.recipeGateway.updateRecipe(saved)
         }
     }
 
     private func handleSavedRecipeAsNew(_ newRecipe: Recipe) {
         showEditor = false
         Task {
-            await appState.addRecipe(newRecipe)
+            await appState.recipeGateway.addRecipe(newRecipe)
         }
     }
 
@@ -1099,7 +1099,7 @@ struct ShoppingPreviewView: View {
                     Button("Add to Shopping List") {
                         let itemsToAdd = items
                         Task {
-                            await appState.addShoppingItems(itemsToAdd)
+                            await appState.inventoryGateway.addShoppingItems(itemsToAdd)
                             dismiss()
                         }
                     }
@@ -1243,12 +1243,12 @@ struct AddRecipeView: View {
                             HStack(spacing: 8) {
                                 ProgressView()
                                     .tint(.white)
-                                Text("Parsing recipe...")
+                                Text("Building recipe...")
                             }
                         } else {
                             HStack(spacing: 6) {
-                                Image(systemName: "sparkles")
-                                Text("Parse Recipe")
+                                Image(systemName: "wand.and.stars")
+                                Text("Build Recipe")
                             }
                         }
                     }
@@ -1271,17 +1271,18 @@ struct AddRecipeView: View {
     private func parseInput() async {
         isParsing = true
         errorMessage = nil
+        let recipeGateway = appState.recipeGateway
 
         let text = inputText.trimmed
 
         if text.isValidURL {
-            if let recipe = await appState.importRecipeFromURL(text) {
+            if let recipe = await recipeGateway.importRecipeFromURL(text) {
                 importedRecipeDraft = recipe
             } else {
                 errorMessage = "Couldn't parse recipe from that URL. Try pasting the recipe text instead."
             }
         } else {
-            if let recipe = await appState.importRecipeFromText(text) {
+            if let recipe = await recipeGateway.importRecipeFromText(text) {
                 importedRecipeDraft = recipe
             } else {
                 errorMessage = "Couldn't parse the text into a recipe. Try including a title, ingredients, and steps."

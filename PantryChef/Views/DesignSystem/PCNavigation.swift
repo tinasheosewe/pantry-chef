@@ -13,8 +13,6 @@ struct PCTabBar: View {
                 miniPlayerContent
             }
 
-            Divider()
-
             HStack(spacing: 0) {
                 ForEach(RootTab.allCases, id: \.self) { tab in
                     Button {
@@ -39,7 +37,19 @@ struct PCTabBar: View {
                 }
             }
             .padding(.horizontal, PCTokens.spacingSM)
-            .background(.ultraThinMaterial)
+            .padding(.top, PCTokens.spacingXS)
+            .padding(.bottom, PCTokens.spacingSM)
+            .background(PCColors.cardBackground.opacity(0.94))
+            .overlay(alignment: .top) {
+                Rectangle()
+                    .fill(PCColors.separator)
+                    .frame(height: 1)
+            }
+            .overlay {
+                RoundedRectangle(cornerRadius: 0)
+                    .stroke(PCColors.glassStroke, lineWidth: 1)
+                    .opacity(0.55)
+            }
         }
     }
 }
@@ -80,6 +90,11 @@ struct PCMiniPlayer: View {
             .padding(.horizontal, PCTokens.spacingLG)
             .padding(.vertical, PCTokens.spacingMD)
             .background(PCColors.cardBackground)
+            .overlay(
+                RoundedRectangle(cornerRadius: PCTokens.cornerRadius)
+                    .stroke(PCColors.glassStroke, lineWidth: 1)
+            )
+            .clipShape(RoundedRectangle(cornerRadius: PCTokens.cornerRadius))
             .pcCardShadow()
         }
         .buttonStyle(.plain)

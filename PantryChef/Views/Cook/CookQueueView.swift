@@ -80,7 +80,7 @@ struct CookQueueView: View {
                     ToolbarItem(placement: .primaryAction) {
                         Button("Clear") {
                             Task {
-                                await appState.clearCookQueue()
+                                await appState.cookGateway.clearQueue()
                             }
                         }
                         .foregroundStyle(PCColors.expired)
@@ -206,7 +206,7 @@ struct CookQueueView: View {
 
                     Button {
                         Task {
-                            await appState.skipCookQueueStage(stage.id)
+                            await appState.cookGateway.skipStage(stage.id)
                         }
                     } label: {
                         Text("Skip")
@@ -222,7 +222,7 @@ struct CookQueueView: View {
                 Menu {
                     Button {
                         Task {
-                            await appState.moveCookQueueStage(stage.id, by: -1)
+                            await appState.cookGateway.moveStage(stage.id, by: -1)
                         }
                     } label: {
                         Label("Move Earlier", systemImage: "arrow.up")
@@ -231,7 +231,7 @@ struct CookQueueView: View {
 
                     Button {
                         Task {
-                            await appState.moveCookQueueStage(stage.id, by: 1)
+                            await appState.cookGateway.moveStage(stage.id, by: 1)
                         }
                     } label: {
                         Label("Move Later", systemImage: "arrow.down")
@@ -240,7 +240,7 @@ struct CookQueueView: View {
 
                     Button {
                         Task {
-                            await appState.bundleCookQueueStageWithNext(stage.id)
+                            await appState.cookGateway.bundleStageWithNext(stage.id)
                         }
                     } label: {
                         Label("Bundle With Next", systemImage: "square.stack.3d.up")
@@ -249,7 +249,7 @@ struct CookQueueView: View {
 
                     Button {
                         Task {
-                            await appState.splitCookQueueStage(stage.id)
+                            await appState.cookGateway.splitStage(stage.id)
                         }
                     } label: {
                         Label("Split Batch", systemImage: "square.split.2x1")
@@ -268,7 +268,7 @@ struct CookQueueView: View {
 
                 Button {
                     Task {
-                        await appState.removeCookQueueStage(stage.id)
+                        await appState.cookGateway.removeStage(stage.id)
                     }
                 } label: {
                     Text("Remove")
@@ -322,7 +322,7 @@ struct CookQueueView: View {
     private func performLaunchStage(_ stage: CookQueueStage) {
         launchingStage = stage
         Task {
-            await appState.startCookQueueStage(stage.id)
+            await appState.cookGateway.startStage(stage.id)
             let recipes = appState.resolvedRecipes(for: stage)
             guard !recipes.isEmpty else { return }
 

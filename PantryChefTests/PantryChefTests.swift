@@ -393,7 +393,6 @@ final class PantryItemModelTests: XCTestCase {
         XCTAssertEqual(item.quantityMode, .presenceOnly)
         XCTAssertNil(item.expiryDate)
         XCTAssertNil(item.notes)
-        XCTAssertNil(item.imageURL)
         XCTAssertNotNil(item.id)
     }
 
@@ -405,8 +404,7 @@ final class PantryItemModelTests: XCTestCase {
             quantity: 12,
             unit: .piece,
             expiryDate: expiry,
-            notes: "Free range",
-            imageURL: "https://example.com/eggs.jpg"
+            notes: "Free range"
         )
         XCTAssertEqual(item.name, "Egg")
         XCTAssertEqual(item.category, .protein)
@@ -1996,7 +1994,6 @@ final class AIModelTests: XCTestCase {
             servings: 2,
             prepTimeMinutes: 5,
             cookTimeMinutes: 10,
-            imageURL: nil,
             dietaryTags: [.vegan],
             difficulty: .medium,
             mealType: .snack,
@@ -2023,7 +2020,6 @@ final class AIModelTests: XCTestCase {
             servings: nil,
             prepTimeMinutes: nil,
             cookTimeMinutes: nil,
-            imageURL: nil,
             dietaryTags: nil,
             difficulty: nil,
             mealType: nil,
@@ -3064,7 +3060,6 @@ final class AppStateTests: XCTestCase {
             cuisine: discoverRecipe.cuisine,
             source: .user,
             nutrition: discoverRecipe.nutrition,
-            imageURL: discoverRecipe.imageURL,
             sourceURL: discoverRecipe.sourceURL,
             isFavorite: true,
             dateAdded: discoverRecipe.dateAdded,
@@ -3749,7 +3744,6 @@ final class AppStateTests: XCTestCase {
             servings: 4,
             prepTimeMinutes: nil,
             cookTimeMinutes: nil,
-            imageURL: nil,
             dietaryTags: nil,
             difficulty: nil,
             mealType: nil,
@@ -3775,7 +3769,6 @@ final class AppStateTests: XCTestCase {
             servings: 4,
             prepTimeMinutes: nil,
             cookTimeMinutes: nil,
-            imageURL: nil,
             dietaryTags: nil,
             difficulty: nil,
             mealType: nil,
@@ -4240,7 +4233,6 @@ final class RecipeViewModelTests: XCTestCase {
             servings: 4,
             prepTimeMinutes: nil,
             cookTimeMinutes: nil,
-            imageURL: nil,
             dietaryTags: nil,
             difficulty: nil,
             mealType: nil,

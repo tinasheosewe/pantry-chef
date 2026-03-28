@@ -104,7 +104,6 @@ struct RecipeImportResult: Codable {
     let servings: Int?
     let prepTimeMinutes: Int?
     let cookTimeMinutes: Int?
-    let imageURL: String?
     let dietaryTags: [DietaryTag]?
     let difficulty: DifficultyLevel?
     let mealType: MealType?
@@ -126,7 +125,7 @@ struct RecipeImportResult: Codable {
             cuisine: cuisine,
             source: source,
             nutrition: nutrition,
-            imageURL: imageURL
+            sourceURL: nil
         )
         .completed()
     }
@@ -173,7 +172,6 @@ struct RawImportResult: Decodable {
             servings: servings,
             prepTimeMinutes: prepTimeMinutes,
             cookTimeMinutes: cookTimeMinutes,
-            imageURL: nil,
             dietaryTags: convertedTags,
             difficulty: convertedDifficulty,
             mealType: convertedMealType,
@@ -252,7 +250,6 @@ struct RawFullRecipe: Decodable {
             cuisine: cu ?? original?.cuisine,
             source: source,
             nutrition: nutrition ?? original?.nutrition,
-            imageURL: original?.imageURL,
             sourceURL: original?.sourceURL,
             isFavorite: original?.isFavorite ?? false,
             dateAdded: original?.dateAdded ?? Date(),

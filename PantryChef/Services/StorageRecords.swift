@@ -2,7 +2,7 @@ import Foundation
 import SwiftData
 
 enum StorageSchema {
-    static let currentVersion = 14
+    static let currentVersion = 15
 }
 
 @Model
@@ -16,7 +16,6 @@ final class PantryItemRecord {
     var expiryDate: Date?
     var dateAdded: Date
     var notes: String?
-    var imageURL: String?
     var catalogItemID: String?
     var storageRawValue: String
     var freshnessSourceRawValue: String
@@ -35,7 +34,6 @@ final class PantryItemRecord {
         expiryDate = item.expiryDate
         dateAdded = item.dateAdded
         notes = item.notes
-        imageURL = item.imageURL
         catalogItemID = item.catalogItemID
         storageRawValue = item.storage.rawValue
         freshnessSourceRawValue = item.freshnessSource.rawValue
@@ -52,7 +50,6 @@ final class PantryItemRecord {
         expiryDate = item.expiryDate
         dateAdded = item.dateAdded
         notes = item.notes
-        imageURL = item.imageURL
         catalogItemID = item.catalogItemID
         storageRawValue = item.storage.rawValue
         freshnessSourceRawValue = item.freshnessSource.rawValue
@@ -70,7 +67,6 @@ final class PantryItemRecord {
             expiryDate: expiryDate,
             dateAdded: dateAdded,
             notes: notes,
-            imageURL: imageURL,
             catalogItemID: catalogItemID,
             facets: facetRecords
                 .sorted { $0.sortIndex < $1.sortIndex }
@@ -262,7 +258,6 @@ final class RecipeRecord {
     var cuisineRawValue: String?
     var sourceKind: String
     var sourceExternalId: Int?
-    var imageURL: String?
     var sourceURL: String?
     var isFavorite: Bool
     var dateAdded: Date
@@ -296,7 +291,6 @@ final class RecipeRecord {
         cuisineRawValue = recipe.cuisine?.rawValue
         sourceKind = RecipeSourceCodec.kind(from: recipe.source)
         sourceExternalId = RecipeSourceCodec.externalId(from: recipe.source)
-        imageURL = recipe.imageURL
         sourceURL = recipe.sourceURL
         isFavorite = recipe.isFavorite
         dateAdded = recipe.dateAdded
@@ -331,7 +325,6 @@ final class RecipeRecord {
         cuisineRawValue = recipe.cuisine?.rawValue
         sourceKind = RecipeSourceCodec.kind(from: recipe.source)
         sourceExternalId = RecipeSourceCodec.externalId(from: recipe.source)
-        imageURL = recipe.imageURL
         sourceURL = recipe.sourceURL
         isFavorite = recipe.isFavorite
         dateAdded = recipe.dateAdded
@@ -396,7 +389,6 @@ final class RecipeRecord {
             cuisine: cuisineRawValue.flatMap { CuisineType(rawValue: $0) },
             source: source,
             nutrition: nutrition,
-            imageURL: imageURL,
             sourceURL: sourceURL,
             isFavorite: isFavorite,
             dateAdded: dateAdded,

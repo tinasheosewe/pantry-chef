@@ -15,7 +15,13 @@ struct PantryView: View {
         @Bindable var viewModel = viewModel
         AppScreen("pantry.screen", isEmbedded: isEmbedded) {
             VStack(spacing: 0) {
+                pantryHeader(viewModel: viewModel)
+                    .padding(.horizontal)
+                    .padding(.top, 12)
+
                 searchAndSortBar
+                    .padding(.horizontal)
+                    .padding(.top, 12)
 
                 if viewModel.appState.pantryItems.isEmpty {
                     EmptyStateView(
@@ -57,6 +63,56 @@ struct PantryView: View {
                 }
             }
         }
+    }
+
+    private func pantryHeader(viewModel: PantryViewModel) -> some View {
+        let totalItems = viewModel.appState.pantryItems.count
+        let expiringSoonCount = viewModel.appState.pantryItems.filter { $0.expiryStatus != .fresh }.count
+        let trackedCategories = Set(viewModel.appState.pantryItems.map(\.category)).count
+
+        return VStack(alignment: .leading, spacing: 18) {
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Kitchen Inventory")
+                    .font(.caption)
+                    .fontWeight(.semibold)
+                    .foregroundStyle(PCColors.textSecondary)
+                    .textCase(.uppercase)
+                    .tracking(1.2)
+
+                Text("Pantry")
+                    .font(.system(size: 30, weight: .semibold, design: .rounded))
+                    .foregroundStyle(PCColors.textPrimary)
+
+                Text("Keep staples, perishables, and defaults in one calm surface before they flow into planning and cooking.")
+                    .font(.subheadline)
+                    .foregroundStyle(PCColors.textSecondary)
+            }
+
+            HStack(spacing: 10) {
+                PantryStatPill(value: "\(totalItems)", label: "Items", tint: PCColors.accent)
+                PantryStatPill(value: "\(trackedCategories)", label: "Zones", tint: PCColors.info)
+                PantryStatPill(value: "\(expiringSoonCount)", label: "Watch", tint: expiringSoonCount == 0 ? PCColors.fresh : PCColors.expiring)
+            }
+        }
+        .padding(20)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(
+            LinearGradient(
+                colors: [
+                    PCColors.cardBackground,
+                    PCColors.accent.opacity(0.12),
+                    PCColors.info.opacity(0.08)
+                ],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+        )
+        .clipShape(RoundedRectangle(cornerRadius: 28, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: 28, style: .continuous)
+                .stroke(PCColors.glassStroke, lineWidth: 1)
+        )
+        .shadow(color: Color.black.opacity(0.22), radius: 24, x: 0, y: 14)
     }
 
     // MARK: - Search & Sort
@@ -120,6 +176,28 @@ struct PantryView: View {
         }
         .accessibilityIdentifier("pantry.list")
         .listStyle(.insetGrouped)
+    }
+}
+
+private struct PantryStatPill: View {
+    let value: String
+    let label: String
+    let tint: Color
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 3) {
+            Text(value)
+                .font(.headline)
+                .foregroundStyle(PCColors.textPrimary)
+            Text(label)
+                .font(.caption2)
+                .foregroundStyle(PCColors.textSecondary)
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 10)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(tint.opacity(0.12))
+        .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
     }
 }
 
@@ -281,7 +359,7 @@ struct AddPantryItemView: View {
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button(isEditing ? "Save" : "Add") {
-                        if let item = draft.buildItem(existingID: existingItem?.id, existingDateAdded: existingItem?.dateAdded, existingImageURL: existingItem?.imageURL) {
+                        if let item = draft.buildItem(existingID: existingItem?.id, existingDateAdded: existingItem?.dateAdded) {
                             onSave(item)
                             dismiss()
                         }

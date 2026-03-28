@@ -326,7 +326,7 @@ final class RecipeViewModel: AsyncActionHandling {
 
     func importFromURL(_ urlString: String, onComplete: (@MainActor () -> Void)? = nil) {
         runLoadingTask { [self] in
-            if let recipe = await appState.importRecipeFromURL(urlString) {
+            if let recipe = await appState.recipeGateway.importRecipeFromURL(urlString) {
                 self.importedRecipeDraft = recipe
             }
             onComplete?()

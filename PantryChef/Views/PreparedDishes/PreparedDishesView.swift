@@ -14,72 +14,78 @@ struct PreparedDishesView: View {
     var body: some View {
         @Bindable var viewModel = viewModel
 
-        let content = VStack(spacing: 0) {
-            searchAndFilters
-
-            if !viewModel.appState.preparedDishHistory.isEmpty {
-                historySummaryCard
+        let content = AppScreen("preparedDishes.screen", isEmbedded: isEmbedded) {
+            VStack(spacing: 0) {
+                preparedHeader(viewModel: viewModel)
                     .padding(.horizontal)
-                    .padding(.top, 8)
-            }
+                    .padding(.top, 12)
 
-            if viewModel.filteredDishes.isEmpty {
-                EmptyStateView(
-                    icon: "takeoutbag.and.cup.and.straw",
-                    title: "No prepared dishes",
-                    message: "Track leftovers, takeout, and ready-to-eat meals.",
-                    actionTitle: "Add Prepared Dish"
-                ) {
-                    presentSingleAdd()
+                searchAndFilters
+                    .padding(.horizontal)
+                    .padding(.top, 12)
+
+                if !viewModel.appState.preparedDishHistory.isEmpty {
+                    historySummaryCard
+                        .padding(.horizontal)
+                        .padding(.top, 12)
                 }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-            } else {
-                AppList {
-                    ForEach(viewModel.filteredDishes) { dish in
-                        HStack(spacing: 12) {
-                            Button {
-                                viewModel.selectedDish = dish
-                            } label: {
-                                PreparedDishRow(dish: dish)
-                                    .contentShape(Rectangle())
-                            }
-                            .buttonStyle(.plain)
 
-                            Button {
-                                viewModel.consumeServing(dish)
-                            } label: {
-                                quickAdjustButton(for: dish)
-                            }
-                            .buttonStyle(.plain)
-                            .accessibilityLabel(dish.servingsRemaining == 1 ? "Finish prepared dish" : "Use one serving")
-                        }
-                        .swipeActions(edge: .trailing) {
-                            Button(role: .destructive) {
-                                viewModel.deleteDish(dish)
-                            } label: {
-                                Label("Delete", systemImage: "trash")
-                            }
-
-                            Button {
-                                viewModel.editingDish = dish
-                            } label: {
-                                Label("Edit", systemImage: "pencil")
-                            }
-                            .tint(PCColors.info)
-                        }
-                        .swipeActions(edge: .leading, allowsFullSwipe: false) {
-                            Button {
-                                Task {
-                                    _ = await viewModel.appState.adjustPreparedDishServings(dish, delta: 1)
+                if viewModel.filteredDishes.isEmpty {
+                    EmptyStateView(
+                        icon: "takeoutbag.and.cup.and.straw",
+                        title: "No prepared dishes",
+                        message: "Track leftovers, takeout, and ready-to-eat meals.",
+                        actionTitle: "Add Prepared Dish"
+                    ) {
+                        presentSingleAdd()
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                } else {
+                    AppList {
+                        ForEach(viewModel.filteredDishes) { dish in
+                            HStack(spacing: 12) {
+                                Button {
+                                    viewModel.selectedDish = dish
+                                } label: {
+                                    PreparedDishRow(dish: dish)
+                                        .contentShape(Rectangle())
                                 }
-                            } label: {
-                                Label("Add Serving", systemImage: "plus")
+                                .buttonStyle(.plain)
+
+                                Button {
+                                    viewModel.consumeServing(dish)
+                                } label: {
+                                    quickAdjustButton(for: dish)
+                                }
+                                .buttonStyle(.plain)
+                                .accessibilityLabel(dish.servingsRemaining == 1 ? "Finish prepared dish" : "Use one serving")
                             }
-                            .tint(PCColors.accent)
+                            .swipeActions(edge: .trailing) {
+                                Button(role: .destructive) {
+                                    viewModel.deleteDish(dish)
+                                } label: {
+                                    Label("Delete", systemImage: "trash")
+                                }
+
+                                Button {
+                                    viewModel.editingDish = dish
+                                } label: {
+                                    Label("Edit", systemImage: "pencil")
+                                }
+                                .tint(PCColors.info)
+                            }
+                            .swipeActions(edge: .leading, allowsFullSwipe: false) {
+                                Button {
+                                    viewModel.addServing(dish)
+                                } label: {
+                                    Label("Add Serving", systemImage: "plus")
+                                }
+                                .tint(PCColors.accent)
+                            }
                         }
                     }
+                    .listStyle(.insetGrouped)
                 }
-                .listStyle(.insetGrouped)
             }
         }
         .overlay(alignment: .bottom) {
@@ -146,6 +152,56 @@ struct PreparedDishesView: View {
 
         content
             .navigationTitle("Prepared Dishes")
+    }
+
+    private func preparedHeader(viewModel: PreparedDishViewModel) -> some View {
+        let totalDishes = viewModel.appState.preparedDishes.count
+        let totalServings = viewModel.appState.preparedDishes.reduce(0) { $0 + $1.servingsRemaining }
+        let useSoonCount = viewModel.appState.preparedDishes.filter { $0.expiryStatus != .fresh }.count
+
+        return VStack(alignment: .leading, spacing: 18) {
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Ready To Eat")
+                    .font(.caption)
+                    .fontWeight(.semibold)
+                    .foregroundStyle(PCColors.textSecondary)
+                    .textCase(.uppercase)
+                    .tracking(1.2)
+
+                Text("Prepared Dishes")
+                    .font(.system(size: 30, weight: .semibold, design: .rounded))
+                    .foregroundStyle(PCColors.textPrimary)
+
+                Text("Keep leftovers, prepped meals, and takeout visible so the next dinner decision starts from what is already ready.")
+                    .font(.subheadline)
+                    .foregroundStyle(PCColors.textSecondary)
+            }
+
+            HStack(spacing: 10) {
+                PreparedDishStatPill(value: "\(totalDishes)", label: "Dishes", tint: PCColors.expiring)
+                PreparedDishStatPill(value: "\(totalServings)", label: "Servings", tint: PCColors.accent)
+                PreparedDishStatPill(value: "\(useSoonCount)", label: "Use Soon", tint: useSoonCount == 0 ? PCColors.fresh : PCColors.expired)
+            }
+        }
+        .padding(20)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(
+            LinearGradient(
+                colors: [
+                    PCColors.cardBackground,
+                    PCColors.expiring.opacity(0.14),
+                    PCColors.accent.opacity(0.08)
+                ],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+        )
+        .clipShape(RoundedRectangle(cornerRadius: 28, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: 28, style: .continuous)
+                .stroke(PCColors.glassStroke, lineWidth: 1)
+        )
+        .shadow(color: Color.black.opacity(0.22), radius: 24, x: 0, y: 14)
     }
 
     private var searchAndFilters: some View {
@@ -283,6 +339,10 @@ struct PreparedDishDetailView: View {
         return appState.allRecipes.first { $0.id == recipeID }
     }
 
+    private var preparedDishActions: PreparedDishActions {
+        PreparedDishActions(appState: appState)
+    }
+
     var body: some View {
         AppScrollView {
             VStack(alignment: .leading, spacing: 20) {
@@ -304,7 +364,7 @@ struct PreparedDishDetailView: View {
                     HStack(spacing: 12) {
                         Button {
                             Task {
-                                let removed = await appState.adjustPreparedDishServings(currentDish, delta: -1)
+                                let removed = await preparedDishActions.adjustServings(currentDish, delta: -1)
                                 if removed {
                                     dismiss()
                                 }
@@ -320,7 +380,7 @@ struct PreparedDishDetailView: View {
 
                         Button {
                             Task {
-                                _ = await appState.adjustPreparedDishServings(currentDish, delta: 1)
+                                _ = await preparedDishActions.adjustServings(currentDish, delta: 1)
                             }
                         } label: {
                             quickActionLabel(title: "Add 1 Serving", systemImage: "plus.circle.fill", color: PCColors.accent)
@@ -394,7 +454,7 @@ struct PreparedDishDetailView: View {
         .sheet(item: $editingDish) { dish in
             PreparedDishEditorView(appState: appState, dish: dish) { updatedDish in
                 Task {
-                    await appState.updatePreparedDish(updatedDish)
+                    await preparedDishActions.updateDish(updatedDish)
                 }
             }
         }
@@ -446,6 +506,28 @@ struct PreparedDishDetailView: View {
         .background(color.opacity(0.14))
         .foregroundStyle(color)
         .clipShape(RoundedRectangle(cornerRadius: 12))
+    }
+}
+
+private struct PreparedDishStatPill: View {
+    let value: String
+    let label: String
+    let tint: Color
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 3) {
+            Text(value)
+                .font(.headline)
+                .foregroundStyle(PCColors.textPrimary)
+            Text(label)
+                .font(.caption2)
+                .foregroundStyle(PCColors.textSecondary)
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 10)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(tint.opacity(0.12))
+        .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
     }
 }
 

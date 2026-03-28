@@ -73,7 +73,6 @@ final class AIOutputValidatorTests: XCTestCase {
             servings: nil,
             prepTimeMinutes: nil,
             cookTimeMinutes: nil,
-            imageURL: nil,
             dietaryTags: nil,
             difficulty: nil,
             mealType: nil,

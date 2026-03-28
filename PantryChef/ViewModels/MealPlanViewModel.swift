@@ -10,7 +10,7 @@ final class MealPlanViewModel: AsyncActionHandling {
     var isLoading = false
 
     let appState: AppState
-    @ObservationIgnored private let mealPlanActions: MealPlanActions
+    @ObservationIgnored private let mealPlanGateway: MealPlanGateway
 
     struct MealSlot: Identifiable {
         let id = UUID()
@@ -27,7 +27,7 @@ final class MealPlanViewModel: AsyncActionHandling {
 
     init(appState: AppState) {
         self.appState = appState
-        self.mealPlanActions = MealPlanActions(appState: appState)
+        self.mealPlanGateway = appState.mealPlanGateway
         let calendar = Calendar.current
         self.weekStartDate = calendar.dateInterval(of: .weekOfYear, for: Date())?.start ?? Date()
     }
@@ -62,43 +62,43 @@ final class MealPlanViewModel: AsyncActionHandling {
 
     func assignRecipe(_ recipe: Recipe, to slot: MealSlot) {
         runTask { [self] in
-            await self.mealPlanActions.assignRecipe(recipe, to: slot)
+            await self.mealPlanGateway.planRecipe(recipe, on: slot.date, mealType: slot.mealType, replaceExisting: slot.replaceExisting)
         }
     }
 
     func assignPreparedDish(_ dish: PreparedDish, to slot: MealSlot) {
         runTask { [self] in
-            await self.mealPlanActions.assignPreparedDish(dish, to: slot)
+            await self.mealPlanGateway.planPreparedDish(dish, on: slot.date, mealType: slot.mealType, replaceExisting: slot.replaceExisting)
         }
     }
 
     func assignSelections(_ selections: [MealSelectionItem], to slot: MealSlot) {
         runTask { [self] in
-            await self.mealPlanActions.assignSelections(selections, to: slot)
+            await self.mealPlanGateway.planSelections(selections, on: slot.date, mealType: slot.mealType, replaceExisting: slot.replaceExisting)
         }
     }
 
     func removeEntry(_ entry: MealPlanEntry) {
         runTask { [self] in
-            await self.mealPlanActions.removeEntry(entry)
+            await self.mealPlanGateway.removeEntries([entry])
         }
     }
 
     func removeEntries(_ entries: [MealPlanEntry]) {
         runTask { [self] in
-            await self.mealPlanActions.removeEntries(entries)
+            await self.mealPlanGateway.removeEntries(entries)
         }
     }
 
     func updateEntry(_ entry: MealPlanEntry) {
         runTask { [self] in
-            await self.mealPlanActions.updateEntry(entry)
+            await self.mealPlanGateway.updateEntry(entry)
         }
     }
 
     func logEntriesEaten(_ selections: [MealPlanEatenLoggingSelection]) {
         runTask { [self] in
-            await self.mealPlanActions.logEntriesEaten(selections)
+            await self.mealPlanGateway.logEntriesEaten(selections)
         }
     }
 
@@ -113,7 +113,7 @@ final class MealPlanViewModel: AsyncActionHandling {
 
     func generateShoppingList() {
         runTask { [self] in
-            await self.mealPlanActions.generateShoppingList()
+            await self.mealPlanGateway.addShoppingItems(appState.previewShoppingListFromMealPlan())
         }
     }
 
@@ -123,13 +123,19 @@ final class MealPlanViewModel: AsyncActionHandling {
 
     func addShoppingItems(_ items: [ShoppingItem]) {
         runTask { [self] in
-            await self.mealPlanActions.addShoppingItems(items)
+            await self.mealPlanGateway.addShoppingItems(items)
+        }
+    }
+
+    func addPreparedDishes(_ dishes: [PreparedDish]) {
+        runTask { [self] in
+            await self.mealPlanGateway.addPreparedDishes(dishes)
         }
     }
 
     func addEntriesToCookQueue(_ entries: [MealPlanEntry], asParallelBatch: Bool) {
         runTask { [self] in
-            await self.mealPlanActions.addEntriesToCookQueue(entries, asParallelBatch: asParallelBatch)
+            await self.mealPlanGateway.addEntriesToCookQueue(entries, asParallelBatch: asParallelBatch)
         }
     }
 

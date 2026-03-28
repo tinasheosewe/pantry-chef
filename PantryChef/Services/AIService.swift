@@ -1235,7 +1235,6 @@ final class AIService: AIServiceProtocol {
             servings: completedRecipe.servings,
             prepTimeMinutes: completedRecipe.prepTimeMinutes,
             cookTimeMinutes: completedRecipe.cookTimeMinutes,
-            imageURL: result.imageURL,
             dietaryTags: completedRecipe.dietaryTags,
             difficulty: completedRecipe.difficulty,
             mealType: completedRecipe.mealType,

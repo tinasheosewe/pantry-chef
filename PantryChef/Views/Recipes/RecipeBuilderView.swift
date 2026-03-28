@@ -1,7 +1,7 @@
 import SwiftUI
 
 /// Compact recipe configurator sheet — all taps, no typing.
-/// Pre-filled from the user's search query; "Just generate" skips straight to AI.
+/// Pre-filled from the user's search query; recipe creation runs through the shared recipe gateway.
 struct RecipeBuilderView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(AppState.self) private var appState
@@ -151,8 +151,8 @@ struct RecipeBuilderView: View {
                                 Task { await generate() }
                             } label: {
                                 HStack(spacing: 8) {
-                                    Image(systemName: "sparkles")
-                                    Text("Generate Recipe")
+                                    Image(systemName: "wand.and.stars")
+                                    Text("Create Recipe")
                                         .fontWeight(.semibold)
                                 }
                                 .foregroundStyle(.white)
@@ -174,7 +174,7 @@ struct RecipeBuilderView: View {
                         Button {
                             Task { await generate() }
                         } label: {
-                            Text("Just generate with defaults →")
+                            Text("Use smart defaults →")
                                 .font(.footnote)
                                 .foregroundStyle(PCColors.textSecondary)
                         }
@@ -198,7 +198,7 @@ struct RecipeBuilderView: View {
     private var headerSection: some View {
         VStack(spacing: 8) {
             HStack(spacing: 8) {
-                Image(systemName: "sparkles")
+                Image(systemName: "wand.and.stars")
                     .font(.title2)
                     .foregroundStyle(PCColors.expiring)
                 Text(query.capitalized)
@@ -206,7 +206,7 @@ struct RecipeBuilderView: View {
                     .fontWeight(.bold)
                     .foregroundStyle(PCColors.textPrimary)
             }
-            Text("Customize your recipe or tap Generate to go with smart defaults")
+            Text("Shape the outcome, then let PantryChef build it with smart defaults.")
                 .font(.subheadline)
                 .foregroundStyle(PCColors.textSecondary)
                 .multilineTextAlignment(.center)
@@ -291,6 +291,7 @@ struct RecipeBuilderView: View {
     private func generate() async {
         isGenerating = true
         generationError = nil
+        let recipeGateway = appState.recipeGateway
 
         let prefs = RecipeGenerationPreferences(
             servings: servings,
@@ -301,14 +302,11 @@ struct RecipeBuilderView: View {
             pantryIngredients: usePantry ? appState.pantryItems.map(\.name) : []
         )
 
-        // Show an immediate first message while the AI call fires
         statusMessage = "Researching the best \(query.capitalized) recipes…"
 
-        // Fire status messages + recipe generation in parallel
         async let statusFetch = appState.aiService.generateStatusMessages(query: query, preferences: prefs)
-        async let recipeFetch = appState.generateRecipe(query: query, preferences: prefs)
+        async let recipeFetch = recipeGateway.generateRecipe(query: query, preferences: prefs)
 
-        // Status messages come back fast (~2s), start cycling them
         let messages = await statusFetch
         statusMessage = messages.first ?? statusMessage
 
@@ -326,16 +324,14 @@ struct RecipeBuilderView: View {
             }
         }
 
-        // Wait for the recipe
-        if let recipe = await recipeFetch,
-           let normalizedRecipe = await appState.cacheDiscoverRecipe(recipe) {
+        if let normalizedRecipe = await recipeFetch {
             tickerTask.cancel()
             appState.refreshDiscoverRecipes()
             dismiss()
             onGenerated(normalizedRecipe.recipe)
         } else {
             tickerTask.cancel()
-            generationError = "Failed to generate recipe. Please try again."
+            generationError = appState.errorMessage ?? "Couldn't create a recipe right now. Please try again."
         }
         isGenerating = false
         statusMessage = ""

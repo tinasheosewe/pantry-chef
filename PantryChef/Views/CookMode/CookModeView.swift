@@ -119,7 +119,7 @@ struct CookModeView: View {
         ) {
             Button("End Session", role: .destructive) {
                 if let queueStageID {
-                    Task { await appState.skipCookQueueStage(queueStageID) }
+                    Task { await appState.cookGateway.skipStage(queueStageID) }
                 }
                 viewModel?.endCookingSession()
                 appState.activeCooks.refresh()
@@ -657,17 +657,19 @@ struct CookModeView: View {
             VStack(spacing: 12) {
                 Button {
                     Task {
+                        let cookGateway = appState.cookGateway
+                        let recipeGateway = appState.recipeGateway
                         // Save rating if set, then mark as cooked
                         if vm.selectedRating != nil {
-                            await appState.updateRecipe(vm.ratedRecipe)
+                            await recipeGateway.updateRecipe(vm.ratedRecipe)
                         }
                         NotificationService.shared.cancelAllNotifications(recipeId: vm.recipe.id.uuidString)
                         if let queueStageID {
-                            await appState.completeCookQueueStage(queueStageID)
+                            await cookGateway.completeStage(queueStageID)
                         } else {
-                            await appState.stampCookedMealPlanEntriesByRecipe(vm.recipe.id)
+                            await cookGateway.stampCookedMealPlanEntries(recipeID: vm.recipe.id)
                         }
-                        await appState.addPreparedDishForRecipe(vm.recipe)
+                        await cookGateway.addPreparedDishForRecipe(vm.recipe)
                         CookingSession.clear(recipeId: vm.recipe.id)
                         vm.endCookingSession()
                         appState.activeCooks.refresh()
@@ -692,16 +694,18 @@ struct CookModeView: View {
 
                 Button {
                     Task {
+                        let cookGateway = appState.cookGateway
+                        let recipeGateway = appState.recipeGateway
                         if vm.selectedRating != nil {
-                            await appState.updateRecipe(vm.ratedRecipe)
+                            await recipeGateway.updateRecipe(vm.ratedRecipe)
                         }
                         NotificationService.shared.cancelAllNotifications(recipeId: vm.recipe.id.uuidString)
                         if let queueStageID {
-                            await appState.completeCookQueueStage(queueStageID)
+                            await cookGateway.completeStage(queueStageID)
                         } else {
-                            await appState.stampCookedMealPlanEntriesByRecipe(vm.recipe.id)
+                            await cookGateway.stampCookedMealPlanEntries(recipeID: vm.recipe.id)
                         }
-                        await appState.addPreparedDishForRecipe(vm.recipe)
+                        await cookGateway.addPreparedDishForRecipe(vm.recipe)
                         CookingSession.clear(recipeId: vm.recipe.id)
                         vm.endCookingSession()
                         appState.activeCooks.refresh()

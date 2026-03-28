@@ -399,7 +399,7 @@ struct PantryIntakeRowDraft: Identifiable {
         }
     }
 
-    func buildItem(existingID: UUID? = nil, existingDateAdded: Date? = nil, existingImageURL: String? = nil) -> PantryItem? {
+    func buildItem(existingID: UUID? = nil, existingDateAdded: Date? = nil) -> PantryItem? {
         guard rowState == .valid, let storage else { return nil }
         let notesValue = notes.trimmed.isEmpty ? nil : notes.trimmed
 
@@ -413,7 +413,6 @@ struct PantryIntakeRowDraft: Identifiable {
                 expiryDate: resolvedExpiryDate,
                 dateAdded: existingDateAdded ?? Date(),
                 notes: notesValue,
-                imageURL: existingImageURL,
                 catalogItemID: nil,
                 facets: [],
                 storage: storage,
@@ -432,7 +431,6 @@ struct PantryIntakeRowDraft: Identifiable {
             expiryDate: resolvedExpiryDate,
             dateAdded: existingDateAdded ?? Date(),
             notes: notesValue,
-            imageURL: existingImageURL,
             catalogItemID: selectedItem.id,
             facets: selectedFacets,
             storage: storage,

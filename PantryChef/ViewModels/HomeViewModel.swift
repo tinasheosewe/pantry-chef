@@ -8,9 +8,11 @@ final class HomeViewModel {
     var isLoading = false
 
     let appState: AppState
+    @ObservationIgnored private let inventoryGateway: InventoryGateway
 
     init(appState: AppState) {
         self.appState = appState
+        self.inventoryGateway = appState.inventoryGateway
         updateGreeting()
     }
 
@@ -46,6 +48,10 @@ final class HomeViewModel {
 
     var weeklyNutrition: WeeklyNutritionSummary? {
         dashboard.weeklyNutrition
+    }
+
+    func addShoppingItems(_ items: [ShoppingItem]) async {
+        await inventoryGateway.addShoppingItems(items)
     }
 }
 

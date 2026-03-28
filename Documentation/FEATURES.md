@@ -1,6 +1,26 @@
 # PantryChef — Comprehensive Feature Specification
 
-> This document details every capability of the PantryChef application: its data models, relationships, algorithms, services, and business logic. It intentionally omits UI/UX implementation details, focusing exclusively on *what the system does*, not how users interact with it visually.
+> This document describes the implemented PantryChef feature set as of March 28, 2026. It focuses on shipped data models, services, workflows, and business logic, and explicitly calls out infrastructure-only or research-only capabilities where relevant.
+
+## Implementation Status Notes
+
+### Current App Shell
+- The shipped app is organized around four root tabs: **Today**, **Recipes**, **Kitchen**, and **Plan**.
+- The **Today** dashboard is a live operational summary rather than a static welcome screen.
+   - It surfaces today's meal-plan entries.
+   - It highlights expiring pantry items and expiring prepared dishes.
+   - It provides quick actions for "What can I make?", shopping generation from the meal plan, and meal planning.
+   - It can show a pantry-based suggested recipe and a weekly nutrition summary.
+   - On weekends it surfaces a batch-prep prompt.
+- The **Recipes** workspace is split into **My Recipes** and **Discover** sections with shared search/filter infrastructure.
+- The **Kitchen** workspace is a segmented container over pantry items, prepared dishes, and shopping items.
+- An active-cook mini player appears above the tab bar when a cooking session or queued stage is active, and tapping it opens cook-queue management.
+- Notification taps can deep-link directly back into cook mode for the relevant recipe and step.
+
+### Explicitly Not Shipped in the Current Build
+- **Receipt OCR and barcode pantry intake** are still research-only. The product ships with manual pantry entry and structured bulk-add flows, not camera-based intake.
+- **Supabase-backed sync or cloud persistence** is not active. The shipping app is local-first and runs entirely on SwiftData plus lightweight local caches/preferences.
+- **Realtime voice cook mode** is the primary shipped voice experience. The AVSpeechSynthesizer/SFSpeechRecognizer stack exists as fallback infrastructure, but it is not the main cook-mode path.
 
 ---
 
@@ -46,7 +66,6 @@ Track the user's real-world food inventory with quantities, storage locations, e
 | `expiryDate` | Date? | Manual or estimated expiry |
 | `dateAdded` | Date | Timestamp of intake |
 | `notes` | String? | Freeform user notes |
-| `imageURL` | String? | Photo reference |
 | `catalogItemID` | String? | Link to canonical `PantryCatalogItemDefinition` |
 | `facets` | [PantryFacetSelection] | Structured qualifiers (variant, form, preservation, processing, preparation, texture, concentration, base) |
 | `storage` | PantryStorage | pantry, refrigerated, or frozen |
@@ -81,6 +100,14 @@ Items enter the pantry through a structured drafting process (`PantryIntakeRowDr
 - Unresolved tokens become custom items.
 - All staged items go through the validation pipeline before commit.
 
+### Pantry Workspace Flow
+- Pantry is managed through a search-and-filter list grouped by category.
+- Empty state drives users into the structured bulk-add flow instead of a plain freeform item form.
+- Bulk add has two phases:
+   - **Selection**: browse categories, search the catalog, pick common staples, or fall back to a custom item.
+   - **Review**: edit each staged draft, inspect warnings, save catalog defaults, and then commit only valid rows.
+- Existing pantry items are edited through the same draft-backed form used for intake, with swipe-to-delete from the pantry list.
+
 ### Preference Store
 - Per-catalog-item, the system remembers the user's last-used facets, storage, quantity, unit, and expiry offset.
 - Stored in `PantryItemDefaultPreference` via UserDefaults.
@@ -97,6 +124,7 @@ After completing a cooking session, the system generates `PantryCookReviewItem` 
 - **Keep**: Leave the pantry item unchanged.
 - **Remove**: Completely remove the item from the pantry.
 - **Subtract**: Reduce by the recipe-specified quantity (with unit conversion).
+- If no current pantry items are matched for the cooked recipe, the review flow is blocked with a user-facing error rather than showing an empty review surface.
 
 ---
 
@@ -257,7 +285,6 @@ The matcher maintains a cached `PantryIndex` with signature-based invalidation:
 | `cuisine` | CuisineType? | 16 cuisine types (Italian, Mexican, Chinese, Japanese, Indian, Thai, French, Mediterranean, American, Korean, Vietnamese, Greek, Middle Eastern, Ethiopian, Caribbean, Other) |
 | `source` | RecipeSource | user, bundled, imported, aiGenerated |
 | `nutrition` | NutritionInfo? | Per-serving macros (calories, protein, carbs, fat, fiber, sugar, sodium) |
-| `imageURL` | String? | Image reference |
 | `sourceURL` | String? | Origin URL (for imported recipes) |
 | `isFavorite` | Bool | User bookmark |
 | `dateAdded` | Date | Creation timestamp |
@@ -300,6 +327,29 @@ The `effectiveDurationSeconds` is computed as: `estimatedDurationSeconds` (if se
 | `bundled` | Shipped with the app (seed recipes) | Yes (via TrustedRecipeCanonicalizer) | No (Discover only) |
 | `imported` | Parsed from URL or text | Via user review | After user saves |
 | `aiGenerated` | Generated by AI from prompts | Via user review | After user saves |
+
+### Recipe Library Surface
+- The Recipes tab is divided into two user-facing collections:
+   - **My Recipes** for user-owned and favorited recipes.
+   - **Discover** for bundled and cached non-user recipes.
+- Shared library controls include search with debounce, filters for can-make status, substitution allowance, cuisine, meal type, favorites, and dietary tags, and sort orders for recent, name, difficulty, total time, most cooked, and pantry match percentage.
+- Discover supports progressive loading and background prewarming of pantry-match metrics so large catalogs remain responsive.
+- When the user types a query of at least 3 characters in Discover, the grid can prepend an AI-generate tile that opens the recipe builder for that query.
+
+### Recipe Intake Surfaces
+- Manual add flow supports free-form recipe pasting through `AddRecipeView`.
+   - URLs are detected and routed through URL import.
+   - Non-URL text is routed through text import.
+   - Successful imports open a structured review/editor before save.
+- URL-only import is also exposed through a focused import sheet.
+- AI generation is exposed through `RecipeBuilderView`, which lets the user configure servings, spice level, max time bucket, dietary tags, and whether pantry ingredients should be considered.
+- During AI generation, short status messages are shown while the recipe request is in flight.
+
+### Recipe Detail Workflow
+- Recipe detail is a working surface, not just a read-only page.
+- It supports favorite toggling, in-place editing, saving an edited recipe as a new recipe, serving scaling up to 100 servings, pantry-match visualization, ingredient gathering before a new cook session, resuming an existing session, adding the recipe to the cook queue, shopping preview, substitutions, healthier suggestions, AI recipe modification, and pantry review initiation.
+- Ingredient rows are rendered with availability status against the current pantry.
+- Step rows render timers and tips inline.
 
 ### Serving Scaling
 `recipe.scaled(to: newServings)` returns a copy where:
@@ -436,7 +486,7 @@ Each catalog item can define an array of `PantrySubstitutionDefinition`:
 - Looks up substitutions by resolving ingredient name → catalog item → item.substitutions.
 - Filters out substitutions involving "generic" facets (generic items are fallbacks, not recommended substitutes).
 - **Pantry enrichment**: Checks whether each substitute exists in the user's current pantry (matching catalog ID + facets). Marks `inPantry = true` and sorts in-pantry substitutions first.
-- The AI can also generate additional substitution suggestions beyond the static catalog definitions.
+- Substitution suggestions in the current implementation come from the static catalog definitions. The repository does not currently augment them with AI-generated alternatives.
 
 ### Integration with Recipe Matching
 When computing `PantryMatchResult`, the matcher:
@@ -525,7 +575,7 @@ Enable hands-free, real-time voice interaction while cooking. The AI reads steps
 ### Connection Lifecycle
 1. **Ephemeral key fetch**: POST to `https://api.openai.com/v1/realtime/client_secrets` → short-lived WebRTC auth token.
 2. **Audio session configuration**: AVAudioSession set to `.playAndRecord` with `.voiceChat` mode and `.defaultToSpeaker`.
-3. **WebSocket connection**: SDK's `Conversation` object manages WebRTC signaling.
+3. **Realtime session connection**: The SDK's `Conversation` object manages the WebRTC-backed session and signaling lifecycle.
 4. **Session configuration wait**: Polls until `conv.session.audio.output.voice == .sage` (up to 5 seconds) to ensure round-trip session update is confirmed.
 5. **State sync loop**: Background task polls SDK state every 50ms and copies to observable properties.
 
@@ -577,7 +627,7 @@ The AI receives a detailed system prompt including:
 ## 11. Text-to-Speech & Speech Recognition
 
 ### Purpose
-Provide fallback voice capabilities independent of the Realtime API — TTS for reading steps aloud and on-device speech recognition for voice commands.
+Provide fallback voice capabilities independent of the Realtime API. This infrastructure supports spoken step playback and on-device command recognition, but the primary shipped cook-mode experience uses the Realtime API described in section 10.
 
 ### Text-to-Speech (AVSpeechSynthesizer)
 - Rate: 0.48 (configurable per call).
@@ -761,9 +811,10 @@ Organize multiple recipes into a cooking sequence with support for parallel batc
 pending → active → completed
                  → skipped
 ```
-- Only one stage can be `active` at a time.
+- The enum supports `pending`, `active`, `completed`, and `skipped` states.
+- Only one retained stage can be `active` at a time.
 - Starting a new stage returns any other active stage to `pending`.
-- Stages can be completed, skipped, or removed.
+- In the current persisted queue implementation, **completed** and **skipped** stages are removed from the queue rather than kept as historical entries.
 
 ### Stage Operations
 | Operation | Description |
@@ -771,8 +822,8 @@ pending → active → completed
 | `appendStages` | Add stages to the end of the queue |
 | `replaceStages` | Replace all stages |
 | `startStage` | Set a stage to active (demotes other active stage) |
-| `completeStage` | Mark a stage as completed |
-| `skipStage` | Mark a stage as skipped |
+| `completeStage` | Remove a stage from the queue after it is finished |
+| `skipStage` | Remove a stage from the queue without cooking it |
 | `removeStage` | Delete a stage from the queue |
 | `moveStage` | Reorder a stage by offset (±n positions) |
 | `bundleStageWithNext` | Merge two pending stages into a parallel batch |
@@ -898,7 +949,7 @@ Estimated use-by dates by storage:
 - Frozen: 90 days from preparation.
 
 ### History Tracking (`PreparedDishHistoryItem`)
-Every time a dish is prepared or modified, a history record is created/updated:
+When a prepared dish is added, or when edits materially change its reusable template, a history record is created or refreshed:
 | Field | Type | Description |
 |---|---|---|
 | `foodIdentityID` | UUID | Persistent identity |
@@ -923,6 +974,12 @@ History enables:
 - `consumeServing()` decrements `servingsRemaining`.
 - When `servingsRemaining` reaches 0, the dish is completely deleted.
 - Meal plan eating logs can also decrement servings from linked prepared dishes.
+
+### Prepared Dishes Workspace Flow
+- Prepared dishes are searchable and filterable by meal type.
+- Users can add a single prepared dish, create prepared dishes from meal-plan selections, edit or delete dishes, decrement servings directly from the list with quick actions, and open a reusable-history picker when prior prepared-dish templates exist.
+- Quick-consume actions produce transient success feedback so the user can see whether a serving was used or the dish was fully removed.
+- History reuse is a first-class workflow: previously prepared dishes can be searched, reopened as drafts, and re-added with refreshed defaults.
 
 ### Draft System (`PreparedDishDraft`)
 A mutable workspace for creating or editing prepared dishes, supporting:
@@ -974,9 +1031,17 @@ Each shopping item can have a separate "pantry plan" — the amount the user wan
 ### Purchased-to-Pantry Transfer
 When items are checked off the shopping list:
 - `pantryItemForTransfer()` converts the `ShoppingItem` into a `PantryItem`.
-- Uses the `pantryQuantity` and `pantryUnit` (not recipe quantity) for the pantry item.
+- Uses the reviewed `pantryQuantity` and `pantryUnit` pantry-plan fields, not necessarily the raw recipe-required amount.
 - Applies the pantry quantity mode (exact vs. presenceOnly).
+- The UI can route checked items through a review step before transfer via `completeCheckedToPantry(with:)`.
 - Adds to pantry with automatic merging if the item already exists.
+
+### Shopping Workspace Flow
+- Shopping items are grouped by category and expose progress as `checked / total` with a progress bar.
+- Users can add catalog-backed items manually, fall back to custom items when catalog search is insufficient, toggle checked state inline, delete items, clear all checked items, and review checked items before moving them into Pantry.
+- Each shopping item can expose three layers of information simultaneously: display name and facet summary, recipe-required quantity, and pantry-plan quantity that will actually transfer into pantry.
+- Pantry-plan editing supports switching between exact quantity and presence-only tracking, adjusting unit and quantity, and adjusting catalog facets for what was actually purchased.
+- The checked-to-pantry review sheet is intentionally explicit about the difference between recipe need and pantry intake, so shopping completion does not silently overfit to recipe quantities.
 
 ### Facet Normalization
 Shopping item facets are normalized via a two-stage process:
@@ -1027,8 +1092,9 @@ Support "continue cooking in background" mode by scheduling local notifications 
 
 ### Technology
 - **Primary store**: SwiftData (SQLite-backed) via the actor-isolated `StorageService`.
-- **Auxiliary stores**: UserDefaults for lightweight preferences (`PantryItemPreferenceStore`, `CookingSession`).
-- **File storage**: JSON files in `~/Library/Caches/` for recipe metric caches.
+- **Persistent store location**: Application Support `default.store` plus the associated WAL/SHM files.
+- **Auxiliary stores**: UserDefaults for lightweight preferences and session state (`PantryItemPreferenceStore`, `CookingSession`, cook-mode mute preference).
+- **File storage**: JSON files under `~/Library/Caches/PantryChef/` for recipe repository caches and persisted recipe-match metrics.
 
 ### Schema
 Current schema version: **14**. All records carry a `schemaVersion` field for future migration support.
@@ -1069,9 +1135,9 @@ Current schema version: **14**. All records carry a `schemaVersion` field for fu
 
 ### Bootstrap
 On first launch:
-1. If no pantry items or recipes exist, seed with `PantryItem.samples` and bundled seed recipes via `BundledSeedRecipeLoader`.
-2. Seed recipes go through `TrustedRecipeCanonicalizer` to ensure all ingredients are resolved.
-3. Bootstrap is gated — runs only once via `didBootstrap` flag.
+1. If bootstrapping is enabled for the launch mode and no relevant local data exists, the app can seed pantry items, user recipes, and discover recipes.
+2. Bundled seed recipes go through `TrustedRecipeCanonicalizer` to ensure all ingredients are resolved.
+3. Bootstrap is gated inside `StorageService` and runs only once via the `didBootstrap` guard.
 
 ### Error Recovery
 - **Container creation failure**: Destroys existing store files (.sqlite, .shm, .wal) and retries.

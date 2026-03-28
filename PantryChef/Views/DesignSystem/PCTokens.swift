@@ -6,8 +6,8 @@ enum PCTokens {
     // MARK: Layout
     static let cornerRadius: CGFloat = 16
     static let cornerRadiusSmall: CGFloat = 10
-    static let cardShadowRadius: CGFloat = 4
-    static let cardShadowY: CGFloat = 2
+    static let cardShadowRadius: CGFloat = 18
+    static let cardShadowY: CGFloat = 10
     static let cardPadding: CGFloat = 16
     static let sectionSpacing: CGFloat = 24
     static let rowHeight: CGFloat = 56
@@ -32,39 +32,60 @@ enum PCTokens {
 
 enum PCColors {
     // Brand
-    static let accent = Color(red: 0.87, green: 0.36, blue: 0.24)        // deep coral
-    static let accentSecondary = Color(red: 0.91, green: 0.49, blue: 0.19) // burnt orange
+    static let accent = Color(red: 0.84, green: 0.48, blue: 0.24)
+    static let accentSecondary = Color(red: 0.69, green: 0.56, blue: 0.28)
 
     // Greens
-    static let fresh = Color(red: 0.13, green: 0.77, blue: 0.37)          // emerald
-    static let freshSubtle = Color(red: 0.13, green: 0.77, blue: 0.37).opacity(0.12)
+    static let fresh = Color(red: 0.45, green: 0.72, blue: 0.38)
+    static let freshSubtle = Color(red: 0.45, green: 0.72, blue: 0.38).opacity(0.18)
 
     // Amber / Warning
-    static let expiring = Color(red: 0.98, green: 0.62, blue: 0.20)       // amber
-    static let expiringSubtle = Color(red: 0.98, green: 0.62, blue: 0.20).opacity(0.12)
+    static let expiring = Color(red: 0.90, green: 0.67, blue: 0.32)
+    static let expiringSubtle = Color(red: 0.90, green: 0.67, blue: 0.32).opacity(0.18)
 
     // Red / Error
-    static let expired = Color(red: 0.96, green: 0.40, blue: 0.40)        // warm coral
-    static let expiredSubtle = Color(red: 0.96, green: 0.40, blue: 0.40).opacity(0.12)
+    static let expired = Color(red: 0.76, green: 0.37, blue: 0.32)
+    static let expiredSubtle = Color(red: 0.76, green: 0.37, blue: 0.32).opacity(0.18)
 
     // Blues
-    static let info = Color(red: 0.24, green: 0.51, blue: 0.96)           // vibrant blue
-    static let infoSubtle = Color(red: 0.24, green: 0.51, blue: 0.96).opacity(0.12)
+    static let info = Color(red: 0.42, green: 0.63, blue: 0.78)
+    static let infoSubtle = Color(red: 0.42, green: 0.63, blue: 0.78).opacity(0.18)
 
     // Teal
-    static let teal = Color(red: 0.06, green: 0.73, blue: 0.70)
+    static let teal = Color(red: 0.35, green: 0.69, blue: 0.64)
 
-    // Neutrals (adaptive)
-    static var background: Color { Color(.systemGroupedBackground) }
-    static var cardBackground: Color { Color(.secondarySystemGroupedBackground) }
-    static var surfaceSecondary: Color { Color(.tertiarySystemGroupedBackground) }
-    static var textPrimary: Color { Color(.label) }
-    static var textSecondary: Color { Color(.secondaryLabel) }
-    static var textTertiary: Color { Color(.tertiaryLabel) }
-    static var separator: Color { Color(.separator) }
-    static var fill: Color { Color(.systemFill) }
-    static var fillSecondary: Color { Color(.secondarySystemFill) }
-    static var fillTertiary: Color { Color(.tertiarySystemFill) }
+    // Shell
+    static let shellTop = Color(red: 0.15, green: 0.18, blue: 0.14)
+    static let shellBottom = Color(red: 0.05, green: 0.06, blue: 0.05)
+    static let shellGlow = Color(red: 0.41, green: 0.31, blue: 0.16).opacity(0.24)
+
+    // Neutrals
+    static var background: Color { shellBottom }
+    static var cardBackground: Color { Color(red: 0.12, green: 0.14, blue: 0.11) }
+    static var surfaceSecondary: Color { Color(red: 0.16, green: 0.19, blue: 0.15) }
+    static var textPrimary: Color { Color(red: 0.95, green: 0.92, blue: 0.86) }
+    static var textSecondary: Color { Color(red: 0.73, green: 0.70, blue: 0.64) }
+    static var textTertiary: Color { Color(red: 0.50, green: 0.49, blue: 0.44) }
+    static var separator: Color { Color.white.opacity(0.08) }
+    static var fill: Color { Color.white.opacity(0.08) }
+    static var fillSecondary: Color { Color.white.opacity(0.12) }
+    static var fillTertiary: Color { Color.white.opacity(0.06) }
+
+    static var shellGradient: LinearGradient {
+        LinearGradient(
+            colors: [shellTop, shellBottom],
+            startPoint: .topLeading,
+            endPoint: .bottomTrailing
+        )
+    }
+
+    static var glassStroke: LinearGradient {
+        LinearGradient(
+            colors: [Color.white.opacity(0.18), Color.white.opacity(0.04)],
+            startPoint: .topLeading,
+            endPoint: .bottomTrailing
+        )
+    }
 }
 
 // MARK: - Font Tokens
@@ -86,7 +107,7 @@ struct PCCardShadow: ViewModifier {
     func body(content: Content) -> some View {
         content
             .shadow(
-                color: Color.black.opacity(0.06),
+                color: Color.black.opacity(0.28),
                 radius: PCTokens.cardShadowRadius,
                 x: 0,
                 y: PCTokens.cardShadowY
@@ -103,6 +124,10 @@ extension View {
         self
             .background(PCColors.cardBackground)
             .clipShape(RoundedRectangle(cornerRadius: PCTokens.cornerRadius))
+            .overlay(
+                RoundedRectangle(cornerRadius: PCTokens.cornerRadius)
+                    .stroke(PCColors.glassStroke, lineWidth: 1)
+            )
             .pcCardShadow()
     }
 }

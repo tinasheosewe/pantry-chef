@@ -468,9 +468,9 @@ struct MultiCookModeView: View {
         Task {
             if let queueStageID {
                 if completed {
-                    await appState.completeCookQueueStage(queueStageID)
+                    await appState.cookGateway.completeStage(queueStageID)
                 } else {
-                    await appState.skipCookQueueStage(queueStageID)
+                    await appState.cookGateway.skipStage(queueStageID)
                 }
             }
         }

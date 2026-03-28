@@ -15,7 +15,7 @@ final class ViewSnapshotBaselineTests: XCTestCase {
         ]
 
         let hash = try snapshotHash(of: PantryView(appState: appState), size: CGSize(width: 390, height: 844))
-        XCTAssertEqual(hash, "fe1148221393a54ec9b3d4077dc40d50db14366ebf61d7323cbc5aafb88e132e")
+        XCTAssertEqual(hash, "2bb657eeaa12e9413e4fcacf1f00cd1f9e64aae5df5c533307d75437f9a4b48b")
     }
 
     func testShoppingListViewSnapshotHash() throws {
@@ -26,7 +26,7 @@ final class ViewSnapshotBaselineTests: XCTestCase {
         ]
 
         let hash = try snapshotHash(of: ShoppingListView(appState: appState), size: CGSize(width: 390, height: 844))
-        XCTAssertEqual(hash, "d2c9f80cdcb493bae0ce80dadda4390f6b6746832cdc4df72aa9d74be605bce7")
+        XCTAssertEqual(hash, "83a65665b4789080e6df3d205b442cba68b4c48bab13239cfe24dd00f1cd52a0")
     }
 
     func testRecipeDetailViewSnapshotHash() throws {
@@ -60,7 +60,7 @@ final class ViewSnapshotBaselineTests: XCTestCase {
             of: NavigationStack { RecipeDetailView(recipe: recipe).environment(appState) },
             size: CGSize(width: 390, height: 844)
         )
-        XCTAssertEqual(hash, "06566b06f69a8182bfaed08f065c5cc7263829d6aaca2f0d43a7c3e09e1ada31")
+        XCTAssertEqual(hash, "0db72c8b0496f802ec3862b1bc66cef56bd0b7159975147f0f34bb11ba6a4d65")
     }
 
     func testPreparedDishDetailViewSnapshotHash() throws {
@@ -97,7 +97,7 @@ final class ViewSnapshotBaselineTests: XCTestCase {
             of: NavigationStack { PreparedDishDetailView(dish: dish).environment(appState) },
             size: CGSize(width: 390, height: 844)
         )
-        XCTAssertEqual(hash, "87e340c47d219dce9001c48575cd253584c7488c277b235ea4f827eaf94a6707")
+        XCTAssertEqual(hash, "9e1b95c061005be37b968fe2aee89ba9c3484f3eff5e88a2a25d21183e682a2c")
     }
 
     private func snapshotHash<V: View>(of view: V, size: CGSize) throws -> String {

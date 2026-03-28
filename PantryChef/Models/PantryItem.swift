@@ -9,7 +9,6 @@ struct PantryItem: Identifiable, Codable, Hashable {
     var expiryDate: Date?
     var dateAdded: Date
     var notes: String?
-    var imageURL: String?
     var catalogItemID: String?
     var facets: [PantryFacetSelection]
     var storage: PantryStorage
@@ -25,7 +24,6 @@ struct PantryItem: Identifiable, Codable, Hashable {
         expiryDate: Date? = nil,
         dateAdded: Date = Date(),
         notes: String? = nil,
-        imageURL: String? = nil,
         catalogItemID: String? = nil,
         facets: [PantryFacetSelection] = [],
         storage: PantryStorage? = nil,
@@ -45,7 +43,6 @@ struct PantryItem: Identifiable, Codable, Hashable {
         self.expiryDate = expiryDate
         self.dateAdded = dateAdded
         self.notes = notes?.trimmed.nilIfEmpty
-        self.imageURL = imageURL
         self.catalogItemID = catalogItem?.id ?? catalogItemID
         self.facets = effectiveFacets
         self.storage = storage ?? catalogItem?.defaultStorage ?? .pantry
