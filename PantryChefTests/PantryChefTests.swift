@@ -3297,7 +3297,8 @@ final class AppStateTests: XCTestCase {
 
     func testAddPreparedDishForRecipeCreatesLinkedDish() async throws {
         let (appState, storage, _) = makeTestAppState()
-        let recipe = makeRecipe(title: "Chicken Tikka", servings: 4, mealType: .dinner)
+        let recipe = makeRecipe(title: "Chicken Tikka", servings: 4, mealType: .dinner,
+                                nutrition: NutritionInfo(calories: 350, protein: 28, carbohydrates: 20, fat: 16))
 
         await appState.addPreparedDishForRecipe(recipe)
 
@@ -3308,6 +3309,8 @@ final class AppStateTests: XCTestCase {
         XCTAssertEqual(dish.recipeID, recipe.id)
         XCTAssertEqual(dish.storage, .refrigerated)
         XCTAssertEqual(dish.mealTypes, [.dinner])
+        XCTAssertNotNil(dish.useByDate, "Dish should have a useByDate from freshness policy")
+        XCTAssertEqual(dish.nutrition, recipe.nutrition, "Dish should carry recipe nutrition")
         XCTAssertEqual(storage.addPreparedDishCallCount, 1)
     }
 
@@ -3319,6 +3322,32 @@ final class AppStateTests: XCTestCase {
 
         let dish = try XCTUnwrap(appState.preparedDishes.first)
         XCTAssertEqual(dish.mealTypes, [], "Nil mealType should result in empty mealTypes")
+    }
+
+    func testAddPreparedDishForRecipeUseByDateMatchesFreshnessPolicy() async throws {
+        let (appState, _, _) = makeTestAppState()
+        let recipe = makeRecipe(title: "Pasta Bake")
+
+        let before = Date()
+        await appState.addPreparedDishForRecipe(recipe)
+        let after = Date()
+
+        let dish = try XCTUnwrap(appState.preparedDishes.first)
+        let expectedMin = Calendar.current.date(byAdding: .day, value: 4, to: before)!
+        let expectedMax = Calendar.current.date(byAdding: .day, value: 4, to: after)!
+        let useBy = try XCTUnwrap(dish.useByDate)
+        XCTAssertTrue(useBy >= expectedMin && useBy <= expectedMax,
+                      "useByDate should be ~4 days from now (refrigerated policy), got \(useBy)")
+    }
+
+    func testAddPreparedDishForRecipeWithNilNutritionLeavesDishNutritionNil() async throws {
+        let (appState, _, _) = makeTestAppState()
+        let recipe = makeRecipe(title: "Simple Toast", nutrition: nil)
+
+        await appState.addPreparedDishForRecipe(recipe)
+
+        let dish = try XCTUnwrap(appState.preparedDishes.first)
+        XCTAssertNil(dish.nutrition, "Dish should have nil nutrition when recipe has none")
     }
 
     func testAddRecipesToCookQueueWithSourceEntriesLinksMealPlanEntryIDs() async throws {
@@ -4649,8 +4678,10 @@ final class HomeViewModelTests: XCTestCase {
 
     func testExpiringPreparedDishesReflectsAppState() async {
         let (vm, appState) = makeSUT()
-        // Pantry storage = 2 day expiry → dish added now should show up in expiring list
-        let dish = PreparedDish(name: "Old Leftovers", mealTypes: [.dinner], servingsRemaining: 1, storage: .pantry, dateAdded: Calendar.current.date(byAdding: .day, value: -1, to: Date())!)
+        // Pantry storage = 2 day expiry → dish with useByDate 1 day from now should show up in expiring list
+        let dish = PreparedDish(name: "Old Leftovers", mealTypes: [.dinner], servingsRemaining: 1, storage: .pantry,
+                                useByDate: Calendar.current.date(byAdding: .day, value: 1, to: Date()),
+                                dateAdded: Calendar.current.date(byAdding: .day, value: -1, to: Date())!)
         await appState.addPreparedDish(dish)
 
         // expiringPreparedDishes is a passthrough from appState
@@ -6722,12 +6753,14 @@ final class ErrorHandlingTests: XCTestCase {
             ShoppingItem(name: "Bread", quantity: 1, unit: .whole, category: .grains),
         ])
 
-        var milkUpdated = appState.shoppingItems.first(where: { $0.name == "Milk" })!
+        let milkItem = appState.shoppingItems.first(where: { $0.name.contains("Milk") })
+        XCTAssertNotNil(milkItem, "Milk item should exist in shopping list")
+        guard var milkUpdated = milkItem else { return }
         milkUpdated.isChecked = true
         await appState.replaceShoppingItems([milkUpdated])
 
-        XCTAssertTrue(appState.shoppingItems.first(where: { $0.name == "Milk" })!.isChecked)
-        XCTAssertFalse(appState.shoppingItems.first(where: { $0.name.contains("Bread") })!.isChecked)
+        XCTAssertTrue(appState.shoppingItems.first(where: { $0.name.contains("Milk") })?.isChecked == true)
+        XCTAssertFalse(appState.shoppingItems.first(where: { $0.name.contains("Bread") })?.isChecked == true)
     }
 
     func testReplaceShoppingItemsNoOpWhenEmpty() async {

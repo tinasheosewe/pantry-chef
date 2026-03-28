@@ -1212,7 +1212,9 @@ final class AppState {
             mealTypes: [recipe.mealType].compactMap { $0 },
             servingsRemaining: recipe.servings,
             storage: .refrigerated,
-            recipeID: recipe.id
+            useByDate: PreparedDishFreshnessPolicy.estimatedUseByDate(for: .refrigerated),
+            recipeID: recipe.id,
+            nutrition: recipe.nutrition
         )
         await addPreparedDish(dish)
     }

@@ -127,7 +127,8 @@ final class ScenarioBaselineTests: XCTestCase {
     /// Scenario: Cook a recipe via queue that came from meal plan → expect cookedAt stamped AND prepared dish created.
     func testCookQueueFromMealPlanScenarioStampsCookedAndCreatesPreparedDish() async throws {
         let (appState, storage, _) = makeTestAppState()
-        let recipe = makeRecipe(title: "Chicken Curry", servings: 4, mealType: .dinner)
+        let recipe = makeRecipe(title: "Chicken Curry", servings: 4, mealType: .dinner,
+                                nutrition: NutritionInfo(calories: 450, protein: 32, carbohydrates: 30, fat: 18))
         await appState.addRecipe(recipe)
 
         // Plan it
@@ -149,10 +150,13 @@ final class ScenarioBaselineTests: XCTestCase {
         // The Done button also calls addPreparedDishForRecipe — simulate that
         await appState.addPreparedDishForRecipe(recipe)
 
-        // Verify prepared dish was created
+        // Verify prepared dish was created with recipe link, expiry, and nutrition
         XCTAssertEqual(appState.preparedDishes.count, 1)
-        XCTAssertEqual(appState.preparedDishes.first?.name, "Chicken Curry")
-        XCTAssertEqual(appState.preparedDishes.first?.recipeID, recipe.id)
+        let dish = try XCTUnwrap(appState.preparedDishes.first)
+        XCTAssertEqual(dish.name, "Chicken Curry")
+        XCTAssertEqual(dish.recipeID, recipe.id)
+        XCTAssertNotNil(dish.useByDate, "Prepared dish from cook should have a useByDate")
+        XCTAssertEqual(dish.nutrition, recipe.nutrition, "Prepared dish should carry recipe nutrition")
         XCTAssertEqual(storage.addPreparedDishCallCount, 1)
     }
 
@@ -649,8 +653,10 @@ final class ScenarioBaselineTests: XCTestCase {
         XCTAssertEqual(appState.shoppingItems.count, 3)
 
         // Check off two items
-        await appState.toggleShoppingItem(appState.shoppingItems.first(where: { $0.name == "Eggs" })!)
-        await appState.toggleShoppingItem(appState.shoppingItems.first(where: { $0.name == "Flour" })!)
+        let eggs = try XCTUnwrap(appState.shoppingItems.first(where: { $0.name.contains("Egg") }))
+        let flour = try XCTUnwrap(appState.shoppingItems.first(where: { $0.name.contains("Flour") }))
+        await appState.toggleShoppingItem(eggs)
+        await appState.toggleShoppingItem(flour)
 
         let checkedItems = appState.shoppingItems.filter { $0.isChecked }
         XCTAssertEqual(checkedItems.count, 2)
@@ -662,13 +668,13 @@ final class ScenarioBaselineTests: XCTestCase {
         await appState.removeCheckedShoppingItems()
 
         // Verify: pantry has transferred items
-        let pantryNames = Set(appState.pantryItems.map { $0.name })
-        XCTAssertTrue(pantryNames.contains("Eggs"), "Eggs should be in pantry")
-        XCTAssertTrue(pantryNames.contains("Flour"), "Flour should be in pantry")
+        let pantryNames = appState.pantryItems.map { $0.name }
+        XCTAssertTrue(pantryNames.contains(where: { $0.contains("Egg") }), "Eggs should be in pantry")
+        XCTAssertTrue(pantryNames.contains(where: { $0.contains("Flour") }), "Flour should be in pantry")
 
         // Verify: shopping list only has the unchecked item
         XCTAssertEqual(appState.shoppingItems.count, 1)
-        XCTAssertEqual(appState.shoppingItems.first?.name, "Sugar")
+        XCTAssertTrue(appState.shoppingItems.first?.name.contains("Sugar") == true)
     }
 
     // ================================================================

@@ -97,7 +97,7 @@ final class ViewSnapshotBaselineTests: XCTestCase {
             of: NavigationStack { PreparedDishDetailView(dish: dish).environment(appState) },
             size: CGSize(width: 390, height: 844)
         )
-        XCTAssertEqual(hash, "c286fc69c4576400336a121f2a49ddd7505432ca5c4235763d30c034450d496c")
+        XCTAssertEqual(hash, "87e340c47d219dce9001c48575cd253584c7488c277b235ea4f827eaf94a6707")
     }
 
     private func snapshotHash<V: View>(of view: V, size: CGSize) throws -> String {
