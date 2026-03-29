@@ -1,368 +1,166 @@
+"""Main orchestrator — coordinates ingredient and recipe pipelines."""
+
 from __future__ import annotations
 
-import argparse
-import json
-import sys
-from pathlib import Path
+import asyncio
+import logging
 
-if __package__ in {None, ""}:
-    package_dir = Path(__file__).resolve().parent
-    sys.path.insert(0, str(package_dir.parent))
-    from recipe_ingredient_orchestrator.artifacts import ArtifactWriter
-    from recipe_ingredient_orchestrator.campaigns import RecipeCampaignRunner, load_campaign_spec, load_campaign_spec_from_dir
-    from recipe_ingredient_orchestrator.corpus_builder import IngredientCorpusBuilder, RecipeCorpusBuilder, analyze_corpus, export_app_ingredient_catalog
-    from recipe_ingredient_orchestrator.corpus import RecipeCorpusIndex
-    from recipe_ingredient_orchestrator.config import OrchestratorConfig
-    from recipe_ingredient_orchestrator.logging_utils import get_logger, setup_logging
-    from recipe_ingredient_orchestrator.models import CampaignSpec, DishSpec
-    from recipe_ingredient_orchestrator.openai_client import OpenAIChatClient
-    from recipe_ingredient_orchestrator.pipeline import build_demo_orchestrator, build_production_orchestrator
-    from recipe_ingredient_orchestrator.promotion import IngredientPromotionStore
-    from recipe_ingredient_orchestrator.request_planning import RequestPlanningService
-else:
-    from .artifacts import ArtifactWriter
-    from .campaigns import RecipeCampaignRunner, load_campaign_spec, load_campaign_spec_from_dir
-    from .corpus_builder import IngredientCorpusBuilder, RecipeCorpusBuilder, analyze_corpus, export_app_ingredient_catalog
-    from .corpus import RecipeCorpusIndex
-    from .config import OrchestratorConfig
-    from .logging_utils import get_logger, setup_logging
-    from .models import CampaignSpec, DishSpec
-    from .openai_client import OpenAIChatClient
-    from .pipeline import build_demo_orchestrator, build_production_orchestrator
-    from .promotion import IngredientPromotionStore
-    from .request_planning import RequestPlanningService
+from .catalog import InMemoryCatalog
+from .client import LLMClient
+from .config import Settings
+from .generators.ingredients import IngredientGenerator
+from .generators.recipes import RecipeGenerator
+from .models import GenerationRequest, Recipe
+from .reviewer import RecipeReviewer
+from .schemas import GenerationMode, ReviewStatus
+from .writer import OutputWriter
+
+logger = logging.getLogger(__name__)
 
 
-logger = get_logger("cli")
+class GenerationOrchestrator:
+    """Coordinates ingredient generation, recipe generation, review, and output."""
 
+    def __init__(
+        self,
+        client: LLMClient,
+        catalog: InMemoryCatalog,
+        ingredient_gen: IngredientGenerator,
+        recipe_gen: RecipeGenerator,
+        reviewer: RecipeReviewer,
+        writer: OutputWriter,
+        settings: Settings,
+    ) -> None:
+        self._client = client
+        self._catalog = catalog
+        self._ingredient_gen = ingredient_gen
+        self._recipe_gen = recipe_gen
+        self._reviewer = reviewer
+        self._writer = writer
+        self._settings = settings
 
-def load_spec(spec_file: Path | None, title: str | None) -> DishSpec:
-    if spec_file is not None:
-        payload = json.loads(spec_file.read_text(encoding="utf-8"))
-        return DishSpec(
-            title=payload["title"],
-            cuisine=payload.get("cuisine"),
-            meal_type=payload.get("meal_type"),
-            servings=payload.get("servings", 4),
-            goals=payload.get("goals", []),
-            pantry_focus=payload.get("pantry_focus", []),
-            notes=payload.get("notes"),
+    async def run(
+        self,
+        request: GenerationRequest,
+        existing_titles: list[str] | None = None,
+    ) -> None:
+        """Execute the generation pipeline based on request mode."""
+        existing_titles = existing_titles or []
+        recipes: list[Recipe] = []
+
+        logger.info(
+            "Starting generation: mode=%s count=%d",
+            request.mode.value,
+            request.count,
         )
 
-    return DishSpec(
-        title=title or "Creamy Garlic Chicken Pasta",
-        cuisine="Italian",
-        meal_type="Dinner",
-        servings=4,
-        goals=["Mock end-to-end orchestration slice"],
-    )
-
-
-def build_argument_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Run the PantryChef recipe and ingredient orchestrator.")
-    subparsers = parser.add_subparsers(dest="command", required=True)
-
-    run_dish = subparsers.add_parser("run-dish", help="Generate one recipe pipeline run.")
-    run_dish.add_argument("--title", help="Dish title to use for the run.")
-    run_dish.add_argument("--spec-file", type=Path, help="Optional JSON file containing a DishSpec payload.")
-    run_dish.add_argument("--demo", action="store_true", help="Use the local demo generator and resolver.")
-    run_dish.add_argument(
-        "--output-dir",
-        type=Path,
-        help="Directory where pipeline artifacts will be written.",
-    )
-
-    run_campaign = subparsers.add_parser("run-campaign", help="Run a batch campaign from a JSON spec file.")
-    run_campaign.add_argument("--campaign-file", required=True, type=Path, help="Campaign JSON file.")
-    run_campaign.add_argument("--demo", action="store_true", help="Use the local demo generator and resolver.")
-    run_campaign.add_argument("--max-concurrency", type=int, help="Override the bounded dish-level parallelism for this run.")
-
-    plan_request = subparsers.add_parser("plan-request", help="Convert a natural language request into a campaign spec.")
-    plan_request.add_argument("--request", required=True, help="Natural language request, for example 'generate 10 indian recipes'.")
-    plan_request.add_argument("--demo", action="store_true", help="Ignored for planning. Request planning always uses GPT; --demo only affects downstream generation in run-request.")
-    plan_request.add_argument("--output-file", type=Path, help="Optional path to write the planned campaign JSON.")
-
-    run_request = subparsers.add_parser("run-request", help="Plan and run a natural language request as a campaign.")
-    run_request.add_argument("--request", required=True, help="Natural language request, for example 'generate a duck confit recipe'.")
-    run_request.add_argument("--demo", action="store_true", help="Use demo generation after GPT request planning.")
-    run_request.add_argument("--max-concurrency", type=int, help="Override the bounded dish-level parallelism for this run.")
-    run_request.add_argument("--plan-output-file", type=Path, help="Optional path to write the planned campaign JSON.")
-
-    resume_campaign = subparsers.add_parser("resume-campaign", help="Resume a campaign directory.")
-    resume_campaign.add_argument("--campaign-dir", required=True, type=Path, help="Existing campaign directory.")
-    resume_campaign.add_argument("--demo", action="store_true", help="Use the local demo generator and resolver.")
-    resume_campaign.add_argument("--max-concurrency", type=int, help="Override the bounded dish-level parallelism for this resume.")
-
-    report_campaign = subparsers.add_parser("report-campaign", help="Print campaign metrics for a campaign directory.")
-    report_campaign.add_argument("--campaign-dir", required=True, type=Path, help="Existing campaign directory.")
-
-    build_ingredient_corpus = subparsers.add_parser("build-ingredient-corpus", help="Grow the first-class ingredient corpus to a target enriched size.")
-    build_ingredient_corpus.add_argument("--target-count", type=int, default=1000, help="Target enriched ingredient count.")
-    build_ingredient_corpus.add_argument("--batch-size", type=int, default=100, help="Maximum ingredients to request per batch.")
-    build_ingredient_corpus.add_argument("--report-file", type=Path, help="Optional path for the build report JSON.")
-
-    build_recipe_corpus = subparsers.add_parser("build-recipe-corpus", help="Grow the accepted recipe corpus to a target count.")
-    build_recipe_corpus.add_argument("--target-count", type=int, default=1000, help="Target accepted recipe count.")
-    build_recipe_corpus.add_argument("--batch-size", type=int, default=25, help="Maximum dishes to plan per batch.")
-    build_recipe_corpus.add_argument("--max-concurrency", type=int, help="Override bounded dish-level parallelism for corpus builds.")
-    build_recipe_corpus.add_argument("--report-file", type=Path, help="Optional path for the build report JSON.")
-
-    run_eda = subparsers.add_parser("run-eda", help="Analyze the ingredient and recipe corpus state.")
-    run_eda.add_argument("--output-file", type=Path, help="Optional path for the EDA report JSON.")
-
-    export_ingredient_catalog = subparsers.add_parser("export-app-ingredient-catalog", help="Export the ingredient catalog in an app-aligned JSON bundle.")
-    export_ingredient_catalog.add_argument("--output-file", type=Path, help="Optional output path for the exported app ingredient catalog JSON.")
-
-    subparsers.add_parser("print-config", help="Print resolved orchestrator configuration.")
-    return parser
-
-
-def build_runtime_orchestrator(config: OrchestratorConfig, demo: bool):
-    if demo:
-        return build_demo_orchestrator()
-    return build_production_orchestrator(config)
-
-
-def build_campaign_runner(
-    config: OrchestratorConfig,
-    demo: bool,
-    max_workers: int | None = None,
-) -> RecipeCampaignRunner:
-    orchestrator = build_runtime_orchestrator(config, demo)
-    return RecipeCampaignRunner(
-        orchestrator=orchestrator,
-        artifact_writer=ArtifactWriter(),
-        promotion_store=IngredientPromotionStore(),
-        root_dir=config.output_root,
-        accepted_root=config.accepted_root,
-        max_workers=max_workers or config.max_concurrency,
-    )
-
-
-def build_request_planner(config: OrchestratorConfig) -> RequestPlanningService:
-    config.require_request_planning_support()
-    project_root = Path(__file__).resolve().parents[2]
-    corpus_index = RecipeCorpusIndex.from_project_root(
-        project_root,
-        output_root=config.output_root,
-        accepted_root=config.accepted_root,
-        include_bundled_seed=False,
-    )
-    client = OpenAIChatClient(config)
-    return RequestPlanningService(corpus_index=corpus_index, client=client, planning_model=config.planner_model)
-
-
-def write_campaign_spec(spec: CampaignSpec, output_file: Path) -> None:
-    output_file.parent.mkdir(parents=True, exist_ok=True)
-    output_file.write_text(json.dumps(spec, default=_json_default, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-
-
-def _json_default(value):
-    if hasattr(value, "__dataclass_fields__"):
-        from dataclasses import asdict
-
-        return asdict(value)
-    raise TypeError(f"Object of type {type(value).__name__} is not JSON serializable")
-
-
-def main(argv: list[str] | None = None) -> int:
-    parser = build_argument_parser()
-    args = parser.parse_args(argv)
-    config = OrchestratorConfig.from_env(base_dir=Path(__file__).resolve().parent)
-    log_path = setup_logging(config.output_root, config.log_level)
-    logger.info("Command started command=%s", args.command)
-
-    if args.command == "print-config":
-        print(
-            json.dumps(
-                {
-                    "generationModel": config.generation_model,
-                    "plannerModel": config.planner_model,
-                    "reviewModel": config.review_model,
-                    "ambiguityModel": config.ambiguity_model,
-                    "ingredientModel": config.ingredient_model,
-                    "baseUrl": config.base_url,
-                    "timeoutSeconds": config.timeout_seconds,
-                    "maxRetries": config.max_retries,
-                    "maxDishAttempts": config.max_dish_attempts,
-                    "maxResolutionCycles": config.max_resolution_cycles,
-                    "maxConcurrency": config.max_concurrency,
-                    "requestsPerMinute": config.requests_per_minute,
-                    "logLevel": config.log_level,
-                    "logPath": str(log_path),
-                    "outputRoot": str(config.output_root),
-                    "acceptedRoot": str(config.accepted_root),
-                    "hasOpenAIKey": bool(config.openai_api_key),
-                    "openAIKeySource": config.openai_api_key_source,
-                },
-                indent=2,
-                sort_keys=True,
+        # -- Ingredient pipeline -------------------------------------------
+        if request.mode in (GenerationMode.INGREDIENTS, GenerationMode.BOTH):
+            count = request.count
+            logger.info("Running ingredient pipeline: %d entries", count)
+            await self._ingredient_gen.generate(
+                count=count,
+                catalog=self._catalog,
+                category_filter=request.category.value if request.category else None,
+                prompt_context=request.prompt,
             )
+            logger.info("Ingredient pipeline complete. Catalog size: %d", self._catalog.size)
+
+        # -- Recipe pipeline -----------------------------------------------
+        if request.mode in (GenerationMode.RECIPES, GenerationMode.BOTH):
+            count = request.count
+            logger.info("Running recipe pipeline: %d recipes", count)
+
+            # Plan dishes in batches
+            all_briefs = []
+            remaining = count
+            while remaining > 0:
+                batch_count = min(remaining, self._settings.recipe_batch_size)
+                briefs = await self._recipe_gen.plan_dishes(
+                    count=batch_count,
+                    existing_titles=existing_titles + [r.title for r in recipes] + [b.title for b in all_briefs],
+                    cuisine_filter=request.cuisine.value if request.cuisine else None,
+                    meal_type_filter=request.meal_type.value if request.meal_type else None,
+                    prompt_context=request.prompt,
+                )
+                all_briefs.extend(briefs)
+                remaining -= len(briefs)
+
+            # Generate and review in batches
+            for batch_start in range(0, len(all_briefs), self._settings.recipe_batch_size):
+                batch = all_briefs[batch_start:batch_start + self._settings.recipe_batch_size]
+                batch_recipes = await self._recipe_gen.generate_batch(batch, self._catalog)
+
+                # Review each recipe with retry
+                for recipe in batch_recipes:
+                    accepted = await self._review_with_retry(recipe, self._catalog)
+                    if accepted:
+                        recipes.append(accepted)
+
+                logger.info(
+                    "Batch %d-%d: %d/%d accepted (total: %d)",
+                    batch_start + 1,
+                    batch_start + len(batch),
+                    len([r for r in batch_recipes]),
+                    len(batch),
+                    len(recipes),
+                )
+
+        # -- Substitution linking ------------------------------------------
+        if self._catalog.size > 0:
+            logger.info("Running substitution linking pass...")
+            stats = await self._catalog.link_substitutions()
+            logger.info("Substitution linking: %s", stats)
+
+        # -- Write output --------------------------------------------------
+        self._writer.write(
+            catalog=self._catalog.all_entries(),
+            recipes=recipes,
         )
-        return 0
+        logger.info(
+            "Generation complete: %d catalog entries, %d recipes",
+            self._catalog.size,
+            len(recipes),
+        )
 
-    if args.command == "plan-request":
-        planner = build_request_planner(config)
-        spec = planner.plan(args.request)
-        if args.output_file is not None:
-            write_campaign_spec(spec, args.output_file)
-        logger.info("Request planning completed campaign_id=%s", spec.campaign_id)
-        print(json.dumps(spec, default=_json_default, indent=2, sort_keys=True))
-        return 0
+    async def _review_with_retry(
+        self,
+        recipe: Recipe,
+        catalog: InMemoryCatalog,
+    ) -> Recipe | None:
+        """Review a recipe. If revise, retry generation with feedback. If reject, drop."""
+        current = recipe
+        for attempt in range(1, self._settings.max_retries + 1):
+            result = await self._reviewer.review(current)
 
-    if args.command == "run-dish":
-        spec = load_spec(args.spec_file, args.title)
-        orchestrator = build_runtime_orchestrator(config, args.demo)
-        pipeline_run = orchestrator.run(spec)
-        output_dir = args.output_dir or (config.output_root / pipeline_run.run_id)
-        artifact_paths = ArtifactWriter().write(pipeline_run, output_dir)
+            if result.status == ReviewStatus.ACCEPTED:
+                return current
 
-        summary = {
-            "runId": pipeline_run.run_id,
-            "valid": pipeline_run.validation.is_valid,
-            "reviewStatus": None if pipeline_run.review is None else pipeline_run.review.status,
-            "failureCode": pipeline_run.failure_code,
-            "logPath": str(log_path),
-            "errors": pipeline_run.validation.errors,
-            "warnings": pipeline_run.validation.warnings,
-            "pipelineRun": artifact_paths["pipeline_run"],
-            "exportedRecipe": artifact_paths["exported_recipe"],
-            "startedAt": pipeline_run.started_at,
-            "durationSeconds": pipeline_run.duration_seconds,
-            "resolvedIngredients": len(pipeline_run.resolved_recipe.ingredients),
-        }
-        print(json.dumps(summary, indent=2, sort_keys=True))
-        accepted = pipeline_run.validation.is_valid and (pipeline_run.review is None or pipeline_run.review.status == "accepted")
-        logger.info("run-dish completed run_id=%s accepted=%s", pipeline_run.run_id, accepted)
-        return 0 if accepted else 1
+            if result.status == ReviewStatus.REJECTED:
+                logger.warning("Recipe '%s' rejected: %s", current.title, result.feedback)
+                return None
 
-    if args.command == "run-campaign":
-        spec = load_campaign_spec(args.campaign_file)
-        max_workers = args.max_concurrency or spec.max_concurrency or config.max_concurrency
-        runner = build_campaign_runner(config, args.demo, max_workers=max_workers)
-        state = runner.run_campaign(spec)
-        print(
-            json.dumps(
-                {
-                    "campaignId": state.campaign_id,
-                    "status": state.status,
-                    "items": len(state.items),
-                    "maxConcurrency": max_workers,
-                    "logPath": str(log_path),
-                    "metricsPath": str(config.output_root / state.campaign_id / "campaign_metrics.json"),
-                    "appImportBundle": str(config.output_root / state.campaign_id / "app_import" / "seed_recipes.json"),
-                },
-                indent=2,
-                sort_keys=True,
+            # Revise: regenerate with feedback
+            logger.info(
+                "Recipe '%s' needs revision (attempt %d/%d): %s",
+                current.title,
+                attempt,
+                self._settings.max_retries,
+                result.feedback,
             )
-        )
-        logger.info("run-campaign completed campaign_id=%s status=%s", state.campaign_id, state.status)
-        return 0 if state.status == "completed" else 1
-
-    if args.command == "run-request":
-        planner = build_request_planner(config)
-        spec = planner.plan(args.request)
-        if args.plan_output_file is not None:
-            write_campaign_spec(spec, args.plan_output_file)
-        max_workers = args.max_concurrency or spec.max_concurrency or config.max_concurrency
-        runner = build_campaign_runner(config, args.demo, max_workers=max_workers)
-        state = runner.run_campaign(spec)
-        print(
-            json.dumps(
-                {
-                    "campaignId": state.campaign_id,
-                    "status": state.status,
-                    "items": len(state.items),
-                    "maxConcurrency": max_workers,
-                    "logPath": str(log_path),
-                    "metricsPath": str(config.output_root / state.campaign_id / "campaign_metrics.json"),
-                    "appImportBundle": str(config.output_root / state.campaign_id / "app_import" / "seed_recipes.json"),
-                },
-                indent=2,
-                sort_keys=True,
+            from .models import DishBrief
+            brief = DishBrief(
+                title=current.title,
+                cuisine=current.cuisine,
+                meal_type=current.meal_type,
+                servings=current.servings,
             )
-        )
-        logger.info("run-request completed campaign_id=%s status=%s", state.campaign_id, state.status)
-        return 0 if state.status == "completed" else 1
-
-    if args.command == "resume-campaign":
-        spec = load_campaign_spec_from_dir(args.campaign_dir)
-        max_workers = args.max_concurrency or spec.max_concurrency or config.max_concurrency
-        runner = build_campaign_runner(config, args.demo, max_workers=max_workers)
-        state = runner.resume_campaign(args.campaign_dir)
-        print(
-            json.dumps(
-                {
-                    "campaignId": state.campaign_id,
-                    "status": state.status,
-                    "items": len(state.items),
-                    "maxConcurrency": max_workers,
-                    "logPath": str(log_path),
-                    "metricsPath": str(args.campaign_dir / "campaign_metrics.json"),
-                    "appImportBundle": str(args.campaign_dir / "app_import" / "seed_recipes.json"),
-                },
-                indent=2,
-                sort_keys=True,
+            current = await self._recipe_gen.generate_one(
+                brief=brief,
+                catalog=catalog,
+                revision_feedback=result.feedback,
             )
-        )
-        logger.info("resume-campaign completed campaign_id=%s status=%s", state.campaign_id, state.status)
-        return 0 if state.status == "completed" else 1
 
-    if args.command == "report-campaign":
-        metrics_path = args.campaign_dir / "campaign_metrics.json"
-        if not metrics_path.exists():
-            raise RuntimeError(f"Campaign metrics file not found: {metrics_path}")
-        print(metrics_path.read_text(encoding="utf-8").rstrip())
-        return 0
-
-    if args.command == "build-ingredient-corpus":
-        config.require_openai_api_key()
-        builder = IngredientCorpusBuilder(OpenAIChatClient(config), model=config.ingredient_model)
-        report_path = args.report_file or (config.output_root / "corpus_builds" / "ingredients" / "latest.json")
-        report = builder.build(
-            target_count=max(1, args.target_count),
-            batch_size=max(1, args.batch_size),
-            storage_dir=config.output_root / "ingredient_catalog",
-            report_path=report_path,
-        )
-        print(json.dumps({"reportPath": str(report_path), **report["metrics"]}, indent=2, sort_keys=True))
-        return 0 if report["metrics"]["enriched_count"] >= args.target_count else 1
-
-    if args.command == "build-recipe-corpus":
-        config.require_openai_api_key()
-        max_workers = args.max_concurrency or config.max_concurrency
-        runner = build_campaign_runner(config, False, max_workers=max_workers)
-        builder = RecipeCorpusBuilder(OpenAIChatClient(config), runner=runner, model=config.planner_model)
-        project_root = Path(__file__).resolve().parents[2]
-        report_path = args.report_file or (config.output_root / "corpus_builds" / "recipes" / "latest.json")
-        report = builder.build(
-            project_root=project_root,
-            output_root=config.output_root,
-            accepted_root=config.accepted_root,
-            target_count=max(1, args.target_count),
-            batch_size=max(1, args.batch_size),
-            report_path=report_path,
-        )
-        print(json.dumps({"reportPath": str(report_path), **report["metrics"]}, indent=2, sort_keys=True))
-        return 0 if report["metrics"]["accepted_recipe_count"] >= args.target_count else 1
-
-    if args.command == "run-eda":
-        project_root = Path(__file__).resolve().parents[2]
-        report = analyze_corpus(project_root, config.output_root, config.accepted_root)
-        if args.output_file is not None:
-            args.output_file.parent.mkdir(parents=True, exist_ok=True)
-            args.output_file.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-        print(json.dumps(report, indent=2, sort_keys=True))
-        return 0
-
-    if args.command == "export-app-ingredient-catalog":
-        output_path = args.output_file or (config.output_root / "app_import" / "ingredient_catalog.json")
-        report = export_app_ingredient_catalog(config.output_root / "ingredient_catalog", output_path)
-        print(json.dumps(report, indent=2, sort_keys=True))
-        return 0
-
-    raise RuntimeError(f"Unknown command: {args.command}")
-
-
-if __name__ == "__main__":
-    raise SystemExit(main())
+        # Exhausted retries — accept the last version
+        logger.warning("Recipe '%s' exhausted retries, accepting last version", current.title)
+        return current
