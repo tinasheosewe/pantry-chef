@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 import asyncio
+import json
 import logging
+from pathlib import Path
 
 from .catalog import InMemoryCatalog
 from .client import LLMClient
@@ -108,6 +110,9 @@ class GenerationOrchestrator:
                     len(recipes),
                 )
 
+                # Checkpoint after each batch so progress survives crashes
+                self._save_checkpoint(existing_recipes + recipes)
+
         # -- Substitution linking ------------------------------------------
         if self._catalog.size > 0:
             logger.info("Running substitution linking pass...")
@@ -126,6 +131,17 @@ class GenerationOrchestrator:
             len(all_recipes),
             len(recipes),
         )
+
+    def _save_checkpoint(self, recipes: list[Recipe]) -> None:
+        """Persist current recipe progress so it survives crashes."""
+        try:
+            cp_path = self._writer._output_dir / "recipes_checkpoint.json"
+            self._writer._output_dir.mkdir(parents=True, exist_ok=True)
+            data = [r.model_dump(mode="json", exclude_none=True) for r in recipes]
+            cp_path.write_text(json.dumps(data, indent=2, ensure_ascii=False))
+            logger.info("Checkpoint saved: %d recipes → %s", len(recipes), cp_path)
+        except Exception:
+            logger.exception("Failed to write checkpoint")
 
     async def _review_with_retry(
         self,

@@ -58,7 +58,8 @@ class InMemoryCatalog:
         - every alias
         - name combined with each variant/form option  ("cheese cheddar", "garlic powdered")
         - stemmed form variants ("garlic powder" from form=powdered)
-        - each variant option on its own               ("cheddar", "balsamic")
+        - multi-word variant options on their own       ("extra virgin", "stone ground")
+          (single-word variants like "sweet" are too broad for standalone registration)
         """
         tokens: list[str] = [self._normalise(entry.name)]
         for alias in entry.aliases:
@@ -73,7 +74,9 @@ class InMemoryCatalog:
                     for stem in self._stem_variants(nopt):
                         tokens.append(f"{base} {stem}")
                         tokens.append(f"{stem} {base}")
-                    if facet.key.value == "variant":
+                    # Only register standalone variant tokens for multi-word options;
+                    # single words like "sweet", "dried", "hot" cause false positives.
+                    if facet.key.value == "variant" and len(nopt.split()) >= 2:
                         tokens.append(nopt)
         return tokens
 
@@ -88,19 +91,35 @@ class InMemoryCatalog:
         Returns the existing entry ID that causes the overlap, or None.
         """
         candidate_name = self._normalise(entry.name)
+        candidate_words = set(candidate_name.split())
+
         # Direct name collision with an existing token
         if candidate_name in self._token_index:
             existing_id = self._token_index[candidate_name]
             if existing_id != entry.id:
                 return existing_id
 
-        # Check every alias
+        # Check every alias — with name-relevance verification for indirect matches.
+        # Direct match (alias == existing name) is always accepted.
+        # Indirect match (alias == existing alias/token) requires that the candidate
+        # and existing entry names have a word-subset relationship, preventing
+        # false positives from generic aliases like "Nut Oil" or "Dried Herb".
         for alias in entry.aliases:
             norm_alias = self._normalise(alias)
             if norm_alias in self._token_index:
                 existing_id = self._token_index[norm_alias]
                 if existing_id != entry.id:
-                    return existing_id
+                    existing_entry = self._entries.get(existing_id)
+                    if not existing_entry:
+                        return existing_id
+                    existing_name = self._normalise(existing_entry.name)
+                    # Strong match: alias matches existing entry's actual name
+                    if norm_alias == existing_name:
+                        return existing_id
+                    # Indirect match: require name word-subset relationship
+                    existing_words = set(existing_name.split())
+                    if existing_words < candidate_words or candidate_words < existing_words:
+                        return existing_id
 
         # Word-superset check: catch new qualifier+base combos not yet in the token index
         # e.g. "parmesan cheese" when "cheese" exists but doesn't have variant=parmesan
