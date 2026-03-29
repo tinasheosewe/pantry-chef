@@ -53,10 +53,10 @@ Run a natural-language request end to end:
 python3 Scripts/recipe_ingredient_orchestrator/orchestrator.py run-request --request "generate a duck confit recipe"
 ```
 
-Run a true zero-base request with no built-in ingredient seed catalog:
+Run a request that generates many recipes:
 
 ```bash
-python3 Scripts/recipe_ingredient_orchestrator/orchestrator.py run-request --request "generate 10 french recipes" --empty-catalog
+python3 Scripts/recipe_ingredient_orchestrator/orchestrator.py run-request --request "generate 10 french recipes"
 ```
 
 Run a production campaign from a spec file:
@@ -98,13 +98,13 @@ python3 Scripts/recipe_ingredient_orchestrator/orchestrator.py run-eda
 Grow the first-class ingredient corpus toward a target enriched count:
 
 ```bash
-python3 Scripts/recipe_ingredient_orchestrator/orchestrator.py build-ingredient-corpus --target-count 1000 --batch-size 100 --empty-catalog
+python3 Scripts/recipe_ingredient_orchestrator/orchestrator.py build-ingredient-corpus --target-count 1000 --batch-size 100
 ```
 
 Grow the accepted recipe corpus toward a target count:
 
 ```bash
-python3 Scripts/recipe_ingredient_orchestrator/orchestrator.py build-recipe-corpus --target-count 1000 --batch-size 25 --max-concurrency 3 --empty-catalog
+python3 Scripts/recipe_ingredient_orchestrator/orchestrator.py build-recipe-corpus --target-count 1000 --batch-size 25 --max-concurrency 3
 ```
 
 For isolated experiments, override the runtime roots explicitly:
@@ -151,24 +151,10 @@ Planning behavior:
 - request planning is aware of the existing PantryChef recipe corpus before it selects dishes
 - request-based entrypoints require `OPENAI_API_KEY`, including `run-request --demo`, because planning remains model-backed even when generation is mocked
 
-## Empty Catalog Mode
+## Ingredient Catalog
 
-`--empty-catalog` disables built-in seed ingredient entries and forces the pipeline to build ingredient knowledge from unresolved mentions or corpus-build prompts.
-
-Use it for:
-
-- validating true zero-base recipe generation
-- measuring first-class ingredient enrichment behavior without seed assistance
-- building fresh ingredient and recipe corpus roots for experiments
-
-It is supported on:
-
-- `run-dish`
-- `run-campaign`
-- `run-request`
-- `resume-campaign`
-- `build-ingredient-corpus`
-- `build-recipe-corpus`
+The pipeline always starts with an empty ingredient catalog and builds knowledge dynamically through LLM enrichment.
+Ingredient corpus builds grow the catalog from scratch, and recipe pipeline runs enrich unresolved mentions into first-class catalog entries on the fly.
 
 ## Corpus Awareness And Duplicates
 

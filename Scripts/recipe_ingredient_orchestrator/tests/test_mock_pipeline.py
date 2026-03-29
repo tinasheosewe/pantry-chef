@@ -36,7 +36,7 @@ from recipe_ingredient_orchestrator.models import (
 from recipe_ingredient_orchestrator.pipeline import RecipeIngredientOrchestrator
 from recipe_ingredient_orchestrator.promotion import IngredientPromotionStore
 from recipe_ingredient_orchestrator.request_planning import RequestPlanningService
-from recipe_ingredient_orchestrator.services import ScriptedAmbiguityResolver, ScriptedIngredientEnricher, StaticRecipeGenerator, build_default_catalog as build_empty_default_catalog, build_seed_catalog
+from recipe_ingredient_orchestrator.services import MutableIngredientCatalog, ScriptedAmbiguityResolver, ScriptedIngredientEnricher, StaticRecipeGenerator, build_default_catalog as build_empty_default_catalog
 from recipe_ingredient_orchestrator.workers import (
     IngredientExtractionWorker,
     IngredientResolutionWorker,
@@ -45,7 +45,59 @@ from recipe_ingredient_orchestrator.workers import (
 )
 
 
-build_default_catalog = build_seed_catalog
+def _test_entries() -> list[CatalogEntry]:
+    """Minimal, self-contained catalog entries for test assertions."""
+    return [
+        CatalogEntry(item_id="chicken-breast", name="Chicken Breast", category="Protein", aliases={"chicken breast": [], "chicken": []}, default_unit="g", quality_status="enriched"),
+        CatalogEntry(item_id="chicken-thigh", name="Chicken Thigh", category="Protein", aliases={"chicken thigh": []}, default_unit="g", quality_status="enriched"),
+        CatalogEntry(item_id="salmon", name="Salmon", category="Protein", aliases={"salmon": [], "salmon fillet": [FacetSelection(key="cut", value="fillet")]}, default_unit="g", quality_status="enriched"),
+        CatalogEntry(item_id="shrimp", name="Shrimp", category="Protein", aliases={"shrimp": [], "prawns": []}, default_unit="g", quality_status="enriched"),
+        CatalogEntry(item_id="pork", name="Pork", category="Protein", aliases={"pork": [], "ground pork": [FacetSelection(key="form", value="ground")]}, default_unit="g", quality_status="enriched"),
+        CatalogEntry(item_id="bacon", name="Bacon", category="Protein", aliases={"bacon": [], "lardons": [FacetSelection(key="cut", value="lardons")]}, default_unit="g", quality_status="enriched"),
+        CatalogEntry(item_id="white-fish", name="White Fish", category="Protein", aliases={"white fish": [], "white fish fillets": [FacetSelection(key="cut", value="fillet")], "white fish fillet": [FacetSelection(key="cut", value="fillet")]}, default_unit="g", quality_status="enriched"),
+        CatalogEntry(item_id="eggs", name="Eggs", category="Protein", aliases={"eggs": [], "egg": [], "large eggs": []}, default_unit="piece", quality_status="enriched"),
+        CatalogEntry(item_id="pasta", name="Pasta", category="Pasta & Noodles", aliases={"pasta": [], "fettuccine": [FacetSelection(key="form", value="fettuccine")], "spaghetti": [FacetSelection(key="form", value="spaghetti")], "penne": [FacetSelection(key="form", value="penne")]}, default_unit="g", quality_status="enriched"),
+        CatalogEntry(item_id="rice", name="Rice", category="Grains & Cereals", aliases={"rice": [], "jasmine rice": [FacetSelection(key="variety", value="jasmine")], "brown rice": [FacetSelection(key="variety", value="brown")], "basmati rice": [FacetSelection(key="variety", value="basmati")]}, default_unit="cup", quality_status="enriched"),
+        CatalogEntry(item_id="heavy-cream", name="Heavy Cream", category="Dairy", aliases={"heavy cream": [], "cream": [], "double cream": []}, default_unit="cup", quality_status="enriched"),
+        CatalogEntry(item_id="butter", name="Butter", category="Dairy", aliases={"butter": [], "unsalted butter": [FacetSelection(key="style", value="unsalted")]}, default_unit="tbsp", quality_status="enriched"),
+        CatalogEntry(item_id="parmesan", name="Parmesan", category="Dairy", aliases={"parmesan": [], "parmesan cheese": []}, default_unit="g", quality_status="enriched"),
+        CatalogEntry(item_id="mozzarella", name="Mozzarella", category="Dairy", aliases={"mozzarella": [], "fresh mozzarella": [FacetSelection(key="style", value="fresh")]}, default_unit="g", quality_status="enriched"),
+        CatalogEntry(item_id="cheddar", name="Cheddar", category="Dairy", aliases={"cheddar": [], "cheddar cheese": []}, default_unit="g", quality_status="enriched"),
+        CatalogEntry(item_id="garlic", name="Garlic", category="Produce", aliases={"garlic": [], "garlic cloves": [FacetSelection(key="form", value="clove")]}, default_unit="clove", quality_status="enriched"),
+        CatalogEntry(item_id="onion", name="Onion", category="Produce", aliases={"onion": [], "yellow onion": [FacetSelection(key="variety", value="yellow")], "red onion": [FacetSelection(key="variety", value="red")]}, default_unit="piece", quality_status="enriched"),
+        CatalogEntry(item_id="lemon", name="Lemon", category="Produce", aliases={"lemon": [], "lemon juice": [FacetSelection(key="form", value="juice")], "lemon zest": [FacetSelection(key="form", value="zest")]}, default_unit="piece", quality_status="enriched"),
+        CatalogEntry(item_id="spinach", name="Spinach", category="Produce", aliases={"spinach": [], "baby spinach": [FacetSelection(key="variety", value="baby")]}, default_unit="g", quality_status="enriched"),
+        CatalogEntry(item_id="mushroom", name="Mushroom", category="Produce", aliases={"mushroom": [], "mushrooms": [], "cremini mushrooms": [FacetSelection(key="variety", value="cremini")]}, default_unit="g", quality_status="enriched"),
+        CatalogEntry(item_id="tomato", name="Tomato", category="Produce", aliases={"tomato": [], "tomatoes": []}, default_unit="piece", quality_status="enriched"),
+        CatalogEntry(item_id="apple", name="Apple", category="Produce", aliases={"apple": [], "apples": [], "granny smith apple": [FacetSelection(key="variety", value="granny smith")], "granny smith apples": [FacetSelection(key="variety", value="granny smith")]}, default_unit="piece", quality_status="enriched"),
+        CatalogEntry(item_id="eggplant", name="Eggplant", category="Produce", aliases={"eggplant": [], "aubergine": []}, default_unit="piece", quality_status="enriched"),
+        CatalogEntry(item_id="zucchini", name="Zucchini", category="Produce", aliases={"zucchini": [], "courgette": []}, default_unit="piece", quality_status="enriched"),
+        CatalogEntry(item_id="fennel", name="Fennel", category="Produce", aliases={"fennel": [], "fennel bulb": [FacetSelection(key="part", value="bulb")]}, default_unit="piece", quality_status="enriched"),
+        CatalogEntry(item_id="olive-oil", name="Olive Oil", category="Oils & Fats", aliases={"olive oil": [], "extra virgin olive oil": [FacetSelection(key="style", value="extra virgin")]}, default_unit="tbsp", quality_status="enriched"),
+        CatalogEntry(item_id="salt", name="Salt", category="Spices & Herbs", aliases={"salt": [], "kosher salt": [FacetSelection(key="grain", value="kosher")]}, default_unit="pinch", quality_status="enriched"),
+        CatalogEntry(item_id="black-pepper", name="Black Pepper", category="Spices & Herbs", aliases={"black pepper": [], "pepper": []}, default_unit="tsp", quality_status="enriched"),
+        CatalogEntry(item_id="bay-leaf", name="Bay Leaf", category="Spices & Herbs", aliases={"bay leaf": [], "bay leaves": []}, default_unit="piece", quality_status="enriched"),
+        CatalogEntry(item_id="dill", name="Dill", category="Spices & Herbs", aliases={"dill": [], "fresh dill": [FacetSelection(key="form", value="fresh")]}, default_unit="bunch", quality_status="enriched"),
+        CatalogEntry(item_id="nutmeg", name="Nutmeg", category="Spices & Herbs", aliases={"nutmeg": [], "ground nutmeg": [FacetSelection(key="form", value="ground")]}, default_unit="tsp", quality_status="enriched"),
+        CatalogEntry(item_id="saffron", name="Saffron", category="Spices & Herbs", aliases={"saffron": [], "saffron threads": [FacetSelection(key="form", value="threads")]}, default_unit="pinch", quality_status="enriched"),
+        CatalogEntry(item_id="vanilla-extract", name="Vanilla Extract", category="Baking Supplies", aliases={"vanilla extract": []}, default_unit="tsp", quality_status="enriched"),
+        CatalogEntry(item_id="all-purpose-flour", name="All-Purpose Flour", category="Baking Supplies", aliases={"all purpose flour": [], "flour": [], "plain flour": []}, default_unit="cup", quality_status="enriched"),
+        CatalogEntry(item_id="cornstarch", name="Cornstarch", category="Baking Supplies", aliases={"cornstarch": []}, default_unit="tbsp", quality_status="enriched"),
+        CatalogEntry(item_id="sugar", name="Sugar", category="Baking Supplies", aliases={"sugar": [], "caster sugar": [FacetSelection(key="variety", value="caster")], "granulated sugar": [FacetSelection(key="variety", value="granulated")], "white sugar": [FacetSelection(key="variety", value="white")]}, default_unit="cup", quality_status="enriched"),
+        CatalogEntry(item_id="brown-sugar", name="Brown Sugar", category="Baking Supplies", aliases={"brown sugar": []}, default_unit="cup", quality_status="enriched"),
+        CatalogEntry(item_id="chicken-broth", name="Chicken Broth", category="Canned & Jarred", aliases={"chicken broth": [], "chicken stock": []}, default_unit="cup", quality_status="enriched"),
+        CatalogEntry(item_id="puff-pastry", name="Puff Pastry", category="Frozen Foods", aliases={"puff pastry": [], "frozen puff pastry": [FacetSelection(key="state", value="frozen")]}, default_unit="pkg", quality_status="enriched"),
+        CatalogEntry(item_id="water", name="Water", category="Beverages", aliases={"water": [], "cold water": [FacetSelection(key="temperature", value="cold")]}, default_unit="cup", quality_status="enriched"),
+        CatalogEntry(item_id="orange-juice", name="Orange Juice", category="Beverages", aliases={"orange juice": []}, default_unit="cup", quality_status="enriched"),
+        CatalogEntry(item_id="parchment-paper", name="Parchment Paper", category="Other", aliases={"parchment paper": [], "baking parchment": []}, default_unit="piece", quality_status="enriched"),
+    ]
+
+
+def _build_test_catalog(storage_dir: Path | None = None) -> MutableIngredientCatalog:
+    return MutableIngredientCatalog(_test_entries(), storage_dir=storage_dir)
+
+
+build_default_catalog = _build_test_catalog
 
 
 class FakeChatClient:
@@ -1261,14 +1313,13 @@ class MockPipelineTests(unittest.TestCase):
         self.assertEqual(sum(plan["category_targets"].values()), 24)
         self.assertNotIn("Produce", plan["focus_categories"])
         self.assertEqual(set(plan["focus_categories"]), set(plan["category_targets"].keys()))
-        self.assertTrue(all(plan["expansion_hints"][category] for category in plan["focus_categories"]))
 
     def test_catalog_entry_quality_issue_rejects_duplicates_and_generic_buckets(self) -> None:
-        generic_entry = CatalogEntry(
-            item_id="nut-mix",
-            name="Nut Mix",
+        generic_bucket_entry = CatalogEntry(
+            item_id="assorted-variety-mixed-nuts-deluxe",
+            name="Assorted Variety Mixed Nuts Deluxe",
             category="Snacks",
-            aliases={"Nut Mix": []},
+            aliases={"Assorted Variety Mixed Nuts Deluxe": []},
             quality_status="enriched",
         )
         duplicate_entry = CatalogEntry(
@@ -1281,13 +1332,13 @@ class MockPipelineTests(unittest.TestCase):
 
         self.assertEqual(
             _catalog_entry_quality_issue(
-                generic_entry,
+                generic_bucket_entry,
                 existing_item_ids=set(),
                 existing_names=set(),
                 seen_generated_ids=set(),
                 seen_generated_names=set(),
             ),
-            "generic low-value canonical ingredient",
+            "overly generic family bucket",
         )
         self.assertEqual(
             _catalog_entry_quality_issue(
@@ -1460,11 +1511,11 @@ class MockPipelineTests(unittest.TestCase):
         self.assertEqual(merged.facet_definitions, [FacetDefinition(key="style", options=["thai"])])
         self.assertEqual(merged.default_facets, [FacetSelection(key="style", value="thai")])
         self.assertEqual(merged.unit_overrides, {"style": {"thai": "tbsp"}})
-        self.assertEqual(merged.substitutes, [IngredientReference(item_id="soy-sauce", name="Soy Sauce", rationale="Closest pantry substitute.")])
+        self.assertEqual(merged.substitutes, [IngredientReference(item_id="soy-sauce", name="Soy Sauce", rationale="Closest pantry substitute.", facets=[], ratio="1:1", taste_impact="Moderate", texture_impact="Moderate", cooking_impact="Moderate Adjustment", nutrition_impact=None, notes="Closest pantry substitute.", dietary=[])])
         self.assertEqual(merged.storage, IngredientStorage(preferred="pantry", pantry_days=365, refrigerator_days=30, freezer_days=None, notes="Refrigerate after opening."))
         self.assertEqual(merged.freshness_by_storage, {"pantry": FreshnessRange(min_days=180, max_days=365)})
         self.assertIn("Fish Sauce", merged.aliases)
-        self.assertIn("nam pla", merged.aliases)
+        self.assertIn("Nam Pla", merged.aliases)
         self.assertEqual(merged.quality_status, "enriched")
 
     def test_plan_unique_recipe_batch_accumulates_unique_dishes(self) -> None:

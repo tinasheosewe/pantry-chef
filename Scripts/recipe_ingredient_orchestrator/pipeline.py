@@ -21,10 +21,8 @@ from .services import (
     OpenAIRecipeGenerator,
     RecipeGenerator,
     RecipeReviewer,
-    build_empty_catalog,
     build_placeholder_catalog_entries,
     build_default_catalog,
-    build_seed_catalog,
 )
 
 
@@ -265,8 +263,8 @@ class RecipeIngredientOrchestrator:
         return [], [], enrichment_decisions
 
 
-def build_demo_orchestrator(include_seed_catalog: bool = True) -> RecipeIngredientOrchestrator:
-    catalog = build_seed_catalog() if include_seed_catalog else build_default_catalog()
+def build_demo_orchestrator() -> RecipeIngredientOrchestrator:
+    catalog = build_default_catalog()
     return RecipeIngredientOrchestrator(
         recipe_generator=DemoRecipeGenerator(),
         extraction_worker=IngredientExtractionWorker(),
@@ -283,8 +281,6 @@ def build_demo_orchestrator(include_seed_catalog: bool = True) -> RecipeIngredie
 
 def build_production_orchestrator(
     config: OrchestratorConfig | None = None,
-    *,
-    include_seed_catalog: bool = True,
 ) -> RecipeIngredientOrchestrator:
     resolved_config = config or OrchestratorConfig.from_env()
     resolved_config.require_openai_api_key()
@@ -369,36 +365,7 @@ def _failure_code_for_exception(exc: Exception) -> str:
     return "pipeline_execution_failed"
 
 
-_NON_VEGETARIAN_ITEM_IDS = {
-    "bacon",
-    "chicken-breast",
-    "chicken-thigh",
-    "duck-leg",
-    "fish-fillets",
-    "fish-stock",
-    "ground-beef",
-    "pork",
-    "salmon",
-    "shrimp",
-    "white-fish",
-}
 
-_NON_VEGAN_ITEM_IDS = _NON_VEGETARIAN_ITEM_IDS | {
-    "butter",
-    "cheddar",
-    "duck-fat",
-    "eggs",
-    "heavy-cream",
-    "milk",
-}
-
-_GLUTEN_ITEM_IDS = {
-    "all-purpose-flour",
-    "bread",
-    "breadcrumbs",
-    "pasta",
-    "puff-pastry",
-}
 
 
 def _normalize_recipe_metadata(
@@ -488,26 +455,5 @@ def _merge_validation_reports(left: ValidationReport, right: ValidationReport) -
 
 
 def _normalized_dietary_tags_for_resolved_recipe(resolved_recipe: ResolvedRecipeArtifact) -> list[str]:
-    tags = list(dict.fromkeys(tag.strip() for tag in resolved_recipe.dietary_tags if tag and tag.strip()))
-    if not tags:
-        return []
-
-    item_ids = {
-        ingredient.catalog_item_id
-        for ingredient in resolved_recipe.resolved_ingredients()
-        if ingredient.catalog_item_id
-    }
-    categories = {ingredient.category for ingredient in resolved_recipe.resolved_ingredients()}
-
-    normalized: list[str] = []
-    for tag in tags:
-        if tag == "Vegetarian" and item_ids & _NON_VEGETARIAN_ITEM_IDS:
-            continue
-        if tag == "Vegan" and ((item_ids & _NON_VEGAN_ITEM_IDS) or "Dairy" in categories or "Protein" in categories and "eggs" in item_ids):
-            continue
-        if tag == "Dairy-Free" and "Dairy" in categories:
-            continue
-        if tag == "Gluten-Free" and item_ids & _GLUTEN_ITEM_IDS:
-            continue
-        normalized.append(tag)
-    return normalized
+    """Deduplicate and clean dietary tags.  Semantic validation is left to the LLM review step."""
+    return list(dict.fromkeys(tag.strip() for tag in resolved_recipe.dietary_tags if tag and tag.strip()))

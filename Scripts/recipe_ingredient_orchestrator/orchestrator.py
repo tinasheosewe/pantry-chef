@@ -71,13 +71,11 @@ def build_argument_parser() -> argparse.ArgumentParser:
         type=Path,
         help="Directory where pipeline artifacts will be written.",
     )
-    run_dish.add_argument("--empty-catalog", action="store_true", help="Start without built-in seed ingredient entries.")
 
     run_campaign = subparsers.add_parser("run-campaign", help="Run a batch campaign from a JSON spec file.")
     run_campaign.add_argument("--campaign-file", required=True, type=Path, help="Campaign JSON file.")
     run_campaign.add_argument("--demo", action="store_true", help="Use the local demo generator and resolver.")
     run_campaign.add_argument("--max-concurrency", type=int, help="Override the bounded dish-level parallelism for this run.")
-    run_campaign.add_argument("--empty-catalog", action="store_true", help="Start without built-in seed ingredient entries.")
 
     plan_request = subparsers.add_parser("plan-request", help="Convert a natural language request into a campaign spec.")
     plan_request.add_argument("--request", required=True, help="Natural language request, for example 'generate 10 indian recipes'.")
@@ -89,13 +87,11 @@ def build_argument_parser() -> argparse.ArgumentParser:
     run_request.add_argument("--demo", action="store_true", help="Use demo generation after GPT request planning.")
     run_request.add_argument("--max-concurrency", type=int, help="Override the bounded dish-level parallelism for this run.")
     run_request.add_argument("--plan-output-file", type=Path, help="Optional path to write the planned campaign JSON.")
-    run_request.add_argument("--empty-catalog", action="store_true", help="Start without built-in seed ingredient entries.")
 
     resume_campaign = subparsers.add_parser("resume-campaign", help="Resume a campaign directory.")
     resume_campaign.add_argument("--campaign-dir", required=True, type=Path, help="Existing campaign directory.")
     resume_campaign.add_argument("--demo", action="store_true", help="Use the local demo generator and resolver.")
     resume_campaign.add_argument("--max-concurrency", type=int, help="Override the bounded dish-level parallelism for this resume.")
-    resume_campaign.add_argument("--empty-catalog", action="store_true", help="Start without built-in seed ingredient entries.")
 
     report_campaign = subparsers.add_parser("report-campaign", help="Print campaign metrics for a campaign directory.")
     report_campaign.add_argument("--campaign-dir", required=True, type=Path, help="Existing campaign directory.")
@@ -103,14 +99,12 @@ def build_argument_parser() -> argparse.ArgumentParser:
     build_ingredient_corpus = subparsers.add_parser("build-ingredient-corpus", help="Grow the first-class ingredient corpus to a target enriched size.")
     build_ingredient_corpus.add_argument("--target-count", type=int, default=1000, help="Target enriched ingredient count.")
     build_ingredient_corpus.add_argument("--batch-size", type=int, default=100, help="Maximum ingredients to request per batch.")
-    build_ingredient_corpus.add_argument("--empty-catalog", action="store_true", help="Start from an empty ingredient catalog instead of built-in seed entries.")
     build_ingredient_corpus.add_argument("--report-file", type=Path, help="Optional path for the build report JSON.")
 
     build_recipe_corpus = subparsers.add_parser("build-recipe-corpus", help="Grow the accepted recipe corpus to a target count.")
     build_recipe_corpus.add_argument("--target-count", type=int, default=1000, help="Target accepted recipe count.")
     build_recipe_corpus.add_argument("--batch-size", type=int, default=25, help="Maximum dishes to plan per batch.")
     build_recipe_corpus.add_argument("--max-concurrency", type=int, help="Override bounded dish-level parallelism for corpus builds.")
-    build_recipe_corpus.add_argument("--empty-catalog", action="store_true", help="Start without built-in seed ingredient entries.")
     build_recipe_corpus.add_argument("--report-file", type=Path, help="Optional path for the build report JSON.")
 
     run_eda = subparsers.add_parser("run-eda", help="Analyze the ingredient and recipe corpus state.")
@@ -123,19 +117,18 @@ def build_argument_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def build_runtime_orchestrator(config: OrchestratorConfig, demo: bool, include_seed_catalog: bool = True):
+def build_runtime_orchestrator(config: OrchestratorConfig, demo: bool):
     if demo:
-        return build_demo_orchestrator(include_seed_catalog=include_seed_catalog)
-    return build_production_orchestrator(config, include_seed_catalog=False)
+        return build_demo_orchestrator()
+    return build_production_orchestrator(config)
 
 
 def build_campaign_runner(
     config: OrchestratorConfig,
     demo: bool,
     max_workers: int | None = None,
-    include_seed_catalog: bool = True,
 ) -> RecipeCampaignRunner:
-    orchestrator = build_runtime_orchestrator(config, demo, include_seed_catalog=include_seed_catalog)
+    orchestrator = build_runtime_orchestrator(config, demo)
     return RecipeCampaignRunner(
         orchestrator=orchestrator,
         artifact_writer=ArtifactWriter(),
@@ -219,7 +212,7 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.command == "run-dish":
         spec = load_spec(args.spec_file, args.title)
-        orchestrator = build_runtime_orchestrator(config, args.demo, include_seed_catalog=not args.empty_catalog)
+        orchestrator = build_runtime_orchestrator(config, args.demo)
         pipeline_run = orchestrator.run(spec)
         output_dir = args.output_dir or (config.output_root / pipeline_run.run_id)
         artifact_paths = ArtifactWriter().write(pipeline_run, output_dir)
@@ -246,7 +239,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "run-campaign":
         spec = load_campaign_spec(args.campaign_file)
         max_workers = args.max_concurrency or spec.max_concurrency or config.max_concurrency
-        runner = build_campaign_runner(config, args.demo, max_workers=max_workers, include_seed_catalog=not args.empty_catalog)
+        runner = build_campaign_runner(config, args.demo, max_workers=max_workers)
         state = runner.run_campaign(spec)
         print(
             json.dumps(
@@ -272,7 +265,7 @@ def main(argv: list[str] | None = None) -> int:
         if args.plan_output_file is not None:
             write_campaign_spec(spec, args.plan_output_file)
         max_workers = args.max_concurrency or spec.max_concurrency or config.max_concurrency
-        runner = build_campaign_runner(config, args.demo, max_workers=max_workers, include_seed_catalog=not args.empty_catalog)
+        runner = build_campaign_runner(config, args.demo, max_workers=max_workers)
         state = runner.run_campaign(spec)
         print(
             json.dumps(
@@ -295,7 +288,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "resume-campaign":
         spec = load_campaign_spec_from_dir(args.campaign_dir)
         max_workers = args.max_concurrency or spec.max_concurrency or config.max_concurrency
-        runner = build_campaign_runner(config, args.demo, max_workers=max_workers, include_seed_catalog=not args.empty_catalog)
+        runner = build_campaign_runner(config, args.demo, max_workers=max_workers)
         state = runner.resume_campaign(args.campaign_dir)
         print(
             json.dumps(
@@ -331,7 +324,6 @@ def main(argv: list[str] | None = None) -> int:
             batch_size=max(1, args.batch_size),
             storage_dir=config.output_root / "ingredient_catalog",
             report_path=report_path,
-            include_seed_entries=False,
         )
         print(json.dumps({"reportPath": str(report_path), **report["metrics"]}, indent=2, sort_keys=True))
         return 0 if report["metrics"]["enriched_count"] >= args.target_count else 1
@@ -339,7 +331,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "build-recipe-corpus":
         config.require_openai_api_key()
         max_workers = args.max_concurrency or config.max_concurrency
-        runner = build_campaign_runner(config, False, max_workers=max_workers, include_seed_catalog=not args.empty_catalog)
+        runner = build_campaign_runner(config, False, max_workers=max_workers)
         builder = RecipeCorpusBuilder(OpenAIChatClient(config), runner=runner, model=config.planner_model)
         project_root = Path(__file__).resolve().parents[2]
         report_path = args.report_file or (config.output_root / "corpus_builds" / "recipes" / "latest.json")

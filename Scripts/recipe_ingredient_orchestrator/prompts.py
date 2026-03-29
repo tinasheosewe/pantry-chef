@@ -192,6 +192,9 @@ def ingredient_enrichment_messages(
         "You normalize unresolved recipe ingredient mentions into first-class pantry ingredient records. "
         "For real edible items, choose a broad canonical pantry ingredient name and keep the original phrase as an alias. "
         "When the subtype matters, keep it as structured qualifiers such as variant, form, base, or preservation instead of making the subtype the top-level identity. "
+        "Aliases may carry facet selections that capture meaningful culinary distinctions: variety (e.g. jasmine for rice), form (e.g. fillet, ground, juice, zest), "
+        "preparation state (e.g. roasted, smoked, frozen), or cut (e.g. steak, florets). "
+        "NEVER use plurality, count, or the ingredient name itself as a facet. "
         "For obvious tools, packaging, or non-ingredient process aids, mark them as ignore. "
         "For edible ingredients, provide substitute ingredients that are themselves ingredients, not prose. "
         "Also provide practical storage preferences when they are knowable. "
@@ -612,7 +615,6 @@ def ingredient_corpus_batch_messages(
     existing_names: list[str],
     focus_categories: list[str],
     category_targets: dict[str, int],
-    expansion_hints: dict[str, list[str]],
     remaining_target: int,
     attempt_number: int,
 ) -> tuple[str, str]:
@@ -621,10 +623,13 @@ def ingredient_corpus_batch_messages(
         "Return diverse canonical pantry ingredients, not brands, recipes, tools, or packaging. "
         "Each ingredient must be broad enough to be reusable across many recipes, but still be a real pantry concept. "
         "Use app-style canonical roots with structured qualifiers when needed: for example sugar plus variant granulated, or broth plus base chicken, instead of promoting the subtype as the top-level identity. "
+        "Aliases may carry facet selections that describe meaningful culinary distinctions: variety (e.g. jasmine for rice, granny smith for apple), "
+        "form (e.g. fillet, ground, juice, zest, rolled), preparation (e.g. roasted, smoked, frozen, rendered), or cut (e.g. steak, florets, lardons). "
+        "NEVER use plurality or count as a facet. NEVER use the ingredient name itself as a facet value. "
         "Provide practical aliases, substitutes, and storage preferences. "
         "Do not return duplicates of existing items, and do not emit placeholder-quality entries. "
         "Return exactly the requested number of ingredients. If one idea is weak, replace it with another rather than returning fewer items. "
-        "Follow the requested category distribution closely and use the expansion hints only as inspiration for coverage, not as literal names."
+        "Follow the requested category distribution closely. Think broadly about what real cooks stock in each category."
     )
     user_prompt = json.dumps(
         {
@@ -635,7 +640,6 @@ def ingredient_corpus_batch_messages(
             "allowed_units": MEASUREMENT_UNITS,
             "focus_categories": focus_categories,
             "category_targets": category_targets,
-            "expansion_hints": expansion_hints,
             "existing_item_ids": existing_item_ids,
             "existing_names": existing_names,
             "requirements": {
@@ -646,6 +650,8 @@ def ingredient_corpus_batch_messages(
                 "avoid_tools_and_packaging": True,
                 "avoid_existing_or_adjacent_duplicates": True,
                 "prefer_broad_roots_with_structured_qualifiers": True,
+                "facets_only_for_culinary_distinctions": True,
+                "never_use_count_or_plurality_as_facets": True,
             },
         },
         indent=2,

@@ -27,7 +27,7 @@ _catalog_alignment_service = CatalogAlignmentService()
 
 
 def analyze_ingredient_catalog(storage_dir: Path) -> dict:
-    catalog = build_default_catalog(storage_dir=storage_dir, include_seed_entries=False)
+    catalog = build_default_catalog(storage_dir=storage_dir)
     entries = catalog.entries()
     category_counts: dict[str, int] = {}
     quality_counts: dict[str, int] = {}
@@ -81,7 +81,7 @@ def analyze_ingredient_catalog(storage_dir: Path) -> dict:
 
 
 def export_app_ingredient_catalog(storage_dir: Path, output_path: Path) -> dict:
-    catalog = build_default_catalog(storage_dir=storage_dir, include_seed_entries=False)
+    catalog = build_default_catalog(storage_dir=storage_dir)
     items = [entry.to_app_catalog_item_dict() for entry in sorted(catalog.entries(), key=lambda value: value.item_id)]
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(json.dumps(items, indent=2, sort_keys=True) + "\n", encoding="utf-8")
@@ -146,10 +146,9 @@ class IngredientCorpusBuilder:
         batch_size: int,
         storage_dir: Path,
         report_path: Path,
-        include_seed_entries: bool,
         max_stalled_batches: int = 8,
     ) -> dict:
-        catalog = build_default_catalog(storage_dir=storage_dir, include_seed_entries=include_seed_entries)
+        catalog = build_default_catalog(storage_dir=storage_dir)
         stalled_batches = 0
         batches: list[dict] = []
         attempt_number = 0
@@ -170,7 +169,6 @@ class IngredientCorpusBuilder:
                 existing_names=_sample_existing_values(existing_names, limit=80),
                 focus_categories=focus_categories,
                 category_targets=focus_plan["category_targets"],
-                expansion_hints=focus_plan["expansion_hints"],
                 remaining_target=remaining,
                 attempt_number=attempt_number + 1,
             )
@@ -214,7 +212,6 @@ class IngredientCorpusBuilder:
                     "attempt_number": attempt_number + 1,
                     "focus_categories": focus_categories,
                     "category_targets": focus_plan["category_targets"],
-                    "expansion_hints": focus_plan["expansion_hints"],
                     "generated_count": len(generated_entries),
                     "new_enriched_item_ids": new_ids,
                     "rejected_count": len(rejected_entries),
@@ -228,7 +225,6 @@ class IngredientCorpusBuilder:
             "generated_at": utc_now_iso(),
             "target_count": target_count,
             "batch_size": batch_size,
-            "include_seed_entries": include_seed_entries,
             "batches": batches,
             "metrics": analyze_ingredient_catalog(storage_dir),
         }
@@ -380,14 +376,9 @@ def _ingredient_focus_plan(entries: list[CatalogEntry], *, target_count: int, ba
         category: base_target + (1 if index < remainder else 0)
         for index, category in enumerate(selected_categories)
     }
-    expansion_hints = {
-        category: _category_expansion_hints(category, attempt_number)
-        for category in selected_categories
-    }
     return {
         "focus_categories": selected_categories,
         "category_targets": category_targets,
-        "expansion_hints": expansion_hints,
     }
 
 
@@ -501,15 +492,6 @@ def _plan_unique_recipe_batch(
     }
 
 
-def _category_expansion_hints(category: str, attempt_number: int) -> list[str]:
-    hints = CATEGORY_EXPANSION_HINTS.get(category, [])
-    if not hints:
-        return []
-    window_size = min(4, len(hints))
-    start = (attempt_number * window_size) % len(hints)
-    return [hints[(start + index) % len(hints)] for index in range(window_size)]
-
-
 def _catalog_entry_quality_issue(
     entry: CatalogEntry,
     *,
@@ -523,8 +505,6 @@ def _catalog_entry_quality_issue(
         return "duplicate item id"
     if normalized_name in existing_names or normalized_name in seen_generated_names:
         return "duplicate canonical name"
-    if normalized_name in LOW_VALUE_INGREDIENT_NAMES:
-        return "generic low-value canonical ingredient"
     if len(normalized_name.split()) >= 4 and any(token in normalized_name.split() for token in {"assorted", "variety", "mixed"}):
         return "overly generic family bucket"
     return None
@@ -547,11 +527,23 @@ def _catalog_entry_from_payload(payload: dict) -> CatalogEntry:
         substitute_name = str(substitute.get("name", "")).strip()
         if not substitute_name:
             continue
+        sub_rationale = None if substitute.get("rationale") is None else str(substitute.get("rationale")).strip() or None
+        sub_notes = None if substitute.get("notes") is None else str(substitute.get("notes")).strip() or None
+        sub_ratio = None if substitute.get("ratio") is None else str(substitute.get("ratio")).strip() or None
+        sub_dietary = [str(d).strip() for d in substitute.get("dietary", []) if str(d).strip()] if isinstance(substitute.get("dietary"), list) else []
         substitutes.append(
             IngredientReference(
                 item_id=_slugify(substitute_name),
                 name=substitute_name,
-                rationale=None if substitute.get("rationale") is None else str(substitute.get("rationale")).strip() or None,
+                rationale=sub_rationale,
+                facets=_facet_selections_from_payload(substitute.get("facets")),
+                ratio=sub_ratio,
+                taste_impact=None if substitute.get("tasteImpact") is None else str(substitute.get("tasteImpact")).strip() or None,
+                texture_impact=None if substitute.get("textureImpact") is None else str(substitute.get("textureImpact")).strip() or None,
+                cooking_impact=None if substitute.get("cookingImpact") is None else str(substitute.get("cookingImpact")).strip() or None,
+                nutrition_impact=None if substitute.get("nutritionImpact") is None else str(substitute.get("nutritionImpact")).strip() or None,
+                notes=sub_notes,
+                dietary=sub_dietary,
             )
         )
 
@@ -754,169 +746,3 @@ def _int_or_none(value: object) -> int | None:
 def _write_json(path: Path, payload: dict) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-
-
-CATEGORY_EXPANSION_HINTS: dict[str, list[str]] = {
-    "Baking Supplies": [
-        "leaveners and starches",
-        "cocoa and chocolate staples",
-        "sweeteners used in baking",
-        "alternative flours",
-        "decorative baking basics",
-        "cookie and cake pantry staples",
-        "custard and pastry building blocks",
-        "gluten-free baking staples",
-    ],
-    "Beverages": [
-        "cooking wines",
-        "tea and coffee staples",
-        "plant-based milks",
-        "fruit juices used in cooking",
-        "fermented beverage ingredients",
-        "broth-adjacent drinkable pantry items",
-        "cocktail-mixer pantry staples",
-        "shelf-stable beverage concentrates",
-    ],
-    "Canned & Jarred": [
-        "beans and legumes",
-        "broths and stocks",
-        "preserved tomatoes and peppers",
-        "pickled vegetables",
-        "jarred peppers and olives",
-        "preserved seafood",
-        "canned fruit pantry items",
-        "simmer sauce bases",
-    ],
-    "Condiments & Sauces": [
-        "mustards and mayonnaise family",
-        "hot sauces",
-        "salad dressing bases",
-        "asian sauce staples",
-        "sweet condiments",
-        "savory finishing sauces",
-        "fermented condiments",
-        "spreadable savory pantry items",
-    ],
-    "Dairy": [
-        "hard and aged cheeses",
-        "soft cheeses",
-        "cultured dairy",
-        "cream products",
-        "spreadable dairy staples",
-        "baking dairy basics",
-        "melting cheeses",
-        "breakfast dairy staples",
-    ],
-    "Frozen Foods": [
-        "frozen vegetables",
-        "frozen fruit",
-        "frozen proteins",
-        "frozen convenience staples",
-        "frozen herbs and aromatics",
-        "freezer meal components",
-        "frozen grain sides",
-        "frozen seafood basics",
-    ],
-    "Grains & Cereals": [
-        "whole grains",
-        "breakfast grains",
-        "ancient grains",
-        "rice varieties",
-        "grain blends",
-        "porridge staples",
-        "baking grains",
-        "savory grain side dishes",
-    ],
-    "Nuts & Seeds": [
-        "tree nuts",
-        "seed toppings",
-        "nut-based baking staples",
-        "roasted snack nuts",
-        "seed butters and pastes",
-        "salad and granola add-ins",
-        "dessert nuts",
-        "savory garnish seeds",
-    ],
-    "Oils & Fats": [
-        "neutral cooking oils",
-        "finishing oils",
-        "animal fats",
-        "baking fats",
-        "high-heat oils",
-        "nut and seed oils",
-        "specialty flavored oils",
-        "spreadable fats",
-    ],
-    "Other": [
-        "fermentation starters",
-        "sweet pantry boosters",
-        "savory pantry boosters",
-        "dry mixes that are still first-class ingredients",
-        "shelf-stable cooking aids",
-        "global pantry staples that defy other categories",
-        "baking aromatics",
-        "umami boosters",
-    ],
-    "Pasta & Noodles": [
-        "italian pasta shapes",
-        "asian noodles",
-        "gluten-free noodles",
-        "whole-grain pasta",
-        "stuffed pasta basics",
-        "quick-cooking noodles",
-        "soup noodles",
-        "legume-based pasta",
-    ],
-    "Produce": [
-        "alliums and aromatics",
-        "leafy greens",
-        "root vegetables",
-        "fresh herbs",
-        "citrus and acidic produce",
-        "salad vegetables",
-        "sturdy cooking vegetables",
-        "fruit used in savory cooking",
-    ],
-    "Protein": [
-        "fresh meat staples",
-        "seafood basics",
-        "plant proteins",
-        "eggs and egg products",
-        "cured meats",
-        "tofu and soy proteins",
-        "quick-cooking proteins",
-        "braising proteins",
-    ],
-    "Snacks": [
-        "crackers and crisp snacks",
-        "chips and crunchy snacks",
-        "popcorn family",
-        "sweet snack staples",
-        "salty snack pantry items",
-        "dried fruit snacks",
-        "trail and energy snack components",
-        "savory munchable pantry items",
-    ],
-    "Spices & Herbs": [
-        "warm baking spices",
-        "whole spices",
-        "ground spice staples",
-        "dried herb staples",
-        "regional seasoning profiles",
-        "peppercorn family",
-        "smoked and chile spices",
-        "aromatic seed spices",
-    ],
-}
-
-
-LOW_VALUE_INGREDIENT_NAMES = {
-    normalize_text(value)
-    for value in [
-        "dried fruit mix",
-        "nut butter",
-        "nut milk",
-        "nut mix",
-        "zest citrus",
-    ]
-}
