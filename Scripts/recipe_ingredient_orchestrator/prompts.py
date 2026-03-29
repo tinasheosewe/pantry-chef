@@ -72,6 +72,7 @@ def ingredient_generation_messages(
     *,
     category_filter: str | None = None,
     prompt_context: str | None = None,
+    catalog_summary: str | None = None,
 ) -> list[dict[str, str]]:
     system = f"""You are a culinary ingredient database expert. Generate pantry catalog
 entries for a cooking app.
@@ -86,11 +87,26 @@ DO NOT create separate entries for variants — use facets instead.
 CORRECT: One entry "Vinegar" with facets: variant=[balsamic, red wine, rice, apple cider, white wine, malt, sherry]
 WRONG: Separate entries for "Balsamic Vinegar", "Red Wine Vinegar", "Rice Vinegar"
 
-CORRECT: One entry "Cheese" with facets: variant=[cheddar, mozzarella, parmesan, feta, gruyère, brie, gouda], form=[block, shredded, sliced, crumbled]
-WRONG: Separate entries for "Cheddar Cheese", "Mozzarella", "Parmesan"
+CORRECT: One entry "Cheese" with facets: variant=[cheddar, mozzarella, parmesan, feta, gruyère, brie, gouda]
+WRONG: Separate entries for "Cheddar Cheese", "Mozzarella", "Parmesan", "Feta Cheese"
 
 CORRECT: One entry "Rice" with facets: variant=[white, brown, basmati, jasmine, arborio, sushi]
 WRONG: Separate entries for "Basmati Rice", "Brown Rice"
+
+CORRECT: One entry "Potatoes" with facets: variant=[russet, sweet, yukon gold, red, fingerling]
+WRONG: Separate entries for "Sweet Potatoes", "Russet Potatoes"
+
+## OVERLAP REJECTION RULES
+
+Before creating ANY entry, check the existing catalog below. An entry is FORBIDDEN if:
+1. Its name matches an existing entry's name, alias, or variant option
+2. Its name is a variant of an existing generic base (e.g. "Feta Cheese" when "Cheese" exists with variant=feta)
+3. Its name is a more specific form of an existing entry (e.g. "Garlic Powder" when "Garlic" exists with form=powdered)
+4. Its name is a more generic form that would subsume an existing entry
+5. It overlaps with or is contained in any existing entry name
+
+If an existing entry is missing a variant, ADD that variant to the existing entry's facets instead of creating a new entry.
+Since you cannot modify existing entries, simply SKIP any ingredient that would overlap.
 
 ## Richness Requirements
 
@@ -118,7 +134,9 @@ Every entry MUST include:
 - Be realistic about impacts"""
 
     existing_block = ""
-    if existing_names:
+    if catalog_summary:
+        existing_block = f"\n\n## Existing Catalog (DO NOT duplicate or overlap with these):\n{catalog_summary}"
+    elif existing_names:
         existing_block = f"\n\nAlready in catalog (DO NOT duplicate): {existing_names}"
 
     constraints = ""

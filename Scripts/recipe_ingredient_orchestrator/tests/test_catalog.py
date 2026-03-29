@@ -1,4 +1,4 @@
-"""Tests for InMemoryCatalog — add, get, dedup, linking, persistence."""
+"""Tests for InMemoryCatalog — add, get, dedup, overlap detection, linking, persistence."""
 
 import asyncio
 import json
@@ -208,3 +208,180 @@ class TestPersistence:
         path.write_text('{"not": "an array"}')
         with pytest.raises(ValueError, match="Expected JSON array"):
             InMemoryCatalog.load_from_file(path)
+
+
+# -- Overlap Detection Tests -----------------------------------------------
+
+
+class TestOverlapDetection:
+    """Verify the 3-layer facet-variant overlap defense."""
+
+    @pytest.mark.asyncio
+    async def test_variant_overlap_rejected(self, catalog):
+        """'Feta Cheese' should be rejected when 'Cheese' exists with variant=feta."""
+        cheese = make_catalog_entry(
+            id="cheese",
+            name="Cheese",
+            category=FoodCategory.DAIRY,
+            facets=[FacetDefinition(key=FacetKey.VARIANT, options=["cheddar", "mozzarella", "feta", "parmesan"])],
+        )
+        feta = make_catalog_entry(
+            id="feta-cheese",
+            name="Feta Cheese",
+            category=FoodCategory.DAIRY,
+        )
+        await catalog.add(cheese)
+        assert await catalog.add(feta) is False
+        assert catalog.size == 1
+
+    @pytest.mark.asyncio
+    async def test_variant_overlap_rejected_in_add_many(self, catalog):
+        """add_many should also reject overlapping entries."""
+        cheese = make_catalog_entry(
+            id="cheese",
+            name="Cheese",
+            category=FoodCategory.DAIRY,
+            facets=[FacetDefinition(key=FacetKey.VARIANT, options=["cheddar", "feta"])],
+        )
+        parmesan = make_catalog_entry(
+            id="parmesan-cheese",
+            name="Parmesan Cheese",
+            category=FoodCategory.DAIRY,
+        )
+        await catalog.add(cheese)
+        count = await catalog.add_many([parmesan])
+        assert count == 0
+        assert catalog.size == 1
+
+    @pytest.mark.asyncio
+    async def test_reverse_overlap_rejected(self, catalog):
+        """If 'Sweet Potatoes' exists and 'Potatoes' is added, reject 'Potatoes'
+        (candidate name is contained in existing entry name)."""
+        sweet_potatoes = make_catalog_entry(
+            id="sweet-potatoes",
+            name="Sweet Potatoes",
+            category=FoodCategory.PRODUCE,
+        )
+        potatoes = make_catalog_entry(
+            id="potatoes",
+            name="Potatoes",
+            category=FoodCategory.PRODUCE,
+        )
+        await catalog.add(sweet_potatoes)
+        assert await catalog.add(potatoes) is False
+
+    @pytest.mark.asyncio
+    async def test_substring_overlap_rejected(self, catalog):
+        """'Garlic Powder' should be rejected when 'Garlic' exists."""
+        garlic = make_catalog_entry(
+            id="garlic",
+            name="Garlic",
+            category=FoodCategory.PRODUCE,
+            facets=[FacetDefinition(key=FacetKey.FORM, options=["whole", "minced", "powdered"])],
+        )
+        garlic_powder = make_catalog_entry(
+            id="garlic-powder",
+            name="Garlic Powder",
+            category=FoodCategory.SPICES_HERBS,
+        )
+        await catalog.add(garlic)
+        assert await catalog.add(garlic_powder) is False
+
+    @pytest.mark.asyncio
+    async def test_alias_overlap_rejected(self, catalog):
+        """An entry whose name matches an existing alias should be rejected."""
+        soy_sauce = make_catalog_entry(
+            id="soy-sauce",
+            name="Soy Sauce",
+            aliases=["shoyu", "soya sauce"],
+        )
+        shoyu = make_catalog_entry(
+            id="shoyu",
+            name="Shoyu",
+        )
+        await catalog.add(soy_sauce)
+        assert await catalog.add(shoyu) is False
+
+    @pytest.mark.asyncio
+    async def test_non_overlapping_entries_accepted(self, catalog):
+        """Genuinely distinct entries should both be accepted."""
+        cheese = make_catalog_entry(
+            id="cheese",
+            name="Cheese",
+            category=FoodCategory.DAIRY,
+            facets=[FacetDefinition(key=FacetKey.VARIANT, options=["cheddar", "feta"])],
+        )
+        butter = make_catalog_entry(
+            id="butter",
+            name="Butter",
+            category=FoodCategory.DAIRY,
+        )
+        await catalog.add(cheese)
+        assert await catalog.add(butter) is True
+        assert catalog.size == 2
+
+    @pytest.mark.asyncio
+    async def test_batch_internal_overlap_rejected(self, catalog):
+        """When adding a batch, later entries that overlap earlier ones are rejected."""
+        vinegar = make_catalog_entry(
+            id="vinegar",
+            name="Vinegar",
+            facets=[FacetDefinition(key=FacetKey.VARIANT, options=["balsamic", "red wine", "rice"])],
+        )
+        balsamic = make_catalog_entry(
+            id="balsamic-vinegar",
+            name="Balsamic Vinegar",
+        )
+        rice_vinegar = make_catalog_entry(
+            id="rice-vinegar",
+            name="Rice Vinegar",
+        )
+        count = await catalog.add_many([vinegar, balsamic, rice_vinegar])
+        assert count == 1  # only vinegar accepted
+        assert catalog.size == 1
+
+    @pytest.mark.asyncio
+    async def test_load_from_file_rebuilds_index(self, salt, sugar):
+        """Loading from file should rebuild the overlap index."""
+        data = [salt.model_dump(mode="json"), sugar.model_dump(mode="json")]
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as f:
+            json.dump(data, f)
+            path = Path(f.name)
+
+        catalog = InMemoryCatalog.load_from_file(path)
+        # Salt has auto-generated aliases, so an entry with a matching alias should overlap
+        alias_entry = make_catalog_entry(id="salt-alias", name="Salt Alias-A")
+        assert await catalog.add(alias_entry) is False
+        path.unlink()
+
+
+class TestSummaryWithFacets:
+    @pytest.mark.asyncio
+    async def test_empty_catalog(self, catalog):
+        assert catalog.summary_with_facets() == "(empty catalog)"
+
+    @pytest.mark.asyncio
+    async def test_includes_facet_details(self, catalog):
+        cheese = make_catalog_entry(
+            id="cheese",
+            name="Cheese",
+            category=FoodCategory.DAIRY,
+            aliases=["fromage", "queso"],
+            facets=[
+                FacetDefinition(key=FacetKey.VARIANT, options=["cheddar", "feta"]),
+                FacetDefinition(key=FacetKey.FORM, options=["block", "shredded"]),
+            ],
+        )
+        await catalog.add(cheese)
+        summary = catalog.summary_with_facets()
+        assert "Cheese" in summary
+        assert "variant=[cheddar, feta]" in summary
+        assert "form=[block, shredded]" in summary
+        assert "aliases: fromage, queso" in summary
+
+    @pytest.mark.asyncio
+    async def test_respects_max_entries(self, catalog):
+        for i in range(10):
+            await catalog.add(make_catalog_entry(id=f"item-{i}", name=f"Item {i}"))
+        summary = catalog.summary_with_facets(max_entries=5)
+        assert "... and 5 more entries" in summary

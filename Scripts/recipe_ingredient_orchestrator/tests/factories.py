@@ -54,7 +54,13 @@ def make_catalog_entry(
     category: FoodCategory = FoodCategory.SPICES_HERBS,
     **overrides: Any,
 ) -> CatalogEntry:
-    """Factory for test catalog entries."""
+    """Factory for test catalog entries.
+
+    Generates unique aliases and facets based on the entry name so that
+    overlap detection doesn't reject unrelated test entries.
+    """
+    # Build name-derived defaults so entries don't collide via shared aliases
+    lower = name.lower()
     defaults = dict(
         id=id,
         name=name,
@@ -62,9 +68,9 @@ def make_catalog_entry(
         default_unit=MeasurementUnit.TSP,
         default_quantity=1.0,
         default_storage=PantryStorage.PANTRY,
-        aliases=["table salt", "sea salt"],
-        facets=[FacetDefinition(key=FacetKey.VARIANT, options=["table", "sea", "kosher", "himalayan"])],
-        default_selections=[FacetSelection(key=FacetKey.VARIANT, value="table")],
+        aliases=[f"{lower} alias-a", f"{lower} alias-b"],
+        facets=[FacetDefinition(key=FacetKey.VARIANT, options=[f"{lower}-v1", f"{lower}-v2"])],
+        default_selections=[FacetSelection(key=FacetKey.VARIANT, value=f"{lower}-v1")],
         substitution_suggestions=[
             SubstitutionSuggestion(
                 substitute_name="Soy Sauce",

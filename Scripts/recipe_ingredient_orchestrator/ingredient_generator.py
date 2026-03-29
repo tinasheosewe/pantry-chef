@@ -57,6 +57,7 @@ class IngredientGenerator:
                 existing_names=catalog.names(),
                 category_filter=category_filter,
                 prompt_context=prompt_context,
+                catalog_summary=catalog.summary_with_facets(),
             )
 
             response = await self._client.generate(

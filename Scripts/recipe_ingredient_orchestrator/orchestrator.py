@@ -43,9 +43,11 @@ class GenerationOrchestrator:
         self,
         request: GenerationRequest,
         existing_titles: list[str] | None = None,
+        existing_recipes: list[Recipe] | None = None,
     ) -> None:
         """Execute the generation pipeline based on request mode."""
         existing_titles = existing_titles or []
+        existing_recipes = existing_recipes or []
         recipes: list[Recipe] = []
 
         logger.info(
@@ -113,13 +115,15 @@ class GenerationOrchestrator:
             logger.info("Substitution linking: %s", stats)
 
         # -- Write output --------------------------------------------------
+        all_recipes = existing_recipes + recipes
         self._writer.write(
             catalog=self._catalog.all_entries(),
-            recipes=recipes,
+            recipes=all_recipes,
         )
         logger.info(
-            "Generation complete: %d catalog entries, %d recipes",
+            "Generation complete: %d catalog entries, %d recipes (%d new)",
             self._catalog.size,
+            len(all_recipes),
             len(recipes),
         )
 

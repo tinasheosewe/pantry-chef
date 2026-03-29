@@ -75,10 +75,16 @@ async def async_main(args: argparse.Namespace) -> None:
 
     # Load existing recipe titles for dedup
     existing_titles: list[str] = []
+    existing_recipes: list[Recipe] = []
     if args.seed_recipes:
         data = json.loads(Path(args.seed_recipes).read_text())
-        existing_titles = [r["title"] for r in data if "title" in r]
-        logger.info("Loaded %d existing recipe titles for dedup", len(existing_titles))
+        for r in data:
+            try:
+                existing_recipes.append(Recipe.model_validate(r))
+            except Exception:
+                pass  # skip unparseable recipes
+        existing_titles = [r.title for r in existing_recipes]
+        logger.info("Loaded %d existing recipes (%d for dedup)", len(existing_recipes), len(existing_titles))
 
     # Build request
     client = LLMClient(settings)
@@ -115,7 +121,7 @@ async def async_main(args: argparse.Namespace) -> None:
             settings=settings,
         )
 
-        await orchestrator.run(request, existing_titles=existing_titles)
+        await orchestrator.run(request, existing_titles=existing_titles, existing_recipes=existing_recipes)
     finally:
         await client.close()
 
