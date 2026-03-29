@@ -256,7 +256,12 @@ final class AIService: AIServiceProtocol {
         }
 
         let prompt = """
-        I want to use up these ingredients: \(ingredientList)
+        I have these items already in my pantry/fridge that I want to use up: \(ingredientList)
+
+        CRITICAL: These are existing items I already have on hand. Treat each one as a ready-to-use ingredient, \
+        NOT something to make from scratch. For example, if I list "muffins", create a recipe that USES muffins \
+        as an ingredient (e.g. muffin bread pudding, muffin French toast), don't suggest baking muffins. \
+        If I list "bread", use the bread (e.g. in a sandwich, French toast, panzanella), don't bake bread.
 
         \(ingredientConstraint)\(excludeClause)
 
@@ -313,6 +318,10 @@ final class AIService: AIServiceProtocol {
 
         You previously assessed this recipe idea as \(suggestion.confidenceScore)/5 because: "\(suggestion.confidenceReason)". \
         Generate a recipe consistent with that assessment.
+
+        CRITICAL: The listed ingredients are items the user ALREADY HAS in their pantry/fridge. \
+        Treat each one as a ready-to-use ingredient, NOT something to make from scratch. \
+        For example, if "muffins" are listed, the recipe should USE muffins as an ingredient, not bake new ones.
 
         \(ingredientConstraint)
 
