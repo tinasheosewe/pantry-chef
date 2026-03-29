@@ -218,61 +218,99 @@ class TestOverlapDetection:
 
     @pytest.mark.asyncio
     async def test_variant_overlap_rejected(self, catalog):
-        """'Feta Cheese' should be rejected when 'Cheese' exists with variant=feta."""
-        cheese = make_catalog_entry(
-            id="cheese",
-            name="Cheese",
-            category=FoodCategory.DAIRY,
-            facets=[FacetDefinition(key=FacetKey.VARIANT, options=["cheddar", "mozzarella", "feta", "parmesan"])],
+        """'Low Sodium Soy Sauce' should be rejected when 'Soy Sauce' exists
+        with variant containing 'low sodium' (multi-word base = true overlap)."""
+        soy_sauce = make_catalog_entry(
+            id="soy-sauce",
+            name="Soy Sauce",
+            category=FoodCategory.CONDIMENTS_SAUCES,
+            facets=[FacetDefinition(key=FacetKey.VARIANT, options=["regular", "low sodium"])],
         )
-        feta = make_catalog_entry(
-            id="feta-cheese",
-            name="Feta Cheese",
-            category=FoodCategory.DAIRY,
+        low_sodium_soy = make_catalog_entry(
+            id="low-sodium-soy-sauce",
+            name="Low Sodium Soy Sauce",
+            category=FoodCategory.CONDIMENTS_SAUCES,
         )
-        await catalog.add(cheese)
-        assert await catalog.add(feta) is False
+        await catalog.add(soy_sauce)
+        assert await catalog.add(low_sodium_soy) is False
         assert catalog.size == 1
 
     @pytest.mark.asyncio
     async def test_variant_overlap_rejected_in_add_many(self, catalog):
         """add_many should also reject overlapping entries."""
-        cheese = make_catalog_entry(
-            id="cheese",
-            name="Cheese",
-            category=FoodCategory.DAIRY,
-            facets=[FacetDefinition(key=FacetKey.VARIANT, options=["cheddar", "feta"])],
+        olive_oil = make_catalog_entry(
+            id="olive-oil",
+            name="Olive Oil",
+            category=FoodCategory.OILS_FATS,
+            facets=[FacetDefinition(key=FacetKey.VARIANT, options=["extra virgin", "virgin", "light"])],
         )
-        parmesan = make_catalog_entry(
-            id="parmesan-cheese",
-            name="Parmesan Cheese",
-            category=FoodCategory.DAIRY,
+        ev_olive_oil = make_catalog_entry(
+            id="extra-virgin-olive-oil",
+            name="Extra Virgin Olive Oil",
+            category=FoodCategory.OILS_FATS,
         )
-        await catalog.add(cheese)
-        count = await catalog.add_many([parmesan])
+        await catalog.add(olive_oil)
+        count = await catalog.add_many([ev_olive_oil])
         assert count == 0
         assert catalog.size == 1
 
     @pytest.mark.asyncio
     async def test_reverse_overlap_rejected(self, catalog):
-        """If 'Sweet Potatoes' exists and 'Potatoes' is added, reject 'Potatoes'
-        (candidate name is contained in existing entry name)."""
-        sweet_potatoes = make_catalog_entry(
-            id="sweet-potatoes",
-            name="Sweet Potatoes",
-            category=FoodCategory.PRODUCE,
+        """If 'Olive Oil' exists and 'Light Olive Oil' is added, reject it
+        because 'Olive Oil' (2-word base) already covers it via variant facets."""
+        olive_oil = make_catalog_entry(
+            id="olive-oil",
+            name="Olive Oil",
+            category=FoodCategory.OILS_FATS,
+            facets=[FacetDefinition(key=FacetKey.VARIANT, options=["extra virgin", "light"])],
         )
-        potatoes = make_catalog_entry(
-            id="potatoes",
-            name="Potatoes",
-            category=FoodCategory.PRODUCE,
+        light_olive_oil = make_catalog_entry(
+            id="light-olive-oil",
+            name="Light Olive Oil",
+            category=FoodCategory.OILS_FATS,
         )
-        await catalog.add(sweet_potatoes)
-        assert await catalog.add(potatoes) is False
+        await catalog.add(olive_oil)
+        assert await catalog.add(light_olive_oil) is False
+
+    @pytest.mark.asyncio
+    async def test_qualified_single_word_base_allowed(self, catalog):
+        """A qualified variant of a single-word base is distinct.
+        'Smoked Paprika' should be allowed alongside 'Paprika'."""
+        paprika = make_catalog_entry(
+            id="paprika",
+            name="Paprika",
+            category=FoodCategory.SPICES_HERBS,
+        )
+        smoked = make_catalog_entry(
+            id="smoked-paprika",
+            name="Smoked Paprika",
+            category=FoodCategory.SPICES_HERBS,
+        )
+        await catalog.add(paprika)
+        assert await catalog.add(smoked) is True
 
     @pytest.mark.asyncio
     async def test_substring_overlap_rejected(self, catalog):
-        """'Garlic Powder' should be rejected when 'Garlic' exists."""
+        """'Toasted Sesame Oil' should be rejected when 'Sesame Oil' exists
+        with variant=toasted (multi-word base = true overlap)."""
+        sesame_oil = make_catalog_entry(
+            id="sesame-oil",
+            name="Sesame Oil",
+            category=FoodCategory.OILS_FATS,
+            facets=[FacetDefinition(key=FacetKey.VARIANT, options=["regular", "toasted"])],
+        )
+        toasted_sesame = make_catalog_entry(
+            id="toasted-sesame-oil",
+            name="Toasted Sesame Oil",
+            category=FoodCategory.OILS_FATS,
+        )
+        await catalog.add(sesame_oil)
+        assert await catalog.add(toasted_sesame) is False
+
+    @pytest.mark.asyncio
+    async def test_qualified_single_word_base_cross_category_allowed(self, catalog):
+        """'Garlic Powder' (Spices) alongside 'Garlic' (Produce) should be allowed.
+        A qualifier extending a single-word base is a distinct product."""
         garlic = make_catalog_entry(
             id="garlic",
             name="Garlic",
@@ -285,7 +323,7 @@ class TestOverlapDetection:
             category=FoodCategory.SPICES_HERBS,
         )
         await catalog.add(garlic)
-        assert await catalog.add(garlic_powder) is False
+        assert await catalog.add(garlic_powder) is True
 
     @pytest.mark.asyncio
     async def test_alias_overlap_rejected(self, catalog):
@@ -356,35 +394,43 @@ class TestOverlapDetection:
 
     @pytest.mark.asyncio
     async def test_batch_internal_overlap_rejected(self, catalog):
-        """When adding a batch, later entries that overlap earlier ones are rejected."""
-        vinegar = make_catalog_entry(
-            id="vinegar",
-            name="Vinegar",
-            facets=[FacetDefinition(key=FacetKey.VARIANT, options=["balsamic", "red wine", "rice"])],
+        """When adding a batch, later entries that overlap multi-word bases are rejected."""
+        olive_oil = make_catalog_entry(
+            id="olive-oil",
+            name="Olive Oil",
+            category=FoodCategory.OILS_FATS,
+            facets=[FacetDefinition(key=FacetKey.VARIANT, options=["extra virgin", "virgin", "light"])],
         )
-        balsamic = make_catalog_entry(
-            id="balsamic-vinegar",
-            name="Balsamic Vinegar",
+        light_olive = make_catalog_entry(
+            id="light-olive-oil",
+            name="Light Olive Oil",
+            category=FoodCategory.OILS_FATS,
         )
-        rice_vinegar = make_catalog_entry(
-            id="rice-vinegar",
-            name="Rice Vinegar",
+        coconut_oil = make_catalog_entry(
+            id="coconut-oil",
+            name="Coconut Oil",
+            category=FoodCategory.OILS_FATS,
         )
-        count = await catalog.add_many([vinegar, balsamic, rice_vinegar])
-        assert count == 1  # only vinegar accepted
-        assert catalog.size == 1
+        count = await catalog.add_many([olive_oil, light_olive, coconut_oil])
+        assert count == 2  # olive oil + coconut oil accepted, light olive oil rejected
+        assert catalog.size == 2
 
     @pytest.mark.asyncio
     async def test_load_from_file_rebuilds_index(self, salt, sugar):
         """Loading from file should rebuild the overlap index."""
-        data = [salt.model_dump(mode="json"), sugar.model_dump(mode="json")]
+        soy = make_catalog_entry(
+            id="soy-sauce",
+            name="Soy Sauce",
+            aliases=["shoyu", "soya sauce"],
+        )
+        data = [soy.model_dump(mode="json"), sugar.model_dump(mode="json")]
         with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as f:
             json.dump(data, f)
             path = Path(f.name)
 
         catalog = InMemoryCatalog.load_from_file(path)
-        # Salt has auto-generated aliases, so an entry with a matching alias should overlap
-        alias_entry = make_catalog_entry(id="salt-alias", name="Salt Alias-A")
+        # Soy Sauce has alias 'shoyu', so an entry named 'Shoyu' should overlap
+        alias_entry = make_catalog_entry(id="shoyu", name="Shoyu")
         assert await catalog.add(alias_entry) is False
         path.unlink()
 

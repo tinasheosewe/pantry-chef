@@ -109,10 +109,24 @@ class InMemoryCatalog:
                 and self._normalise(existing.name) != candidate_name
             )
 
+        def _is_qualified_variant(existing_id: str) -> bool:
+            """True if the candidate is a multi-word qualified form of a single-word
+            existing entry (e.g. 'Smoked Paprika' vs 'Paprika').  These are
+            culinarily distinct products, not overlaps."""
+            existing = self._entries.get(existing_id)
+            if not existing:
+                return False
+            existing_words = set(self._normalise(existing.name).split())
+            return (
+                len(existing_words) == 1
+                and len(candidate_words) > 1
+                and existing_words < candidate_words
+            )
+
         # Direct name collision with an existing token
         if candidate_name in self._token_index:
             existing_id = self._token_index[candidate_name]
-            if existing_id != entry.id and not _is_sibling(existing_id):
+            if existing_id != entry.id and not _is_sibling(existing_id) and not _is_qualified_variant(existing_id):
                 return existing_id
 
         # Check every alias — with name-relevance verification for indirect matches.
@@ -125,16 +139,30 @@ class InMemoryCatalog:
                     if not existing_entry:
                         return existing_id
                     existing_name = self._normalise(existing_entry.name)
+                    existing_alias_words = set(existing_name.split())
+                    # Allow qualified variants: if the candidate name adds a
+                    # qualifier to a single-word base (e.g. "Smoked Paprika"
+                    # has alias "Paprika" matching existing "Paprika"), that's
+                    # a distinct product, not an overlap.
+                    is_qualified_of_single_base = (
+                        len(existing_alias_words) == 1
+                        and len(candidate_words) > 1
+                        and existing_alias_words < candidate_words
+                    )
+                    if is_qualified_of_single_base:
+                        continue
                     # Strong match: alias matches existing entry's actual name
                     if norm_alias == existing_name:
                         return existing_id
                     # Indirect match: require name word-subset relationship
-                    existing_words = set(existing_name.split())
-                    if existing_words < candidate_words or candidate_words < existing_words:
+                    if existing_alias_words < candidate_words or candidate_words < existing_alias_words:
                         return existing_id
 
         # Word-superset check: catch new qualifier+base combos not yet indexed.
         # Skip when entries are siblings in the same base_ingredient family.
+        # Also allow "qualified variants" — when a multi-word candidate extends a
+        # single-word existing entry (e.g. "Smoked Paprika" vs "Paprika"), or vice-
+        # versa, because the qualifier typically makes it a distinct product.
         candidate_words = set(candidate_name.split())
         if len(candidate_words) >= 1:
             for existing_id, existing_entry in self._entries.items():
@@ -149,7 +177,13 @@ class InMemoryCatalog:
                 if existing_base == candidate_name:
                     continue
                 if existing_words < candidate_words or candidate_words < existing_words:
-                    return existing_id
+                    smaller = min(len(existing_words), len(candidate_words))
+                    # A single-word base being extended by a qualifier is a distinct
+                    # product (e.g. "sausage" → "andouille sausage", "paprika" →
+                    # "smoked paprika"). Only flag as overlap when the smaller name
+                    # already has 2+ words — that indicates a true near-duplicate.
+                    if smaller >= 2:
+                        return existing_id
 
         return None
 
