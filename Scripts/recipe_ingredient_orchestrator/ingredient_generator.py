@@ -6,11 +6,11 @@ import logging
 
 from pydantic import BaseModel, Field
 
-from ..catalog import InMemoryCatalog
-from ..client import LLMClient
-from ..config import Settings
-from ..models import CatalogEntry
-from ..prompts import ingredient_generation_messages
+from .catalog import InMemoryCatalog
+from .client import LLMClient
+from .config import Settings
+from .models import CatalogEntry
+from .prompts import ingredient_generation_messages
 
 logger = logging.getLogger(__name__)
 

@@ -8,8 +8,8 @@ import logging
 from .catalog import InMemoryCatalog
 from .client import LLMClient
 from .config import Settings
-from .generators.ingredients import IngredientGenerator
-from .generators.recipes import RecipeGenerator
+from .ingredient_generator import IngredientGenerator
+from .recipe_generator import RecipeGenerator
 from .models import GenerationRequest, Recipe
 from .reviewer import RecipeReviewer
 from .schemas import GenerationMode, ReviewStatus

@@ -22,7 +22,7 @@ from recipe_ingredient_orchestrator.schemas import (
     SubstitutionImpact,
 )
 
-from tests.factories import make_catalog_entry
+from recipe_ingredient_orchestrator.tests.factories import make_catalog_entry
 
 
 @pytest.fixture

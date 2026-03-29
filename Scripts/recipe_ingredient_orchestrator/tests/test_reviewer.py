@@ -14,7 +14,7 @@ from recipe_ingredient_orchestrator.schemas import (
     ReviewStatus,
 )
 
-from tests.factories import make_mock_client
+from recipe_ingredient_orchestrator.tests.factories import make_mock_client
 
 
 def _make_recipe(**overrides) -> Recipe:

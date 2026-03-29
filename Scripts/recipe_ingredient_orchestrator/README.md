@@ -108,10 +108,9 @@ recipe_ingredient_orchestrator/
 ├── client.py            Async OpenAI wrapper with structured outputs
 ├── prompts.py           All prompt builders
 ├── catalog.py           In-memory catalog with substitution linking
-├── generators/
-│   ├── ingredients.py   Batched ingredient generation
-│   └── recipes.py       Plan → generate → resolve pipeline
-├── reviewer.py          LLM quality gate
+├── ingredient_generator.py  Batched ingredient generation
+├── recipe_generator.py      Plan → generate → resolve pipeline
+├── reviewer.py              LLM quality gate
 ├── orchestrator.py      Main coordinator
 ├── writer.py            JSON output
 └── tests/

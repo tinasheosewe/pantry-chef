@@ -4,11 +4,11 @@ import pytest
 
 from recipe_ingredient_orchestrator.catalog import InMemoryCatalog
 from recipe_ingredient_orchestrator.config import Settings
-from recipe_ingredient_orchestrator.generators.ingredients import (
+from recipe_ingredient_orchestrator.ingredient_generator import (
     IngredientBatchResponse,
     IngredientGenerator,
 )
-from recipe_ingredient_orchestrator.generators.recipes import (
+from recipe_ingredient_orchestrator.recipe_generator import (
     DishBriefBatchResponse,
     RawIngredient,
     RawRecipeResponse,
@@ -34,7 +34,7 @@ from recipe_ingredient_orchestrator.schemas import (
 )
 from recipe_ingredient_orchestrator.writer import OutputWriter
 
-from tests.factories import make_catalog_entry, make_mock_client
+from recipe_ingredient_orchestrator.tests.factories import make_catalog_entry, make_mock_client
 
 
 class _CallTracker:

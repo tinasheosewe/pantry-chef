@@ -8,17 +8,17 @@ from typing import Optional
 
 from pydantic import BaseModel, Field
 
-from ..catalog import InMemoryCatalog
-from ..client import LLMClient
-from ..config import Settings
-from ..models import (
+from .catalog import InMemoryCatalog
+from .client import LLMClient
+from .config import Settings
+from .models import (
     CatalogEntry,
     DishBrief,
     Recipe,
     RecipeIngredient,
     ResolutionResult,
 )
-from ..prompts import (
+from .prompts import (
     ingredient_resolution_messages,
     recipe_generation_messages,
     recipe_planning_messages,
@@ -180,13 +180,13 @@ class RecipeGenerator:
                 is_optional=ri.is_optional,
             ))
 
-        from ..schemas import (
+        from .schemas import (
             CuisineType,
             DietaryTag,
             DifficultyLevel,
             MealType,
         )
-        from ..models import NutritionInfo, RecipeStep
+        from .models import NutritionInfo, RecipeStep
 
         recipe = Recipe(
             title=raw.title,
