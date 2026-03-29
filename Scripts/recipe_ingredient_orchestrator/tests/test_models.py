@@ -14,6 +14,7 @@ from recipe_ingredient_orchestrator.models import (
     RecipeIngredient,
     RecipeStep,
     ReviewResult,
+    StorageFreshness,
     Substitution,
     SubstitutionSuggestion,
 )
@@ -54,7 +55,7 @@ class TestCatalogEntry:
             name="Vinegar",
             category=FoodCategory.CONDIMENTS_SAUCES,
             facets=[FacetDefinition(key=FacetKey.VARIANT, options=["balsamic", "red wine", "rice"])],
-            freshness_by_storage={PantryStorage.PANTRY: FreshnessRange(min_days=365, max_days=730)},
+            freshness_by_storage=[StorageFreshness(storage=PantryStorage.PANTRY, min_days=365, max_days=730)],
         )
         data = entry.model_dump(mode="json")
         restored = CatalogEntry.model_validate(data)

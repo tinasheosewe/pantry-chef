@@ -45,6 +45,13 @@ class FreshnessRange(BaseModel):
     max_days: int = Field(ge=1)
 
 
+class StorageFreshness(BaseModel):
+    """Shelf-life for a specific storage type."""
+    storage: PantryStorage
+    min_days: int = Field(ge=0)
+    max_days: int = Field(ge=1)
+
+
 class SubstitutionSuggestion(BaseModel):
     """LLM-proposed substitute before catalog linking.
 
@@ -89,7 +96,7 @@ class CatalogEntry(BaseModel):
     default_selections: list[FacetSelection] = Field(default_factory=list)
     substitution_suggestions: list[SubstitutionSuggestion] = Field(default_factory=list)
     substitutions: list[Substitution] = Field(default_factory=list)
-    freshness_by_storage: dict[PantryStorage, FreshnessRange] = Field(default_factory=dict)
+    freshness_by_storage: list[StorageFreshness] = Field(default_factory=list)
 
     @field_validator("id")
     @classmethod

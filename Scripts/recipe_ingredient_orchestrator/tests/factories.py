@@ -16,6 +16,7 @@ from recipe_ingredient_orchestrator.models import (
     FacetDefinition,
     FacetSelection,
     FreshnessRange,
+    StorageFreshness,
     SubstitutionSuggestion,
 )
 from recipe_ingredient_orchestrator.schemas import (
@@ -74,7 +75,7 @@ def make_catalog_entry(
                 notes="Adds umami and liquid",
             )
         ],
-        freshness_by_storage={PantryStorage.PANTRY: FreshnessRange(min_days=730, max_days=1825)},
+        freshness_by_storage=[StorageFreshness(storage=PantryStorage.PANTRY, min_days=730, max_days=1825)],
     )
     defaults.update(overrides)
     return CatalogEntry(**defaults)

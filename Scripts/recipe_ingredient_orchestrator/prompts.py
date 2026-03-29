@@ -110,7 +110,7 @@ Every entry MUST include:
 - default_selections: the most common variant/form combination
 - substitution_suggestions: 2-4 substitutes with ratio and impact ratings
   - substitute_name should be a generic base name that could be another catalog entry
-- freshness_by_storage: shelf-life ranges for each applicable storage type
+- freshness_by_storage: list of {{storage, min_days, max_days}} for each applicable storage type
 
 ## Substitution Rules
 - substitute_name must be a GENERIC BASE ingredient name (not a variant)
