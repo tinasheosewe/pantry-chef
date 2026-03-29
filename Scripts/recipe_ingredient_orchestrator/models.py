@@ -81,13 +81,18 @@ class Substitution(BaseModel):
 class CatalogEntry(BaseModel):
     """A first-class ingredient in the pantry catalog.
 
-    Follows the generic-base-with-facet-specificity pattern: one entry for
-    'Vinegar' with variant facet [balsamic, red wine, rice, …], not separate
-    entries for each type.
+    Uses culinary-distinction: items are separate entries when they differ
+    meaningfully in cooking method, nutrition, or storage (e.g. chicken-breast
+    vs chicken-thigh).  Entries sharing a protein/produce family are linked
+    via base_ingredient (e.g. both have base_ingredient='chicken').
     """
-    id: str = Field(description="kebab-case slug, e.g. 'olive-oil'")
-    name: str = Field(description="Generic base display name, e.g. 'Olive Oil'")
+    id: str = Field(description="kebab-case slug, e.g. 'chicken-breast'")
+    name: str = Field(description="Display name, e.g. 'Chicken Breast'")
     category: FoodCategory
+    base_ingredient: Optional[str] = Field(
+        default=None,
+        description="Parent family slug grouping related items, e.g. 'chicken' for chicken-breast and chicken-thigh",
+    )
     default_unit: Optional[MeasurementUnit] = None
     default_quantity: Optional[float] = None
     default_storage: PantryStorage = PantryStorage.PANTRY

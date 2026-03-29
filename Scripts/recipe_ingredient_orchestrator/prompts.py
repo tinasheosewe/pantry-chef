@@ -79,59 +79,87 @@ entries for a cooking app.
 
 {_VOCAB_BLOCK}
 
-## CRITICAL: Generic Base + Facet Specificity Pattern
+## CRITICAL: Culinary-Distinction Principle
 
-Each entry must be a GENERIC BASE ITEM with specificity expressed through facets.
-DO NOT create separate entries for variants — use facets instead.
+Decide entry granularity by asking: "Would a home cook buy, store, or cook
+these differently?"  If YES → separate entries linked by base_ingredient.
+If NO → one entry with variant facets.
 
-CORRECT: One entry "Vinegar" with facets: variant=[balsamic, red wine, rice, apple cider, white wine, malt, sherry]
-WRONG: Separate entries for "Balsamic Vinegar", "Red Wine Vinegar", "Rice Vinegar"
+### SEPARATE entries (culinarily distinct — different cooking/nutrition/storage):
 
-CORRECT: One entry "Cheese" with facets: variant=[cheddar, mozzarella, parmesan, feta, gruyère, brie, gouda]
-WRONG: Separate entries for "Cheddar Cheese", "Mozzarella", "Parmesan", "Feta Cheese"
+Proteins — ALWAYS separate by cut or form:
+  "Chicken Breast" (id=chicken-breast, base_ingredient=chicken)
+  "Chicken Thigh"  (id=chicken-thigh, base_ingredient=chicken)
+  "Ground Chicken"  (id=ground-chicken, base_ingredient=chicken)
+  "Whole Chicken"  (id=whole-chicken, base_ingredient=chicken)
+  NEVER a single "Chicken" entry.
 
-CORRECT: One entry "Rice" with facets: variant=[white, brown, basmati, jasmine, arborio, sushi]
-WRONG: Separate entries for "Basmati Rice", "Brown Rice"
+  "Ribeye Steak" (id=ribeye-steak, base_ingredient=beef)
+  "Ground Beef"   (id=ground-beef, base_ingredient=beef)
+  "Beef Stew Meat" (id=beef-stew-meat, base_ingredient=beef)
+  NEVER a single "Beef" entry.
 
-CORRECT: One entry "Potatoes" with facets: variant=[russet, sweet, yukon gold, red, fingerling]
-WRONG: Separate entries for "Sweet Potatoes", "Russet Potatoes"
+Cheeses — separate when taste/melt/use differs significantly:
+  "Mozzarella" (base_ingredient=cheese), "Parmesan" (base_ingredient=cheese),
+  "Cheddar" (base_ingredient=cheese), "Feta" (base_ingredient=cheese)
+  Each has its own storage, nutrition, substitutions.
+
+### ONE entry with variant facets (truly interchangeable):
+
+"Bell Pepper" with variant=[red, green, yellow, orange] — same cooking method.
+"Onion" with variant=[yellow, white, red, sweet] — same general usage.
+"Apple" with variant=[gala, fuji, granny smith, honeycrisp] — same storage.
+"Flour" with variant=[all-purpose, bread, cake, self-rising] — same category, similar use.
+
+### base_ingredient field
+
+Set base_ingredient to the common family slug whenever related items exist:
+  chicken-breast → base_ingredient: "chicken"
+  chicken-thigh  → base_ingredient: "chicken"
+  ground-beef    → base_ingredient: "beef"
+  ribeye-steak   → base_ingredient: "beef"
+  mozzarella     → base_ingredient: "cheese"
+  parmesan       → base_ingredient: "cheese"
+
+For standalone items (olive oil, cumin, rice), set base_ingredient to null.
 
 ## OVERLAP REJECTION RULES
 
 Before creating ANY entry, check the existing catalog below. An entry is FORBIDDEN if:
-1. Its name matches an existing entry's name, alias, or variant option
-2. Its name is a variant of an existing generic base (e.g. "Feta Cheese" when "Cheese" exists with variant=feta)
-3. Its name is a more specific form of an existing entry (e.g. "Garlic Powder" when "Garlic" exists with form=powdered)
-4. Its name is a more generic form that would subsume an existing entry
-5. It overlaps with or is contained in any existing entry name
+1. Its id or name matches an existing entry's id/name
+2. Its name is an exact duplicate of an existing entry (including aliases)
+3. It is functionally the same ingredient already present under a different name
 
-If an existing entry is missing a variant, ADD that variant to the existing entry's facets instead of creating a new entry.
-Since you cannot modify existing entries, simply SKIP any ingredient that would overlap.
+Entries in the SAME base_ingredient family are NOT overlaps — they are siblings.
+"Chicken Breast" does NOT overlap with "Chicken Thigh" — both should exist.
+"Mozzarella" does NOT overlap with "Parmesan" — both should exist.
+
+Since you cannot modify existing entries, simply SKIP any ingredient that truly duplicates.
 
 ## Richness Requirements
 
 Every entry MUST include:
-- id: kebab-case slug (e.g. "olive-oil", "bell-pepper")
-- name: generic base display name (e.g. "Olive Oil", "Bell Pepper")
+- id: kebab-case slug (e.g. "chicken-breast", "olive-oil")
+- name: display name (e.g. "Chicken Breast", "Olive Oil")
+- base_ingredient: family slug if part of a related group, null otherwise
 - category: from allowed Food Categories
 - default_unit: most common measurement unit for this ingredient
 - default_quantity: sensible default quantity for pantry tracking
 - default_storage: primary storage location
 - aliases: alternative names, abbreviations, regional terms (at least 2)
-- facets: relevant facet dimensions with comprehensive options
-  - variant: different types/varieties (MOST entries should have this)
-  - form: physical forms (whole, chopped, minced, ground, sliced, diced, etc.)
-  - preservation: how it's preserved (fresh, dried, frozen, canned, pickled)
-  - Other keys as relevant: processing, preparation, texture, concentration, base
+- facets: relevant facet dimensions with options
+  - variant: types/varieties WHERE the item has truly interchangeable options
+  - form: physical forms (whole, sliced, diced, ground, shredded, etc.)
+  - preservation: how it can be preserved (fresh, frozen, canned, dried, etc.)
+  - Other keys as relevant: processing, preparation, texture
 - default_selections: the most common variant/form combination
 - substitution_suggestions: 2-4 substitutes with ratio and impact ratings
-  - substitute_name should be a generic base name that could be another catalog entry
 - freshness_by_storage: list of {{storage, min_days, max_days}} for each applicable storage type
 
 ## Substitution Rules
-- substitute_name must be a GENERIC BASE ingredient name (not a variant)
+- substitute_name should reference another catalog-level ingredient name
 - Include ratio (e.g. "1:1"), taste_impact, texture_impact, cooking_impact
-- Be realistic about impacts"""
+- Be realistic about impacts — chicken breast and chicken thigh are NOT 1:1 in a recipe"""
 
     existing_block = ""
     if catalog_summary:

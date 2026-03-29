@@ -89,26 +89,38 @@ class InMemoryCatalog:
         """Check if *entry* overlaps with something already in the catalog.
 
         Returns the existing entry ID that causes the overlap, or None.
+
+        Sibling entries that share a base_ingredient are allowed (e.g.
+        chicken-breast and chicken-thigh both have base_ingredient='chicken').
         """
         candidate_name = self._normalise(entry.name)
         candidate_words = set(candidate_name.split())
 
+        def _is_sibling(existing_id: str) -> bool:
+            """True if candidate and existing entry are siblings in the same family."""
+            if not entry.base_ingredient:
+                return False
+            existing = self._entries.get(existing_id)
+            if not existing:
+                return False
+            return (
+                existing.base_ingredient is not None
+                and existing.base_ingredient == entry.base_ingredient
+                and self._normalise(existing.name) != candidate_name
+            )
+
         # Direct name collision with an existing token
         if candidate_name in self._token_index:
             existing_id = self._token_index[candidate_name]
-            if existing_id != entry.id:
+            if existing_id != entry.id and not _is_sibling(existing_id):
                 return existing_id
 
         # Check every alias — with name-relevance verification for indirect matches.
-        # Direct match (alias == existing name) is always accepted.
-        # Indirect match (alias == existing alias/token) requires that the candidate
-        # and existing entry names have a word-subset relationship, preventing
-        # false positives from generic aliases like "Nut Oil" or "Dried Herb".
         for alias in entry.aliases:
             norm_alias = self._normalise(alias)
             if norm_alias in self._token_index:
                 existing_id = self._token_index[norm_alias]
-                if existing_id != entry.id:
+                if existing_id != entry.id and not _is_sibling(existing_id):
                     existing_entry = self._entries.get(existing_id)
                     if not existing_entry:
                         return existing_id
@@ -121,16 +133,16 @@ class InMemoryCatalog:
                     if existing_words < candidate_words or candidate_words < existing_words:
                         return existing_id
 
-        # Word-superset check: catch new qualifier+base combos not yet in the token index
-        # e.g. "parmesan cheese" when "cheese" exists but doesn't have variant=parmesan
-        # Only applies when names share a subset relationship AND are the same category
-        # (avoids: "avocado" (Produce) vs "avocado oil" (Oils) are legitimately different)
+        # Word-superset check: catch new qualifier+base combos not yet indexed.
+        # Skip when entries are siblings in the same base_ingredient family.
         candidate_words = set(candidate_name.split())
         if len(candidate_words) >= 1:
             for existing_id, existing_entry in self._entries.items():
                 if existing_id == entry.id:
                     continue
                 if existing_entry.category != entry.category:
+                    continue
+                if _is_sibling(existing_id):
                     continue
                 existing_base = self._normalise(existing_entry.name)
                 existing_words = set(existing_base.split())
@@ -243,7 +255,10 @@ class InMemoryCatalog:
                 facet_parts.append(f"{f.key.value}=[{', '.join(f.options)}]")
             facets_str = "; ".join(facet_parts) if facet_parts else "no facets"
             aliases_str = ", ".join(e.aliases[:3]) if e.aliases else ""
-            line = f"- {e.name} ({e.category.value}) | {facets_str}"
+            line = f"- {e.name} ({e.category.value})"
+            if e.base_ingredient:
+                line += f" [family={e.base_ingredient}]"
+            line += f" | {facets_str}"
             if aliases_str:
                 line += f" | aliases: {aliases_str}"
             lines.append(line)
