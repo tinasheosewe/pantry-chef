@@ -10,12 +10,26 @@ struct RecipeNameSuggestion: Identifiable, Codable {
     let confidenceScore: Int
     let confidenceReason: String
 
+    private enum CodingKeys: String, CodingKey {
+        case name, description, confidenceScore, confidenceReason
+    }
+
     init(id: UUID = UUID(), name: String, description: String, confidenceScore: Int, confidenceReason: String) {
         self.id = id
         self.name = name
         self.description = description
         self.confidenceScore = max(1, min(5, confidenceScore))
         self.confidenceReason = confidenceReason
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.id = UUID()
+        self.name = try container.decode(String.self, forKey: .name)
+        self.description = try container.decode(String.self, forKey: .description)
+        let raw = try container.decode(Int.self, forKey: .confidenceScore)
+        self.confidenceScore = max(1, min(5, raw))
+        self.confidenceReason = try container.decode(String.self, forKey: .confidenceReason)
     }
 }
 
