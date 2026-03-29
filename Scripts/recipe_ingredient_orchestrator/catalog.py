@@ -34,27 +34,47 @@ class InMemoryCatalog:
         """Lower-case, strip non-alphanumeric, collapse whitespace."""
         return re.sub(r"\s+", " ", re.sub(r"[^a-z0-9 ]", "", text.lower())).strip()
 
+    @staticmethod
+    def _stem_variants(word: str) -> list[str]:
+        """Generate common culinary word stems/variants for overlap matching."""
+        stems = [word]
+        # powdered→powder, smoked→smoke, roasted→roast, etc.
+        if word.endswith("ed"):
+            stems.append(word[:-2])
+            stems.append(word[:-1])  # "smoked" → "smoke"
+        if word.endswith("d") and not word.endswith("ed"):
+            stems.append(word[:-1])
+        # powder→powdered, smoke→smoked, etc.
+        if not word.endswith("ed"):
+            stems.append(word + "d")
+            stems.append(word + "ed")
+        return stems
+
     def _tokens_for_entry(self, entry: CatalogEntry) -> list[str]:
         """Build the set of normalised tokens an entry "claims".
 
         Includes:
         - the entry name
         - every alias
-        - name combined with each variant option  ("cheese cheddar", "vinegar balsamic")
-        - each variant option on its own            ("cheddar", "balsamic")
+        - name combined with each variant/form option  ("cheese cheddar", "garlic powdered")
+        - stemmed form variants ("garlic powder" from form=powdered)
+        - each variant option on its own               ("cheddar", "balsamic")
         """
         tokens: list[str] = [self._normalise(entry.name)]
         for alias in entry.aliases:
             tokens.append(self._normalise(alias))
 
+        base = self._normalise(entry.name)
         for facet in entry.facets:
-            if facet.key.value == "variant":
-                base = self._normalise(entry.name)
+            if facet.key.value in ("variant", "form"):
                 for opt in facet.options:
                     nopt = self._normalise(opt)
-                    tokens.append(f"{base} {nopt}")   # "cheese cheddar"
-                    tokens.append(f"{nopt} {base}")   # "cheddar cheese"
-                    tokens.append(nopt)                # "cheddar"
+                    # Register original + stemmed combinations
+                    for stem in self._stem_variants(nopt):
+                        tokens.append(f"{base} {stem}")
+                        tokens.append(f"{stem} {base}")
+                    if facet.key.value == "variant":
+                        tokens.append(nopt)
         return tokens
 
     def _register_tokens(self, entry: CatalogEntry) -> None:
@@ -82,20 +102,23 @@ class InMemoryCatalog:
                 if existing_id != entry.id:
                     return existing_id
 
-        # Check if candidate name contains an existing base name as substring
-        # e.g. "feta cheese" contains "cheese" → overlap with cheese entry
-        for token, existing_id in self._token_index.items():
-            if existing_id == entry.id:
-                continue
-            # Only match base-name tokens (not compound tokens with spaces)
-            existing_entry = self._entries.get(existing_id)
-            if not existing_entry:
-                continue
-            existing_base = self._normalise(existing_entry.name)
-            if existing_base in candidate_name and existing_base != candidate_name:
-                return existing_id
-            if candidate_name in existing_base and candidate_name != existing_base:
-                return existing_id
+        # Word-superset check: catch new qualifier+base combos not yet in the token index
+        # e.g. "parmesan cheese" when "cheese" exists but doesn't have variant=parmesan
+        # Only applies when names share a subset relationship AND are the same category
+        # (avoids: "avocado" (Produce) vs "avocado oil" (Oils) are legitimately different)
+        candidate_words = set(candidate_name.split())
+        if len(candidate_words) >= 1:
+            for existing_id, existing_entry in self._entries.items():
+                if existing_id == entry.id:
+                    continue
+                if existing_entry.category != entry.category:
+                    continue
+                existing_base = self._normalise(existing_entry.name)
+                existing_words = set(existing_base.split())
+                if existing_base == candidate_name:
+                    continue
+                if existing_words < candidate_words or candidate_words < existing_words:
+                    return existing_id
 
         return None
 

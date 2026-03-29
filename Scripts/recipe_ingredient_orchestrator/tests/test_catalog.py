@@ -321,6 +321,40 @@ class TestOverlapDetection:
         assert catalog.size == 2
 
     @pytest.mark.asyncio
+    async def test_distinct_compound_names_accepted(self, catalog):
+        """'Avocado' should NOT be rejected when 'Avocado Oil' exists — different products."""
+        avocado_oil = make_catalog_entry(
+            id="avocado-oil",
+            name="Avocado Oil",
+            category=FoodCategory.OILS_FATS,
+        )
+        avocado = make_catalog_entry(
+            id="avocado",
+            name="Avocado",
+            category=FoodCategory.PRODUCE,
+        )
+        await catalog.add(avocado_oil)
+        assert await catalog.add(avocado) is True
+        assert catalog.size == 2
+
+    @pytest.mark.asyncio
+    async def test_distinct_compound_names_accepted_reverse(self, catalog):
+        """'Apple' should NOT be rejected when 'Apple Cider Vinegar' exists."""
+        acv = make_catalog_entry(
+            id="apple-cider-vinegar",
+            name="Apple Cider Vinegar",
+            category=FoodCategory.CONDIMENTS_SAUCES,
+        )
+        apple = make_catalog_entry(
+            id="apple",
+            name="Apple",
+            category=FoodCategory.PRODUCE,
+        )
+        await catalog.add(acv)
+        assert await catalog.add(apple) is True
+        assert catalog.size == 2
+
+    @pytest.mark.asyncio
     async def test_batch_internal_overlap_rejected(self, catalog):
         """When adding a batch, later entries that overlap earlier ones are rejected."""
         vinegar = make_catalog_entry(
