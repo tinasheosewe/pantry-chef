@@ -41,6 +41,8 @@ protocol RecipeDomainServicing {
     func getSubstitutions(for recipe: Recipe, state: any RecipeDomainState) async -> [SubstitutionSuggestion]
     func getHealthierVersion(of recipe: Recipe, state: any RecipeDomainState) async -> HealthierSuggestion?
     func getLeftoverIdeas(ingredients: [String], state: any RecipeDomainState) async -> [AppState.NormalizedAIRecipe]
+    func suggestRecipeNames(ingredients: [String], strictIngredients: Bool, excludeNames: [String], state: any RecipeDomainState) async -> RecipeNameSuggestionsResult
+    func generateRecipeFromSuggestion(_ suggestion: RecipeNameSuggestion, ingredients: [String], strictIngredients: Bool, state: any RecipeDomainState) async -> AppState.NormalizedAIRecipe?
 }
 
 @MainActor
@@ -306,6 +308,22 @@ struct RecipeDomainService: RecipeDomainServicing {
     func getLeftoverIdeas(ingredients: [String], state: any RecipeDomainState) async -> [AppState.NormalizedAIRecipe] {
         let recipes = await state.aiService.leftoverTransformer(ingredients: ingredients)
         return await normalizeAIRecipes(recipes, state: state)
+    }
+
+    func suggestRecipeNames(ingredients: [String], strictIngredients: Bool, excludeNames: [String], state: any RecipeDomainState) async -> RecipeNameSuggestionsResult {
+        await state.aiService.suggestRecipeNames(ingredients: ingredients, strictIngredients: strictIngredients, excludeNames: excludeNames)
+    }
+
+    func generateRecipeFromSuggestion(_ suggestion: RecipeNameSuggestion, ingredients: [String], strictIngredients: Bool, state: any RecipeDomainState) async -> AppState.NormalizedAIRecipe? {
+        guard !Task.isCancelled else { return nil }
+        guard let recipe = await state.aiService.generateRecipeFromSuggestion(suggestion, ingredients: ingredients, strictIngredients: strictIngredients) else {
+            if !Task.isCancelled {
+                pushAIFailure("recipe generation", fallbackMessage: "Couldn't generate a recipe right now. Please try again.", state: state)
+            }
+            return nil
+        }
+
+        return await normalizedAIRecipe(recipe, state: state)
     }
 
     func modifyRecipe(_ recipe: Recipe, feedback: String, state: any RecipeDomainState) async -> AppState.NormalizedAIRecipe? {

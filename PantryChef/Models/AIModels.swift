@@ -1,4 +1,80 @@
 import Foundation
+import SwiftUI
+
+// MARK: - Use-Up-Ingredients Models
+
+struct RecipeNameSuggestion: Identifiable, Codable {
+    let id: UUID
+    let name: String
+    let description: String
+    let confidenceScore: Int
+    let confidenceReason: String
+
+    init(id: UUID = UUID(), name: String, description: String, confidenceScore: Int, confidenceReason: String) {
+        self.id = id
+        self.name = name
+        self.description = description
+        self.confidenceScore = max(1, min(5, confidenceScore))
+        self.confidenceReason = confidenceReason
+    }
+}
+
+struct RecipeNameSuggestionsResult: Codable {
+    let suggestions: [RecipeNameSuggestion]
+    let message: String?
+}
+
+enum ConfidenceTier {
+    case perfectMatch
+    case greatFit
+    case worthATry
+    case creativeStretch
+
+    init(score: Int) {
+        switch max(2, min(5, score)) {
+        case 5: self = .perfectMatch
+        case 4: self = .greatFit
+        case 3: self = .worthATry
+        default: self = .creativeStretch
+        }
+    }
+
+    var label: String {
+        switch self {
+        case .perfectMatch: return "Perfect Match"
+        case .greatFit: return "Great Fit"
+        case .worthATry: return "Worth a Try"
+        case .creativeStretch: return "Creative Stretch"
+        }
+    }
+
+    var icon: String {
+        switch self {
+        case .perfectMatch: return "star.fill"
+        case .greatFit: return "hand.thumbsup.fill"
+        case .worthATry: return "lightbulb.fill"
+        case .creativeStretch: return "flask.fill"
+        }
+    }
+
+    var emoji: String {
+        switch self {
+        case .perfectMatch: return "🔥"
+        case .greatFit: return "👍"
+        case .worthATry: return "💡"
+        case .creativeStretch: return "🧪"
+        }
+    }
+
+    var color: Color {
+        switch self {
+        case .perfectMatch: return .green
+        case .greatFit: return .teal
+        case .worthATry: return .yellow
+        case .creativeStretch: return .orange
+        }
+    }
+}
 
 // MARK: - AI Response Models
 

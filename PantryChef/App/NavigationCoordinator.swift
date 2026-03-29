@@ -10,6 +10,7 @@ final class NavigationCoordinator {
     var requestedRootTab: RootTab?
 
     var showCookQueueSheet = false
+    var showUseUpIngredientsSheet = false
     var activateRecipesCanMakeFilter = false
 
     /// Resolved deep-link target shown by ContentView.
@@ -25,6 +26,10 @@ final class NavigationCoordinator {
 
     func requestCookQueueSheet() {
         showCookQueueSheet = true
+    }
+
+    func requestUseUpIngredientsSheet() {
+        showUseUpIngredientsSheet = true
     }
 
     func requestRecipesCanMake() {

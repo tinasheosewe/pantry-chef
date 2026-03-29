@@ -53,6 +53,13 @@ struct ContentView: View {
         )) {
             CookQueueView(appState: appState)
         }
+        .appNavigationSheet(isPresented: Binding(
+            get: { appState.navigator.showUseUpIngredientsSheet },
+            set: { appState.navigator.showUseUpIngredientsSheet = $0 }
+        )) {
+            UseUpIngredientsView(appState: appState)
+                .environment(appState)
+        }
         .task {
             appState.scheduleInitialLoadIfNeeded()
         }

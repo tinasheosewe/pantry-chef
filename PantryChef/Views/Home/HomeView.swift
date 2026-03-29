@@ -252,6 +252,10 @@ struct HomeView: View {
                     onSwitchToPlan?()
                 }
                 .accessibilityIdentifier("home.quickAction.plan")
+                QuickActionButton(icon: "refrigerator", title: "Use up\ningredients", color: PCColors.fresh) {
+                    viewModel.appState.navigator.requestUseUpIngredientsSheet()
+                }
+                .accessibilityIdentifier("home.quickAction.useUp")
             }
         }
     }

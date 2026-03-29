@@ -59,6 +59,11 @@ struct RecipeListView: View {
                         Button { showMultiCookSelection = true } label: {
                             Label("Multi-Cook", systemImage: "flame.fill")
                         }
+                        Button {
+                            viewModel.appState.navigator.requestUseUpIngredientsSheet()
+                        } label: {
+                            Label("Use Up Ingredients", systemImage: "refrigerator")
+                        }
                     } label: {
                         Image(systemName: "plus.circle.fill")
                             .font(.title3)

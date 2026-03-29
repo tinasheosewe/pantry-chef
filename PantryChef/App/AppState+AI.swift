@@ -35,6 +35,14 @@ extension AppState {
         await recipeDomainService.getLeftoverIdeas(ingredients: ingredients, state: self)
     }
 
+    func suggestRecipeNames(ingredients: [String], strictIngredients: Bool, excludeNames: [String]) async -> RecipeNameSuggestionsResult {
+        await recipeDomainService.suggestRecipeNames(ingredients: ingredients, strictIngredients: strictIngredients, excludeNames: excludeNames, state: self)
+    }
+
+    func generateRecipeFromSuggestion(_ suggestion: RecipeNameSuggestion, ingredients: [String], strictIngredients: Bool) async -> NormalizedAIRecipe? {
+        await recipeDomainService.generateRecipeFromSuggestion(suggestion, ingredients: ingredients, strictIngredients: strictIngredients, state: self)
+    }
+
     func modifyRecipe(_ recipe: Recipe, feedback: String) async -> NormalizedAIRecipe? {
         await recipeDomainService.modifyRecipe(recipe, feedback: feedback, state: self)
     }
