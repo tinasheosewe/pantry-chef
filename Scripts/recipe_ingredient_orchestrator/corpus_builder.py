@@ -4,6 +4,7 @@ from dataclasses import asdict
 import json
 import math
 from pathlib import Path
+from typing import Any
 
 from .campaigns import RecipeCampaignRunner
 from .corpus import RecipeCorpusIndex, load_recipe_records, normalize_text
@@ -217,6 +218,7 @@ class RecipeCorpusBuilder:
     ) -> dict:
         stalled_batches = 0
         batches: list[dict] = []
+        attempt_number = 0
 
         while _accepted_recipe_count(accepted_root) < target_count and stalled_batches < max_stalled_batches:
             recipe_metrics = analyze_recipe_corpus(project_root, output_root, accepted_root)
@@ -225,52 +227,32 @@ class RecipeCorpusBuilder:
             remaining = target_count - current_count
             current_batch_size = min(batch_size, remaining)
             corpus_index = RecipeCorpusIndex.from_project_root(project_root, output_root=output_root, accepted_root=accepted_root)
-            underrepresented_cuisines = _underrepresented_enum_values(recipe_metrics["cuisine_counts"], APP_CUISINES)
-            underrepresented_meal_types = _underrepresented_enum_values(recipe_metrics["meal_type_counts"], APP_MEAL_TYPES)
-
-            system_prompt, user_prompt = recipe_corpus_batch_messages(
-                batch_size=current_batch_size,
-                existing_titles=sorted(record.title for record in corpus_index._recipes)[:500],
-                underrepresented_cuisines=underrepresented_cuisines,
-                underrepresented_meal_types=underrepresented_meal_types,
-                known_ingredients=[entry["name"] for entry in ingredient_metrics["top_alias_rich_entries"]],
-            )
-            payload = self._client.complete_json(
-                system_prompt=system_prompt,
-                user_prompt=user_prompt,
-                schema=recipe_corpus_batch_schema(current_batch_size),
-                schema_name="recipe_corpus_batch",
-                temperature=0.5,
+            plan = _plan_unique_recipe_batch(
+                client=self._client,
                 model=self._model,
+                target_batch_size=current_batch_size,
+                corpus_index=corpus_index,
+                underrepresented_cuisines=_underrepresented_enum_values(recipe_metrics["cuisine_counts"], APP_CUISINES),
+                underrepresented_meal_types=_underrepresented_enum_values(recipe_metrics["meal_type_counts"], APP_MEAL_TYPES),
+                known_ingredients=[entry["name"] for entry in ingredient_metrics["top_alias_rich_entries"]],
+                remaining_target=remaining,
+                attempt_number=attempt_number,
             )
-
-            proposed_spec = CampaignSpec(
-                name=(payload.get("name") or f"recipe-corpus-batch-{utc_now_iso()}"),
-                dishes=[
-                    DishSpec(
-                        title=str(dish["title"]).strip(),
-                        cuisine=dish.get("cuisine"),
-                        meal_type=dish.get("meal_type"),
-                        servings=max(1, int(dish.get("servings", 4))),
-                        goals=[str(value).strip() for value in dish.get("goals", []) if str(value).strip()],
-                        pantry_focus=[str(value).strip() for value in dish.get("pantry_focus", []) if str(value).strip()],
-                        notes=(None if dish.get("notes") is None else str(dish.get("notes")).strip() or None),
-                    )
-                    for dish in payload.get("dishes", [])
-                    if str(dish.get("title", "")).strip()
-                ],
-            )
-            filtered_spec = _filter_unique_dishes(proposed_spec, corpus_index, current_batch_size)
+            filtered_spec = plan["spec"]
             if not filtered_spec.dishes:
                 stalled_batches += 1
                 batches.append(
                     {
                         "generated_at": utc_now_iso(),
                         "requested_batch_size": current_batch_size,
+                        "attempt_number": attempt_number + 1,
+                        "planner_attempts": plan["planner_attempts"],
+                        "planner_batches": plan["planner_batches"],
                         "accepted_in_batch": 0,
                         "status": "no-unique-dishes",
                     }
                 )
+                attempt_number += 1
                 continue
 
             state = self._runner.run_campaign(filtered_spec)
@@ -279,13 +261,17 @@ class RecipeCorpusBuilder:
                 {
                     "generated_at": utc_now_iso(),
                     "campaign_id": state.campaign_id,
+                    "attempt_number": attempt_number + 1,
                     "requested_batch_size": current_batch_size,
                     "planned_batch_size": len(filtered_spec.dishes),
+                    "planner_attempts": plan["planner_attempts"],
+                    "planner_batches": plan["planner_batches"],
                     "accepted_in_batch": accepted_in_batch,
                     "campaign_status": state.status,
                 }
             )
             stalled_batches = 0 if accepted_in_batch else stalled_batches + 1
+            attempt_number += 1
 
         report = {
             "generated_at": utc_now_iso(),
@@ -372,9 +358,109 @@ def _effective_ingredient_batch_size(requested_batch_size: int, remaining: int) 
 def _sample_existing_values(values: list[str], *, limit: int) -> list[str]:
     if len(values) <= limit:
         return list(values)
-    head_count = limit // 2
-    tail_count = limit - head_count
-    return [*values[:head_count], *values[-tail_count:]]
+
+    sampled: list[str] = []
+    seen: set[str] = set()
+    step = (len(values) - 1) / max(1, limit - 1)
+    for index in range(limit):
+        value = values[round(index * step)]
+        if value in seen:
+            continue
+        sampled.append(value)
+        seen.add(value)
+
+    if len(sampled) >= limit:
+        return sampled[:limit]
+
+    for value in values:
+        if value in seen:
+            continue
+        sampled.append(value)
+        if len(sampled) >= limit:
+            break
+    return sampled
+
+
+def _plan_unique_recipe_batch(
+    *,
+    client: OpenAIChatClient,
+    model: str | None,
+    target_batch_size: int,
+    corpus_index: RecipeCorpusIndex,
+    underrepresented_cuisines: list[str],
+    underrepresented_meal_types: list[str],
+    known_ingredients: list[str],
+    remaining_target: int,
+    attempt_number: int,
+    max_planner_attempts: int = 4,
+) -> dict[str, Any]:
+    planned_dishes: list[DishSpec] = []
+    planner_batches: list[dict[str, Any]] = []
+    campaign_name: str | None = None
+    existing_titles = _sample_existing_values(sorted(record.title for record in corpus_index._recipes), limit=120)
+
+    planner_attempts = 0
+    while len(planned_dishes) < target_batch_size and planner_attempts < max_planner_attempts:
+        needed = target_batch_size - len(planned_dishes)
+        system_prompt, user_prompt = recipe_corpus_batch_messages(
+            batch_size=needed,
+            existing_titles=existing_titles,
+            underrepresented_cuisines=underrepresented_cuisines,
+            underrepresented_meal_types=underrepresented_meal_types,
+            known_ingredients=known_ingredients,
+            remaining_target=remaining_target,
+            attempt_number=attempt_number + planner_attempts + 1,
+        )
+        payload = client.complete_json(
+            system_prompt=system_prompt,
+            user_prompt=user_prompt,
+            schema=recipe_corpus_batch_schema(needed),
+            schema_name="recipe_corpus_batch",
+            temperature=0.5,
+            model=model,
+        )
+
+        if campaign_name is None:
+            campaign_name = payload.get("name") or f"recipe-corpus-batch-{utc_now_iso()}"
+
+        proposed_dishes = [
+            DishSpec(
+                title=str(dish["title"]).strip(),
+                cuisine=dish.get("cuisine"),
+                meal_type=dish.get("meal_type"),
+                servings=max(1, int(dish.get("servings", 4))),
+                goals=[str(value).strip() for value in dish.get("goals", []) if str(value).strip()],
+                pantry_focus=[str(value).strip() for value in dish.get("pantry_focus", []) if str(value).strip()],
+                notes=(None if dish.get("notes") is None else str(dish.get("notes")).strip() or None),
+            )
+            for dish in payload.get("dishes", [])
+            if str(dish.get("title", "")).strip()
+        ]
+        merged_spec = CampaignSpec(
+            name=campaign_name,
+            dishes=[*planned_dishes, *proposed_dishes],
+        )
+        filtered_spec = _filter_unique_dishes(merged_spec, corpus_index, target_batch_size)
+        added_count = max(0, len(filtered_spec.dishes) - len(planned_dishes))
+        planner_batches.append(
+            {
+                "planner_attempt": planner_attempts + 1,
+                "requested_batch_size": needed,
+                "proposed_count": len(proposed_dishes),
+                "added_unique_dishes": added_count,
+                "accumulated_unique_dishes": len(filtered_spec.dishes),
+            }
+        )
+        planned_dishes = filtered_spec.dishes
+        planner_attempts += 1
+        if added_count == 0 and planner_attempts >= 2:
+            break
+
+    return {
+        "spec": CampaignSpec(name=campaign_name or f"recipe-corpus-batch-{utc_now_iso()}", dishes=planned_dishes),
+        "planner_attempts": planner_attempts,
+        "planner_batches": planner_batches,
+    }
 
 
 def _category_expansion_hints(category: str, attempt_number: int) -> list[str]:

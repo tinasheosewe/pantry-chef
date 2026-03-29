@@ -14,7 +14,7 @@ if str(PACKAGE_PARENT) not in sys.path:
 from recipe_ingredient_orchestrator.artifacts import ArtifactWriter
 from recipe_ingredient_orchestrator.campaigns import CampaignStore, RecipeCampaignRunner
 from recipe_ingredient_orchestrator.config import OrchestratorConfig
-from recipe_ingredient_orchestrator.corpus_builder import _catalog_entry_quality_issue, _ingredient_focus_plan
+from recipe_ingredient_orchestrator.corpus_builder import _catalog_entry_quality_issue, _ingredient_focus_plan, _plan_unique_recipe_batch
 from recipe_ingredient_orchestrator.corpus import RecipeCorpusIndex
 from recipe_ingredient_orchestrator.models import (
     AttemptTrace,
@@ -123,6 +123,24 @@ class ScriptedRecipeReviewer:
         if not self._reports:
             raise AssertionError("ScriptedRecipeReviewer had no reports remaining.")
         return self._reports.pop(0)
+
+
+def _recipe_batch_payload(*titles: str) -> dict:
+    return {
+        "name": "recipe-corpus-batch-test",
+        "dishes": [
+            {
+                "title": title,
+                "cuisine": "Mediterranean",
+                "meal_type": "Dinner",
+                "servings": 4,
+                "goals": ["Weeknight"],
+                "pantry_focus": ["chickpeas", "olive oil"],
+                "notes": None,
+            }
+            for title in titles
+        ],
+    }
 
 
 class MockPipelineTests(unittest.TestCase):
@@ -1273,6 +1291,69 @@ class MockPipelineTests(unittest.TestCase):
             ),
             "duplicate item id",
         )
+
+    def test_plan_unique_recipe_batch_accumulates_unique_dishes(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir)
+            (root / "PantryChef" / "Resources").mkdir(parents=True)
+            (root / "PantryChef" / "Resources" / "seed_recipes.json").write_text(
+                json.dumps(
+                    [
+                        {
+                            "title": "Mediterranean Chickpea Salad with Canned Olives",
+                            "description": "Existing seed recipe.",
+                            "ingredients": [{"name": "chickpeas"}],
+                            "steps": [{"instruction": "Mix and serve."}],
+                            "servings": 2,
+                            "prepTimeMinutes": 10,
+                            "cookTimeMinutes": 0,
+                            "difficulty": 1,
+                            "mealType": "Lunch",
+                            "cuisine": "Mediterranean",
+                        }
+                    ],
+                    indent=2,
+                )
+                + "\n",
+                encoding="utf-8",
+            )
+
+            corpus_index = RecipeCorpusIndex.from_project_root(root)
+            plan = _plan_unique_recipe_batch(
+                client=FakeChatClient(
+                    [
+                        _recipe_batch_payload(
+                            "Mediterranean Chickpea Salad with Canned Olives",
+                            "Thai Peanut Noodles",
+                        ),
+                        _recipe_batch_payload(
+                            "Italian White Bean Soup",
+                            "Korean Gochujang Tofu Bowl",
+                        ),
+                    ]
+                ),
+                model=None,
+                target_batch_size=3,
+                corpus_index=corpus_index,
+                underrepresented_cuisines=["Thai", "Korean", "Italian"],
+                underrepresented_meal_types=["Dinner"],
+                known_ingredients=["chickpeas", "tofu", "white beans"],
+                remaining_target=900,
+                attempt_number=0,
+            )
+
+            self.assertEqual(plan["planner_attempts"], 2)
+            self.assertEqual(len(plan["spec"].dishes), 3)
+            self.assertEqual(
+                [dish.title for dish in plan["spec"].dishes],
+                [
+                    "Thai Peanut Noodles",
+                    "Italian White Bean Soup",
+                    "Korean Gochujang Tofu Bowl",
+                ],
+            )
+            self.assertEqual(plan["planner_batches"][0]["added_unique_dishes"], 1)
+            self.assertEqual(plan["planner_batches"][1]["added_unique_dishes"], 2)
 
 
 if __name__ == "__main__":

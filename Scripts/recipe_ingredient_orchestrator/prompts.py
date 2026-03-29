@@ -652,16 +652,22 @@ def recipe_corpus_batch_messages(
     underrepresented_cuisines: list[str],
     underrepresented_meal_types: list[str],
     known_ingredients: list[str],
+    remaining_target: int,
+    attempt_number: int,
 ) -> tuple[str, str]:
     system_prompt = (
         "You are planning a diverse PantryChef recipe corpus batch. "
         "Return specific dish briefs, each for one exact dish title, with realistic pantry focus ingredients. "
         "Do not propose duplicates, near-duplicates, generic placeholders, or titles already present in the corpus. "
-        "Spread the batch across cuisines and meal types, with extra weight on underrepresented areas."
+        "Return exactly the requested number of distinct dishes whenever possible. "
+        "Spread the batch across cuisines and meal types, with extra weight on underrepresented areas. "
+        "Avoid title templates that merely swap one ingredient into an existing dish frame such as close salad, soup, curry, noodle, bowl, taco, or pasta variants."
     )
     user_prompt = json.dumps(
         {
             "batch_size": batch_size,
+            "remaining_target": remaining_target,
+            "attempt_number": attempt_number,
             "allowed_cuisines": APP_CUISINES,
             "allowed_meal_types": APP_MEAL_TYPES,
             "underrepresented_cuisines": underrepresented_cuisines,
@@ -673,6 +679,8 @@ def recipe_corpus_batch_messages(
                 "avoid_existing_titles": True,
                 "prefer_diverse_courses": True,
                 "prefer_canonical_pantry_focus": True,
+                "target_exact_batch_size": True,
+                "avoid_template_variants_of_existing_titles": True,
             },
         },
         indent=2,
