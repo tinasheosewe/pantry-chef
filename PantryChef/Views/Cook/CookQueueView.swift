@@ -104,10 +104,9 @@ struct CookQueueView: View {
             .sheet(isPresented: $showGathering) {
                 IngredientGatheringView(recipes: launchingRecipes) {
                     if launchingRecipes.count > 1 {
-                        let blocks = MultiRecipeScheduler.schedule(recipes: launchingRecipes)
-                        MultiCookModeView(
+                        BatchScheduleLoadingView(
                             recipes: launchingRecipes,
-                            blocks: blocks,
+                            aiService: appState.aiService,
                             queueID: queueContext?.queueID,
                             queueStageID: queueContext?.stageID
                         )

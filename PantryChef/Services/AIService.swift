@@ -238,6 +238,147 @@ final class AIService: AIServiceProtocol {
         }
     }
 
+    // MARK: - Use-Up-Ingredients Pipeline
+
+    func suggestRecipeNames(ingredients: [String], strictIngredients: Bool, excludeNames: [String]) async -> RecipeNameSuggestionsResult {
+        let ingredientList = ingredients.joined(separator: ", ")
+
+        let ingredientConstraint: String
+        if strictIngredients {
+            ingredientConstraint = "Use ONLY these ingredients. Do not include any ingredients not in this list."
+        } else {
+            ingredientConstraint = "Use these as primary ingredients. You may assume common staples are available (salt, pepper, water, cooking oil, butter, garlic, onion, sugar, flour, eggs, basic dried herbs/spices) but do NOT require specialty ingredients not listed."
+        }
+
+        var excludeClause = ""
+        if !excludeNames.isEmpty {
+            excludeClause = "\n\nDo NOT suggest any of these recipes (already shown): \(excludeNames.joined(separator: ", "))"
+        }
+
+        let prompt = """
+        I want to use up these ingredients: \(ingredientList)
+
+        \(ingredientConstraint)\(excludeClause)
+
+        Suggest up to 10 recipe ideas. For each, provide:
+        - "name": a specific, descriptive recipe title
+        - "description": a one-liner (~10 words) describing the dish
+        - "confidenceScore": integer 1-5 rating how well these ingredients work together in this dish:
+          5 = classic natural pairing, 4 = works well, 3 = workable but unconventional, 2 = a stretch, 1 = forced/unlikely to taste good
+        - "confidenceReason": brief reason for the score (~15 words)
+
+        Only suggest recipes you'd rate 2 or above. If no recipe scores 3+, you may return fewer suggestions or an empty array — in that case, set the "message" field explaining why and what ingredient additions would help.
+
+        Return a JSON object with:
+        - "suggestions": array of recipe suggestions
+        - "message": string or null (explanation when few/no results)
+        """
+
+        guard let response = await sendChatRequest(
+            prompt: prompt,
+            maxTokens: 2048,
+            responseFormat: ["type": "json_schema", "json_schema": Self.recipeNameSuggestionsSchema]
+        ) else {
+            return RecipeNameSuggestionsResult(suggestions: [], message: nil)
+        }
+
+        guard let data = response.data(using: .utf8) else {
+            return RecipeNameSuggestionsResult(suggestions: [], message: nil)
+        }
+        do {
+            let result = try JSONDecoder().decode(RecipeNameSuggestionsResult.self, from: data)
+            let filtered = result.suggestions
+                .filter { $0.confidenceScore >= 2 }
+                .sorted { $0.confidenceScore > $1.confidenceScore }
+            return RecipeNameSuggestionsResult(suggestions: filtered, message: result.message)
+        } catch {
+            AppLog.warn("[AIService] Failed to decode recipe name suggestions: \(error)")
+            return RecipeNameSuggestionsResult(suggestions: [], message: nil)
+        }
+    }
+
+    func generateRecipeFromSuggestion(_ suggestion: RecipeNameSuggestion, ingredients: [String], strictIngredients: Bool) async -> Recipe? {
+        let ingredientList = ingredients.joined(separator: ", ")
+
+        let ingredientConstraint: String
+        if strictIngredients {
+            ingredientConstraint = "Use ONLY these ingredients: \(ingredientList). Do not add any ingredients not in this list."
+        } else {
+            ingredientConstraint = "Primary ingredients: \(ingredientList). You may include common staples (salt, pepper, oil, butter, garlic, onion, sugar, flour, eggs, basic dried herbs/spices) but no other unlisted ingredients."
+        }
+
+        let prompt = """
+        Generate a full recipe for: \(suggestion.name)
+        Description: \(suggestion.description)
+
+        You previously assessed this recipe idea as \(suggestion.confidenceScore)/5 because: "\(suggestion.confidenceReason)". \
+        Generate a recipe consistent with that assessment.
+
+        \(ingredientConstraint)
+
+        Create an authentic, well-tested recipe. Use realistic quantities, proper technique, \
+        and accurate cooking times.
+
+        IMPORTANT: Use standard title capitalization for the recipe title. \
+        Use sentence case for ingredient names (lowercase unless a proper noun). \
+        Use sentence case for step instructions.
+
+        INGREDIENT QUALITY RULES:
+        - Every ingredient name must be specific enough to purchase at a store.
+        - Use the most natural unit for each ingredient type: weight (g, kg) for solids/meats, volume (ml, L, cup, tbsp) for liquids, "piece"/"whole" only for naturally countable items.
+        - Never use "piece" for meats, cheese, or ingredients sold by weight — use g or kg instead.
+        - Prefer human-readable quantities: use "1 kg" not "1000 g".
+        - Quantities must be realistic for the serving count.
+        - For fats and oils, use volume (tbsp, cup, ml) not weight.
+        - For spices and seasonings, use tsp, tbsp, or "pinch".
+
+        Return a single JSON object with:
+        - "title": string
+        - "description": string (2-3 sentences)
+        - "ingredients": [{"name": string, "quantity": number, "unit": string, "category": string}]
+        - "steps": [{"stepNumber": number, "instruction": string, "timerMinutes": number or null, "estimatedDurationSeconds": number, "tasks": [task]}]
+        - "servings": 4
+        - "prepTimeMinutes": number
+        - "cookTimeMinutes": number
+        - "difficulty": number (1-5)
+        - "dietaryTags": [string]
+        - "mealType": string
+        - "cuisine": string
+        - "calories": number (per serving)
+        - "protein": number (grams per serving)
+        - "carbohydrates": number (grams per serving)
+        - "fat": number (grams per serving)
+        - "fiber": number (grams per serving)
+        - "sugar": number (grams per serving)
+        - "sodium": number (mg per serving)
+
+        For unit, use: tsp, tbsp, cup, ml, L, g, kg, oz, lb, piece, whole, loaf, slice, clove, bunch, can, pinch, to taste.
+        For category, use: Dairy, Produce, Protein, Grains & Cereals, Spices & Herbs, Condiments & Sauces, Baking Supplies, Oils & Fats, Other.
+
+        Each task object: {"taskIndex": number, "action": string, "ingredient": string or null, "durationSeconds": number, "type": "active" or "passive", "effort": "easy" or "medium" or "hard", "requiresEquipment": string or null, "dependsOn": [number]}
+        "taskIndex" — unique integer starting at 0, incrementing across ALL steps.
+        "dependsOn" — taskIndex values of prerequisite tasks.
+        "effort" — "easy" (occasional checking), "medium" (periodic attention), "hard" (constant hands-on).
+        Valid actions: "cut_dice", "cut_mince", "cut_slice", "cut_chop", "peel", "measure", "mix", "marinate", "season", "heat", "saute", "boil", "simmer", "fry_pan", "fry_deep", "fry_stir", "bake", "roast", "grill", "steam", "plate", "garnish", "rest", "serve", "toss", or a custom string.
+
+        Return ONLY the JSON object, no other text.
+        """
+
+        guard let response = await sendChatRequest(
+            prompt: prompt,
+            responseFormat: ["type": "json_schema", "json_schema": Self.fullRecipeSchema]
+        ) else { return nil }
+
+        guard let data = response.data(using: .utf8) else { return nil }
+        do {
+            let raw = try JSONDecoder().decode(RawFullRecipe.self, from: data)
+            return validatedRecipe(raw.toRecipe(source: .aiGenerated), source: "generateRecipeFromSuggestion")
+        } catch {
+            AppLog.warn("[AIService] Failed to parse recipe from suggestion: \(error)")
+            return nil
+        }
+    }
+
     // MARK: - Recipe URL Import
 
     func parseRecipeFromURL(_ url: String) async -> RecipeImportResult? {
@@ -571,6 +712,34 @@ final class AIService: AIServiceProtocol {
         ] as [String: Any]
     ]
 
+    /// Recipe name suggestions — lightweight response for use-up-ingredients flow.
+    private static let recipeNameSuggestionsSchema: [String: Any] = [
+        "name": "recipe_name_suggestions",
+        "strict": true,
+        "schema": [
+            "type": "object",
+            "properties": [
+                "suggestions": [
+                    "type": "array",
+                    "items": [
+                        "type": "object",
+                        "properties": [
+                            "name": ["type": "string"],
+                            "description": ["type": "string"],
+                            "confidenceScore": ["type": "integer"],
+                            "confidenceReason": ["type": "string"]
+                        ] as [String: Any],
+                        "required": ["name", "description", "confidenceScore", "confidenceReason"],
+                        "additionalProperties": false
+                    ] as [String: Any]
+                ] as [String: Any],
+                "message": ["type": ["string", "null"]]
+            ] as [String: Any],
+            "required": ["suggestions", "message"],
+            "additionalProperties": false
+        ] as [String: Any]
+    ]
+
     /// Shopping list items.
     private static let shoppingListSchema: [String: Any] = [
         "name": "shopping_list",
@@ -660,6 +829,33 @@ final class AIService: AIServiceProtocol {
                 "messages": ["type": "array", "items": ["type": "string"]]
             ] as [String: Any],
             "required": ["messages"],
+            "additionalProperties": false
+        ] as [String: Any]
+    ]
+
+    /// Batch cook schedule — LLM-authored block sequence.
+    private static let batchScheduleSchema: [String: Any] = [
+        "name": "batch_schedule",
+        "strict": true,
+        "schema": [
+            "type": "object",
+            "properties": [
+                "blocks": [
+                    "type": "array",
+                    "items": [
+                        "type": "object",
+                        "properties": [
+                            "taskIDs": ["type": "array", "items": ["type": "string"]],
+                            "instruction": ["type": "string"],
+                            "isPassive": ["type": "boolean"],
+                            "durationSeconds": ["type": "integer"]
+                        ] as [String: Any],
+                        "required": ["taskIDs", "instruction", "isPassive", "durationSeconds"],
+                        "additionalProperties": false
+                    ] as [String: Any]
+                ] as [String: Any]
+            ] as [String: Any],
+            "required": ["blocks"],
             "additionalProperties": false
         ] as [String: Any]
     ]
@@ -849,6 +1045,151 @@ final class AIService: AIServiceProtocol {
 
     /// Generate a complete recipe from a search query and user preferences.
     // MARK: - Status Messages (lightweight, fast)
+
+    // MARK: - Batch Cook Schedule (LLM-powered)
+
+    func generateBatchSchedule(recipes: [Recipe]) async throws -> LLMBatchSchedule {
+        // 1. Extract all tasks with recipe context for the prompt payload
+        var taskPayloads: [[String: Any]] = []
+        var allTaskIDs: Set<String> = []
+
+        for recipe in recipes {
+            for step in recipe.steps.sorted(by: { $0.stepNumber < $1.stepNumber }) {
+                if step.tasks.isEmpty {
+                    // Wrap bare step as a synthetic task
+                    let syntheticID = UUID()
+                    allTaskIDs.insert(syntheticID.uuidString)
+                    taskPayloads.append([
+                        "taskID": syntheticID.uuidString,
+                        "recipeName": recipe.title,
+                        "stepNumber": step.stepNumber,
+                        "action": "other",
+                        "actionDetail": step.instruction,
+                        "ingredient": NSNull(),
+                        "quantity": NSNull(),
+                        "unit": NSNull(),
+                        "durationSeconds": step.effectiveDurationSeconds,
+                        "type": step.timerMinutes != nil ? "passive" : "active",
+                        "equipment": NSNull(),
+                        "dependsOn": [] as [String]
+                    ] as [String: Any])
+                } else {
+                    for task in step.tasks {
+                        allTaskIDs.insert(task.id.uuidString)
+                        taskPayloads.append([
+                            "taskID": task.id.uuidString,
+                            "recipeName": recipe.title,
+                            "stepNumber": step.stepNumber,
+                            "action": task.action.verb,
+                            "ingredient": task.ingredient as Any,
+                            "quantity": task.quantity as Any,
+                            "unit": task.unit as Any,
+                            "durationSeconds": task.durationSeconds,
+                            "type": task.type == .passive ? "passive" : "active",
+                            "equipment": task.requiresEquipment as Any,
+                            "dependsOn": task.dependsOn.map(\.uuidString)
+                        ] as [String: Any])
+                    }
+                }
+            }
+        }
+
+        let tasksJSON = try JSONSerialization.data(withJSONObject: taskPayloads)
+        let tasksString = String(data: tasksJSON, encoding: .utf8) ?? "[]"
+
+        let recipeNames = recipes.map(\.title).joined(separator: ", ")
+
+        let prompt = """
+        You are an expert chef planning a batch cooking session for these recipes: \(recipeNames).
+
+        Below is every atomic cooking task across all recipes, with dependency info. \
+        Your job is to produce an OPTIMAL schedule — an ordered list of "blocks" that a \
+        home cook follows sequentially.
+
+        TASKS (JSON array):
+        \(tasksString)
+
+        RULES:
+        1. **Every taskID must appear in exactly one block.** Do not skip or duplicate any task.
+        2. **Respect dependencies.** A task's block must come AFTER all blocks containing its \
+           dependsOn tasks.
+        3. **Be smart about parallelism.** Group tasks that can realistically be done at the \
+           same time, but never overload the cook. A person can do at most 2-3 simple things \
+           simultaneously (e.g., chop two vegetables), but only 1 demanding task (e.g., stir-fry).
+        4. **Optimal ordering.** Prep tasks first, then cooking, then plating. Hot food should \
+           finish close together so nothing gets cold. Passive waits (oven, simmering) should \
+           be started early so active work fills the wait time.
+        5. **Merge prep when safe.** If two recipes each need the same ingredient prepped in \
+           the same way for the same downstream treatment (e.g., both dice onion, both will \
+           be fried), merge into one instruction with combined quantity (e.g., "Dice 2 onions"). \
+           Then reword ALL downstream references so the cook knows which batch goes where \
+           (e.g., "Add the onions to the stir-fry pan" not just "Add the onions").
+        6. **Keep prep separate when downstream differs.** If one recipe fries the onion and \
+           another boils it, do NOT merge. Instead keep them as separate tasks in the same or \
+           different blocks, clearly labeled: "Dice 1 onion (for the Curry)" and \
+           "Dice 1 onion (for the Soup)".
+        7. **Passive blocks.** Mark blocks where the cook just waits (oven preheating, \
+           simmering, marinating, resting) as isPassive=true so the app can show a background \
+           timer. The cook should NOT sit idle during passive waits — schedule active work \
+           from other recipes in between.
+        8. **Natural language instructions.** Each block's "instruction" should read like a \
+           real chef talking: clear, concise, unambiguous. Mention specific recipes by name \
+           when tasks span multiple recipes. Include quantities and timing where helpful.
+        9. **Equipment awareness.** Don't schedule two tasks needing the same burner or oven \
+           at conflicting temperatures in the same block.
+
+        Return a JSON object with a "blocks" array. Each block:
+        {
+          "taskIDs": ["uuid1", "uuid2"],
+          "instruction": "Natural language instruction for the cook",
+          "isPassive": false,
+          "durationSeconds": 120
+        }
+
+        Order the blocks array in the exact sequence the cook should follow.
+        """
+
+        guard let response = await sendChatRequest(
+            prompt: prompt,
+            maxTokens: 4096,
+            responseFormat: ["type": "json_schema", "json_schema": Self.batchScheduleSchema]
+        ) else {
+            throw BatchScheduleError.llmRequestFailed
+        }
+
+        guard let data = response.data(using: .utf8) else {
+            throw BatchScheduleError.llmRequestFailed
+        }
+
+        let schedule: LLMBatchSchedule
+        do {
+            schedule = try JSONDecoder().decode(LLMBatchSchedule.self, from: data)
+        } catch {
+            AppLog.warn("[AIService] Failed to decode batch schedule: \(error)")
+            throw BatchScheduleError.invalidResponse
+        }
+
+        // Validate: every task ID must appear exactly once
+        var seen = Set<String>()
+        for block in schedule.blocks {
+            for id in block.taskIDs {
+                guard !seen.contains(id) else {
+                    AppLog.warn("[AIService] Batch schedule has duplicate taskID: \(id)")
+                    throw BatchScheduleError.validationFailed("Duplicate task ID")
+                }
+                seen.insert(id)
+            }
+        }
+
+        let missing = allTaskIDs.subtracting(seen)
+        if !missing.isEmpty {
+            AppLog.warn("[AIService] Batch schedule missing \(missing.count) task IDs")
+            throw BatchScheduleError.validationFailed("Missing \(missing.count) tasks")
+        }
+
+        return schedule
+    }
+
 
     func generateStatusMessages(query: String, preferences: RecipeGenerationPreferences) async -> [String] {
         var context = "Dish: \(query)"

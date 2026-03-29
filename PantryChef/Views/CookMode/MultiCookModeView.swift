@@ -2,8 +2,8 @@ import SwiftUI
 
 // MARK: - Multi-Cook Mode View
 //
-// Displays the interleaved timeline from MultiRecipeScheduler.
-// Each block is color-coded by source recipe.
+// Displays the interleaved timeline from MultiRecipeScheduler with voice AI.
+// Each block shows the LLM-authored natural language instruction.
 // Passive blocks start a background timer pill when the user advances past them.
 
 struct MultiCookModeView: View {
@@ -11,17 +11,14 @@ struct MultiCookModeView: View {
     @Environment(AppState.self) private var appState
 
     let recipes: [Recipe]
+    let blocks: [MultiRecipeScheduler.ScheduledBlock]
     let queueID: UUID?
     let queueStageID: UUID?
-    @State private var blocks: [MultiRecipeScheduler.ScheduledBlock]
-    @State private var currentBlockIndex = 0
-    @State private var showEndConfirm = false
 
-    // MARK: - Passive Timer State
-    @State private var runningTimers: [RunningPassiveTimer] = []
-    @State private var tickTimer: Timer?
-    @State private var finishedTimerName: String?
-    @State private var showTimerFinishedAlert = false
+    @State private var realtimeService: RealtimeService?
+    @State private var viewModel: MultiCookModeViewModel?
+    @State private var syncTask: Task<Void, Never>?
+    @State private var showEndConfirm = false
 
     /// Distinct color per recipe.
     private let recipeColors: [Color] = [
@@ -33,40 +30,52 @@ struct MultiCookModeView: View {
 
     init(recipes: [Recipe], blocks: [MultiRecipeScheduler.ScheduledBlock], queueID: UUID? = nil, queueStageID: UUID? = nil) {
         self.recipes = recipes
+        self.blocks = blocks
         self.queueID = queueID
         self.queueStageID = queueStageID
-        _blocks = State(initialValue: blocks)
-    }
-
-    private var currentBlock: MultiRecipeScheduler.ScheduledBlock? {
-        guard currentBlockIndex < blocks.count else { return nil }
-        return blocks[currentBlockIndex]
-    }
-
-    private var progress: Double {
-        guard !blocks.isEmpty else { return 0 }
-        return Double(currentBlockIndex) / Double(blocks.count)
     }
 
     var body: some View {
         ZStack {
-            PCColors.background.ignoresSafeArea()
+            Color.black.ignoresSafeArea()
 
-            VStack(spacing: 0) {
-                topBar
-                progressBar
-
-                // Passive timer pills
-                if !runningTimers.isEmpty {
-                    passiveTimerBanner
-                }
-
-                if let block = currentBlock {
-                    blockContent(block)
-                } else {
-                    completionScreen
+            if let viewModel {
+                cookContent(vm: viewModel)
+            } else {
+                ProgressView()
+                    .tint(PCColors.accent)
+            }
+        }
+        .environment(\.colorScheme, .dark)
+        .onAppear {
+            if viewModel == nil {
+                let realtime = RealtimeService()
+                realtimeService = realtime
+                let vm = MultiCookModeViewModel(
+                    recipes: recipes,
+                    blocks: blocks,
+                    realtimeService: realtime,
+                    preferenceStore: appState.cookModePreferenceStore,
+                    queueID: queueID,
+                    queueStageID: queueStageID
+                )
+                viewModel = vm
+                vm.startConversation()
+            }
+            if syncTask == nil {
+                syncTask = Task { @MainActor in
+                    while !Task.isCancelled {
+                        viewModel?.syncRealtimeState()
+                        try? await Task.sleep(for: .milliseconds(66))
+                    }
                 }
             }
+        }
+        .onDisappear {
+            syncTask?.cancel()
+            syncTask = nil
+            viewModel?.cleanup()
+            appState.activeCooks.refresh()
         }
         .confirmationDialog("End Multi-Cook?", isPresented: $showEndConfirm, titleVisibility: .visible) {
             Button("End All Sessions", role: .destructive) {
@@ -76,18 +85,71 @@ struct MultiCookModeView: View {
         } message: {
             Text("This will end all \(recipes.count) cooking sessions.")
         }
-        .alert("Timer Done!", isPresented: $showTimerFinishedAlert) {
+        .alert("Timer Done!", isPresented: Binding(
+            get: { viewModel?.showTimerFinishedAlert ?? false },
+            set: { viewModel?.showTimerFinishedAlert = $0 }
+        )) {
             Button("OK") {}
         } message: {
-            Text("\(finishedTimerName ?? "A passive task") is ready!")
+            Text("\(viewModel?.finishedTimerName ?? "A passive task") is ready!")
         }
-        .onAppear { startTickTimer() }
-        .onDisappear { tickTimer?.invalidate() }
+        .alert("Voice Control Unavailable",
+               isPresented: Binding(
+                get: { viewModel?.voiceAuthorizationDenied ?? false },
+                set: { viewModel?.voiceAuthorizationDenied = $0 }
+               )) {
+            Button("Open Settings") {
+                if let url = URL(string: UIApplication.openSettingsURLString) {
+                    UIApplication.shared.open(url)
+                }
+            }
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("Please enable Microphone access in Settings to use voice commands.")
+        }
+        .alert("Voice Chat Error",
+               isPresented: Binding(
+                get: { viewModel?.conversationError != nil },
+                set: { if !$0 { viewModel?.conversationError = nil } }
+               )) {
+            Button("Retry") {
+                viewModel?.stopConversation()
+                viewModel?.startConversation()
+            }
+            Button("Dismiss", role: .cancel) {
+                viewModel?.stopConversation()
+            }
+        } message: {
+            Text(viewModel?.conversationError ?? "Connection lost")
+        }
+    }
+
+    // MARK: - Cook Content
+
+    @ViewBuilder
+    private func cookContent(vm: MultiCookModeViewModel) -> some View {
+        if vm.showCompletionScreen {
+            completionScreen(vm: vm)
+        } else {
+            VStack(spacing: 0) {
+                topBar(vm: vm)
+                progressBar(vm: vm)
+
+                // Passive timer pills
+                if !vm.runningTimers.isEmpty {
+                    passiveTimerBanner(vm: vm)
+                }
+
+                if let block = vm.currentBlock {
+                    blockContent(block, vm: vm)
+                }
+            }
+        }
     }
 
     // MARK: - Top Bar
 
-    private var topBar: some View {
+    private func topBar(vm: MultiCookModeViewModel) -> some View {
         HStack {
             Button {
                 dismiss()
@@ -130,10 +192,10 @@ struct MultiCookModeView: View {
 
     // MARK: - Progress Bar
 
-    private var progressBar: some View {
+    private func progressBar(vm: MultiCookModeViewModel) -> some View {
         PCProgressBar(
-            progress: progress,
-            label: "Step \(min(currentBlockIndex + 1, blocks.count)) of \(blocks.count)",
+            progress: vm.progress,
+            label: "Block \(min(vm.currentBlockIndex + 1, blocks.count)) of \(blocks.count)",
             trailingLabel: "~\(blocks.map(\.totalDurationSeconds).reduce(0, +) / 60) min total",
             height: 6
         )
@@ -143,10 +205,10 @@ struct MultiCookModeView: View {
 
     // MARK: - Passive Timer Banner
 
-    private var passiveTimerBanner: some View {
+    private func passiveTimerBanner(vm: MultiCookModeViewModel) -> some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 8) {
-                ForEach(runningTimers) { rt in
+                ForEach(vm.runningTimers) { rt in
                     HStack(spacing: 6) {
                         Image(systemName: "timer")
                             .font(.caption2)
@@ -173,9 +235,77 @@ struct MultiCookModeView: View {
         .padding(.top, 6)
     }
 
+    // MARK: - Conversation Indicator
+
+    private func conversationIndicator(vm: MultiCookModeViewModel) -> some View {
+        VStack(spacing: 8) {
+            HStack(spacing: 10) {
+                if vm.isUserSpeaking {
+                    Circle()
+                        .fill(PCColors.info)
+                        .frame(width: 10, height: 10)
+                        .modifier(MultiCookPulseAnimation())
+                    Text("Listening to you…")
+                        .font(.caption)
+                        .fontWeight(.medium)
+                        .foregroundStyle(PCColors.info)
+                } else if vm.isModelSpeaking {
+                    HStack(spacing: 3) {
+                        ForEach(0..<5, id: \.self) { _ in
+                            RoundedRectangle(cornerRadius: 2)
+                                .fill(PCColors.accent)
+                                .frame(width: 3, height: CGFloat.random(in: 8...20))
+                        }
+                    }
+                    .modifier(MultiCookPulseAnimation())
+                    Text("Speaking…")
+                        .font(.caption)
+                        .fontWeight(.medium)
+                        .foregroundStyle(PCColors.accent)
+                } else {
+                    Circle()
+                        .fill(PCColors.accent)
+                        .frame(width: 8, height: 8)
+                        .modifier(MultiCookPulseAnimation())
+                    Text(vm.conversationStatus.isEmpty ? "Ready — just talk!" : vm.conversationStatus)
+                        .font(.caption)
+                        .foregroundStyle(PCColors.textSecondary)
+                }
+
+                Spacer()
+
+                Button {
+                    vm.toggleMute()
+                } label: {
+                    Image(systemName: vm.isMuted ? "speaker.slash.fill" : "mic.fill")
+                        .font(.subheadline)
+                        .foregroundStyle(vm.isMuted ? PCColors.textTertiary : PCColors.accent)
+                        .frame(width: 32, height: 32)
+                        .background(PCColors.fillTertiary)
+                        .clipShape(Circle())
+                }
+            }
+
+            if !vm.conversationTranscript.isEmpty {
+                Text(vm.conversationTranscript)
+                    .font(.caption)
+                    .foregroundStyle(PCColors.textPrimary)
+                    .lineLimit(3)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 10)
+        .background(PCColors.cardBackground)
+        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .shadow(color: Color.black.opacity(0.04), radius: 8, x: 0, y: 2)
+        .padding(.horizontal, 16)
+        .padding(.bottom, 8)
+    }
+
     // MARK: - Block Content
 
-    private func blockContent(_ block: MultiRecipeScheduler.ScheduledBlock) -> some View {
+    private func blockContent(_ block: MultiRecipeScheduler.ScheduledBlock, vm: MultiCookModeViewModel) -> some View {
         AppScrollView {
             VStack(spacing: 24) {
                 // Action class badge
@@ -187,6 +317,15 @@ struct MultiCookModeView: View {
                 }
                 .foregroundStyle(colorForBlock(block))
                 .padding(.top, 24)
+
+                // LLM-authored instruction — the primary content
+                Text(block.displayInstruction)
+                    .font(.title3)
+                    .fontWeight(.medium)
+                    .foregroundStyle(PCColors.textPrimary)
+                    .multilineTextAlignment(.leading)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.horizontal)
 
                 // Passive indicator
                 if block.type == .passive {
@@ -209,14 +348,6 @@ struct MultiCookModeView: View {
                     .clipShape(RoundedRectangle(cornerRadius: 10))
                 }
 
-                // Tasks list
-                VStack(alignment: .leading, spacing: 16) {
-                    ForEach(block.tasks) { task in
-                        taskRow(task)
-                    }
-                }
-                .padding(.horizontal)
-
                 // Recipe source tags
                 HStack(spacing: 8) {
                     ForEach(block.recipeNames, id: \.self) { name in
@@ -231,18 +362,18 @@ struct MultiCookModeView: View {
                     }
                 }
 
+                // Voice conversation indicator
+                if vm.isConversationActive {
+                    conversationIndicator(vm: vm)
+                }
+
                 Spacer()
 
                 // Navigation buttons
                 HStack(spacing: 12) {
-                    if currentBlockIndex > 0 {
+                    if !vm.isFirstBlock {
                         Button {
-                            withAnimation {
-                                currentBlockIndex -= 1
-                                // Remove passive timers started from blocks after the new position
-                                let validBlockIDs = Set(blocks.prefix(currentBlockIndex).map(\.id))
-                                runningTimers.removeAll { !validBlockIDs.contains($0.blockId) }
-                            }
+                            withAnimation { vm.previousBlock() }
                         } label: {
                             HStack(spacing: 4) {
                                 Image(systemName: "chevron.left")
@@ -259,15 +390,15 @@ struct MultiCookModeView: View {
                     }
 
                     Button {
-                        advanceBlock()
+                        withAnimation { vm.nextBlock() }
                     } label: {
                         HStack(spacing: 4) {
-                            Text(currentBlockIndex < blocks.count - 1
-                                 ? (block.type == .passive ? "Start & Next" : "Next")
-                                 : "Finish")
-                            Image(systemName: currentBlockIndex < blocks.count - 1
-                                  ? (block.type == .passive ? "timer" : "chevron.right")
-                                  : "checkmark")
+                            Text(vm.isLastBlock
+                                 ? "Finish"
+                                 : (block.type == .passive ? "Start & Next" : "Next"))
+                            Image(systemName: vm.isLastBlock
+                                  ? "checkmark"
+                                  : (block.type == .passive ? "timer" : "chevron.right"))
                         }
                         .font(.subheadline)
                         .fontWeight(.semibold)
@@ -284,110 +415,9 @@ struct MultiCookModeView: View {
         }
     }
 
-    // MARK: - Task Row
-
-    private func taskRow(_ task: StepTask) -> some View {
-        HStack(alignment: .top, spacing: 12) {
-            Circle()
-                .fill(colorForRecipe(task.recipeName ?? ""))
-                .frame(width: 8, height: 8)
-                .padding(.top, 6)
-
-            VStack(alignment: .leading, spacing: 4) {
-                Text(task.displayText)
-                    .font(.body)
-                    .foregroundStyle(PCColors.textPrimary)
-
-                HStack(spacing: 8) {
-                    if let name = task.recipeName {
-                        Text(name)
-                            .font(.caption2)
-                            .foregroundStyle(colorForRecipe(name))
-                    }
-                    if let step = task.sourceStepNumber {
-                        Text("Step \(step)")
-                            .font(.caption2)
-                            .foregroundStyle(PCColors.textSecondary)
-                    }
-                    if task.durationSeconds > 0 {
-                        Text("\(task.durationSeconds / 60)m")
-                            .font(.caption2)
-                            .foregroundStyle(PCColors.textSecondary)
-                    }
-                }
-            }
-
-            Spacer()
-        }
-        .padding()
-        .background(PCColors.cardBackground)
-        .clipShape(RoundedRectangle(cornerRadius: 12))
-        .shadow(color: Color.black.opacity(0.04), radius: 6, x: 0, y: 2)
-    }
-
-    // MARK: - Advance Block
-
-    private func advanceBlock() {
-        // If current block is passive, start a background timer for it
-        if let block = currentBlock, block.type == .passive, block.totalDurationSeconds > 0 {
-            let label = block.tasks.first.map { task -> String in
-                let name = task.recipeName ?? "Timer"
-                let verb = task.action.verb
-                return "\(verb) (\(name))"
-            } ?? "Passive"
-
-            let rt = RunningPassiveTimer(
-                blockId: block.id,
-                label: label,
-                totalSeconds: block.totalDurationSeconds,
-                startedAt: Date()
-            )
-            runningTimers.append(rt)
-        }
-
-        withAnimation { currentBlockIndex += 1 }
-    }
-
-    // MARK: - Tick Timer (updates all passive countdowns)
-
-    private func startTickTimer() {
-        tickTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { _ in
-            tickPassiveTimers()
-        }
-        if let tickTimer {
-            RunLoop.main.add(tickTimer, forMode: .common)
-        }
-    }
-
-    private func tickPassiveTimers() {
-        var finished: [RunningPassiveTimer] = []
-
-        for i in runningTimers.indices {
-            let elapsed = Date().timeIntervalSince(runningTimers[i].startedAt)
-            let remaining = max(0, runningTimers[i].totalSeconds - Int(elapsed))
-            runningTimers[i].remainingSeconds = remaining
-
-            if remaining == 0 {
-                finished.append(runningTimers[i])
-            }
-        }
-
-        // Remove finished timers and alert
-        if let first = finished.first {
-            runningTimers.removeAll { $0.remainingSeconds == 0 }
-            finishedTimerName = first.label
-
-            // Haptic
-            let generator = UINotificationFeedbackGenerator()
-            generator.notificationOccurred(.success)
-
-            showTimerFinishedAlert = true
-        }
-    }
-
     // MARK: - Completion Screen
 
-    private var completionScreen: some View {
+    private func completionScreen(vm: MultiCookModeViewModel) -> some View {
         VStack(spacing: 24) {
             Spacer()
 
@@ -464,7 +494,7 @@ struct MultiCookModeView: View {
     // MARK: - Session Management
 
     private func endSession(completed: Bool = false) {
-        tickTimer?.invalidate()
+        viewModel?.cleanup()
         Task {
             if let queueStageID {
                 if completed {
@@ -479,6 +509,20 @@ struct MultiCookModeView: View {
         }
         appState.activeCooks.refresh()
         dismiss()
+    }
+}
+
+// MARK: - Pulse Animation
+
+private struct MultiCookPulseAnimation: ViewModifier {
+    @State private var isPulsing = false
+
+    func body(content: Content) -> some View {
+        content
+            .scaleEffect(isPulsing ? 1.3 : 1.0)
+            .opacity(isPulsing ? 0.6 : 1.0)
+            .animation(.easeInOut(duration: 1.0).repeatForever(autoreverses: true), value: isPulsing)
+            .onAppear { isPulsing = true }
     }
 }
 

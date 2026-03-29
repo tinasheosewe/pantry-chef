@@ -136,10 +136,9 @@ struct MultiCookSelectionView: View {
                 let selectedRecipes = availableRecipes.filter { selectedRecipeIds.contains($0.id) }
                 IngredientGatheringView(recipes: selectedRecipes) {
                     let selectedRecipes = availableRecipes.filter { selectedRecipeIds.contains($0.id) }
-                    let blocks = MultiRecipeScheduler.schedule(recipes: selectedRecipes)
-                    MultiCookModeView(
+                    BatchScheduleLoadingView(
                         recipes: selectedRecipes,
-                        blocks: blocks
+                        aiService: appState.aiService
                     )
                     .environment(appState)
                 }
@@ -256,7 +255,7 @@ struct MultiCookSelectionView: View {
             return
         }
 
-        let blocks = MultiRecipeScheduler.schedule(recipes: selectedRecipes)
+        let blocks = MultiRecipeScheduler.estimateBlocks(recipes: selectedRecipes)
         let sequential = MultiRecipeScheduler.sequentialTime(recipes: selectedRecipes)
         let interleaved = MultiRecipeScheduler.estimatedTotalTime(blocks: blocks)
         scheduleSummary = ScheduleSummary(

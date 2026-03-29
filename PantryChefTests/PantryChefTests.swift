@@ -198,11 +198,20 @@ final class MockAIService: AIServiceProtocol {
     var disambiguateIngredientsCallCount = 0
     var generateRecipeCallCount = 0
     var modifyRecipeCallCount = 0
+    var suggestRecipeNamesCallCount = 0
+    var generateRecipeFromSuggestionCallCount = 0
     var lastGenerateRecipeQuery: String?
     var lastGenerateRecipePreferences: RecipeGenerationPreferences?
     var lastModifyFeedback: String?
     var lastModifyPantryIngredients: [String] = []
     var lastDisambiguationRequests: [IngredientResolutionRequest] = []
+    var recipeNameSuggestionsToReturn = RecipeNameSuggestionsResult(suggestions: [], message: nil)
+    var lastSuggestRecipeNamesIngredients: [String] = []
+    var lastSuggestRecipeNamesStrictIngredients: Bool = false
+    var lastSuggestRecipeNamesExcludeNames: [String] = []
+    var lastGenerateFromSuggestion: RecipeNameSuggestion?
+    var lastGenerateFromSuggestionIngredients: [String] = []
+    var lastGenerateFromSuggestionStrict: Bool = false
 
     func generateShoppingList(recipe: Recipe, pantry: [PantryItem]) async -> [ShoppingItem] {
         generateShoppingListCallCount += 1
@@ -256,6 +265,31 @@ final class MockAIService: AIServiceProtocol {
         lastModifyFeedback = feedback
         lastModifyPantryIngredients = pantryIngredients
         return recipesToReturn.first
+    }
+    func suggestRecipeNames(ingredients: [String], strictIngredients: Bool, excludeNames: [String]) async -> RecipeNameSuggestionsResult {
+        suggestRecipeNamesCallCount += 1
+        lastSuggestRecipeNamesIngredients = ingredients
+        lastSuggestRecipeNamesStrictIngredients = strictIngredients
+        lastSuggestRecipeNamesExcludeNames = excludeNames
+        return recipeNameSuggestionsToReturn
+    }
+    func generateRecipeFromSuggestion(_ suggestion: RecipeNameSuggestion, ingredients: [String], strictIngredients: Bool) async -> Recipe? {
+        generateRecipeFromSuggestionCallCount += 1
+        lastGenerateFromSuggestion = suggestion
+        lastGenerateFromSuggestionIngredients = ingredients
+        lastGenerateFromSuggestionStrict = strictIngredients
+        return recipesToReturn.first
+    }
+
+    var batchScheduleToReturn: LLMBatchSchedule?
+    var batchScheduleError: Error?
+    var generateBatchScheduleCallCount = 0
+
+    func generateBatchSchedule(recipes: [Recipe]) async throws -> LLMBatchSchedule {
+        generateBatchScheduleCallCount += 1
+        if let error = batchScheduleError { throw error }
+        if let result = batchScheduleToReturn { return result }
+        throw BatchScheduleError.llmRequestFailed
     }
 }
 

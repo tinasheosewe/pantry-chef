@@ -2,40 +2,24 @@ import Foundation
 
 // MARK: - Multi-Recipe Scheduler
 //
-// Generic DAG-based scheduler for cooking multiple recipes simultaneously.
-// The LLM builds the dependency graph and assigns effort levels at recipe
-// creation time. The scheduler is a dumb executor — it packs ready tasks
-// into time slots under an attention budget, using action-class phase
-// priority only as a tiebreaker.
-//
-// Key concepts:
-//   1. DAG — task.dependsOn defines hard ordering (built by the LLM).
-//   2. Effort budget — up to 3 "effort points" of active work per block.
-//      easy=1, medium=2, hard=3, passive=0. Tasks of any class can share a block.
-//   3. Phase preference — when multiple tasks are ready and could fill the budget,
-//      prefer prep → cook → finish. This gives the natural "chop everything first" feel.
-//   4. Passive tasks — emitted as background timer blocks (0 effort cost)
-//      and do not block the active work pipeline.
+// LLM-powered scheduler for cooking multiple recipes simultaneously.
+// At cook-start, the full task list is sent to the LLM which produces
+// an optimal, naturally-worded block sequence. Single-recipe mode uses
+// a simple linear conversion (no LLM needed).
 
 struct MultiRecipeScheduler {
 
-    /// Maximum attention points the cook can handle simultaneously.
-    static let effortBudget = AppConfig.effortBudget
-
     // MARK: - Output Types
 
-    /// A block in the scheduled timeline. May contain tasks from multiple recipes
-    /// running in parallel (within the effort budget).
+    /// A block in the scheduled timeline. May contain tasks from multiple recipes.
     struct ScheduledBlock: Identifiable, Hashable {
         let id: UUID
         let tasks: [StepTask]
         let type: TaskType
         let totalDurationSeconds: Int
 
-        /// Total effort points consumed by this block.
-        var totalEffort: Int {
-            tasks.reduce(0) { $0 + $1.effortPoints }
-        }
+        /// Natural-language instruction authored by the LLM.
+        let llmInstruction: String
 
         /// Dominant action class (most common among tasks), used for display.
         var actionClass: ActionClass {
@@ -44,23 +28,9 @@ struct MultiRecipeScheduler {
             return grouped.max(by: { $0.value.count < $1.value.count })?.key ?? .activeCook
         }
 
-        /// Human-readable instruction combining all tasks.
+        /// Human-readable instruction — returns the LLM-authored text.
         var displayInstruction: String {
-            if tasks.count == 1, let task = tasks.first {
-                var text = task.displayText
-                if let name = task.recipeName {
-                    text += " (\(name))"
-                }
-                return text
-            }
-            // Multi-task block
-            let grouped = Dictionary(grouping: tasks, by: { $0.recipeName ?? "Unknown" })
-            var lines: [String] = []
-            for (recipe, recipeTasks) in grouped.sorted(by: { $0.key < $1.key }) {
-                let descs = recipeTasks.map { $0.displayText }.joined(separator: ", ")
-                lines.append("\(descs) (\(recipe))")
-            }
-            return lines.joined(separator: "\n")
+            llmInstruction
         }
 
         /// Short label for the block.
@@ -82,25 +52,34 @@ struct MultiRecipeScheduler {
         }
     }
 
-    // MARK: - Schedule
+    // MARK: - Schedule (LLM-powered)
 
-    /// Build an interleaved timeline from multiple recipes.
-    static func schedule(recipes: [Recipe]) -> [ScheduledBlock] {
+    /// Build an interleaved timeline from multiple recipes using the LLM.
+    static func schedule(recipes: [Recipe], aiService: AIServiceProtocol) async throws -> [ScheduledBlock] {
         guard !recipes.isEmpty else { return [] }
 
-        // If single recipe, just convert steps to blocks linearly
+        // Single recipe: simple linear conversion, no LLM needed
         if recipes.count == 1 {
             return singleRecipeBlocks(recipes[0])
         }
 
-        // 1. Extract all tasks with recipe context
+        // Multi-recipe: call the LLM for an optimal schedule
         let allTasks = extractTasks(from: recipes)
+        let taskByID = Dictionary(uniqueKeysWithValues: allTasks.map { ($0.id.uuidString, $0) })
 
-        // 2. Build dependency graph from task.dependsOn
-        let dependencies = buildDependencies(tasks: allTasks)
+        let llmSchedule = try await aiService.generateBatchSchedule(recipes: recipes)
 
-        // 3. Schedule using effort-budget packing
-        return effortPackSchedule(tasks: allTasks, dependencies: dependencies)
+        return llmSchedule.blocks.map { block in
+            let blockTasks = block.taskIDs.compactMap { taskByID[$0] }
+            let type: TaskType = block.isPassive ? .passive : .active
+            return ScheduledBlock(
+                id: UUID(),
+                tasks: blockTasks,
+                type: type,
+                totalDurationSeconds: block.durationSeconds,
+                llmInstruction: block.instruction
+            )
+        }
     }
 
     // MARK: - Single Recipe (simple linear)
@@ -118,19 +97,19 @@ struct MultiRecipeScheduler {
                 id: UUID(),
                 tasks: tasks,
                 type: type,
-                totalDurationSeconds: duration
+                totalDurationSeconds: duration,
+                llmInstruction: step.instruction
             )
         }
     }
 
     // MARK: - Task Extraction
 
-    private static func extractTasks(from recipes: [Recipe]) -> [StepTask] {
+    static func extractTasks(from recipes: [Recipe]) -> [StepTask] {
         var result: [StepTask] = []
         for recipe in recipes {
             for step in recipe.steps.sorted(by: { $0.stepNumber < $1.stepNumber }) {
                 if step.tasks.isEmpty {
-                    // Wrap the step instruction as a single generic task
                     let task = StepTask(
                         action: .other(step.instruction),
                         durationSeconds: step.effectiveDurationSeconds,
@@ -153,156 +132,31 @@ struct MultiRecipeScheduler {
         return result
     }
 
-    // MARK: - Dependency Graph (explicit DAG from recipe data)
+    // MARK: - Quick Estimate (synchronous, no LLM)
 
-    private static func buildDependencies(tasks: [StepTask]) -> [UUID: Set<UUID>] {
-        let validIds = Set(tasks.map(\.id))
-        var deps: [UUID: Set<UUID>] = [:]
-        for task in tasks {
-            deps[task.id] = Set(task.dependsOn.filter { validIds.contains($0) })
+    /// Produces a rough block estimate for preview UI (time savings display).
+    /// Groups tasks by phase for a ballpark block count and total time — NOT used for cooking.
+    static func estimateBlocks(recipes: [Recipe]) -> [ScheduledBlock] {
+        guard recipes.count > 1 else {
+            if let recipe = recipes.first { return singleRecipeBlocks(recipe) }
+            return []
         }
-        return deps
-    }
-
-    // MARK: - Effort-Budget Packing Scheduler
-    //
-    // Algorithm:
-    //   1. Find all ready tasks (deps satisfied).
-    //   2. Separate passive (background timers, 0 effort) from active.
-    //   3. Emit each passive task as its own timer block.
-    //   4. Sort active ready tasks by phase priority (tiebreaker), then by effort ascending.
-    //   5. Greedily pack active tasks into one block up to `effortBudget` points.
-    //   6. Mark completed, repeat.
-
-    private static func effortPackSchedule(tasks: [StepTask], dependencies: [UUID: Set<UUID>]) -> [ScheduledBlock] {
-        var timeline: [ScheduledBlock] = []
-        var completed = Set<UUID>()
-        var remaining = Set(tasks.map(\.id))
-        let taskById = Dictionary(uniqueKeysWithValues: tasks.map { ($0.id, $0) })
-        let dependents = buildDependents(dependencies: dependencies)
-        let criticalPathLengths = computeCriticalPathLengths(tasks: taskById, dependents: dependents)
-
-        func isReady(_ taskId: UUID) -> Bool {
-            (dependencies[taskId] ?? []).isSubset(of: completed)
+        let tasks = extractTasks(from: recipes)
+        // Group by action class phase for a rough interleaving estimate
+        let grouped = Dictionary(grouping: tasks, by: { $0.action.actionClass.phasePriority })
+        return grouped.keys.sorted().compactMap { phase -> ScheduledBlock? in
+            guard let phaseTasks = grouped[phase], !phaseTasks.isEmpty else { return nil }
+            let isPassive = phaseTasks.allSatisfy { $0.type == .passive }
+            let duration = phaseTasks.map(\.durationSeconds).max() ?? 0
+            let instruction = phaseTasks.map { $0.displayText }.joined(separator: "; ")
+            return ScheduledBlock(
+                id: UUID(),
+                tasks: phaseTasks,
+                type: isPassive ? .passive : .active,
+                totalDurationSeconds: duration,
+                llmInstruction: instruction
+            )
         }
-
-        var iterations = 0
-        let maxIterations = tasks.count * 3
-
-        while !remaining.isEmpty && iterations < maxIterations {
-            iterations += 1
-
-            let readyIds = remaining.filter { isReady($0) }
-            guard !readyIds.isEmpty else { break }
-
-            let readyTasks = readyIds.compactMap { taskById[$0] }
-
-            // --- Passive tasks: emit as background timer blocks ---
-            let passiveTasks = readyTasks.filter { $0.type == .passive }
-            for task in passiveTasks {
-                timeline.append(ScheduledBlock(
-                    id: UUID(),
-                    tasks: [task],
-                    type: .passive,
-                    totalDurationSeconds: task.durationSeconds
-                ))
-                completed.insert(task.id)
-                remaining.remove(task.id)
-            }
-
-            // --- Active tasks: effort-budget packing ---
-            // Re-check readiness after passive completions may have unlocked new tasks
-            let activeReadyIds = remaining.filter { isReady($0) }
-            let activeReady = activeReadyIds.compactMap { taskById[$0] }
-                .filter { $0.type == .active }
-                .sorted {
-                    let c0 = criticalPathLengths[$0.id] ?? $0.durationSeconds
-                    let c1 = criticalPathLengths[$1.id] ?? $1.durationSeconds
-                    if c0 != c1 { return c0 > c1 }
-
-                    // Secondary: phase priority (prep first)
-                    let p0 = $0.action.actionClass.phasePriority
-                    let p1 = $1.action.actionClass.phasePriority
-                    if p0 != p1 { return p0 < p1 }
-
-                    // Tertiary: prioritize higher effort if critical path is tied.
-                    if $0.effortPoints != $1.effortPoints {
-                        return $0.effortPoints > $1.effortPoints
-                    }
-
-                    return $0.durationSeconds > $1.durationSeconds
-                }
-
-            guard !activeReady.isEmpty else {
-                // Only passive tasks were ready this iteration
-                if passiveTasks.isEmpty { break }
-                continue
-            }
-
-            // Greedily fill one block up to the budget
-            var blockTasks: [StepTask] = []
-            var budgetUsed = 0
-
-            for task in activeReady {
-                if budgetUsed + task.effortPoints <= effortBudget {
-                    blockTasks.append(task)
-                    budgetUsed += task.effortPoints
-                }
-                if budgetUsed >= effortBudget { break }
-            }
-
-            if !blockTasks.isEmpty {
-                let duration = blockTasks.map(\.durationSeconds).max() ?? 60
-                timeline.append(ScheduledBlock(
-                    id: UUID(),
-                    tasks: blockTasks,
-                    type: .active,
-                    totalDurationSeconds: duration
-                ))
-                for task in blockTasks {
-                    completed.insert(task.id)
-                    remaining.remove(task.id)
-                }
-            }
-        }
-
-        return timeline
-    }
-
-    private static func buildDependents(dependencies: [UUID: Set<UUID>]) -> [UUID: Set<UUID>] {
-        var dependents: [UUID: Set<UUID>] = [:]
-        for (taskID, prerequisites) in dependencies {
-            dependents[taskID, default: []] = dependents[taskID] ?? []
-            for prerequisite in prerequisites {
-                dependents[prerequisite, default: []].insert(taskID)
-            }
-        }
-        return dependents
-    }
-
-    private static func computeCriticalPathLengths(
-        tasks: [UUID: StepTask],
-        dependents: [UUID: Set<UUID>]
-    ) -> [UUID: Int] {
-        var memo: [UUID: Int] = [:]
-
-        func criticalPath(for taskID: UUID) -> Int {
-            if let cached = memo[taskID] {
-                return cached
-            }
-
-            let duration = tasks[taskID]?.durationSeconds ?? 0
-            let downstream = (dependents[taskID] ?? []).map { criticalPath(for: $0) }.max() ?? 0
-            let total = duration + downstream
-            memo[taskID] = total
-            return total
-        }
-
-        for taskID in tasks.keys {
-            memo[taskID] = criticalPath(for: taskID)
-        }
-
-        return memo
     }
 
     // MARK: - Estimated Total Time
@@ -337,3 +191,4 @@ struct MultiRecipeScheduler {
         return max(0, sequential - interleaved)
     }
 }
+

@@ -295,7 +295,7 @@ struct MealPlanCookQueueReviewWorkspace: Identifiable, Hashable {
                 .compactMap(\.recipe)
 
             if stage.isParallelBatch, recipes.count > 1 {
-                let blocks = MultiRecipeScheduler.schedule(recipes: recipes)
+                let blocks = MultiRecipeScheduler.estimateBlocks(recipes: recipes)
                 return partialResult + MultiRecipeScheduler.estimatedTotalTime(blocks: blocks)
             }
 
