@@ -6,9 +6,10 @@ import math
 from pathlib import Path
 from typing import Any
 
+from .catalog_alignment import CatalogAlignmentService
 from .campaigns import RecipeCampaignRunner
 from .corpus import RecipeCorpusIndex, load_recipe_records, normalize_text
-from .models import CampaignSpec, CatalogEntry, DishSpec, FacetSelection, IngredientReference, IngredientStorage, utc_now_iso
+from .models import CampaignSpec, CatalogEntry, DishSpec, FacetDefinition, FacetSelection, FreshnessRange, IngredientReference, IngredientStorage, utc_now_iso
 from .openai_client import OpenAIChatClient
 from .prompts import (
     APP_CUISINES,
@@ -22,6 +23,9 @@ from .prompts import (
 from .services import build_default_catalog
 
 
+_catalog_alignment_service = CatalogAlignmentService()
+
+
 def analyze_ingredient_catalog(storage_dir: Path) -> dict:
     catalog = build_default_catalog(storage_dir=storage_dir, include_seed_entries=False)
     entries = catalog.entries()
@@ -29,6 +33,10 @@ def analyze_ingredient_catalog(storage_dir: Path) -> dict:
     quality_counts: dict[str, int] = {}
     substitute_count = 0
     storage_count = 0
+    default_quantity_count = 0
+    facet_definition_count = 0
+    default_facet_count = 0
+    freshness_range_count = 0
 
     for entry in entries:
         category_counts[entry.category] = category_counts.get(entry.category, 0) + 1
@@ -37,6 +45,14 @@ def analyze_ingredient_catalog(storage_dir: Path) -> dict:
             substitute_count += 1
         if entry.storage is not None:
             storage_count += 1
+        if entry.default_quantity is not None:
+            default_quantity_count += 1
+        if entry.facet_definitions:
+            facet_definition_count += 1
+        if entry.default_facets:
+            default_facet_count += 1
+        if entry.freshness_by_storage or entry.app_freshness_by_storage():
+            freshness_range_count += 1
 
     enriched_entries = [entry for entry in entries if entry.quality_status == "enriched"]
     return {
@@ -49,6 +65,10 @@ def analyze_ingredient_catalog(storage_dir: Path) -> dict:
         "quality_counts": dict(sorted(quality_counts.items())),
         "storage_coverage": 0.0 if not entries else round(storage_count / len(entries), 4),
         "substitute_coverage": 0.0 if not entries else round(substitute_count / len(entries), 4),
+        "default_quantity_coverage": 0.0 if not entries else round(default_quantity_count / len(entries), 4),
+        "facet_definition_coverage": 0.0 if not entries else round(facet_definition_count / len(entries), 4),
+        "default_facet_coverage": 0.0 if not entries else round(default_facet_count / len(entries), 4),
+        "freshness_range_coverage": 0.0 if not entries else round(freshness_range_count / len(entries), 4),
         "top_alias_rich_entries": [
             {
                 "item_id": entry.item_id,
@@ -57,6 +77,18 @@ def analyze_ingredient_catalog(storage_dir: Path) -> dict:
             }
             for entry in sorted(entries, key=lambda value: (-len(value.aliases), value.name))[:20]
         ],
+    }
+
+
+def export_app_ingredient_catalog(storage_dir: Path, output_path: Path) -> dict:
+    catalog = build_default_catalog(storage_dir=storage_dir, include_seed_entries=False)
+    items = [entry.to_app_catalog_item_dict() for entry in sorted(catalog.entries(), key=lambda value: value.item_id)]
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    output_path.write_text(json.dumps(items, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    return {
+        "generated_at": utc_now_iso(),
+        "item_count": len(items),
+        "output_path": str(output_path),
     }
 
 
@@ -77,7 +109,12 @@ def analyze_recipe_corpus(project_root: Path, output_root: Path, accepted_root: 
         normalized_titles[record.normalized_title] = normalized_titles.get(record.normalized_title, 0) + 1
 
     duplicate_titles = [title for title, count in normalized_titles.items() if count > 1]
-    full_corpus = RecipeCorpusIndex.from_project_root(project_root, output_root=output_root, accepted_root=accepted_root)
+    full_corpus = RecipeCorpusIndex.from_project_root(
+        project_root,
+        output_root=output_root,
+        accepted_root=accepted_root,
+        include_bundled_seed=False,
+    )
     return {
         "generated_at": utc_now_iso(),
         "accepted_recipe_count": len(records),
@@ -222,11 +259,15 @@ class RecipeCorpusBuilder:
 
         while _accepted_recipe_count(accepted_root) < target_count and stalled_batches < max_stalled_batches:
             recipe_metrics = analyze_recipe_corpus(project_root, output_root, accepted_root)
-            ingredient_metrics = analyze_ingredient_catalog(output_root / "ingredient_catalog")
             current_count = recipe_metrics["accepted_recipe_count"]
             remaining = target_count - current_count
             current_batch_size = min(batch_size, remaining)
-            corpus_index = RecipeCorpusIndex.from_project_root(project_root, output_root=output_root, accepted_root=accepted_root)
+            corpus_index = RecipeCorpusIndex.from_project_root(
+                project_root,
+                output_root=output_root,
+                accepted_root=accepted_root,
+                include_bundled_seed=False,
+            )
             plan = _plan_unique_recipe_batch(
                 client=self._client,
                 model=self._model,
@@ -234,7 +275,6 @@ class RecipeCorpusBuilder:
                 corpus_index=corpus_index,
                 underrepresented_cuisines=_underrepresented_enum_values(recipe_metrics["cuisine_counts"], APP_CUISINES),
                 underrepresented_meal_types=_underrepresented_enum_values(recipe_metrics["meal_type_counts"], APP_MEAL_TYPES),
-                known_ingredients=[entry["name"] for entry in ingredient_metrics["top_alias_rich_entries"]],
                 remaining_target=remaining,
                 attempt_number=attempt_number,
             )
@@ -389,7 +429,6 @@ def _plan_unique_recipe_batch(
     corpus_index: RecipeCorpusIndex,
     underrepresented_cuisines: list[str],
     underrepresented_meal_types: list[str],
-    known_ingredients: list[str],
     remaining_target: int,
     attempt_number: int,
     max_planner_attempts: int = 4,
@@ -407,7 +446,6 @@ def _plan_unique_recipe_batch(
             existing_titles=existing_titles,
             underrepresented_cuisines=underrepresented_cuisines,
             underrepresented_meal_types=underrepresented_meal_types,
-            known_ingredients=known_ingredients,
             remaining_target=remaining_target,
             attempt_number=attempt_number + planner_attempts + 1,
         )
@@ -528,19 +566,105 @@ def _catalog_entry_from_payload(payload: dict) -> CatalogEntry:
             notes=None if storage_payload.get("notes") is None else str(storage_payload.get("notes")).strip() or None,
         )
 
-    return CatalogEntry(
+    freshness_by_storage = _freshness_ranges_from_payload(payload.get("freshness_by_storage"))
+
+    return _catalog_alignment_service.align_entry(CatalogEntry(
         item_id=_slugify(name),
         name=name,
         category=str(payload["category"]).strip(),
         aliases=aliases,
         default_unit=None if payload.get("default_unit") is None else str(payload.get("default_unit")).strip() or None,
-        default_facets=[],
+        default_quantity=_float_or_none(payload.get("default_quantity")),
+        facet_definitions=_facet_definitions_from_payload(payload.get("facet_definitions")),
+        default_facets=_facet_selections_from_payload(payload.get("default_facets")),
+        unit_overrides=_unit_overrides_from_payload(payload.get("unit_overrides")),
         notes=str(payload.get("rationale", "")).strip() or None,
         substitutes=substitutes,
         storage=storage,
+        freshness_by_storage=freshness_by_storage,
         quality_status="enriched",
         provenance=["ingredient_corpus_build"],
-    )
+    ))
+
+
+def _facet_selections_from_payload(value: object) -> list[FacetSelection]:
+    if not isinstance(value, list):
+        return []
+    selections: list[FacetSelection] = []
+    seen: set[tuple[str, str]] = set()
+    for item in value:
+        if not isinstance(item, dict):
+            continue
+        key = str(item.get("key", "")).strip()
+        option = str(item.get("value", "")).strip()
+        if not key or not option or (key, option) in seen:
+            continue
+        seen.add((key, option))
+        selections.append(FacetSelection(key=key, value=option))
+    return selections
+
+
+def _facet_definitions_from_payload(value: object) -> list[FacetDefinition]:
+    if not isinstance(value, list):
+        return []
+    definitions: list[FacetDefinition] = []
+    seen: set[str] = set()
+    for item in value:
+        if not isinstance(item, dict):
+            continue
+        key = str(item.get("key", "")).strip()
+        if not key or key in seen:
+            continue
+        options = [str(option).strip() for option in item.get("options", []) if str(option).strip()]
+        if not options:
+            continue
+        seen.add(key)
+        definitions.append(FacetDefinition(key=key, options=options))
+    return definitions
+
+
+def _unit_overrides_from_payload(value: object) -> dict[str, dict[str, str]]:
+    if not isinstance(value, dict):
+        return {}
+    cleaned: dict[str, dict[str, str]] = {}
+    for facet_key, overrides in value.items():
+        if not isinstance(overrides, dict):
+            continue
+        key = str(facet_key).strip()
+        if not key:
+            continue
+        option_overrides = {
+            str(option).strip(): str(unit).strip()
+            for option, unit in overrides.items()
+            if str(option).strip() and str(unit).strip()
+        }
+        if option_overrides:
+            cleaned[key] = option_overrides
+    return cleaned
+
+
+def _freshness_ranges_from_payload(value: object) -> dict[str, FreshnessRange]:
+    if not isinstance(value, dict):
+        return {}
+    freshness: dict[str, FreshnessRange] = {}
+    for storage_key, payload in value.items():
+        if not isinstance(payload, dict):
+            continue
+        minimum = _int_or_none(payload.get("min_days") if "min_days" in payload else payload.get("minDays"))
+        maximum = _int_or_none(payload.get("max_days") if "max_days" in payload else payload.get("maxDays"))
+        if minimum is None or maximum is None:
+            continue
+        key = str(storage_key).strip()
+        if not key:
+            continue
+        freshness[key] = FreshnessRange(min_days=minimum, max_days=max(maximum, minimum))
+    return freshness
+
+
+def _float_or_none(value: object) -> float | None:
+    if value in (None, ""):
+        return None
+    return float(value)
 
 
 def _filter_unique_dishes(spec: CampaignSpec, corpus_index: RecipeCorpusIndex, desired_count: int) -> CampaignSpec:

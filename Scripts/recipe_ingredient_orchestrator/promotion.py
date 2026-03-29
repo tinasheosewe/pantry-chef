@@ -75,8 +75,16 @@ class IngredientPromotionStore:
                         for alias, facets in ingredient_record.aliases.items()
                     },
                     "default_unit": None if ingredient_record is None else ingredient_record.default_unit,
+                    "default_quantity": None if ingredient_record is None else ingredient_record.default_quantity,
+                    "facet_definitions": [] if ingredient_record is None else [asdict(definition) for definition in ingredient_record.facet_definitions],
+                    "default_facets": [] if ingredient_record is None else [asdict(facet) for facet in ingredient_record.default_facets],
+                    "unit_overrides": {} if ingredient_record is None else dict(ingredient_record.unit_overrides),
                     "substitutes": [] if ingredient_record is None else [asdict(reference) for reference in ingredient_record.substitutes],
                     "storage": None if ingredient_record is None or ingredient_record.storage is None else asdict(ingredient_record.storage),
+                    "freshness_by_storage": {} if ingredient_record is None else {
+                        storage_key: asdict(freshness)
+                        for storage_key, freshness in ingredient_record.freshness_by_storage.items()
+                    },
                     "quality_status": "seed" if ingredient_record is None else ingredient_record.quality_status,
                     "provenance": [] if ingredient_record is None else list(ingredient_record.provenance),
                     "first_seen_at": pipeline_run.generated_at,
@@ -99,8 +107,16 @@ class IngredientPromotionStore:
                     for alias, facets in ingredient_record.aliases.items()
                 }
                 payload["default_unit"] = ingredient_record.default_unit
+                payload["default_quantity"] = ingredient_record.default_quantity
+                payload["facet_definitions"] = [asdict(definition) for definition in ingredient_record.facet_definitions]
+                payload["default_facets"] = [asdict(facet) for facet in ingredient_record.default_facets]
+                payload["unit_overrides"] = dict(ingredient_record.unit_overrides)
                 payload["substitutes"] = [asdict(reference) for reference in ingredient_record.substitutes]
                 payload["storage"] = None if ingredient_record.storage is None else asdict(ingredient_record.storage)
+                payload["freshness_by_storage"] = {
+                    storage_key: asdict(freshness)
+                    for storage_key, freshness in ingredient_record.freshness_by_storage.items()
+                }
                 payload["quality_status"] = ingredient_record.quality_status
                 payload["provenance"] = list(dict.fromkeys([*payload.get("provenance", []), *ingredient_record.provenance]))
             payload["observed_raw_names"][ingredient.raw_name] = payload["observed_raw_names"].get(ingredient.raw_name, 0) + 1

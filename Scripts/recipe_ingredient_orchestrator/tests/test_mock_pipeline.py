@@ -14,14 +14,19 @@ if str(PACKAGE_PARENT) not in sys.path:
 from recipe_ingredient_orchestrator.artifacts import ArtifactWriter
 from recipe_ingredient_orchestrator.campaigns import CampaignStore, RecipeCampaignRunner
 from recipe_ingredient_orchestrator.config import OrchestratorConfig
-from recipe_ingredient_orchestrator.corpus_builder import _catalog_entry_quality_issue, _ingredient_focus_plan, _plan_unique_recipe_batch
+from recipe_ingredient_orchestrator.corpus_builder import _catalog_entry_from_payload, _catalog_entry_quality_issue, _ingredient_focus_plan, _plan_unique_recipe_batch
 from recipe_ingredient_orchestrator.corpus import RecipeCorpusIndex
 from recipe_ingredient_orchestrator.models import (
     AttemptTrace,
     CampaignSpec,
     CatalogEntry,
     DishSpec,
+    FacetDefinition,
+    FacetSelection,
+    FreshnessRange,
     IngredientEnrichmentDecision,
+    IngredientReference,
+    IngredientStorage,
     RecipeCandidate,
     RecipeIngredientInput,
     RecipeReviewReport,
@@ -31,13 +36,16 @@ from recipe_ingredient_orchestrator.models import (
 from recipe_ingredient_orchestrator.pipeline import RecipeIngredientOrchestrator
 from recipe_ingredient_orchestrator.promotion import IngredientPromotionStore
 from recipe_ingredient_orchestrator.request_planning import RequestPlanningService
-from recipe_ingredient_orchestrator.services import ScriptedAmbiguityResolver, ScriptedIngredientEnricher, StaticRecipeGenerator, build_default_catalog
+from recipe_ingredient_orchestrator.services import ScriptedAmbiguityResolver, ScriptedIngredientEnricher, StaticRecipeGenerator, build_default_catalog as build_empty_default_catalog, build_seed_catalog
 from recipe_ingredient_orchestrator.workers import (
     IngredientExtractionWorker,
     IngredientResolutionWorker,
     RecipeReconciliationWorker,
     RecipeValidationWorker,
 )
+
+
+build_default_catalog = build_seed_catalog
 
 
 class FakeChatClient:
@@ -447,7 +455,7 @@ class MockPipelineTests(unittest.TestCase):
         self.assertTrue(pipeline_run.validation.is_valid, pipeline_run.validation.errors)
         self.assertEqual(pipeline_run.generation_attempts, 1)
         self.assertEqual(len(generator.feedback_history), 1)
-        self.assertEqual([decision.raw_name for decision in pipeline_run.ingredient_enrichment_decisions], ["caster sugar", "silicone baking liner"])
+        self.assertEqual([decision.raw_name for decision in pipeline_run.ingredient_enrichment_decisions], ["silicone baking liner"])
         ingredient_status = {ingredient.raw_name: ingredient.status for ingredient in pipeline_run.resolved_recipe.ingredients}
         ingredient_catalog_ids = {ingredient.raw_name: ingredient.catalog_item_id for ingredient in pipeline_run.resolved_recipe.ingredients}
         self.assertEqual(ingredient_catalog_ids["caster sugar"], "sugar")
@@ -458,7 +466,7 @@ class MockPipelineTests(unittest.TestCase):
             title="Placeholder Upgrade Tart",
             description="Exercise placeholder upgrade behavior.",
             ingredients=[
-                RecipeIngredientInput(name="caster sugar", quantity=0.5, unit="cup", category="Baking Supplies"),
+                RecipeIngredientInput(name="panela", quantity=0.5, unit="cup", category="Baking Supplies"),
                 RecipeIngredientInput(name="butter", quantity=2, unit="tbsp", category="Dairy"),
             ],
             steps=[
@@ -495,9 +503,9 @@ class MockPipelineTests(unittest.TestCase):
             )
 
             first_sugar = next(
-                ingredient for ingredient in first_run.resolved_recipe.ingredients if ingredient.raw_name == "caster sugar"
+                ingredient for ingredient in first_run.resolved_recipe.ingredients if ingredient.raw_name == "panela"
             )
-            self.assertEqual(first_sugar.catalog_item_id, "caster-sugar")
+            self.assertEqual(first_sugar.catalog_item_id, "panela")
             self.assertIsNotNone(first_sugar.ingredient_record)
             self.assertEqual(first_sugar.ingredient_record.quality_status, "placeholder")
 
@@ -512,14 +520,14 @@ class MockPipelineTests(unittest.TestCase):
                 validation_worker=RecipeValidationWorker(),
                 ingredient_enricher=ScriptedIngredientEnricher(
                     {
-                        "caster sugar": IngredientEnrichmentDecision(
-                            raw_name="caster sugar",
+                        "panela": IngredientEnrichmentDecision(
+                            raw_name="panela",
                             action="add_catalog_entry",
                             canonical_name="Sugar",
                             category="Baking Supplies",
-                            aliases=["caster sugar", "superfine sugar"],
+                            aliases=["panela"],
                             default_unit="cup",
-                            rationale="Broaden caster sugar to the canonical pantry ingredient sugar.",
+                            rationale="Broaden panela to the canonical pantry ingredient sugar.",
                             quality_status="enriched",
                         )
                     }
@@ -533,13 +541,13 @@ class MockPipelineTests(unittest.TestCase):
             )
 
             second_sugar = next(
-                ingredient for ingredient in second_run.resolved_recipe.ingredients if ingredient.raw_name == "caster sugar"
+                ingredient for ingredient in second_run.resolved_recipe.ingredients if ingredient.raw_name == "panela"
             )
             self.assertEqual(second_sugar.catalog_item_id, "sugar")
             self.assertIsNotNone(second_sugar.ingredient_record)
             self.assertEqual(second_sugar.ingredient_record.quality_status, "enriched")
             self.assertTrue((storage_dir / "sugar.json").exists())
-            self.assertFalse((storage_dir / "caster-sugar.json").exists())
+            self.assertFalse((storage_dir / "panela.json").exists())
 
     def test_campaign_runner_writes_state_and_promoted_ingredients(self) -> None:
         candidate = RecipeCandidate(
@@ -1292,6 +1300,173 @@ class MockPipelineTests(unittest.TestCase):
             "duplicate item id",
         )
 
+    def test_catalog_entry_payload_preserves_explicit_structure(self) -> None:
+        entry = _catalog_entry_from_payload(
+            {
+                "name": "Granulated Sugar",
+                "category": "Baking Supplies",
+                "aliases": ["white sugar"],
+                "default_unit": "cup",
+                "facet_definitions": [{"key": "variant", "options": ["granulated"]}],
+                "default_facets": [{"key": "variant", "value": "granulated"}],
+                "substitutes": [
+                    {
+                        "name": "Brown Sugar",
+                        "rationale": "Adds a deeper molasses note.",
+                        "facets": [{"key": "variant", "value": "brown"}],
+                        "ratio": "1:1",
+                        "tasteImpact": "Moderate",
+                        "textureImpact": "Moderate",
+                        "cookingImpact": "Moderate Adjustment",
+                        "nutritionImpact": None,
+                        "notes": "Adds a deeper molasses note.",
+                        "dietary": [],
+                    }
+                ],
+                "storage": {
+                    "preferred": "pantry",
+                    "pantry_days": 365,
+                    "refrigerator_days": None,
+                    "freezer_days": None,
+                    "notes": "Keep dry.",
+                },
+                "rationale": "Common sweetener used in baking.",
+            }
+        )
+
+        self.assertEqual(entry.item_id, "granulated-sugar")
+        self.assertEqual(entry.name, "Granulated Sugar")
+        self.assertIsNone(entry.default_quantity)
+        self.assertEqual(entry.default_facets, [FacetSelection(key="variant", value="granulated")])
+        self.assertTrue(any(definition.key == "variant" for definition in entry.facet_definitions))
+        self.assertEqual(entry.aliases["Granulated Sugar"], [FacetSelection(key="variant", value="granulated")])
+        self.assertEqual(entry.aliases["White Sugar"], [FacetSelection(key="variant", value="granulated")])
+        self.assertEqual(entry.substitutes[0].item_id, "brown-sugar")
+        self.assertEqual(entry.substitutes[0].facets, [FacetSelection(key="variant", value="brown")])
+        self.assertEqual(entry.to_app_catalog_item_dict()["defaultStorage"], "Pantry")
+        self.assertEqual(entry.to_app_catalog_item_dict()["freshnessByStorage"]["Pantry"], {"minDays": 274, "maxDays": 456})
+
+    def test_catalog_entry_payload_builds_structured_substitution_metadata(self) -> None:
+        entry = _catalog_entry_from_payload(
+            {
+                "name": "Chicken Broth",
+                "category": "Canned & Jarred",
+                "aliases": ["chicken stock"],
+                "default_unit": "L",
+                "facet_definitions": [{"key": "base", "options": ["chicken"]}],
+                "default_facets": [{"key": "base", "value": "chicken"}],
+                "substitutes": [
+                    {
+                        "name": "Vegetable Stock",
+                        "rationale": "Neutral savory base.",
+                        "facets": [{"key": "base", "value": "vegetable"}],
+                        "ratio": "1:1",
+                        "tasteImpact": "Moderate",
+                        "textureImpact": "Moderate",
+                        "cookingImpact": "Moderate Adjustment",
+                        "nutritionImpact": None,
+                        "notes": "Neutral savory base.",
+                        "dietary": [],
+                    },
+                    {
+                        "name": "Beef Broth",
+                        "rationale": "Richer and darker flavor.",
+                        "facets": [{"key": "base", "value": "beef"}],
+                        "ratio": "1:1",
+                        "tasteImpact": "Moderate",
+                        "textureImpact": "Moderate",
+                        "cookingImpact": "Moderate Adjustment",
+                        "nutritionImpact": None,
+                        "notes": "Richer and darker flavor.",
+                        "dietary": [],
+                    },
+                ],
+                "storage": {
+                    "preferred": "pantry",
+                    "pantry_days": 180,
+                    "refrigerator_days": 5,
+                    "freezer_days": 60,
+                    "notes": "Refrigerate after opening.",
+                },
+                "rationale": "Savory cooking liquid.",
+            }
+        )
+
+        self.assertEqual(entry.item_id, "chicken-broth")
+        self.assertEqual(entry.default_facets, [FacetSelection(key="base", value="chicken")])
+        self.assertEqual(
+            entry.substitutes[0],
+            IngredientReference(
+                item_id="vegetable-stock",
+                name="Vegetable Stock",
+                rationale="Neutral savory base.",
+                facets=[FacetSelection(key="base", value="vegetable")],
+                ratio="1:1",
+                taste_impact="Moderate",
+                texture_impact="Moderate",
+                cooking_impact="Moderate Adjustment",
+                nutrition_impact=None,
+                notes="Neutral savory base.",
+                dietary=[],
+            ),
+        )
+        self.assertEqual(entry.to_app_catalog_item_dict()["substitutions"][1]["substituteFacets"], [{"key": "base", "value": "beef"}])
+
+    def test_catalog_merge_preserves_structured_metadata(self) -> None:
+        catalog = build_empty_default_catalog()
+        catalog.upsert_entries(
+            [
+                CatalogEntry(
+                    item_id="fish-sauce",
+                    name="Fish Sauce",
+                    category="Condiments & Sauces",
+                    aliases={"Fish Sauce": []},
+                    quality_status="seed",
+                    provenance=["seed"],
+                )
+            ]
+        )
+
+        catalog.upsert_entries(
+            [
+                CatalogEntry(
+                    item_id="fish-sauce",
+                    name="Fish Sauce",
+                    category="Condiments & Sauces",
+                    aliases={"nam pla": [FacetSelection(key="style", value="thai")]},
+                    default_unit="tsp",
+                    default_quantity=150.0,
+                    facet_definitions=[FacetDefinition(key="style", options=["thai"])],
+                    default_facets=[FacetSelection(key="style", value="thai")],
+                    unit_overrides={"style": {"thai": "tbsp"}},
+                    substitutes=[IngredientReference(item_id="soy-sauce", name="Soy Sauce", rationale="Closest pantry substitute.")],
+                    storage=IngredientStorage(
+                        preferred="pantry",
+                        pantry_days=365,
+                        refrigerator_days=30,
+                        freezer_days=None,
+                        notes="Refrigerate after opening.",
+                    ),
+                    freshness_by_storage={"pantry": FreshnessRange(min_days=180, max_days=365)},
+                    quality_status="enriched",
+                    provenance=["ingredient_enrichment"],
+                )
+            ]
+        )
+
+        merged = catalog.entries()[0]
+        self.assertEqual(merged.default_unit, "tsp")
+        self.assertEqual(merged.default_quantity, 150.0)
+        self.assertEqual(merged.facet_definitions, [FacetDefinition(key="style", options=["thai"])])
+        self.assertEqual(merged.default_facets, [FacetSelection(key="style", value="thai")])
+        self.assertEqual(merged.unit_overrides, {"style": {"thai": "tbsp"}})
+        self.assertEqual(merged.substitutes, [IngredientReference(item_id="soy-sauce", name="Soy Sauce", rationale="Closest pantry substitute.")])
+        self.assertEqual(merged.storage, IngredientStorage(preferred="pantry", pantry_days=365, refrigerator_days=30, freezer_days=None, notes="Refrigerate after opening."))
+        self.assertEqual(merged.freshness_by_storage, {"pantry": FreshnessRange(min_days=180, max_days=365)})
+        self.assertIn("Fish Sauce", merged.aliases)
+        self.assertIn("nam pla", merged.aliases)
+        self.assertEqual(merged.quality_status, "enriched")
+
     def test_plan_unique_recipe_batch_accumulates_unique_dishes(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
             root = Path(tmpdir)
@@ -1337,7 +1512,6 @@ class MockPipelineTests(unittest.TestCase):
                 corpus_index=corpus_index,
                 underrepresented_cuisines=["Thai", "Korean", "Italian"],
                 underrepresented_meal_types=["Dinner"],
-                known_ingredients=["chickpeas", "tofu", "white beans"],
                 remaining_target=900,
                 attempt_number=0,
             )

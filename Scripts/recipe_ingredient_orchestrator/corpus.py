@@ -76,14 +76,6 @@ class ExistingRecipeRecord:
 class RecipeCorpusIndex:
     def __init__(self, recipes: list[ExistingRecipeRecord]) -> None:
         self._recipes = recipes
-        self._known_ingredients = sorted(
-            {
-                ingredient
-                for recipe in recipes
-                for ingredient in recipe.ingredients
-                if ingredient.strip()
-            }
-        )
 
     @classmethod
     def from_project_root(
@@ -91,10 +83,11 @@ class RecipeCorpusIndex:
         project_root: Path,
         output_root: Path | None = None,
         accepted_root: Path | None = None,
+        include_bundled_seed: bool = True,
     ) -> "RecipeCorpusIndex":
         recipe_paths: list[Path] = []
         bundled_seed_path = project_root / "PantryChef" / "Resources" / "seed_recipes.json"
-        if bundled_seed_path.exists():
+        if include_bundled_seed and bundled_seed_path.exists():
             recipe_paths.append(bundled_seed_path)
 
         if output_root is not None and output_root.exists():
@@ -138,7 +131,6 @@ class RecipeCorpusIndex:
             "existing_recipe_count": self.recipe_count,
             "related_existing_titles": related_titles,
             "related_existing_ingredients": related_ingredients,
-            "known_ingredients": self._known_ingredients[:80],
             "avoid_titles": avoid_titles[:40],
         }
 

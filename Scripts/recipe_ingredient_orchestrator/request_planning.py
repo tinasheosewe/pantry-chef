@@ -172,13 +172,6 @@ class RequestPlanningService:
                         meal_type=intent.meal_type,
                     )
                 )["avoid_titles"],
-                "known_ingredients": self._corpus_index.awareness_context_for_spec(
-                    DishSpec(
-                        title=intent.exact_title or intent.raw_request,
-                        cuisine=intent.cuisine,
-                        meal_type=intent.meal_type,
-                    )
-                )["known_ingredients"],
             },
             indent=2,
             sort_keys=True,

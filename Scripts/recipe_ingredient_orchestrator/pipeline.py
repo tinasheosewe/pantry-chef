@@ -24,6 +24,7 @@ from .services import (
     build_empty_catalog,
     build_placeholder_catalog_entries,
     build_default_catalog,
+    build_seed_catalog,
 )
 
 
@@ -265,7 +266,7 @@ class RecipeIngredientOrchestrator:
 
 
 def build_demo_orchestrator(include_seed_catalog: bool = True) -> RecipeIngredientOrchestrator:
-    catalog = build_default_catalog(include_seed_entries=include_seed_catalog)
+    catalog = build_seed_catalog() if include_seed_catalog else build_default_catalog()
     return RecipeIngredientOrchestrator(
         recipe_generator=DemoRecipeGenerator(),
         extraction_worker=IngredientExtractionWorker(),
@@ -289,10 +290,7 @@ def build_production_orchestrator(
     resolved_config.require_openai_api_key()
 
     client = OpenAIChatClient(resolved_config)
-    catalog = build_default_catalog(
-        storage_dir=resolved_config.output_root / "ingredient_catalog",
-        include_seed_entries=include_seed_catalog,
-    ) if include_seed_catalog else build_empty_catalog(storage_dir=resolved_config.output_root / "ingredient_catalog")
+    catalog = build_default_catalog(storage_dir=resolved_config.output_root / "ingredient_catalog")
     project_root = Path(__file__).resolve().parents[2]
     corpus_index = RecipeCorpusIndex.from_project_root(
         project_root,

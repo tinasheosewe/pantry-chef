@@ -10,7 +10,7 @@ if __package__ in {None, ""}:
     sys.path.insert(0, str(package_dir.parent))
     from recipe_ingredient_orchestrator.artifacts import ArtifactWriter
     from recipe_ingredient_orchestrator.campaigns import RecipeCampaignRunner, load_campaign_spec, load_campaign_spec_from_dir
-    from recipe_ingredient_orchestrator.corpus_builder import IngredientCorpusBuilder, RecipeCorpusBuilder, analyze_corpus
+    from recipe_ingredient_orchestrator.corpus_builder import IngredientCorpusBuilder, RecipeCorpusBuilder, analyze_corpus, export_app_ingredient_catalog
     from recipe_ingredient_orchestrator.corpus import RecipeCorpusIndex
     from recipe_ingredient_orchestrator.config import OrchestratorConfig
     from recipe_ingredient_orchestrator.logging_utils import get_logger, setup_logging
@@ -22,7 +22,7 @@ if __package__ in {None, ""}:
 else:
     from .artifacts import ArtifactWriter
     from .campaigns import RecipeCampaignRunner, load_campaign_spec, load_campaign_spec_from_dir
-    from .corpus_builder import IngredientCorpusBuilder, RecipeCorpusBuilder, analyze_corpus
+    from .corpus_builder import IngredientCorpusBuilder, RecipeCorpusBuilder, analyze_corpus, export_app_ingredient_catalog
     from .corpus import RecipeCorpusIndex
     from .config import OrchestratorConfig
     from .logging_utils import get_logger, setup_logging
@@ -116,6 +116,9 @@ def build_argument_parser() -> argparse.ArgumentParser:
     run_eda = subparsers.add_parser("run-eda", help="Analyze the ingredient and recipe corpus state.")
     run_eda.add_argument("--output-file", type=Path, help="Optional path for the EDA report JSON.")
 
+    export_ingredient_catalog = subparsers.add_parser("export-app-ingredient-catalog", help="Export the ingredient catalog in an app-aligned JSON bundle.")
+    export_ingredient_catalog.add_argument("--output-file", type=Path, help="Optional output path for the exported app ingredient catalog JSON.")
+
     subparsers.add_parser("print-config", help="Print resolved orchestrator configuration.")
     return parser
 
@@ -123,7 +126,7 @@ def build_argument_parser() -> argparse.ArgumentParser:
 def build_runtime_orchestrator(config: OrchestratorConfig, demo: bool, include_seed_catalog: bool = True):
     if demo:
         return build_demo_orchestrator(include_seed_catalog=include_seed_catalog)
-    return build_production_orchestrator(config, include_seed_catalog=include_seed_catalog)
+    return build_production_orchestrator(config, include_seed_catalog=False)
 
 
 def build_campaign_runner(
@@ -150,6 +153,7 @@ def build_request_planner(config: OrchestratorConfig) -> RequestPlanningService:
         project_root,
         output_root=config.output_root,
         accepted_root=config.accepted_root,
+        include_bundled_seed=False,
     )
     client = OpenAIChatClient(config)
     return RequestPlanningService(corpus_index=corpus_index, client=client, planning_model=config.planner_model)
@@ -327,7 +331,7 @@ def main(argv: list[str] | None = None) -> int:
             batch_size=max(1, args.batch_size),
             storage_dir=config.output_root / "ingredient_catalog",
             report_path=report_path,
-            include_seed_entries=not args.empty_catalog,
+            include_seed_entries=False,
         )
         print(json.dumps({"reportPath": str(report_path), **report["metrics"]}, indent=2, sort_keys=True))
         return 0 if report["metrics"]["enriched_count"] >= args.target_count else 1
@@ -356,6 +360,12 @@ def main(argv: list[str] | None = None) -> int:
         if args.output_file is not None:
             args.output_file.parent.mkdir(parents=True, exist_ok=True)
             args.output_file.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0
+
+    if args.command == "export-app-ingredient-catalog":
+        output_path = args.output_file or (config.output_root / "app_import" / "ingredient_catalog.json")
+        report = export_app_ingredient_catalog(config.output_root / "ingredient_catalog", output_path)
         print(json.dumps(report, indent=2, sort_keys=True))
         return 0
 

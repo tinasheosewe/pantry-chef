@@ -6,12 +6,15 @@ from pathlib import Path
 from threading import Lock
 from typing import Protocol
 
+from .catalog_alignment import CatalogAlignmentService
 from .corpus import RecipeCorpusIndex, normalize_text
 from .openai_client import OpenAIChatClient
 from .models import (
     CatalogEntry,
     DishSpec,
+    FacetDefinition,
     FacetSelection,
+    FreshnessRange,
     IngredientCandidate,
     IngredientEnrichmentDecision,
     IngredientEnrichmentReport,
@@ -39,6 +42,9 @@ from .prompts import (
     recipe_generation_messages,
     recipe_generation_schema,
 )
+
+
+_catalog_alignment_service = CatalogAlignmentService()
 
 class RecipeGenerator(Protocol):
     def generate(self, spec: DishSpec, revision_feedback: list[str] | None = None) -> RecipeCandidate: ...
@@ -158,6 +164,7 @@ class MutableIngredientCatalog:
         self._storage_dir = storage_dir
         self._lock = Lock()
         self._entries_by_key: dict[str, CatalogEntry] = {}
+        self._stale_persisted_paths: set[Path] = set()
 
         if self._storage_dir is not None:
             self._storage_dir.mkdir(parents=True, exist_ok=True)
@@ -226,6 +233,11 @@ class MutableIngredientCatalog:
                 merged_entries.append(merged_entry)
                 if self._storage_dir is not None:
                     self._persist_entry(merged_entry)
+            stale_paths = list(self._stale_persisted_paths)
+            self._stale_persisted_paths.clear()
+        for path in stale_paths:
+            if path.exists():
+                path.unlink()
         return merged_entries
 
     def _bootstrap_entries(self, entries: list[CatalogEntry]) -> None:
@@ -252,10 +264,14 @@ class MutableIngredientCatalog:
             category=existing.category or entry.category,
             aliases={alias: list(facets) for alias, facets in merged_aliases.items()},
             default_unit=existing.default_unit or entry.default_unit,
+            default_quantity=existing.default_quantity if existing.default_quantity is not None else entry.default_quantity,
+            facet_definitions=_merged_facet_definitions(existing.facet_definitions, entry.facet_definitions),
             default_facets=list(existing.default_facets or entry.default_facets),
+            unit_overrides=_merged_unit_overrides(existing.unit_overrides, entry.unit_overrides),
             notes=existing.notes or entry.notes,
             substitutes=list(existing.substitutes or entry.substitutes),
             storage=existing.storage or entry.storage,
+            freshness_by_storage=_merged_freshness_ranges(existing.freshness_by_storage, entry.freshness_by_storage),
             quality_status=_merged_quality_status(existing.quality_status, entry.quality_status),
             provenance=_merged_string_list(existing.provenance, entry.provenance),
             evidence_count=max(existing.evidence_count, entry.evidence_count),
@@ -307,10 +323,14 @@ class MutableIngredientCatalog:
             category=entry.category,
             aliases=merged_aliases,
             default_unit=entry.default_unit,
+            default_quantity=entry.default_quantity,
+            facet_definitions=list(entry.facet_definitions),
             default_facets=list(entry.default_facets),
+            unit_overrides={key: dict(value) for key, value in entry.unit_overrides.items()},
             notes=notes,
             substitutes=list(entry.substitutes),
             storage=entry.storage,
+            freshness_by_storage=dict(entry.freshness_by_storage),
             quality_status=entry.quality_status,
             provenance=merged_provenance,
             evidence_count=evidence_count,
@@ -325,7 +345,7 @@ class MutableIngredientCatalog:
         entries: list[CatalogEntry] = []
         for path in sorted(self._storage_dir.glob("*.json")):
             payload = json.loads(path.read_text(encoding="utf-8"))
-            entries.append(
+            entry = _catalog_alignment_service.align_entry(
                 CatalogEntry(
                     item_id=str(payload["item_id"]),
                     name=str(payload["name"]),
@@ -335,21 +355,17 @@ class MutableIngredientCatalog:
                         for alias, facets in payload.get("aliases", {}).items()
                     },
                     default_unit=_clean_optional_string(payload.get("default_unit")),
+                    default_quantity=_float_or_none(payload.get("default_quantity")),
+                    facet_definitions=_facet_definitions_from_payload(payload.get("facet_definitions")),
                     default_facets=[
                         FacetSelection(key=str(facet["key"]), value=str(facet["value"]))
                         for facet in payload.get("default_facets", [])
                     ],
+                    unit_overrides=_unit_overrides_from_payload(payload.get("unit_overrides")),
                     notes=_clean_optional_string(payload.get("notes")),
-                    substitutes=[
-                        IngredientReference(
-                            item_id=str(reference["item_id"]),
-                            name=str(reference["name"]),
-                            rationale=_clean_optional_string(reference.get("rationale")),
-                        )
-                        for reference in payload.get("substitutes", [])
-                        if isinstance(reference, dict) and str(reference.get("item_id", "")).strip() and str(reference.get("name", "")).strip()
-                    ],
+                    substitutes=_ingredient_references_from_payload(payload.get("substitutes")),
                     storage=_storage_from_payload(payload.get("storage")),
+                    freshness_by_storage=_freshness_ranges_from_payload(payload.get("freshness_by_storage")),
                     quality_status=_clean_optional_string(payload.get("quality_status")) or "seed",
                     provenance=_clean_string_sequence(payload.get("provenance")),
                     evidence_count=max(0, int(payload.get("evidence_count", 0))),
@@ -358,6 +374,9 @@ class MutableIngredientCatalog:
                     last_seen_at=_clean_optional_string(payload.get("last_seen_at")),
                 )
             )
+            if entry.item_id != path.stem:
+                self._stale_persisted_paths.add(path)
+            entries.append(entry)
         return entries
 
     def _persist_entry(self, entry: CatalogEntry) -> None:
@@ -375,10 +394,17 @@ class MutableIngredientCatalog:
                         for alias, facets in entry.aliases.items()
                     },
                     "default_unit": entry.default_unit,
+                    "default_quantity": entry.default_quantity,
+                    "facet_definitions": [asdict(definition) for definition in entry.facet_definitions],
                     "default_facets": [{"key": facet.key, "value": facet.value} for facet in entry.default_facets],
+                    "unit_overrides": dict(entry.unit_overrides),
                     "notes": entry.notes,
                     "substitutes": [asdict(reference) for reference in entry.substitutes],
                     "storage": None if entry.storage is None else asdict(entry.storage),
+                    "freshness_by_storage": {
+                        storage_key: asdict(freshness)
+                        for storage_key, freshness in entry.freshness_by_storage.items()
+                    },
                     "quality_status": entry.quality_status,
                     "provenance": list(entry.provenance),
                     "evidence_count": entry.evidence_count,
@@ -564,8 +590,13 @@ class OpenAIIngredientEnricher:
                 category=_optional_string(item, "category"),
                 aliases=_clean_string_sequence(item.get("aliases")),
                 default_unit=_optional_string(item, "default_unit"),
+                default_quantity=_float_or_none(item.get("default_quantity")),
+                facet_definitions=_facet_definitions_from_payload(item.get("facet_definitions")),
+                default_facets=_facet_selections_from_payload(item.get("default_facets")),
+                unit_overrides=_unit_overrides_from_payload(item.get("unit_overrides")),
                 substitutes=_ingredient_references_from_payload(item.get("substitutes")),
                 storage=_storage_from_payload(item.get("storage")),
+                freshness_by_storage=_freshness_ranges_from_payload(item.get("freshness_by_storage")),
                 quality_status="enriched",
             )
             decisions.append(decision)
@@ -816,6 +847,12 @@ def _clean_optional_string(value: object) -> str | None:
     return cleaned or None
 
 
+def _float_or_none(value: object) -> float | None:
+    if value in (None, ""):
+        return None
+    return float(value)
+
+
 def _clean_string_sequence(value: object) -> list[str]:
     if not isinstance(value, list):
         return []
@@ -827,6 +864,66 @@ def _clean_string_sequence(value: object) -> list[str]:
             continue
         seen.add(normalized)
         cleaned.append(str(item).strip())
+    return cleaned
+
+
+def _facet_selections_from_payload(value: object) -> list[FacetSelection]:
+    if not isinstance(value, list):
+        return []
+    selections: list[FacetSelection] = []
+    seen: set[tuple[str, str]] = set()
+    for item in value:
+        if not isinstance(item, dict):
+            continue
+        key = _clean_optional_string(item.get("key"))
+        option = _clean_optional_string(item.get("value"))
+        if key is None or option is None:
+            continue
+        if (key, option) in seen:
+            continue
+        seen.add((key, option))
+        selections.append(FacetSelection(key=key, value=option))
+    return selections
+
+
+def _facet_definitions_from_payload(value: object) -> list[FacetDefinition]:
+    if not isinstance(value, list):
+        return []
+    definitions: list[FacetDefinition] = []
+    seen: set[str] = set()
+    for item in value:
+        if not isinstance(item, dict):
+            continue
+        key = _clean_optional_string(item.get("key"))
+        if key is None or key in seen:
+            continue
+        options = _clean_string_sequence(item.get("options"))
+        if not options:
+            continue
+        seen.add(key)
+        definitions.append(FacetDefinition(key=key, options=options))
+    return definitions
+
+
+def _unit_overrides_from_payload(value: object) -> dict[str, dict[str, str]]:
+    if not isinstance(value, dict):
+        return {}
+    cleaned: dict[str, dict[str, str]] = {}
+    for facet_key, overrides in value.items():
+        if not isinstance(overrides, dict):
+            continue
+        normalized_facet_key = str(facet_key).strip()
+        if not normalized_facet_key:
+            continue
+        option_overrides: dict[str, str] = {}
+        for option, unit in overrides.items():
+            normalized_option = str(option).strip()
+            normalized_unit = _clean_optional_string(unit)
+            if not normalized_option or normalized_unit is None:
+                continue
+            option_overrides[normalized_option] = normalized_unit
+        if option_overrides:
+            cleaned[normalized_facet_key] = option_overrides
     return cleaned
 
 
@@ -891,7 +988,7 @@ def _catalog_entry(
     quality_status: str = "seed",
     provenance: list[str] | None = None,
 ) -> CatalogEntry:
-    return CatalogEntry(
+    return _catalog_alignment_service.align_entry(CatalogEntry(
         item_id=item_id,
         name=name,
         category=category,
@@ -901,7 +998,7 @@ def _catalog_entry(
         storage=storage,
         quality_status=quality_status,
         provenance=list(provenance or []),
-    )
+    ))
 
 
 def _catalog_entry_key(entry: CatalogEntry) -> str:
@@ -917,23 +1014,27 @@ def _normalized_catalog_entry(entry: CatalogEntry) -> CatalogEntry:
         aliases[cleaned_alias] = list(facets)
     if entry.name not in aliases:
         aliases[entry.name] = list(entry.default_facets)
-    return CatalogEntry(
+    return _catalog_alignment_service.align_entry(CatalogEntry(
         item_id=entry.item_id,
         name=entry.name,
         category=entry.category,
         aliases=aliases,
         default_unit=entry.default_unit,
+        default_quantity=entry.default_quantity,
+        facet_definitions=list(entry.facet_definitions),
         default_facets=list(entry.default_facets),
+        unit_overrides={key: dict(value) for key, value in entry.unit_overrides.items()},
         notes=entry.notes,
         substitutes=list(entry.substitutes),
         storage=entry.storage,
+        freshness_by_storage=dict(entry.freshness_by_storage),
         quality_status=entry.quality_status,
         provenance=list(entry.provenance),
         evidence_count=entry.evidence_count,
         recipe_reference_count=entry.recipe_reference_count,
         first_seen_at=entry.first_seen_at,
         last_seen_at=entry.last_seen_at,
-    )
+    ))
 
 
 def _catalog_entry_from_enrichment(decision: IngredientEnrichmentDecision, mention: IngredientMention) -> CatalogEntry:
@@ -943,20 +1044,25 @@ def _catalog_entry_from_enrichment(decision: IngredientEnrichmentDecision, menti
         for alias in [canonical_name, mention.raw_name, *decision.aliases]
         if alias.strip()
     }
-    return CatalogEntry(
+    return _catalog_alignment_service.align_entry(CatalogEntry(
         item_id=slugify(canonical_name),
         name=canonical_name,
         category=decision.category or mention.category,
         aliases=aliases,
         default_unit=decision.default_unit or mention.unit,
+        default_quantity=decision.default_quantity,
+        facet_definitions=list(decision.facet_definitions),
+        default_facets=list(decision.default_facets),
+        unit_overrides={key: dict(value) for key, value in decision.unit_overrides.items()},
         notes=decision.rationale,
         substitutes=list(decision.substitutes),
         storage=decision.storage,
+        freshness_by_storage=dict(decision.freshness_by_storage),
         quality_status=decision.quality_status,
         provenance=["ingredient_enrichment"],
         first_seen_at=None,
         last_seen_at=None,
-    )
+    ))
 
 
 def build_placeholder_catalog_entries(mentions: list[IngredientMention]) -> list[CatalogEntry]:
@@ -994,6 +1100,35 @@ def _merged_string_list(left: list[str], right: list[str]) -> list[str]:
     return merged
 
 
+def _merged_facet_definitions(left: list[FacetDefinition], right: list[FacetDefinition]) -> list[FacetDefinition]:
+    options_by_key: dict[str, set[str]] = {}
+    for definition in [*left, *right]:
+        options_by_key.setdefault(definition.key, set()).update(definition.options)
+    return [
+        FacetDefinition(key=key, options=sorted(options))
+        for key, options in sorted(options_by_key.items())
+        if options
+    ]
+
+
+def _merged_unit_overrides(left: dict[str, dict[str, str]], right: dict[str, dict[str, str]]) -> dict[str, dict[str, str]]:
+    merged: dict[str, dict[str, str]] = {}
+    for facet_key, overrides in left.items():
+        merged[facet_key] = dict(overrides)
+    for facet_key, overrides in right.items():
+        merged.setdefault(facet_key, {}).update(overrides)
+    return merged
+
+
+def _merged_freshness_ranges(
+    left: dict[str, FreshnessRange],
+    right: dict[str, FreshnessRange],
+) -> dict[str, FreshnessRange]:
+    merged = dict(left)
+    merged.update(right)
+    return merged
+
+
 def _merged_quality_status(existing: str, incoming: str) -> str:
     rank = {"placeholder": 0, "seed": 1, "enriched": 2}
     return incoming if rank.get(incoming, 0) >= rank.get(existing, 0) else existing
@@ -1018,6 +1153,27 @@ def _storage_from_payload(value: object) -> IngredientStorage | None:
     )
 
 
+def _freshness_ranges_from_payload(value: object) -> dict[str, FreshnessRange]:
+    if not isinstance(value, dict):
+        return {}
+    freshness: dict[str, FreshnessRange] = {}
+    for storage_key, payload in value.items():
+        if not isinstance(payload, dict):
+            continue
+        minimum = _int_or_none(payload.get("min_days"))
+        maximum = _int_or_none(payload.get("max_days"))
+        if minimum is None or maximum is None:
+            minimum = _int_or_none(payload.get("minDays"))
+            maximum = _int_or_none(payload.get("maxDays"))
+        if minimum is None or maximum is None:
+            continue
+        normalized_storage_key = str(storage_key).strip()
+        if not normalized_storage_key:
+            continue
+        freshness[normalized_storage_key] = FreshnessRange(min_days=minimum, max_days=max(maximum, minimum))
+    return freshness
+
+
 def _ingredient_references_from_payload(value: object) -> list[IngredientReference]:
     if not isinstance(value, list):
         return []
@@ -1038,6 +1194,14 @@ def _ingredient_references_from_payload(value: object) -> list[IngredientReferen
                 item_id=item_id,
                 name=name,
                 rationale=_clean_optional_string(item.get("rationale")),
+                facets=_facet_selections_from_payload(item.get("facets")),
+                ratio=_clean_optional_string(item.get("ratio")),
+                taste_impact=_clean_optional_string(item.get("taste_impact") or item.get("tasteImpact")),
+                texture_impact=_clean_optional_string(item.get("texture_impact") or item.get("textureImpact")),
+                cooking_impact=_clean_optional_string(item.get("cooking_impact") or item.get("cookingImpact")),
+                nutrition_impact=_clean_optional_string(item.get("nutrition_impact") or item.get("nutritionImpact")),
+                notes=_clean_optional_string(item.get("notes")),
+                dietary=_clean_string_sequence(item.get("dietary")),
             )
         )
     return references
@@ -1049,11 +1213,7 @@ def _int_or_none(value: object) -> int | None:
     return int(value)
 
 
-def build_default_catalog(
-    storage_dir: Path | None = None,
-    *,
-    include_seed_entries: bool = True,
-) -> MutableIngredientCatalog:
+def build_seed_catalog(storage_dir: Path | None = None) -> MutableIngredientCatalog:
     entries = [
         _catalog_entry(
             "duck-leg",
@@ -1977,9 +2137,19 @@ def build_default_catalog(
             },
             default_unit="cup",
         ),
-    ] if include_seed_entries else []
+    ]
     return MutableIngredientCatalog(entries, storage_dir=storage_dir)
 
 
+def build_default_catalog(
+    storage_dir: Path | None = None,
+    *,
+    include_seed_entries: bool = False,
+) -> MutableIngredientCatalog:
+    if include_seed_entries:
+        return build_seed_catalog(storage_dir=storage_dir)
+    return MutableIngredientCatalog([], storage_dir=storage_dir)
+
+
 def build_empty_catalog(storage_dir: Path | None = None) -> MutableIngredientCatalog:
-    return build_default_catalog(storage_dir=storage_dir, include_seed_entries=False)
+    return build_default_catalog(storage_dir=storage_dir)

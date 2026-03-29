@@ -32,10 +32,43 @@ class FacetSelection:
 
 
 @dataclass(frozen=True)
+class FacetDefinition:
+    key: str
+    options: list[str]
+
+
+@dataclass(frozen=True)
+class FreshnessRange:
+    min_days: int
+    max_days: int
+
+
+@dataclass(frozen=True)
 class IngredientReference:
     item_id: str
     name: str
     rationale: str | None = None
+    facets: list[FacetSelection] = field(default_factory=list)
+    ratio: str | None = None
+    taste_impact: str | None = None
+    texture_impact: str | None = None
+    cooking_impact: str | None = None
+    nutrition_impact: str | None = None
+    notes: str | None = None
+    dietary: list[str] = field(default_factory=list)
+
+    def to_app_substitution_dict(self) -> dict[str, Any]:
+        return {
+            "substituteItemID": self.item_id,
+            "substituteFacets": [asdict(facet) for facet in self.facets],
+            "ratio": self.ratio or "1:1",
+            "tasteImpact": self.taste_impact or "Moderate",
+            "textureImpact": self.texture_impact or "Moderate",
+            "cookingImpact": self.cooking_impact or "Moderate Adjustment",
+            "nutritionImpact": self.nutrition_impact,
+            "notes": self.notes or self.rationale,
+            "dietary": list(self.dietary),
+        }
 
 
 @dataclass(frozen=True)
@@ -114,16 +147,82 @@ class CatalogEntry:
     category: str
     aliases: dict[str, list[FacetSelection]]
     default_unit: str | None = None
+    default_quantity: float | None = None
+    facet_definitions: list[FacetDefinition] = field(default_factory=list)
     default_facets: list[FacetSelection] = field(default_factory=list)
+    unit_overrides: dict[str, dict[str, str]] = field(default_factory=dict)
     notes: str | None = None
     substitutes: list[IngredientReference] = field(default_factory=list)
     storage: IngredientStorage | None = None
+    freshness_by_storage: dict[str, FreshnessRange] = field(default_factory=dict)
     quality_status: str = "seed"
     provenance: list[str] = field(default_factory=list)
     evidence_count: int = 0
     recipe_reference_count: int = 0
     first_seen_at: str | None = None
     last_seen_at: str | None = None
+
+    def app_default_storage(self) -> str:
+        preferred = None if self.storage is None else self.storage.preferred
+        if preferred == "refrigerator":
+            return "Refrigerated"
+        if preferred == "freezer":
+            return "Frozen"
+        return "Pantry"
+
+    def app_freshness_by_storage(self) -> dict[str, dict[str, int]]:
+        freshness = self.freshness_by_storage or self._freshness_from_storage_days()
+        return {
+            self._app_storage_name(storage_key): {
+                "minDays": value.min_days,
+                "maxDays": value.max_days,
+            }
+            for storage_key, value in freshness.items()
+        }
+
+    def to_app_catalog_item_dict(self) -> dict[str, Any]:
+        return {
+            "id": self.item_id,
+            "name": self.name,
+            "category": self.category,
+            "defaultUnit": self.default_unit,
+            "defaultQuantity": self.default_quantity,
+            "defaultStorage": self.app_default_storage(),
+            "aliases": sorted(self.aliases.keys()),
+            "facets": [asdict(definition) for definition in self.facet_definitions],
+            "defaultSelections": [asdict(facet) for facet in self.default_facets],
+            "substitutions": [reference.to_app_substitution_dict() for reference in self.substitutes],
+            "unitOverrides": dict(self.unit_overrides),
+            "freshnessByStorage": self.app_freshness_by_storage(),
+            "notes": self.notes,
+            "qualityStatus": self.quality_status,
+            "provenance": list(self.provenance),
+        }
+
+    def _freshness_from_storage_days(self) -> dict[str, FreshnessRange]:
+        if self.storage is None:
+            return {}
+
+        freshness: dict[str, FreshnessRange] = {}
+        for storage_key, days in {
+            "pantry": self.storage.pantry_days,
+            "refrigerator": self.storage.refrigerator_days,
+            "freezer": self.storage.freezer_days,
+        }.items():
+            if days is None:
+                continue
+            minimum = max(1, int(round(days * 0.75)))
+            maximum = max(minimum, int(round(days * 1.25)))
+            freshness[storage_key] = FreshnessRange(min_days=minimum, max_days=maximum)
+        return freshness
+
+    @staticmethod
+    def _app_storage_name(storage_key: str) -> str:
+        if storage_key == "refrigerator":
+            return "Refrigerated"
+        if storage_key == "freezer":
+            return "Frozen"
+        return "Pantry"
 
 
 @dataclass(frozen=True)
@@ -135,8 +234,13 @@ class IngredientEnrichmentDecision:
     category: str | None = None
     aliases: list[str] = field(default_factory=list)
     default_unit: str | None = None
+    default_quantity: float | None = None
+    facet_definitions: list[FacetDefinition] = field(default_factory=list)
+    default_facets: list[FacetSelection] = field(default_factory=list)
+    unit_overrides: dict[str, dict[str, str]] = field(default_factory=dict)
     substitutes: list[IngredientReference] = field(default_factory=list)
     storage: IngredientStorage | None = None
+    freshness_by_storage: dict[str, FreshnessRange] = field(default_factory=dict)
     quality_status: str = "enriched"
 
 

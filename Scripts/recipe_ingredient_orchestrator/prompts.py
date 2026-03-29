@@ -191,6 +191,7 @@ def ingredient_enrichment_messages(
     system_prompt = (
         "You normalize unresolved recipe ingredient mentions into first-class pantry ingredient records. "
         "For real edible items, choose a broad canonical pantry ingredient name and keep the original phrase as an alias. "
+        "When the subtype matters, keep it as structured qualifiers such as variant, form, base, or preservation instead of making the subtype the top-level identity. "
         "For obvious tools, packaging, or non-ingredient process aids, mark them as ignore. "
         "For edible ingredients, provide substitute ingredients that are themselves ingredients, not prose. "
         "Also provide practical storage preferences when they are knowable. "
@@ -501,6 +502,9 @@ def ingredient_enrichment_schema() -> dict:
                         "category",
                         "aliases",
                         "default_unit",
+                        "default_quantity",
+                        "facet_definitions",
+                        "default_facets",
                         "substitutes",
                         "storage",
                         "rationale",
@@ -512,14 +516,69 @@ def ingredient_enrichment_schema() -> dict:
                         "category": {"type": ["string", "null"], "enum": FOOD_CATEGORIES + [None]},
                         "aliases": {"type": "array", "items": {"type": "string"}},
                         "default_unit": {"type": ["string", "null"], "enum": MEASUREMENT_UNITS + [None]},
+                        "default_quantity": {"type": ["number", "null"], "minimum": 0},
+                        "facet_definitions": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "required": ["key", "options"],
+                                "properties": {
+                                    "key": {"type": "string"},
+                                    "options": {"type": "array", "items": {"type": "string"}},
+                                },
+                                "additionalProperties": False,
+                            },
+                        },
+                        "default_facets": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "required": ["key", "value"],
+                                "properties": {
+                                    "key": {"type": "string"},
+                                    "value": {"type": "string"},
+                                },
+                                "additionalProperties": False,
+                            },
+                        },
                         "substitutes": {
                             "type": "array",
                             "items": {
                                 "type": "object",
-                                "required": ["name", "rationale"],
+                                "required": [
+                                    "name",
+                                    "rationale",
+                                    "facets",
+                                    "ratio",
+                                    "tasteImpact",
+                                    "textureImpact",
+                                    "cookingImpact",
+                                    "nutritionImpact",
+                                    "notes",
+                                    "dietary",
+                                ],
                                 "properties": {
                                     "name": {"type": "string"},
                                     "rationale": {"type": ["string", "null"]},
+                                    "facets": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "object",
+                                            "required": ["key", "value"],
+                                            "properties": {
+                                                "key": {"type": "string"},
+                                                "value": {"type": "string"},
+                                            },
+                                            "additionalProperties": False,
+                                        },
+                                    },
+                                    "ratio": {"type": ["string", "null"]},
+                                    "tasteImpact": {"type": ["string", "null"]},
+                                    "textureImpact": {"type": ["string", "null"]},
+                                    "cookingImpact": {"type": ["string", "null"]},
+                                    "nutritionImpact": {"type": ["string", "null"]},
+                                    "notes": {"type": ["string", "null"]},
+                                    "dietary": {"type": "array", "items": {"type": "string"}},
                                 },
                                 "additionalProperties": False,
                             },
@@ -561,6 +620,7 @@ def ingredient_corpus_batch_messages(
         "You are building PantryChef's first-class ingredient corpus. "
         "Return diverse canonical pantry ingredients, not brands, recipes, tools, or packaging. "
         "Each ingredient must be broad enough to be reusable across many recipes, but still be a real pantry concept. "
+        "Use app-style canonical roots with structured qualifiers when needed: for example sugar plus variant granulated, or broth plus base chicken, instead of promoting the subtype as the top-level identity. "
         "Provide practical aliases, substitutes, and storage preferences. "
         "Do not return duplicates of existing items, and do not emit placeholder-quality entries. "
         "Return exactly the requested number of ingredients. If one idea is weak, replace it with another rather than returning fewer items. "
@@ -585,7 +645,7 @@ def ingredient_corpus_batch_messages(
                 "avoid_brands": True,
                 "avoid_tools_and_packaging": True,
                 "avoid_existing_or_adjacent_duplicates": True,
-                "prefer_specific_real_foods_over_family_buckets": True,
+                "prefer_broad_roots_with_structured_qualifiers": True,
             },
         },
         indent=2,
@@ -605,20 +665,86 @@ def ingredient_corpus_batch_schema(batch_size: int) -> dict:
                 "maxItems": batch_size,
                 "items": {
                     "type": "object",
-                    "required": ["name", "category", "aliases", "default_unit", "substitutes", "storage", "rationale"],
+                    "required": [
+                        "name",
+                        "category",
+                        "aliases",
+                        "default_unit",
+                        "default_quantity",
+                        "facet_definitions",
+                        "default_facets",
+                        "substitutes",
+                        "storage",
+                        "rationale",
+                    ],
                     "properties": {
                         "name": {"type": "string"},
                         "category": {"type": "string", "enum": FOOD_CATEGORIES},
                         "aliases": {"type": "array", "items": {"type": "string"}},
                         "default_unit": {"type": ["string", "null"], "enum": MEASUREMENT_UNITS + [None]},
+                        "default_quantity": {"type": ["number", "null"], "minimum": 0},
+                        "facet_definitions": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "required": ["key", "options"],
+                                "properties": {
+                                    "key": {"type": "string"},
+                                    "options": {"type": "array", "items": {"type": "string"}},
+                                },
+                                "additionalProperties": False,
+                            },
+                        },
+                        "default_facets": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "required": ["key", "value"],
+                                "properties": {
+                                    "key": {"type": "string"},
+                                    "value": {"type": "string"},
+                                },
+                                "additionalProperties": False,
+                            },
+                        },
                         "substitutes": {
                             "type": "array",
                             "items": {
                                 "type": "object",
-                                "required": ["name", "rationale"],
+                                "required": [
+                                    "name",
+                                    "rationale",
+                                    "facets",
+                                    "ratio",
+                                    "tasteImpact",
+                                    "textureImpact",
+                                    "cookingImpact",
+                                    "nutritionImpact",
+                                    "notes",
+                                    "dietary",
+                                ],
                                 "properties": {
                                     "name": {"type": "string"},
                                     "rationale": {"type": ["string", "null"]},
+                                    "facets": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "object",
+                                            "required": ["key", "value"],
+                                            "properties": {
+                                                "key": {"type": "string"},
+                                                "value": {"type": "string"},
+                                            },
+                                            "additionalProperties": False,
+                                        },
+                                    },
+                                    "ratio": {"type": ["string", "null"]},
+                                    "tasteImpact": {"type": ["string", "null"]},
+                                    "textureImpact": {"type": ["string", "null"]},
+                                    "cookingImpact": {"type": ["string", "null"]},
+                                    "nutritionImpact": {"type": ["string", "null"]},
+                                    "notes": {"type": ["string", "null"]},
+                                    "dietary": {"type": "array", "items": {"type": "string"}},
                                 },
                                 "additionalProperties": False,
                             },
@@ -651,7 +777,6 @@ def recipe_corpus_batch_messages(
     existing_titles: list[str],
     underrepresented_cuisines: list[str],
     underrepresented_meal_types: list[str],
-    known_ingredients: list[str],
     remaining_target: int,
     attempt_number: int,
 ) -> tuple[str, str]:
@@ -673,12 +798,11 @@ def recipe_corpus_batch_messages(
             "underrepresented_cuisines": underrepresented_cuisines,
             "underrepresented_meal_types": underrepresented_meal_types,
             "existing_titles": existing_titles,
-            "known_ingredients": known_ingredients,
             "requirements": {
                 "exact_dish_titles": True,
                 "avoid_existing_titles": True,
                 "prefer_diverse_courses": True,
-                "prefer_canonical_pantry_focus": True,
+                "prefer_globally_diverse_real_dishes": True,
                 "target_exact_batch_size": True,
                 "avoid_template_variants_of_existing_titles": True,
             },
