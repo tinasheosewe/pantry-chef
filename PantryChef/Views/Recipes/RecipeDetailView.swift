@@ -147,13 +147,19 @@ struct RecipeDetailView: View {
     @State private var modifyText = ""
     @State private var isModifying = false
     @State private var showEditor = false
+    @State private var originalRecipe: Recipe
     private let maxServings = 100
     private let sourceMealPlanEntry: MealPlanEntry?
 
     init(recipe: Recipe, sourceMealPlanEntry: MealPlanEntry? = nil) {
         _recipe = State(initialValue: recipe)
         _servings = State(initialValue: recipe.servings)
+        _originalRecipe = State(initialValue: recipe)
         self.sourceMealPlanEntry = sourceMealPlanEntry
+    }
+
+    private var isModified: Bool {
+        recipe != originalRecipe
     }
 
     private var scaledRecipe: Recipe {
@@ -187,10 +193,26 @@ struct RecipeDetailView: View {
                         dietaryTagsSection
                             .padding(.bottom, 16)
                     }
+
+                    // Extra padding so content isn't hidden behind the bottom bar
+                    if isModified || isModifying {
+                        Spacer().frame(height: 60)
+                    }
                 }
                 .padding(.horizontal)
             }
         }
+        .overlay(alignment: .bottom) {
+            if isModifying {
+                modifyingBanner
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+            } else if isModified {
+                modifiedSaveBar
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+            }
+        }
+        .animation(.easeInOut(duration: 0.25), value: isModified)
+        .animation(.easeInOut(duration: 0.3), value: isModifying)
         .background(PCColors.background)
         .onAppear {
             existingSession = appState.cookingSessionStore.load(recipeId: recipe.id)
@@ -239,10 +261,24 @@ struct RecipeDetailView: View {
             }
         }
         .sheet(isPresented: $showSubstitutions) {
-            SubstitutionsView(substitutions: substitutions)
+            SubstitutionsView(
+                substitutions: substitutions,
+                onApply: { subs in
+                    let changes = subs.map { "Replace \($0.originalIngredient) with \($0.substituteName) (ratio: \($0.ratio))" }.joined(separator: "; ")
+                    Task {
+                        await performModify(prompt: "Apply these ingredient substitutions to the recipe: \(changes). Update the recipe steps, timing, and nutrition accordingly.")
+                    }
+                }
+            )
         }
         .sheet(item: $healthierSuggestion) { suggestion in
-            HealthierView(suggestion: suggestion)
+            HealthierView(
+                suggestion: suggestion,
+                onApply: { tweaks in
+                    let changes = tweaks.map(\.change).joined(separator: "; ")
+                    Task { await performModify(prompt: "Apply these healthier changes to the recipe: \(changes)") }
+                }
+            )
         }
         .sheet(isPresented: $showShoppingList) {
             ShoppingPreviewView(items: shoppingList)
@@ -330,10 +366,36 @@ struct RecipeDetailView: View {
     // MARK: - Title Section
     private var titleSection: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text(recipe.title)
-                .font(.title2)
-                .fontWeight(.bold)
-                .foregroundStyle(PCColors.textPrimary)
+            HStack(alignment: .center, spacing: 8) {
+                Text(recipe.title)
+                    .font(.title2)
+                    .fontWeight(.bold)
+                    .foregroundStyle(PCColors.textPrimary)
+
+                if isModifying {
+                    HStack(spacing: 4) {
+                        ProgressView()
+                            .controlSize(.mini)
+                            .tint(.white)
+                        Text("Updating…")
+                            .font(.system(size: 10, weight: .bold))
+                    }
+                    .foregroundStyle(.white)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 3)
+                    .background(PCColors.teal)
+                    .clipShape(Capsule())
+                    .transition(.opacity)
+                } else if isModified {
+                    Text("Modified")
+                        .font(.system(size: 10, weight: .bold))
+                        .foregroundStyle(.white)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 3)
+                        .background(Color.orange)
+                        .clipShape(Capsule())
+                }
+            }
 
             if let desc = recipe.description {
                 Text(desc)
@@ -468,6 +530,23 @@ struct RecipeDetailView: View {
                                 .foregroundStyle(sub.cookingImpact.color)
                                 .clipShape(Capsule())
                         }
+
+                        Spacer()
+
+                        Button {
+                            Task {
+                                await performModify(prompt: "Replace \(ingredient.name) with \(sub.substituteName) (ratio: \(sub.ratio)). Update the recipe steps, timing, and nutrition accordingly.")
+                            }
+                        } label: {
+                            Text("Use")
+                                .font(.system(size: 9, weight: .semibold))
+                                .foregroundStyle(.white)
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 3)
+                                .background(isModifying ? PCColors.textTertiary : PCColors.teal)
+                                .clipShape(Capsule())
+                        }
+                        .disabled(isModifying)
                     }
                     .padding(.leading, 16)
                     .opacity(sub.inPantry ? 1.0 : 0.7)
@@ -480,32 +559,20 @@ struct RecipeDetailView: View {
     private var actionButtons: some View {
         VStack(spacing: 12) {
             // Prominent Cook button
-            Button {
+            PCPrimaryButton(
+                title: existingSession != nil
+                    ? "Resume Cooking (step \(existingSession!.currentStepIndex + 1)/\(existingSession!.totalSteps))"
+                    : "Start Cooking",
+                icon: existingSession != nil ? "arrow.counterclockwise" : "play.fill"
+            ) {
                 existingSession = appState.cookingSessionStore.load(recipeId: recipe.id)
                 if existingSession != nil {
-                    showCookMode = true       // resume — skip gathering
+                    showCookMode = true
                 } else if appState.activeCooks.hasActiveSessions {
                     showEndOtherCookAlert = true
                 } else {
-                    showGathering = true   // new session — show ingredients first
+                    showGathering = true
                 }
-            } label: {
-                HStack(spacing: 8) {
-                    Image(systemName: existingSession != nil ? "arrow.counterclockwise" : "play.fill")
-                        .font(.title3)
-                    if let session = existingSession {
-                        Text("Resume Cooking (step \(session.currentStepIndex + 1)/\(session.totalSteps))")
-                            .font(.headline)
-                    } else {
-                        Text("Start Cooking")
-                            .font(.headline)
-                    }
-                }
-                .foregroundStyle(.white)
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 14)
-                .background(existingSession != nil ? PCColors.expiring : PCColors.accent)
-                .clipShape(RoundedRectangle(cornerRadius: 14))
             }
 
             HStack(spacing: 12) {
@@ -705,21 +772,6 @@ struct RecipeDetailView: View {
                             .padding(10)
                             .appInputSurface()
 
-                        Text("\(servings)")
-                            .font(.title3)
-                            .fontWeight(.semibold)
-                            .frame(width: 40)
-
-                        Button {
-                            if servings < maxServings {
-                                servings += 1
-                            }
-                        } label: {
-                            Image(systemName: "plus.circle.fill")
-                                .font(.title3)
-                                .foregroundStyle(servings < maxServings ? PCColors.accent : PCColors.textTertiary)
-                        }
-                        .disabled(servings >= maxServings)
                         Button {
                             Task { await performModify() }
                         } label: {
@@ -745,20 +797,18 @@ struct RecipeDetailView: View {
         }
     }
 
-    private func performModify() async {
+    private func performModify(prompt: String? = nil) async {
         hideKeyboard()
+        let feedback = prompt ?? modifyText
+        guard !feedback.trimmingCharacters(in: .whitespaces).isEmpty else { return }
         isModifying = true
-        if let normalizedRecipe = await appState.recipeGateway.modifyRecipe(recipe, feedback: modifyText) {
+        if let normalizedRecipe = await appState.recipeGateway.modifyRecipe(recipe, feedback: feedback) {
             withAnimation {
                 recipe = normalizedRecipe.recipe
                 servings = normalizedRecipe.recipe.servings
             }
             modifyText = ""
             showModify = false
-            // Persist if it's a saved recipe
-            if appState.recipes.contains(where: { $0.id == recipe.id }) {
-                await appState.recipeGateway.updateRecipe(normalizedRecipe.recipe)
-            }
         } else {
             actionErrorMessage = "Couldn't modify the recipe. Please try again."
         }
@@ -768,6 +818,7 @@ struct RecipeDetailView: View {
     private func handleSavedRecipe(_ saved: Recipe) {
         recipe = saved
         servings = saved.servings
+        originalRecipe = saved
         showEditor = false
         Task {
             await appState.recipeGateway.updateRecipe(saved)
@@ -775,10 +826,74 @@ struct RecipeDetailView: View {
     }
 
     private func handleSavedRecipeAsNew(_ newRecipe: Recipe) {
+        originalRecipe = recipe
         showEditor = false
         Task {
             await appState.recipeGateway.addRecipe(newRecipe)
         }
+    }
+
+    // MARK: - Modifying Banner
+    private var modifyingBanner: some View {
+        HStack(spacing: 10) {
+            ProgressView()
+                .controlSize(.small)
+                .tint(PCColors.teal)
+            Text("Updating recipe with AI…")
+                .font(.subheadline)
+                .fontWeight(.medium)
+                .foregroundStyle(PCColors.textPrimary)
+            Spacer()
+        }
+        .padding(.horizontal)
+        .padding(.vertical, 14)
+        .background(.ultraThinMaterial)
+    }
+
+    // MARK: - Modified Save Bar
+    private var isSavedRecipe: Bool {
+        appState.recipes.contains(where: { $0.id == recipe.id })
+    }
+
+    private var modifiedSaveBar: some View {
+        VStack(spacing: 0) {
+            Divider()
+            HStack(spacing: PCTokens.spacingMD) {
+                PCCapsuleButton("Revert", color: PCColors.textSecondary, style: .plain) {
+                    withAnimation {
+                        recipe = originalRecipe
+                        servings = originalRecipe.servings
+                    }
+                }
+
+                Spacer()
+
+                if isSavedRecipe {
+                    PCCapsuleButton("Save", color: PCColors.accent, style: .filled) {
+                        Task {
+                            await appState.recipeGateway.updateRecipe(recipe)
+                            withAnimation { originalRecipe = recipe }
+                        }
+                    }
+                }
+
+                PCCapsuleButton("Save as New", color: PCColors.teal, style: .filled) {
+                    Task {
+                        var copy = recipe
+                        copy.id = UUID()
+                        copy.dateAdded = Date()
+                        copy.timesCooked = 0
+                        copy.source = .user
+                        copy.isFavorite = false
+                        await appState.recipeGateway.addRecipe(copy)
+                        withAnimation { originalRecipe = recipe }
+                    }
+                }
+            }
+            .padding(.horizontal, PCTokens.spacingLG)
+            .padding(.vertical, PCTokens.spacingSM + 2)
+        }
+        .background(.ultraThinMaterial)
     }
 
     // MARK: - Ingredients Section
@@ -900,6 +1015,10 @@ struct ActionButton: View {
 struct SubstitutionsView: View {
     @Environment(\.dismiss) private var dismiss
     let substitutions: [SubstitutionSuggestion]
+    var onApply: (([SubstitutionSuggestion]) -> Void)?
+
+    @State private var selectedSubIDs: Set<UUID> = []
+    @State private var isApplying = false
 
     /// Group substitutions by original ingredient for multi-sub display
     private var grouped: [(ingredient: String, suggestions: [SubstitutionSuggestion])] {
@@ -914,26 +1033,60 @@ struct SubstitutionsView: View {
 
     var body: some View {
         NavigationStack {
-            AppList {
-                if substitutions.isEmpty {
-                    EmptyStateView(
-                        icon: "checkmark.circle",
-                        title: "No substitutions needed",
-                        message: "You have all the ingredients!"
-                    )
-                } else {
-                    ForEach(grouped, id: \.ingredient) { group in
-                        Section {
-                            ForEach(group.suggestions) { sub in
-                                substitutionRow(sub)
+            VStack(spacing: 0) {
+                AppList {
+                    if substitutions.isEmpty {
+                        EmptyStateView(
+                            icon: "checkmark.circle",
+                            title: "No substitutions needed",
+                            message: "You have all the ingredients!"
+                        )
+                    } else {
+                        ForEach(grouped, id: \.ingredient) { group in
+                            Section {
+                                ForEach(group.suggestions) { sub in
+                                    let isSelected = selectedSubIDs.contains(sub.id)
+                                    Button {
+                                        if onApply != nil {
+                                            if isSelected {
+                                                selectedSubIDs.remove(sub.id)
+                                            } else {
+                                                // Only allow one selection per original ingredient
+                                                for s in group.suggestions {
+                                                    selectedSubIDs.remove(s.id)
+                                                }
+                                                selectedSubIDs.insert(sub.id)
+                                            }
+                                        }
+                                    } label: {
+                                        substitutionRow(sub, isSelected: isSelected)
+                                    }
+                                    .buttonStyle(.plain)
                                     .opacity(sub.inPantry ? 1.0 : 0.8)
+                                }
+                            } header: {
+                                Text(group.ingredient)
+                                    .font(.subheadline)
+                                    .fontWeight(.semibold)
+                                    .foregroundStyle(PCColors.textPrimary)
                             }
-                        } header: {
-                            Text(group.ingredient)
-                                .font(.subheadline)
-                                .fontWeight(.semibold)
-                                .foregroundStyle(PCColors.textPrimary)
                         }
+                    }
+                }
+
+                if onApply != nil && !substitutions.isEmpty {
+                    PCApplyBar(
+                        title: "Apply Selected (\(selectedSubIDs.count))",
+                        disabledTitle: "Select substitutions to apply",
+                        color: PCColors.teal,
+                        isDisabled: selectedSubIDs.isEmpty,
+                        isApplying: isApplying
+                    ) {
+                        let selected = substitutions.filter { selectedSubIDs.contains($0.id) }
+                        guard !selected.isEmpty else { return }
+                        isApplying = true
+                        onApply?(selected)
+                        dismiss()
                     }
                 }
             }
@@ -947,9 +1100,15 @@ struct SubstitutionsView: View {
     }
 
     @ViewBuilder
-    private func substitutionRow(_ sub: SubstitutionSuggestion) -> some View {
+    private func substitutionRow(_ sub: SubstitutionSuggestion, isSelected: Bool) -> some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
+                if onApply != nil {
+                    Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
+                        .foregroundStyle(isSelected ? PCColors.teal : PCColors.textTertiary)
+                        .font(.title3)
+                }
+
                 Text(sub.substituteName)
                     .font(.subheadline)
                     .fontWeight(.semibold)
@@ -1018,42 +1177,109 @@ struct DetailChip: View {
 struct HealthierView: View {
     @Environment(\.dismiss) private var dismiss
     let suggestion: HealthierSuggestion
+    var onApply: (([HealthTweak]) -> Void)?
+
+    @State private var selectedTweakIDs: Set<UUID> = []
+    @State private var isApplying = false
+
+    private var allSelected: Bool {
+        selectedTweakIDs.count == suggestion.suggestions.count
+    }
 
     var body: some View {
         NavigationStack {
-            AppList {
-                Section {
-                    Text(suggestion.overallImpact)
-                        .font(.subheadline)
-                        .foregroundStyle(PCColors.accent)
+            VStack(spacing: 0) {
+                AppList {
+                    Section {
+                        Text(suggestion.overallImpact)
+                            .font(.subheadline)
+                            .foregroundStyle(PCColors.accent)
 
-                    if let reduction = suggestion.estimatedCalorieReduction {
-                        HStack {
-                            Image(systemName: "arrow.down.circle.fill")
-                                .foregroundStyle(PCColors.accent)
-                            Text("~\(reduction) fewer calories per serving")
-                                .font(.subheadline)
-                                .fontWeight(.medium)
+                        if let reduction = suggestion.estimatedCalorieReduction {
+                            HStack {
+                                Image(systemName: "arrow.down.circle.fill")
+                                    .foregroundStyle(PCColors.accent)
+                                Text("~\(reduction) fewer calories per serving")
+                                    .font(.subheadline)
+                                    .fontWeight(.medium)
+                            }
                         }
+                    } header: {
+                        Text("Impact")
                     }
-                } header: {
-                    Text("Impact")
+
+                    Section {
+                        if onApply != nil {
+                            Button {
+                                if allSelected {
+                                    selectedTweakIDs.removeAll()
+                                } else {
+                                    selectedTweakIDs = Set(suggestion.suggestions.map(\.id))
+                                }
+                            } label: {
+                                HStack(spacing: 6) {
+                                    Image(systemName: allSelected ? "checkmark.circle.fill" : "circle")
+                                        .foregroundStyle(allSelected ? PCColors.accent : PCColors.textTertiary)
+                                    Text(allSelected ? "Deselect All" : "Select All")
+                                        .font(.caption)
+                                        .foregroundStyle(PCColors.textSecondary)
+                                }
+                            }
+                        }
+
+                        ForEach(suggestion.suggestions) { tweak in
+                            let isSelected = selectedTweakIDs.contains(tweak.id)
+                            Button {
+                                if onApply != nil {
+                                    if isSelected {
+                                        selectedTweakIDs.remove(tweak.id)
+                                    } else {
+                                        selectedTweakIDs.insert(tweak.id)
+                                    }
+                                }
+                            } label: {
+                                HStack {
+                                    if onApply != nil {
+                                        Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
+                                            .foregroundStyle(isSelected ? PCColors.accent : PCColors.textTertiary)
+                                            .font(.title3)
+                                    }
+
+                                    VStack(alignment: .leading, spacing: 6) {
+                                        Text(tweak.change)
+                                            .font(.subheadline)
+                                            .fontWeight(.medium)
+                                            .foregroundStyle(PCColors.textPrimary)
+                                        Text(tweak.benefit)
+                                            .font(.caption)
+                                            .foregroundStyle(PCColors.accent)
+                                    }
+
+                                    Spacer()
+                                }
+                            }
+                            .padding(.vertical, 4)
+                        }
+                    } header: {
+                        Text("Suggestions")
+                    }
                 }
 
-                Section {
-                    ForEach(suggestion.suggestions) { tweak in
-                        VStack(alignment: .leading, spacing: 6) {
-                            Text(tweak.change)
-                                .font(.subheadline)
-                                .fontWeight(.medium)
-                            Text(tweak.benefit)
-                                .font(.caption)
-                                .foregroundStyle(PCColors.accent)
-                        }
-                        .padding(.vertical, 4)
+                if onApply != nil {
+                    PCApplyBar(
+                        title: selectedTweakIDs.count == suggestion.suggestions.count
+                            ? "Apply All"
+                            : "Apply Selected (\(selectedTweakIDs.count))",
+                        color: PCColors.accent,
+                        isDisabled: selectedTweakIDs.isEmpty,
+                        isApplying: isApplying
+                    ) {
+                        let selected = suggestion.suggestions.filter { selectedTweakIDs.contains($0.id) }
+                        guard !selected.isEmpty else { return }
+                        isApplying = true
+                        onApply?(selected)
+                        dismiss()
                     }
-                } header: {
-                    Text("Suggestions")
                 }
             }
             .navigationTitle("Make It Healthier")

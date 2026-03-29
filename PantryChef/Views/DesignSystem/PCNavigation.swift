@@ -317,4 +317,53 @@ struct PCCapsuleButton: View {
     }
 }
 
+// MARK: - PCApplyBar
 
+/// Sticky bottom bar used in sheets for batch-apply actions.
+/// Shows a full-width button with loading state, disabled state, and material background.
+struct PCApplyBar: View {
+    let title: String
+    var disabledTitle: String?
+    var color: Color = PCColors.accent
+    var isDisabled: Bool = false
+    var isApplying: Bool = false
+    let action: () -> Void
+
+    var body: some View {
+        VStack(spacing: 0) {
+            Divider()
+            Button {
+                guard !isApplying else { return }
+                action()
+            } label: {
+                HStack {
+                    Spacer()
+                    if isApplying {
+                        HStack(spacing: PCTokens.spacingSM) {
+                            ProgressView()
+                                .controlSize(.small)
+                                .tint(.white)
+                            Text("Applying…")
+                                .font(PCFont.captionBold)
+                        }
+                    } else {
+                        Label(
+                            isDisabled ? (disabledTitle ?? title) : title,
+                            systemImage: "checkmark.circle"
+                        )
+                        .font(PCFont.captionBold)
+                    }
+                    Spacer()
+                }
+                .foregroundStyle(.white)
+                .padding(.vertical, PCTokens.spacingMD)
+                .background(isDisabled || isApplying ? PCColors.textTertiary : color)
+                .clipShape(RoundedRectangle(cornerRadius: PCTokens.cornerRadiusSmall))
+            }
+            .disabled(isDisabled || isApplying)
+            .padding(.horizontal, PCTokens.spacingLG)
+            .padding(.vertical, PCTokens.spacingSM + 2)
+        }
+        .background(.ultraThinMaterial)
+    }
+}
