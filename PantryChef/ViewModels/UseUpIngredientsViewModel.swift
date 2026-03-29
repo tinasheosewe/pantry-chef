@@ -178,6 +178,12 @@ final class UseUpIngredientsViewModel {
     // MARK: - Generation Actions
 
     func selectAndGenerate(_ suggestion: RecipeNameSuggestion) async {
+        // If we already generated a recipe for this suggestion, just re-show it
+        if selectedSuggestion?.name == suggestion.name, generatedRecipe != nil {
+            showingRecipe = true
+            return
+        }
+
         selectedSuggestion = suggestion
         generatedRecipe = nil
         showingRecipe = true

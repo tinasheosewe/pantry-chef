@@ -60,7 +60,6 @@ struct UseUpIngredientsView: View {
                         }
                     }
 
-                    extraIngredientsSection
                     strictIngredientsToggle
                 }
                 .padding(.vertical)
@@ -94,54 +93,6 @@ struct UseUpIngredientsView: View {
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
-    }
-
-    private var extraIngredientsSection: some View {
-        VStack(alignment: .leading, spacing: PCTokens.spacingSM) {
-            Text("Add Extra Ingredients")
-                .font(PCFont.headline)
-                .foregroundStyle(PCColors.textPrimary)
-                .padding(.horizontal)
-
-            HStack(spacing: PCTokens.spacingSM) {
-                TextField("e.g., lemon from garden", text: $viewModel.extraIngredientText)
-                    .textFieldStyle(.roundedBorder)
-                    .onSubmit { viewModel.addExtraIngredient() }
-
-                Button {
-                    viewModel.addExtraIngredient()
-                } label: {
-                    Image(systemName: "plus.circle.fill")
-                        .font(.title3)
-                        .foregroundStyle(PCColors.accent)
-                }
-                .disabled(viewModel.extraIngredientText.trimmingCharacters(in: .whitespaces).isEmpty)
-            }
-            .padding(.horizontal)
-
-            if !viewModel.extraIngredients.isEmpty {
-                FlowLayout(spacing: PCTokens.spacingSM) {
-                    ForEach(viewModel.extraIngredients, id: \.self) { ingredient in
-                        HStack(spacing: 4) {
-                            Text(ingredient)
-                                .font(PCFont.caption)
-                            Button {
-                                viewModel.removeExtraIngredient(ingredient)
-                            } label: {
-                                Image(systemName: "xmark.circle.fill")
-                                    .font(.caption2)
-                            }
-                        }
-                        .padding(.horizontal, 10)
-                        .padding(.vertical, 5)
-                        .background(PCColors.accent.opacity(0.15))
-                        .clipShape(Capsule())
-                        .foregroundStyle(PCColors.accent)
-                    }
-                }
-                .padding(.horizontal)
-            }
-        }
     }
 
     private var strictIngredientsToggle: some View {
@@ -312,15 +263,13 @@ struct UseUpIngredientsView: View {
             if viewModel.isGeneratingRecipe {
                 generatingRecipeLoadingView
             } else if let normalized = viewModel.generatedRecipe {
-                PCScrollView {
-                    VStack(spacing: PCTokens.spacingMD) {
-                        if let suggestion = viewModel.selectedSuggestion {
-                            confidencePill(ConfidenceTier(score: suggestion.confidenceScore), reason: suggestion.confidenceReason)
-                        }
-
-                        RecipeDetailView(recipe: normalized.rawValue)
-                            .environment(appState)
+                VStack(spacing: PCTokens.spacingMD) {
+                    if let suggestion = viewModel.selectedSuggestion {
+                        confidencePill(ConfidenceTier(score: suggestion.confidenceScore), reason: suggestion.confidenceReason)
                     }
+
+                    RecipeDetailView(recipe: normalized.rawValue)
+                        .environment(appState)
                 }
             } else {
                 generationFailedView
