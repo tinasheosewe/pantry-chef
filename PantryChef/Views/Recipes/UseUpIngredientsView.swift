@@ -520,8 +520,3 @@ private struct PulseAnimationModifier: ViewModifier {
             .onAppear { isPulsing = true }
     }
 }
-            .padding(.horizontal)
-            .padding(.bottom)
-        }
-    }
-}
