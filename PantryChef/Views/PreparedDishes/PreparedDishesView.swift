@@ -352,6 +352,7 @@ struct PreparedDishBatchRow: View {
         } label: {
             collapsedBatchSummary
         }
+        .tint(PCColors.textSecondary)
     }
 
     private var collapsedBatchSummary: some View {
