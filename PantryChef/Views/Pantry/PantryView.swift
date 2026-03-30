@@ -1173,15 +1173,6 @@ struct PantryIntakeFormSections: View {
                 displayedComponents: .date
             )
 
-            if draft.manualExpiryDate != nil {
-                Button(role: .destructive) {
-                    draft.clearExpiryDate()
-                } label: {
-                    Text("Remove Expiry Date")
-                        .font(.subheadline)
-                }
-            }
-
             if let summary = draft.freshnessSummaryText() {
                 Text(summary)
                     .font(.caption)

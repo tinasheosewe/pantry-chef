@@ -124,8 +124,20 @@ struct PantryIntakeRowDraft: Identifiable {
     }
 
     var estimatedExpiryDate: Date? {
-        guard let window = estimatedFreshnessWindow else { return nil }
-        return Calendar.current.date(byAdding: .day, value: window.upperBound, to: Date())
+        // Use catalog freshness if available
+        if let window = estimatedFreshnessWindow {
+            return Calendar.current.date(byAdding: .day, value: window.upperBound, to: Date())
+        }
+        // Fallback defaults by storage type
+        guard let storage else { return nil }
+        switch storage {
+        case .frozen:
+            return Calendar.current.date(byAdding: .year, value: 1, to: Date())
+        case .pantry:
+            return Calendar.current.date(byAdding: .month, value: 6, to: Date())
+        case .refrigerated:
+            return nil
+        }
     }
 
     var facetDefinitions: [PantryFacetDefinition] {
@@ -369,11 +381,6 @@ struct PantryIntakeRowDraft: Identifiable {
 
     mutating func setExpiryDate(_ date: Date) {
         manualExpiryDate = date
-        expiryDateWasEdited = true
-    }
-
-    mutating func clearExpiryDate() {
-        manualExpiryDate = nil
         expiryDateWasEdited = true
     }
 
