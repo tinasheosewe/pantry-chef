@@ -16,6 +16,9 @@ final class NavigationCoordinator {
     /// Resolved deep-link target shown by ContentView.
     var deepLinkedCookRecipe: Recipe?
 
+    /// Multi-cook session to resume via deep-link.
+    var deepLinkedMultiCookSession: MultiCookSession?
+
     /// Set by notification tap to deep-link into cook mode for a specific recipe.
     var deepLinkCookModeRecipeId: String?
 

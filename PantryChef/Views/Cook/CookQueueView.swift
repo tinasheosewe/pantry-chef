@@ -7,6 +7,7 @@ struct CookQueueView: View {
     @State private var launchingStage: CookQueueStage?
     @State private var showGathering = false
     @State private var resumingSession: CookingSession?
+    @State private var resumingMultiCookSession: MultiCookSession?
     @State private var showEndOtherCookAlert = false
     @State private var pendingLaunchStage: CookQueueStage?
 
@@ -30,8 +31,12 @@ struct CookQueueView: View {
                 if let queue, !queue.stages.isEmpty {
                     ScrollView {
                         LazyVStack(spacing: PCTokens.spacingMD) {
-                            // Active cook banner
-                            if let session = appState.activeCooks.activeSessions.first {
+                            // Active cook banner — multi-cook takes priority
+                            if let multiSession = appState.activeCooks.activeMultiCookSessions.first {
+                                multiCookBanner(multiSession)
+                                    .padding(.horizontal)
+                                    .padding(.top, PCTokens.spacingSM)
+                            } else if let session = appState.activeCooks.activeSessions.first {
                                 activeCookBanner(session)
                                     .padding(.horizontal)
                                     .padding(.top, PCTokens.spacingSM)
@@ -138,6 +143,20 @@ struct CookQueueView: View {
                     )
                     .environment(appState)
                 }
+            }
+            .fullScreenCover(item: $resumingMultiCookSession) { multiSession in
+                let recipes = multiSession.recipeIDs.compactMap { id in
+                    appState.allRecipes.first { $0.id == id }
+                }
+                MultiCookModeView(
+                    recipes: recipes,
+                    blocks: multiSession.blocks,
+                    queueID: multiSession.queueID,
+                    queueStageID: multiSession.queueStageID,
+                    resumeSessionId: multiSession.id,
+                    resumeAtBlock: multiSession.currentBlockIndex
+                )
+                .environment(appState)
             }
         }
     }
@@ -325,6 +344,15 @@ struct CookQueueView: View {
             let recipes = appState.resolvedRecipes(for: stage)
             guard !recipes.isEmpty else { return }
 
+            // Check for existing multi-cook session first
+            if recipes.count > 1 {
+                let stageRecipeIDs = Set(recipes.map(\.id))
+                if let existing = MultiCookSession.loadAll().first(where: { Set($0.recipeIDs) == stageRecipeIDs }) {
+                    resumingMultiCookSession = existing
+                    return
+                }
+            }
+
             if recipes.count == 1, let recipe = recipes.first,
                let session = appState.cookingSessionStore.load(recipeId: recipe.id) {
                 resumingSession = session
@@ -378,6 +406,52 @@ struct CookQueueView: View {
                         .fontWeight(.semibold)
                         .foregroundStyle(PCColors.textPrimary)
                     Text(stepProgress)
+                        .font(.caption)
+                        .foregroundStyle(PCColors.textSecondary)
+                }
+
+                Spacer()
+
+                Text("Continue")
+                    .font(.caption)
+                    .fontWeight(.semibold)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 6)
+                    .background(PCColors.accent)
+                    .foregroundStyle(.white)
+                    .clipShape(Capsule())
+            }
+            .padding(PCTokens.cardPadding)
+            .background(PCColors.accent.opacity(0.10))
+            .clipShape(RoundedRectangle(cornerRadius: PCTokens.cornerRadius))
+            .overlay(
+                RoundedRectangle(cornerRadius: PCTokens.cornerRadius)
+                    .strokeBorder(PCColors.accent.opacity(0.3), lineWidth: 1)
+            )
+        }
+        .buttonStyle(.plain)
+    }
+
+    private func multiCookBanner(_ session: MultiCookSession) -> some View {
+        let blockProgress = "Block \(session.currentBlockIndex + 1) of \(session.blocks.count)"
+        let title = session.recipeNames.prefix(2).joined(separator: " & ")
+            + (session.recipeNames.count > 2 ? " +\(session.recipeNames.count - 2)" : "")
+
+        return Button {
+            resumingMultiCookSession = session
+        } label: {
+            HStack(spacing: 12) {
+                Image(systemName: "flame.fill")
+                    .font(.title3)
+                    .foregroundStyle(PCColors.accent)
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(title)
+                        .font(.subheadline)
+                        .fontWeight(.semibold)
+                        .foregroundStyle(PCColors.textPrimary)
+                        .lineLimit(1)
+                    Text(blockProgress)
                         .font(.caption)
                         .foregroundStyle(PCColors.textSecondary)
                 }

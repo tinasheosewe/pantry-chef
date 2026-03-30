@@ -14,6 +14,8 @@ struct MultiCookModeView: View {
     let blocks: [MultiRecipeScheduler.ScheduledBlock]
     let queueID: UUID?
     let queueStageID: UUID?
+    let resumeSessionId: UUID?
+    let resumeAtBlock: Int
 
     @State private var realtimeService: RealtimeService?
     @State private var viewModel: MultiCookModeViewModel?
@@ -28,11 +30,20 @@ struct MultiCookModeView: View {
         Color(red: 0.48, green: 0.40, blue: 0.82)     // soft indigo
     ]
 
-    init(recipes: [Recipe], blocks: [MultiRecipeScheduler.ScheduledBlock], queueID: UUID? = nil, queueStageID: UUID? = nil) {
+    init(
+        recipes: [Recipe],
+        blocks: [MultiRecipeScheduler.ScheduledBlock],
+        queueID: UUID? = nil,
+        queueStageID: UUID? = nil,
+        resumeSessionId: UUID? = nil,
+        resumeAtBlock: Int = 0
+    ) {
         self.recipes = recipes
         self.blocks = blocks
         self.queueID = queueID
         self.queueStageID = queueStageID
+        self.resumeSessionId = resumeSessionId
+        self.resumeAtBlock = resumeAtBlock
     }
 
     var body: some View {
@@ -57,7 +68,9 @@ struct MultiCookModeView: View {
                     realtimeService: realtime,
                     preferenceStore: appState.cookModePreferenceStore,
                     queueID: queueID,
-                    queueStageID: queueStageID
+                    queueStageID: queueStageID,
+                    sessionId: resumeSessionId ?? UUID(),
+                    resumeAtBlock: resumeAtBlock
                 )
                 viewModel = vm
                 vm.startConversation()
@@ -548,6 +561,7 @@ struct MultiCookModeView: View {
     // MARK: - Session Management
 
     private func endSession(completed: Bool = false) {
+        viewModel?.clearSession()
         viewModel?.cleanup()
         Task {
             if let queueStageID {

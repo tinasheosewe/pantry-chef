@@ -34,6 +34,9 @@ final class MultiCookModeViewModel {
     let queueID: UUID?
     let queueStageID: UUID?
 
+    /// Stable identifier persisted across resume cycles.
+    let sessionId: UUID
+
     private var wasEverConnected = false
 
     /// Date-based timer tracking
@@ -51,7 +54,9 @@ final class MultiCookModeViewModel {
         realtimeService: any RealtimeServiceProtocol,
         preferenceStore: CookModePreferenceStoreProtocol? = nil,
         queueID: UUID? = nil,
-        queueStageID: UUID? = nil
+        queueStageID: UUID? = nil,
+        sessionId: UUID = UUID(),
+        resumeAtBlock: Int = 0
     ) {
         self.recipes = recipes
         self.blocks = blocks
@@ -59,6 +64,8 @@ final class MultiCookModeViewModel {
         self.preferenceStore = preferenceStore ?? UserDefaultsCookModePreferenceStore()
         self.queueID = queueID
         self.queueStageID = queueStageID
+        self.sessionId = sessionId
+        self.currentBlockIndex = resumeAtBlock
         self.isMuted = self.preferenceStore.isMuted
         setupRealtimeCallbacks()
         startPassiveTimerTick()
@@ -90,12 +97,14 @@ final class MultiCookModeViewModel {
             stopTimer()
             showCompletionScreen = true
             stopConversation()
+            clearSession()
             return
         }
         maybeStartPassiveTimer()
         stopTimer()
         currentBlockIndex += 1
         notifyBlockChanged()
+        persistSession()
     }
 
     func previousBlock() {
@@ -106,6 +115,7 @@ final class MultiCookModeViewModel {
         let validBlockIDs = Set(blocks.prefix(currentBlockIndex).map(\.id))
         runningTimers.removeAll { !validBlockIDs.contains($0.blockId) }
         notifyBlockChanged()
+        persistSession()
     }
 
     func goToBlock(_ index: Int) {
@@ -113,6 +123,7 @@ final class MultiCookModeViewModel {
         stopTimer()
         currentBlockIndex = index
         notifyBlockChanged()
+        persistSession()
     }
 
     /// Tell the Realtime API model about the new block so it reads it aloud.
@@ -180,6 +191,7 @@ final class MultiCookModeViewModel {
             let tools = buildConversationTools()
             realtimeService.connect(withInstructions: instructions, tools: tools)
             isPreparing = false
+            persistSession()
 
             if isMuted {
                 realtimeService.stopCapture()
@@ -512,5 +524,40 @@ final class MultiCookModeViewModel {
         passiveTickCancellable?.cancel()
         timerCancellable?.cancel()
         stopConversation()
+    }
+
+    // MARK: - Session Persistence
+
+    func persistSession() {
+        var session = MultiCookSession(
+            id: sessionId,
+            recipeIDs: recipes.map(\.id),
+            recipeNames: recipes.map(\.title),
+            blocks: blocks,
+            currentBlockIndex: currentBlockIndex,
+            startedAt: Date(),
+            lastUpdatedAt: Date(),
+            queueID: queueID,
+            queueStageID: queueStageID
+        )
+        // Preserve original startedAt if resuming
+        if let existing = MultiCookSession.load(id: sessionId) {
+            session = MultiCookSession(
+                id: sessionId,
+                recipeIDs: recipes.map(\.id),
+                recipeNames: recipes.map(\.title),
+                blocks: blocks,
+                currentBlockIndex: currentBlockIndex,
+                startedAt: existing.startedAt,
+                lastUpdatedAt: Date(),
+                queueID: queueID,
+                queueStageID: queueStageID
+            )
+        }
+        session.save()
+    }
+
+    func clearSession() {
+        MultiCookSession.clear(id: sessionId)
     }
 }

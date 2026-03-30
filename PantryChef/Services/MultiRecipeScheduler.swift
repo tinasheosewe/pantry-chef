@@ -12,7 +12,7 @@ struct MultiRecipeScheduler {
     // MARK: - Output Types
 
     /// A block in the scheduled timeline. May contain tasks from multiple recipes.
-    struct ScheduledBlock: Identifiable, Hashable {
+    struct ScheduledBlock: Identifiable, Hashable, Codable {
         let id: UUID
         let tasks: [StepTask]
         let type: TaskType

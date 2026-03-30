@@ -617,3 +617,79 @@ struct CookingSession: Codable, Identifiable {
     }
 
 }
+
+// MARK: - Multi-Cook Session Persistence
+//
+// Persists the LLM-generated block schedule and current progress so the
+// mini player can appear and multi-cook can be resumed after backgrounding.
+
+struct MultiCookSession: Codable, Identifiable, Hashable {
+    let id: UUID
+    let recipeIDs: [UUID]
+    let recipeNames: [String]
+    let blocks: [MultiRecipeScheduler.ScheduledBlock]
+    var currentBlockIndex: Int
+    let startedAt: Date
+    var lastUpdatedAt: Date
+    var queueID: UUID?
+    var queueStageID: UUID?
+
+    static func == (lhs: MultiCookSession, rhs: MultiCookSession) -> Bool {
+        lhs.id == rhs.id
+    }
+
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+
+    var totalBlocks: Int { blocks.count }
+    var progress: Double {
+        guard totalBlocks > 0 else { return 0 }
+        return Double(currentBlockIndex + 1) / Double(totalBlocks)
+    }
+
+    var isExpired: Bool {
+        Date().timeIntervalSince(lastUpdatedAt) > AppConfig.sessionExpiryTimeout
+    }
+
+    // MARK: - Persistence
+
+    private static let storageKey = "active_multi_cook_sessions"
+
+    func save() {
+        var sessions = Self.loadAll()
+        if let idx = sessions.firstIndex(where: { $0.id == id }) {
+            sessions[idx] = self
+        } else {
+            sessions.append(self)
+        }
+        Self.saveAll(sessions)
+    }
+
+    static func loadAll() -> [MultiCookSession] {
+        guard let data = UserDefaults.standard.data(forKey: storageKey) else { return [] }
+        let sessions = (try? JSONDecoder().decode([MultiCookSession].self, from: data)) ?? []
+        let active = sessions.filter { !$0.isExpired }
+        if active.count != sessions.count { saveAll(active) }
+        return active
+    }
+
+    static func load(id: UUID) -> MultiCookSession? {
+        loadAll().first { $0.id == id }
+    }
+
+    static func clear(id: UUID) {
+        var sessions = loadAll()
+        sessions.removeAll { $0.id == id }
+        saveAll(sessions)
+    }
+
+    static func clearAll() {
+        UserDefaults.standard.removeObject(forKey: storageKey)
+    }
+
+    private static func saveAll(_ sessions: [MultiCookSession]) {
+        guard let data = try? JSONEncoder().encode(sessions) else { return }
+        UserDefaults.standard.set(data, forKey: storageKey)
+    }
+}

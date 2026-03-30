@@ -26,7 +26,13 @@ struct ContentView: View {
                             recipeName: miniPlayerData.recipeName,
                             stepProgress: miniPlayerData.stepProgress,
                             progress: miniPlayerData.progress,
-                            onTap: { appState.navigator.requestCookQueueSheet() }
+                            onTap: {
+                                if let multiSession = appState.activeCooks.activeMultiCookSessions.first {
+                                    appState.navigator.deepLinkedMultiCookSession = multiSession
+                                } else {
+                                    appState.navigator.requestCookQueueSheet()
+                                }
+                            }
                         )
                     }
 
@@ -46,6 +52,23 @@ struct ContentView: View {
             let stepIndex = session?.currentStepIndex ?? 0
             CookModeView(recipe: recipe, resumeAtStep: stepIndex, isResuming: true)
                 .environment(appState)
+        }
+        .fullScreenCover(item: Binding(
+            get: { appState.navigator.deepLinkedMultiCookSession },
+            set: { appState.navigator.deepLinkedMultiCookSession = $0 }
+        )) { multiSession in
+            let recipes = multiSession.recipeIDs.compactMap { id in
+                appState.allRecipes.first { $0.id == id }
+            }
+            MultiCookModeView(
+                recipes: recipes,
+                blocks: multiSession.blocks,
+                queueID: multiSession.queueID,
+                queueStageID: multiSession.queueStageID,
+                resumeSessionId: multiSession.id,
+                resumeAtBlock: multiSession.currentBlockIndex
+            )
+            .environment(appState)
         }
         .appNavigationSheet(isPresented: Binding(
             get: { appState.navigator.showCookQueueSheet },
@@ -68,6 +91,16 @@ struct ContentView: View {
     // MARK: - Mini Player Data
 
     private var activeCookMiniPlayerData: (recipeName: String, stepProgress: String, progress: Double)? {
+        if let multiSession = appState.activeCooks.activeMultiCookSessions.first {
+            let names = multiSession.recipeNames.prefix(2).joined(separator: " & ")
+            let suffix = multiSession.recipeNames.count > 2 ? " +\(multiSession.recipeNames.count - 2)" : ""
+            return (
+                recipeName: names + suffix,
+                stepProgress: "Block \(multiSession.currentBlockIndex + 1) of \(multiSession.totalBlocks)",
+                progress: multiSession.progress
+            )
+        }
+
         if let session = appState.activeCooks.activeSessions.first {
             let progress = session.totalSteps > 0
                 ? Double(session.currentStepIndex) / Double(session.totalSteps)
