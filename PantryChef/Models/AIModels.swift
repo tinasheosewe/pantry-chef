@@ -429,6 +429,8 @@ enum RecipeConversion {
         }
 
         return rawSteps.map { raw in
+            let inferredStepDuration = inferredStepDurationSeconds(for: raw)
+            let fallbackTaskDuration = max(30, inferredStepDuration / max(raw.tasks.count, 1))
             let tasks = raw.tasks.map { rawTask in
                 let taskID = indexToUUID[rawTask.taskIndex] ?? UUID()
                 let deps = rawTask.dependsOn.compactMap { indexToUUID[$0] }
@@ -436,7 +438,7 @@ enum RecipeConversion {
                     id: taskID,
                     action: CookingAction.from(string: rawTask.action),
                     ingredient: rawTask.ingredient,
-                    durationSeconds: rawTask.durationSeconds,
+                    durationSeconds: rawTask.durationSeconds > 0 ? rawTask.durationSeconds : fallbackTaskDuration,
                     type: rawTask.type == "passive" ? .passive : .active,
                     requiresEquipment: rawTask.requiresEquipment,
                     effort: EffortLevel(from: rawTask.effort),
@@ -446,11 +448,25 @@ enum RecipeConversion {
             return RecipeStep(
                 stepNumber: raw.stepNumber,
                 instruction: raw.instruction,
-                timerMinutes: raw.timerMinutes,
-                estimatedDurationSeconds: raw.estimatedDurationSeconds,
+                timerMinutes: raw.timerMinutes.flatMap { $0 >= 0 ? $0 : nil },
+                estimatedDurationSeconds: raw.estimatedDurationSeconds.flatMap { $0 > 0 ? $0 : inferredStepDuration } ?? inferredStepDuration,
                 tasks: tasks
             )
         }
+    }
+
+    private static func inferredStepDurationSeconds(for raw: RawStep) -> Int {
+        if let estimatedDurationSeconds = raw.estimatedDurationSeconds,
+           estimatedDurationSeconds > 0 {
+            return estimatedDurationSeconds
+        }
+
+        if let timerMinutes = raw.timerMinutes,
+           timerMinutes > 0 {
+            return timerMinutes * 60
+        }
+
+        return AppConfig.defaultStepDurationSeconds
     }
 }
 

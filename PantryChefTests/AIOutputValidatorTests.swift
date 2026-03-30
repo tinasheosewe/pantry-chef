@@ -64,6 +64,56 @@ final class AIOutputValidatorTests: XCTestCase {
         })
     }
 
+    func testRawFullRecipeSanitizesInvalidTaskDurations() {
+        let raw = RawFullRecipe(
+            title: "Salted Greens",
+            description: "Quick greens with seasoning.",
+            ingredients: [
+                RawIngredient(name: "spinach", quantity: 2, unit: "cup", category: "Produce"),
+                RawIngredient(name: "salt", quantity: 1, unit: "tsp", category: "Spices & Herbs")
+            ],
+            steps: [
+                RawStep(
+                    stepNumber: 1,
+                    instruction: "Toss the spinach with salt.",
+                    timerMinutes: nil,
+                    estimatedDurationSeconds: 120,
+                    tasks: [
+                        RawTask(
+                            taskIndex: 1,
+                            action: "mix",
+                            ingredient: "spinach",
+                            durationSeconds: 0,
+                            type: "active",
+                            effort: "easy",
+                            requiresEquipment: nil,
+                            dependsOn: []
+                        )
+                    ]
+                )
+            ],
+            servings: 2,
+            prepTimeMinutes: nil,
+            cookTimeMinutes: nil,
+            dietaryTags: nil,
+            difficulty: 1,
+            mealType: nil,
+            cuisine: nil,
+            calories: nil,
+            protein: nil,
+            carbohydrates: nil,
+            fat: nil,
+            fiber: nil,
+            sugar: nil,
+            sodium: nil
+        )
+
+        let recipe = raw.toRecipe()
+
+        XCTAssertEqual(recipe.steps.first?.tasks.first?.durationSeconds, 120)
+        XCTAssertTrue(AIOutputValidator.validate(recipe: recipe).isEmpty)
+    }
+
     func testInvalidImportResultIsRejected() {
         let result = RecipeImportResult(
             title: "",

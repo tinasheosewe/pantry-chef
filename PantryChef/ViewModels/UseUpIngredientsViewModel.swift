@@ -20,7 +20,7 @@ final class UseUpIngredientsViewModel {
     var extraIngredients: [String] = []
     var extraIngredientText: String = ""
     var strictIngredients: Bool = false
-    var requireAllIngredients: Bool = true
+    var requireAllIngredients: Bool = false
 
     // MARK: - Suggestion State
 
