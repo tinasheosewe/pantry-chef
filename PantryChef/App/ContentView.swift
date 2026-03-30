@@ -50,22 +50,25 @@ struct ContentView: View {
             CookModeView(recipe: recipe, resumeAtStep: stepIndex, isResuming: true)
                 .environment(appState)
         }
-        .fullScreenCover(item: Binding(
-            get: { appState.navigator.deepLinkedMultiCookSession },
-            set: { appState.navigator.deepLinkedMultiCookSession = $0 }
-        )) { multiSession in
-            let recipes = multiSession.recipeIDs.compactMap { id in
-                appState.allRecipes.first { $0.id == id }
-            }
-            MultiCookModeView(
-                recipes: recipes,
-                blocks: multiSession.blocks,
-                queueID: multiSession.queueID,
-                queueStageID: multiSession.queueStageID,
-                resumeSessionId: multiSession.id,
-                resumeAtBlock: multiSession.currentBlockIndex
-            )
-            .environment(appState)
+        .background {
+            Color.clear
+                .fullScreenCover(item: Binding(
+                    get: { appState.navigator.deepLinkedMultiCookSession },
+                    set: { appState.navigator.deepLinkedMultiCookSession = $0 }
+                )) { multiSession in
+                    let recipes = multiSession.recipeIDs.compactMap { id in
+                        appState.allRecipes.first { $0.id == id }
+                    }
+                    MultiCookModeView(
+                        recipes: recipes,
+                        blocks: multiSession.blocks,
+                        queueID: multiSession.queueID,
+                        queueStageID: multiSession.queueStageID,
+                        resumeSessionId: multiSession.id,
+                        resumeAtBlock: multiSession.currentBlockIndex
+                    )
+                    .environment(appState)
+                }
         }
         .appNavigationSheet(isPresented: Binding(
             get: { appState.navigator.showCookQueueSheet },
@@ -73,12 +76,15 @@ struct ContentView: View {
         )) {
             CookQueueView(appState: appState)
         }
-        .appNavigationSheet(isPresented: Binding(
-            get: { appState.navigator.showUseUpIngredientsSheet },
-            set: { appState.navigator.showUseUpIngredientsSheet = $0 }
-        )) {
-            UseUpIngredientsView(appState: appState)
-                .environment(appState)
+        .background {
+            Color.clear
+                .appNavigationSheet(isPresented: Binding(
+                    get: { appState.navigator.showUseUpIngredientsSheet },
+                    set: { appState.navigator.showUseUpIngredientsSheet = $0 }
+                )) {
+                    UseUpIngredientsView(appState: appState)
+                        .environment(appState)
+                }
         }
         .task {
             appState.scheduleInitialLoadIfNeeded()
