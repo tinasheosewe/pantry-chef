@@ -1072,6 +1072,8 @@ final class AIService: AIServiceProtocol {
                         "taskID": syntheticID.uuidString,
                         "recipeName": recipe.title,
                         "stepNumber": step.stepNumber,
+                        "stepGroupID": step.id.uuidString,
+                        "stepInstruction": step.instruction,
                         "action": "other",
                         "actionDetail": step.instruction,
                         "ingredient": NSNull(),
@@ -1089,6 +1091,8 @@ final class AIService: AIServiceProtocol {
                             "taskID": task.id.uuidString,
                             "recipeName": recipe.title,
                             "stepNumber": step.stepNumber,
+                            "stepGroupID": step.id.uuidString,
+                            "stepInstruction": step.instruction,
                             "action": task.action.verb,
                             "ingredient": task.ingredient as Any,
                             "quantity": task.quantity as Any,
@@ -1148,6 +1152,17 @@ final class AIService: AIServiceProtocol {
            "• Dice 2 onions — 1 for the Curry, 1 for the Soup\n• Mince 4 cloves garlic\n• Slice the bell pepper into strips (Stir-Fry)"
         9. **Equipment awareness.** Don't schedule two tasks needing the same burner or oven \
            at conflicting temperatures in the same block.
+        10. **Keep recipe steps cohesive.** Tasks sharing the same "stepGroupID" came from the \
+           same recipe step and form a logical sequence (e.g., roll dough → add sauce → add \
+           cheese). These tasks MUST be placed in the same block or in consecutive blocks with \
+           NO unrelated tasks from other recipes inserted between them. The cook should finish \
+           one recipe phase before switching to another recipe. Think of it like a kitchen \
+           workflow: once you start assembling a pizza, you finish assembling it before moving \
+           on to chopping vegetables for a salad.
+        11. **Minimize recipe context-switching.** When possible, group multiple consecutive \
+           steps from the same recipe together before switching to another recipe. The only \
+           exception is when a passive wait (oven, simmering) creates dead time that should be \
+           filled with active work from another recipe.
 
         Return a JSON object with a "blocks" array. Each block:
         {
