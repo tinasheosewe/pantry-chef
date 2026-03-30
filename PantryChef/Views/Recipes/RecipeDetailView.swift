@@ -899,7 +899,7 @@ struct RecipeDetailView: View {
             ProgressView()
                 .controlSize(.small)
                 .tint(PCColors.teal)
-            Text("Updating recipe with AI…")
+            Text("Updating recipe…")
                 .font(.subheadline)
                 .fontWeight(.medium)
                 .foregroundStyle(PCColors.textPrimary)
