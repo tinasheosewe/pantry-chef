@@ -49,6 +49,32 @@ final class PreparedDishViewModel: AsyncActionHandling {
         }
     }
 
+    /// Groups dishes by identity (name) so items with same name but different expiry dates are grouped together.
+    var groupedByIdentity: [PreparedDishBatch] {
+        let groupedDict = Dictionary(grouping: filteredDishes) { PreparedDishBatch.identityKey(for: $0) }
+        return groupedDict.map { _, groupedDishes -> PreparedDishBatch in
+            let sortedDishes = groupedDishes.sorted { left, right in
+                // Sort by use-by date ascending (nil last)
+                switch (left.useByDate, right.useByDate) {
+                case let (l?, r?): return l < r
+                case (nil, .some): return false
+                case (.some, nil): return true
+                case (nil, nil): return left.dateAdded > right.dateAdded
+                }
+            }
+            return PreparedDishBatch(dishes: sortedDishes)
+        }
+        .sorted { left, right in
+            // Sort batches by earliest use-by date
+            switch (left.earliestUseBy, right.earliestUseBy) {
+            case let (l?, r?): return l < r
+            case (nil, .some): return false
+            case (.some, nil): return true
+            case (nil, nil): return left.representativeDish.name < right.representativeDish.name
+            }
+        }
+    }
+
     var filteredHistoryItems: [PreparedDishHistoryItem] {
         var items = SearchQuerySupport.filtered(appState.preparedDishHistory, query: debouncedSearchText) { item in
             [item.name, item.mealTypesSummary].joined(separator: " ")

@@ -35,46 +35,16 @@ struct PreparedDishesView: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
                 AppList {
-                    ForEach(viewModel.filteredDishes) { dish in
-                        HStack(spacing: 12) {
-                            Button {
-                                viewModel.selectedDish = dish
-                            } label: {
-                                PreparedDishRow(dish: dish)
-                                    .contentShape(Rectangle())
-                            }
-                            .buttonStyle(.plain)
-
-                            Button {
-                                viewModel.consumeServing(dish)
-                            } label: {
-                                quickAdjustButton(for: dish)
-                            }
-                            .buttonStyle(.plain)
-                            .accessibilityLabel(dish.servingsRemaining == 1 ? "Finish prepared dish" : "Use one serving")
-                        }
-                        .swipeActions(edge: .trailing) {
-                            Button(role: .destructive) {
-                                viewModel.deleteDish(dish)
-                            } label: {
-                                Label("Delete", systemImage: "trash")
-                            }
-
-                            Button {
-                                viewModel.editingDish = dish
-                            } label: {
-                                Label("Edit", systemImage: "pencil")
-                            }
-                            .tint(PCColors.info)
-                        }
-                        .swipeActions(edge: .leading, allowsFullSwipe: false) {
-                            Button {
-                                viewModel.addServing(dish)
-                            } label: {
-                                Label("Add Serving", systemImage: "plus")
-                            }
-                            .tint(PCColors.accent)
-                        }
+                    ForEach(viewModel.groupedByIdentity) { batch in
+                        PreparedDishBatchRow(
+                            batch: batch,
+                            onSelectDish: { dish in viewModel.selectedDish = dish },
+                            onEditDish: { dish in viewModel.editingDish = dish },
+                            onDeleteDish: { dish in viewModel.deleteDish(dish) },
+                            onConsumeServing: { dish in viewModel.consumeServing(dish) },
+                            onAddServing: { dish in viewModel.addServing(dish) },
+                            quickAdjustButton: { dish in AnyView(quickAdjustButton(for: dish)) }
+                        )
                     }
                 }
                 .listStyle(.insetGrouped)
@@ -270,6 +240,184 @@ struct PreparedDishRow: View {
                 ExpiryBadge(status: dish.expiryStatus, daysLeft: dish.daysUntilUseBy)
             }
         }
+        .padding(.vertical, 4)
+    }
+}
+
+// MARK: - Prepared Dish Batch Row (Accordion)
+struct PreparedDishBatchRow: View {
+    let batch: PreparedDishBatch
+    let onSelectDish: (PreparedDish) -> Void
+    let onEditDish: (PreparedDish) -> Void
+    let onDeleteDish: (PreparedDish) -> Void
+    let onConsumeServing: (PreparedDish) -> Void
+    let onAddServing: (PreparedDish) -> Void
+    let quickAdjustButton: (PreparedDish) -> AnyView
+
+    @State private var isExpanded = false
+
+    var body: some View {
+        if batch.hasMultipleBatches {
+            expandableBatchRow
+        } else {
+            singleDishRow
+        }
+    }
+
+    private var singleDishRow: some View {
+        let dish = batch.representativeDish
+        return HStack(spacing: 12) {
+            Button {
+                onSelectDish(dish)
+            } label: {
+                PreparedDishRow(dish: dish)
+                    .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+
+            Button {
+                onConsumeServing(dish)
+            } label: {
+                quickAdjustButton(dish)
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel(dish.servingsRemaining == 1 ? "Finish prepared dish" : "Use one serving")
+        }
+        .swipeActions(edge: .trailing) {
+            Button(role: .destructive) {
+                onDeleteDish(dish)
+            } label: {
+                Label("Delete", systemImage: "trash")
+            }
+
+            Button {
+                onEditDish(dish)
+            } label: {
+                Label("Edit", systemImage: "pencil")
+            }
+            .tint(PCColors.info)
+        }
+        .swipeActions(edge: .leading, allowsFullSwipe: false) {
+            Button {
+                onAddServing(dish)
+            } label: {
+                Label("Add Serving", systemImage: "plus")
+            }
+            .tint(PCColors.accent)
+        }
+    }
+
+    private var expandableBatchRow: some View {
+        DisclosureGroup(isExpanded: $isExpanded) {
+            ForEach(batch.dishes) { dish in
+                HStack(spacing: 12) {
+                    Button {
+                        onSelectDish(dish)
+                    } label: {
+                        batchDishDetailRow(dish)
+                            .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
+
+                    Button {
+                        onConsumeServing(dish)
+                    } label: {
+                        quickAdjustButton(dish)
+                    }
+                    .buttonStyle(.plain)
+                }
+                .swipeActions(edge: .trailing) {
+                    Button(role: .destructive) {
+                        onDeleteDish(dish)
+                    } label: {
+                        Label("Delete", systemImage: "trash")
+                    }
+
+                    Button {
+                        onEditDish(dish)
+                    } label: {
+                        Label("Edit", systemImage: "pencil")
+                    }
+                    .tint(PCColors.info)
+                }
+                .swipeActions(edge: .leading, allowsFullSwipe: false) {
+                    Button {
+                        onAddServing(dish)
+                    } label: {
+                        Label("Add Serving", systemImage: "plus")
+                    }
+                    .tint(PCColors.accent)
+                }
+            }
+        } label: {
+            collapsedBatchSummary
+        }
+    }
+
+    private var collapsedBatchSummary: some View {
+        HStack(spacing: 12) {
+            Image(systemName: "takeoutbag.and.cup.and.straw")
+                .font(.title3)
+                .foregroundStyle(PCColors.expiring)
+                .frame(width: 36, height: 36)
+                .background(PCColors.expiring.opacity(0.12))
+                .clipShape(RoundedRectangle(cornerRadius: 10))
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text(batch.representativeDish.name)
+                    .font(.subheadline)
+                    .fontWeight(.medium)
+                    .foregroundStyle(PCColors.textPrimary)
+
+                HStack(spacing: 8) {
+                    Text(batch.servingsDisplay)
+                        .font(.caption)
+                        .foregroundStyle(PCColors.textSecondary)
+
+                    Text(batch.batchCountSummary)
+                        .font(.caption)
+                        .foregroundStyle(PCColors.accent)
+                }
+
+                Label(batch.representativeDish.storage.rawValue, systemImage: batch.representativeDish.storage.icon)
+                    .font(.caption2)
+                    .foregroundStyle(PCColors.textSecondary)
+            }
+
+            Spacer()
+
+            if batch.earliestUseBy != nil {
+                ExpiryBadge(status: batch.expiryStatus, daysLeft: batch.daysUntilUseBy)
+            }
+        }
+        .padding(.vertical, 4)
+    }
+
+    private func batchDishDetailRow(_ dish: PreparedDish) -> some View {
+        HStack(spacing: 12) {
+            VStack(alignment: .leading, spacing: 2) {
+                Text(dish.servingsDisplay)
+                    .font(.caption)
+                    .foregroundStyle(PCColors.textPrimary)
+
+                if let useByDate = dish.useByDate {
+                    Text(useByDate.formatted(date: .abbreviated, time: .omitted))
+                        .font(.caption2)
+                        .foregroundStyle(PCColors.textSecondary)
+                } else {
+                    Text("No expiry")
+                        .font(.caption2)
+                        .foregroundStyle(PCColors.textSecondary)
+                }
+            }
+
+            Spacer()
+
+            if dish.useByDate != nil {
+                ExpiryBadge(status: dish.expiryStatus, daysLeft: dish.daysUntilUseBy)
+            }
+        }
+        .padding(.leading, 16)
         .padding(.vertical, 4)
     }
 }
