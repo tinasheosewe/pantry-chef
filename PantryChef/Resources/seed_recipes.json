@@ -3,12 +3,12 @@
     "title": "Creamy Spinach and Feta Pasta",
     "description": "A delightful Italian-inspired dish featuring tender pasta coated in a creamy sauce with fresh spinach and tangy feta cheese. Perfect for a comforting yet quick weeknight dinner.",
     "cuisine": "Italian",
-    "meal_type": "Dinner",
+    "mealType": "Dinner",
     "difficulty": 2,
     "servings": 4,
-    "prep_time_minutes": 10,
-    "cook_time_minutes": 20,
-    "dietary_tags": [
+    "prepTimeMinutes": 10,
+    "cookTimeMinutes": 20,
+    "dietaryTags": [
       "Vegetarian"
     ],
     "ingredients": [
@@ -17,149 +17,149 @@
         "quantity": 300.0,
         "unit": "g",
         "category": "Grains & Cereals",
-        "catalog_entry_id": "pasta",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "pasta",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "spinach",
         "quantity": 200.0,
         "unit": "g",
         "category": "Produce",
-        "catalog_entry_id": "spinach",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "spinach",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "feta",
         "quantity": 150.0,
         "unit": "g",
         "category": "Dairy",
-        "catalog_entry_id": "feta",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "feta",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "olive-oil",
         "quantity": 2.0,
         "unit": "tbsp",
         "category": "Oils & Fats",
-        "catalog_entry_id": "olive-oil",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "olive-oil",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "garlic",
         "quantity": 3.0,
         "unit": "clove",
         "category": "Produce",
-        "catalog_entry_id": "garlic",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "garlic",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "lemon",
         "quantity": 1.0,
         "unit": "whole",
         "category": "Produce",
-        "catalog_entry_id": "lemon",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "lemon",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "heavy-cream",
         "quantity": 150.0,
         "unit": "ml",
         "category": "Dairy",
-        "catalog_entry_id": "heavy-cream",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "heavy-cream",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "black-pepper",
         "quantity": 0.5,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalog_entry_id": "black-pepper",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "black-pepper",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "table-salt",
         "quantity": 1.0,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalog_entry_id": "table-salt",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "table-salt",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "parmesan",
         "quantity": 50.0,
         "unit": "g",
         "category": "Dairy",
-        "catalog_entry_id": "parmesan",
-        "facet_selections": [],
-        "is_optional": true
+        "catalogEntryId": "parmesan",
+        "facetSelections": [],
+        "isOptional": true
       },
       {
         "name": "red-pepper-flakes",
         "quantity": 0.5,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalog_entry_id": "red-pepper-flakes",
-        "facet_selections": [],
-        "is_optional": true
+        "catalogEntryId": "red-pepper-flakes",
+        "facetSelections": [],
+        "isOptional": true
       },
       {
         "name": "basil",
         "quantity": 1.0,
         "unit": "bunch",
         "category": "Produce",
-        "catalog_entry_id": "basil",
-        "facet_selections": [],
-        "is_optional": true
+        "catalogEntryId": "basil",
+        "facetSelections": [],
+        "isOptional": true
       }
     ],
     "steps": [
       {
-        "step_number": 1,
+        "stepNumber": 1,
         "instruction": "Bring a large pot of salted water to a boil. Add the pasta and cook according to package instructions until al dente. Reserve 1 cup of pasta water, then drain the pasta.",
-        "timer_minutes": 10,
-        "estimated_duration_seconds": 600
+        "timerMinutes": 10,
+        "estimatedDurationSeconds": 600
       },
       {
-        "step_number": 2,
-        "instruction": "While the pasta is cooking, heat olive oil in a large skillet over medium heat. Add minced garlic and sauté until fragrant, about 1 minute.",
-        "estimated_duration_seconds": 60
+        "stepNumber": 2,
+        "instruction": "While the pasta is cooking, heat olive oil in a large skillet over medium heat. Add minced garlic and saut\u00e9 until fragrant, about 1 minute.",
+        "estimatedDurationSeconds": 60
       },
       {
-        "step_number": 3,
+        "stepNumber": 3,
         "instruction": "Add the spinach to the skillet and cook until wilted, about 2-3 minutes. Season with salt and black pepper.",
-        "timer_minutes": 3,
-        "estimated_duration_seconds": 180
+        "timerMinutes": 3,
+        "estimatedDurationSeconds": 180
       },
       {
-        "step_number": 4,
+        "stepNumber": 4,
         "instruction": "Stir in the heavy cream and bring to a simmer. Add the crumbled feta cheese and stir until the cheese is melted and the sauce is creamy, about 2-3 minutes.",
-        "timer_minutes": 3,
-        "estimated_duration_seconds": 180
+        "timerMinutes": 3,
+        "estimatedDurationSeconds": 180
       },
       {
-        "step_number": 5,
+        "stepNumber": 5,
         "instruction": "Add the cooked pasta to the skillet, tossing it in the creamy sauce. If needed, add reserved pasta water a little at a time to achieve desired sauce consistency.",
-        "timer_minutes": 2,
-        "estimated_duration_seconds": 120
+        "timerMinutes": 2,
+        "estimatedDurationSeconds": 120
       },
       {
-        "step_number": 6,
+        "stepNumber": 6,
         "instruction": "Squeeze the juice of one lemon over the pasta and mix well. Adjust seasoning with more salt and pepper if needed.",
-        "estimated_duration_seconds": 60
+        "estimatedDurationSeconds": 60
       },
       {
-        "step_number": 7,
+        "stepNumber": 7,
         "instruction": "Serve the pasta garnished with grated parmesan, red pepper flakes, and fresh basil leaves if desired.",
-        "estimated_duration_seconds": 120
+        "estimatedDurationSeconds": 120
       }
     ],
     "nutrition": {
@@ -176,12 +176,12 @@
     "title": "Spicy Chickpea Tacos",
     "description": "Delicious and easy-to-make vegan spicy chickpea tacos perfect for a quick weeknight lunch. Packed with flavor and nutrients, this dish combines spicy chickpeas with creamy avocado and fresh toppings.",
     "cuisine": "Mexican",
-    "meal_type": "Lunch",
+    "mealType": "Lunch",
     "difficulty": 2,
     "servings": 2,
-    "prep_time_minutes": 10,
-    "cook_time_minutes": 10,
-    "dietary_tags": [
+    "prepTimeMinutes": 10,
+    "cookTimeMinutes": 10,
+    "dietaryTags": [
       "Vegan"
     ],
     "ingredients": [
@@ -190,143 +190,143 @@
         "quantity": 1.0,
         "unit": "can",
         "category": "Canned & Jarred",
-        "catalog_entry_id": "canned-beans-chickpeas",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "canned-beans-chickpeas",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "taco-shells",
         "quantity": 4.0,
         "unit": "piece",
         "category": "Grains & Cereals",
-        "catalog_entry_id": "tortilla",
-        "facet_selections": [
+        "catalogEntryId": "tortilla",
+        "facetSelections": [
           {
             "key": "variant",
             "value": "flour"
           }
         ],
-        "is_optional": false
+        "isOptional": false
       },
       {
         "name": "avocado",
         "quantity": 1.0,
         "unit": "whole",
         "category": "Produce",
-        "catalog_entry_id": "avocado",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "avocado",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "olive-oil",
         "quantity": 1.0,
         "unit": "tbsp",
         "category": "Oils & Fats",
-        "catalog_entry_id": "olive-oil",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "olive-oil",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "chili-powder",
         "quantity": 1.0,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalog_entry_id": "chili-powder",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "chili-powder",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "cumin",
         "quantity": 0.5,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalog_entry_id": "cumin",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "cumin",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "lime",
         "quantity": 1.0,
         "unit": "whole",
         "category": "Produce",
-        "catalog_entry_id": "lime",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "lime",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "fresh-cilantro",
         "quantity": 0.25,
         "unit": "cup",
         "category": "Produce",
-        "catalog_entry_id": "cilantro",
-        "facet_selections": [
+        "catalogEntryId": "cilantro",
+        "facetSelections": [
           {
             "key": "variant",
             "value": "fresh"
           }
         ],
-        "is_optional": true
+        "isOptional": true
       },
       {
         "name": "red-onion",
         "quantity": 0.5,
         "unit": "whole",
         "category": "Produce",
-        "catalog_entry_id": "red-onion",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "red-onion",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "table-salt",
         "quantity": 0.25,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalog_entry_id": "table-salt",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "table-salt",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "black-pepper",
         "quantity": 0.25,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalog_entry_id": "black-pepper",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "black-pepper",
+        "facetSelections": [],
+        "isOptional": false
       }
     ],
     "steps": [
       {
-        "step_number": 1,
+        "stepNumber": 1,
         "instruction": "Drain and rinse the canned chickpeas under cold water.",
-        "estimated_duration_seconds": 120
+        "estimatedDurationSeconds": 120
       },
       {
-        "step_number": 2,
-        "instruction": "Heat olive oil in a skillet over medium heat. Add the chickpeas, chili powder, cumin, salt, and pepper. Sauté for 5 minutes until the chickpeas are heated through and coated with spices.",
-        "timer_minutes": 5,
-        "estimated_duration_seconds": 300
+        "stepNumber": 2,
+        "instruction": "Heat olive oil in a skillet over medium heat. Add the chickpeas, chili powder, cumin, salt, and pepper. Saut\u00e9 for 5 minutes until the chickpeas are heated through and coated with spices.",
+        "timerMinutes": 5,
+        "estimatedDurationSeconds": 300
       },
       {
-        "step_number": 3,
+        "stepNumber": 3,
         "instruction": "While the chickpeas are cooking, dice the red onion and slice the avocado. Set aside.",
-        "estimated_duration_seconds": 180
+        "estimatedDurationSeconds": 180
       },
       {
-        "step_number": 4,
-        "instruction": "Warm the taco shells in a preheated oven at 180°C (350°F) for 2-3 minutes or until crisp.",
-        "timer_minutes": 3,
-        "estimated_duration_seconds": 180
+        "stepNumber": 4,
+        "instruction": "Warm the taco shells in a preheated oven at 180\u00b0C (350\u00b0F) for 2-3 minutes or until crisp.",
+        "timerMinutes": 3,
+        "estimatedDurationSeconds": 180
       },
       {
-        "step_number": 5,
+        "stepNumber": 5,
         "instruction": "Assemble the tacos by filling each shell with spicy chickpeas, avocado slices, and diced red onion.",
-        "estimated_duration_seconds": 180
+        "estimatedDurationSeconds": 180
       },
       {
-        "step_number": 6,
+        "stepNumber": 6,
         "instruction": "Garnish with fresh cilantro and a squeeze of lime juice before serving.",
-        "estimated_duration_seconds": 60
+        "estimatedDurationSeconds": 60
       }
     ],
     "nutrition": {
@@ -343,12 +343,12 @@
     "title": "Honey Garlic Chicken Stir-Fry",
     "description": "A quick and flavorful Chinese-inspired chicken stir-fry with a delicious honey garlic glaze, perfect for a weeknight dinner.",
     "cuisine": "Chinese",
-    "meal_type": "Dinner",
+    "mealType": "Dinner",
     "difficulty": 2,
     "servings": 4,
-    "prep_time_minutes": 15,
-    "cook_time_minutes": 15,
-    "dietary_tags": [
+    "prepTimeMinutes": 15,
+    "cookTimeMinutes": 15,
+    "dietaryTags": [
       "Nut-Free"
     ],
     "ingredients": [
@@ -357,176 +357,176 @@
         "quantity": 1.0,
         "unit": "lb",
         "category": "Protein",
-        "catalog_entry_id": "chicken-breast",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "chicken-breast",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "broccoli",
         "quantity": 2.0,
         "unit": "cup",
         "category": "Produce",
-        "catalog_entry_id": "broccoli",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "broccoli",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "red-bell-pepper",
         "quantity": 1.0,
         "unit": "whole",
         "category": "Produce",
-        "catalog_entry_id": "red-bell-pepper",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "red-bell-pepper",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "carrot",
         "quantity": 1.0,
         "unit": "whole",
         "category": "Produce",
-        "catalog_entry_id": "carrot",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "carrot",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "garlic",
         "quantity": 4.0,
         "unit": "clove",
         "category": "Produce",
-        "catalog_entry_id": "garlic",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "garlic",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "ginger",
         "quantity": 1.0,
         "unit": "tbsp",
         "category": "Produce",
-        "catalog_entry_id": "ginger",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "ginger",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "honey",
         "quantity": 3.0,
         "unit": "tbsp",
         "category": "Condiments & Sauces",
-        "catalog_entry_id": "honey",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "honey",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "soy-sauce",
         "quantity": 3.0,
         "unit": "tbsp",
         "category": "Condiments & Sauces",
-        "catalog_entry_id": "soy-sauce",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "soy-sauce",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "rice-vinegar",
         "quantity": 1.0,
         "unit": "tbsp",
         "category": "Condiments & Sauces",
-        "catalog_entry_id": "vinegar",
-        "facet_selections": [
+        "catalogEntryId": "vinegar",
+        "facetSelections": [
           {
             "key": "variant",
             "value": "rice"
           }
         ],
-        "is_optional": false
+        "isOptional": false
       },
       {
         "name": "cornstarch",
         "quantity": 2.0,
         "unit": "tbsp",
         "category": "Baking Supplies",
-        "catalog_entry_id": "cornstarch",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "cornstarch",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "olive-oil",
         "quantity": 2.0,
         "unit": "tbsp",
         "category": "Oils & Fats",
-        "catalog_entry_id": "olive-oil",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "olive-oil",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "sesame-oil",
         "quantity": 1.0,
         "unit": "tsp",
         "category": "Oils & Fats",
-        "catalog_entry_id": "sesame-oil",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "sesame-oil",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "green-onion",
         "quantity": 2.0,
         "unit": "whole",
         "category": "Produce",
-        "catalog_entry_id": "green-onion",
-        "facet_selections": [],
-        "is_optional": true
+        "catalogEntryId": "green-onion",
+        "facetSelections": [],
+        "isOptional": true
       },
       {
         "name": "black-pepper",
         "quantity": 0.5,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalog_entry_id": "black-pepper",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "black-pepper",
+        "facetSelections": [],
+        "isOptional": false
       }
     ],
     "steps": [
       {
-        "step_number": 1,
+        "stepNumber": 1,
         "instruction": "Slice the chicken breast into thin strips. Set aside.",
-        "estimated_duration_seconds": 300
+        "estimatedDurationSeconds": 300
       },
       {
-        "step_number": 2,
+        "stepNumber": 2,
         "instruction": "Cut the broccoli into small florets, slice the red bell pepper into strips, and julienne the carrot. Mince the garlic and grate the ginger.",
-        "estimated_duration_seconds": 300
+        "estimatedDurationSeconds": 300
       },
       {
-        "step_number": 3,
+        "stepNumber": 3,
         "instruction": "In a small bowl, mix the honey, soy sauce, rice vinegar, and cornstarch until smooth. Set aside.",
-        "estimated_duration_seconds": 120
+        "estimatedDurationSeconds": 120
       },
       {
-        "step_number": 4,
+        "stepNumber": 4,
         "instruction": "Heat 1 tbsp of olive oil in a large pan or wok over medium-high heat. Add the chicken strips and season with black pepper. Stir-fry until the chicken is cooked through, about 5-6 minutes. Remove the chicken from the pan and set aside.",
-        "timer_minutes": 6,
-        "estimated_duration_seconds": 360
+        "timerMinutes": 6,
+        "estimatedDurationSeconds": 360
       },
       {
-        "step_number": 5,
+        "stepNumber": 5,
         "instruction": "In the same pan, add the remaining 1 tbsp of olive oil and sesame oil. Add the garlic and ginger, stirring until fragrant, about 30 seconds.",
-        "estimated_duration_seconds": 60
+        "estimatedDurationSeconds": 60
       },
       {
-        "step_number": 6,
+        "stepNumber": 6,
         "instruction": "Add the broccoli, red bell pepper, and carrot to the pan. Stir-fry for about 5 minutes until the vegetables are tender-crisp.",
-        "timer_minutes": 5,
-        "estimated_duration_seconds": 300
+        "timerMinutes": 5,
+        "estimatedDurationSeconds": 300
       },
       {
-        "step_number": 7,
+        "stepNumber": 7,
         "instruction": "Return the chicken to the pan. Pour the honey garlic sauce over the chicken and vegetables, stirring to coat everything evenly. Cook for another 2-3 minutes until the sauce has thickened.",
-        "timer_minutes": 3,
-        "estimated_duration_seconds": 180
+        "timerMinutes": 3,
+        "estimatedDurationSeconds": 180
       },
       {
-        "step_number": 8,
+        "stepNumber": 8,
         "instruction": "Garnish with sliced green onions before serving, if desired.",
-        "estimated_duration_seconds": 60
+        "estimatedDurationSeconds": 60
       }
     ],
     "nutrition": {
@@ -543,12 +543,12 @@
     "title": "Mango Sticky Rice",
     "description": "A classic Thai dessert featuring sweet sticky rice paired with ripe mango slices, all infused with creamy coconut milk.",
     "cuisine": "Thai",
-    "meal_type": "Dessert",
+    "mealType": "Dessert",
     "difficulty": 2,
     "servings": 4,
-    "prep_time_minutes": 10,
-    "cook_time_minutes": 30,
-    "dietary_tags": [
+    "prepTimeMinutes": 10,
+    "cookTimeMinutes": 30,
+    "dietaryTags": [
       "Vegan",
       "Gluten-Free"
     ],
@@ -558,111 +558,111 @@
         "quantity": 1.0,
         "unit": "cup",
         "category": "Grains & Cereals",
-        "catalog_entry_id": "rice",
-        "facet_selections": [
+        "catalogEntryId": "rice",
+        "facetSelections": [
           {
             "key": "variant",
             "value": "sushi"
           }
         ],
-        "is_optional": false
+        "isOptional": false
       },
       {
         "name": "coconut-milk",
         "quantity": 1.5,
         "unit": "cup",
         "category": "Condiments & Sauces",
-        "catalog_entry_id": "coconut-milk",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "coconut-milk",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "sugar",
         "quantity": 0.5,
         "unit": "cup",
         "category": "Baking Supplies",
-        "catalog_entry_id": "sugar",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "sugar",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "table-salt",
         "quantity": 0.25,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalog_entry_id": "table-salt",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "table-salt",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "mango",
         "quantity": 2.0,
         "unit": "whole",
         "category": "Produce",
-        "catalog_entry_id": "mango",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "mango",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "sesame-seeds",
         "quantity": 1.0,
         "unit": "tbsp",
         "category": "Nuts & Seeds",
-        "catalog_entry_id": "sesame-seeds",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "sesame-seeds",
+        "facetSelections": [],
+        "isOptional": false
       }
     ],
     "steps": [
       {
-        "step_number": 1,
+        "stepNumber": 1,
         "instruction": "Rinse the glutinous rice under cold water until the water runs clear.",
-        "estimated_duration_seconds": 120
+        "estimatedDurationSeconds": 120
       },
       {
-        "step_number": 2,
+        "stepNumber": 2,
         "instruction": "Soak the rinsed rice in cold water for at least 30 minutes, preferably 1 hour.",
-        "timer_minutes": 30,
-        "estimated_duration_seconds": 120
+        "timerMinutes": 30,
+        "estimatedDurationSeconds": 120
       },
       {
-        "step_number": 3,
+        "stepNumber": 3,
         "instruction": "Drain the soaked rice and steam it using a rice cooker or a steamer basket over boiling water for 20-25 minutes until tender.",
-        "timer_minutes": 25,
-        "estimated_duration_seconds": 120
+        "timerMinutes": 25,
+        "estimatedDurationSeconds": 120
       },
       {
-        "step_number": 4,
+        "stepNumber": 4,
         "instruction": "In a saucepan, combine 1 cup of coconut milk, sugar, and salt. Heat gently over medium heat, stirring until the sugar dissolves. Do not let it boil.",
-        "timer_minutes": 5,
-        "estimated_duration_seconds": 180
+        "timerMinutes": 5,
+        "estimatedDurationSeconds": 180
       },
       {
-        "step_number": 5,
+        "stepNumber": 5,
         "instruction": "Once the rice is cooked, transfer it to a bowl and pour the sweetened coconut milk over it. Stir to combine. Cover and let it sit for 10 minutes to absorb the flavors.",
-        "timer_minutes": 10,
-        "estimated_duration_seconds": 120
+        "timerMinutes": 10,
+        "estimatedDurationSeconds": 120
       },
       {
-        "step_number": 6,
+        "stepNumber": 6,
         "instruction": "Peel and slice the mangoes. Set aside.",
-        "estimated_duration_seconds": 180
+        "estimatedDurationSeconds": 180
       },
       {
-        "step_number": 7,
+        "stepNumber": 7,
         "instruction": "Dry roast the sesame seeds in a small pan over low heat until golden. Set aside.",
-        "timer_minutes": 5,
-        "estimated_duration_seconds": 180
+        "timerMinutes": 5,
+        "estimatedDurationSeconds": 180
       },
       {
-        "step_number": 8,
+        "stepNumber": 8,
         "instruction": "Reserve 1/2 cup of coconut milk for drizzling. Warm it slightly if desired.",
-        "estimated_duration_seconds": 60
+        "estimatedDurationSeconds": 60
       },
       {
-        "step_number": 9,
+        "stepNumber": 9,
         "instruction": "To serve, place a portion of sticky rice on a plate, top with mango slices, drizzle with reserved coconut milk, and sprinkle with roasted sesame seeds.",
-        "estimated_duration_seconds": 240
+        "estimatedDurationSeconds": 240
       }
     ],
     "nutrition": {
@@ -679,12 +679,12 @@
     "title": "Mediterranean Quinoa Salad",
     "description": "A refreshing and hearty salad featuring quinoa and classic Mediterranean flavors, perfect for a light lunch.",
     "cuisine": "Mediterranean",
-    "meal_type": "Lunch",
+    "mealType": "Lunch",
     "difficulty": 2,
     "servings": 3,
-    "prep_time_minutes": 15,
-    "cook_time_minutes": 20,
-    "dietary_tags": [
+    "prepTimeMinutes": 15,
+    "cookTimeMinutes": 20,
+    "dietaryTags": [
       "Vegetarian",
       "Gluten-Free"
     ],
@@ -694,151 +694,151 @@
         "quantity": 1.0,
         "unit": "cup",
         "category": "Grains & Cereals",
-        "catalog_entry_id": "quinoa",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "quinoa",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "water",
         "quantity": 2.0,
         "unit": "cup",
         "category": "Other",
-        "catalog_entry_id": "water",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "water",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "cherry-tomato",
         "quantity": 1.0,
         "unit": "cup",
         "category": "Produce",
-        "catalog_entry_id": "cherry-tomato",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "cherry-tomato",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "cucumber",
         "quantity": 1.0,
         "unit": "whole",
         "category": "Produce",
-        "catalog_entry_id": "cucumber",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "cucumber",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "red-onion",
         "quantity": 0.5,
         "unit": "whole",
         "category": "Produce",
-        "catalog_entry_id": "red-onion",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "red-onion",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "feta",
         "quantity": 0.5,
         "unit": "cup",
         "category": "Dairy",
-        "catalog_entry_id": "feta",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "feta",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "kalamata olives",
         "quantity": 0.5,
         "unit": "cup",
         "category": "Canned & Jarred",
-        "catalog_entry_id": "olives-kalamata",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "olives-kalamata",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "parsley",
         "quantity": 0.25,
         "unit": "cup",
         "category": "Produce",
-        "catalog_entry_id": "parsley",
-        "facet_selections": [],
-        "is_optional": true
+        "catalogEntryId": "parsley",
+        "facetSelections": [],
+        "isOptional": true
       },
       {
         "name": "olive-oil",
         "quantity": 3.0,
         "unit": "tbsp",
         "category": "Oils & Fats",
-        "catalog_entry_id": "olive-oil",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "olive-oil",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "lemon",
         "quantity": 1.0,
         "unit": "whole",
         "category": "Produce",
-        "catalog_entry_id": "lemon",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "lemon",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "table-salt",
         "quantity": 0.5,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalog_entry_id": "table-salt",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "table-salt",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "black-pepper",
         "quantity": 0.25,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalog_entry_id": "black-pepper",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "black-pepper",
+        "facetSelections": [],
+        "isOptional": false
       }
     ],
     "steps": [
       {
-        "step_number": 1,
+        "stepNumber": 1,
         "instruction": "Rinse the quinoa under cold water to remove any bitterness.",
-        "estimated_duration_seconds": 60
+        "estimatedDurationSeconds": 60
       },
       {
-        "step_number": 2,
+        "stepNumber": 2,
         "instruction": "In a medium saucepan, bring 2 cups of water to a boil. Add the rinsed quinoa, reduce heat to low, cover, and let simmer for 15 minutes or until the quinoa is fluffy and water is absorbed.",
-        "timer_minutes": 15,
-        "estimated_duration_seconds": 120
+        "timerMinutes": 15,
+        "estimatedDurationSeconds": 120
       },
       {
-        "step_number": 3,
+        "stepNumber": 3,
         "instruction": "While the quinoa is cooking, chop the cherry tomatoes in half and dice the cucumber and red onion finely.",
-        "estimated_duration_seconds": 300
+        "estimatedDurationSeconds": 300
       },
       {
-        "step_number": 4,
+        "stepNumber": 4,
         "instruction": "In a large bowl, combine the cooked quinoa, cherry tomatoes, cucumber, red onion, feta, and kalamata olives.",
-        "estimated_duration_seconds": 180
+        "estimatedDurationSeconds": 180
       },
       {
-        "step_number": 5,
+        "stepNumber": 5,
         "instruction": "Add chopped parsley if using, and mix well to combine all ingredients evenly.",
-        "estimated_duration_seconds": 60
+        "estimatedDurationSeconds": 60
       },
       {
-        "step_number": 6,
+        "stepNumber": 6,
         "instruction": "In a small bowl, whisk together the olive oil, juice of the lemon, table salt, and black pepper to make the dressing.",
-        "estimated_duration_seconds": 120
+        "estimatedDurationSeconds": 120
       },
       {
-        "step_number": 7,
+        "stepNumber": 7,
         "instruction": "Pour the dressing over the salad and toss gently to coat all ingredients.",
-        "estimated_duration_seconds": 60
+        "estimatedDurationSeconds": 60
       },
       {
-        "step_number": 8,
+        "stepNumber": 8,
         "instruction": "Serve the salad immediately or refrigerate for up to 2 hours before serving for enhanced flavors.",
-        "estimated_duration_seconds": 60
+        "estimatedDurationSeconds": 60
       }
     ],
     "nutrition": {
@@ -855,12 +855,12 @@
     "title": "Beef Kofta Kebabs",
     "description": "Juicy and flavorful beef kofta kebabs seasoned with spices and herbs, perfect for a Middle Eastern-inspired dinner.",
     "cuisine": "Middle Eastern",
-    "meal_type": "Dinner",
+    "mealType": "Dinner",
     "difficulty": 3,
     "servings": 6,
-    "prep_time_minutes": 20,
-    "cook_time_minutes": 15,
-    "dietary_tags": [
+    "prepTimeMinutes": 20,
+    "cookTimeMinutes": 15,
+    "dietaryTags": [
       "High Protein"
     ],
     "ingredients": [
@@ -869,141 +869,141 @@
         "quantity": 1.0,
         "unit": "lb",
         "category": "Protein",
-        "catalog_entry_id": "ground-beef",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "ground-beef",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "yellow-onion",
         "quantity": 1.0,
         "unit": "whole",
         "category": "Produce",
-        "catalog_entry_id": "yellow-onion",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "yellow-onion",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "garlic",
         "quantity": 3.0,
         "unit": "clove",
         "category": "Produce",
-        "catalog_entry_id": "garlic",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "garlic",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "parsley",
         "quantity": 0.5,
         "unit": "bunch",
         "category": "Produce",
-        "catalog_entry_id": "parsley",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "parsley",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "cumin",
         "quantity": 2.0,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalog_entry_id": "cumin",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "cumin",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "coriander",
         "quantity": 1.0,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalog_entry_id": "ground-coriander",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "ground-coriander",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "paprika",
         "quantity": 1.0,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalog_entry_id": "paprika",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "paprika",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "cayenne-pepper",
         "quantity": 0.25,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalog_entry_id": "cayenne-pepper",
-        "facet_selections": [],
-        "is_optional": true
+        "catalogEntryId": "cayenne-pepper",
+        "facetSelections": [],
+        "isOptional": true
       },
       {
         "name": "table-salt",
         "quantity": 1.0,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalog_entry_id": "table-salt",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "table-salt",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "black-pepper",
         "quantity": 0.5,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalog_entry_id": "black-pepper",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "black-pepper",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "olive-oil",
         "quantity": 2.0,
         "unit": "tbsp",
         "category": "Oils & Fats",
-        "catalog_entry_id": "olive-oil",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "olive-oil",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "lemon",
         "quantity": 1.0,
         "unit": "whole",
         "category": "Produce",
-        "catalog_entry_id": "lemon",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "lemon",
+        "facetSelections": [],
+        "isOptional": false
       }
     ],
     "steps": [
       {
-        "step_number": 1,
+        "stepNumber": 1,
         "instruction": "Finely chop the yellow onion and parsley. Mince the garlic cloves.",
-        "estimated_duration_seconds": 300
+        "estimatedDurationSeconds": 300
       },
       {
-        "step_number": 2,
+        "stepNumber": 2,
         "instruction": "In a large bowl, combine ground beef, chopped onion, minced garlic, chopped parsley, cumin, coriander, paprika, cayenne pepper, table salt, and black pepper. Mix well until all ingredients are evenly incorporated.",
-        "estimated_duration_seconds": 300
+        "estimatedDurationSeconds": 300
       },
       {
-        "step_number": 3,
+        "stepNumber": 3,
         "instruction": "Divide the mixture into 12 equal portions. Shape each portion into an oval or log shape, approximately 4 inches long, and thread onto skewers. If using wooden skewers, soak them in water for 30 minutes beforehand to prevent burning.",
-        "estimated_duration_seconds": 600
+        "estimatedDurationSeconds": 600
       },
       {
-        "step_number": 4,
+        "stepNumber": 4,
         "instruction": "Preheat a grill or grill pan over medium-high heat. Brush the koftas with olive oil to prevent sticking.",
-        "estimated_duration_seconds": 120
+        "estimatedDurationSeconds": 120
       },
       {
-        "step_number": 5,
+        "stepNumber": 5,
         "instruction": "Grill the koftas for about 6-8 minutes, turning occasionally, until they are cooked through and have a nice char on the outside.",
-        "timer_minutes": 8,
-        "estimated_duration_seconds": 480
+        "timerMinutes": 8,
+        "estimatedDurationSeconds": 480
       },
       {
-        "step_number": 6,
+        "stepNumber": 6,
         "instruction": "Remove the koftas from the grill and let them rest for a few minutes. Squeeze fresh lemon juice over them before serving.",
-        "estimated_duration_seconds": 120
+        "estimatedDurationSeconds": 120
       }
     ],
     "nutrition": {
@@ -1020,176 +1020,176 @@
     "title": "Classic French Onion Soup",
     "description": "A rich and savory French onion soup topped with melted cheese and crusty bread.",
     "cuisine": "French",
-    "meal_type": "Dinner",
+    "mealType": "Dinner",
     "difficulty": 3,
     "servings": 4,
-    "prep_time_minutes": 20,
-    "cook_time_minutes": 60,
-    "dietary_tags": [],
+    "prepTimeMinutes": 20,
+    "cookTimeMinutes": 60,
+    "dietaryTags": [],
     "ingredients": [
       {
         "name": "butter",
         "quantity": 4.0,
         "unit": "tbsp",
         "category": "Dairy",
-        "catalog_entry_id": "butter",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "butter",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "yellow-onion",
         "quantity": 6.0,
         "unit": "piece",
         "category": "Produce",
-        "catalog_entry_id": "yellow-onion",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "yellow-onion",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "garlic",
         "quantity": 2.0,
         "unit": "clove",
         "category": "Produce",
-        "catalog_entry_id": "garlic",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "garlic",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "beef-broth",
         "quantity": 4.0,
         "unit": "cup",
         "category": "Canned & Jarred",
-        "catalog_entry_id": "beef-broth",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "beef-broth",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "balsamic-vinegar",
         "quantity": 1.0,
         "unit": "tbsp",
         "category": "Condiments & Sauces",
-        "catalog_entry_id": "vinegar",
-        "facet_selections": [
+        "catalogEntryId": "vinegar",
+        "facetSelections": [
           {
             "key": "variant",
             "value": "balsamic"
           }
         ],
-        "is_optional": false
+        "isOptional": false
       },
       {
         "name": "bay-leaves",
         "quantity": 2.0,
         "category": "Spices & Herbs",
-        "catalog_entry_id": "bay-leaves",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "bay-leaves",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "thyme",
         "quantity": 1.0,
         "unit": "tsp",
         "category": "Produce",
-        "catalog_entry_id": "thyme",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "thyme",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "table-salt",
         "quantity": 0.5,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalog_entry_id": "table-salt",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "table-salt",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "black-pepper",
         "quantity": 0.5,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalog_entry_id": "black-pepper",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "black-pepper",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "baguette",
         "quantity": 1.0,
         "unit": "loaf",
         "category": "Grains & Cereals",
-        "catalog_entry_id": "bread",
-        "facet_selections": [
+        "catalogEntryId": "bread",
+        "facetSelections": [
           {
             "key": "variant",
             "value": "white"
           }
         ],
-        "is_optional": false
+        "isOptional": false
       },
       {
         "name": "gruyere",
         "quantity": 1.0,
         "unit": "cup",
         "category": "Dairy",
-        "catalog_entry_id": "gruyere",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "gruyere",
+        "facetSelections": [],
+        "isOptional": false
       }
     ],
     "steps": [
       {
-        "step_number": 1,
+        "stepNumber": 1,
         "instruction": "Peel and thinly slice the yellow onions. Mince the garlic cloves.",
-        "estimated_duration_seconds": 300
+        "estimatedDurationSeconds": 300
       },
       {
-        "step_number": 2,
+        "stepNumber": 2,
         "instruction": "In a large pot, melt the butter over medium heat.",
-        "estimated_duration_seconds": 60
+        "estimatedDurationSeconds": 60
       },
       {
-        "step_number": 3,
+        "stepNumber": 3,
         "instruction": "Add the sliced onions to the pot and cook, stirring occasionally, until they are caramelized, about 25 minutes.",
-        "timer_minutes": 25,
-        "estimated_duration_seconds": 1500
+        "timerMinutes": 25,
+        "estimatedDurationSeconds": 1500
       },
       {
-        "step_number": 4,
+        "stepNumber": 4,
         "instruction": "Add the minced garlic and cook for another 2 minutes.",
-        "estimated_duration_seconds": 120
+        "estimatedDurationSeconds": 120
       },
       {
-        "step_number": 5,
+        "stepNumber": 5,
         "instruction": "Pour in the beef broth and add the balsamic vinegar, bay leaves, thyme, salt, and pepper. Stir well.",
-        "estimated_duration_seconds": 120
+        "estimatedDurationSeconds": 120
       },
       {
-        "step_number": 6,
+        "stepNumber": 6,
         "instruction": "Bring the soup to a boil, then reduce the heat and let it simmer for 20 minutes.",
-        "timer_minutes": 20,
-        "estimated_duration_seconds": 60
+        "timerMinutes": 20,
+        "estimatedDurationSeconds": 60
       },
       {
-        "step_number": 7,
-        "instruction": "While the soup is simmering, preheat the oven to 400°F (200°C). Slice the baguette into 1-inch thick slices and toast them in the oven for about 5 minutes or until golden brown.",
-        "timer_minutes": 5,
-        "estimated_duration_seconds": 300
+        "stepNumber": 7,
+        "instruction": "While the soup is simmering, preheat the oven to 400\u00b0F (200\u00b0C). Slice the baguette into 1-inch thick slices and toast them in the oven for about 5 minutes or until golden brown.",
+        "timerMinutes": 5,
+        "estimatedDurationSeconds": 300
       },
       {
-        "step_number": 8,
+        "stepNumber": 8,
         "instruction": "Grate the Gruyere cheese.",
-        "estimated_duration_seconds": 60
+        "estimatedDurationSeconds": 60
       },
       {
-        "step_number": 9,
+        "stepNumber": 9,
         "instruction": "Remove the bay leaves from the soup. Ladle the soup into oven-safe bowls, place a slice of toasted baguette on top, and sprinkle generously with Gruyere cheese.",
-        "estimated_duration_seconds": 180
+        "estimatedDurationSeconds": 180
       },
       {
-        "step_number": 10,
+        "stepNumber": 10,
         "instruction": "Place the bowls on a baking sheet and broil in the oven until the cheese is melted and bubbly, about 3-5 minutes.",
-        "timer_minutes": 5,
-        "estimated_duration_seconds": 300
+        "timerMinutes": 5,
+        "estimatedDurationSeconds": 300
       }
     ],
     "nutrition": {
@@ -1206,12 +1206,12 @@
     "title": "Lentil Soup with Spinach",
     "description": "A hearty and nutritious Indian-inspired lentil soup featuring spinach and coconut milk, perfect for a healthy vegan lunch.",
     "cuisine": "Indian",
-    "meal_type": "Lunch",
+    "mealType": "Lunch",
     "difficulty": 2,
     "servings": 4,
-    "prep_time_minutes": 15,
-    "cook_time_minutes": 45,
-    "dietary_tags": [
+    "prepTimeMinutes": 15,
+    "cookTimeMinutes": 45,
+    "dietaryTags": [
       "Vegan",
       "Gluten-Free",
       "Dairy-Free"
@@ -1222,196 +1222,196 @@
         "quantity": 1.0,
         "unit": "cup",
         "category": "Protein",
-        "catalog_entry_id": "lentils",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "lentils",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "spinach",
         "quantity": 2.0,
         "unit": "cup",
         "category": "Produce",
-        "catalog_entry_id": "spinach",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "spinach",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "coconut milk",
         "quantity": 1.0,
         "unit": "cup",
         "category": "Condiments & Sauces",
-        "catalog_entry_id": "coconut-milk",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "coconut-milk",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "yellow onion",
         "quantity": 1.0,
         "unit": "whole",
         "category": "Produce",
-        "catalog_entry_id": "yellow-onion",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "yellow-onion",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "garlic",
         "quantity": 3.0,
         "unit": "clove",
         "category": "Produce",
-        "catalog_entry_id": "garlic",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "garlic",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "ginger",
         "quantity": 1.0,
         "unit": "tbsp",
         "category": "Produce",
-        "catalog_entry_id": "ginger",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "ginger",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "cumin",
         "quantity": 1.0,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalog_entry_id": "cumin",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "cumin",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "turmeric",
         "quantity": 1.0,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalog_entry_id": "turmeric",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "turmeric",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "coriander",
         "quantity": 1.0,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalog_entry_id": "ground-coriander",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "ground-coriander",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "red pepper flakes",
         "quantity": 0.5,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalog_entry_id": "red-pepper-flakes",
-        "facet_selections": [],
-        "is_optional": true
+        "catalogEntryId": "red-pepper-flakes",
+        "facetSelections": [],
+        "isOptional": true
       },
       {
         "name": "vegetable broth",
         "quantity": 4.0,
         "unit": "cup",
         "category": "Canned & Jarred",
-        "catalog_entry_id": "vegetable-broth",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "vegetable-broth",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "olive oil",
         "quantity": 2.0,
         "unit": "tbsp",
         "category": "Oils & Fats",
-        "catalog_entry_id": "olive-oil",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "olive-oil",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "table salt",
         "quantity": 1.0,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalog_entry_id": "table-salt",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "table-salt",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "black pepper",
         "quantity": 0.5,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalog_entry_id": "black-pepper",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "black-pepper",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "lemon",
         "quantity": 1.0,
         "unit": "whole",
         "category": "Produce",
-        "catalog_entry_id": "lemon",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "lemon",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "cilantro",
         "quantity": 2.0,
         "unit": "tbsp",
         "category": "Produce",
-        "catalog_entry_id": "cilantro",
-        "facet_selections": [],
-        "is_optional": true
+        "catalogEntryId": "cilantro",
+        "facetSelections": [],
+        "isOptional": true
       }
     ],
     "steps": [
       {
-        "step_number": 1,
+        "stepNumber": 1,
         "instruction": "Rinse the lentils under cold water until the water runs clear, then set aside.",
-        "estimated_duration_seconds": 180
+        "estimatedDurationSeconds": 180
       },
       {
-        "step_number": 2,
+        "stepNumber": 2,
         "instruction": "Finely chop the yellow onion, mince the garlic, and grate the ginger.",
-        "estimated_duration_seconds": 300
+        "estimatedDurationSeconds": 300
       },
       {
-        "step_number": 3,
-        "instruction": "In a large pot, heat olive oil over medium heat. Add the chopped onion and sauté until translucent, about 5 minutes.",
-        "timer_minutes": 5,
-        "estimated_duration_seconds": 300
+        "stepNumber": 3,
+        "instruction": "In a large pot, heat olive oil over medium heat. Add the chopped onion and saut\u00e9 until translucent, about 5 minutes.",
+        "timerMinutes": 5,
+        "estimatedDurationSeconds": 300
       },
       {
-        "step_number": 4,
-        "instruction": "Add the minced garlic and grated ginger to the pot. Sauté for another 2 minutes until fragrant.",
-        "timer_minutes": 2,
-        "estimated_duration_seconds": 120
+        "stepNumber": 4,
+        "instruction": "Add the minced garlic and grated ginger to the pot. Saut\u00e9 for another 2 minutes until fragrant.",
+        "timerMinutes": 2,
+        "estimatedDurationSeconds": 120
       },
       {
-        "step_number": 5,
+        "stepNumber": 5,
         "instruction": "Stir in cumin, turmeric, coriander, and optional red pepper flakes. Cook for 1 minute to toast the spices.",
-        "timer_minutes": 1,
-        "estimated_duration_seconds": 60
+        "timerMinutes": 1,
+        "estimatedDurationSeconds": 60
       },
       {
-        "step_number": 6,
+        "stepNumber": 6,
         "instruction": "Add the rinsed lentils and vegetable broth to the pot. Bring to a boil, then reduce the heat to low and simmer uncovered for 25 minutes, stirring occasionally.",
-        "timer_minutes": 25,
-        "estimated_duration_seconds": 120
+        "timerMinutes": 25,
+        "estimatedDurationSeconds": 120
       },
       {
-        "step_number": 7,
+        "stepNumber": 7,
         "instruction": "Add the coconut milk and spinach to the soup. Stir until the spinach is wilted, about 3 minutes.",
-        "timer_minutes": 3,
-        "estimated_duration_seconds": 120
+        "timerMinutes": 3,
+        "estimatedDurationSeconds": 120
       },
       {
-        "step_number": 8,
+        "stepNumber": 8,
         "instruction": "Season the soup with table salt and black pepper to taste. Squeeze the juice of one lemon into the soup for added flavor.",
-        "estimated_duration_seconds": 60
+        "estimatedDurationSeconds": 60
       },
       {
-        "step_number": 9,
+        "stepNumber": 9,
         "instruction": "Serve hot, garnished with optional chopped cilantro for a fresh finish.",
-        "estimated_duration_seconds": 60
+        "estimatedDurationSeconds": 60
       }
     ],
     "nutrition": {
@@ -1428,12 +1428,12 @@
     "title": "Chocolate Chip Banana Bread",
     "description": "A moist and delicious banana bread loaded with chocolate chips, perfect for a snack or dessert.",
     "cuisine": "American",
-    "meal_type": "Snack",
+    "mealType": "Snack",
     "difficulty": 2,
     "servings": 8,
-    "prep_time_minutes": 15,
-    "cook_time_minutes": 60,
-    "dietary_tags": [
+    "prepTimeMinutes": 15,
+    "cookTimeMinutes": 60,
+    "dietaryTags": [
       "Vegetarian"
     ],
     "ingredients": [
@@ -1442,145 +1442,145 @@
         "quantity": 3.0,
         "unit": "piece",
         "category": "Produce",
-        "catalog_entry_id": "banana",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "banana",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "all-purpose flour",
         "quantity": 1.5,
         "unit": "cup",
         "category": "Grains & Cereals",
-        "catalog_entry_id": "flour",
-        "facet_selections": [
+        "catalogEntryId": "flour",
+        "facetSelections": [
           {
             "key": "variant",
             "value": "all-purpose"
           }
         ],
-        "is_optional": false
+        "isOptional": false
       },
       {
         "name": "sugar",
         "quantity": 0.75,
         "unit": "cup",
         "category": "Baking Supplies",
-        "catalog_entry_id": "sugar",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "sugar",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "baking soda",
         "quantity": 1.0,
         "unit": "tsp",
         "category": "Baking Supplies",
-        "catalog_entry_id": "baking-soda",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "baking-soda",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "salt",
         "quantity": 0.5,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalog_entry_id": "table-salt",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "table-salt",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "egg",
         "quantity": 1.0,
         "unit": "piece",
         "category": "Protein",
-        "catalog_entry_id": "eggs",
-        "facet_selections": [
+        "catalogEntryId": "eggs",
+        "facetSelections": [
           {
             "key": "form",
             "value": "whole"
           }
         ],
-        "is_optional": false
+        "isOptional": false
       },
       {
         "name": "butter",
         "quantity": 0.5,
         "unit": "cup",
         "category": "Dairy",
-        "catalog_entry_id": "butter",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "butter",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "vanilla extract",
         "quantity": 1.0,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalog_entry_id": "vanilla-extract",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "vanilla-extract",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "chocolate chips",
         "quantity": 0.5,
         "unit": "cup",
         "category": "Baking Supplies",
-        "catalog_entry_id": "chocolate-chips",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "chocolate-chips",
+        "facetSelections": [],
+        "isOptional": false
       }
     ],
     "steps": [
       {
-        "step_number": 1,
-        "instruction": "Preheat the oven to 350°F (175°C). Grease a 9x5-inch loaf pan.",
-        "estimated_duration_seconds": 180
+        "stepNumber": 1,
+        "instruction": "Preheat the oven to 350\u00b0F (175\u00b0C). Grease a 9x5-inch loaf pan.",
+        "estimatedDurationSeconds": 180
       },
       {
-        "step_number": 2,
+        "stepNumber": 2,
         "instruction": "In a large bowl, mash the ripe bananas with a fork until smooth.",
-        "estimated_duration_seconds": 120
+        "estimatedDurationSeconds": 120
       },
       {
-        "step_number": 3,
+        "stepNumber": 3,
         "instruction": "Melt the butter in a microwave or on the stove and let it cool slightly.",
-        "estimated_duration_seconds": 60
+        "estimatedDurationSeconds": 60
       },
       {
-        "step_number": 4,
+        "stepNumber": 4,
         "instruction": "Add melted butter, sugar, egg, and vanilla extract to the mashed bananas. Mix well until combined.",
-        "estimated_duration_seconds": 180
+        "estimatedDurationSeconds": 180
       },
       {
-        "step_number": 5,
+        "stepNumber": 5,
         "instruction": "In another bowl, whisk together the flour, baking soda, and salt.",
-        "estimated_duration_seconds": 120
+        "estimatedDurationSeconds": 120
       },
       {
-        "step_number": 6,
+        "stepNumber": 6,
         "instruction": "Gradually add the dry ingredients to the banana mixture, stirring until just combined. Be careful not to overmix.",
-        "estimated_duration_seconds": 180
+        "estimatedDurationSeconds": 180
       },
       {
-        "step_number": 7,
+        "stepNumber": 7,
         "instruction": "Fold in the chocolate chips gently.",
-        "estimated_duration_seconds": 60
+        "estimatedDurationSeconds": 60
       },
       {
-        "step_number": 8,
+        "stepNumber": 8,
         "instruction": "Pour the batter into the prepared loaf pan, spreading it evenly.",
-        "estimated_duration_seconds": 60
+        "estimatedDurationSeconds": 60
       },
       {
-        "step_number": 9,
+        "stepNumber": 9,
         "instruction": "Bake in the preheated oven for 60 minutes, or until a toothpick inserted into the center comes out clean.",
-        "timer_minutes": 60,
-        "estimated_duration_seconds": 120
+        "timerMinutes": 60,
+        "estimatedDurationSeconds": 120
       },
       {
-        "step_number": 10,
+        "stepNumber": 10,
         "instruction": "Let the bread cool in the pan for about 10 minutes, then transfer to a wire rack to cool completely before slicing.",
-        "timer_minutes": 10,
-        "estimated_duration_seconds": 300
+        "timerMinutes": 10,
+        "estimatedDurationSeconds": 300
       }
     ],
     "nutrition": {
@@ -1597,190 +1597,190 @@
     "title": "Shrimp Pad Thai",
     "description": "A classic Thai dish featuring stir-fried rice noodles with shrimp, vegetables, and a savory-sweet sauce.",
     "cuisine": "Thai",
-    "meal_type": "Dinner",
+    "mealType": "Dinner",
     "difficulty": 3,
     "servings": 2,
-    "prep_time_minutes": 15,
-    "cook_time_minutes": 20,
-    "dietary_tags": [],
+    "prepTimeMinutes": 15,
+    "cookTimeMinutes": 20,
+    "dietaryTags": [],
     "ingredients": [
       {
         "name": "shrimp",
         "quantity": 200.0,
         "unit": "g",
         "category": "Protein",
-        "catalog_entry_id": "shrimp",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "shrimp",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "rice-noodles",
         "quantity": 150.0,
         "unit": "g",
         "category": "Pasta & Noodles",
-        "catalog_entry_id": "rice-noodles",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "rice-noodles",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "vegetable-oil",
         "quantity": 2.0,
         "unit": "tbsp",
         "category": "Oils & Fats",
-        "catalog_entry_id": "vegetable-oil",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "vegetable-oil",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "eggs",
         "quantity": 2.0,
         "unit": "piece",
         "category": "Protein",
-        "catalog_entry_id": "eggs",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "eggs",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "red-bell-pepper",
         "quantity": 1.0,
         "unit": "whole",
         "category": "Produce",
-        "catalog_entry_id": "red-bell-pepper",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "red-bell-pepper",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "bean-sprouts",
         "quantity": 100.0,
         "unit": "g",
         "category": "Produce",
-        "catalog_entry_id": "bean-sprouts",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "bean-sprouts",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "green-onion",
         "quantity": 2.0,
         "unit": "piece",
         "category": "Produce",
-        "catalog_entry_id": "green-onion",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "green-onion",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "garlic",
         "quantity": 2.0,
         "unit": "clove",
         "category": "Produce",
-        "catalog_entry_id": "garlic",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "garlic",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "fish-sauce",
         "quantity": 2.0,
         "unit": "tbsp",
         "category": "Condiments & Sauces",
-        "catalog_entry_id": "fish-sauce",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "fish-sauce",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "soy-sauce",
         "quantity": 1.0,
         "unit": "tbsp",
         "category": "Condiments & Sauces",
-        "catalog_entry_id": "soy-sauce",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "soy-sauce",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "lime",
         "quantity": 1.0,
         "unit": "whole",
         "category": "Produce",
-        "catalog_entry_id": "lime",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "lime",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "peanuts",
         "quantity": 30.0,
         "unit": "g",
         "category": "Nuts & Seeds",
-        "catalog_entry_id": "peanuts",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "peanuts",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "coriander",
         "quantity": 1.0,
         "unit": "bunch",
         "category": "Produce",
-        "catalog_entry_id": "cilantro",
-        "facet_selections": [],
-        "is_optional": true
+        "catalogEntryId": "cilantro",
+        "facetSelections": [],
+        "isOptional": true
       },
       {
         "name": "sugar",
         "quantity": 1.0,
         "unit": "tbsp",
         "category": "Baking Supplies",
-        "catalog_entry_id": "sugar",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "sugar",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "chili-powder",
         "quantity": 0.5,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalog_entry_id": "chili-powder",
-        "facet_selections": [],
-        "is_optional": true
+        "catalogEntryId": "chili-powder",
+        "facetSelections": [],
+        "isOptional": true
       }
     ],
     "steps": [
       {
-        "step_number": 1,
+        "stepNumber": 1,
         "instruction": "Soak the rice noodles in warm water for about 10 minutes until they are soft but not mushy. Drain and set aside.",
-        "timer_minutes": 10,
-        "estimated_duration_seconds": 600
+        "timerMinutes": 10,
+        "estimatedDurationSeconds": 600
       },
       {
-        "step_number": 2,
+        "stepNumber": 2,
         "instruction": "Heat 1 tbsp of vegetable oil in a large pan over medium heat. Add the shrimp and cook until pink and opaque, about 2-3 minutes per side. Remove from the pan and set aside.",
-        "timer_minutes": 5,
-        "estimated_duration_seconds": 300
+        "timerMinutes": 5,
+        "estimatedDurationSeconds": 300
       },
       {
-        "step_number": 3,
+        "stepNumber": 3,
         "instruction": "In the same pan, add another tablespoon of vegetable oil. Crack the eggs into the pan and scramble them until fully cooked. Remove and set aside with the shrimp.",
-        "timer_minutes": 3,
-        "estimated_duration_seconds": 180
+        "timerMinutes": 3,
+        "estimatedDurationSeconds": 180
       },
       {
-        "step_number": 4,
-        "instruction": "Add the remaining oil to the pan. Sauté the minced garlic and sliced red bell pepper for 2-3 minutes until fragrant and the pepper is tender.",
-        "timer_minutes": 3,
-        "estimated_duration_seconds": 180
+        "stepNumber": 4,
+        "instruction": "Add the remaining oil to the pan. Saut\u00e9 the minced garlic and sliced red bell pepper for 2-3 minutes until fragrant and the pepper is tender.",
+        "timerMinutes": 3,
+        "estimatedDurationSeconds": 180
       },
       {
-        "step_number": 5,
+        "stepNumber": 5,
         "instruction": "Add the drained noodles to the pan along with the fish sauce, soy sauce, sugar, and lime juice. Toss to combine and cook for another 2 minutes.",
-        "timer_minutes": 2,
-        "estimated_duration_seconds": 120
+        "timerMinutes": 2,
+        "estimatedDurationSeconds": 120
       },
       {
-        "step_number": 6,
+        "stepNumber": 6,
         "instruction": "Return the shrimp and scrambled eggs to the pan. Add the bean sprouts and chopped green onions. Toss everything together and cook for an additional 2 minutes.",
-        "timer_minutes": 2,
-        "estimated_duration_seconds": 120
+        "timerMinutes": 2,
+        "estimatedDurationSeconds": 120
       },
       {
-        "step_number": 7,
+        "stepNumber": 7,
         "instruction": "Serve the Pad Thai hot, garnished with chopped peanuts, fresh coriander, and a sprinkle of chili powder if using.",
-        "estimated_duration_seconds": 120
+        "estimatedDurationSeconds": 120
       }
     ],
     "nutrition": {
@@ -1797,12 +1797,12 @@
     "title": "Savory Breakfast Quinoa Bowl",
     "description": "A protein-packed breakfast bowl featuring fluffy quinoa, poached eggs, and fresh vegetables, topped with optional feta cheese for a savory touch.",
     "cuisine": "American",
-    "meal_type": "Breakfast",
+    "mealType": "Breakfast",
     "difficulty": 2,
     "servings": 2,
-    "prep_time_minutes": 10,
-    "cook_time_minutes": 20,
-    "dietary_tags": [
+    "prepTimeMinutes": 10,
+    "cookTimeMinutes": 20,
+    "dietaryTags": [
       "Vegetarian",
       "Gluten-Free"
     ],
@@ -1812,138 +1812,138 @@
         "quantity": 1.0,
         "unit": "cup",
         "category": "Grains & Cereals",
-        "catalog_entry_id": "quinoa",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "quinoa",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "water",
         "quantity": 2.0,
         "unit": "cup",
         "category": "Other",
-        "catalog_entry_id": "water",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "water",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "eggs",
         "quantity": 2.0,
         "unit": "piece",
         "category": "Protein",
-        "catalog_entry_id": "eggs",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "eggs",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "white-vinegar",
         "quantity": 1.0,
         "unit": "tbsp",
         "category": "Condiments & Sauces",
-        "catalog_entry_id": "vinegar",
-        "facet_selections": [
+        "catalogEntryId": "vinegar",
+        "facetSelections": [
           {
             "key": "variant",
             "value": "white"
           }
         ],
-        "is_optional": false
+        "isOptional": false
       },
       {
         "name": "avocado",
         "quantity": 1.0,
         "unit": "whole",
         "category": "Produce",
-        "catalog_entry_id": "avocado",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "avocado",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "cherry-tomato",
         "quantity": 1.0,
         "unit": "cup",
         "category": "Produce",
-        "catalog_entry_id": "cherry-tomato",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "cherry-tomato",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "spinach",
         "quantity": 1.0,
         "unit": "cup",
         "category": "Produce",
-        "catalog_entry_id": "spinach",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "spinach",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "feta",
         "quantity": 0.25,
         "unit": "cup",
         "category": "Dairy",
-        "catalog_entry_id": "feta",
-        "facet_selections": [],
-        "is_optional": true
+        "catalogEntryId": "feta",
+        "facetSelections": [],
+        "isOptional": true
       },
       {
         "name": "olive-oil",
         "quantity": 1.0,
         "unit": "tbsp",
         "category": "Oils & Fats",
-        "catalog_entry_id": "olive-oil",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "olive-oil",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "table-salt",
         "quantity": 0.5,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalog_entry_id": "table-salt",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "table-salt",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "black-pepper",
         "quantity": 0.25,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalog_entry_id": "black-pepper",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "black-pepper",
+        "facetSelections": [],
+        "isOptional": false
       }
     ],
     "steps": [
       {
-        "step_number": 1,
+        "stepNumber": 1,
         "instruction": "Rinse the quinoa under cold water. In a medium saucepan, bring 2 cups of water to a boil. Add the rinsed quinoa, reduce heat to low, cover, and simmer for 15 minutes or until water is absorbed and quinoa is fluffy. Remove from heat and let sit covered for 5 minutes.",
-        "timer_minutes": 15,
-        "estimated_duration_seconds": 180
+        "timerMinutes": 15,
+        "estimatedDurationSeconds": 180
       },
       {
-        "step_number": 2,
+        "stepNumber": 2,
         "instruction": "While the quinoa is cooking, fill a small saucepan with about 3 inches of water and bring to a gentle simmer. Add 1 tbsp of white vinegar to the water.",
-        "estimated_duration_seconds": 120
+        "estimatedDurationSeconds": 120
       },
       {
-        "step_number": 3,
+        "stepNumber": 3,
         "instruction": "Crack each egg into a small bowl. Swirl the simmering water to create a vortex, then gently slide the eggs one at a time into the water. Poach the eggs for 3-4 minutes until the whites are set but the yolks remain runny. Remove with a slotted spoon and set aside.",
-        "timer_minutes": 4,
-        "estimated_duration_seconds": 240
+        "timerMinutes": 4,
+        "estimatedDurationSeconds": 240
       },
       {
-        "step_number": 4,
+        "stepNumber": 4,
         "instruction": "Halve the avocado and remove the pit. Scoop out the flesh and slice it thinly. Halve the cherry tomatoes.",
-        "estimated_duration_seconds": 180
+        "estimatedDurationSeconds": 180
       },
       {
-        "step_number": 5,
+        "stepNumber": 5,
         "instruction": "In a large mixing bowl, combine cooked quinoa, spinach, cherry tomatoes, and sliced avocado. Drizzle with olive oil, and season with table salt and black pepper to taste. Toss gently to combine.",
-        "estimated_duration_seconds": 120
+        "estimatedDurationSeconds": 120
       },
       {
-        "step_number": 6,
+        "stepNumber": 6,
         "instruction": "Divide the quinoa mixture between two bowls. Top each with a poached egg and sprinkle with feta cheese if using.",
-        "estimated_duration_seconds": 120
+        "estimatedDurationSeconds": 120
       }
     ],
     "nutrition": {
@@ -1960,12 +1960,12 @@
     "title": "Zesty Lime Grilled Chicken",
     "description": "A flavorful and tangy Mexican-inspired grilled chicken dish, perfect for a refreshing dinner.",
     "cuisine": "Mexican",
-    "meal_type": "Dinner",
+    "mealType": "Dinner",
     "difficulty": 2,
     "servings": 4,
-    "prep_time_minutes": 15,
-    "cook_time_minutes": 20,
-    "dietary_tags": [
+    "prepTimeMinutes": 15,
+    "cookTimeMinutes": 20,
+    "dietaryTags": [
       "Gluten-Free"
     ],
     "ingredients": [
@@ -1974,112 +1974,112 @@
         "quantity": 4.0,
         "unit": "piece",
         "category": "Protein",
-        "catalog_entry_id": "chicken-breast",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "chicken-breast",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "lime",
         "quantity": 3.0,
         "unit": "whole",
         "category": "Produce",
-        "catalog_entry_id": "lime",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "lime",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "olive-oil",
         "quantity": 3.0,
         "unit": "tbsp",
         "category": "Oils & Fats",
-        "catalog_entry_id": "olive-oil",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "olive-oil",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "garlic",
         "quantity": 3.0,
         "unit": "clove",
         "category": "Produce",
-        "catalog_entry_id": "garlic",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "garlic",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "cilantro",
         "quantity": 1.0,
         "unit": "bunch",
         "category": "Produce",
-        "catalog_entry_id": "cilantro",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "cilantro",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "cumin",
         "quantity": 1.0,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalog_entry_id": "cumin",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "cumin",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "chili-powder",
         "quantity": 1.0,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalog_entry_id": "chili-powder",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "chili-powder",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "table-salt",
         "quantity": 1.0,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalog_entry_id": "table-salt",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "table-salt",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "black-pepper",
         "quantity": 0.5,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalog_entry_id": "black-pepper",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "black-pepper",
+        "facetSelections": [],
+        "isOptional": false
       }
     ],
     "steps": [
       {
-        "step_number": 1,
+        "stepNumber": 1,
         "instruction": "Juice the limes into a large mixing bowl. Add olive oil, minced garlic, chopped cilantro, cumin, chili powder, salt, and pepper. Mix well to combine.",
-        "estimated_duration_seconds": 300
+        "estimatedDurationSeconds": 300
       },
       {
-        "step_number": 2,
+        "stepNumber": 2,
         "instruction": "Place the chicken breasts in the marinade, ensuring they are fully coated. Cover and refrigerate for at least 1 hour to marinate.",
-        "timer_minutes": 60,
-        "estimated_duration_seconds": 180
+        "timerMinutes": 60,
+        "estimatedDurationSeconds": 180
       },
       {
-        "step_number": 3,
+        "stepNumber": 3,
         "instruction": "Preheat the grill to medium-high heat.",
-        "timer_minutes": 10,
-        "estimated_duration_seconds": 120
+        "timerMinutes": 10,
+        "estimatedDurationSeconds": 120
       },
       {
-        "step_number": 4,
-        "instruction": "Remove the chicken from the marinade and place on the grill. Cook each side for about 7-8 minutes, or until the internal temperature reaches 165°F (75°C).",
-        "timer_minutes": 16,
-        "estimated_duration_seconds": 180
+        "stepNumber": 4,
+        "instruction": "Remove the chicken from the marinade and place on the grill. Cook each side for about 7-8 minutes, or until the internal temperature reaches 165\u00b0F (75\u00b0C).",
+        "timerMinutes": 16,
+        "estimatedDurationSeconds": 180
       },
       {
-        "step_number": 5,
+        "stepNumber": 5,
         "instruction": "Remove chicken from the grill and let it rest for 5 minutes before serving.",
-        "timer_minutes": 5,
-        "estimated_duration_seconds": 60
+        "timerMinutes": 5,
+        "estimatedDurationSeconds": 60
       }
     ],
     "nutrition": {
@@ -2096,12 +2096,12 @@
     "title": "Creamy Tomato Basil Risotto",
     "description": "A creamy and flavorful Italian risotto featuring fresh basil and ripe tomatoes, perfect for a cozy dinner.",
     "cuisine": "Italian",
-    "meal_type": "Dinner",
+    "mealType": "Dinner",
     "difficulty": 3,
     "servings": 4,
-    "prep_time_minutes": 15,
-    "cook_time_minutes": 30,
-    "dietary_tags": [
+    "prepTimeMinutes": 15,
+    "cookTimeMinutes": 30,
+    "dietaryTags": [
       "Vegetarian"
     ],
     "ingredients": [
@@ -2110,156 +2110,156 @@
         "quantity": 1.5,
         "unit": "cup",
         "category": "Grains & Cereals",
-        "catalog_entry_id": "rice",
-        "facet_selections": [
+        "catalogEntryId": "rice",
+        "facetSelections": [
           {
             "key": "variant",
             "value": "arborio"
           }
         ],
-        "is_optional": false
+        "isOptional": false
       },
       {
         "name": "olive-oil",
         "quantity": 2.0,
         "unit": "tbsp",
         "category": "Oils & Fats",
-        "catalog_entry_id": "olive-oil",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "olive-oil",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "yellow-onion",
         "quantity": 1.0,
         "unit": "whole",
         "category": "Produce",
-        "catalog_entry_id": "yellow-onion",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "yellow-onion",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "garlic",
         "quantity": 3.0,
         "unit": "clove",
         "category": "Produce",
-        "catalog_entry_id": "garlic",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "garlic",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "canned-tomatoes-diced",
         "quantity": 1.0,
         "unit": "can",
         "category": "Canned & Jarred",
-        "catalog_entry_id": "canned-tomatoes-diced",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "canned-tomatoes-diced",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "vegetable-broth",
         "quantity": 4.0,
         "unit": "cup",
         "category": "Canned & Jarred",
-        "catalog_entry_id": "vegetable-broth",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "vegetable-broth",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "parmesan",
         "quantity": 0.5,
         "unit": "cup",
         "category": "Dairy",
-        "catalog_entry_id": "parmesan",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "parmesan",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "butter",
         "quantity": 2.0,
         "unit": "tbsp",
         "category": "Dairy",
-        "catalog_entry_id": "butter",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "butter",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "fresh basil",
         "quantity": 0.5,
         "unit": "bunch",
         "category": "Produce",
-        "catalog_entry_id": "basil",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "basil",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "table-salt",
         "quantity": 0.5,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalog_entry_id": "table-salt",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "table-salt",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "black-pepper",
         "quantity": 0.25,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalog_entry_id": "black-pepper",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "black-pepper",
+        "facetSelections": [],
+        "isOptional": false
       }
     ],
     "steps": [
       {
-        "step_number": 1,
+        "stepNumber": 1,
         "instruction": "Finely chop the yellow onion and mince the garlic cloves.",
-        "estimated_duration_seconds": 180
+        "estimatedDurationSeconds": 180
       },
       {
-        "step_number": 2,
+        "stepNumber": 2,
         "instruction": "In a large pan, heat the olive oil over medium heat. Add the chopped onion and cook until translucent, about 5 minutes.",
-        "timer_minutes": 5,
-        "estimated_duration_seconds": 300
+        "timerMinutes": 5,
+        "estimatedDurationSeconds": 300
       },
       {
-        "step_number": 3,
-        "instruction": "Add the minced garlic to the pan and sauté for an additional 1 minute until fragrant.",
-        "timer_minutes": 1,
-        "estimated_duration_seconds": 60
+        "stepNumber": 3,
+        "instruction": "Add the minced garlic to the pan and saut\u00e9 for an additional 1 minute until fragrant.",
+        "timerMinutes": 1,
+        "estimatedDurationSeconds": 60
       },
       {
-        "step_number": 4,
+        "stepNumber": 4,
         "instruction": "Stir in the arborio rice and cook for 2 minutes, ensuring each grain is coated with the oil and slightly toasted.",
-        "timer_minutes": 2,
-        "estimated_duration_seconds": 120
+        "timerMinutes": 2,
+        "estimatedDurationSeconds": 120
       },
       {
-        "step_number": 5,
+        "stepNumber": 5,
         "instruction": "Add the canned diced tomatoes, including their juice, to the pan and stir well.",
-        "estimated_duration_seconds": 60
+        "estimatedDurationSeconds": 60
       },
       {
-        "step_number": 6,
+        "stepNumber": 6,
         "instruction": "Begin adding vegetable broth one cup at a time. Stir frequently and allow the liquid to be absorbed before adding more broth.",
-        "timer_minutes": 20,
-        "estimated_duration_seconds": 1200
+        "timerMinutes": 20,
+        "estimatedDurationSeconds": 1200
       },
       {
-        "step_number": 7,
+        "stepNumber": 7,
         "instruction": "Once the rice is creamy and al dente, stir in the butter and grated Parmesan cheese until melted and incorporated.",
-        "timer_minutes": 2,
-        "estimated_duration_seconds": 120
+        "timerMinutes": 2,
+        "estimatedDurationSeconds": 120
       },
       {
-        "step_number": 8,
+        "stepNumber": 8,
         "instruction": "Chiffonade the fresh basil and stir it into the risotto. Season with table salt and black pepper to taste.",
-        "estimated_duration_seconds": 120
+        "estimatedDurationSeconds": 120
       },
       {
-        "step_number": 9,
+        "stepNumber": 9,
         "instruction": "Serve the risotto hot, garnished with additional fresh basil if desired.",
-        "estimated_duration_seconds": 60
+        "estimatedDurationSeconds": 60
       }
     ],
     "nutrition": {
@@ -2276,12 +2276,12 @@
     "title": "Sweet Potato and Black Bean Enchiladas",
     "description": "These Sweet Potato and Black Bean Enchiladas are a delicious and satisfying Mexican-inspired dish, perfect for a hearty dinner. The combination of creamy sweet potatoes, protein-rich black beans, and melted cheese wrapped in corn tortillas is sure to please everyone at the table.",
     "cuisine": "Mexican",
-    "meal_type": "Dinner",
+    "mealType": "Dinner",
     "difficulty": 2,
     "servings": 4,
-    "prep_time_minutes": 20,
-    "cook_time_minutes": 30,
-    "dietary_tags": [
+    "prepTimeMinutes": 20,
+    "cookTimeMinutes": 30,
+    "dietaryTags": [
       "Vegetarian"
     ],
     "ingredients": [
@@ -2290,188 +2290,188 @@
         "quantity": 2.0,
         "unit": "whole",
         "category": "Produce",
-        "catalog_entry_id": "sweet-potato",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "sweet-potato",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "canned-beans-black",
         "quantity": 1.0,
         "unit": "can",
         "category": "Canned & Jarred",
-        "catalog_entry_id": "canned-beans-black",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "canned-beans-black",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "corn-tortilla",
         "quantity": 8.0,
         "unit": "piece",
         "category": "Grains & Cereals",
-        "catalog_entry_id": "tortilla",
-        "facet_selections": [
+        "catalogEntryId": "tortilla",
+        "facetSelections": [
           {
             "key": "variant",
             "value": "corn"
           }
         ],
-        "is_optional": false
+        "isOptional": false
       },
       {
         "name": "cheddar",
         "quantity": 1.0,
         "unit": "cup",
         "category": "Dairy",
-        "catalog_entry_id": "cheddar",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "cheddar",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "salsa",
         "quantity": 1.0,
         "unit": "cup",
         "category": "Condiments & Sauces",
-        "catalog_entry_id": "salsa",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "salsa",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "cumin",
         "quantity": 1.0,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalog_entry_id": "cumin",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "cumin",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "chili-powder",
         "quantity": 1.0,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalog_entry_id": "chili-powder",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "chili-powder",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "table-salt",
         "quantity": 0.5,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalog_entry_id": "table-salt",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "table-salt",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "black-pepper",
         "quantity": 0.25,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalog_entry_id": "black-pepper",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "black-pepper",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "olive-oil",
         "quantity": 1.0,
         "unit": "tbsp",
         "category": "Oils & Fats",
-        "catalog_entry_id": "olive-oil",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "olive-oil",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "yellow-onion",
         "quantity": 1.0,
         "unit": "whole",
         "category": "Produce",
-        "catalog_entry_id": "yellow-onion",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "yellow-onion",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "garlic",
         "quantity": 2.0,
         "unit": "clove",
         "category": "Produce",
-        "catalog_entry_id": "garlic",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "garlic",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "cilantro",
         "quantity": 0.25,
         "unit": "cup",
         "category": "Produce",
-        "catalog_entry_id": "cilantro",
-        "facet_selections": [],
-        "is_optional": true
+        "catalogEntryId": "cilantro",
+        "facetSelections": [],
+        "isOptional": true
       }
     ],
     "steps": [
       {
-        "step_number": 1,
-        "instruction": "Preheat the oven to 375°F (190°C).",
-        "estimated_duration_seconds": 60
+        "stepNumber": 1,
+        "instruction": "Preheat the oven to 375\u00b0F (190\u00b0C).",
+        "estimatedDurationSeconds": 60
       },
       {
-        "step_number": 2,
+        "stepNumber": 2,
         "instruction": "Peel and dice the sweet potatoes into small cubes.",
-        "estimated_duration_seconds": 300
+        "estimatedDurationSeconds": 300
       },
       {
-        "step_number": 3,
+        "stepNumber": 3,
         "instruction": "Chop the yellow onion and mince the garlic cloves.",
-        "estimated_duration_seconds": 180
+        "estimatedDurationSeconds": 180
       },
       {
-        "step_number": 4,
+        "stepNumber": 4,
         "instruction": "Heat olive oil in a large skillet over medium heat. Add the diced sweet potatoes and cook for about 10 minutes, stirring occasionally, until they are tender.",
-        "timer_minutes": 10,
-        "estimated_duration_seconds": 120
+        "timerMinutes": 10,
+        "estimatedDurationSeconds": 120
       },
       {
-        "step_number": 5,
+        "stepNumber": 5,
         "instruction": "Add the chopped onion and minced garlic to the skillet. Cook for an additional 5 minutes until the onion is translucent.",
-        "timer_minutes": 5,
-        "estimated_duration_seconds": 60
+        "timerMinutes": 5,
+        "estimatedDurationSeconds": 60
       },
       {
-        "step_number": 6,
+        "stepNumber": 6,
         "instruction": "Drain and rinse the canned black beans. Add them to the skillet along with cumin, chili powder, salt, and black pepper. Stir well to combine and cook for another 5 minutes.",
-        "timer_minutes": 5,
-        "estimated_duration_seconds": 90
+        "timerMinutes": 5,
+        "estimatedDurationSeconds": 90
       },
       {
-        "step_number": 7,
+        "stepNumber": 7,
         "instruction": "Warm the corn tortillas in the microwave for about 30 seconds to make them pliable.",
-        "estimated_duration_seconds": 60
+        "estimatedDurationSeconds": 60
       },
       {
-        "step_number": 8,
+        "stepNumber": 8,
         "instruction": "Spread a thin layer of salsa in the bottom of a baking dish.",
-        "estimated_duration_seconds": 30
+        "estimatedDurationSeconds": 30
       },
       {
-        "step_number": 9,
+        "stepNumber": 9,
         "instruction": "Fill each tortilla with the sweet potato and black bean mixture. Roll them up and place seam-side down in the baking dish.",
-        "estimated_duration_seconds": 180
+        "estimatedDurationSeconds": 180
       },
       {
-        "step_number": 10,
+        "stepNumber": 10,
         "instruction": "Pour the remaining salsa over the top of the enchiladas and sprinkle with cheddar cheese.",
-        "estimated_duration_seconds": 60
+        "estimatedDurationSeconds": 60
       },
       {
-        "step_number": 11,
+        "stepNumber": 11,
         "instruction": "Bake in the preheated oven for 15 minutes or until the cheese is melted and bubbly.",
-        "timer_minutes": 15,
-        "estimated_duration_seconds": 60
+        "timerMinutes": 15,
+        "estimatedDurationSeconds": 60
       },
       {
-        "step_number": 12,
+        "stepNumber": 12,
         "instruction": "Garnish with chopped cilantro before serving (optional).",
-        "estimated_duration_seconds": 30
+        "estimatedDurationSeconds": 30
       }
     ],
     "nutrition": {
@@ -2488,12 +2488,12 @@
     "title": "Garlic Butter Shrimp with Asparagus",
     "description": "A quick and flavorful dish featuring succulent shrimp and tender asparagus, all coated in a rich garlic butter sauce. Perfect for a delightful dinner.",
     "cuisine": "American",
-    "meal_type": "Dinner",
+    "mealType": "Dinner",
     "difficulty": 2,
     "servings": 2,
-    "prep_time_minutes": 10,
-    "cook_time_minutes": 15,
-    "dietary_tags": [
+    "prepTimeMinutes": 10,
+    "cookTimeMinutes": 15,
+    "dietaryTags": [
       "Gluten-Free"
     ],
     "ingredients": [
@@ -2502,132 +2502,132 @@
         "quantity": 0.5,
         "unit": "lb",
         "category": "Protein",
-        "catalog_entry_id": "shrimp",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "shrimp",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "asparagus",
         "quantity": 1.0,
         "unit": "bunch",
         "category": "Produce",
-        "catalog_entry_id": "asparagus",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "asparagus",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "butter",
         "quantity": 3.0,
         "unit": "tbsp",
         "category": "Dairy",
-        "catalog_entry_id": "butter",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "butter",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "garlic",
         "quantity": 4.0,
         "unit": "clove",
         "category": "Produce",
-        "catalog_entry_id": "garlic",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "garlic",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "lemon",
         "quantity": 1.0,
         "unit": "whole",
         "category": "Produce",
-        "catalog_entry_id": "lemon",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "lemon",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "olive-oil",
         "quantity": 1.0,
         "unit": "tbsp",
         "category": "Oils & Fats",
-        "catalog_entry_id": "olive-oil",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "olive-oil",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "table-salt",
         "quantity": 0.5,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalog_entry_id": "table-salt",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "table-salt",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "black-pepper",
         "quantity": 0.25,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalog_entry_id": "black-pepper",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "black-pepper",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "parsley",
         "quantity": 2.0,
         "unit": "tbsp",
         "category": "Produce",
-        "catalog_entry_id": "parsley",
-        "facet_selections": [],
-        "is_optional": true
+        "catalogEntryId": "parsley",
+        "facetSelections": [],
+        "isOptional": true
       }
     ],
     "steps": [
       {
-        "step_number": 1,
+        "stepNumber": 1,
         "instruction": "Peel and devein the shrimp, if not already done. Rinse under cold water and pat dry with paper towels.",
-        "estimated_duration_seconds": 180
+        "estimatedDurationSeconds": 180
       },
       {
-        "step_number": 2,
+        "stepNumber": 2,
         "instruction": "Trim the woody ends of the asparagus and cut into 2-inch pieces. Set aside.",
-        "estimated_duration_seconds": 120
+        "estimatedDurationSeconds": 120
       },
       {
-        "step_number": 3,
+        "stepNumber": 3,
         "instruction": "Mince the garlic cloves and zest the lemon. Cut the lemon in half and set aside.",
-        "estimated_duration_seconds": 120
+        "estimatedDurationSeconds": 120
       },
       {
-        "step_number": 4,
+        "stepNumber": 4,
         "instruction": "In a large skillet over medium heat, melt 1 tablespoon of butter with the olive oil.",
-        "estimated_duration_seconds": 60
+        "estimatedDurationSeconds": 60
       },
       {
-        "step_number": 5,
-        "instruction": "Add the minced garlic and sauté for about 1 minute until fragrant, but not browned.",
-        "timer_minutes": 1,
-        "estimated_duration_seconds": 60
+        "stepNumber": 5,
+        "instruction": "Add the minced garlic and saut\u00e9 for about 1 minute until fragrant, but not browned.",
+        "timerMinutes": 1,
+        "estimatedDurationSeconds": 60
       },
       {
-        "step_number": 6,
+        "stepNumber": 6,
         "instruction": "Add the shrimp to the skillet. Season with salt and black pepper. Cook for 2-3 minutes on each side until the shrimp is pink and opaque.",
-        "timer_minutes": 5,
-        "estimated_duration_seconds": 300
+        "timerMinutes": 5,
+        "estimatedDurationSeconds": 300
       },
       {
-        "step_number": 7,
+        "stepNumber": 7,
         "instruction": "Remove the shrimp from the skillet and set aside. Add the asparagus to the same skillet. Cook for 4-5 minutes, stirring occasionally, until tender-crisp.",
-        "timer_minutes": 5,
-        "estimated_duration_seconds": 300
+        "timerMinutes": 5,
+        "estimatedDurationSeconds": 300
       },
       {
-        "step_number": 8,
+        "stepNumber": 8,
         "instruction": "Return the shrimp to the skillet. Add the remaining 2 tablespoons of butter, lemon zest, and a squeeze of lemon juice. Toss everything together to coat in the garlic butter sauce.",
-        "timer_minutes": 2,
-        "estimated_duration_seconds": 120
+        "timerMinutes": 2,
+        "estimatedDurationSeconds": 120
       },
       {
-        "step_number": 9,
+        "stepNumber": 9,
         "instruction": "Adjust seasoning with more salt, pepper, or lemon juice if desired. Garnish with chopped parsley before serving if using.",
-        "estimated_duration_seconds": 60
+        "estimatedDurationSeconds": 60
       }
     ],
     "nutrition": {
@@ -2644,12 +2644,12 @@
     "title": "Spiced Chickpea and Spinach Stew",
     "description": "A hearty and comforting Indian-inspired stew featuring chickpeas and spinach, seasoned with aromatic spices. Perfect for a healthy and satisfying dinner.",
     "cuisine": "Indian",
-    "meal_type": "Dinner",
+    "mealType": "Dinner",
     "difficulty": 2,
     "servings": 4,
-    "prep_time_minutes": 15,
-    "cook_time_minutes": 30,
-    "dietary_tags": [
+    "prepTimeMinutes": 15,
+    "cookTimeMinutes": 30,
+    "dietaryTags": [
       "Vegan",
       "Gluten-Free",
       "Nut-Free"
@@ -2660,186 +2660,186 @@
         "quantity": 2.0,
         "unit": "can",
         "category": "Canned & Jarred",
-        "catalog_entry_id": "canned-beans-chickpeas",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "canned-beans-chickpeas",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "spinach",
         "quantity": 4.0,
         "unit": "cup",
         "category": "Produce",
-        "catalog_entry_id": "spinach",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "spinach",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "yellow-onion",
         "quantity": 1.0,
         "unit": "whole",
         "category": "Produce",
-        "catalog_entry_id": "yellow-onion",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "yellow-onion",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "garlic",
         "quantity": 3.0,
         "unit": "clove",
         "category": "Produce",
-        "catalog_entry_id": "garlic",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "garlic",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "ginger",
         "quantity": 1.0,
         "unit": "tbsp",
         "category": "Produce",
-        "catalog_entry_id": "ginger",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "ginger",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "curry-powder",
         "quantity": 2.0,
         "unit": "tbsp",
         "category": "Spices & Herbs",
-        "catalog_entry_id": "curry-powder",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "curry-powder",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "cumin",
         "quantity": 1.0,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalog_entry_id": "cumin",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "cumin",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "canned-tomatoes-diced",
         "quantity": 1.0,
         "unit": "can",
         "category": "Canned & Jarred",
-        "catalog_entry_id": "canned-tomatoes-diced",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "canned-tomatoes-diced",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "coconut-milk",
         "quantity": 1.0,
         "unit": "cup",
         "category": "Condiments & Sauces",
-        "catalog_entry_id": "coconut-milk",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "coconut-milk",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "vegetable-broth",
         "quantity": 1.0,
         "unit": "cup",
         "category": "Canned & Jarred",
-        "catalog_entry_id": "vegetable-broth",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "vegetable-broth",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "olive-oil",
         "quantity": 2.0,
         "unit": "tbsp",
         "category": "Oils & Fats",
-        "catalog_entry_id": "olive-oil",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "olive-oil",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "lime",
         "quantity": 1.0,
         "unit": "whole",
         "category": "Produce",
-        "catalog_entry_id": "lime",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "lime",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "table-salt",
         "quantity": 1.0,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalog_entry_id": "table-salt",
-        "facet_selections": [],
-        "is_optional": true
+        "catalogEntryId": "table-salt",
+        "facetSelections": [],
+        "isOptional": true
       },
       {
         "name": "black-pepper",
         "quantity": 0.5,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalog_entry_id": "black-pepper",
-        "facet_selections": [],
-        "is_optional": true
+        "catalogEntryId": "black-pepper",
+        "facetSelections": [],
+        "isOptional": true
       },
       {
         "name": "cilantro",
         "quantity": 0.25,
         "unit": "cup",
         "category": "Produce",
-        "catalog_entry_id": "cilantro",
-        "facet_selections": [],
-        "is_optional": true
+        "catalogEntryId": "cilantro",
+        "facetSelections": [],
+        "isOptional": true
       }
     ],
     "steps": [
       {
-        "step_number": 1,
+        "stepNumber": 1,
         "instruction": "Drain and rinse the canned chickpeas. Set aside.",
-        "estimated_duration_seconds": 120
+        "estimatedDurationSeconds": 120
       },
       {
-        "step_number": 2,
+        "stepNumber": 2,
         "instruction": "Finely chop the yellow onion, garlic, and ginger.",
-        "estimated_duration_seconds": 180
+        "estimatedDurationSeconds": 180
       },
       {
-        "step_number": 3,
-        "instruction": "In a large pot, heat olive oil over medium heat. Add the chopped onion, garlic, and ginger. Sauté until the onion becomes translucent, about 5 minutes.",
-        "timer_minutes": 5,
-        "estimated_duration_seconds": 300
+        "stepNumber": 3,
+        "instruction": "In a large pot, heat olive oil over medium heat. Add the chopped onion, garlic, and ginger. Saut\u00e9 until the onion becomes translucent, about 5 minutes.",
+        "timerMinutes": 5,
+        "estimatedDurationSeconds": 300
       },
       {
-        "step_number": 4,
+        "stepNumber": 4,
         "instruction": "Add curry powder and cumin to the pot. Stir well to coat the onions and cook for an additional 2 minutes to release the spices' aroma.",
-        "timer_minutes": 2,
-        "estimated_duration_seconds": 120
+        "timerMinutes": 2,
+        "estimatedDurationSeconds": 120
       },
       {
-        "step_number": 5,
+        "stepNumber": 5,
         "instruction": "Add the canned diced tomatoes, coconut milk, and vegetable broth to the pot. Stir to combine.",
-        "estimated_duration_seconds": 60
+        "estimatedDurationSeconds": 60
       },
       {
-        "step_number": 6,
+        "stepNumber": 6,
         "instruction": "Add the rinsed chickpeas to the pot. Bring to a simmer and let cook for 10 minutes.",
-        "timer_minutes": 10,
-        "estimated_duration_seconds": 60
+        "timerMinutes": 10,
+        "estimatedDurationSeconds": 60
       },
       {
-        "step_number": 7,
+        "stepNumber": 7,
         "instruction": "Stir in the spinach and cook until wilted, about 3 minutes.",
-        "timer_minutes": 3,
-        "estimated_duration_seconds": 180
+        "timerMinutes": 3,
+        "estimatedDurationSeconds": 180
       },
       {
-        "step_number": 8,
+        "stepNumber": 8,
         "instruction": "Season the stew with table salt and black pepper to taste. Squeeze the juice of one lime into the pot and stir.",
-        "estimated_duration_seconds": 60
+        "estimatedDurationSeconds": 60
       },
       {
-        "step_number": 9,
+        "stepNumber": 9,
         "instruction": "Serve hot, garnished with chopped cilantro if desired.",
-        "estimated_duration_seconds": 120
+        "estimatedDurationSeconds": 120
       }
     ],
     "nutrition": {
@@ -2856,12 +2856,12 @@
     "title": "Chocolate Avocado Mousse",
     "description": "A rich and creamy vegan dessert blending ripe avocados with cocoa powder and maple syrup for a delightful treat.",
     "cuisine": "Other",
-    "meal_type": "Dessert",
+    "mealType": "Dessert",
     "difficulty": 2,
     "servings": 4,
-    "prep_time_minutes": 10,
-    "cook_time_minutes": 0,
-    "dietary_tags": [
+    "prepTimeMinutes": 10,
+    "cookTimeMinutes": 0,
+    "dietaryTags": [
       "Vegan",
       "Gluten-Free",
       "Dairy-Free"
@@ -2872,92 +2872,92 @@
         "quantity": 2.0,
         "unit": "whole",
         "category": "Produce",
-        "catalog_entry_id": "avocado",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "avocado",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "cocoa-powder",
         "quantity": 0.5,
         "unit": "cup",
         "category": "Baking Supplies",
-        "catalog_entry_id": "cocoa-powder",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "cocoa-powder",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "maple-syrup",
         "quantity": 0.25,
         "unit": "cup",
         "category": "Condiments & Sauces",
-        "catalog_entry_id": "maple-syrup",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "maple-syrup",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "vanilla-extract",
         "quantity": 1.0,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalog_entry_id": "vanilla-extract",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "vanilla-extract",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "table-salt",
         "quantity": 0.25,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalog_entry_id": "table-salt",
-        "facet_selections": [],
-        "is_optional": true
+        "catalogEntryId": "table-salt",
+        "facetSelections": [],
+        "isOptional": true
       },
       {
         "name": "coconut-milk",
         "quantity": 0.25,
         "unit": "cup",
         "category": "Condiments & Sauces",
-        "catalog_entry_id": "coconut-milk",
-        "facet_selections": [],
-        "is_optional": true
+        "catalogEntryId": "coconut-milk",
+        "facetSelections": [],
+        "isOptional": true
       }
     ],
     "steps": [
       {
-        "step_number": 1,
+        "stepNumber": 1,
         "instruction": "Cut the avocados in half, remove the pits, and scoop the flesh into a blender or food processor.",
-        "estimated_duration_seconds": 120
+        "estimatedDurationSeconds": 120
       },
       {
-        "step_number": 2,
+        "stepNumber": 2,
         "instruction": "Add cocoa powder, maple syrup, vanilla extract, and a pinch of salt to the blender.",
-        "estimated_duration_seconds": 60
+        "estimatedDurationSeconds": 60
       },
       {
-        "step_number": 3,
+        "stepNumber": 3,
         "instruction": "Blend the ingredients until smooth and creamy. Scrape down the sides as needed to ensure even blending.",
-        "estimated_duration_seconds": 180
+        "estimatedDurationSeconds": 180
       },
       {
-        "step_number": 4,
+        "stepNumber": 4,
         "instruction": "If desired, add coconut milk to achieve a lighter consistency. Blend again until fully incorporated.",
-        "estimated_duration_seconds": 60
+        "estimatedDurationSeconds": 60
       },
       {
-        "step_number": 5,
+        "stepNumber": 5,
         "instruction": "Taste the mousse and adjust sweetness or salt to your preference.",
-        "estimated_duration_seconds": 60
+        "estimatedDurationSeconds": 60
       },
       {
-        "step_number": 6,
+        "stepNumber": 6,
         "instruction": "Divide the mousse into four serving bowls or glasses. Refrigerate for at least 30 minutes before serving to allow the flavors to meld and the mousse to firm up slightly.",
-        "timer_minutes": 30,
-        "estimated_duration_seconds": 120
+        "timerMinutes": 30,
+        "estimatedDurationSeconds": 120
       },
       {
-        "step_number": 7,
+        "stepNumber": 7,
         "instruction": "Serve chilled, optionally garnished with fresh berries or a sprinkle of cocoa powder.",
-        "estimated_duration_seconds": 60
+        "estimatedDurationSeconds": 60
       }
     ],
     "nutrition": {
@@ -2974,12 +2974,12 @@
     "title": "Savory Vegetable Frittata",
     "description": "A delightful Italian-inspired breakfast dish featuring a medley of fresh vegetables and eggs, perfect for a healthy brunch.",
     "cuisine": "Italian",
-    "meal_type": "Breakfast",
+    "mealType": "Breakfast",
     "difficulty": 2,
     "servings": 4,
-    "prep_time_minutes": 15,
-    "cook_time_minutes": 25,
-    "dietary_tags": [
+    "prepTimeMinutes": 15,
+    "cookTimeMinutes": 25,
+    "dietaryTags": [
       "Vegetarian",
       "Gluten-Free"
     ],
@@ -2989,154 +2989,154 @@
         "quantity": 6.0,
         "unit": "piece",
         "category": "Protein",
-        "catalog_entry_id": "eggs",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "eggs",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "zucchini",
         "quantity": 1.0,
         "unit": "whole",
         "category": "Produce",
-        "catalog_entry_id": "zucchini",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "zucchini",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "red-bell-pepper",
         "quantity": 1.0,
         "unit": "whole",
         "category": "Produce",
-        "catalog_entry_id": "red-bell-pepper",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "red-bell-pepper",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "yellow-bell-pepper",
         "quantity": 1.0,
         "unit": "whole",
         "category": "Produce",
-        "catalog_entry_id": "yellow-bell-pepper",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "yellow-bell-pepper",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "spinach",
         "quantity": 1.0,
         "unit": "bunch",
         "category": "Produce",
-        "catalog_entry_id": "spinach",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "spinach",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "yellow-onion",
         "quantity": 0.5,
         "unit": "whole",
         "category": "Produce",
-        "catalog_entry_id": "yellow-onion",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "yellow-onion",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "garlic",
         "quantity": 2.0,
         "unit": "clove",
         "category": "Produce",
-        "catalog_entry_id": "garlic",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "garlic",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "parmesan",
         "quantity": 0.5,
         "unit": "cup",
         "category": "Dairy",
-        "catalog_entry_id": "parmesan",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "parmesan",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "olive-oil",
         "quantity": 2.0,
         "unit": "tbsp",
         "category": "Oils & Fats",
-        "catalog_entry_id": "olive-oil",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "olive-oil",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "table-salt",
         "quantity": 0.5,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalog_entry_id": "table-salt",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "table-salt",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "black-pepper",
         "quantity": 0.25,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalog_entry_id": "black-pepper",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "black-pepper",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "basil",
         "quantity": 2.0,
         "unit": "tbsp",
         "category": "Produce",
-        "catalog_entry_id": "basil",
-        "facet_selections": [],
-        "is_optional": true
+        "catalogEntryId": "basil",
+        "facetSelections": [],
+        "isOptional": true
       }
     ],
     "steps": [
       {
-        "step_number": 1,
-        "instruction": "Preheat your oven to 375°F (190°C).",
-        "estimated_duration_seconds": 60
+        "stepNumber": 1,
+        "instruction": "Preheat your oven to 375\u00b0F (190\u00b0C).",
+        "estimatedDurationSeconds": 60
       },
       {
-        "step_number": 2,
+        "stepNumber": 2,
         "instruction": "Dice the zucchini, red bell pepper, and yellow bell pepper into small cubes. Chop the spinach and finely dice the yellow onion and garlic.",
-        "estimated_duration_seconds": 480
+        "estimatedDurationSeconds": 480
       },
       {
-        "step_number": 3,
-        "instruction": "In a large oven-safe skillet, heat olive oil over medium heat. Add the onion and garlic, sauté for 2 minutes until fragrant.",
-        "timer_minutes": 2,
-        "estimated_duration_seconds": 120
+        "stepNumber": 3,
+        "instruction": "In a large oven-safe skillet, heat olive oil over medium heat. Add the onion and garlic, saut\u00e9 for 2 minutes until fragrant.",
+        "timerMinutes": 2,
+        "estimatedDurationSeconds": 120
       },
       {
-        "step_number": 4,
+        "stepNumber": 4,
         "instruction": "Add the diced zucchini and bell peppers to the skillet. Cook for 5 minutes, stirring occasionally, until they start to soften.",
-        "timer_minutes": 5,
-        "estimated_duration_seconds": 300
+        "timerMinutes": 5,
+        "estimatedDurationSeconds": 300
       },
       {
-        "step_number": 5,
+        "stepNumber": 5,
         "instruction": "Add the chopped spinach to the skillet, stir well until wilted, about 2 minutes.",
-        "timer_minutes": 2,
-        "estimated_duration_seconds": 120
+        "timerMinutes": 2,
+        "estimatedDurationSeconds": 120
       },
       {
-        "step_number": 6,
+        "stepNumber": 6,
         "instruction": "In a mixing bowl, whisk together the eggs, Parmesan, table salt, and black pepper. Pour the egg mixture over the vegetables in the skillet.",
-        "estimated_duration_seconds": 120
+        "estimatedDurationSeconds": 120
       },
       {
-        "step_number": 7,
+        "stepNumber": 7,
         "instruction": "Transfer the skillet to the preheated oven. Bake for 15 minutes or until the frittata is set and lightly golden on top.",
-        "timer_minutes": 15,
-        "estimated_duration_seconds": 300
+        "timerMinutes": 15,
+        "estimatedDurationSeconds": 300
       },
       {
-        "step_number": 8,
+        "stepNumber": 8,
         "instruction": "Remove from the oven and let it cool slightly before slicing. Garnish with fresh basil if desired.",
-        "estimated_duration_seconds": 180
+        "estimatedDurationSeconds": 180
       }
     ],
     "nutrition": {
@@ -3153,121 +3153,121 @@
     "title": "Honey Mustard Glazed Salmon",
     "description": "A delicious and simple Mediterranean-style salmon dish with a sweet and tangy honey mustard glaze.",
     "cuisine": "Mediterranean",
-    "meal_type": "Dinner",
+    "mealType": "Dinner",
     "difficulty": 2,
     "servings": 2,
-    "prep_time_minutes": 10,
-    "cook_time_minutes": 15,
-    "dietary_tags": [],
+    "prepTimeMinutes": 10,
+    "cookTimeMinutes": 15,
+    "dietaryTags": [],
     "ingredients": [
       {
         "name": "salmon-fillet",
         "quantity": 2.0,
         "unit": "piece",
         "category": "Protein",
-        "catalog_entry_id": "salmon-fillet",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "salmon-fillet",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "honey",
         "quantity": 3.0,
         "unit": "tbsp",
         "category": "Condiments & Sauces",
-        "catalog_entry_id": "honey",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "honey",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "dijon-mustard",
         "quantity": 2.0,
         "unit": "tbsp",
         "category": "Condiments & Sauces",
-        "catalog_entry_id": "dijon-mustard",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "dijon-mustard",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "lemon",
         "quantity": 1.0,
         "unit": "piece",
         "category": "Produce",
-        "catalog_entry_id": "lemon",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "lemon",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "olive-oil",
         "quantity": 2.0,
         "unit": "tbsp",
         "category": "Oils & Fats",
-        "catalog_entry_id": "olive-oil",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "olive-oil",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "garlic",
         "quantity": 2.0,
         "unit": "clove",
         "category": "Produce",
-        "catalog_entry_id": "garlic",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "garlic",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "table-salt",
         "quantity": 0.5,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalog_entry_id": "table-salt",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "table-salt",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "black-pepper",
         "quantity": 0.25,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalog_entry_id": "black-pepper",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "black-pepper",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "parsley",
         "quantity": 0.25,
         "unit": "bunch",
         "category": "Produce",
-        "catalog_entry_id": "parsley",
-        "facet_selections": [],
-        "is_optional": true
+        "catalogEntryId": "parsley",
+        "facetSelections": [],
+        "isOptional": true
       }
     ],
     "steps": [
       {
-        "step_number": 1,
-        "instruction": "Preheat your oven to 400°F (200°C).",
-        "estimated_duration_seconds": 60
+        "stepNumber": 1,
+        "instruction": "Preheat your oven to 400\u00b0F (200\u00b0C).",
+        "estimatedDurationSeconds": 60
       },
       {
-        "step_number": 2,
+        "stepNumber": 2,
         "instruction": "In a small bowl, combine 3 tbsp honey, 2 tbsp Dijon mustard, the juice of 1 lemon, 2 tbsp olive oil, 2 minced garlic cloves, 0.5 tsp table salt, and 0.25 tsp black pepper. Mix until well combined to form the glaze.",
-        "estimated_duration_seconds": 120
+        "estimatedDurationSeconds": 120
       },
       {
-        "step_number": 3,
+        "stepNumber": 3,
         "instruction": "Place the salmon fillets on a baking sheet lined with parchment paper. Brush the glaze evenly over the salmon fillets.",
-        "estimated_duration_seconds": 120
+        "estimatedDurationSeconds": 120
       },
       {
-        "step_number": 4,
+        "stepNumber": 4,
         "instruction": "Bake the salmon in the preheated oven for 12-15 minutes, or until the salmon is cooked through and flakes easily with a fork.",
-        "timer_minutes": 15,
-        "estimated_duration_seconds": 60
+        "timerMinutes": 15,
+        "estimatedDurationSeconds": 60
       },
       {
-        "step_number": 5,
+        "stepNumber": 5,
         "instruction": "Garnish with chopped parsley before serving, if desired.",
-        "estimated_duration_seconds": 30
+        "estimatedDurationSeconds": 30
       }
     ],
     "nutrition": {
@@ -3284,12 +3284,12 @@
     "title": "Peanut Butter Banana Overnight Oats",
     "description": "A deliciously creamy and nutritious breakfast option that combines oats, peanut butter, and banana for a perfect start to your day.",
     "cuisine": "American",
-    "meal_type": "Breakfast",
+    "mealType": "Breakfast",
     "difficulty": 1,
     "servings": 2,
-    "prep_time_minutes": 10,
-    "cook_time_minutes": 0,
-    "dietary_tags": [
+    "prepTimeMinutes": 10,
+    "cookTimeMinutes": 0,
+    "dietaryTags": [
       "Vegetarian"
     ],
     "ingredients": [
@@ -3298,101 +3298,101 @@
         "quantity": 1.0,
         "unit": "cup",
         "category": "Grains & Cereals",
-        "catalog_entry_id": "oats",
-        "facet_selections": [
+        "catalogEntryId": "oats",
+        "facetSelections": [
           {
             "key": "variant",
             "value": "rolled"
           }
         ],
-        "is_optional": false
+        "isOptional": false
       },
       {
         "name": "milk",
         "quantity": 1.0,
         "unit": "cup",
         "category": "Dairy",
-        "catalog_entry_id": "milk",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "milk",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "peanut butter",
         "quantity": 2.0,
         "unit": "tbsp",
         "category": "Condiments & Sauces",
-        "catalog_entry_id": "peanut-butter",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "peanut-butter",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "banana",
         "quantity": 1.0,
         "unit": "whole",
         "category": "Produce",
-        "catalog_entry_id": "banana",
-        "facet_selections": [],
-        "is_optional": false
+        "catalogEntryId": "banana",
+        "facetSelections": [],
+        "isOptional": false
       },
       {
         "name": "honey",
         "quantity": 1.0,
         "unit": "tbsp",
         "category": "Condiments & Sauces",
-        "catalog_entry_id": "honey",
-        "facet_selections": [],
-        "is_optional": true
+        "catalogEntryId": "honey",
+        "facetSelections": [],
+        "isOptional": true
       },
       {
         "name": "cinnamon",
         "quantity": 0.5,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalog_entry_id": "cinnamon",
-        "facet_selections": [],
-        "is_optional": true
+        "catalogEntryId": "cinnamon",
+        "facetSelections": [],
+        "isOptional": true
       },
       {
         "name": "chia seeds",
         "quantity": 1.0,
         "unit": "tbsp",
         "category": "Nuts & Seeds",
-        "catalog_entry_id": "chia-seeds",
-        "facet_selections": [],
-        "is_optional": true
+        "catalogEntryId": "chia-seeds",
+        "facetSelections": [],
+        "isOptional": true
       }
     ],
     "steps": [
       {
-        "step_number": 1,
+        "stepNumber": 1,
         "instruction": "In a medium-sized bowl, combine the rolled oats and milk. Stir until the oats are fully submerged.",
-        "estimated_duration_seconds": 60
+        "estimatedDurationSeconds": 60
       },
       {
-        "step_number": 2,
+        "stepNumber": 2,
         "instruction": "Add the peanut butter and honey (if using) to the oats and stir until well combined.",
-        "estimated_duration_seconds": 60
+        "estimatedDurationSeconds": 60
       },
       {
-        "step_number": 3,
+        "stepNumber": 3,
         "instruction": "Slice the banana into thin rounds and add them to the oat mixture. Stir gently to combine.",
-        "estimated_duration_seconds": 60
+        "estimatedDurationSeconds": 60
       },
       {
-        "step_number": 4,
+        "stepNumber": 4,
         "instruction": "Sprinkle the cinnamon and chia seeds (if using) over the top and lightly stir them into the mixture.",
-        "estimated_duration_seconds": 30
+        "estimatedDurationSeconds": 30
       },
       {
-        "step_number": 5,
+        "stepNumber": 5,
         "instruction": "Cover the bowl with plastic wrap or transfer the mixture to a jar with a lid. Refrigerate overnight or for at least 4 hours.",
-        "timer_minutes": 240,
-        "estimated_duration_seconds": 120
+        "timerMinutes": 240,
+        "estimatedDurationSeconds": 120
       },
       {
-        "step_number": 6,
+        "stepNumber": 6,
         "instruction": "In the morning, give the oats a quick stir and divide the mixture into two bowls. Serve chilled or at room temperature.",
-        "estimated_duration_seconds": 90
+        "estimatedDurationSeconds": 90
       }
     ],
     "nutrition": {
