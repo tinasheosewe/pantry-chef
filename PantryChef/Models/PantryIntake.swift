@@ -136,7 +136,7 @@ struct PantryIntakeRowDraft: Identifiable {
         case .pantry:
             return Calendar.current.date(byAdding: .month, value: 6, to: Date())
         case .refrigerated:
-            return nil
+            return Calendar.current.date(byAdding: .weekOfYear, value: 1, to: Date())
         }
     }
 
