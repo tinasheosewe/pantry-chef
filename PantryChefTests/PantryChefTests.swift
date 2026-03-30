@@ -266,14 +266,14 @@ final class MockAIService: AIServiceProtocol {
         lastModifyPantryIngredients = pantryIngredients
         return recipesToReturn.first
     }
-    func suggestRecipeNames(ingredients: [String], strictIngredients: Bool, excludeNames: [String]) async -> RecipeNameSuggestionsResult {
+    func suggestRecipeNames(ingredients: [String], strictIngredients: Bool, requireAllIngredients: Bool, excludeNames: [String]) async -> RecipeNameSuggestionsResult {
         suggestRecipeNamesCallCount += 1
         lastSuggestRecipeNamesIngredients = ingredients
         lastSuggestRecipeNamesStrictIngredients = strictIngredients
         lastSuggestRecipeNamesExcludeNames = excludeNames
         return recipeNameSuggestionsToReturn
     }
-    func generateRecipeFromSuggestion(_ suggestion: RecipeNameSuggestion, ingredients: [String], strictIngredients: Bool) async -> Recipe? {
+    func generateRecipeFromSuggestion(_ suggestion: RecipeNameSuggestion, ingredients: [String], strictIngredients: Bool, requireAllIngredients: Bool) async -> Recipe? {
         generateRecipeFromSuggestionCallCount += 1
         lastGenerateFromSuggestion = suggestion
         lastGenerateFromSuggestionIngredients = ingredients

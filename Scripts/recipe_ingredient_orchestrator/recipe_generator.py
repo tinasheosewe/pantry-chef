@@ -188,16 +188,23 @@ class RecipeGenerator:
         )
         from .models import NutritionInfo, RecipeStep
 
+        def _safe_enum(enum_cls, value, fallback=None):
+            try:
+                return enum_cls(value)
+            except (ValueError, KeyError):
+                logger.warning("Unknown %s value '%s', using %s", enum_cls.__name__, value, fallback)
+                return fallback
+
         recipe = Recipe(
             title=raw.title,
             description=raw.description,
-            cuisine=CuisineType(raw.cuisine) if raw.cuisine else None,
-            meal_type=MealType(raw.meal_type) if raw.meal_type else None,
-            difficulty=DifficultyLevel(raw.difficulty),
+            cuisine=_safe_enum(CuisineType, raw.cuisine, CuisineType.OTHER) if raw.cuisine else None,
+            meal_type=_safe_enum(MealType, raw.meal_type) if raw.meal_type else None,
+            difficulty=_safe_enum(DifficultyLevel, raw.difficulty, DifficultyLevel.MEDIUM) or DifficultyLevel.MEDIUM,
             servings=raw.servings,
             prep_time_minutes=raw.prep_time_minutes,
             cook_time_minutes=raw.cook_time_minutes,
-            dietary_tags=[DietaryTag(t) for t in raw.dietary_tags],
+            dietary_tags=[t for t in (_safe_enum(DietaryTag, v) for v in raw.dietary_tags) if t is not None],
             ingredients=resolved_ingredients,
             steps=[
                 RecipeStep(

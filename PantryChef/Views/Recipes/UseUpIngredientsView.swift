@@ -61,6 +61,8 @@ struct UseUpIngredientsView: View {
                     }
 
                     strictIngredientsToggle
+
+                    requireAllIngredientsToggle
                 }
                 .padding(.vertical)
             }
@@ -102,6 +104,19 @@ struct UseUpIngredientsView: View {
                 .padding(.horizontal)
 
             Text("Off: recipes may include common staples like salt, oil, and garlic")
+                .font(PCFont.caption)
+                .foregroundStyle(PCColors.textTertiary)
+                .padding(.horizontal)
+        }
+    }
+
+    private var requireAllIngredientsToggle: some View {
+        VStack(alignment: .leading, spacing: PCTokens.spacingXS) {
+            Toggle("Use all ingredients in each recipe", isOn: $viewModel.requireAllIngredients)
+                .font(PCFont.body)
+                .padding(.horizontal)
+
+            Text("Off: each recipe can use a subset — make multiple recipes to use everything")
                 .font(PCFont.caption)
                 .foregroundStyle(PCColors.textTertiary)
                 .padding(.horizontal)

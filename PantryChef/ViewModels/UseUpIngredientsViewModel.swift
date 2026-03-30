@@ -20,6 +20,7 @@ final class UseUpIngredientsViewModel {
     var extraIngredients: [String] = []
     var extraIngredientText: String = ""
     var strictIngredients: Bool = false
+    var requireAllIngredients: Bool = true
 
     // MARK: - Suggestion State
 
@@ -148,6 +149,7 @@ final class UseUpIngredientsViewModel {
         let result = await appState.suggestRecipeNames(
             ingredients: selectedIngredientNames,
             strictIngredients: strictIngredients,
+            requireAllIngredients: requireAllIngredients,
             excludeNames: []
         )
 
@@ -164,6 +166,7 @@ final class UseUpIngredientsViewModel {
         let result = await appState.suggestRecipeNames(
             ingredients: selectedIngredientNames,
             strictIngredients: strictIngredients,
+            requireAllIngredients: requireAllIngredients,
             excludeNames: previousNames
         )
 
@@ -194,7 +197,8 @@ final class UseUpIngredientsViewModel {
         let recipe = await appState.generateRecipeFromSuggestion(
             suggestion,
             ingredients: selectedIngredientNames,
-            strictIngredients: strictIngredients
+            strictIngredients: strictIngredients,
+            requireAllIngredients: requireAllIngredients
         )
 
         generatedRecipe = recipe
@@ -212,7 +216,8 @@ final class UseUpIngredientsViewModel {
         let recipe = await appState.generateRecipeFromSuggestion(
             suggestion,
             ingredients: selectedIngredientNames,
-            strictIngredients: strictIngredients
+            strictIngredients: strictIngredients,
+            requireAllIngredients: requireAllIngredients
         )
 
         generatedRecipe = recipe

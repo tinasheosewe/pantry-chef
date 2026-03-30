@@ -148,6 +148,8 @@ struct RecipeDetailView: View {
     @State private var isModifying = false
     @State private var showEditor = false
     @State private var originalRecipe: Recipe
+    @State private var showSaveAsSheet = false
+    @State private var saveAsName = ""
     private let maxServings = 100
     private let sourceMealPlanEntry: MealPlanEntry?
 
@@ -803,9 +805,11 @@ struct RecipeDetailView: View {
         guard !feedback.trimmingCharacters(in: .whitespaces).isEmpty else { return }
         isModifying = true
         if let normalizedRecipe = await appState.recipeGateway.modifyRecipe(recipe, feedback: feedback) {
+            var result = normalizedRecipe.recipe
+            result.ingredients = Self.mergedIngredients(result.ingredients)
             withAnimation {
-                recipe = normalizedRecipe.recipe
-                servings = normalizedRecipe.recipe.servings
+                recipe = result
+                servings = result.servings
             }
             modifyText = ""
             showModify = false
@@ -813,6 +817,36 @@ struct RecipeDetailView: View {
             actionErrorMessage = "Couldn't modify the recipe. Please try again."
         }
         isModifying = false
+    }
+
+    /// Merge duplicate ingredients by catalog ID (if resolved) or lowercased rawName.
+    /// Combines quantities when units match; keeps separate otherwise.
+    private static func mergedIngredients(_ ingredients: [Ingredient]) -> [Ingredient] {
+        var seen: [String: Int] = [:] // merge key → index in result
+        var result: [Ingredient] = []
+
+        for ingredient in ingredients {
+            let key: String
+            if let catalogID = ingredient.catalogItemID {
+                key = "catalog:" + catalogID
+            } else {
+                key = "name:" + ingredient.rawName.lowercased()
+            }
+
+            if let existingIndex = seen[key],
+               result[existingIndex].unit == ingredient.unit {
+                result[existingIndex].quantity += ingredient.quantity
+                if let newNotes = ingredient.notes, !newNotes.isEmpty {
+                    let existing = result[existingIndex].notes ?? ""
+                    result[existingIndex].notes = existing.isEmpty ? newNotes : "\(existing); \(newNotes)"
+                }
+            } else {
+                seen[key] = result.count
+                result.append(ingredient)
+            }
+        }
+
+        return result
     }
 
     private func handleSavedRecipe(_ saved: Recipe) {
@@ -878,22 +912,64 @@ struct RecipeDetailView: View {
                 }
 
                 PCCapsuleButton("Save as New", color: PCColors.teal, style: .filled) {
-                    Task {
-                        var copy = recipe
-                        copy.id = UUID()
-                        copy.dateAdded = Date()
-                        copy.timesCooked = 0
-                        copy.source = .user
-                        copy.isFavorite = false
-                        await appState.recipeGateway.addRecipe(copy)
-                        withAnimation { originalRecipe = recipe }
-                    }
+                    saveAsName = nextAvailableTitle(for: recipe.title)
+                    showSaveAsSheet = true
                 }
             }
             .padding(.horizontal, PCTokens.spacingLG)
             .padding(.vertical, PCTokens.spacingSM + 2)
         }
         .background(.ultraThinMaterial)
+        .sheet(isPresented: $showSaveAsSheet) {
+            saveAsSheet
+        }
+    }
+
+    private var saveAsSheet: some View {
+        NavigationStack {
+            VStack(spacing: PCTokens.spacingLG) {
+                PCTextField("Recipe Name", text: $saveAsName, placeholder: "Enter a name")
+                Spacer()
+            }
+            .padding(PCTokens.spacingLG)
+            .background(PCColors.background)
+            .navigationTitle("Save as New Recipe")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") { showSaveAsSheet = false }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Save") {
+                        showSaveAsSheet = false
+                        Task {
+                            var copy = recipe
+                            copy.id = UUID()
+                            copy.title = saveAsName.trimmingCharacters(in: .whitespaces)
+                            copy.dateAdded = Date()
+                            copy.timesCooked = 0
+                            copy.source = .user
+                            copy.isFavorite = false
+                            await appState.recipeGateway.addRecipe(copy)
+                            withAnimation { originalRecipe = recipe }
+                        }
+                    }
+                    .disabled(saveAsName.trimmingCharacters(in: .whitespaces).isEmpty)
+                }
+            }
+        }
+        .presentationDetents([.height(220)])
+    }
+
+    private func nextAvailableTitle(for title: String) -> String {
+        let allTitles = Set(appState.recipes.map(\.title))
+        var candidate = "\(title) (1)"
+        var index = 1
+        while allTitles.contains(candidate) {
+            index += 1
+            candidate = "\(title) (\(index))"
+        }
+        return candidate
     }
 
     // MARK: - Ingredients Section

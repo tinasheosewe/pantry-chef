@@ -98,8 +98,8 @@ protocol AIServiceProtocol: AnyObject, Sendable {
     func generateRecipe(query: String, preferences: RecipeGenerationPreferences) async -> Recipe?
     func generateStatusMessages(query: String, preferences: RecipeGenerationPreferences) async -> [String]
     func modifyRecipe(_ recipe: Recipe, feedback: String, pantryIngredients: [String]) async -> Recipe?
-    func suggestRecipeNames(ingredients: [String], strictIngredients: Bool, excludeNames: [String]) async -> RecipeNameSuggestionsResult
-    func generateRecipeFromSuggestion(_ suggestion: RecipeNameSuggestion, ingredients: [String], strictIngredients: Bool) async -> Recipe?
+    func suggestRecipeNames(ingredients: [String], strictIngredients: Bool, requireAllIngredients: Bool, excludeNames: [String]) async -> RecipeNameSuggestionsResult
+    func generateRecipeFromSuggestion(_ suggestion: RecipeNameSuggestion, ingredients: [String], strictIngredients: Bool, requireAllIngredients: Bool) async -> Recipe?
     func generateBatchSchedule(recipes: [Recipe]) async throws -> LLMBatchSchedule
 }
 

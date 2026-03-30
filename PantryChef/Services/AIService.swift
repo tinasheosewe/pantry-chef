@@ -240,7 +240,7 @@ final class AIService: AIServiceProtocol {
 
     // MARK: - Use-Up-Ingredients Pipeline
 
-    func suggestRecipeNames(ingredients: [String], strictIngredients: Bool, excludeNames: [String]) async -> RecipeNameSuggestionsResult {
+    func suggestRecipeNames(ingredients: [String], strictIngredients: Bool, requireAllIngredients: Bool, excludeNames: [String]) async -> RecipeNameSuggestionsResult {
         let ingredientList = ingredients.joined(separator: ", ")
 
         let ingredientConstraint: String
@@ -248,6 +248,13 @@ final class AIService: AIServiceProtocol {
             ingredientConstraint = "Use ONLY these ingredients. Do not include any ingredients not in this list."
         } else {
             ingredientConstraint = "Use these as primary ingredients. You may assume common staples are available (salt, pepper, water, cooking oil, butter, garlic, onion, sugar, flour, eggs, basic dried herbs/spices) but do NOT require specialty ingredients not listed."
+        }
+
+        let coverageConstraint: String
+        if requireAllIngredients {
+            coverageConstraint = "Each recipe MUST use ALL of the listed ingredients."
+        } else {
+            coverageConstraint = "Each recipe can use any subset of the listed ingredients — it does NOT need to use all of them. Aim for variety: suggest recipes that collectively cover different ingredients so the user can use everything across multiple recipes."
         }
 
         var excludeClause = ""
@@ -263,7 +270,9 @@ final class AIService: AIServiceProtocol {
         as an ingredient (e.g. muffin bread pudding, muffin French toast), don't suggest baking muffins. \
         If I list "bread", use the bread (e.g. in a sandwich, French toast, panzanella), don't bake bread.
 
-        \(ingredientConstraint)\(excludeClause)
+        \(ingredientConstraint)
+
+        \(coverageConstraint)\(excludeClause)
 
         Suggest up to 10 recipe ideas. For each, provide:
         - "name": a specific, descriptive recipe title
@@ -302,7 +311,7 @@ final class AIService: AIServiceProtocol {
         }
     }
 
-    func generateRecipeFromSuggestion(_ suggestion: RecipeNameSuggestion, ingredients: [String], strictIngredients: Bool) async -> Recipe? {
+    func generateRecipeFromSuggestion(_ suggestion: RecipeNameSuggestion, ingredients: [String], strictIngredients: Bool, requireAllIngredients: Bool) async -> Recipe? {
         let ingredientList = ingredients.joined(separator: ", ")
 
         let ingredientConstraint: String
@@ -310,6 +319,13 @@ final class AIService: AIServiceProtocol {
             ingredientConstraint = "Use ONLY these ingredients: \(ingredientList). Do not add any ingredients not in this list."
         } else {
             ingredientConstraint = "Primary ingredients: \(ingredientList). You may include common staples (salt, pepper, oil, butter, garlic, onion, sugar, flour, eggs, basic dried herbs/spices) but no other unlisted ingredients."
+        }
+
+        let coverageConstraint: String
+        if requireAllIngredients {
+            coverageConstraint = "The recipe MUST use ALL of the listed ingredients."
+        } else {
+            coverageConstraint = "The recipe should use whichever of the listed ingredients work best for this dish. It does NOT need to use all of them."
         }
 
         let prompt = """
@@ -324,6 +340,8 @@ final class AIService: AIServiceProtocol {
         For example, if "muffins" are listed, the recipe should USE muffins as an ingredient, not bake new ones.
 
         \(ingredientConstraint)
+
+        \(coverageConstraint)
 
         Create an authentic, well-tested recipe. Use realistic quantities, proper technique, \
         and accurate cooking times.
