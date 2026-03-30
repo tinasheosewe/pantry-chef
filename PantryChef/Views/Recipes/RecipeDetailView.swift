@@ -231,16 +231,18 @@ struct RecipeDetailView: View {
         }
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
-                Button {
-                    recipe.isFavorite.toggle()
-                    Task {
-                        await appState.recipeGateway.toggleFavoriteWithSave(recipe)
+                if isSavedRecipe {
+                    Button {
+                        recipe.isFavorite.toggle()
+                        Task {
+                            await appState.recipeGateway.toggleFavoriteWithSave(recipe)
+                        }
+                    } label: {
+                        Image(systemName: recipe.isFavorite ? "heart.fill" : "heart")
+                            .foregroundStyle(recipe.isFavorite ? .red : PCColors.textTertiary)
                     }
-                } label: {
-                    Image(systemName: recipe.isFavorite ? "heart.fill" : "heart")
-                        .foregroundStyle(recipe.isFavorite ? .red : PCColors.textTertiary)
+                    .accessibilityIdentifier("recipe.detail.favoriteButton")
                 }
-                .accessibilityIdentifier("recipe.detail.favoriteButton")
             }
             ToolbarItem(placement: .topBarTrailing) {
                 Button {

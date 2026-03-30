@@ -218,14 +218,21 @@ enum IngredientLexicon {
         return distances[rhsCount]
     }
 
-    private static let stripWords: [String] = [
-        "fresh", "dried", "frozen", "organic", "large", "small", "medium",
-        "whole", "chopped", "diced", "minced", "sliced", "ground", "raw",
-        "cooked", "boneless", "skinless", "extra", "virgin", "light",
-        "heavy", "low fat", "low-fat", "fat free", "fat-free", "unsalted", "salted", "canned",
-        "packed", "plain", "all purpose", "all-purpose", "self rising", "self-rising", "unbleached",
-        "fine", "coarse", "baby", "ripe", "firm", "soft", "thin", "thick"
-    ]
+    // MARK: - Catalog-Derived Data
+
+    /// Strip words derived from all catalog facet options.
+    /// These are modifiers (fresh, dried, chopped, etc.) that should be removed during normalization.
+    private static let stripWords: [String] = {
+        var words = Set<String>()
+        for item in PantryCatalog.allItems {
+            for facet in item.facets {
+                for option in facet.options {
+                    words.insert(option.lowercased())
+                }
+            }
+        }
+        return Array(words)
+    }()
 
     private static let stripRegexes: [NSRegularExpression] = {
         stripWords.compactMap { word in
@@ -236,46 +243,14 @@ enum IngredientLexicon {
         }
     }()
 
-    private static let rawSynonymGroups: [[String]] = [
-        ["green onion", "scallion", "spring onion"],
-        ["shallot", "french shallot"],
-        ["bell pepper", "capsicum", "sweet pepper"],
-        ["chili pepper", "chilli", "chile", "hot pepper"],
-        ["jalapeno", "jalapeño"],
-        ["cilantro", "coriander", "coriander leaf"],
-        ["parsley", "flat leaf parsley", "italian parsley"],
-        ["cornstarch", "corn starch", "corn flour"],
-        ["potato starch", "potato flour"],
-        ["chicken breast", "chicken"],
-        ["ground beef", "beef mince", "minced beef"],
-        ["ground turkey", "turkey mince"],
-        ["shrimp", "prawn"],
-        ["heavy cream", "whipping cream", "double cream"],
-        ["sour cream", "crème fraîche"],
-        ["greek yogurt", "greek yoghurt", "strained yogurt"],
-        ["all purpose flour", "plain flour", "ap flour", "flour"],
-        ["bread flour", "strong flour"],
-        ["olive oil", "extra virgin olive oil", "evoo"],
-        ["vegetable oil", "canola oil", "neutral oil"],
-        ["soy sauce", "shoyu", "tamari"],
-        ["fish sauce", "nam pla"],
-        ["sugar", "granulated sugar", "white sugar"],
-        ["brown sugar", "dark brown sugar", "light brown sugar"],
-        ["powdered sugar", "confectioner sugar", "icing sugar"],
-        ["garbanzo", "chickpea"],
-        ["eggplant", "aubergine"],
-        ["zucchini", "courgette"],
-        ["arugula", "rocket"],
-        ["beet", "beetroot"],
-        ["stock", "broth"],
-        ["chicken stock", "chicken broth"],
-        ["beef stock", "beef broth"],
-        ["vegetable stock", "vegetable broth"],
-        ["baking soda", "bicarbonate of soda", "bicarb"],
-        ["baking powder", "raising agent"],
-        ["cream cheese", "neufchatel"],
-        ["egg", "egg whole"]
-    ]
+    /// Synonym groups derived from catalog item names and aliases.
+    /// Each item's name + aliases form a synonym group for lookup expansion.
+    private static let rawSynonymGroups: [[String]] = {
+        PantryCatalog.allItems.compactMap { item -> [String]? in
+            guard !item.aliases.isEmpty else { return nil }
+            return [item.name] + item.aliases
+        }
+    }()
 
     private static let lookupSynonymIndex: [String: Set<String>] = {
         var index: [String: Set<String>] = [:]
