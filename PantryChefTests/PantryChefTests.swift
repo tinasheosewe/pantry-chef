@@ -251,20 +251,22 @@ final class MockAIService: AIServiceProtocol {
     func estimateStepDurations(for steps: [RecipeStep], recipeTitle: String) async -> [RecipeStep] {
         return steps
     }
-    func generateRecipe(query: String, preferences: RecipeGenerationPreferences) async -> Recipe? {
+    func generateRecipe(query: String, preferences: RecipeGenerationPreferences) async -> RecipeGenerationResult? {
         generateRecipeCallCount += 1
         lastGenerateRecipeQuery = query
         lastGenerateRecipePreferences = preferences
-        return recipesToReturn.first
+        guard let recipe = recipesToReturn.first else { return nil }
+        return .recipe(recipe)
     }
     func generateStatusMessages(query: String, preferences: RecipeGenerationPreferences) async -> [String] {
         return ["Cooking..."]
     }
-    func modifyRecipe(_ recipe: Recipe, feedback: String, pantryIngredients: [String]) async -> Recipe? {
+    func modifyRecipe(_ recipe: Recipe, feedback: String, pantryIngredients: [String]) async -> RecipeGenerationResult? {
         modifyRecipeCallCount += 1
         lastModifyFeedback = feedback
         lastModifyPantryIngredients = pantryIngredients
-        return recipesToReturn.first
+        guard let modifiedRecipe = recipesToReturn.first else { return nil }
+        return .recipe(modifiedRecipe)
     }
     func suggestRecipeNames(ingredients: [String], strictIngredients: Bool, requireAllIngredients: Bool, excludeNames: [String]) async -> RecipeNameSuggestionsResult {
         suggestRecipeNamesCallCount += 1
@@ -3752,6 +3754,7 @@ final class AppStateTests: XCTestCase {
             source: .aiGenerated
         )]
         let preferences = RecipeGenerationPreferences(
+        let preferences = RecipeGenerationPreferences(
             servings: 2,
             maxTimeMinutes: 25,
             spiceLevel: .medium,
@@ -3761,9 +3764,10 @@ final class AppStateTests: XCTestCase {
         )
 
         let result = await appState.generateRecipe(query: "parfait", preferences: preferences)
+        let generatedRecipe = result?.recipe
 
-        XCTAssertEqual(result?.recipe.ingredients.first?.catalogItemID, "yogurt")
-        XCTAssertEqual(result?.recipe.ingredients.first?.facets, [.init(key: .variant, value: "greek")])
+        XCTAssertEqual(generatedRecipe?.ingredients.first?.catalogItemID, "yogurt")
+        XCTAssertEqual(generatedRecipe?.ingredients.first?.facets, [.init(key: .variant, value: "greek")])
         XCTAssertEqual(ai.generateRecipeCallCount, 1)
         XCTAssertEqual(ai.lastGenerateRecipeQuery, "parfait")
     }
@@ -3964,9 +3968,10 @@ final class AppStateTests: XCTestCase {
         )]
 
         let result = await appState.modifyRecipe(makeRecipe(title: "Base", source: .aiGenerated), feedback: "make it lighter")
+        let modifiedRecipe = result?.recipe
 
-        XCTAssertEqual(result?.recipe.ingredients.first?.catalogItemID, "rice")
-        XCTAssertEqual(result?.recipe.ingredients.first?.facets, [.init(key: .variant, value: "jasmine")])
+        XCTAssertEqual(modifiedRecipe?.ingredients.first?.catalogItemID, "rice")
+        XCTAssertEqual(modifiedRecipe?.ingredients.first?.facets, [.init(key: .variant, value: "jasmine")])
         XCTAssertEqual(ai.modifyRecipeCallCount, 1)
         XCTAssertEqual(ai.lastModifyFeedback, "make it lighter")
         XCTAssertEqual(ai.lastModifyPantryIngredients, ["Spinach"])

@@ -11,7 +11,7 @@ extension AppState {
         await recipeDomainService.getRecipeSuggestions(state: self)
     }
 
-    func generateRecipe(query: String, preferences: RecipeGenerationPreferences) async -> NormalizedAIRecipe? {
+    func generateRecipe(query: String, preferences: RecipeGenerationPreferences) async -> RecipeGenerationResult? {
         await recipeDomainService.generateRecipe(query: query, preferences: preferences, state: self)
     }
 
@@ -43,7 +43,7 @@ extension AppState {
         await recipeDomainService.generateRecipeFromSuggestion(suggestion, ingredients: ingredients, strictIngredients: strictIngredients, requireAllIngredients: requireAllIngredients, state: self)
     }
 
-    func modifyRecipe(_ recipe: Recipe, feedback: String) async -> NormalizedAIRecipe? {
+    func modifyRecipe(_ recipe: Recipe, feedback: String) async -> RecipeGenerationResult? {
         await recipeDomainService.modifyRecipe(recipe, feedback: feedback, state: self)
     }
 }

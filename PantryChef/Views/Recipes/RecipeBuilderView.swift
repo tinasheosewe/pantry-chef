@@ -324,13 +324,17 @@ struct RecipeBuilderView: View {
             }
         }
 
-        if let normalizedRecipe = await recipeFetch {
-            tickerTask.cancel()
+        let result = await recipeFetch
+        tickerTask.cancel()
+
+        switch result {
+        case .recipe(let recipe):
             appState.refreshDiscoverRecipes()
             dismiss()
-            onGenerated(normalizedRecipe.recipe)
-        } else {
-            tickerTask.cancel()
+            onGenerated(recipe)
+        case .rejected(let rejection):
+            generationError = rejection.userMessage
+        case nil:
             generationError = appState.errorMessage ?? "Couldn't create a recipe. Please try again."
         }
         isGenerating = false

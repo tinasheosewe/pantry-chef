@@ -827,8 +827,12 @@ struct RecipeDetailView: View {
         let feedback = prompt ?? modifyText
         guard !feedback.trimmingCharacters(in: .whitespaces).isEmpty else { return }
         isModifying = true
-        if let normalizedRecipe = await appState.recipeGateway.modifyRecipe(recipe, feedback: feedback) {
-            var result = normalizedRecipe.recipe
+
+        let modifyResult = await appState.recipeGateway.modifyRecipe(recipe, feedback: feedback)
+
+        switch modifyResult {
+        case .recipe(let modifiedRecipe):
+            var result = modifiedRecipe
             result.ingredients = Self.mergedIngredients(result.ingredients)
             withAnimation {
                 isModifiedBarDismissed = false
@@ -837,7 +841,9 @@ struct RecipeDetailView: View {
             }
             modifyText = ""
             showModify = false
-        } else {
+        case .rejected(let rejection):
+            actionErrorMessage = rejection.userMessage
+        case nil:
             actionErrorMessage = "Couldn't modify the recipe. Please try again."
         }
         isModifying = false

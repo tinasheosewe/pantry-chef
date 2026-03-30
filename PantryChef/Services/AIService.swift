@@ -20,6 +20,29 @@ final class AIService: AIServiceProtocol {
         self.telemetryReporter = telemetryReporter
     }
 
+    // MARK: - System Prompt
+
+    private static let systemPrompt = """
+        You are a helpful kitchen and cooking assistant. Always return valid JSON when asked for structured data.
+
+        IMPORTANT: You can ONLY help with food, cooking, recipes, ingredients, meal planning, and kitchen-related topics.
+
+        If the user asks about anything unrelated to food or cooking — such as:
+        - Programming, coding, or software (e.g., "hello world in python", "write me some code")
+        - Homework, math problems, or academic questions
+        - General knowledge unrelated to food
+        - Entertainment, games, or other non-cooking topics
+
+        You MUST reject the request by setting "rejected": true with:
+        - "rejectionReason": a brief category like "programming_request", "off_topic", "homework", etc.
+        - "rejectionMessage": a friendly message like "I'm your cooking assistant! I can only help with recipes, ingredients, and food-related questions. Try asking me about a dish you'd like to make!"
+        - "recipe": null
+
+        When the request IS about food/cooking, set "rejected": false with rejectionReason and rejectionMessage as null, and provide the full recipe.
+
+        Be generous in interpreting food-related requests. "Python Cake" or "Death by Chocolate" are valid dessert names. Only reject clearly non-food requests.
+        """
+
     // MARK: - Core Feature 1: What to Buy
 
     func generateShoppingList(recipe: Recipe, pantry: [PantryItem]) async -> [ShoppingItem] {
@@ -671,7 +694,8 @@ final class AIService: AIServiceProtocol {
     ]
 
     /// Build recipe object schema properties and required keys.
-    private static func recipeSchemaBody(includeFullDetails: Bool) -> [String: Any] {
+    /// When `allNullable` is true, the entire recipe can be null (for rejection responses).
+    private static func recipeSchemaBody(includeFullDetails: Bool, allNullable: Bool = false) -> [String: Any] {
         var properties: [String: Any] = [
             "title": ["type": "string"],
             "description": ["type": ["string", "null"]],
@@ -701,12 +725,17 @@ final class AIService: AIServiceProtocol {
             required += ["difficulty", "mealType", "cuisine", "calories", "protein", "carbohydrates", "fat", "fiber", "sugar", "sodium"]
         }
 
-        return [
+        let objectSchema: [String: Any] = [
             "type": "object",
             "properties": properties,
             "required": required,
             "additionalProperties": false
         ]
+
+        if allNullable {
+            return ["anyOf": [objectSchema, ["type": "null"]]] as [String: Any]
+        }
+        return objectSchema
     }
 
     // MARK: - JSON Schemas for Structured Output
@@ -723,6 +752,23 @@ final class AIService: AIServiceProtocol {
         "name": "full_recipe",
         "strict": true,
         "schema": recipeSchemaBody(includeFullDetails: true)
+    ]
+
+    /// Recipe or rejection — allows AI to reject off-topic queries.
+    private static let recipeOrRejectionSchema: [String: Any] = [
+        "name": "recipe_or_rejection",
+        "strict": true,
+        "schema": [
+            "type": "object",
+            "properties": [
+                "rejected": ["type": "boolean"],
+                "rejectionReason": ["type": ["string", "null"]],
+                "rejectionMessage": ["type": ["string", "null"]],
+                "recipe": recipeSchemaBody(includeFullDetails: true, allNullable: true)
+            ] as [String: Any],
+            "required": ["rejected", "rejectionReason", "rejectionMessage", "recipe"],
+            "additionalProperties": false
+        ] as [String: Any]
     ]
 
     /// Array of full recipes — for suggestRecipes, leftoverTransformer.
@@ -1332,7 +1378,7 @@ final class AIService: AIServiceProtocol {
 
     // MARK: - Recipe Generation
 
-    func generateRecipe(query: String, preferences: RecipeGenerationPreferences) async -> Recipe? {
+    func generateRecipe(query: String, preferences: RecipeGenerationPreferences) async -> RecipeGenerationResult? {
         var contextLines: [String] = []
         contextLines.append("Create a recipe for: \(query)")
         contextLines.append("Servings: \(preferences.servings)")
@@ -1353,7 +1399,9 @@ final class AIService: AIServiceProtocol {
         let prompt = """
         \(context)
 
-        Create an authentic, well-tested recipe. Use realistic quantities, proper technique, \
+        If this request is NOT about food or cooking, reject it with "rejected": true.
+
+        Otherwise, create an authentic, well-tested recipe. Use realistic quantities, proper technique, \
         and accurate cooking times. The recipe should feel like it comes from an experienced \
         home cook, not a generic template.
 
@@ -1370,7 +1418,13 @@ final class AIService: AIServiceProtocol {
         - For fats and oils, use volume (tbsp, cup, ml) not weight.
         - For spices and seasonings, use tsp, tbsp, or "pinch" — never grams for small amounts.
 
-        Return a single JSON object with:
+        Return a JSON object with these fields:
+        - "rejected": boolean (true if off-topic, false if valid food request)
+        - "rejectionReason": string or null (e.g. "programming_request", "off_topic" — only if rejected)
+        - "rejectionMessage": string or null (friendly message explaining you only help with food — only if rejected)
+        - "recipe": object or null (the full recipe if not rejected, null if rejected)
+
+        If not rejected, the recipe object should contain:
         - "title": string (specific and descriptive, e.g. "Hyderabadi Chicken Dum Biryani" not just "Chicken Biryani")
         - "description": string (2-3 sentences about the dish, its origin, and what makes it special)
         - "ingredients": [{"name": string, "quantity": number, "unit": string, "category": string}]
@@ -1404,13 +1458,34 @@ final class AIService: AIServiceProtocol {
 
         guard let response = await sendChatRequest(
             prompt: prompt,
-            responseFormat: ["type": "json_schema", "json_schema": Self.fullRecipeSchema]
+            responseFormat: ["type": "json_schema", "json_schema": Self.recipeOrRejectionSchema]
         ) else { return nil }
 
         guard let data = response.data(using: .utf8) else { return nil }
         do {
-            let raw = try JSONDecoder().decode(RawFullRecipe.self, from: data)
-            return validatedRecipe(raw.toRecipe(source: .aiGenerated), source: "generateRecipe")
+            let raw = try JSONDecoder().decode(RawRecipeOrRejection.self, from: data)
+            guard let result = raw.toResult() else {
+                AppLog.warn("[AIService] Failed to convert raw response to result")
+                return nil
+            }
+
+            if case .rejected(let rejection) = result {
+                telemetryReporter.record(TelemetryEvent(
+                    name: "ai.query.rejected.offtopic",
+                    severity: .info,
+                    metadata: ["reason": rejection.reason]
+                ))
+                return result
+            }
+
+            if case .recipe(let recipe) = result {
+                if let validated = validatedRecipe(recipe, source: "generateRecipe") {
+                    return .recipe(validated)
+                }
+                return nil
+            }
+
+            return result
         } catch {
             AppLog.warn("[AIService] Failed to parse generated recipe: \(error)")
             return nil
@@ -1419,7 +1494,7 @@ final class AIService: AIServiceProtocol {
 
     // MARK: - Recipe Modification
 
-    func modifyRecipe(_ recipe: Recipe, feedback: String, pantryIngredients: [String]) async -> Recipe? {
+    func modifyRecipe(_ recipe: Recipe, feedback: String, pantryIngredients: [String]) async -> RecipeGenerationResult? {
         let ingredientList = recipe.ingredients.map { ing in
             "\(ing.quantity) \(ing.unit?.rawValue ?? "") \(ing.name)"
         }.joined(separator: "\n")
@@ -1444,7 +1519,9 @@ final class AIService: AIServiceProtocol {
         let prompt = """
         \(context)
 
-        Modify this recipe according to the user's request. Keep the recipe's identity \
+        If the modification request is NOT about food or cooking (e.g., asking you to write code, do homework, etc.), reject it with "rejected": true.
+
+        Otherwise, modify this recipe according to the user's request. Keep the recipe's identity \
         and character intact — only change what the user asked for. If the user references \
         their pantry or available ingredients, use those. If they ask to make it spicier, \
         healthier, faster, etc., adjust accordingly.
@@ -1462,7 +1539,13 @@ final class AIService: AIServiceProtocol {
         - For fats and oils, use volume (tbsp, cup, ml) not weight.
         - For spices and seasonings, use tsp, tbsp, or "pinch" — never grams for small amounts.
 
-        Return the COMPLETE modified recipe as a single JSON object with the same structure:
+        Return a JSON object with these fields:
+        - "rejected": boolean (true if off-topic request, false if valid modification)
+        - "rejectionReason": string or null (e.g. "off_topic" — only if rejected)
+        - "rejectionMessage": string or null (friendly message — only if rejected)
+        - "recipe": object or null (the full modified recipe if not rejected, null if rejected)
+
+        If not rejected, the recipe object should contain:
         - "title": string
         - "description": string (update to reflect changes)
         - "ingredients": [{"name": string, "quantity": number, "unit": string, "category": string}]
@@ -1491,13 +1574,34 @@ final class AIService: AIServiceProtocol {
 
         guard let response = await sendChatRequest(
             prompt: prompt,
-            responseFormat: ["type": "json_schema", "json_schema": Self.fullRecipeSchema]
+            responseFormat: ["type": "json_schema", "json_schema": Self.recipeOrRejectionSchema]
         ) else { return nil }
 
         guard let data = response.data(using: .utf8) else { return nil }
         do {
-            let raw = try JSONDecoder().decode(RawFullRecipe.self, from: data)
-            return validatedRecipe(raw.toRecipe(source: recipe.source, preserving: recipe), source: "modifyRecipe")
+            let raw = try JSONDecoder().decode(RawRecipeOrRejection.self, from: data)
+            guard let result = raw.toModificationResult(preserving: recipe) else {
+                AppLog.warn("[AIService] Failed to convert raw modification response to result")
+                return nil
+            }
+
+            if case .rejected(let rejection) = result {
+                telemetryReporter.record(TelemetryEvent(
+                    name: "ai.modification.rejected.offtopic",
+                    severity: .info,
+                    metadata: ["reason": rejection.reason]
+                ))
+                return result
+            }
+
+            if case .recipe(let modifiedRecipe) = result {
+                if let validated = validatedRecipe(modifiedRecipe, source: "modifyRecipe") {
+                    return .recipe(validated)
+                }
+                return nil
+            }
+
+            return result
         } catch {
             AppLog.warn("[AIService] Failed to parse modified recipe: \(error)")
             return nil
@@ -1577,7 +1681,7 @@ final class AIService: AIServiceProtocol {
         var body: [String: Any] = [
             "model": model,
             "messages": [
-                ["role": "system", "content": "You are a helpful kitchen and cooking assistant. Always return valid JSON when asked for structured data."],
+                ["role": "system", "content": Self.systemPrompt],
                 ["role": "user", "content": prompt]
             ],
             "temperature": 0.7,

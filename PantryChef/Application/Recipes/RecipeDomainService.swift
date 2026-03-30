@@ -23,10 +23,10 @@ protocol RecipeDomainServicing {
     func updateRecipe(_ recipe: Recipe, state: any RecipeDomainState) async
     func deleteRecipe(_ recipe: Recipe, state: any RecipeDomainState) async
     func toggleFavoriteWithSave(_ recipe: Recipe, state: any RecipeDomainState) async
-    func generateRecipe(query: String, preferences: RecipeGenerationPreferences, state: any RecipeDomainState) async -> AppState.NormalizedAIRecipe?
+    func generateRecipe(query: String, preferences: RecipeGenerationPreferences, state: any RecipeDomainState) async -> RecipeGenerationResult?
     func importRecipeFromURL(_ urlString: String, state: any RecipeDomainState) async -> AppState.ReviewableImportedRecipe?
     func importRecipeFromText(_ text: String, state: any RecipeDomainState) async -> AppState.ReviewableImportedRecipe?
-    func modifyRecipe(_ recipe: Recipe, feedback: String, state: any RecipeDomainState) async -> AppState.NormalizedAIRecipe?
+    func modifyRecipe(_ recipe: Recipe, feedback: String, state: any RecipeDomainState) async -> RecipeGenerationResult?
     func cacheDiscoverRecipe(_ recipe: AppState.NormalizedAIRecipe, state: any RecipeDomainState) async -> AppState.NormalizedAIRecipe?
     func cacheDiscoverRecipe(_ recipe: Recipe, state: any RecipeDomainState) async -> Recipe?
     func normalizedAIRecipe(_ recipe: Recipe, state: any RecipeDomainState) async -> AppState.NormalizedAIRecipe?
@@ -237,16 +237,24 @@ struct RecipeDomainService: RecipeDomainServicing {
         return AppState.ReviewableImportedRecipe(recipe: resolvedRecipe)
     }
 
-    func generateRecipe(query: String, preferences: RecipeGenerationPreferences, state: any RecipeDomainState) async -> AppState.NormalizedAIRecipe? {
+    func generateRecipe(query: String, preferences: RecipeGenerationPreferences, state: any RecipeDomainState) async -> RecipeGenerationResult? {
         guard !Task.isCancelled else { return nil }
-        guard let recipe = await state.aiService.generateRecipe(query: query, preferences: preferences) else {
+        guard let result = await state.aiService.generateRecipe(query: query, preferences: preferences) else {
             if !Task.isCancelled {
                 pushAIFailure("recipe generation", fallbackMessage: "Couldn't create a recipe right now. Please try again.", state: state)
             }
             return nil
         }
 
-        return await normalizedAIRecipe(recipe, state: state)
+        switch result {
+        case .recipe(let recipe):
+            guard let normalized = await normalizedAIRecipe(recipe, state: state) else {
+                return nil
+            }
+            return .recipe(normalized.recipe)
+        case .rejected(let rejection):
+            return .rejected(rejection)
+        }
     }
 
     func importRecipeFromURL(_ urlString: String, state: any RecipeDomainState) async -> AppState.ReviewableImportedRecipe? {
@@ -326,17 +334,25 @@ struct RecipeDomainService: RecipeDomainServicing {
         return await bestEffortNormalizedAIRecipe(recipe, state: state)
     }
 
-    func modifyRecipe(_ recipe: Recipe, feedback: String, state: any RecipeDomainState) async -> AppState.NormalizedAIRecipe? {
+    func modifyRecipe(_ recipe: Recipe, feedback: String, state: any RecipeDomainState) async -> RecipeGenerationResult? {
         let pantryNames = state.pantryItems.map(\.name)
         guard !Task.isCancelled else { return nil }
-        guard let modifiedRecipe = await state.aiService.modifyRecipe(recipe, feedback: feedback, pantryIngredients: pantryNames) else {
+        guard let result = await state.aiService.modifyRecipe(recipe, feedback: feedback, pantryIngredients: pantryNames) else {
             if !Task.isCancelled {
                 pushAIFailure("recipe modification", fallbackMessage: "Couldn't modify the recipe right now. Please try again.", state: state)
             }
             return nil
         }
 
-        return await bestEffortNormalizedAIRecipe(modifiedRecipe, state: state)
+        switch result {
+        case .recipe(let modifiedRecipe):
+            guard let normalized = await bestEffortNormalizedAIRecipe(modifiedRecipe, state: state) else {
+                return nil
+            }
+            return .recipe(normalized.recipe)
+        case .rejected(let rejection):
+            return .rejected(rejection)
+        }
     }
 
     private func unresolvedIngredientNames(in draft: RecipeResolutionDraft) -> [String] {

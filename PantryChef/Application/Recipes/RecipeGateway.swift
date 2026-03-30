@@ -6,10 +6,10 @@ protocol RecipeGatewayProtocol {
     func updateRecipe(_ recipe: Recipe) async
     func deleteRecipe(_ recipe: Recipe) async
     func toggleFavoriteWithSave(_ recipe: Recipe) async
-    func generateRecipe(query: String, preferences: RecipeGenerationPreferences) async -> AppState.NormalizedAIRecipe?
+    func generateRecipe(query: String, preferences: RecipeGenerationPreferences) async -> RecipeGenerationResult?
     func importRecipeFromURL(_ urlString: String) async -> AppState.ReviewableImportedRecipe?
     func importRecipeFromText(_ text: String) async -> AppState.ReviewableImportedRecipe?
-    func modifyRecipe(_ recipe: Recipe, feedback: String) async -> AppState.NormalizedAIRecipe?
+    func modifyRecipe(_ recipe: Recipe, feedback: String) async -> RecipeGenerationResult?
     func cacheDiscoverRecipe(_ recipe: Recipe) async -> Recipe?
 }
 
@@ -43,12 +43,20 @@ struct RecipeGateway: RecipeGatewayProtocol {
 
     // MARK: - AI / Import
 
-    func generateRecipe(query: String, preferences: RecipeGenerationPreferences) async -> AppState.NormalizedAIRecipe? {
-        guard let recipe = await recipeDomainService.generateRecipe(query: query, preferences: preferences, state: appState) else {
+    func generateRecipe(query: String, preferences: RecipeGenerationPreferences) async -> RecipeGenerationResult? {
+        guard let result = await recipeDomainService.generateRecipe(query: query, preferences: preferences, state: appState) else {
             return nil
         }
 
-        return await recipeDomainService.cacheDiscoverRecipe(recipe, state: appState)
+        switch result {
+        case .recipe(let recipe):
+            guard let cached = await recipeDomainService.cacheDiscoverRecipe(recipe, state: appState) else {
+                return nil
+            }
+            return .recipe(cached)
+        case .rejected(let rejection):
+            return .rejected(rejection)
+        }
     }
 
     func importRecipeFromURL(_ urlString: String) async -> AppState.ReviewableImportedRecipe? {
@@ -59,7 +67,7 @@ struct RecipeGateway: RecipeGatewayProtocol {
         await recipeDomainService.importRecipeFromText(text, state: appState)
     }
 
-    func modifyRecipe(_ recipe: Recipe, feedback: String) async -> AppState.NormalizedAIRecipe? {
+    func modifyRecipe(_ recipe: Recipe, feedback: String) async -> RecipeGenerationResult? {
         await recipeDomainService.modifyRecipe(recipe, feedback: feedback, state: appState)
     }
 

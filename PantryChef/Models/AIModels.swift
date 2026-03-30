@@ -350,6 +350,64 @@ struct RawFullRecipe: Decodable {
     }
 }
 
+// MARK: - Recipe Generation Result (supports off-topic rejection)
+
+/// When AI determines a query is not food/cooking related, it returns a rejection.
+struct RejectionResponse: Sendable, Equatable {
+    /// Brief reason for logging/analytics (e.g., "programming_request", "off_topic")
+    let reason: String
+    /// User-friendly message to display (e.g., "I can only help with food and cooking...")
+    let userMessage: String
+}
+
+/// Result of recipe generation — either a recipe or a rejection for off-topic queries.
+enum RecipeGenerationResult: Sendable {
+    case recipe(Recipe)
+    case rejected(RejectionResponse)
+
+    var recipe: Recipe? {
+        if case .recipe(let r) = self { return r }
+        return nil
+    }
+
+    var rejection: RejectionResponse? {
+        if case .rejected(let r) = self { return r }
+        return nil
+    }
+}
+
+/// Raw response wrapper for discriminated union parsing (recipe or rejection).
+struct RawRecipeOrRejection: Decodable {
+    let rejected: Bool
+    let rejectionReason: String?
+    let rejectionMessage: String?
+    let recipe: RawFullRecipe?
+
+    func toResult() -> RecipeGenerationResult? {
+        if rejected {
+            guard let reason = rejectionReason, let message = rejectionMessage else {
+                return nil
+            }
+            return .rejected(RejectionResponse(reason: reason, userMessage: message))
+        } else {
+            guard let rawRecipe = recipe else { return nil }
+            return .recipe(rawRecipe.toRecipe(source: .aiGenerated))
+        }
+    }
+
+    func toModificationResult(preserving original: Recipe) -> RecipeGenerationResult? {
+        if rejected {
+            guard let reason = rejectionReason, let message = rejectionMessage else {
+                return nil
+            }
+            return .rejected(RejectionResponse(reason: reason, userMessage: message))
+        } else {
+            guard let rawRecipe = recipe else { return nil }
+            return .recipe(rawRecipe.toRecipe(source: original.source, preserving: original))
+        }
+    }
+}
+
 // MARK: - Raw Wrapper Types (structured output requires top-level objects)
 
 struct RawRecipeArray: Decodable { let recipes: [RawFullRecipe] }
