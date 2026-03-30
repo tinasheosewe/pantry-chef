@@ -220,10 +220,11 @@ enum IngredientLexicon {
 
     // MARK: - Catalog-Derived Data
 
-    /// Strip words derived from all catalog facet options.
-    /// These are modifiers (fresh, dried, chopped, etc.) that should be removed during normalization.
+    /// Strip words combining universal modifiers with catalog facet options.
+    /// Universal modifiers are defined in PantryCatalog.universalModifiers.
+    /// Facet options are derived from all catalog items.
     private static let stripWords: [String] = {
-        var words = Set<String>()
+        var words = PantryCatalog.universalModifiers
         for item in PantryCatalog.allItems {
             for facet in item.facets {
                 for option in facet.options {
@@ -243,13 +244,16 @@ enum IngredientLexicon {
         }
     }()
 
-    /// Synonym groups derived from catalog item names and aliases.
-    /// Each item's name + aliases form a synonym group for lookup expansion.
+    /// Synonym groups combining universal synonyms with catalog item aliases.
+    /// Universal synonyms are defined in PantryCatalog.universalSynonyms.
+    /// Item aliases create additional synonym groups per catalog item.
     private static let rawSynonymGroups: [[String]] = {
-        PantryCatalog.allItems.compactMap { item -> [String]? in
-            guard !item.aliases.isEmpty else { return nil }
-            return [item.name] + item.aliases
+        var groups = PantryCatalog.universalSynonyms
+        for item in PantryCatalog.allItems {
+            guard !item.aliases.isEmpty else { continue }
+            groups.append([item.name] + item.aliases)
         }
+        return groups
     }()
 
     private static let lookupSynonymIndex: [String: Set<String>] = {

@@ -32,7 +32,7 @@ final class MultiRecipeSchedulerTests: XCTestCase {
         let recipe = makeRecipe(
             title: "Bake Test",
             steps: [
-                RecipeStep(stepNumber: 1, instruction: "Bake", estimatedDurationSeconds: 1800, timerMinutes: 30, tasks: [
+                RecipeStep(stepNumber: 1, instruction: "Bake", timerMinutes: 30, estimatedDurationSeconds: 1800, tasks: [
                     StepTask(id: passiveID, action: .bake, ingredient: "casserole", durationSeconds: 1800, type: .passive)
                 ]),
                 RecipeStep(stepNumber: 2, instruction: "Chop herbs", estimatedDurationSeconds: 90, tasks: [
@@ -43,9 +43,9 @@ final class MultiRecipeSchedulerTests: XCTestCase {
 
         let blocks = try await MultiRecipeScheduler.schedule(recipes: [recipe], aiService: MockAIService())
 
-        XCTAssertEqual(blocks[0].type, .passive, "Block with only passive tasks should be passive")
+        XCTAssertEqual(blocks[0].type, TaskType.passive, "Block with only passive tasks should be passive")
         XCTAssertEqual(blocks[0].tasks.first?.id, passiveID)
-        XCTAssertEqual(blocks[1].type, .active)
+        XCTAssertEqual(blocks[1].type, TaskType.active)
         XCTAssertEqual(blocks[1].tasks.first?.id, activeID)
     }
 
@@ -89,14 +89,14 @@ final class MultiRecipeSchedulerTests: XCTestCase {
 
         // First block: merged active tasks
         XCTAssertEqual(blocks[0].tasks.count, 2)
-        XCTAssertEqual(blocks[0].type, .active)
+        XCTAssertEqual(blocks[0].type, TaskType.active)
         XCTAssertEqual(blocks[0].displayInstruction, "Dice the onion for the soup, then quickly toss the salad while it heats.")
         XCTAssertTrue(blocks[0].recipeNames.contains("Soup"))
         XCTAssertTrue(blocks[0].recipeNames.contains("Salad"))
 
         // Second block: passive simmer
         XCTAssertEqual(blocks[1].tasks.count, 1)
-        XCTAssertEqual(blocks[1].type, .passive)
+        XCTAssertEqual(blocks[1].type, TaskType.passive)
         XCTAssertEqual(blocks[1].totalDurationSeconds, 900)
     }
 

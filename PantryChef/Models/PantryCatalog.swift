@@ -170,6 +170,68 @@ struct PantryCatalogItemDefinition: Identifiable, Hashable, Sendable {
 }
 
 enum PantryCatalog {
+    /// Universal ingredient modifiers that should be stripped during normalization.
+    /// These are common qualifiers that apply across many ingredient types.
+    static let universalModifiers: Set<String> = [
+        // Size
+        "large", "small", "medium",
+        // Preservation
+        "fresh", "dried", "frozen", "canned", "packed",
+        // Preparation
+        "whole", "chopped", "diced", "minced", "sliced", "ground",
+        // State
+        "raw", "cooked", "boneless", "skinless",
+        // Quality
+        "organic", "ripe", "baby",
+        // Fat content
+        "extra", "virgin", "light", "heavy",
+        "low fat", "low-fat", "fat free", "fat-free",
+        "unsalted", "salted",
+        // Flour types
+        "plain", "all purpose", "all-purpose", "self rising", "self-rising", "unbleached",
+        // Texture
+        "fine", "coarse", "firm", "soft", "thin", "thick"
+    ]
+
+    /// Universal synonym groups for cross-regional ingredient naming.
+    /// These connect equivalent ingredients that may have different names across regions.
+    static let universalSynonyms: [[String]] = [
+        ["green onion", "scallion", "spring onion"],
+        ["shallot", "french shallot"],
+        ["bell pepper", "capsicum", "sweet pepper"],
+        ["chili pepper", "chilli", "chile", "hot pepper"],
+        ["jalapeno", "jalapeño"],
+        ["cilantro", "coriander", "coriander leaf"],
+        ["parsley", "flat leaf parsley", "italian parsley"],
+        ["cornstarch", "corn starch", "corn flour"],
+        ["potato starch", "potato flour"],
+        ["shrimp", "prawn"],
+        ["heavy cream", "whipping cream", "double cream"],
+        ["sour cream", "crème fraîche"],
+        ["greek yogurt", "greek yoghurt", "strained yogurt"],
+        ["all purpose flour", "plain flour", "ap flour"],
+        ["bread flour", "strong flour"],
+        ["olive oil", "extra virgin olive oil", "evoo"],
+        ["vegetable oil", "canola oil", "neutral oil"],
+        ["soy sauce", "shoyu", "tamari"],
+        ["fish sauce", "nam pla"],
+        ["sugar", "granulated sugar", "white sugar"],
+        ["brown sugar", "dark brown sugar", "light brown sugar"],
+        ["powdered sugar", "confectioner sugar", "icing sugar"],
+        ["garbanzo", "chickpea"],
+        ["eggplant", "aubergine"],
+        ["zucchini", "courgette"],
+        ["arugula", "rocket"],
+        ["beet", "beetroot"],
+        ["stock", "broth"],
+        ["chicken stock", "chicken broth"],
+        ["beef stock", "beef broth"],
+        ["vegetable stock", "vegetable broth"],
+        ["baking soda", "bicarbonate of soda", "bicarb"],
+        ["baking powder", "raising agent"],
+        ["cream cheese", "neufchatel"]
+    ]
+
     static let allItems: [PantryCatalogItemDefinition] = [
         item(
             id: "flour",
