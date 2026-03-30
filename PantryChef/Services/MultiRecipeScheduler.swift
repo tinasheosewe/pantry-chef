@@ -134,15 +134,14 @@ struct MultiRecipeScheduler {
 
     // MARK: - Quick Estimate (synchronous, no LLM)
 
-    /// Produces a rough block estimate for preview UI (time savings display).
-    /// Groups tasks by phase for a ballpark block count and total time — NOT used for cooking.
+    /// Produces a rough block estimate for preview UI — NOT used for cooking.
+    /// Returns one block per recipe step to give a ballpark step count.
     static func estimateBlocks(recipes: [Recipe]) -> [ScheduledBlock] {
         guard recipes.count > 1 else {
             if let recipe = recipes.first { return singleRecipeBlocks(recipe) }
             return []
         }
         let tasks = extractTasks(from: recipes)
-        // Group by action class phase for a rough interleaving estimate
         let grouped = Dictionary(grouping: tasks, by: { $0.action.actionClass.phasePriority })
         return grouped.keys.sorted().compactMap { phase -> ScheduledBlock? in
             guard let phaseTasks = grouped[phase], !phaseTasks.isEmpty else { return nil }
@@ -159,36 +158,27 @@ struct MultiRecipeScheduler {
         }
     }
 
-    // MARK: - Estimated Total Time
+    // MARK: - Time Estimates
 
-    /// Estimate total cooking time for the interleaved schedule.
-    static func estimatedTotalTime(blocks: [ScheduledBlock]) -> Int {
-        var activeTime = 0
-        var maxPassive = 0
-
-        for block in blocks {
-            if block.type == .passive {
-                maxPassive = max(maxPassive, block.totalDurationSeconds)
-            } else {
-                activeTime += block.totalDurationSeconds
-            }
-        }
-
-        return activeTime + maxPassive
+    /// Individual recipe time in seconds using step-level durations.
+    private static func recipeTimeSeconds(_ recipe: Recipe) -> Int {
+        if let total = recipe.totalTimeMinutes { return total * 60 }
+        return recipe.steps.reduce(0) { $0 + $1.effectiveDurationSeconds }
     }
 
-    /// Compare with sequential cooking time.
+    /// Estimated interleaved time = longest recipe (assumes full parallelism).
+    static func estimatedInterleavedTime(recipes: [Recipe]) -> Int {
+        recipes.map { recipeTimeSeconds($0) }.max() ?? 0
+    }
+
+    /// Sequential baseline = sum of every recipe cooked back-to-back.
     static func sequentialTime(recipes: [Recipe]) -> Int {
-        recipes.reduce(0) { total, recipe in
-            total + recipe.steps.reduce(0) { $0 + $1.effectiveDurationSeconds }
-        }
+        recipes.reduce(0) { $0 + recipeTimeSeconds($1) }
     }
 
     /// Time saved by interleaving.
-    static func timeSaved(recipes: [Recipe], blocks: [ScheduledBlock]) -> Int {
-        let sequential = sequentialTime(recipes: recipes)
-        let interleaved = estimatedTotalTime(blocks: blocks)
-        return max(0, sequential - interleaved)
+    static func timeSaved(recipes: [Recipe]) -> Int {
+        max(0, sequentialTime(recipes: recipes) - estimatedInterleavedTime(recipes: recipes))
     }
 }
 

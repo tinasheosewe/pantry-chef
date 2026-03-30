@@ -256,12 +256,12 @@ struct MultiCookSelectionView: View {
         }
 
         let blocks = MultiRecipeScheduler.estimateBlocks(recipes: selectedRecipes)
-        let sequential = MultiRecipeScheduler.sequentialTime(recipes: selectedRecipes)
-        let interleaved = MultiRecipeScheduler.estimatedTotalTime(blocks: blocks)
+        let interleaved = MultiRecipeScheduler.estimatedInterleavedTime(recipes: selectedRecipes)
+        let saved = MultiRecipeScheduler.timeSaved(recipes: selectedRecipes)
         scheduleSummary = ScheduleSummary(
             blockCount: blocks.count,
             interleavedSeconds: interleaved,
-            savedSeconds: max(0, sequential - interleaved)
+            savedSeconds: saved
         )
     }
 

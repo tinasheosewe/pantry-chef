@@ -1141,9 +1141,11 @@ final class AIService: AIServiceProtocol {
            simmering, marinating, resting) as isPassive=true so the app can show a background \
            timer. The cook should NOT sit idle during passive waits — schedule active work \
            from other recipes in between.
-        8. **Natural language instructions.** Each block's "instruction" should read like a \
-           real chef talking: clear, concise, unambiguous. Mention specific recipes by name \
-           when tasks span multiple recipes. Include quantities and timing where helpful.
+        8. **Natural language instructions.** Each block's "instruction" should be a bullet \
+           list with one action per line, each prefixed with "• ". Keep each bullet to a single \
+           clear action. Mention specific recipes by name when tasks span multiple recipes. \
+           Include quantities and timing where helpful. Example:\n\
+           "• Dice 2 onions — 1 for the Curry, 1 for the Soup\n• Mince 4 cloves garlic\n• Slice the bell pepper into strips (Stir-Fry)"
         9. **Equipment awareness.** Don't schedule two tasks needing the same burner or oven \
            at conflicting temperatures in the same block.
 

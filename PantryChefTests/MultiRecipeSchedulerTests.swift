@@ -166,16 +166,41 @@ final class MultiRecipeSchedulerTests: XCTestCase {
 
     // MARK: - Time Helpers
 
-    func testTimeSavedCalculation() {
-        let block1 = MultiRecipeScheduler.ScheduledBlock(
-            id: UUID(), tasks: [], type: .active, totalDurationSeconds: 300, llmInstruction: "Active"
+    func testInterleavedTimeIsLongestRecipe() {
+        let recipe1 = makeRecipe(
+            title: "Slow",
+            steps: [
+                RecipeStep(stepNumber: 1, instruction: "Braise", estimatedDurationSeconds: 3600)
+            ]
         )
-        let block2 = MultiRecipeScheduler.ScheduledBlock(
-            id: UUID(), tasks: [], type: .passive, totalDurationSeconds: 900, llmInstruction: "Passive"
+        let recipe2 = makeRecipe(
+            title: "Fast",
+            steps: [
+                RecipeStep(stepNumber: 1, instruction: "Toss", estimatedDurationSeconds: 300)
+            ]
         )
 
-        let total = MultiRecipeScheduler.estimatedTotalTime(blocks: [block1, block2])
-        // active + max passive = 300 + 900
-        XCTAssertEqual(total, 1200)
+        let interleaved = MultiRecipeScheduler.estimatedInterleavedTime(recipes: [recipe1, recipe2])
+        // Should equal the longest recipe, not the sum
+        XCTAssertEqual(interleaved, 3600)
+    }
+
+    func testTimeSavedCalculation() {
+        let recipe1 = makeRecipe(
+            title: "Slow",
+            steps: [
+                RecipeStep(stepNumber: 1, instruction: "Braise", estimatedDurationSeconds: 3600)
+            ]
+        )
+        let recipe2 = makeRecipe(
+            title: "Fast",
+            steps: [
+                RecipeStep(stepNumber: 1, instruction: "Toss", estimatedDurationSeconds: 300)
+            ]
+        )
+
+        let saved = MultiRecipeScheduler.timeSaved(recipes: [recipe1, recipe2])
+        // sequential (3900) - interleaved (3600) = 300
+        XCTAssertEqual(saved, 300)
     }
 }

@@ -306,68 +306,70 @@ struct MultiCookModeView: View {
     // MARK: - Block Content
 
     private func blockContent(_ block: MultiRecipeScheduler.ScheduledBlock, vm: MultiCookModeViewModel) -> some View {
-        AppScrollView {
-            VStack(spacing: 24) {
-                // Action class badge
-                HStack(spacing: 8) {
-                    Image(systemName: block.actionClass.icon)
-                        .font(.title3)
-                    Text(block.label)
-                        .font(.headline)
-                }
-                .foregroundStyle(colorForBlock(block))
-                .padding(.top, 24)
+        VStack(spacing: 0) {
+            // Scrollable instruction area
+            AppScrollView {
+                VStack(spacing: 24) {
+                    // Action class badge
+                    HStack(spacing: 8) {
+                        Image(systemName: block.actionClass.icon)
+                            .font(.title3)
+                        Text(block.label)
+                            .font(.headline)
+                    }
+                    .foregroundStyle(colorForBlock(block))
+                    .padding(.top, 24)
 
-                // LLM-authored instruction — the primary content
-                Text(block.displayInstruction)
-                    .font(.title3)
-                    .fontWeight(.medium)
-                    .foregroundStyle(PCColors.textPrimary)
-                    .multilineTextAlignment(.leading)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.horizontal)
+                    // LLM-authored instruction — rendered as bullet list
+                    instructionBullets(block.displayInstruction)
+                        .padding(.horizontal)
 
-                // Passive indicator
-                if block.type == .passive {
-                    VStack(spacing: 4) {
-                        HStack(spacing: 6) {
-                            Image(systemName: "timer")
-                                .font(.caption)
-                            Text("Passive — \(block.totalDurationSeconds / 60) min wait")
-                                .font(.caption)
+                    // Passive indicator
+                    if block.type == .passive {
+                        VStack(spacing: 4) {
+                            HStack(spacing: 6) {
+                                Image(systemName: "timer")
+                                    .font(.caption)
+                                Text("Passive — \(block.totalDurationSeconds / 60) min wait")
+                                    .font(.caption)
+                            }
+                            .foregroundStyle(PCColors.expiring)
+
+                            Text("Start this, then tap Next to continue with other tasks")
+                                .font(.caption2)
+                                .foregroundStyle(PCColors.textSecondary)
                         }
-                        .foregroundStyle(PCColors.expiring)
-
-                        Text("Start this, then tap Next to continue with other tasks")
-                            .font(.caption2)
-                            .foregroundStyle(PCColors.textSecondary)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 8)
+                        .background(PCColors.expiring.opacity(0.1))
+                        .clipShape(RoundedRectangle(cornerRadius: 10))
                     }
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 8)
-                    .background(PCColors.expiring.opacity(0.1))
-                    .clipShape(RoundedRectangle(cornerRadius: 10))
-                }
 
-                // Recipe source tags
-                HStack(spacing: 8) {
-                    ForEach(block.recipeNames, id: \.self) { name in
-                        Text(name)
-                            .font(.caption2)
-                            .fontWeight(.medium)
-                            .foregroundStyle(Color.white)
-                            .padding(.horizontal, 8)
-                            .padding(.vertical, 4)
-                            .background(colorForRecipe(name).opacity(0.6))
-                            .clipShape(Capsule())
+                    // Recipe source tags
+                    HStack(spacing: 8) {
+                        ForEach(block.recipeNames, id: \.self) { name in
+                            Text(name)
+                                .font(.caption2)
+                                .fontWeight(.medium)
+                                .foregroundStyle(Color.white)
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 4)
+                                .background(colorForRecipe(name).opacity(0.6))
+                                .clipShape(Capsule())
+                        }
                     }
+                    .padding(.bottom, 16)
                 }
+            }
 
+            Spacer(minLength: 0)
+
+            // Fixed bottom area
+            VStack(spacing: 8) {
                 // Voice conversation indicator
                 if vm.isConversationActive {
                     conversationIndicator(vm: vm)
                 }
-
-                Spacer()
 
                 // Navigation buttons
                 HStack(spacing: 12) {
@@ -412,7 +414,59 @@ struct MultiCookModeView: View {
                 .padding(.horizontal)
                 .padding(.bottom, 32)
             }
+            .background(Color.black)
         }
+    }
+
+    // MARK: - Instruction Bullets
+
+    /// Splits the LLM instruction into bullet lines for readability.
+    /// Handles "• " prefixed lines, numbered lines, or falls back to sentence splitting.
+    private func instructionBullets(_ text: String) -> some View {
+        let lines = parseBulletLines(text)
+        return VStack(alignment: .leading, spacing: 10) {
+            ForEach(Array(lines.enumerated()), id: \.offset) { _, line in
+                HStack(alignment: .top, spacing: 8) {
+                    Text("•")
+                        .font(.title3)
+                        .fontWeight(.bold)
+                        .foregroundStyle(PCColors.accent)
+                    Text(line)
+                        .font(.title3)
+                        .foregroundStyle(PCColors.textPrimary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    /// Parse instruction text into individual action lines.
+    private func parseBulletLines(_ text: String) -> [String] {
+        let raw = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        // If the LLM already used bullet or numbered lines, split on newlines
+        let newlineLines = raw.components(separatedBy: .newlines)
+            .map { $0.trimmingCharacters(in: .whitespaces) }
+            .filter { !$0.isEmpty }
+        if newlineLines.count > 1 {
+            return newlineLines.map { line in
+                // Strip leading bullet/number markers
+                var cleaned = line
+                if cleaned.hasPrefix("•") || cleaned.hasPrefix("-") || cleaned.hasPrefix("*") {
+                    cleaned = String(cleaned.dropFirst()).trimmingCharacters(in: .whitespaces)
+                } else if let dotRange = cleaned.range(of: #"^\d+[\.\)]\s*"#, options: .regularExpression) {
+                    cleaned = String(cleaned[dotRange.upperBound...])
+                }
+                return cleaned
+            }
+        }
+        // Fallback: split a single paragraph on sentence boundaries
+        let sentences = raw.components(separatedBy: ". ")
+            .flatMap { $0.components(separatedBy: ".\n") }
+            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+            .filter { !$0.isEmpty }
+            .map { $0.hasSuffix(".") ? $0 : $0 + "." }
+        return sentences.count > 1 ? sentences : [raw]
     }
 
     // MARK: - Completion Screen
