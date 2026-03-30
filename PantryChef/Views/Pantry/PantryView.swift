@@ -266,10 +266,6 @@ struct PantryItemBatchRow: View {
                         Text(batch.displayQuantity)
                     }
 
-                    Text(batch.batchCountSummary)
-                        .font(.caption)
-                        .foregroundStyle(PCColors.accent)
-
                     Label(batch.representativeItem.storage.rawValue, systemImage: batch.representativeItem.storage.icon)
                         .font(.caption)
                         .foregroundStyle(PCColors.textSecondary)

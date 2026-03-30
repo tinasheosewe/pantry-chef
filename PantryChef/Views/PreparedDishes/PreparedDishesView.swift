@@ -369,15 +369,9 @@ struct PreparedDishBatchRow: View {
                     .fontWeight(.medium)
                     .foregroundStyle(PCColors.textPrimary)
 
-                HStack(spacing: 8) {
-                    Text(batch.servingsDisplay)
-                        .font(.caption)
-                        .foregroundStyle(PCColors.textSecondary)
-
-                    Text(batch.batchCountSummary)
-                        .font(.caption)
-                        .foregroundStyle(PCColors.accent)
-                }
+                Text(batch.servingsDisplay)
+                    .font(.caption)
+                    .foregroundStyle(PCColors.textSecondary)
 
                 Label(batch.representativeDish.storage.rawValue, systemImage: batch.representativeDish.storage.icon)
                     .font(.caption2)

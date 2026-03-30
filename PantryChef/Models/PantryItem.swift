@@ -185,10 +185,5 @@ struct PantryItemBatch: Identifiable {
         }
         return representativeItem.displayQuantity
     }
-
-    /// Summary of batch count for display (e.g., "3 batches").
-    var batchCountSummary: String {
-        items.count == 1 ? "" : "\(items.count) batches"
-    }
 }
 

@@ -501,11 +501,6 @@ struct PreparedDishBatch: Identifiable {
         totalServings == 1 ? "1 serving" : "\(totalServings) servings"
     }
 
-    /// Summary of batch count for display (e.g., "3 batches").
-    var batchCountSummary: String {
-        dishes.count == 1 ? "" : "\(dishes.count) batches"
-    }
-
     /// The normalized identity key for grouping (lowercased, trimmed name).
     static func identityKey(for dish: PreparedDish) -> String {
         dish.name.trimmed.lowercased()
