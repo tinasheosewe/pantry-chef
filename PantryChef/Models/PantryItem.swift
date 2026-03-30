@@ -129,3 +129,66 @@ struct PantryItem: Identifiable, Codable, Hashable {
         }
     }
 }
+
+// MARK: - Pantry Item Batch
+
+/// A group of pantry items with the same identity (ingredient, storage, variant) but potentially different expiry dates.
+/// Used for UI grouping with accordion display when multiple batches exist.
+struct PantryItemBatch: Identifiable {
+    let items: [PantryItem]
+
+    var id: UUID { items.first?.id ?? UUID() }
+
+    /// The first item serves as the representative for displaying name, category, etc.
+    var representativeItem: PantryItem { items[0] }
+
+    /// Whether this batch contains multiple items with different expiry dates.
+    var hasMultipleBatches: Bool { items.count > 1 }
+
+    /// The earliest expiry date among all items in this batch.
+    var earliestExpiry: Date? {
+        items.compactMap(\.expiryDate).min()
+    }
+
+    /// The expiry status based on the earliest expiry date.
+    var expiryStatus: ExpiryStatus {
+        .from(date: earliestExpiry)
+    }
+
+    /// Days until the earliest expiry, used for display.
+    var daysUntilExpiry: Int? {
+        ExpiryStatus.daysRemaining(until: earliestExpiry)
+    }
+
+    /// Total quantity across all items, if they all use the same unit.
+    var totalQuantity: Double? {
+        guard items.allSatisfy({ $0.quantity != nil }) else { return nil }
+        let units = Set(items.compactMap(\.unit))
+        guard units.count == 1 else { return nil }
+        return items.compactMap(\.quantity).reduce(0, +)
+    }
+
+    /// The common unit if all items share the same unit.
+    var commonUnit: MeasurementUnit? {
+        let units = Set(items.compactMap(\.unit))
+        return units.count == 1 ? units.first : nil
+    }
+
+    /// Display quantity showing total across batches.
+    var displayQuantity: String {
+        if let total = totalQuantity, let unit = commonUnit {
+            let unitStr = unit.rawValue
+            if total == total.rounded() {
+                return "\(Int(total)) \(unitStr)"
+            }
+            return String(format: "%.1f %@", total, unitStr)
+        }
+        return representativeItem.displayQuantity
+    }
+
+    /// Summary of batch count for display (e.g., "3 batches").
+    var batchCountSummary: String {
+        items.count == 1 ? "" : "\(items.count) batches"
+    }
+}
+

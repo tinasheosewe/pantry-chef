@@ -239,7 +239,8 @@ struct HomeView: View {
                 GridItem(.flexible()),
                 GridItem(.flexible()),
                 GridItem(.flexible()),
-            ], spacing: PCTokens.spacingMD) {
+                GridItem(.flexible()),
+            ], spacing: PCTokens.spacingSM) {
                 QuickActionButton(icon: "fork.knife", title: "What can\nI make?", color: PCColors.accent) {
                     onSwitchToRecipesCanMake?()
                 }

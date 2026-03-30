@@ -460,3 +460,54 @@ struct PreparedDishDraft: Identifiable, Hashable {
         }
     }
 }
+
+// MARK: - Prepared Dish Batch
+
+/// A group of prepared dishes with the same identity (same name) but potentially different expiry dates.
+/// Used for UI grouping with accordion display when multiple batches exist.
+struct PreparedDishBatch: Identifiable {
+    let dishes: [PreparedDish]
+
+    var id: UUID { dishes.first?.id ?? UUID() }
+
+    /// The first dish serves as the representative for displaying name, meal types, etc.
+    var representativeDish: PreparedDish { dishes[0] }
+
+    /// Whether this batch contains multiple dishes with different expiry dates.
+    var hasMultipleBatches: Bool { dishes.count > 1 }
+
+    /// The earliest use-by date among all dishes in this batch.
+    var earliestUseBy: Date? {
+        dishes.compactMap(\.useByDate).min()
+    }
+
+    /// The expiry status based on the earliest use-by date.
+    var expiryStatus: ExpiryStatus {
+        .from(date: earliestUseBy)
+    }
+
+    /// Days until the earliest use-by, used for display.
+    var daysUntilUseBy: Int? {
+        ExpiryStatus.daysRemaining(until: earliestUseBy)
+    }
+
+    /// Total servings across all dishes in this batch.
+    var totalServings: Int {
+        dishes.reduce(0) { $0 + $1.servingsRemaining }
+    }
+
+    /// Display string for total servings.
+    var servingsDisplay: String {
+        totalServings == 1 ? "1 serving" : "\(totalServings) servings"
+    }
+
+    /// Summary of batch count for display (e.g., "3 batches").
+    var batchCountSummary: String {
+        dishes.count == 1 ? "" : "\(dishes.count) batches"
+    }
+
+    /// The normalized identity key for grouping (lowercased, trimmed name).
+    static func identityKey(for dish: PreparedDish) -> String {
+        dish.name.trimmed.lowercased()
+    }
+}

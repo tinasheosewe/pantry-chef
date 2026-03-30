@@ -264,6 +264,36 @@ final class PantryViewModel: AsyncActionHandling {
         return grouped.sorted { $0.key.rawValue < $1.key.rawValue }
     }
 
+    /// Groups items by category, then by identity within each category.
+    /// Items with the same identity but different expiry dates are grouped together as a batch.
+    var groupedByCategoryAndIdentity: [(FoodCategory, [PantryItemBatch])] {
+        groupedByCategory.map { category, items in
+            let batches = Dictionary(grouping: items) { appState.pantryItemIdentityKey($0) }
+                .map { _, groupedItems -> PantryItemBatch in
+                    let sortedItems = groupedItems.sorted { left, right in
+                        // Sort by expiry date ascending (nil last)
+                        switch (left.expiryDate, right.expiryDate) {
+                        case let (l?, r?): return l < r
+                        case (nil, .some): return false
+                        case (.some, nil): return true
+                        case (nil, nil): return left.dateAdded > right.dateAdded
+                        }
+                    }
+                    return PantryItemBatch(items: sortedItems)
+                }
+                .sorted { left, right in
+                    // Sort batches by earliest expiry date
+                    switch (left.earliestExpiry, right.earliestExpiry) {
+                    case let (l?, r?): return l < r
+                    case (nil, .some): return false
+                    case (.some, nil): return true
+                    case (nil, nil): return left.representativeItem.name < right.representativeItem.name
+                    }
+                }
+            return (category, batches)
+        }
+    }
+
     var activeCategoryCount: [FoodCategory: Int] {
         Dictionary(grouping: appState.pantryItems, by: { $0.category })
             .mapValues { $0.count }

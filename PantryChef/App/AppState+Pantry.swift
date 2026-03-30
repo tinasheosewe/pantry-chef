@@ -26,4 +26,8 @@ extension AppState {
     func normalizedPantryIdentityFacets(_ item: PantryItem) -> [PantryFacetSelection] {
         pantryDomainService.normalizedPantryIdentityFacets(item)
     }
+
+    func pantryItemIdentityKey(_ item: PantryItem) -> PantryItemIdentityKey {
+        pantryDomainService.pantryItemIdentityKey(item)
+    }
 }

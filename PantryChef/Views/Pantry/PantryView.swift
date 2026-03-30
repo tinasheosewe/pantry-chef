@@ -90,26 +90,15 @@ struct PantryView: View {
     // MARK: - Pantry List
     private var pantryList: some View {
         AppList {
-            ForEach(viewModel.groupedByCategory, id: \.0) { category, items in
+            ForEach(viewModel.groupedByCategoryAndIdentity, id: \.0) { category, batches in
                 Section {
-                    ForEach(items) { item in
-                        Button {
-                            editingItem = item
-                        } label: {
-                            PantryItemRow(item: item)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                                .contentShape(Rectangle())
-                        }
-                        .buttonStyle(.plain)
-                        .accessibilityIdentifier("pantry.item.\(item.id.uuidString)")
-                        .swipeActions(edge: .trailing) {
-                            Button(role: .destructive) {
-                                viewModel.deleteItem(item)
-                            } label: {
-                                Label("Delete", systemImage: "trash")
-                            }
-                            .tint(.red)
-                        }
+                    ForEach(batches) { batch in
+                        PantryItemBatchRow(
+                            batch: batch,
+                            onEditItem: { item in editingItem = item },
+                            onDeleteItem: { item in viewModel.deleteItem(item) }
+                        )
+                        .accessibilityIdentifier("pantry.batch.\(batch.id.uuidString)")
                     }
                 } header: {
                     HStack(spacing: 8) {
@@ -200,6 +189,130 @@ struct PantryItemRow: View {
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.vertical, 4)
+    }
+}
+
+// MARK: - Pantry Item Batch Row (Accordion)
+struct PantryItemBatchRow: View {
+    let batch: PantryItemBatch
+    let onEditItem: (PantryItem) -> Void
+    let onDeleteItem: (PantryItem) -> Void
+
+    @State private var isExpanded = false
+
+    var body: some View {
+        if batch.hasMultipleBatches {
+            expandableBatchRow
+        } else {
+            singleItemRow
+        }
+    }
+
+    private var singleItemRow: some View {
+        let item = batch.representativeItem
+        return Button {
+            onEditItem(item)
+        } label: {
+            PantryItemRow(item: item)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .swipeActions(edge: .trailing) {
+            Button(role: .destructive) {
+                onDeleteItem(item)
+            } label: {
+                Label("Delete", systemImage: "trash")
+            }
+            .tint(.red)
+        }
+    }
+
+    private var expandableBatchRow: some View {
+        DisclosureGroup(isExpanded: $isExpanded) {
+            ForEach(batch.items) { item in
+                Button {
+                    onEditItem(item)
+                } label: {
+                    batchItemDetailRow(item)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .swipeActions(edge: .trailing) {
+                    Button(role: .destructive) {
+                        onDeleteItem(item)
+                    } label: {
+                        Label("Delete", systemImage: "trash")
+                    }
+                    .tint(.red)
+                }
+            }
+        } label: {
+            collapsedBatchSummary
+        }
+    }
+
+    private var collapsedBatchSummary: some View {
+        HStack(spacing: 12) {
+            VStack(alignment: .leading, spacing: 4) {
+                Text(batch.representativeItem.name)
+                    .font(.subheadline)
+                    .fontWeight(.medium)
+
+                HStack(spacing: 8) {
+                    if !batch.displayQuantity.isEmpty {
+                        Text(batch.displayQuantity)
+                    }
+
+                    Text(batch.batchCountSummary)
+                        .font(.caption)
+                        .foregroundStyle(PCColors.accent)
+
+                    Label(batch.representativeItem.storage.rawValue, systemImage: batch.representativeItem.storage.icon)
+                        .font(.caption)
+                        .foregroundStyle(PCColors.textSecondary)
+                }
+            }
+
+            Spacer()
+
+            if batch.earliestExpiry != nil {
+                ExpiryBadge(status: batch.expiryStatus, daysLeft: batch.daysUntilExpiry)
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.vertical, 4)
+    }
+
+    private func batchItemDetailRow(_ item: PantryItem) -> some View {
+        HStack(spacing: 12) {
+            VStack(alignment: .leading, spacing: 2) {
+                if !item.displayQuantity.isEmpty {
+                    Text(item.displayQuantity)
+                        .font(.caption)
+                        .foregroundStyle(PCColors.textPrimary)
+                }
+
+                if let expiryDate = item.expiryDate {
+                    Text(expiryDate.formatted(date: .abbreviated, time: .omitted))
+                        .font(.caption2)
+                        .foregroundStyle(PCColors.textSecondary)
+                } else {
+                    Text("No expiry")
+                        .font(.caption2)
+                        .foregroundStyle(PCColors.textSecondary)
+                }
+            }
+
+            Spacer()
+
+            if item.expiryDate != nil {
+                ExpiryBadge(status: item.expiryStatus, daysLeft: item.daysUntilExpiry)
+            }
+        }
+        .padding(.leading, 16)
         .padding(.vertical, 4)
     }
 }

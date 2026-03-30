@@ -1,5 +1,14 @@
 import Foundation
 
+/// Key for grouping pantry items by identity (same ingredient, storage, variant) but potentially different expiry dates.
+struct PantryItemIdentityKey: Hashable {
+    let catalogItemID: String?
+    let normalizedName: String
+    let category: FoodCategory
+    let storage: PantryStorage
+    let facetsHash: Int
+}
+
 @MainActor
 protocol PantryDomainState: AnyObject {
     var pantryItems: [PantryItem] { get }
@@ -24,6 +33,7 @@ protocol PantryDomainServicing {
     func pantryItemsCanMerge(_ existing: PantryItem, _ addition: PantryItem, state: any PantryDomainState) -> Bool
     func mergePantryItem(_ existing: PantryItem, with addition: PantryItem, state: any PantryDomainState) -> PantryItem
     func normalizedPantryIdentityFacets(_ item: PantryItem) -> [PantryFacetSelection]
+    func pantryItemIdentityKey(_ item: PantryItem) -> PantryItemIdentityKey
     func pantryCookReviewItems(for recipe: Recipe, state: any PantryDomainState) -> [PantryCookReviewItem]
     func applyPantryCookReview(_ items: [PantryCookReviewItem], state: any PantryDomainState) async
     func subtractableRecipeAmount(for ingredient: Ingredient, pantryItem: PantryItem, state: any PantryDomainState) -> Double?
@@ -193,6 +203,22 @@ struct PantryDomainService: PantryDomainServicing {
         }
 
         return catalogItem.facets.compactMap { facetsByKey[$0.key] }
+    }
+
+    func pantryItemIdentityKey(_ item: PantryItem) -> PantryItemIdentityKey {
+        let facets = normalizedPantryIdentityFacets(item)
+        var hasher = Hasher()
+        for facet in facets {
+            hasher.combine(facet.key)
+            hasher.combine(facet.value)
+        }
+        return PantryItemIdentityKey(
+            catalogItemID: item.catalogItemID,
+            normalizedName: IngredientMatcher.normalize(item.name),
+            category: item.category,
+            storage: item.storage,
+            facetsHash: hasher.finalize()
+        )
     }
 
     func pantryCookReviewItems(for recipe: Recipe, state: any PantryDomainState) -> [PantryCookReviewItem] {
