@@ -102,6 +102,21 @@ final class RecipeIngredientResolutionTests: XCTestCase {
         XCTAssertEqual(candidates.first?.facets, [.init(key: .variant, value: "generic")])
     }
 
+    func testCandidateParserReturnsResultsForQualifierPrefixedIngredients() {
+        let parser = IngredientCandidateParser()
+        let qualifiedNames = ["dried rosemary", "fresh basil", "frozen peas", "ground cumin"]
+
+        for name in qualifiedNames {
+            let ingredient = Ingredient(name: name)
+            let candidates = parser.candidates(for: ingredient)
+
+            XCTAssertFalse(
+                candidates.isEmpty,
+                "Expected candidates for '\(name)' but got none."
+            )
+        }
+    }
+
     func testTrustedCanonicalizerUsesBestCandidateIdentity() {
         let recipe = makeRecipe(
             title: "Parfait",

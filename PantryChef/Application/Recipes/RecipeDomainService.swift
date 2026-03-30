@@ -323,7 +323,7 @@ struct RecipeDomainService: RecipeDomainServicing {
             return nil
         }
 
-        return await normalizedAIRecipe(recipe, state: state)
+        return await bestEffortNormalizedAIRecipe(recipe, state: state)
     }
 
     func modifyRecipe(_ recipe: Recipe, feedback: String, state: any RecipeDomainState) async -> AppState.NormalizedAIRecipe? {
