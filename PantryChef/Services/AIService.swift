@@ -254,7 +254,7 @@ final class AIService: AIServiceProtocol {
         if requireAllIngredients {
             coverageConstraint = "Each recipe MUST use ALL of the listed ingredients."
         } else {
-            coverageConstraint = "Each recipe can use any subset of the listed ingredients — it does NOT need to use all of them. Aim for variety: suggest recipes that collectively cover different ingredients so the user can use everything across multiple recipes."
+            coverageConstraint = "Each recipe can use any subset of the listed ingredients - it does NOT need to use all of them. Aim for variety: suggest recipes that collectively cover different ingredients so the user can use everything across multiple recipes."
         }
 
         var excludeClause = ""

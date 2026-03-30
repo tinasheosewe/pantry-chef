@@ -148,6 +148,7 @@ struct RecipeDetailView: View {
     @State private var isModifying = false
     @State private var showEditor = false
     @State private var originalRecipe: Recipe
+    @State private var isModifiedBarDismissed = false
     @State private var showSaveAsSheet = false
     @State private var saveAsName = ""
     private let maxServings = 100
@@ -162,6 +163,10 @@ struct RecipeDetailView: View {
 
     private var isModified: Bool {
         recipe != originalRecipe
+    }
+
+    private var showsModifiedSaveBar: Bool {
+        isModified && !isModifiedBarDismissed
     }
 
     private var scaledRecipe: Recipe {
@@ -197,7 +202,7 @@ struct RecipeDetailView: View {
                     }
 
                     // Extra padding so content isn't hidden behind the bottom bar
-                    if isModified || isModifying {
+                    if showsModifiedSaveBar || isModifying {
                         Spacer().frame(height: 60)
                     }
                 }
@@ -208,7 +213,7 @@ struct RecipeDetailView: View {
             if isModifying {
                 modifyingBanner
                     .transition(.move(edge: .bottom).combined(with: .opacity))
-            } else if isModified {
+            } else if showsModifiedSaveBar {
                 modifiedSaveBar
                     .transition(.move(edge: .bottom).combined(with: .opacity))
             }
@@ -218,6 +223,11 @@ struct RecipeDetailView: View {
         .background(PCColors.background)
         .onAppear {
             existingSession = appState.cookingSessionStore.load(recipeId: recipe.id)
+        }
+        .onChange(of: recipe) { _, newRecipe in
+            if newRecipe != originalRecipe {
+                isModifiedBarDismissed = false
+            }
         }
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
@@ -808,6 +818,7 @@ struct RecipeDetailView: View {
             var result = normalizedRecipe.recipe
             result.ingredients = Self.mergedIngredients(result.ingredients)
             withAnimation {
+                isModifiedBarDismissed = false
                 recipe = result
                 servings = result.servings
             }
@@ -853,6 +864,7 @@ struct RecipeDetailView: View {
         recipe = saved
         servings = saved.servings
         originalRecipe = saved
+        isModifiedBarDismissed = false
         showEditor = false
         Task {
             await appState.recipeGateway.updateRecipe(saved)
@@ -861,6 +873,7 @@ struct RecipeDetailView: View {
 
     private func handleSavedRecipeAsNew(_ newRecipe: Recipe) {
         originalRecipe = recipe
+        isModifiedBarDismissed = false
         showEditor = false
         Task {
             await appState.recipeGateway.addRecipe(newRecipe)
@@ -893,8 +906,19 @@ struct RecipeDetailView: View {
         VStack(spacing: 0) {
             Divider()
             HStack(spacing: PCTokens.spacingMD) {
+                Button {
+                    withAnimation {
+                        isModifiedBarDismissed = true
+                    }
+                } label: {
+                    Image(systemName: "xmark.circle.fill")
+                        .font(.system(size: 18))
+                        .foregroundStyle(PCColors.textTertiary)
+                }
+
                 PCCapsuleButton("Revert", color: PCColors.textSecondary, style: .plain) {
                     withAnimation {
+                        isModifiedBarDismissed = false
                         recipe = originalRecipe
                         servings = originalRecipe.servings
                     }
@@ -906,7 +930,10 @@ struct RecipeDetailView: View {
                     PCCapsuleButton("Save", color: PCColors.accent, style: .filled) {
                         Task {
                             await appState.recipeGateway.updateRecipe(recipe)
-                            withAnimation { originalRecipe = recipe }
+                            withAnimation {
+                                isModifiedBarDismissed = false
+                                originalRecipe = recipe
+                            }
                         }
                     }
                 }
