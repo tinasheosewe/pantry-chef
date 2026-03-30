@@ -372,6 +372,11 @@ struct PantryIntakeRowDraft: Identifiable {
         expiryDateWasEdited = true
     }
 
+    mutating func clearExpiryDate() {
+        manualExpiryDate = nil
+        expiryDateWasEdited = true
+    }
+
     mutating func setUnit(_ unit: MeasurementUnit) {
         self.unit = unit
         unitWasEdited = true

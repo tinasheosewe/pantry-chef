@@ -1164,15 +1164,21 @@ struct PantryIntakeFormSections: View {
                 }
             }
 
-            if let expiryDate = draft.manualExpiryDate {
-                DatePicker("Expires on", selection: Binding(
-                    get: { expiryDate },
+            DatePicker(
+                "Expires on",
+                selection: Binding(
+                    get: { draft.manualExpiryDate ?? Date() },
                     set: { draft.setExpiryDate($0) }
-                ), displayedComponents: .date)
-            } else {
-                LabeledContent("Expires on") {
-                    Text(" ")
-                        .foregroundStyle(PCColors.textSecondary)
+                ),
+                displayedComponents: .date
+            )
+
+            if draft.manualExpiryDate != nil {
+                Button(role: .destructive) {
+                    draft.clearExpiryDate()
+                } label: {
+                    Text("Remove Expiry Date")
+                        .font(.subheadline)
                 }
             }
 
