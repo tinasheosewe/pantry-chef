@@ -27,6 +27,10 @@ final class MultiCookModeViewModel {
     var finishedTimerName: String?
     var showTimerFinishedAlert = false
 
+    /// Flags for session lifecycle
+    var isEndingSession = false
+    var didContinueInBackground = false
+
     let recipes: [Recipe]
     let blocks: [MultiRecipeScheduler.ScheduledBlock]
     let realtimeService: any RealtimeServiceProtocol
@@ -524,6 +528,27 @@ final class MultiCookModeViewModel {
         passiveTickCancellable?.cancel()
         timerCancellable?.cancel()
         stopConversation()
+    }
+
+    /// Continue cooking in background — keeps session persisted, stops voice.
+    func continueInBackground() {
+        didContinueInBackground = true
+        stopConversation()
+        persistSession()
+    }
+
+    /// Resume from background — reconnect voice.
+    func resumeFromBackground() {
+        didContinueInBackground = false
+        startConversation()
+    }
+
+    /// End session permanently — clears persisted state.
+    func endSession() {
+        isEndingSession = true
+        stopTimer()
+        stopConversation()
+        clearSession()
     }
 
     // MARK: - Session Persistence

@@ -328,8 +328,18 @@ struct CookQueueView: View {
 
     private func launchStage(_ stage: CookQueueStage) {
         let stageRecipeIDs = Set(stage.recipeIDs)
-        let hasConflict = appState.activeCooks.activeSessions.contains { !stageRecipeIDs.contains($0.recipeId) }
-        if hasConflict {
+        
+        // Check for conflicting single-cook sessions (different recipe)
+        let hasSingleCookConflict = appState.activeCooks.activeSessions.contains {
+            !stageRecipeIDs.contains($0.recipeId)
+        }
+        
+        // Check for conflicting multi-cook sessions (different recipe set)
+        let hasMultiCookConflict = appState.activeCooks.activeMultiCookSessions.contains {
+            Set($0.recipeIDs) != stageRecipeIDs
+        }
+        
+        if hasSingleCookConflict || hasMultiCookConflict {
             pendingLaunchStage = stage
             showEndOtherCookAlert = true
             return

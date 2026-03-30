@@ -8,6 +8,7 @@ import SwiftUI
 
 struct MultiCookModeView: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.scenePhase) private var scenePhase
     @Environment(AppState.self) private var appState
 
     let recipes: [Recipe]
@@ -87,8 +88,31 @@ struct MultiCookModeView: View {
         .onDisappear {
             syncTask?.cancel()
             syncTask = nil
+            // Auto-continue in background on any dismiss (unless explicitly ending)
+            if let vm = viewModel, !vm.isEndingSession, !vm.didContinueInBackground {
+                vm.continueInBackground()
+            }
             viewModel?.cleanup()
             appState.activeCooks.refresh()
+        }
+        .onChange(of: scenePhase) { _, newPhase in
+            switch newPhase {
+            case .active:
+                // If we auto-backgrounded when the app went inactive, resume live voice
+                if let vm = viewModel, vm.didContinueInBackground {
+                    vm.resumeFromBackground()
+                }
+            case .background:
+                // Auto-continue in background when app goes to background
+                viewModel?.continueInBackground()
+            default:
+                break
+            }
+        }
+        .onChange(of: viewModel?.isEndingSession ?? false) { _, isEnding in
+            if isEnding {
+                dismiss()
+            }
         }
         .confirmationDialog("End Multi-Cook?", isPresented: $showEndConfirm, titleVisibility: .visible) {
             Button("End All Sessions", role: .destructive) {
@@ -163,19 +187,8 @@ struct MultiCookModeView: View {
     // MARK: - Top Bar
 
     private func topBar(vm: MultiCookModeViewModel) -> some View {
-        HStack {
-            Button {
-                dismiss()
-            } label: {
-                Image(systemName: "chevron.down")
-                    .font(.title3)
-                    .fontWeight(.semibold)
-                    .foregroundStyle(PCColors.textPrimary)
-                    .padding(8)
-            }
-
-            Spacer()
-
+        ZStack {
+            // Center title
             VStack(spacing: 2) {
                 Text("Multi-Cook")
                     .font(.caption)
@@ -186,18 +199,29 @@ struct MultiCookModeView: View {
                     .foregroundStyle(PCColors.textPrimary)
             }
 
-            Spacer()
+            HStack {
+                // Close — offers background or end
+                Menu {
+                    Button {
+                        dismiss()
+                    } label: {
+                        Label("Continue in Background", systemImage: "arrow.down.to.line")
+                    }
+                    Button(role: .destructive) {
+                        showEndConfirm = true
+                    } label: {
+                        Label("End Session", systemImage: "xmark.circle")
+                    }
+                } label: {
+                    Image(systemName: "chevron.down")
+                        .font(.title3)
+                        .fontWeight(.semibold)
+                        .foregroundStyle(PCColors.textPrimary)
+                        .padding(8)
+                }
 
-            Button("End") {
-                showEndConfirm = true
+                Spacer()
             }
-            .font(.subheadline)
-            .fontWeight(.semibold)
-            .foregroundStyle(PCColors.expired)
-            .padding(.horizontal, 12)
-            .padding(.vertical, 6)
-            .background(PCColors.expired.opacity(0.12))
-            .clipShape(Capsule())
         }
         .padding(.horizontal)
         .padding(.top, 8)
@@ -561,8 +585,9 @@ struct MultiCookModeView: View {
     // MARK: - Session Management
 
     private func endSession(completed: Bool = false) {
-        viewModel?.clearSession()
-        viewModel?.cleanup()
+        // Tell the view model to end (sets isEndingSession flag, clears session)
+        viewModel?.endSession()
+        
         Task {
             if let queueStageID {
                 if completed {
@@ -576,7 +601,7 @@ struct MultiCookModeView: View {
             appState.cookingSessionStore.clear(recipeId: recipe.id)
         }
         appState.activeCooks.refresh()
-        dismiss()
+        // Dismiss is handled by the onChange(of: viewModel?.isEndingSession) observer
     }
 }
 

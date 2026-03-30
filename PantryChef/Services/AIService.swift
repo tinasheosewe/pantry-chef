@@ -1140,47 +1140,55 @@ final class AIService: AIServiceProtocol {
         TASKS (JSON array):
         \(tasksString)
 
+        CRITICAL SCHEDULING PHILOSOPHY — RECIPE-FIRST APPROACH:
+        The schedule must feel natural to a home cook. When you start working on a recipe's \
+        step sequence (e.g., pizza: roll dough → add sauce → add cheese → put in oven), \
+        you COMPLETE that entire sequence before switching to another recipe. The ONLY \
+        exception is when a passive wait (oven baking, simmering) creates dead time that \
+        you fill with other recipes' active work.
+
+        Think of it this way: A cook picks up the pizza dough, rolls it, adds sauce, adds \
+        cheese, and puts it in the oven — all in one continuous workflow. They do NOT roll \
+        dough, then chop salad vegetables, then come back to add sauce, then go dice onions \
+        for another dish. That would be chaotic and inefficient.
+
         RULES:
         1. **Every taskID must appear in exactly one block.** Do not skip or duplicate any task.
         2. **Respect dependencies.** A task's block must come AFTER all blocks containing its \
            dependsOn tasks.
-        3. **Be smart about parallelism.** Group tasks that can realistically be done at the \
-           same time, but never overload the cook. A person can do at most 2-3 simple things \
-           simultaneously (e.g., chop two vegetables), but only 1 demanding task (e.g., stir-fry).
-        4. **Optimal ordering.** Prep tasks first, then cooking, then plating. Hot food should \
-           finish close together so nothing gets cold. Passive waits (oven, simmering) should \
-           be started early so active work fills the wait time.
-        5. **Merge prep when safe.** If two recipes each need the same ingredient prepped in \
-           the same way for the same downstream treatment (e.g., both dice onion, both will \
-           be fried), merge into one instruction with combined quantity (e.g., "Dice 2 onions"). \
-           Then reword ALL downstream references so the cook knows which batch goes where \
-           (e.g., "Add the onions to the stir-fry pan" not just "Add the onions").
-        6. **Keep prep separate when downstream differs.** If one recipe fries the onion and \
-           another boils it, do NOT merge. Instead keep them as separate tasks in the same or \
-           different blocks, clearly labeled: "Dice 1 onion (for the Curry)" and \
-           "Dice 1 onion (for the Soup)".
-        7. **Passive blocks.** Mark blocks where the cook just waits (oven preheating, \
-           simmering, marinating, resting) as isPassive=true so the app can show a background \
-           timer. The cook should NOT sit idle during passive waits — schedule active work \
-           from other recipes in between.
-        8. **Natural language instructions.** Each block's "instruction" should be a bullet \
+        3. **RECIPE WORKFLOW CONTINUITY (HIGHEST PRIORITY).** Tasks from the same recipe with \
+           consecutive stepNumbers MUST be in consecutive blocks with NO other recipes' tasks \
+           inserted between them. Example: If recipe "Pizza" has steps 3, 4, 5 with active tasks, \
+           those must appear in blocks N, N+1, N+2 with no other recipe's tasks in between. \
+           Violation of this rule produces a bad user experience.
+        4. **Smart parallelism within a block.** ONLY group tasks that can genuinely be done \
+           simultaneously — typically from the SAME recipe step or truly parallel prep work. \
+           Never put tasks from different recipe workflows in the same block unless they're \
+           independent prep that shares nothing downstream.
+        5. **Optimal high-level ordering.** All prep from one recipe, then cook that recipe, \
+           then move to the next recipe's prep and cook. Passive waits are the ONLY time to \
+           switch recipes for active work.
+        6. **Merge prep when safe.** If recipes need the same ingredient prepped the same way \
+           for similar downstream treatment, merge into one instruction. Then reword ALL \
+           downstream references so the cook knows which batch goes where.
+        7. **Keep prep separate when downstream differs.** If recipes use the same ingredient \
+           differently (one fries, one boils), keep them separate and clearly labeled.
+        8. **Passive blocks.** Mark blocks with only passive waiting (oven, simmering) as \
+           isPassive=true. After starting a passive wait, you MAY switch to another recipe's \
+           COMPLETE workflow (not individual tasks) to fill the dead time.
+        9. **Natural language instructions.** Each block's "instruction" should be a bullet \
            list with one action per line, each prefixed with "• ". Keep each bullet to a single \
-           clear action. Mention specific recipes by name when tasks span multiple recipes. \
-           Include quantities and timing where helpful. Example:\n\
-           "• Dice 2 onions — 1 for the Curry, 1 for the Soup\n• Mince 4 cloves garlic\n• Slice the bell pepper into strips (Stir-Fry)"
-        9. **Equipment awareness.** Don't schedule two tasks needing the same burner or oven \
-           at conflicting temperatures in the same block.
-        10. **Keep recipe steps cohesive.** Tasks sharing the same "stepGroupID" came from the \
-           same recipe step and form a logical sequence (e.g., roll dough → add sauce → add \
-           cheese). These tasks MUST be placed in the same block or in consecutive blocks with \
-           NO unrelated tasks from other recipes inserted between them. The cook should finish \
-           one recipe phase before switching to another recipe. Think of it like a kitchen \
-           workflow: once you start assembling a pizza, you finish assembling it before moving \
-           on to chopping vegetables for a salad.
-        11. **Minimize recipe context-switching.** When possible, group multiple consecutive \
-           steps from the same recipe together before switching to another recipe. The only \
-           exception is when a passive wait (oven, simmering) creates dead time that should be \
-           filled with active work from another recipe.
+           clear action. Mention recipes by name. Include quantities and timing.
+        10. **Equipment awareness.** Don't schedule tasks needing the same equipment at \
+           conflicting settings in the same block.
+
+        SCHEDULING ALGORITHM:
+        1. Pick a recipe to start with (usually prep-heavy or has long passive waits)
+        2. Schedule ALL consecutive active steps of that recipe until you hit a passive wait
+        3. Start the passive wait block (isPassive=true)
+        4. During the passive wait: switch to another recipe and follow steps 1-3 for it
+        5. When a passive wait ends, return to that recipe's next steps if needed
+        6. Repeat until all tasks are scheduled
 
         Return a JSON object with a "blocks" array. Each block:
         {
