@@ -50,7 +50,7 @@ struct BatchScheduleLoadingView: View {
                 .font(.headline)
                 .foregroundStyle(PCColors.textPrimary)
 
-            Text("The AI is figuring out the best way to interleave \(recipes.count) recipes.")
+            Text("Figuring out the best way to interleave \(recipes.count) recipes.")
                 .font(.subheadline)
                 .foregroundStyle(PCColors.textSecondary)
                 .multilineTextAlignment(.center)
