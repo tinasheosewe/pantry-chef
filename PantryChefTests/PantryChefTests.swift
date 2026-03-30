@@ -519,6 +519,31 @@ final class PantryItemModelTests: XCTestCase {
         XCTAssertEqual(item.expiryStatus, .expiringSoon)
     }
 
+    // MARK: - Same Calendar Day
+
+    func testSameCalendarDayBothNil() {
+        XCTAssertTrue(ExpiryStatus.sameCalendarDay(nil, nil))
+    }
+
+    func testSameCalendarDayOneNil() {
+        let date = Date()
+        XCTAssertFalse(ExpiryStatus.sameCalendarDay(date, nil))
+        XCTAssertFalse(ExpiryStatus.sameCalendarDay(nil, date))
+    }
+
+    func testSameCalendarDaySameDay() {
+        let baseDate = Calendar.current.startOfDay(for: Date())
+        let morning = Calendar.current.date(byAdding: .hour, value: 9, to: baseDate)!
+        let evening = Calendar.current.date(byAdding: .hour, value: 21, to: baseDate)!
+        XCTAssertTrue(ExpiryStatus.sameCalendarDay(morning, evening))
+    }
+
+    func testSameCalendarDayDifferentDays() {
+        let today = Date()
+        let tomorrow = Calendar.current.date(byAdding: .day, value: 1, to: today)!
+        XCTAssertFalse(ExpiryStatus.sameCalendarDay(today, tomorrow))
+    }
+
     // MARK: - Days Until Expiry
 
     func testDaysUntilExpiryFuture() {
@@ -2308,7 +2333,7 @@ final class AppStateTests: XCTestCase {
         XCTAssertEqual(storage.updatePantryItemCallCount, 1)
     }
 
-    func testAddPantryItemMergeKeepsEarlierExpiryDate() async {
+    func testAddPantryItemKeepsSeparateForDifferentExpiryDates() async {
         let (appState, _, _) = makeTestAppState()
         let laterExpiry = Calendar.current.date(byAdding: .day, value: 5, to: Date())!
         let earlierExpiry = Calendar.current.date(byAdding: .day, value: 2, to: Date())!
@@ -2335,13 +2360,13 @@ final class AppStateTests: XCTestCase {
             freshnessSource: .estimated
         ))
 
-        XCTAssertEqual(appState.pantryItems.count, 1)
-        XCTAssertEqual(appState.pantryItems[0].quantity, 2)
-        XCTAssertEqual(try XCTUnwrap(appState.pantryItems[0].expiryDate).timeIntervalSince1970, earlierExpiry.timeIntervalSince1970, accuracy: 1)
-        XCTAssertEqual(appState.pantryItems[0].freshnessSource, .estimated)
+        // Items with different expiry dates should stay separate
+        XCTAssertEqual(appState.pantryItems.count, 2)
+        XCTAssertEqual(appState.pantryItems[0].quantity, 1)
+        XCTAssertEqual(appState.pantryItems[1].quantity, 1)
     }
 
-    func testAddPantryItemMergeAdoptsIncomingExpiryWhenExistingHasNone() async {
+    func testAddPantryItemKeepsSeparateWhenExistingHasNilExpiry() async {
         let (appState, _, _) = makeTestAppState()
         let incomingExpiry = Calendar.current.date(byAdding: .day, value: 4, to: Date())!
 
@@ -2365,10 +2390,10 @@ final class AppStateTests: XCTestCase {
             freshnessSource: .estimated
         ))
 
-        XCTAssertEqual(appState.pantryItems.count, 1)
-        XCTAssertEqual(appState.pantryItems[0].quantity, 2)
-        XCTAssertEqual(try XCTUnwrap(appState.pantryItems[0].expiryDate).timeIntervalSince1970, incomingExpiry.timeIntervalSince1970, accuracy: 1)
-        XCTAssertEqual(appState.pantryItems[0].freshnessSource, .estimated)
+        // Items with nil vs non-nil expiry should stay separate
+        XCTAssertEqual(appState.pantryItems.count, 2)
+        XCTAssertEqual(appState.pantryItems[0].quantity, 1)
+        XCTAssertEqual(appState.pantryItems[1].quantity, 1)
     }
 
     func testAddPantryItemKeepsDifferentFacetVariantsSeparate() async {
@@ -2441,6 +2466,189 @@ final class AppStateTests: XCTestCase {
         await appState.removePreparedDish(dish)
         XCTAssertTrue(appState.preparedDishes.isEmpty)
         XCTAssertEqual(storage.deletePreparedDishCallCount, 1)
+    }
+
+    // MARK: - Prepared Dish Deduplication
+
+    func testAddPreparedDishMergesSameNameSameExpiryDate() async {
+        let (appState, storage, _) = makeTestAppState()
+        let sameExpiry = Calendar.current.date(byAdding: .day, value: 3, to: Date())!
+
+        let dish1 = makePreparedDish(name: "Chicken Curry", servingsRemaining: 2, useByDate: sameExpiry)
+        let dish2 = makePreparedDish(name: "Chicken Curry", servingsRemaining: 3, useByDate: sameExpiry)
+
+        await appState.addPreparedDish(dish1)
+        await appState.addPreparedDish(dish2)
+
+        // Same name + same expiry should merge, combining servings
+        XCTAssertEqual(appState.preparedDishes.count, 1)
+        XCTAssertEqual(appState.preparedDishes[0].servingsRemaining, 5)
+        XCTAssertEqual(storage.addPreparedDishCallCount, 1)
+        XCTAssertEqual(storage.updatePreparedDishCallCount, 1)
+    }
+
+    func testAddPreparedDishKeepsSeparateForDifferentExpiryDates() async {
+        let (appState, _, _) = makeTestAppState()
+        let expiry1 = Calendar.current.date(byAdding: .day, value: 2, to: Date())!
+        let expiry2 = Calendar.current.date(byAdding: .day, value: 5, to: Date())!
+
+        let dish1 = makePreparedDish(name: "Chicken Curry", servingsRemaining: 2, useByDate: expiry1)
+        let dish2 = makePreparedDish(name: "Chicken Curry", servingsRemaining: 3, useByDate: expiry2)
+
+        await appState.addPreparedDish(dish1)
+        await appState.addPreparedDish(dish2)
+
+        // Different expiry dates should stay separate
+        XCTAssertEqual(appState.preparedDishes.count, 2)
+        XCTAssertEqual(appState.preparedDishes[0].servingsRemaining, 2)
+        XCTAssertEqual(appState.preparedDishes[1].servingsRemaining, 3)
+    }
+
+    func testAddPreparedDishKeepsSeparateForDifferentNames() async {
+        let (appState, _, _) = makeTestAppState()
+        let sameExpiry = Calendar.current.date(byAdding: .day, value: 3, to: Date())!
+
+        let dish1 = makePreparedDish(name: "Chicken Curry", servingsRemaining: 2, useByDate: sameExpiry)
+        let dish2 = makePreparedDish(name: "Beef Stew", servingsRemaining: 3, useByDate: sameExpiry)
+
+        await appState.addPreparedDish(dish1)
+        await appState.addPreparedDish(dish2)
+
+        // Different names should stay separate
+        XCTAssertEqual(appState.preparedDishes.count, 2)
+    }
+
+    func testAddPreparedDishMergesWhenBothHaveNilExpiry() async {
+        let (appState, _, _) = makeTestAppState()
+
+        let dish1 = makePreparedDish(name: "Chicken Curry", servingsRemaining: 2, useByDate: nil)
+        let dish2 = makePreparedDish(name: "Chicken Curry", servingsRemaining: 4, useByDate: nil)
+
+        await appState.addPreparedDish(dish1)
+        await appState.addPreparedDish(dish2)
+
+        // Both nil expiry should merge
+        XCTAssertEqual(appState.preparedDishes.count, 1)
+        XCTAssertEqual(appState.preparedDishes[0].servingsRemaining, 6)
+    }
+
+    func testUpdatePreparedDishTriggersDeduplicationWhenMatchFound() async {
+        let (appState, storage, _) = makeTestAppState()
+        let sameExpiry = Calendar.current.date(byAdding: .day, value: 3, to: Date())!
+        let differentExpiry = Calendar.current.date(byAdding: .day, value: 5, to: Date())!
+
+        let dish1 = makePreparedDish(name: "Chicken Curry", servingsRemaining: 2, useByDate: sameExpiry)
+        var dish2 = makePreparedDish(name: "Chicken Curry", servingsRemaining: 3, useByDate: differentExpiry)
+
+        await appState.addPreparedDish(dish1)
+        await appState.addPreparedDish(dish2)
+
+        // Initially separate
+        XCTAssertEqual(appState.preparedDishes.count, 2)
+
+        // Update dish2's expiry to match dish1
+        dish2.useByDate = sameExpiry
+        await appState.updatePreparedDish(dish2)
+
+        // Should now be merged
+        XCTAssertEqual(appState.preparedDishes.count, 1)
+        XCTAssertEqual(appState.preparedDishes[0].servingsRemaining, 5)
+        XCTAssertEqual(storage.deletePreparedDishCallCount, 1)
+    }
+
+    // MARK: - Pantry Item Expiry-Based Deduplication
+
+    func testAddPantryItemMergesWithSameCalendarDayExpiry() async {
+        let (appState, storage, _) = makeTestAppState()
+        // Create two dates on the same calendar day but different times
+        let baseDate = Calendar.current.startOfDay(for: Date())
+        let morningExpiry = Calendar.current.date(byAdding: .hour, value: 9, to: baseDate)!
+        let eveningExpiry = Calendar.current.date(byAdding: .hour, value: 21, to: baseDate)!
+
+        await appState.addPantryItem(PantryItem(
+            name: "Yogurt",
+            category: .dairy,
+            quantity: 1,
+            unit: .cup,
+            expiryDate: morningExpiry,
+            catalogItemID: "yogurt"
+        ))
+
+        await appState.addPantryItem(PantryItem(
+            name: "Yogurt",
+            category: .dairy,
+            quantity: 2,
+            unit: .cup,
+            expiryDate: eveningExpiry,
+            catalogItemID: "yogurt"
+        ))
+
+        // Same calendar day expiry should merge
+        XCTAssertEqual(appState.pantryItems.count, 1)
+        XCTAssertEqual(appState.pantryItems[0].quantity, 3)
+        XCTAssertEqual(storage.updatePantryItemCallCount, 1)
+    }
+
+    func testAddPantryItemMergesWhenBothHaveNilExpiry() async {
+        let (appState, _, _) = makeTestAppState()
+
+        await appState.addPantryItem(PantryItem(
+            name: "Rice",
+            category: .grains,
+            quantity: 1,
+            unit: .kilogram,
+            catalogItemID: "rice"
+        ))
+
+        await appState.addPantryItem(PantryItem(
+            name: "Rice",
+            category: .grains,
+            quantity: 2,
+            unit: .kilogram,
+            catalogItemID: "rice"
+        ))
+
+        // Both nil expiry should merge
+        XCTAssertEqual(appState.pantryItems.count, 1)
+        XCTAssertEqual(appState.pantryItems[0].quantity, 3)
+    }
+
+    func testUpdatePantryItemTriggersDeduplicationWhenMatchFound() async {
+        let (appState, storage, _) = makeTestAppState()
+        let expiry1 = Calendar.current.date(byAdding: .day, value: 3, to: Date())!
+        let expiry2 = Calendar.current.date(byAdding: .day, value: 5, to: Date())!
+
+        await appState.addPantryItem(PantryItem(
+            name: "Milk",
+            category: .dairy,
+            quantity: 1,
+            unit: .liter,
+            expiryDate: expiry1,
+            catalogItemID: "milk"
+        ))
+
+        var item2 = PantryItem(
+            name: "Milk",
+            category: .dairy,
+            quantity: 2,
+            unit: .liter,
+            expiryDate: expiry2,
+            catalogItemID: "milk"
+        )
+        await appState.addPantryItem(item2)
+
+        // Initially separate
+        XCTAssertEqual(appState.pantryItems.count, 2)
+
+        // Update item2's expiry to match item1
+        item2 = appState.pantryItems[1]
+        item2.expiryDate = expiry1
+        await appState.updatePantryItem(item2)
+
+        // Should now be merged
+        XCTAssertEqual(appState.pantryItems.count, 1)
+        XCTAssertEqual(appState.pantryItems[0].quantity, 3)
+        XCTAssertEqual(storage.deletePantryItemCallCount, 1)
     }
 
     func testAdjustPreparedDishServingsDecrementsExistingDish() async {
@@ -3753,7 +3961,6 @@ final class AppStateTests: XCTestCase {
             ingredients: [Ingredient(name: "Greek yogurt")],
             source: .aiGenerated
         )]
-        let preferences = RecipeGenerationPreferences(
         let preferences = RecipeGenerationPreferences(
             servings: 2,
             maxTimeMinutes: 25,

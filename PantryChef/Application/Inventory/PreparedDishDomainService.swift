@@ -23,11 +23,21 @@ protocol PreparedDishDomainServicing {
     func refreshPreparedDishHistory(with dish: PreparedDish, state: any PreparedDishDomainState)
     func persistPreparedDishHistory(state: any PreparedDishDomainState) async
     func syncPreparedDishesLinked(to recipe: Recipe, state: any PreparedDishDomainState) async
+    func preparedDishesCanMerge(_ existing: PreparedDish, _ addition: PreparedDish) -> Bool
+    func mergePreparedDish(_ existing: PreparedDish, with addition: PreparedDish) -> PreparedDish
 }
 
 @MainActor
 struct PreparedDishDomainService: PreparedDishDomainServicing {
     func addPreparedDish(_ dish: PreparedDish, state: any PreparedDishDomainState) async {
+        // Check for existing dish that can be merged (same name + same expiry date)
+        if let existingIndex = state.preparedDishes.firstIndex(where: { preparedDishesCanMerge($0, dish) }) {
+            var merged = mergePreparedDish(state.preparedDishes[existingIndex], with: dish)
+            merged.id = state.preparedDishes[existingIndex].id // Keep existing ID
+            await updatePreparedDish(merged, state: state)
+            return
+        }
+
         do {
             let saved = try await state.storageService.addPreparedDish(dish)
             state.setPreparedDishes(state.preparedDishes + [saved])
@@ -39,6 +49,31 @@ struct PreparedDishDomainService: PreparedDishDomainServicing {
     }
 
     func updatePreparedDish(_ dish: PreparedDish, state: any PreparedDishDomainState) async {
+        // Check if updated dish now matches another existing dish (excluding itself)
+        if let matchIndex = state.preparedDishes.firstIndex(where: { $0.id != dish.id && preparedDishesCanMerge($0, dish) }) {
+            // Merge into the existing dish, then delete the updated dish
+            var merged = mergePreparedDish(state.preparedDishes[matchIndex], with: dish)
+            merged.id = state.preparedDishes[matchIndex].id // Keep target's ID
+
+            do {
+                // Update the target dish with merged data
+                let updatedTarget = try await state.storageService.updatePreparedDish(merged)
+                // Delete the source dish
+                try await state.storageService.deletePreparedDish(dish)
+
+                var dishes = state.preparedDishes.filter { $0.id != dish.id }
+                if let targetIndex = dishes.firstIndex(where: { $0.id == updatedTarget.id }) {
+                    dishes[targetIndex] = updatedTarget
+                }
+                state.setPreparedDishes(dishes)
+                refreshPreparedDishHistory(with: updatedTarget, state: state)
+                await persistPreparedDishHistory(state: state)
+            } catch {
+                state.pushError(.storage(error))
+            }
+            return
+        }
+
         do {
             let previousDish = state.preparedDishes.first(where: { $0.id == dish.id })
             let updated = try await state.storageService.updatePreparedDish(dish)
@@ -163,6 +198,43 @@ struct PreparedDishDomainService: PreparedDishDomainServicing {
         if didChange {
             state.setPreparedDishes(dishes)
         }
+    }
+
+    // MARK: - Deduplication
+
+    /// Determines if two prepared dishes can be merged.
+    /// Dishes merge when they have the same normalized name AND same calendar-day useByDate.
+    func preparedDishesCanMerge(_ existing: PreparedDish, _ addition: PreparedDish) -> Bool {
+        let namesMatch = existing.name.trimmed.localizedCaseInsensitiveCompare(addition.name.trimmed) == .orderedSame
+        let expiryMatch = ExpiryStatus.sameCalendarDay(existing.useByDate, addition.useByDate)
+        return namesMatch && expiryMatch
+    }
+
+    /// Merges two prepared dishes by combining servings.
+    /// Keeps the existing dish's ID, foodIdentityID, and dateAdded.
+    func mergePreparedDish(_ existing: PreparedDish, with addition: PreparedDish) -> PreparedDish {
+        var merged = existing
+        merged.servingsRemaining = existing.servingsRemaining + addition.servingsRemaining
+
+        // Take non-nil values from addition if existing doesn't have them
+        if merged.recipeID == nil {
+            merged.recipeID = addition.recipeID
+        }
+        if merged.nutrition == nil {
+            merged.nutrition = addition.nutrition
+        }
+        if merged.notes == nil || merged.notes?.isEmpty == true {
+            merged.notes = addition.notes
+        }
+
+        // Merge meal types (deduplicate)
+        var mealTypeSet = Set(merged.mealTypes)
+        for mealType in addition.mealTypes {
+            mealTypeSet.insert(mealType)
+        }
+        merged.mealTypes = Array(mealTypeSet)
+
+        return merged
     }
 }
 

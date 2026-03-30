@@ -458,6 +458,19 @@ enum ExpiryStatus {
         return Calendar.current.dateComponents([.day], from: Date(), to: date).day
     }
 
+    /// Returns true if both dates fall on the same calendar day, or if both are nil.
+    /// Returns false if one is nil and the other is not.
+    static func sameCalendarDay(_ date1: Date?, _ date2: Date?) -> Bool {
+        switch (date1, date2) {
+        case (.none, .none):
+            return true
+        case (.some, .none), (.none, .some):
+            return false
+        case let (.some(d1), .some(d2)):
+            return Calendar.current.isDate(d1, inSameDayAs: d2)
+        }
+    }
+
     var color: Color {
         switch self {
         case .fresh: return Color(red: 0.30, green: 0.69, blue: 0.31)

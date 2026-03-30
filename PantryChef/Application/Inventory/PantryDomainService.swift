@@ -59,6 +59,29 @@ struct PantryDomainService: PantryDomainServicing {
     }
 
     func updatePantryItem(_ item: PantryItem, state: any PantryDomainState) async {
+        // Check if updated item now matches another existing item (excluding itself)
+        if let matchIndex = state.pantryItems.firstIndex(where: { $0.id != item.id && pantryItemsCanMerge($0, item, state: state) }) {
+            // Merge into the existing item, then delete the updated item
+            var merged = mergePantryItem(state.pantryItems[matchIndex], with: item, state: state)
+            merged.id = state.pantryItems[matchIndex].id // Keep target's ID
+
+            do {
+                // Update the target item with merged data
+                let updatedTarget = try await state.storageService.updatePantryItem(merged)
+                // Delete the source item
+                try await state.storageService.deletePantryItem(item)
+
+                var items = state.pantryItems.filter { $0.id != item.id }
+                if let targetIndex = items.firstIndex(where: { $0.id == updatedTarget.id }) {
+                    items[targetIndex] = updatedTarget
+                }
+                state.setPantryItems(items)
+            } catch {
+                state.pushError(.storage(error))
+            }
+            return
+        }
+
         do {
             let updated = try await state.storageService.updatePantryItem(item)
             guard let index = state.pantryItems.firstIndex(where: { $0.id == item.id }) else { return }
@@ -83,6 +106,11 @@ struct PantryDomainService: PantryDomainServicing {
         }
 
         guard identitiesMatch, existing.storage == addition.storage else {
+            return false
+        }
+
+        // Items with different expiry dates should NOT merge
+        guard ExpiryStatus.sameCalendarDay(existing.expiryDate, addition.expiryDate) else {
             return false
         }
 
@@ -133,12 +161,9 @@ struct PantryDomainService: PantryDomainServicing {
             }
         }
 
-        if let existingExpiryDate = merged.expiryDate, let additionExpiryDate = addition.expiryDate {
-            if additionExpiryDate < existingExpiryDate {
-                merged.expiryDate = additionExpiryDate
-                merged.freshnessSource = addition.freshnessSource
-            }
-        } else if merged.expiryDate == nil {
+        // Since items only merge when they have the same calendar-day expiry,
+        // keep the existing expiry date (or adopt addition's if existing is nil)
+        if merged.expiryDate == nil {
             merged.expiryDate = addition.expiryDate
             if addition.expiryDate != nil {
                 merged.freshnessSource = addition.freshnessSource

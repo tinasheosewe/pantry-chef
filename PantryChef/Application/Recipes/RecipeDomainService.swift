@@ -346,9 +346,7 @@ struct RecipeDomainService: RecipeDomainServicing {
 
         switch result {
         case .recipe(let modifiedRecipe):
-            guard let normalized = await bestEffortNormalizedAIRecipe(modifiedRecipe, state: state) else {
-                return nil
-            }
+            let normalized = await bestEffortNormalizedAIRecipe(modifiedRecipe, state: state)
             return .recipe(normalized.recipe)
         case .rejected(let rejection):
             return .rejected(rejection)
