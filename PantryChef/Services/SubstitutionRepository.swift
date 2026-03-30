@@ -110,6 +110,6 @@ final class SubstitutionRepository: SubstitutionProviding, @unchecked Sendable {
     }
 
     private func containsGenericFacet(_ facets: [PantryFacetSelection]) -> Bool {
-        facets.contains { $0.value == "generic" }
+        facets.contains { $0.value == "none" }
     }
 }

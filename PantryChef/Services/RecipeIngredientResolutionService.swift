@@ -226,7 +226,7 @@ final class IngredientCandidateParser: IngredientCandidateParserProtocol {
             candidatesByID.values.compactMap { scoredCandidate -> String? in
                 let candidate = scoredCandidate.candidate
                 let hasGenericFacet = candidate.facets.contains {
-                    $0.value == "generic"
+                    $0.value == "none"
                 }
                 return hasGenericFacet ? candidate.catalogItemID : nil
             }
@@ -345,11 +345,11 @@ final class IngredientCandidateParser: IngredientCandidateParserProtocol {
             guard let item = PantryCatalog.item(id: phrase.itemID) else { continue }
 
             let genericFacetKey: PantryFacetKey?
-            if item.options(for: .variant).contains("generic") {
+            if item.supports(.variant) {
                 genericFacetKey = .variant
-            } else if item.options(for: .base).contains("generic") {
+            } else if item.supports(.base) {
                 genericFacetKey = .base
-            } else if item.options(for: .form).contains("generic") {
+            } else if item.supports(.form) {
                 genericFacetKey = .form
             } else {
                 genericFacetKey = nil
@@ -373,10 +373,10 @@ final class IngredientCandidateParser: IngredientCandidateParserProtocol {
 
             register(
                 item: item,
-                facets: [PantryFacetSelection(key: genericFacetKey, value: "generic")],
+                facets: [PantryFacetSelection(key: genericFacetKey, value: "none")],
                 stage: .lexical,
                 score: score,
-                rationale: "Matched the base ingredient but kept subtype as generic for descriptors: \(meaningfulExtraTokens.joined(separator: ", ")).",
+                rationale: "Matched the base ingredient but kept subtype unspecified for descriptors: \(meaningfulExtraTokens.joined(separator: ", ")).",
                 into: &candidatesByID
             )
         }

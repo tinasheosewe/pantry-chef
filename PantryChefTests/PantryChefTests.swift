@@ -1201,7 +1201,7 @@ final class IngredientMatcherTests: XCTestCase {
             unit: .gram,
             category: .protein,
             catalogItemID: "beef",
-            facets: [.init(key: .variant, value: "generic")]
+            facets: [.init(key: .variant, value: "none")]
         )
         let pantry = [
             PantryItem(
@@ -1233,7 +1233,7 @@ final class IngredientMatcherTests: XCTestCase {
                 quantity: 500,
                 unit: .gram,
                 catalogItemID: "beef",
-                facets: [.init(key: .variant, value: "generic")]
+                facets: [.init(key: .variant, value: "none")]
             )
         ]
 
@@ -1247,7 +1247,7 @@ final class IngredientMatcherTests: XCTestCase {
             unit: .gram,
             category: .protein,
             catalogItemID: "beef",
-            facets: [.init(key: .variant, value: "generic")]
+            facets: [.init(key: .variant, value: "none")]
         )
 
         XCTAssertTrue(SubstitutionRepository.shared.substitutions(for: ingredient).isEmpty)
@@ -4986,7 +4986,7 @@ final class ShoppingAddItemViewModelTests: XCTestCase {
         XCTAssertEqual(breadResults.count, 1)
         XCTAssertEqual(breadResults.first?.displayName, "Bread")
         XCTAssertEqual(breadResults.first?.facets, [
-            .init(key: .variant, value: "generic"),
+            .init(key: .variant, value: "none"),
             .init(key: .form, value: "loaf")
         ])
     }

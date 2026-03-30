@@ -87,9 +87,9 @@ final class RecipeIngredientResolutionTests: XCTestCase {
         let candidates = parser.candidates(for: ingredient)
 
         XCTAssertEqual(candidates.first?.catalogItemID, "beef")
-        XCTAssertEqual(candidates.first?.facets, [.init(key: .variant, value: "generic")])
-        XCTAssertEqual(candidates.first?.displayName, "Generic Beef")
-        XCTAssertTrue(candidates.first?.rationale.contains("subtype as generic") == true)
+        XCTAssertEqual(candidates.first?.facets, [.init(key: .variant, value: "none")])
+        XCTAssertEqual(candidates.first?.displayName, "Beef")
+        XCTAssertTrue(candidates.first?.rationale.contains("subtype unspecified") == true)
     }
 
     func testCandidateParserFallsBackToGenericForOpenEndedStaples() {
@@ -99,7 +99,7 @@ final class RecipeIngredientResolutionTests: XCTestCase {
         let candidates = parser.candidates(for: ingredient)
 
         XCTAssertEqual(candidates.first?.catalogItemID, "cheese")
-        XCTAssertEqual(candidates.first?.facets, [.init(key: .variant, value: "generic")])
+        XCTAssertEqual(candidates.first?.facets, [.init(key: .variant, value: "none")])
     }
 
     func testCandidateParserReturnsResultsForQualifierPrefixedIngredients() {

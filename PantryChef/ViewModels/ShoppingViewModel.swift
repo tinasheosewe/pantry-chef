@@ -279,8 +279,8 @@ final class ShoppingAddItemViewModel {
 
     private func searchDefaultFacets(for item: PantryCatalogItemDefinition) -> [PantryFacetSelection] {
         item.defaultSelections.map { selection in
-            if item.options(for: selection.key).contains("generic") {
-                return PantryFacetSelection(key: selection.key, value: "generic")
+            if item.options(for: selection.key).contains("none") {
+                return PantryFacetSelection(key: selection.key, value: "none")
             }
             return selection
         }
@@ -325,7 +325,7 @@ final class ShoppingAddItemViewModel {
     private func availableFacetSummary(for item: PantryCatalogItemDefinition) -> String? {
         let groups = item.facets.compactMap { definition -> String? in
             let options = definition.options
-                .filter { $0.caseInsensitiveCompare("generic") != .orderedSame }
+                .filter { $0.caseInsensitiveCompare("none") != .orderedSame }
                 .map(humanizedFacetValue)
 
             guard !options.isEmpty else { return nil }

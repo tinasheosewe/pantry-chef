@@ -208,7 +208,7 @@ enum IngredientMatcher {
 
         let pantryFacetValues = Dictionary(uniqueKeysWithValues: pantryFacets.map { ($0.key, $0.value) })
         for requiredFacet in requiredFacets {
-            if requiredFacet.value == "generic" {
+            if requiredFacet.value == "none" {
                 continue
             }
 
@@ -236,7 +236,7 @@ enum IngredientMatcher {
     ) -> Set<String> {
         if let resolvedCatalogItemID = resolvedCatalogItemID(for: name, catalogItemID: catalogItemID) {
             var keys: Set<String> = ["catalog:\(resolvedCatalogItemID)"]
-            for facet in facets where facet.value != "generic" {
+            for facet in facets where facet.value != "none" {
                 keys.insert("catalog:\(resolvedCatalogItemID)|\(facet.key.rawValue)=\(facet.value)")
             }
             return keys
