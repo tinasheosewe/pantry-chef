@@ -73,6 +73,8 @@ final class MultiCookModeViewModel {
         self.isMuted = self.preferenceStore.isMuted
         setupRealtimeCallbacks()
         startPassiveTimerTick()
+        // Persist immediately so session is resumable from the start
+        persistSession()
     }
 
     var currentBlock: MultiRecipeScheduler.ScheduledBlock? {

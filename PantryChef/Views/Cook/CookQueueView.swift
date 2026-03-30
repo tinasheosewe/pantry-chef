@@ -160,6 +160,10 @@ struct CookQueueView: View {
                 )
                 .environment(appState)
             }
+            .onAppear {
+                // Ensure fresh session data when queue appears
+                appState.activeCooks.refresh()
+            }
         }
     }
 
