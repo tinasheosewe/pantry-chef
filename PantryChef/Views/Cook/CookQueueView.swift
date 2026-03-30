@@ -85,6 +85,8 @@ struct CookQueueView: View {
                     ToolbarItem(placement: .primaryAction) {
                         Button("Clear") {
                             Task {
+                                // End any active cooking sessions before clearing queue
+                                appState.activeCooks.endAllSessions()
                                 await appState.cookGateway.clearQueue()
                             }
                         }

@@ -1235,8 +1235,30 @@ final class AIService: AIServiceProtocol {
 
         let missing = allTaskIDs.subtracting(seen)
         if !missing.isEmpty {
-            AppLog.warn("[AIService] Batch schedule missing \(missing.count) task IDs")
-            throw BatchScheduleError.validationFailed("Missing \(missing.count) tasks")
+            // Auto-repair: add missing tasks to a cleanup block at the end
+            AppLog.warn("[AIService] Batch schedule missing \(missing.count) task IDs — auto-adding cleanup block")
+            let missingTaskNames = missing.compactMap { id -> String? in
+                taskPayloads.first { ($0["taskID"] as? String) == id }
+                    .flatMap { payload in
+                        let action = payload["action"] as? String ?? "task"
+                        let ingredient = payload["ingredient"] as? String
+                        let recipe = payload["recipeName"] as? String ?? ""
+                        if let ing = ingredient {
+                            return "\(action) \(ing) (\(recipe))"
+                        }
+                        return "\(action) (\(recipe))"
+                    }
+            }
+            let cleanupInstruction = "• " + missingTaskNames.joined(separator: "\n• ")
+            let cleanupBlock = LLMBatchSchedule.Block(
+                taskIDs: Array(missing),
+                instruction: cleanupInstruction,
+                isPassive: false,
+                durationSeconds: 120
+            )
+            var repairedBlocks = schedule.blocks
+            repairedBlocks.append(cleanupBlock)
+            return LLMBatchSchedule(blocks: repairedBlocks)
         }
 
         return schedule

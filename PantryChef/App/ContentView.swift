@@ -27,11 +27,8 @@ struct ContentView: View {
                             stepProgress: miniPlayerData.stepProgress,
                             progress: miniPlayerData.progress,
                             onTap: {
-                                if let multiSession = appState.activeCooks.activeMultiCookSessions.first {
-                                    appState.navigator.deepLinkedMultiCookSession = multiSession
-                                } else {
-                                    appState.navigator.requestCookQueueSheet()
-                                }
+                                // Always open queue — it shows a resume banner for active sessions
+                                appState.navigator.requestCookQueueSheet()
                             }
                         )
                     }
