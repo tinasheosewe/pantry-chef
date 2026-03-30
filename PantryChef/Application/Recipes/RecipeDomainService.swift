@@ -336,7 +336,7 @@ struct RecipeDomainService: RecipeDomainServicing {
             return nil
         }
 
-        return await normalizedAIRecipe(modifiedRecipe, state: state)
+        return await bestEffortNormalizedAIRecipe(modifiedRecipe, state: state)
     }
 
     private func unresolvedIngredientNames(in draft: RecipeResolutionDraft) -> [String] {
@@ -400,6 +400,63 @@ struct RecipeDomainService: RecipeDomainServicing {
                 .filter { $0.status != .resolved }
                 .map { $0.ingredient.rawName }
             throw AppState.AIRecipeNormalizationError.disambiguationFailed(unresolvedNames)
+        }
+
+        return updatedDraft
+    }
+
+    /// Best-effort normalization for recipe modifications: resolves what it can,
+    /// keeps unmatched ingredients as unresolved rather than failing entirely.
+    private func bestEffortNormalizedAIRecipe(_ recipe: Recipe, state: any RecipeDomainState) async -> AppState.NormalizedAIRecipe {
+        let canonicalRecipe = TrustedRecipeCanonicalizer.canonicalize(recipe)
+        let resolutionDraft = await state.recipeIngredientResolver.resolve(recipe: canonicalRecipe)
+        let finalDraft = await bestEffortDisambiguatedDraft(from: resolutionDraft, state: state)
+        return AppState.NormalizedAIRecipe(rawValue: finalDraft.builtRecipe())
+    }
+
+    private func bestEffortDisambiguatedDraft(from draft: RecipeResolutionDraft, state: any RecipeDomainState) async -> RecipeResolutionDraft {
+        let ambiguousIngredients = draft.ambiguousIngredients
+        guard !ambiguousIngredients.isEmpty else {
+            return draft
+        }
+
+        let requests = ambiguousIngredients.map { ingredientDraft in
+            IngredientResolutionRequest(
+                ingredientID: ingredientDraft.ingredient.id,
+                rawName: ingredientDraft.ingredient.rawName,
+                quantity: ingredientDraft.ingredient.quantity,
+                unit: ingredientDraft.ingredient.unit,
+                category: ingredientDraft.ingredient.category,
+                notes: ingredientDraft.ingredient.notes,
+                candidates: ingredientDraft.candidates
+            )
+        }
+
+        guard let decisions = await state.aiService.disambiguateIngredients(requests),
+              decisions.count == requests.count else {
+            return draft
+        }
+
+        let decisionsByIngredient = Dictionary(uniqueKeysWithValues: decisions.map { ($0.ingredientID, $0) })
+        var updatedDraft = draft
+
+        for index in updatedDraft.ingredients.indices {
+            guard updatedDraft.ingredients[index].status == .ambiguous else {
+                continue
+            }
+
+            let ingredientDraft = updatedDraft.ingredients[index]
+            guard let decision = decisionsByIngredient[ingredientDraft.ingredient.id],
+                  decision.status == .resolved,
+                  let selectedCandidateID = decision.selectedCandidateID,
+                  let candidate = ingredientDraft.candidates.first(where: { $0.id == selectedCandidateID }) else {
+                continue
+            }
+
+            updatedDraft.ingredients[index].status = .resolved
+            updatedDraft.ingredients[index].selectedCandidateID = candidate.id
+            updatedDraft.ingredients[index].confidence = max(decision.confidence, candidate.score)
+            updatedDraft.ingredients[index].rationale = decision.rationale
         }
 
         return updatedDraft
