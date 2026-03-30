@@ -95,17 +95,26 @@ class GenerationOrchestrator:
                 batch = all_briefs[batch_start:batch_start + self._settings.recipe_batch_size]
                 batch_recipes = await self._recipe_gen.generate_batch(batch, self._catalog)
 
-                # Review each recipe with retry
-                for recipe in batch_recipes:
-                    accepted = await self._review_with_retry(recipe, self._catalog)
-                    if accepted:
-                        recipes.append(accepted)
+                # Review all recipes in parallel (bounded by client semaphore)
+                review_tasks = [
+                    self._review_with_retry(recipe, self._catalog)
+                    for recipe in batch_recipes
+                ]
+                review_results = await asyncio.gather(*review_tasks, return_exceptions=True)
+
+                accepted_count = 0
+                for result in review_results:
+                    if isinstance(result, Exception):
+                        logger.error("Review failed: %s", result)
+                    elif result is not None:
+                        recipes.append(result)
+                        accepted_count += 1
 
                 logger.info(
                     "Batch %d-%d: %d/%d accepted (total: %d)",
                     batch_start + 1,
                     batch_start + len(batch),
-                    len([r for r in batch_recipes]),
+                    accepted_count,
                     len(batch),
                     len(recipes),
                 )

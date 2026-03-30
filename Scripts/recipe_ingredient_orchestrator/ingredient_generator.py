@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import logging
 
 from pydantic import BaseModel, Field
@@ -35,48 +36,65 @@ class IngredientGenerator:
         category_filter: str | None = None,
         prompt_context: str | None = None,
     ) -> list[CatalogEntry]:
-        """Generate `count` ingredients across one or more batches.
+        """Generate `count` ingredients across parallel batches.
 
-        Each batch is aware of the current catalog state so it avoids duplicates
-        and maintains the generic-base pattern.
+        Multiple batches run concurrently, and the catalog's add_many
+        handles deduplication of any overlapping entries.
         """
         generated: list[CatalogEntry] = []
         remaining = count
+        max_parallel = self._settings.max_concurrency
 
         while remaining > 0:
-            batch_size = min(remaining, self._settings.ingredient_batch_size)
+            # Determine how many parallel batches to run
+            batches_needed = (remaining + self._settings.ingredient_batch_size - 1) // self._settings.ingredient_batch_size
+            parallel_count = min(batches_needed, max_parallel)
+
             logger.info(
-                "Generating ingredient batch: %d of %d remaining (catalog size: %d)",
-                batch_size,
+                "Generating %d parallel ingredient batches (%d remaining, catalog size: %d)",
+                parallel_count,
                 remaining,
                 catalog.size,
             )
 
-            messages = ingredient_generation_messages(
-                count=batch_size,
-                existing_names=catalog.names(),
-                category_filter=category_filter,
-                prompt_context=prompt_context,
-                catalog_summary=catalog.summary_with_facets(),
-            )
+            async def generate_single_batch() -> list[CatalogEntry]:
+                batch_size = min(remaining, self._settings.ingredient_batch_size)
+                messages = ingredient_generation_messages(
+                    count=batch_size,
+                    existing_names=catalog.names(),
+                    category_filter=category_filter,
+                    prompt_context=prompt_context,
+                    catalog_summary=catalog.summary_with_facets(),
+                )
+                response = await self._client.generate(
+                    messages=messages,
+                    response_model=IngredientBatchResponse,
+                    model=self._settings.enrichment_model,
+                    temperature=0.7,
+                )
+                return response.entries
 
-            response = await self._client.generate(
-                messages=messages,
-                response_model=IngredientBatchResponse,
-                model=self._settings.enrichment_model,
-                temperature=0.7,
-            )
+            # Run batches in parallel
+            tasks = [generate_single_batch() for _ in range(parallel_count)]
+            results = await asyncio.gather(*tasks, return_exceptions=True)
 
-            added = await catalog.add_many(response.entries)
-            generated.extend(response.entries[:added] if added < len(response.entries) else response.entries)
+            # Merge all entries and add to catalog (dedupes automatically)
+            all_entries: list[CatalogEntry] = []
+            for result in results:
+                if isinstance(result, Exception):
+                    logger.error("Batch failed: %s", result)
+                else:
+                    all_entries.extend(result)
+
+            added = await catalog.add_many(all_entries)
+            generated.extend(all_entries[:added] if added < len(all_entries) else all_entries)
             remaining -= added
 
             if added == 0:
-                logger.warning("Batch produced 0 new entries — retrying with fresh context")
-                # Avoid infinite loop: if two consecutive batches add nothing, stop
-                remaining -= batch_size
+                logger.warning("Parallel batches produced 0 new entries — stopping")
+                break
 
-            logger.info("Batch done: %d new entries added, %d remaining", added, remaining)
+            logger.info("Parallel batch done: %d new entries added, %d remaining", added, remaining)
 
         logger.info("Ingredient generation complete: %d total entries", len(generated))
         return generated
