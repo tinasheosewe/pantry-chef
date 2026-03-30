@@ -4,6 +4,8 @@ struct UseUpIngredientsView: View {
     @Environment(AppState.self) private var appState
     @State private var viewModel: UseUpIngredientsViewModel
     @Environment(\.dismiss) private var dismiss
+    @State private var showSaveAsSheet = false
+    @State private var saveAsName = ""
 
     init(appState: AppState) {
         _viewModel = State(initialValue: UseUpIngredientsViewModel(appState: appState))
@@ -290,20 +292,6 @@ struct UseUpIngredientsView: View {
                 generationFailedView
             }
         }
-        .toolbar {
-            ToolbarItem(placement: .confirmationAction) {
-                if viewModel.generatedRecipe != nil {
-                    Button {
-                        Task {
-                            await viewModel.saveRecipe()
-                            dismiss()
-                        }
-                    } label: {
-                        Text("Save Recipe")
-                    }
-                }
-            }
-        }
         .safeAreaInset(edge: .bottom) {
             if viewModel.generatedRecipe != nil {
                 recipeSummaryBar
@@ -418,22 +406,65 @@ struct UseUpIngredientsView: View {
     private var recipeSummaryBar: some View {
         VStack(spacing: 0) {
             Divider()
-            HStack(spacing: 12) {
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("Recipe ready")
-                        .font(.subheadline)
-                        .fontWeight(.semibold)
-                        .foregroundStyle(PCColors.textPrimary)
-                    Text("Save it to your collection, or go back to try another idea.")
-                        .font(.caption)
-                        .foregroundStyle(PCColors.textSecondary)
+            HStack(spacing: PCTokens.spacingMD) {
+                Button {
+                    viewModel.showingRecipe = false
+                } label: {
+                    Image(systemName: "xmark.circle.fill")
+                        .font(.system(size: 18))
+                        .foregroundStyle(PCColors.textTertiary)
                 }
+
                 Spacer()
+
+                PCCapsuleButton("Save as New", color: PCColors.teal, style: .filled) {
+                    saveAsName = viewModel.generatedRecipe?.rawValue.title ?? "New Recipe"
+                    showSaveAsSheet = true
+                }
             }
-            .padding(.horizontal)
-            .padding(.vertical, 10)
+            .padding(.horizontal, PCTokens.spacingLG)
+            .padding(.vertical, PCTokens.spacingSM + 2)
         }
         .background(.ultraThinMaterial)
+        .sheet(isPresented: $showSaveAsSheet) {
+            saveAsSheet
+        }
+    }
+
+    private var saveAsSheet: some View {
+        NavigationStack {
+            VStack(spacing: PCTokens.spacingLG) {
+                PCTextField("Recipe Name", text: $saveAsName, placeholder: "Enter a name")
+                Spacer()
+            }
+            .padding(PCTokens.spacingLG)
+            .background(PCColors.background)
+            .navigationTitle("Save as New Recipe")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") { showSaveAsSheet = false }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Save") {
+                        showSaveAsSheet = false
+                        Task {
+                            guard var recipe = viewModel.generatedRecipe?.rawValue else { return }
+                            recipe.id = UUID()
+                            recipe.title = saveAsName.trimmingCharacters(in: .whitespaces)
+                            recipe.dateAdded = Date()
+                            recipe.timesCooked = 0
+                            recipe.source = .user
+                            recipe.isFavorite = false
+                            await appState.recipeGateway.addRecipe(recipe)
+                            dismiss()
+                        }
+                    }
+                    .disabled(saveAsName.trimmingCharacters(in: .whitespaces).isEmpty)
+                }
+            }
+        }
+        .presentationDetents([.height(220)])
     }
 
     // MARK: - Shared Loading State
