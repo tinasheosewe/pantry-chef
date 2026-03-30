@@ -160,10 +160,10 @@ struct CookModeView: View {
         } message: {
             Text(viewModel?.conversationError ?? "Connection lost")
         }
-        .alert("Nothing to Update", isPresented: $showNoPantryMatchAlert) {
+        .alert("No Matching Items", isPresented: $showNoPantryMatchAlert) {
             Button("OK") { }
         } message: {
-            Text("None of this recipe's ingredients matched items in your pantry. Add ingredients to your pantry to track usage.")
+            Text("None of this recipe's ingredients matched your pantry. Add ingredients to your pantry to track usage.")
         }
         .appNavigationSheet(isPresented: $showPantryReview) {
             if let viewModel {

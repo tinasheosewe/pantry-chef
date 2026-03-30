@@ -241,7 +241,7 @@ struct RecipeDomainService: RecipeDomainServicing {
         guard !Task.isCancelled else { return nil }
         guard let recipe = await state.aiService.generateRecipe(query: query, preferences: preferences) else {
             if !Task.isCancelled {
-                pushAIFailure("recipe generation", fallbackMessage: "Couldn't generate a recipe right now. Please try again.", state: state)
+                pushAIFailure("recipe generation", fallbackMessage: "Couldn't create a recipe right now. Please try again.", state: state)
             }
             return nil
         }
@@ -287,7 +287,7 @@ struct RecipeDomainService: RecipeDomainServicing {
         guard !Task.isCancelled else { return [] }
         let normalized = await normalizeAIRecipes(suggestedRecipes, state: state)
         if normalized.isEmpty, !state.pantryItems.isEmpty {
-            pushAIFailure("recipe suggestions", fallbackMessage: "Couldn't generate recipe suggestions right now. Please try again.", state: state)
+            pushAIFailure("recipe suggestions", fallbackMessage: "Couldn't find recipe suggestions right now. Please try again.", state: state)
         }
         return normalized
     }
@@ -300,7 +300,7 @@ struct RecipeDomainService: RecipeDomainServicing {
         guard !Task.isCancelled else { return nil }
         let suggestion = await state.aiService.makeItHealthier(recipe: recipe)
         if suggestion == nil, !Task.isCancelled {
-            pushAIFailure("healthier suggestion", fallbackMessage: "Couldn't generate healthier suggestions right now. Please try again.", state: state)
+            pushAIFailure("healthier suggestion", fallbackMessage: "Couldn't find healthier options right now. Please try again.", state: state)
         }
         return suggestion
     }
@@ -318,7 +318,7 @@ struct RecipeDomainService: RecipeDomainServicing {
         guard !Task.isCancelled else { return nil }
         guard let recipe = await state.aiService.generateRecipeFromSuggestion(suggestion, ingredients: ingredients, strictIngredients: strictIngredients, requireAllIngredients: requireAllIngredients) else {
             if !Task.isCancelled {
-                pushAIFailure("recipe generation", fallbackMessage: "Couldn't generate a recipe right now. Please try again.", state: state)
+                pushAIFailure("recipe generation", fallbackMessage: "Couldn't create a recipe right now. Please try again.", state: state)
             }
             return nil
         }

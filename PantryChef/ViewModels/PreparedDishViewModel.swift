@@ -118,7 +118,7 @@ final class PreparedDishViewModel: AsyncActionHandling {
 
             let removed = await preparedDishActions.adjustServings(currentDish, delta: -1)
             if removed {
-                presentFeedback("Finished \(currentDish.name). Removed from Prepared Food.")
+                presentFeedback("Finished \(currentDish.name). Removed from Prepared Dishes.")
             } else if let updatedDish = appState.preparedDishById(dish.id) {
                 let remainingText = updatedDish.servingsRemaining == 1 ? "1 serving left" : "\(updatedDish.servingsRemaining) servings left"
                 presentFeedback("Used 1 serving of \(updatedDish.name). \(remainingText).")

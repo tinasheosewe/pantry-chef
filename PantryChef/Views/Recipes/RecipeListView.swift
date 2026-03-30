@@ -54,7 +54,7 @@ struct RecipeListView: View {
                         Button {
                             viewModel.activateWhatCanIMake()
                         } label: {
-                            Label("What Can I Make?", systemImage: "sparkles")
+                            Label("What Can I Make?", systemImage: "lightbulb")
                         }
                         Button { showMultiCookSelection = true } label: {
                             Label("Multi-Cook", systemImage: "flame.fill")
@@ -97,17 +97,23 @@ struct RecipeListView: View {
                 }
                 .environment(viewModel.appState)
             }
-            .sheet(isPresented: $showMultiCookSelection) {
-                MultiCookSelectionView()
-                    .environment(viewModel.appState)
+            .background {
+                Color.clear
+                    .sheet(isPresented: $showMultiCookSelection) {
+                        MultiCookSelectionView()
+                            .environment(viewModel.appState)
+                    }
             }
-            .sheet(isPresented: $showRecipeBuilder) {
-                RecipeBuilderView(
-                    query: viewModel.searchText.trimmingCharacters(in: .whitespaces)
-                ) { recipe in
-                    generatedRecipe = recipe
-                }
-                .environment(viewModel.appState)
+            .background {
+                Color.clear
+                    .sheet(isPresented: $showRecipeBuilder) {
+                        RecipeBuilderView(
+                            query: viewModel.searchText.trimmingCharacters(in: .whitespaces)
+                        ) { recipe in
+                            generatedRecipe = recipe
+                        }
+                        .environment(viewModel.appState)
+                    }
             }
             .navigationDestination(item: $generatedRecipe) { recipe in
                 RecipeDetailView(recipe: recipe)
@@ -659,7 +665,7 @@ struct RecipeIdeaTileView: View {
                     .aspectRatio(4/3, contentMode: .fit)
 
                 VStack(spacing: PCTokens.spacingSM) {
-                    Image(systemName: "sparkles")
+                    Image(systemName: "wand.and.stars")
                         .font(.largeTitle)
                         .foregroundStyle(
                             LinearGradient(
@@ -698,10 +704,10 @@ struct RecipeIdeaTileView: View {
             }
 
             HStack(spacing: PCTokens.spacingXS) {
-                Image(systemName: "sparkles")
+                Image(systemName: "wand.and.stars")
                     .font(.system(size: 8))
                     .foregroundStyle(PCColors.expiring)
-                Text("Tap to customize & generate")
+                Text("Tap to customize & create")
                     .font(PCFont.micro)
                     .foregroundStyle(PCColors.expiring)
             }

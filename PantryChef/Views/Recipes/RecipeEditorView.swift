@@ -738,7 +738,7 @@ struct RecipeEditorView: View {
             let normalizedRecipe = await appState.normalizedAIRecipe(recipe)
             isResolving = false
             guard let normalizedRecipe else {
-                resolutionErrorMessage = appState.errorMessage ?? "Couldn't save this AI recipe. Please try again."
+                resolutionErrorMessage = appState.errorMessage ?? "Couldn't save this recipe. Please try again."
                 return
             }
             completeSave(with: normalizedRecipe.recipe)
@@ -870,7 +870,7 @@ private struct IngredientResolutionReviewView: View {
                 }
             }
         }
-        .navigationTitle("Resolve Ingredients")
+        .navigationTitle("Match Ingredients")
         .toolbar {
             ToolbarItem(placement: .cancellationAction) {
                 Button("Back") {

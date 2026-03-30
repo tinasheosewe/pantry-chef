@@ -144,7 +144,7 @@ struct MultiCookModeView: View {
         } message: {
             Text("Please enable Microphone access in Settings to use voice commands.")
         }
-        .alert("Voice Chat Error",
+        .alert("Voice Connection Error",
                isPresented: Binding(
                 get: { viewModel?.conversationError != nil },
                 set: { if !$0 { viewModel?.conversationError = nil } }

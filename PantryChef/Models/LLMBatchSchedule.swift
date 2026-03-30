@@ -22,11 +22,11 @@ enum BatchScheduleError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .llmRequestFailed:
-            return "Couldn't reach the AI to plan your cook session. Check your connection and try again."
+            return "Couldn't plan your cook session. Check your connection and try again."
         case .invalidResponse:
-            return "The AI returned an unexpected response. Please try again."
-        case .validationFailed(let detail):
-            return "The AI schedule was incomplete (\(detail)). Please try again."
+            return "Something went wrong. Please try again."
+        case .validationFailed:
+            return "Something went wrong. Please try again."
         }
     }
 }

@@ -49,7 +49,7 @@ struct ShoppingListView: View {
                         Button {
                             presentPantryReview()
                         } label: {
-                            Label("Checked → Pantry", systemImage: "arrow.right.circle")
+                            Label("Move Checked to Pantry", systemImage: "arrow.right.circle")
                         }
                         .disabled(viewModel.checkedCount == 0)
 
@@ -153,10 +153,13 @@ struct ShoppingListView: View {
                 showPantryReview = false
             }
         }
-        .sheet(item: $editingPantryPlanItem) { item in
-            ShoppingPantryPlanEditorView(item: item) { updatedItem in
-                viewModel.updateItem(updatedItem)
-            }
+        .background {
+            Color.clear
+                .sheet(item: $editingPantryPlanItem) { item in
+                    ShoppingPantryPlanEditorView(item: item) { updatedItem in
+                        viewModel.updateItem(updatedItem)
+                    }
+                }
         }
     }
 
@@ -193,7 +196,7 @@ private struct ShoppingAddItemView: View {
                     Text(viewModel.isCustomItem ? "Custom Item" : "Find Item")
                 } footer: {
                     if !viewModel.isCustomItem {
-                        Text("Pick a catalog match first so the item carries identity into the shopping list and pantry.")
+                        Text("Pick a catalog match first.")
                     }
                 }
             }

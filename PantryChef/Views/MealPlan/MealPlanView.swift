@@ -35,7 +35,7 @@ struct MealPlanView: View {
                         Button {
                             showPreparedFoodFlow = true
                         } label: {
-                            Label("Add to Prepared Food", systemImage: "calendar.badge.plus")
+                            Label("Add to Prepared Dishes", systemImage: "calendar.badge.plus")
                         }
                         .disabled(preparedFoodSourceEntries.isEmpty)
 
@@ -63,35 +63,44 @@ struct MealPlanView: View {
                     viewModel.addPreparedDishes(dishes)
                 }
             }
-            .sheet(isPresented: $showMealLoggingFlow) {
-                MealPlanEatenSelectionView(appState: viewModel.appState, entries: mealEntriesEligibleForLogging) { selections in
-                    viewModel.logEntriesEaten(selections)
-                }
-            }
-            .sheet(isPresented: $viewModel.showMealPicker) {
-                if let slot = viewModel.selectedSlot {
-                    MealPickerView(
-                        recipes: viewModel.appState.allRecipes,
-                        preparedDishes: viewModel.appState.preparedDishes,
-                        onSelectRecipe: { recipe in
-                            viewModel.assignRecipe(recipe, to: slot)
-                        },
-                        onSelectPreparedDish: { dish in
-                            viewModel.assignPreparedDish(dish, to: slot)
+            .background {
+                Color.clear
+                    .sheet(isPresented: $showMealLoggingFlow) {
+                        MealPlanEatenSelectionView(appState: viewModel.appState, entries: mealEntriesEligibleForLogging) { selections in
+                            viewModel.logEntriesEaten(selections)
                         }
-                    )
-                }
+                    }
             }
-            .sheet(isPresented: $viewModel.showMultiMealPicker) {
-                if let slot = viewModel.selectedSlot {
-                    MultiMealPickerView(
-                        recipes: viewModel.appState.allRecipes,
-                        preparedDishes: viewModel.appState.preparedDishes,
-                        onSave: { selections in
-                            viewModel.assignSelections(selections, to: slot)
+            .background {
+                Color.clear
+                    .sheet(isPresented: $viewModel.showMealPicker) {
+                        if let slot = viewModel.selectedSlot {
+                            MealPickerView(
+                                recipes: viewModel.appState.allRecipes,
+                                preparedDishes: viewModel.appState.preparedDishes,
+                                onSelectRecipe: { recipe in
+                                    viewModel.assignRecipe(recipe, to: slot)
+                                },
+                                onSelectPreparedDish: { dish in
+                                    viewModel.assignPreparedDish(dish, to: slot)
+                                }
+                            )
                         }
-                    )
-                }
+                    }
+            }
+            .background {
+                Color.clear
+                    .sheet(isPresented: $viewModel.showMultiMealPicker) {
+                        if let slot = viewModel.selectedSlot {
+                            MultiMealPickerView(
+                                recipes: viewModel.appState.allRecipes,
+                                preparedDishes: viewModel.appState.preparedDishes,
+                                onSave: { selections in
+                                    viewModel.assignSelections(selections, to: slot)
+                                }
+                            )
+                        }
+                    }
             }
             .appNavigationSheet(item: $selectedMealEntry) { entry in
                 if let recipe = entry.recipe {
@@ -102,28 +111,31 @@ struct MealPlanView: View {
                         .environment(viewModel.appState)
                 }
             }
-            .appNavigationSheet(item: $selectedMealSlot) { slot in
-                MealSlotEntriesView(
-                    slot: slot,
-                    appState: viewModel.appState,
-                    onRemoveEntry: { entry in
-                        viewModel.removeEntry(entry)
-                    },
-                    onUpdateEntry: { entry in
-                        viewModel.updateEntry(entry)
-                    },
-                    onAddMore: {
-                        viewModel.selectSlot(
-                            date: slot.date,
-                            mealType: slot.mealType,
-                            replaceExisting: false,
-                            allowsMultipleSelection: true
+            .background {
+                Color.clear
+                    .appNavigationSheet(item: $selectedMealSlot) { slot in
+                        MealSlotEntriesView(
+                            slot: slot,
+                            appState: viewModel.appState,
+                            onRemoveEntry: { entry in
+                                viewModel.removeEntry(entry)
+                            },
+                            onUpdateEntry: { entry in
+                                viewModel.updateEntry(entry)
+                            },
+                            onAddMore: {
+                                viewModel.selectSlot(
+                                    date: slot.date,
+                                    mealType: slot.mealType,
+                                    replaceExisting: false,
+                                    allowsMultipleSelection: true
+                                )
+                            },
+                            onReplaceSlot: {
+                                viewModel.selectSlot(date: slot.date, mealType: slot.mealType, replaceExisting: true)
+                            }
                         )
-                    },
-                    onReplaceSlot: {
-                        viewModel.selectSlot(date: slot.date, mealType: slot.mealType, replaceExisting: true)
                     }
-                )
             }
         }
     }
@@ -513,18 +525,18 @@ private struct MealPlanEatenReviewDraft: Identifiable, Hashable {
 
     var preparedFoodSelectionSummary: String {
         if let selectedPreparedDishName {
-            return "Using Prepared Food: \(selectedPreparedDishName)"
+            return "Using Prepared Dishes: \(selectedPreparedDishName)"
         }
 
         if candidatePreparedDishes.isEmpty {
-            return "No matching Prepared Food available"
+            return "No matching Prepared Dishes available"
         }
 
         if candidatePreparedDishes.count == 1, let name = candidatePreparedDishes.first?.name {
-            return "Prepared Food: \(name)"
+            return "Prepared Dishes: \(name)"
         }
 
-        return "Choose 1 of \(candidatePreparedDishes.count) matching Prepared Food items"
+        return "Choose 1 of \(candidatePreparedDishes.count) matching Prepared Dishes"
     }
 }
 
@@ -574,14 +586,14 @@ private struct MealPlanEatenSelectionView: View {
                         icon: "fork.knife.circle",
                         title: entries.isEmpty ? "Nothing left to log" : "No meals found",
                         message: entries.isEmpty
-                            ? "Meals only show up here when they still have servings left to log and there is matching Prepared Food available right now."
+                            ? "Meals only show up here when they still have servings left to log and there is matching Prepared Dishes available right now."
                             : "Try a different search for this week’s meals."
                     )
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                 } else {
                     AppList {
                         Section {
-                            Text("Select meals from this week, then choose the matching Prepared Food and how many servings were actually eaten before saving once.")
+                            Text("Select meals, pick the matching dish, and log how many servings were eaten.")
                                 .font(.subheadline)
                                 .foregroundStyle(PCColors.textSecondary)
                         }
@@ -836,11 +848,11 @@ private struct MealPlanEatenReviewView: View {
 
             VStack(alignment: .leading, spacing: 8) {
                 if !draft.wrappedValue.candidatePreparedDishes.isEmpty {
-                    Picker("Prepared Food", selection: Binding(
+                    Picker("Prepared Dishes", selection: Binding(
                         get: { draft.wrappedValue.selectedPreparedDishID },
                         set: { draft.wrappedValue.selectedPreparedDishID = $0 }
                     )) {
-                        Text("Select Prepared Food").tag(Optional<UUID>.none)
+                        Text("Select Prepared Dishes").tag(Optional<UUID>.none)
                         ForEach(draft.wrappedValue.candidatePreparedDishes) { dish in
                             Text("\(dish.name) • \(dish.servingsDisplay)").tag(Optional(dish.id))
                         }
@@ -896,14 +908,14 @@ private struct MealPlanEatenReviewView: View {
 
     private var reviewSummaryText: String {
         if !overdrawMessages.isEmpty {
-            return "Resolve the Prepared Food overdraw warning before saving."
+            return "Resolve the Prepared Dishes overdraw warning before saving."
         }
 
         if hasMissingSelections {
-            return "Choose which Prepared Food item each updated meal should draw from before saving."
+            return "Choose which Prepared Dishes item each updated meal should draw from before saving."
         }
 
-        return "Prepared Food will decrement only for the extra eaten servings you log."
+        return "Servings will be deducted from the selected Prepared Dishes."
     }
 
     private func applyIncrementToAll(_ increment: Int) {

@@ -71,7 +71,7 @@ struct CookQueueView: View {
                     EmptyStateView(
                         icon: "list.number",
                         title: "Cook queue is empty",
-                        message: "Add recipes from Recipe detail or queue planned meals from Meal Plan to build your next cooking run."
+                        message: "Add recipes from your collection or meal plan."
                     )
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
@@ -146,19 +146,22 @@ struct CookQueueView: View {
                     .environment(appState)
                 }
             }
-            .fullScreenCover(item: $resumingMultiCookSession) { multiSession in
-                let recipes = multiSession.recipeIDs.compactMap { id in
-                    appState.allRecipes.first { $0.id == id }
-                }
-                MultiCookModeView(
-                    recipes: recipes,
-                    blocks: multiSession.blocks,
-                    queueID: multiSession.queueID,
-                    queueStageID: multiSession.queueStageID,
-                    resumeSessionId: multiSession.id,
-                    resumeAtBlock: multiSession.currentBlockIndex
-                )
-                .environment(appState)
+            .background {
+                Color.clear
+                    .fullScreenCover(item: $resumingMultiCookSession) { multiSession in
+                        let recipes = multiSession.recipeIDs.compactMap { id in
+                            appState.allRecipes.first { $0.id == id }
+                        }
+                        MultiCookModeView(
+                            recipes: recipes,
+                            blocks: multiSession.blocks,
+                            queueID: multiSession.queueID,
+                            queueStageID: multiSession.queueStageID,
+                            resumeSessionId: multiSession.id,
+                            resumeAtBlock: multiSession.currentBlockIndex
+                        )
+                        .environment(appState)
+                    }
             }
             .onAppear {
                 // Ensure fresh session data when queue appears
@@ -195,7 +198,7 @@ struct CookQueueView: View {
                             .foregroundStyle(PCColors.textSecondary)
                     }
                     if !canStart {
-                        Text("One or more recipes in this stage can no longer be found.")
+                        Text("One or more recipes were removed or deleted.")
                             .font(.caption2)
                             .foregroundStyle(PCColors.expired)
                     }

@@ -40,7 +40,7 @@ struct UseUpIngredientsView: View {
             PCScrollView {
                 VStack(spacing: PCTokens.spacingMD) {
                     Section {
-                        Text("Pick ingredients you want to use up, then get AI-generated recipe ideas.")
+                        Text("Pick ingredients you want to use up and we'll suggest recipes.")
                             .font(.subheadline)
                             .foregroundStyle(PCColors.textSecondary)
                     }
@@ -105,7 +105,7 @@ struct UseUpIngredientsView: View {
                 .font(PCFont.body)
                 .padding(.horizontal)
 
-            Text("Off: recipes may include common staples like salt, oil, and garlic")
+            Text("Recipes may include common staples like oil and salt")
                 .font(PCFont.caption)
                 .foregroundStyle(PCColors.textTertiary)
                 .padding(.horizontal)
@@ -114,11 +114,11 @@ struct UseUpIngredientsView: View {
 
     private var requireAllIngredientsToggle: some View {
         VStack(alignment: .leading, spacing: PCTokens.spacingXS) {
-            Toggle("Use all ingredients in each recipe", isOn: $viewModel.requireAllIngredients)
+            Toggle("Each recipe uses every selected ingredient", isOn: $viewModel.requireAllIngredients)
                 .font(PCFont.body)
                 .padding(.horizontal)
 
-            Text("Off: each recipe can use a subset — make multiple recipes to use everything")
+            Text("Each recipe may use some of your selections")
                 .font(PCFont.caption)
                 .foregroundStyle(PCColors.textTertiary)
                 .padding(.horizontal)
@@ -135,7 +135,7 @@ struct UseUpIngredientsView: View {
                             .font(.subheadline)
                             .fontWeight(.semibold)
                             .foregroundStyle(PCColors.textPrimary)
-                        Text("Tap Get Recipe Ideas to see what you can make.")
+                        Text("Tap Find Recipes to see what you can make.")
                             .font(.caption)
                             .foregroundStyle(PCColors.textSecondary)
                     }
@@ -147,8 +147,8 @@ struct UseUpIngredientsView: View {
                     Task { await viewModel.fetchSuggestions() }
                 } label: {
                     HStack(spacing: 8) {
-                        Image(systemName: "sparkles")
-                        Text("Get Recipe Ideas")
+                        Image(systemName: "lightbulb")
+                        Text("Find Recipes")
                     }
                     .font(PCFont.headline)
                     .frame(maxWidth: .infinity)
@@ -351,11 +351,11 @@ struct UseUpIngredientsView: View {
                     .font(.largeTitle)
                     .foregroundStyle(PCColors.expiring)
 
-                Text("Couldn't generate a recipe")
+                Text("Couldn't create a recipe")
                     .font(PCFont.headline)
                     .foregroundStyle(PCColors.textPrimary)
 
-                Text("This can happen if the AI service is busy. You can try again or go back to pick a different suggestion.")
+                Text("Something went wrong. Try again or pick a different suggestion.")
                     .font(PCFont.body)
                     .foregroundStyle(PCColors.textSecondary)
                     .multilineTextAlignment(.center)

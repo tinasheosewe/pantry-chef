@@ -177,6 +177,62 @@ struct RecipeDetailView: View {
         scaledRecipe.pantryMatch(pantry: appState.pantryItems)
     }
 
+    // Extracted to reduce type-checking complexity for the body
+    @ViewBuilder
+    private var presentationHosts: some View {
+        Color.clear
+            .fullScreenCover(isPresented: $showCookMode) {
+                let queueContext = existingSession.flatMap { appState.cookQueueContext(for: $0) }
+                if let session = existingSession {
+                    CookModeView(
+                        recipe: scaledRecipe,
+                        resumeAtStep: session.currentStepIndex,
+                        isResuming: true,
+                        queueID: queueContext?.queueID,
+                        queueStageID: queueContext?.stageID
+                    )
+                } else {
+                    CookModeView(recipe: scaledRecipe)
+                }
+            }
+        Color.clear
+            .sheet(isPresented: $showSubstitutions) {
+                SubstitutionsView(
+                    substitutions: substitutions,
+                    onApply: { subs in
+                        let changes = subs.map { "Replace \($0.originalIngredient) with \($0.substituteName) (ratio: \($0.ratio))" }.joined(separator: "; ")
+                        Task {
+                            await performModify(prompt: "Apply these ingredient substitutions to the recipe: \(changes). Update the recipe steps, timing, and nutrition accordingly.")
+                        }
+                    }
+                )
+            }
+        Color.clear
+            .sheet(item: $healthierSuggestion) { suggestion in
+                HealthierView(
+                    suggestion: suggestion,
+                    onApply: { tweaks in
+                        let changes = tweaks.map(\.change).joined(separator: "; ")
+                        Task { await performModify(prompt: "Apply these healthier changes to the recipe: \(changes)") }
+                    }
+                )
+            }
+        Color.clear
+            .sheet(isPresented: $showShoppingList) {
+                ShoppingPreviewView(items: shoppingList)
+            }
+        Color.clear
+            .appNavigationSheet(isPresented: $showPantryReview) {
+                PantryCookReviewSheet(
+                    recipeTitle: scaledRecipe.title,
+                    items: $pantryReviewItems,
+                    onApply: { items in
+                        await appState.applyPantryCookReview(items)
+                    }
+                )
+            }
+    }
+
     var body: some View {
         AppScrollView {
             VStack(alignment: .leading, spacing: 20) {
@@ -260,52 +316,7 @@ struct RecipeDetailView: View {
                     .environment(appState)
             }
         }
-        .fullScreenCover(isPresented: $showCookMode) {
-            let queueContext = existingSession.flatMap { appState.cookQueueContext(for: $0) }
-            if let session = existingSession {
-                CookModeView(
-                    recipe: scaledRecipe,
-                    resumeAtStep: session.currentStepIndex,
-                    isResuming: true,
-                    queueID: queueContext?.queueID,
-                    queueStageID: queueContext?.stageID
-                )
-            } else {
-                CookModeView(recipe: scaledRecipe)
-            }
-        }
-        .sheet(isPresented: $showSubstitutions) {
-            SubstitutionsView(
-                substitutions: substitutions,
-                onApply: { subs in
-                    let changes = subs.map { "Replace \($0.originalIngredient) with \($0.substituteName) (ratio: \($0.ratio))" }.joined(separator: "; ")
-                    Task {
-                        await performModify(prompt: "Apply these ingredient substitutions to the recipe: \(changes). Update the recipe steps, timing, and nutrition accordingly.")
-                    }
-                }
-            )
-        }
-        .sheet(item: $healthierSuggestion) { suggestion in
-            HealthierView(
-                suggestion: suggestion,
-                onApply: { tweaks in
-                    let changes = tweaks.map(\.change).joined(separator: "; ")
-                    Task { await performModify(prompt: "Apply these healthier changes to the recipe: \(changes)") }
-                }
-            )
-        }
-        .sheet(isPresented: $showShoppingList) {
-            ShoppingPreviewView(items: shoppingList)
-        }
-        .appNavigationSheet(isPresented: $showPantryReview) {
-            PantryCookReviewSheet(
-                recipeTitle: scaledRecipe.title,
-                items: $pantryReviewItems,
-                onApply: { items in
-                    await appState.applyPantryCookReview(items)
-                }
-            )
-        }
+        .background { presentationHosts }
         .appNavigationSheet(isPresented: $showEditor) {
             RecipeEditorView(
                 recipe: recipe,
@@ -602,7 +613,7 @@ struct RecipeDetailView: View {
                         let result = await appState.getShoppingList(for: recipe)
                         loadingActions.remove(.shopping)
                         if result.isEmpty {
-                            actionErrorMessage = "Couldn't generate shopping list. Please check your internet connection and try again."
+                            actionErrorMessage = "Couldn't create the shopping list. Check your connection and try again."
                         } else {
                             shoppingList = result
                             showShoppingList = true
@@ -632,7 +643,7 @@ struct RecipeDetailView: View {
                         if let result {
                             healthierSuggestion = result
                         } else {
-                            actionErrorMessage = "Couldn't generate healthier suggestions. Please check your internet connection and try again."
+                            actionErrorMessage = "Couldn't find healthier options. Check your connection and try again."
                         }
                     }
                 }
@@ -1578,7 +1589,7 @@ struct AddRecipeView: View {
                             }
                         } else {
                             HStack(spacing: 6) {
-                                Image(systemName: "sparkles")
+                                Image(systemName: "doc.text.magnifyingglass")
                                 Text("Parse Recipe")
                             }
                         }

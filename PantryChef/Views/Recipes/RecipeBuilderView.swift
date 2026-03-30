@@ -143,7 +143,7 @@ struct RecipeBuilderView: View {
                                 .id(statusMessage)
                                 .transition(.push(from: .bottom))
 
-                            Text("Usually takes about 30 seconds")
+                            Text("Takes about 30 seconds")
                                 .font(.caption2)
                                 .foregroundStyle(PCColors.textSecondary)
                         } else {
@@ -151,8 +151,8 @@ struct RecipeBuilderView: View {
                                 Task { await generate() }
                             } label: {
                                 HStack(spacing: 8) {
-                                    Image(systemName: "sparkles")
-                                    Text("Generate Recipe")
+                                    Image(systemName: "wand.and.stars")
+                                    Text("Create Recipe")
                                         .fontWeight(.semibold)
                                 }
                                 .foregroundStyle(.white)
@@ -174,7 +174,7 @@ struct RecipeBuilderView: View {
                         Button {
                             Task { await generate() }
                         } label: {
-                            Text("Just generate with defaults →")
+                            Text("Just create with defaults →")
                                 .font(.footnote)
                                 .foregroundStyle(PCColors.textSecondary)
                         }
@@ -198,7 +198,7 @@ struct RecipeBuilderView: View {
     private var headerSection: some View {
         VStack(spacing: 8) {
             HStack(spacing: 8) {
-                Image(systemName: "sparkles")
+                Image(systemName: "wand.and.stars")
                     .font(.title2)
                     .foregroundStyle(PCColors.expiring)
                 Text(query.capitalized)
@@ -206,7 +206,7 @@ struct RecipeBuilderView: View {
                     .fontWeight(.bold)
                     .foregroundStyle(PCColors.textPrimary)
             }
-            Text("Customize your recipe or tap Generate to go with smart defaults")
+            Text("Customize your recipe or tap Create to use the defaults")
                 .font(.subheadline)
                 .foregroundStyle(PCColors.textSecondary)
                 .multilineTextAlignment(.center)
@@ -302,7 +302,7 @@ struct RecipeBuilderView: View {
             pantryIngredients: usePantry ? appState.pantryItems.map(\.name) : []
         )
 
-        statusMessage = "Researching the best \(query.capitalized) recipes…"
+        statusMessage = "Finding the best \(query.capitalized) recipes…"
 
         async let statusFetch = appState.aiService.generateStatusMessages(query: query, preferences: prefs)
         async let recipeFetch = recipeGateway.generateRecipe(query: query, preferences: prefs)
@@ -331,7 +331,7 @@ struct RecipeBuilderView: View {
             onGenerated(normalizedRecipe.recipe)
         } else {
             tickerTask.cancel()
-            generationError = appState.errorMessage ?? "Failed to generate recipe. Please try again."
+            generationError = appState.errorMessage ?? "Couldn't create a recipe. Please try again."
         }
         isGenerating = false
         statusMessage = ""

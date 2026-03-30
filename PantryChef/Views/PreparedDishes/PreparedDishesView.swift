@@ -120,22 +120,31 @@ struct PreparedDishesView: View {
                 viewModel.addDish(dish)
             }
         }
-        .sheet(isPresented: $showHistoryPicker) {
-            PreparedDishHistoryPickerView(appState: viewModel.appState) { dish in
-                viewModel.addDish(dish)
-            }
-        }
-        .sheet(isPresented: $showMealPlanQuickAdd) {
-            PreparedDishMealPlanSelectionView(appState: viewModel.appState) { dishes in
-                for dish in dishes {
-                    viewModel.addDish(dish)
+        .background {
+            Color.clear
+                .sheet(isPresented: $showHistoryPicker) {
+                    PreparedDishHistoryPickerView(appState: viewModel.appState) { dish in
+                        viewModel.addDish(dish)
+                    }
                 }
-            }
         }
-        .sheet(item: $viewModel.editingDish) { dish in
-            PreparedDishEditorView(appState: viewModel.appState, dish: dish) { updatedDish in
-                viewModel.updateDish(updatedDish)
-            }
+        .background {
+            Color.clear
+                .sheet(isPresented: $showMealPlanQuickAdd) {
+                    PreparedDishMealPlanSelectionView(appState: viewModel.appState) { dishes in
+                        for dish in dishes {
+                            viewModel.addDish(dish)
+                        }
+                    }
+                }
+        }
+        .background {
+            Color.clear
+                .sheet(item: $viewModel.editingDish) { dish in
+                    PreparedDishEditorView(appState: viewModel.appState, dish: dish) { updatedDish in
+                        viewModel.updateDish(updatedDish)
+                    }
+                }
         }
         .appNavigationSheet(item: $viewModel.selectedDish) { dish in
             PreparedDishDetailView(dish: dish)
@@ -549,7 +558,7 @@ private struct PreparedDishHistoryPickerView: View {
                 } else {
                     AppList {
                         Section {
-                            Text("Pick a previous dish to prefill a new Prepared Food entry. You can still adjust servings, storage, and freshness before saving.")
+                            Text("Pick a dish to prefill. You can adjust before saving.")
                                 .font(.subheadline)
                                 .foregroundStyle(PCColors.textSecondary)
                         }
@@ -942,13 +951,13 @@ struct PreparedDishMealPlanSelectionView: View {
                     EmptyStateView(
                         icon: "calendar.badge.exclamationmark",
                         title: "No eligible meal-plan items",
-                        message: "Only recipes and custom planned meals can be added to Prepared Food from here."
+                        message: "Only recipes and custom meals can be added here."
                     )
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                 } else {
                     AppList {
                         Section {
-                            Text("Select one or more meal-plan entries, then review them before adding them to Prepared Food.")
+                            Text("Select one or more meal-plan entries, then review them before adding.")
                                 .font(.subheadline)
                                 .foregroundStyle(PCColors.textSecondary)
                         }
@@ -1116,7 +1125,7 @@ struct PreparedDishMealPlanReviewView: View {
             }
         }
         .background(PCColors.background)
-        .navigationTitle("Review Prepared Food")
+        .navigationTitle("Review Prepared Dishes")
         .toolbar {
             ToolbarItem(placement: .confirmationAction) {
                 Button {
@@ -1128,7 +1137,7 @@ struct PreparedDishMealPlanReviewView: View {
                     if isSaving {
                         ProgressView()
                     } else {
-                        Text("Add to Prepared Food")
+                        Text("Add to Prepared Dishes")
                     }
                 }
                 .disabled(validDraftCount != drafts.count || drafts.isEmpty || isSaving)
@@ -1192,7 +1201,7 @@ struct PreparedDishMealPlanReviewView: View {
             Divider()
             HStack(spacing: 12) {
                 VStack(alignment: .leading, spacing: 2) {
-                    Text(drafts.isEmpty ? "Nothing to add" : "\(drafts.count) dishes staged")
+                    Text(drafts.isEmpty ? "Nothing to add" : "\(drafts.count) dishes ready to add")
                         .font(.subheadline)
                         .fontWeight(.semibold)
                         .foregroundStyle(PCColors.textPrimary)

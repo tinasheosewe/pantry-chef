@@ -3951,7 +3951,7 @@ final class AppStateTests: XCTestCase {
         XCTAssertNil(normalized)
         XCTAssertEqual(ai.resolveIngredientsCallCount, 1)
         XCTAssertEqual(ai.disambiguateIngredientsCallCount, 1)
-        XCTAssertEqual(appState.errorMessage, "Couldn't confidently match AI-generated ingredients (moonmilk). Please try again.")
+        XCTAssertEqual(appState.errorMessage, "Something went wrong. Please try again.")
     }
 
     func testModifyRecipeNormalizesAIAuthoredIngredientsAndUsesPantryContext() async {

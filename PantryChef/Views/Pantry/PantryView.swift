@@ -21,8 +21,8 @@ struct PantryView: View {
                     EmptyStateView(
                         icon: "refrigerator",
                         title: "Your pantry is empty",
-                        message: "Browse the catalog, set your preferences, then review everything before adding it.",
-                        actionTitle: "Start Adding"
+                        message: "Browse the catalog and add ingredients.",
+                        actionTitle: "Add Items"
                     ) {
                         viewModel.prepareBulkAdd()
                     }
@@ -46,15 +46,18 @@ struct PantryView: View {
             .sheet(isPresented: $viewModel.showAddItem) {
                 BulkAddPantryView(viewModel: viewModel)
             }
-            .sheet(item: $editingItem) { item in
-                AddPantryItemView(
-                    item: item,
-                    savedDefaultForItem: { viewModel.appState.pantryItemDefaultPreference(for: $0) },
-                    saveDefault: { viewModel.appState.savePantryItemDefaultPreference($0) },
-                    removeDefault: { viewModel.appState.removePantryItemDefaultPreference(for: $0) }
-                ) { updatedItem in
-                    viewModel.updateItem(updatedItem)
-                }
+            .background {
+                Color.clear
+                    .sheet(item: $editingItem) { item in
+                        AddPantryItemView(
+                            item: item,
+                            savedDefaultForItem: { viewModel.appState.pantryItemDefaultPreference(for: $0) },
+                            saveDefault: { viewModel.appState.savePantryItemDefaultPreference($0) },
+                            removeDefault: { viewModel.appState.removePantryItemDefaultPreference(for: $0) }
+                        ) { updatedItem in
+                            viewModel.updateItem(updatedItem)
+                        }
+                    }
             }
         }
     }

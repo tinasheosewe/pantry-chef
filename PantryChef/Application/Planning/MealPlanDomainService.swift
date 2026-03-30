@@ -62,13 +62,13 @@ struct MealPlanDomainService: MealPlanDomainServicing {
 
         for request in requests where request.additionalServings > 0 {
             guard let preparedDishID = request.preparedDishID else {
-                state.pushError(.validation("Choose which Prepared Food item was eaten before saving."))
+                state.pushError(.validation("Choose which Prepared Dishes item was eaten before saving."))
                 return false
             }
 
             let matchingDishIDs = Set(state.matchingPreparedDishes(for: request.entry).map(\.id))
             guard matchingDishIDs.contains(preparedDishID) else {
-                state.pushError(.validation("The selected Prepared Food item no longer matches \(request.entry.displayName)."))
+                state.pushError(.validation("The selected Prepared Dishes item no longer matches \(request.entry.displayName)."))
                 return false
             }
         }

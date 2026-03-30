@@ -66,7 +66,7 @@ struct BatchScheduleLoadingView: View {
                 .font(.system(size: 48))
                 .foregroundStyle(PCColors.expired)
 
-            Text("Scheduling Failed")
+            Text("Couldn't Plan This Session")
                 .font(.headline)
                 .foregroundStyle(PCColors.textPrimary)
 

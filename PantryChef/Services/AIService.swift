@@ -1320,7 +1320,7 @@ final class AIService: AIServiceProtocol {
 
     private static func fallbackMessages(dish: String) -> [String] {
         [
-            "Researching the best \(dish) recipes…",
+            "Finding the best \(dish) recipes…",
             "Selecting the perfect ingredients…",
             "Working out the technique…",
             "Writing step-by-step instructions…",

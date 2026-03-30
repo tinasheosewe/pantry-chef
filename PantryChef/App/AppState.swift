@@ -8,9 +8,8 @@ final class AppState {
 
         var errorDescription: String? {
             switch self {
-            case .disambiguationFailed(let ingredientNames):
-                let joinedNames = ingredientNames.joined(separator: ", ")
-                return "Couldn't confidently match AI-generated ingredients (\(joinedNames)). Please try again."
+            case .disambiguationFailed:
+                return "Something went wrong. Please try again."
             }
         }
     }
