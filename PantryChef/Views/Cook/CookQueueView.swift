@@ -28,20 +28,20 @@ struct CookQueueView: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
+                // Active cook banner — always show at top regardless of queue state
+                if let multiSession = appState.activeCooks.activeMultiCookSessions.first {
+                    multiCookBanner(multiSession)
+                        .padding(.horizontal)
+                        .padding(.top, PCTokens.spacingSM)
+                } else if let session = appState.activeCooks.activeSessions.first {
+                    activeCookBanner(session)
+                        .padding(.horizontal)
+                        .padding(.top, PCTokens.spacingSM)
+                }
+
                 if let queue, !queue.stages.isEmpty {
                     ScrollView {
                         LazyVStack(spacing: PCTokens.spacingMD) {
-                            // Active cook banner — multi-cook takes priority
-                            if let multiSession = appState.activeCooks.activeMultiCookSessions.first {
-                                multiCookBanner(multiSession)
-                                    .padding(.horizontal)
-                                    .padding(.top, PCTokens.spacingSM)
-                            } else if let session = appState.activeCooks.activeSessions.first {
-                                activeCookBanner(session)
-                                    .padding(.horizontal)
-                                    .padding(.top, PCTokens.spacingSM)
-                            }
-
                             Text("Queue recipes or meal-plan meals into solo or parallel stages. Finish a stage to unlock the next one without losing your place.")
                                 .font(.subheadline)
                                 .foregroundStyle(PCColors.textSecondary)
@@ -67,13 +67,17 @@ struct CookQueueView: View {
                         }
                         .padding(.bottom, PCTokens.spacingLG)
                     }
-                } else {
+                } else if !appState.activeCooks.hasActiveSessions {
+                    // Only show empty state if there's truly nothing (no queue AND no active sessions)
                     EmptyStateView(
                         icon: "list.number",
                         title: "Cook queue is empty",
                         message: "Add recipes from your collection or meal plan."
                     )
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
+                } else {
+                    // Has active session but empty queue — show spacer to push banner to top
+                    Spacer()
                 }
             }
             .navigationTitle("Cook Queue")
