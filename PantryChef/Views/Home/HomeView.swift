@@ -78,28 +78,22 @@ struct HomeView: View {
                         .environment(viewModel.appState)
                 }
             }
-            .background {
-                Color.clear
-                    .appNavigationSheet(item: $selectedPreparedDish) { dish in
-                        PreparedDishDetailView(dish: dish)
-                            .environment(viewModel.appState)
-                    }
+            .appNavigationSheet(item: $selectedPreparedDish) { dish in
+                PreparedDishDetailView(dish: dish)
+                    .environment(viewModel.appState)
             }
-            .background {
-                Color.clear
-                    .fullScreenCover(item: $resumeRecipe) { recipe in
-                        let session = viewModel.appState.cookingSessionStore.load(recipeId: recipe.id)
-                        let stepIndex = session?.currentStepIndex ?? 0
-                        let queueContext = session.flatMap { viewModel.appState.cookQueueContext(for: $0) }
-                        CookModeView(
-                            recipe: recipe,
-                            resumeAtStep: stepIndex,
-                            isResuming: true,
-                            queueID: queueContext?.queueID,
-                            queueStageID: queueContext?.stageID
-                        )
-                        .environment(viewModel.appState)
-                    }
+            .fullScreenCover(item: $resumeRecipe) { recipe in
+                let session = viewModel.appState.cookingSessionStore.load(recipeId: recipe.id)
+                let stepIndex = session?.currentStepIndex ?? 0
+                let queueContext = session.flatMap { viewModel.appState.cookQueueContext(for: $0) }
+                CookModeView(
+                    recipe: recipe,
+                    resumeAtStep: stepIndex,
+                    isResuming: true,
+                    queueID: queueContext?.queueID,
+                    queueStageID: queueContext?.stageID
+                )
+                .environment(viewModel.appState)
             }
         }
     }

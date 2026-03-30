@@ -150,22 +150,19 @@ struct CookQueueView: View {
                     .environment(appState)
                 }
             }
-            .background {
-                Color.clear
-                    .fullScreenCover(item: $resumingMultiCookSession) { multiSession in
-                        let recipes = multiSession.recipeIDs.compactMap { id in
-                            appState.allRecipes.first { $0.id == id }
-                        }
-                        MultiCookModeView(
-                            recipes: recipes,
-                            blocks: multiSession.blocks,
-                            queueID: multiSession.queueID,
-                            queueStageID: multiSession.queueStageID,
-                            resumeSessionId: multiSession.id,
-                            resumeAtBlock: multiSession.currentBlockIndex
-                        )
-                        .environment(appState)
-                    }
+            .fullScreenCover(item: $resumingMultiCookSession) { multiSession in
+                let recipes = multiSession.recipeIDs.compactMap { id in
+                    appState.allRecipes.first { $0.id == id }
+                }
+                MultiCookModeView(
+                    recipes: recipes,
+                    blocks: multiSession.blocks,
+                    queueID: multiSession.queueID,
+                    queueStageID: multiSession.queueStageID,
+                    resumeSessionId: multiSession.id,
+                    resumeAtBlock: multiSession.currentBlockIndex
+                )
+                .environment(appState)
             }
             .onAppear {
                 // Ensure fresh session data when queue appears
