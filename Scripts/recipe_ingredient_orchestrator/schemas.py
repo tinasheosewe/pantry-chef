@@ -81,6 +81,11 @@ class MealType(str, Enum):
 
 
 class CuisineType(str, Enum):
+    """Reference vocabulary for common cuisines.
+    
+    NOTE: Models accept any cuisine string — this enum is for documentation
+    and prompt hints only. Normalization is a manual QA step, not automated.
+    """
     ITALIAN = "Italian"
     MEXICAN = "Mexican"
     CHINESE = "Chinese"
@@ -96,6 +101,12 @@ class CuisineType(str, Enum):
     MIDDLE_EASTERN = "Middle Eastern"
     ETHIOPIAN = "Ethiopian"
     CARIBBEAN = "Caribbean"
+    PERUVIAN = "Peruvian"
+    BRAZILIAN = "Brazilian"
+    TURKISH = "Turkish"
+    MOROCCAN = "Moroccan"
+    FILIPINO = "Filipino"
+    MALAYSIAN = "Malaysian"
     OTHER = "Other"
 
 
@@ -105,7 +116,10 @@ class PantryStorage(str, Enum):
     FROZEN = "Frozen"
 
 
-class FacetKey(str, Enum):
+# FacetKey: Open string type with common constants.
+# The LLM can use ANY facet key (e.g. "grade", "age", "region") — these are conventions only.
+class FacetKey:
+    """Common facet key constants. Any string value is valid."""
     VARIANT = "variant"
     FORM = "form"
     PRESERVATION = "preservation"
@@ -114,6 +128,12 @@ class FacetKey(str, Enum):
     TEXTURE = "texture"
     CONCENTRATION = "concentration"
     BASE = "base"
+
+    # Helper to list common keys for prompts
+    @classmethod
+    def common_keys(cls) -> list[str]:
+        return [cls.VARIANT, cls.FORM, cls.PRESERVATION, cls.PROCESSING,
+                cls.PREPARATION, cls.TEXTURE, cls.CONCENTRATION, cls.BASE]
 
 
 class SubstitutionImpact(str, Enum):

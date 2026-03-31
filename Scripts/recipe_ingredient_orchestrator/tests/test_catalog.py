@@ -15,7 +15,6 @@ from recipe_ingredient_orchestrator.models import (
 )
 from recipe_ingredient_orchestrator.schemas import (
     CookingImpact,
-    FacetKey,
     FoodCategory,
     MeasurementUnit,
     PantryStorage,
@@ -42,6 +41,8 @@ def sugar() -> CatalogEntry:
                 substitute_name="Salt",
                 ratio="not applicable — opposite flavours",
                 taste_impact=SubstitutionImpact.SIGNIFICANT,
+                texture_impact=SubstitutionImpact.NONE,
+                cooking_impact=CookingImpact.NONE,
             ),
         ],
     )
@@ -163,6 +164,9 @@ class TestSubstitutionLinking:
                 SubstitutionSuggestion(
                     substitute_name="shoyu",  # alias of soy_sauce
                     ratio="1:1",
+                    taste_impact=SubstitutionImpact.SLIGHT,
+                    texture_impact=SubstitutionImpact.NONE,
+                    cooking_impact=CookingImpact.NONE,
                 )
             ],
         )
@@ -180,7 +184,13 @@ class TestSubstitutionLinking:
             id="butter",
             name="Butter",
             substitution_suggestions=[
-                SubstitutionSuggestion(substitute_name="Butter", ratio="1:1")
+                SubstitutionSuggestion(
+                    substitute_name="Butter",
+                    ratio="1:1",
+                    taste_impact=SubstitutionImpact.NONE,
+                    texture_impact=SubstitutionImpact.NONE,
+                    cooking_impact=CookingImpact.NONE,
+                )
             ],
         )
         await catalog.add(entry)
@@ -224,7 +234,7 @@ class TestOverlapDetection:
             id="soy-sauce",
             name="Soy Sauce",
             category=FoodCategory.CONDIMENTS_SAUCES,
-            facets=[FacetDefinition(key=FacetKey.VARIANT, options=["regular", "low sodium"])],
+            facets=[FacetDefinition(key="variant", options=["regular", "low sodium"])],
         )
         low_sodium_soy = make_catalog_entry(
             id="low-sodium-soy-sauce",
@@ -242,7 +252,7 @@ class TestOverlapDetection:
             id="olive-oil",
             name="Olive Oil",
             category=FoodCategory.OILS_FATS,
-            facets=[FacetDefinition(key=FacetKey.VARIANT, options=["extra virgin", "virgin", "light"])],
+            facets=[FacetDefinition(key="variant", options=["extra virgin", "virgin", "light"])],
         )
         ev_olive_oil = make_catalog_entry(
             id="extra-virgin-olive-oil",
@@ -262,7 +272,7 @@ class TestOverlapDetection:
             id="olive-oil",
             name="Olive Oil",
             category=FoodCategory.OILS_FATS,
-            facets=[FacetDefinition(key=FacetKey.VARIANT, options=["extra virgin", "light"])],
+            facets=[FacetDefinition(key="variant", options=["extra virgin", "light"])],
         )
         light_olive_oil = make_catalog_entry(
             id="light-olive-oil",
@@ -297,7 +307,7 @@ class TestOverlapDetection:
             id="sesame-oil",
             name="Sesame Oil",
             category=FoodCategory.OILS_FATS,
-            facets=[FacetDefinition(key=FacetKey.VARIANT, options=["regular", "toasted"])],
+            facets=[FacetDefinition(key="variant", options=["regular", "toasted"])],
         )
         toasted_sesame = make_catalog_entry(
             id="toasted-sesame-oil",
@@ -315,7 +325,7 @@ class TestOverlapDetection:
             id="garlic",
             name="Garlic",
             category=FoodCategory.PRODUCE,
-            facets=[FacetDefinition(key=FacetKey.FORM, options=["whole", "minced", "powdered"])],
+            facets=[FacetDefinition(key="form", options=["whole", "minced", "powdered"])],
         )
         garlic_powder = make_catalog_entry(
             id="garlic-powder",
@@ -347,7 +357,7 @@ class TestOverlapDetection:
             id="cheese",
             name="Cheese",
             category=FoodCategory.DAIRY,
-            facets=[FacetDefinition(key=FacetKey.VARIANT, options=["cheddar", "feta"])],
+            facets=[FacetDefinition(key="variant", options=["cheddar", "feta"])],
         )
         butter = make_catalog_entry(
             id="butter",
@@ -399,7 +409,7 @@ class TestOverlapDetection:
             id="olive-oil",
             name="Olive Oil",
             category=FoodCategory.OILS_FATS,
-            facets=[FacetDefinition(key=FacetKey.VARIANT, options=["extra virgin", "virgin", "light"])],
+            facets=[FacetDefinition(key="variant", options=["extra virgin", "virgin", "light"])],
         )
         light_olive = make_catalog_entry(
             id="light-olive-oil",
@@ -448,8 +458,8 @@ class TestSummaryWithFacets:
             category=FoodCategory.DAIRY,
             aliases=["fromage", "queso"],
             facets=[
-                FacetDefinition(key=FacetKey.VARIANT, options=["cheddar", "feta"]),
-                FacetDefinition(key=FacetKey.FORM, options=["block", "shredded"]),
+                FacetDefinition(key="variant", options=["cheddar", "feta"]),
+                FacetDefinition(key="form", options=["block", "shredded"]),
             ],
         )
         await catalog.add(cheese)
@@ -465,3 +475,121 @@ class TestSummaryWithFacets:
             await catalog.add(make_catalog_entry(id=f"item-{i}", name=f"Item {i}"))
         summary = catalog.summary_with_facets(max_entries=5)
         assert "... and 5 more entries" in summary
+
+
+class TestMergeSemantics:
+    """Tests for the new merge/upsert functionality."""
+
+    @pytest.mark.asyncio
+    async def test_merge_nonexistent_returns_false(self, catalog, salt):
+        """Merging an entry that doesn't exist should return False."""
+        assert await catalog.merge(salt) is False
+        assert catalog.size == 0
+
+    @pytest.mark.asyncio
+    async def test_merge_combines_aliases(self, catalog):
+        """Merging should union aliases, keeping existing first."""
+        entry1 = make_catalog_entry(
+            id="cheese",
+            name="Cheese",
+            aliases=["fromage", "queso"],
+        )
+        entry2 = make_catalog_entry(
+            id="cheese",
+            name="Cheese",
+            aliases=["queso", "käse", "formaggio"],  # queso is duplicate
+        )
+        await catalog.add(entry1)
+        await catalog.merge(entry2)
+
+        result = catalog.get("cheese")
+        assert "fromage" in result.aliases
+        assert "queso" in result.aliases
+        assert "käse" in result.aliases
+        assert "formaggio" in result.aliases
+        # Deduped: queso should appear only once
+        assert result.aliases.count("queso") == 1
+
+    @pytest.mark.asyncio
+    async def test_merge_combines_facets(self, catalog):
+        """Merging should union facet options for the same key."""
+        entry1 = make_catalog_entry(
+            id="cheese",
+            name="Cheese",
+            facets=[FacetDefinition(key="variant", options=["cheddar", "feta"])],
+        )
+        entry2 = make_catalog_entry(
+            id="cheese",
+            name="Cheese",
+            facets=[
+                FacetDefinition(key="variant", options=["feta", "mozzarella"]),  # feta is duplicate
+                FacetDefinition(key="age", options=["fresh", "aged"]),  # new key
+            ],
+        )
+        await catalog.add(entry1)
+        await catalog.merge(entry2)
+
+        result = catalog.get("cheese")
+        facets_by_key = {f.key: f.options for f in result.facets}
+        assert "variant" in facets_by_key
+        assert "age" in facets_by_key
+        assert set(facets_by_key["variant"]) == {"cheddar", "feta", "mozzarella"}
+        assert set(facets_by_key["age"]) == {"fresh", "aged"}
+
+    @pytest.mark.asyncio
+    async def test_add_or_merge_adds_new(self, catalog, salt):
+        """add_or_merge should add if entry doesn't exist."""
+        success, action = await catalog.add_or_merge(salt)
+        assert success is True
+        assert action == "added"
+        assert catalog.size == 1
+
+    @pytest.mark.asyncio
+    async def test_add_or_merge_merges_existing(self, catalog):
+        """add_or_merge should merge if entry exists."""
+        entry1 = make_catalog_entry(id="salt", name="Salt", aliases=["table salt"])
+        entry2 = make_catalog_entry(id="salt", name="Salt", aliases=["sea salt"])
+
+        await catalog.add(entry1)
+        success, action = await catalog.add_or_merge(entry2)
+        assert success is True
+        assert action == "merged"
+        assert catalog.size == 1
+
+        result = catalog.get("salt")
+        assert "table salt" in result.aliases
+        assert "sea salt" in result.aliases
+
+    @pytest.mark.asyncio
+    async def test_add_or_merge_rejects_overlap(self, catalog):
+        """add_or_merge should reject if new entry overlaps with a different entry."""
+        soy_sauce = make_catalog_entry(
+            id="soy-sauce",
+            name="Soy Sauce",
+            aliases=["shoyu"],
+        )
+        shoyu = make_catalog_entry(id="shoyu", name="Shoyu")
+
+        await catalog.add(soy_sauce)
+        success, action = await catalog.add_or_merge(shoyu)
+        assert success is False
+        assert action == "rejected"
+        assert catalog.size == 1
+
+    @pytest.mark.asyncio
+    async def test_add_or_merge_many(self, catalog):
+        """add_or_merge_many should handle mixed adds, merges, and rejections."""
+        salt1 = make_catalog_entry(id="salt", name="Salt", aliases=["table salt"])
+        salt2 = make_catalog_entry(id="salt", name="Salt", aliases=["sea salt"])
+        sugar = make_catalog_entry(id="sugar", name="Sugar")
+        soy_sauce = make_catalog_entry(id="soy-sauce", name="Soy Sauce", aliases=["shoyu"])
+        shoyu = make_catalog_entry(id="shoyu", name="Shoyu")
+
+        await catalog.add(salt1)
+        await catalog.add(soy_sauce)
+
+        stats = await catalog.add_or_merge_many([salt2, sugar, shoyu])
+        assert stats["added"] == 1  # sugar
+        assert stats["merged"] == 1  # salt2 → salt1
+        assert stats["rejected"] == 1  # shoyu overlaps soy_sauce
+        assert catalog.size == 3  # salt, soy-sauce, sugar

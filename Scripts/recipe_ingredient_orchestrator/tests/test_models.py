@@ -19,9 +19,9 @@ from recipe_ingredient_orchestrator.models import (
     SubstitutionSuggestion,
 )
 from recipe_ingredient_orchestrator.schemas import (
+    CookingImpact,
     DietaryTag,
     DifficultyLevel,
-    FacetKey,
     FoodCategory,
     GenerationMode,
     MeasurementUnit,
@@ -40,7 +40,7 @@ class TestCatalogEntry:
             default_unit=MeasurementUnit.TBSP,
             default_storage=PantryStorage.PANTRY,
             aliases=["EVOO"],
-            facets=[FacetDefinition(key=FacetKey.VARIANT, options=["extra-virgin", "virgin", "light"])],
+            facets=[FacetDefinition(key="variant", options=["extra-virgin", "virgin", "light"])],
         )
         assert entry.id == "olive-oil"
         assert entry.category == FoodCategory.OILS_FATS
@@ -54,7 +54,7 @@ class TestCatalogEntry:
             id="vinegar",
             name="Vinegar",
             category=FoodCategory.CONDIMENTS_SAUCES,
-            facets=[FacetDefinition(key=FacetKey.VARIANT, options=["balsamic", "red wine", "rice"])],
+            facets=[FacetDefinition(key="variant", options=["balsamic", "red wine", "rice"])],
             freshness_by_storage=[StorageFreshness(storage=PantryStorage.PANTRY, min_days=365, max_days=730)],
         )
         data = entry.model_dump(mode="json")
@@ -101,7 +101,7 @@ class TestRecipe:
                     unit=MeasurementUnit.G,
                     category=FoodCategory.PASTA_NOODLES,
                     catalog_entry_id="pasta",
-                    facet_selections=[FacetSelection(key=FacetKey.VARIANT, value="spaghetti")],
+                    facet_selections=[FacetSelection(key="variant", value="spaghetti")],
                 )
             ],
             steps=[RecipeStep(step_number=1, instruction="Boil pasta", timer_minutes=10, estimated_duration_seconds=600)],
@@ -131,3 +131,118 @@ class TestReviewResult:
     def test_revise_with_feedback(self):
         r = ReviewResult(status=ReviewStatus.REVISE, feedback="Needs more detail in steps")
         assert r.feedback is not None
+
+
+class TestFlexibleFacetKeys:
+    """Tests that facet keys accept any string, not just predefined constants."""
+
+    def test_arbitrary_facet_key_allowed(self):
+        """Domain-specific facet keys like 'grade' should be valid."""
+        entry = CatalogEntry(
+            id="saffron",
+            name="Saffron",
+            category=FoodCategory.SPICES_HERBS,
+            facets=[
+                FacetDefinition(key="grade", options=["Spanish", "Iranian", "Kashmiri"]),
+                FacetDefinition(key="variant", options=["threads", "powder"]),
+            ],
+        )
+        # Both standard and custom keys should work
+        assert len(entry.facets) == 2
+        assert entry.facets[0].key == "grade"
+        assert entry.facets[1].key == "variant"
+
+    def test_age_facet_for_cheese(self):
+        """Cheese can have 'age' as a custom facet key."""
+        entry = CatalogEntry(
+            id="parmesan",
+            name="Parmesan",
+            category=FoodCategory.DAIRY,
+            facets=[
+                FacetDefinition(key="age", options=["12 months", "24 months", "36 months"]),
+            ],
+        )
+        assert entry.facets[0].key == "age"
+
+    def test_region_facet_for_wine(self):
+        """Wine can have 'region' as a custom facet key."""
+        selection = FacetSelection(key="region", value="Bordeaux")
+        assert selection.key == "region"
+        assert selection.value == "Bordeaux"
+
+
+class TestFlexibleCuisine:
+    """Tests that cuisine accepts any string, not just enum values."""
+
+    def test_peruvian_cuisine_allowed(self):
+        """Peruvian and other cuisines not in the original enum should work."""
+        recipe = Recipe(
+            title="Ceviche",
+            cuisine="Peruvian",
+            ingredients=[RecipeIngredient(name="Fish", quantity=500, unit=MeasurementUnit.G)],
+            steps=[RecipeStep(step_number=1, instruction="Marinate fish in lime juice")],
+        )
+        assert recipe.cuisine == "Peruvian"
+
+    def test_turkish_cuisine_allowed(self):
+        recipe = Recipe(
+            title="Lahmacun",
+            cuisine="Turkish",
+            ingredients=[RecipeIngredient(name="Lamb", quantity=300, unit=MeasurementUnit.G)],
+            steps=[RecipeStep(step_number=1, instruction="Prepare the dough")],
+        )
+        assert recipe.cuisine == "Turkish"
+
+    def test_filipino_cuisine_allowed(self):
+        recipe = Recipe(
+            title="Adobo",
+            cuisine="Filipino",
+            ingredients=[RecipeIngredient(name="Chicken", quantity=1, unit=MeasurementUnit.LB)],
+            steps=[RecipeStep(step_number=1, instruction="Marinate chicken")],
+        )
+        assert recipe.cuisine == "Filipino"
+
+
+class TestRequiredImpactFields:
+    """Tests that substitution impact fields are required, not optional."""
+
+    def test_substitution_suggestion_requires_all_impacts(self):
+        """SubstitutionSuggestion should fail validation without impact fields."""
+        with pytest.raises(ValidationError) as exc_info:
+            SubstitutionSuggestion(
+                substitute_name="Butter",
+                ratio="1:1",
+                # Missing: taste_impact, texture_impact, cooking_impact
+            )
+        errors = exc_info.value.errors()
+        missing_fields = {e["loc"][0] for e in errors}
+        assert "taste_impact" in missing_fields
+        assert "texture_impact" in missing_fields
+        assert "cooking_impact" in missing_fields
+
+    def test_substitution_suggestion_valid_with_all_impacts(self):
+        """SubstitutionSuggestion should pass with all impact fields."""
+        sub = SubstitutionSuggestion(
+            substitute_name="Butter",
+            ratio="1:1",
+            taste_impact=SubstitutionImpact.SLIGHT,
+            texture_impact=SubstitutionImpact.MODERATE,
+            cooking_impact=CookingImpact.SLIGHT,
+        )
+        assert sub.taste_impact == SubstitutionImpact.SLIGHT
+        assert sub.texture_impact == SubstitutionImpact.MODERATE
+        assert sub.cooking_impact == CookingImpact.SLIGHT
+
+    def test_substitution_requires_all_impacts(self):
+        """Substitution (linked) should also fail without impact fields."""
+        with pytest.raises(ValidationError) as exc_info:
+            Substitution(
+                substitute_id="butter",
+                ratio="1:1",
+                # Missing impacts
+            )
+        errors = exc_info.value.errors()
+        missing_fields = {e["loc"][0] for e in errors}
+        assert "taste_impact" in missing_fields
+        assert "texture_impact" in missing_fields
+        assert "cooking_impact" in missing_fields

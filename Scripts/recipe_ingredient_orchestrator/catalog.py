@@ -67,7 +67,7 @@ class InMemoryCatalog:
 
         base = self._normalise(entry.name)
         for facet in entry.facets:
-            if facet.key.value in ("variant", "form"):
+            if facet.key in ("variant", "form"):
                 for opt in facet.options:
                     nopt = self._normalise(opt)
                     # Register original + stemmed combinations
@@ -76,7 +76,7 @@ class InMemoryCatalog:
                         tokens.append(f"{stem} {base}")
                     # Only register standalone variant tokens for multi-word options;
                     # single words like "sweet", "dried", "hot" cause false positives.
-                    if facet.key.value == "variant" and len(nopt.split()) >= 2:
+                    if facet.key == "variant" and len(nopt.split()) >= 2:
                         tokens.append(nopt)
         return tokens
 
@@ -235,6 +235,179 @@ class InMemoryCatalog:
                 added += 1
         return added
 
+    def _merge_entries(self, existing: CatalogEntry, incoming: CatalogEntry) -> CatalogEntry:
+        """Merge two catalog entries, combining enrichment data.
+        
+        Strategy:
+        - aliases: union, deduplicated, preserving order (existing first)
+        - facets: merge options for same key, add new keys
+        - substitution_suggestions: union, dedupe by substitute_name
+        - substitutions: union, dedupe by substitute_id
+        - freshness_by_storage: take max days for overlapping storage types
+        - notes/scalar fields: take longer/richer value or incoming if existing is None
+        """
+        from .models import FacetDefinition, StorageFreshness
+        
+        # Union aliases (existing first, then new ones)
+        seen_aliases = set(a.lower() for a in existing.aliases)
+        merged_aliases = list(existing.aliases)
+        for alias in incoming.aliases:
+            if alias.lower() not in seen_aliases:
+                merged_aliases.append(alias)
+                seen_aliases.add(alias.lower())
+        
+        # Merge facets by key
+        facet_by_key: dict[str, list[str]] = {}
+        for f in existing.facets:
+            facet_by_key[f.key] = list(f.options)
+        for f in incoming.facets:
+            if f.key in facet_by_key:
+                # Union options
+                seen = set(facet_by_key[f.key])
+                for opt in f.options:
+                    if opt not in seen:
+                        facet_by_key[f.key].append(opt)
+                        seen.add(opt)
+            else:
+                facet_by_key[f.key] = list(f.options)
+        merged_facets = [
+            FacetDefinition(key=k, options=opts) for k, opts in facet_by_key.items()
+        ]
+        
+        # Union substitution_suggestions by substitute_name
+        seen_subs = set(s.substitute_name.lower() for s in existing.substitution_suggestions)
+        merged_suggestions = list(existing.substitution_suggestions)
+        for s in incoming.substitution_suggestions:
+            if s.substitute_name.lower() not in seen_subs:
+                merged_suggestions.append(s)
+                seen_subs.add(s.substitute_name.lower())
+        
+        # Union substitutions by substitute_id
+        seen_sub_ids = set(s.substitute_id for s in existing.substitutions)
+        merged_substitutions = list(existing.substitutions)
+        for s in incoming.substitutions:
+            if s.substitute_id not in seen_sub_ids:
+                merged_substitutions.append(s)
+                seen_sub_ids.add(s.substitute_id)
+        
+        # Merge freshness_by_storage - take max days for each storage type
+        freshness_by_storage_type: dict[str, StorageFreshness] = {}
+        for f in existing.freshness_by_storage:
+            freshness_by_storage_type[f.storage.value] = f
+        for f in incoming.freshness_by_storage:
+            key = f.storage.value
+            if key in freshness_by_storage_type:
+                old = freshness_by_storage_type[key]
+                freshness_by_storage_type[key] = StorageFreshness(
+                    storage=f.storage,
+                    min_days=max(old.min_days, f.min_days),
+                    max_days=max(old.max_days, f.max_days),
+                )
+            else:
+                freshness_by_storage_type[key] = f
+        merged_freshness = list(freshness_by_storage_type.values())
+        
+        # For scalar fields, take incoming if it provides more info
+        merged_base = incoming.base_ingredient if incoming.base_ingredient else existing.base_ingredient
+        merged_unit = incoming.default_unit if incoming.default_unit else existing.default_unit
+        merged_qty = incoming.default_quantity if incoming.default_quantity else existing.default_quantity
+        
+        # Use existing entry's id and name (canonical), but merge everything else
+        return existing.model_copy(update={
+            "aliases": merged_aliases,
+            "facets": merged_facets,
+            "substitution_suggestions": merged_suggestions,
+            "substitutions": merged_substitutions,
+            "freshness_by_storage": merged_freshness,
+            "base_ingredient": merged_base,
+            "default_unit": merged_unit,
+            "default_quantity": merged_qty,
+            "default_selections": incoming.default_selections if incoming.default_selections else existing.default_selections,
+        })
+
+    async def merge(self, entry: CatalogEntry) -> bool:
+        """Merge an entry with an existing one by ID.
+        
+        If the entry doesn't exist, returns False (use add() or add_or_merge() instead).
+        If it exists, merges the data and returns True.
+        """
+        async with self._lock:
+            if entry.id not in self._entries:
+                logger.debug("Catalog: merge failed, id=%s not found", entry.id)
+                return False
+            
+            existing = self._entries[entry.id]
+            merged = self._merge_entries(existing, entry)
+            self._entries[entry.id] = merged
+            # Re-register tokens in case aliases changed
+            self._register_tokens(merged)
+            logger.debug("Catalog: merged entry id=%s", entry.id)
+            return True
+
+    async def add_or_merge(self, entry: CatalogEntry) -> tuple[bool, str]:
+        """Add a new entry or merge with existing if ID matches.
+        
+        Returns (success, action) where action is 'added', 'merged', or 'rejected'.
+        Rejection only happens for overlap with a DIFFERENT entry (not self).
+        """
+        async with self._lock:
+            if entry.id in self._entries:
+                # Merge with existing
+                existing = self._entries[entry.id]
+                merged = self._merge_entries(existing, entry)
+                self._entries[entry.id] = merged
+                self._register_tokens(merged)
+                logger.debug("Catalog: merged entry id=%s", entry.id)
+                return (True, "merged")
+            
+            # Check for overlap with other entries
+            overlap_id = self._is_overlap(entry)
+            if overlap_id:
+                logger.warning(
+                    "Catalog: rejecting '%s' — overlaps with existing '%s'",
+                    entry.name, overlap_id,
+                )
+                return (False, "rejected")
+            
+            # New entry
+            self._entries[entry.id] = entry
+            self._register_tokens(entry)
+            logger.debug("Catalog: added new entry id=%s", entry.id)
+            return (True, "added")
+
+    async def add_or_merge_many(self, entries: list[CatalogEntry]) -> dict[str, int]:
+        """Add or merge multiple entries.
+        
+        Returns stats: {added: N, merged: N, rejected: N}.
+        """
+        stats = {"added": 0, "merged": 0, "rejected": 0}
+        async with self._lock:
+            for entry in entries:
+                if entry.id in self._entries:
+                    existing = self._entries[entry.id]
+                    merged = self._merge_entries(existing, entry)
+                    self._entries[entry.id] = merged
+                    self._register_tokens(merged)
+                    stats["merged"] += 1
+                else:
+                    overlap_id = self._is_overlap(entry)
+                    if overlap_id:
+                        logger.warning(
+                            "Catalog: rejecting '%s' — overlaps with existing '%s'",
+                            entry.name, overlap_id,
+                        )
+                        stats["rejected"] += 1
+                    else:
+                        self._entries[entry.id] = entry
+                        self._register_tokens(entry)
+                        stats["added"] += 1
+        
+        logger.info(
+            "Catalog add_or_merge_many: %d added, %d merged, %d rejected",
+            stats["added"], stats["merged"], stats["rejected"],
+        )
+        return stats
+
     # -- Queries ------------------------------------------------------------
 
     def get(self, entry_id: str) -> CatalogEntry | None:
@@ -266,7 +439,7 @@ class InMemoryCatalog:
         for e in self._entries.values():
             variants = ""
             for f in e.facets:
-                if f.key.value == "variant":
+                if f.key == "variant":
                     variants = f" variants=[{', '.join(f.options)}]"
                     break
             lines.append(f"- {e.id} | {e.name} | {e.category.value}{variants}")
@@ -286,7 +459,7 @@ class InMemoryCatalog:
         for e in entries:
             facet_parts = []
             for f in e.facets:
-                facet_parts.append(f"{f.key.value}=[{', '.join(f.options)}]")
+                facet_parts.append(f"{f.key}=[{', '.join(f.options)}]")
             facets_str = "; ".join(facet_parts) if facet_parts else "no facets"
             aliases_str = ", ".join(e.aliases[:3]) if e.aliases else ""
             line = f"- {e.name} ({e.category.value})"
@@ -316,7 +489,7 @@ class InMemoryCatalog:
             }
             if e.facets:
                 entry_dict["facets"] = [
-                    {"key": f.key.value, "options": f.options} for f in e.facets
+                    {"key": f.key, "options": f.options} for f in e.facets
                 ]
             result.append(entry_dict)
         return result

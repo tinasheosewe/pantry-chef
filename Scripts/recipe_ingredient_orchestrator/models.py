@@ -9,10 +9,8 @@ from pydantic import BaseModel, Field, field_validator
 
 from .schemas import (
     CookingImpact,
-    CuisineType,
     DietaryTag,
     DifficultyLevel,
-    FacetKey,
     FoodCategory,
     GenerationMode,
     MealType,
@@ -28,14 +26,19 @@ from .schemas import (
 # ---------------------------------------------------------------------------
 
 class FacetDefinition(BaseModel):
-    """A refinement axis on a catalog entry (e.g. variant: [cheddar, mozzarella])."""
-    key: FacetKey
+    """A refinement axis on a catalog entry (e.g. variant: [cheddar, mozzarella]).
+    
+    key can be any string — common values include 'variant', 'form', 'preservation',
+    'processing', 'preparation', 'texture', 'concentration', 'base', but the LLM
+    may use domain-specific keys like 'grade', 'age', 'region' as appropriate.
+    """
+    key: str
     options: list[str] = Field(min_length=1)
 
 
 class FacetSelection(BaseModel):
     """A specific facet choice (e.g. variant=balsamic)."""
-    key: FacetKey
+    key: str
     value: str
 
 
@@ -57,24 +60,29 @@ class SubstitutionSuggestion(BaseModel):
 
     substitute_name is free text; it becomes a validated substitute_id
     after the linking pass.
+    
+    All impact fields are REQUIRED — the LLM must explicitly specify impact levels.
     """
     substitute_name: str
     substitute_facets: list[FacetSelection] = Field(default_factory=list)
     ratio: str = Field(description="e.g. '1:1', '2:1'")
-    taste_impact: SubstitutionImpact = SubstitutionImpact.NONE
-    texture_impact: SubstitutionImpact = SubstitutionImpact.NONE
-    cooking_impact: CookingImpact = CookingImpact.NONE
+    taste_impact: SubstitutionImpact
+    texture_impact: SubstitutionImpact
+    cooking_impact: CookingImpact
     notes: Optional[str] = None
 
 
 class Substitution(BaseModel):
-    """A validated substitute linked to an existing catalog entry."""
+    """A validated substitute linked to an existing catalog entry.
+    
+    All impact fields are REQUIRED — must be explicitly specified.
+    """
     substitute_id: str
     substitute_facets: list[FacetSelection] = Field(default_factory=list)
     ratio: str
-    taste_impact: SubstitutionImpact = SubstitutionImpact.NONE
-    texture_impact: SubstitutionImpact = SubstitutionImpact.NONE
-    cooking_impact: CookingImpact = CookingImpact.NONE
+    taste_impact: SubstitutionImpact
+    texture_impact: SubstitutionImpact
+    cooking_impact: CookingImpact
     notes: Optional[str] = None
 
 
@@ -146,7 +154,7 @@ class NutritionInfo(BaseModel):
 class Recipe(BaseModel):
     title: str
     description: Optional[str] = None
-    cuisine: Optional[CuisineType] = None
+    cuisine: Optional[str] = None  # Any cuisine string; no enum constraint
     meal_type: Optional[MealType] = None
     difficulty: DifficultyLevel = DifficultyLevel.MEDIUM
     servings: int = Field(default=4, ge=1)
@@ -165,7 +173,7 @@ class Recipe(BaseModel):
 class DishBrief(BaseModel):
     """A planned dish to generate."""
     title: str
-    cuisine: Optional[CuisineType] = None
+    cuisine: Optional[str] = None  # Any cuisine string; no enum constraint
     meal_type: Optional[MealType] = None
     servings: int = 4
     pantry_focus: list[str] = Field(default_factory=list, description="Key ingredients")
@@ -176,7 +184,7 @@ class GenerationRequest(BaseModel):
     """What the user asked for — either parsed from flags or from NL prompt."""
     mode: GenerationMode
     count: int = Field(ge=1)
-    cuisine: Optional[CuisineType] = None
+    cuisine: Optional[str] = None  # Any cuisine string; no enum constraint
     meal_type: Optional[MealType] = None
     category: Optional[FoodCategory] = None
     prompt: Optional[str] = None

@@ -27,18 +27,21 @@ from .schemas import (
 # Shared vocabulary block injected into every relevant prompt
 # ---------------------------------------------------------------------------
 
-_VOCAB_BLOCK = f"""## Controlled Vocabularies (use ONLY these exact values)
+_VOCAB_BLOCK = f"""## Controlled Vocabularies
 
+### Strict enums (use ONLY these exact values):
 Food Categories: {enum_values(FoodCategory)}
 Measurement Units: {enum_values(MeasurementUnit)}
 Dietary Tags: {enum_values(DietaryTag)}
 Difficulty Levels: {enum_values(DifficultyLevel)} (1=Beginner … 5=Expert)
 Meal Types: {enum_values(MealType)}
-Cuisines: {enum_values(CuisineType)}
 Storage Types: {enum_values(PantryStorage)}
-Facet Keys: {enum_values(FacetKey)}
-Substitution Impact: {enum_values(SubstitutionImpact)}
-Cooking Impact: {enum_values(CookingImpact)}"""
+Substitution Impact: {enum_values(SubstitutionImpact)} (REQUIRED for all substitutions)
+Cooking Impact: {enum_values(CookingImpact)} (REQUIRED for all substitutions)
+
+### Open vocabularies (any appropriate string is valid):
+Cuisines: Common values include {enum_values(CuisineType)}, but ANY cuisine name is valid (e.g. Peruvian, Turkish, Moroccan, Brazilian, Filipino, Malaysian).
+Facet Keys: Common keys are {FacetKey.common_keys()}, but ANY domain-specific key is valid (e.g. 'grade' for saffron, 'age' for cheese, 'region' for wines)."""
 
 
 # ---------------------------------------------------------------------------
@@ -148,17 +151,22 @@ Every entry MUST include:
 - default_storage: primary storage location
 - aliases: alternative names, abbreviations, regional terms (at least 2)
 - facets: relevant facet dimensions with options
+  - Common keys: variant, form, preservation, processing, preparation, texture
+  - Domain-specific keys allowed: grade (for saffron), age (for cheese), region (for wines), etc.
   - variant: types/varieties WHERE the item has truly interchangeable options
   - form: physical forms (whole, sliced, diced, ground, shredded, etc.)
   - preservation: how it can be preserved (fresh, frozen, canned, dried, etc.)
-  - Other keys as relevant: processing, preparation, texture
 - default_selections: the most common variant/form combination
-- substitution_suggestions: 2-4 substitutes with ratio and impact ratings
+- substitution_suggestions: 2-4 substitutes with ratio and impact ratings (ALL impact fields REQUIRED)
 - freshness_by_storage: list of {{storage, min_days, max_days}} for each applicable storage type
 
-## Substitution Rules
+## Substitution Rules (IMPORTANT: All impact fields are REQUIRED)
 - substitute_name should reference another catalog-level ingredient name
-- Include ratio (e.g. "1:1"), taste_impact, texture_impact, cooking_impact
+- REQUIRED: ratio (e.g. "1:1"), taste_impact, texture_impact, cooking_impact
+- You MUST specify all three impact fields explicitly — do NOT omit any
+- taste_impact: None, Slight, Moderate, or Significant
+- texture_impact: None, Slight, Moderate, or Significant  
+- cooking_impact: None, Slight Adjustment, Moderate Adjustment, or Major Adjustment
 - Be realistic about impacts — chicken breast and chicken thigh are NOT 1:1 in a recipe"""
 
     existing_block = ""

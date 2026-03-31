@@ -27,8 +27,6 @@ from recipe_ingredient_orchestrator.models import (
     ResolutionResult,
 )
 from recipe_ingredient_orchestrator.schemas import (
-    CuisineType,
-    FacetKey,
     FoodCategory,
     MealType,
     MeasurementUnit,
@@ -110,8 +108,8 @@ class TestRecipeGeneratorPlanDishes:
     @pytest.mark.asyncio
     async def test_plan_returns_briefs(self, settings):
         briefs = [
-            DishBrief(title="Spaghetti Carbonara", cuisine=CuisineType.ITALIAN, meal_type=MealType.DINNER),
-            DishBrief(title="Miso Soup", cuisine=CuisineType.JAPANESE, meal_type=MealType.LUNCH),
+            DishBrief(title="Spaghetti Carbonara", cuisine="Italian", meal_type=MealType.DINNER),
+            DishBrief(title="Miso Soup", cuisine="Japanese", meal_type=MealType.LUNCH),
         ]
         client = make_mock_client({
             DishBriefBatchResponse: DishBriefBatchResponse(dishes=briefs),
@@ -157,7 +155,7 @@ class TestRecipeGeneratorGenerateOne:
                 ResolvedIngredient(
                     original_name="Spaghetti",
                     catalog_entry_id="pasta",
-                    facet_selections=[FacetSelection(key=FacetKey.VARIANT, value="spaghetti")],
+                    facet_selections=[FacetSelection(key="variant", value="spaghetti")],
                     quantity=200,
                     unit=MeasurementUnit.G,
                     category=FoodCategory.PASTA_NOODLES,
@@ -186,7 +184,7 @@ class TestRecipeGeneratorGenerateOne:
         client.generate = sequence_generate
 
         gen = RecipeGenerator(client, settings)
-        brief = DishBrief(title="Pasta Aglio e Olio", cuisine=CuisineType.ITALIAN, meal_type=MealType.DINNER)
+        brief = DishBrief(title="Pasta Aglio e Olio", cuisine="Italian", meal_type=MealType.DINNER)
         recipe = await gen.generate_one(brief, catalog)
 
         assert recipe.title == "Pasta Aglio e Olio"
@@ -236,8 +234,8 @@ class TestRecipeGeneratorBatch:
 
         gen = RecipeGenerator(client, settings)
         briefs = [
-            DishBrief(title="Good Recipe", cuisine=CuisineType.ITALIAN),
-            DishBrief(title="Bad Recipe", cuisine=CuisineType.JAPANESE),
+            DishBrief(title="Good Recipe", cuisine="Italian"),
+            DishBrief(title="Bad Recipe", cuisine="Japanese"),
         ]
         recipes = await gen.generate_batch(briefs, catalog)
 
