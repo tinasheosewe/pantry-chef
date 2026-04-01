@@ -1,0 +1,5547 @@
+[
+  {
+    "base_ingredient": "beef",
+    "category": "Beef Products",
+    "suggested_facets": {
+      "variant": [
+        "all grades",
+        "aust. marble score 4/5",
+        "aust. marble score 9",
+        "australian",
+        "back ribs",
+        "bolar blade",
+        "bottom round",
+        "bottom round steak/roast",
+        "brain",
+        "breakfast strips",
+        "brisket",
+        "brisket navel end",
+        "brisket point end",
+        "carcass",
+        "choice",
+        "chuck",
+        "chuck eye country-style ribs",
+        "chuck eye roll",
+        "chuck for stew",
+        "composite of trimmed retail cuts",
+        "crumbles",
+        "cube roll",
+        "denver cut",
+        "external fat",
+        "eye",
+        "eye of round",
+        "eye round",
+        "filet",
+        "flaked",
+        "flank",
+        "flat",
+        "flat half",
+        "full cut",
+        "grass-fed",
+        "heart",
+        "hind shin",
+        "imported",
+        "inside",
+        "inside skirt",
+        "intermuscular fat",
+        "kidney",
+        "kidneys",
+        "knuckle",
+        "large end (ribs 6-9)",
+        "lean only",
+        "lip off",
+        "lip-on",
+        "liver",
+        "loaf",
+        "loin",
+        "lungs",
+        "medallion",
+        "new zealand",
+        "outside round",
+        "outside skirt",
+        "pan-broiled",
+        "pan-browned",
+        "pancreas",
+        "patties",
+        "patty",
+        "plate",
+        "point half",
+        "prepared",
+        "prime",
+        "retail cuts",
+        "rib",
+        "ribeye",
+        "ribeye  petite roast/filet",
+        "ribeye steak/roast lip-on",
+        "roast",
+        "round",
+        "rump centre",
+        "sandwich steaks",
+        "seam fat",
+        "select",
+        "separable fat",
+        "shank crosscuts",
+        "short ribs",
+        "shortribs",
+        "shoulder tender",
+        "shoulder top and center steaks",
+        "simmered",
+        "sirloin",
+        "small end (ribs 10-12)",
+        "spleen",
+        "steak",
+        "strip steaks",
+        "striploin",
+        "subcutaneous fat",
+        "suet",
+        "sweetbread",
+        "tenderloin",
+        "thymus",
+        "tip center",
+        "tip round",
+        "tip side",
+        "tongue",
+        "top blade",
+        "top round",
+        "top round cap-off steak/roast",
+        "trimmed to 0\" fat",
+        "trimmed to 1/4\" fat",
+        "trimmed to 1/8\" fat",
+        "trimmed to 1/8\"fat",
+        "unspecified fat content",
+        "usda choice",
+        "usda select",
+        "variety meats and by-products",
+        "variety meats and by-products liver",
+        "wagyu",
+        "whole"
+      ],
+      "form": [
+        "baked",
+        "boiled",
+        "braised",
+        "broiled",
+        "chopped",
+        "cooked",
+        "cured",
+        "fried",
+        "frozen",
+        "grilled",
+        "pan-fried",
+        "raw",
+        "roasted",
+        "sliced"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "amaranth grain",
+    "category": "Cereal Grains and Pasta",
+    "suggested_facets": {
+      "variant": [
+        "uncooked"
+      ],
+      "form": [
+        "cooked"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "barley",
+    "category": "Cereal Grains and Pasta",
+    "suggested_facets": {
+      "variant": [
+        "hulled",
+        "pearled"
+      ],
+      "form": [
+        "cooked",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "bulgur",
+    "category": "Cereal Grains and Pasta",
+    "suggested_facets": {
+      "form": [
+        "cooked",
+        "dry"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "corn",
+    "category": "Cereal Grains and Pasta",
+    "suggested_facets": {
+      "variant": [
+        "blue (harina de maiz morado)",
+        "crude",
+        "degermed",
+        "masa",
+        "masa harina",
+        "white",
+        "whole-grain",
+        "yellow"
+      ],
+      "form": [
+        "dry",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "cornmeal",
+    "category": "Cereal Grains and Pasta",
+    "suggested_facets": {
+      "variant": [
+        "bolted",
+        "degermed",
+        "plain",
+        "self-rising",
+        "white",
+        "whole-grain",
+        "yellow"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "couscous",
+    "category": "Cereal Grains and Pasta",
+    "suggested_facets": {
+      "form": [
+        "cooked",
+        "dry"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "egg",
+    "category": "Cereal Grains and Pasta",
+    "suggested_facets": {
+      "form": [
+        "cooked",
+        "dry"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "einkorn",
+    "category": "Cereal Grains and Pasta",
+    "suggested_facets": {
+      "variant": [
+        "grain"
+      ],
+      "form": [
+        "dry",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "farro",
+    "category": "Cereal Grains and Pasta",
+    "suggested_facets": {
+      "variant": [
+        "pearled",
+        "white"
+      ],
+      "form": [
+        "dry",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "flour",
+    "category": "Cereal Grains and Pasta",
+    "suggested_facets": {
+      "variant": [
+        "00",
+        "all-purpose",
+        "amaranth",
+        "cake",
+        "coarse and semi-coarse",
+        "dark",
+        "fine",
+        "fine meal",
+        "glutinous",
+        "light",
+        "medium",
+        "pastry",
+        "refined",
+        "rye",
+        "self-rising",
+        "semolina",
+        "soft",
+        "sorghum",
+        "white",
+        "whole",
+        "whole-grain",
+        "whole-groat",
+        "yellow"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "hominy",
+    "category": "Cereal Grains and Pasta",
+    "suggested_facets": {
+      "variant": [
+        "white",
+        "yellow"
+      ],
+      "form": [
+        "canned"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "khorasan",
+    "category": "Cereal Grains and Pasta",
+    "suggested_facets": {
+      "variant": [
+        "grain",
+        "khorasan",
+        "uncooked",
+        "wheat"
+      ],
+      "form": [
+        "cooked",
+        "dry",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "macaroni",
+    "category": "Cereal Grains and Pasta",
+    "suggested_facets": {
+      "variant": [
+        "vegetable"
+      ],
+      "form": [
+        "cooked",
+        "dry"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "millet",
+    "category": "Cereal Grains and Pasta",
+    "suggested_facets": {
+      "form": [
+        "cooked",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "noodle",
+    "category": "Cereal Grains and Pasta",
+    "suggested_facets": {
+      "variant": [
+        "chinese",
+        "chinese restaurant",
+        "chow mein",
+        "crunchy",
+        "flat",
+        "japanese",
+        "soba",
+        "somen",
+        "white"
+      ],
+      "form": [
+        "cooked",
+        "dry",
+        "steamed"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "oat",
+    "category": "Cereal Grains and Pasta",
+    "suggested_facets": {
+      "variant": [
+        "partially debranned",
+        "steel cut",
+        "whole"
+      ],
+      "form": [
+        "cooked",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "pasta",
+    "category": "Cereal Grains and Pasta",
+    "suggested_facets": {
+      "variant": [
+        "ancient harvest",
+        "as purchased",
+        "de boles",
+        "fresh-refrigerated",
+        "gluten-free",
+        "homemade",
+        "plain",
+        "tinkyada",
+        "whole",
+        "whole-wheat"
+      ],
+      "form": [
+        "cooked",
+        "dry"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "quinoa",
+    "category": "Cereal Grains and Pasta",
+    "suggested_facets": {
+      "variant": [
+        "uncooked"
+      ],
+      "form": [
+        "cooked"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "rice",
+    "category": "Cereal Grains and Pasta",
+    "suggested_facets": {
+      "variant": [
+        "black",
+        "brown",
+        "crude",
+        "glutinous",
+        "long-grain",
+        "medium-grain",
+        "parboiled",
+        "prepared",
+        "red",
+        "short-grain",
+        "uncle ben's",
+        "uncooked",
+        "white"
+      ],
+      "form": [
+        "cooked",
+        "dry",
+        "instant",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "sorghum grain",
+    "category": "Cereal Grains and Pasta",
+    "suggested_facets": {
+      "variant": [
+        "pearled",
+        "white",
+        "whole"
+      ],
+      "form": [
+        "dry",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "spelt",
+    "category": "Cereal Grains and Pasta",
+    "suggested_facets": {
+      "variant": [
+        "uncooked"
+      ],
+      "form": [
+        "cooked"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "spinach",
+    "category": "Cereal Grains and Pasta",
+    "suggested_facets": {
+      "variant": [
+        "spaghetti"
+      ],
+      "form": [
+        "cooked",
+        "dry"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "teff",
+    "category": "Cereal Grains and Pasta",
+    "suggested_facets": {
+      "form": [
+        "cooked"
+      ],
+      "variant": [
+        "uncooked"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "butter",
+    "category": "Dairy and Egg Products",
+    "suggested_facets": {
+      "variant": [
+        "anhydrous",
+        "salted",
+        "whipped"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "cheese",
+    "category": "Dairy and Egg Products",
+    "suggested_facets": {
+      "variant": [
+        "American",
+        "blend",
+        "blue",
+        "brick",
+        "brie",
+        "camembert",
+        "caraway",
+        "cheddar",
+        "cheshire",
+        "colby",
+        "cotija",
+        "cottage",
+        "creamed",
+        "edam",
+        "fat-free",
+        "feta",
+        "fontina",
+        "gjetost",
+        "gouda",
+        "gruyere",
+        "hard",
+        "hard type",
+        "lactose reduced",
+        "large or small curd",
+        "limburger",
+        "low cholesterol",
+        "low fat",
+        "low sodium",
+        "low-fat",
+        "low-sodium",
+        "mexican",
+        "mexican blend",
+        "monterey",
+        "mozzarella",
+        "muenster",
+        "neufchatel",
+        "no sodium added",
+        "nonfat",
+        "oaxaca",
+        "parmesan",
+        "part-skim",
+        "pimento",
+        "prepared",
+        "provolone",
+        "queso anejo",
+        "queso asadero",
+        "queso blanco",
+        "queso chihuahua",
+        "queso cotija",
+        "queso fresco",
+        "queso seco",
+        "reduced-fat",
+        "refrigerated",
+        "restaurant",
+        "ricotta",
+        "romano",
+        "roquefort",
+        "semisoft type",
+        "sharp",
+        "singles",
+        "soft",
+        "solid",
+        "swiss",
+        "tilsit",
+        "uncreamed",
+        "white"
+      ],
+      "form": [
+        "dry",
+        "fresh",
+        "frozen",
+        "grated",
+        "shredded",
+        "sliced"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "chocolate",
+    "category": "Dairy and Egg Products",
+    "suggested_facets": {
+      "variant": [
+        "not reconstituted",
+        "sugar-free"
+      ],
+      "form": [
+        "instant"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "cream",
+    "category": "Dairy and Egg Products",
+    "suggested_facets": {
+      "variant": [
+        "bar or stick",
+        "cone",
+        "creamsicle",
+        "cultured",
+        "dietetic",
+        "fat-free",
+        "flavored",
+        "half and half",
+        "heavy whipping",
+        "light",
+        "light whipping",
+        "liquid",
+        "low-fat",
+        "pressurized",
+        "reduced-fat",
+        "soft",
+        "sour",
+        "stick or nugget",
+        "whipped"
+      ],
+      "form": [
+        "powdered"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "dessert topping",
+    "category": "Dairy and Egg Products",
+    "suggested_facets": {
+      "form": [
+        "frozen",
+        "powdered"
+      ],
+      "variant": [
+        "pressurized",
+        "semi solid"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "egg",
+    "category": "Dairy and Egg Products",
+    "suggested_facets": {
+      "variant": [
+        "flakes",
+        "glucose reduced",
+        "hard-boiled",
+        "omelet",
+        "powder",
+        "quail",
+        "salted",
+        "stabilized",
+        "sugared",
+        "white",
+        "whole",
+        "yolk"
+      ],
+      "form": [
+        "cooked",
+        "dried",
+        "fresh",
+        "fried",
+        "frozen",
+        "pasteurized",
+        "poached",
+        "raw",
+        "scrambled"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "kefir",
+    "category": "Dairy and Egg Products",
+    "suggested_facets": {
+      "variant": [
+        "lifeway",
+        "low-fat",
+        "plain",
+        "strawberry"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "milk",
+    "category": "Dairy and Egg Products",
+    "suggested_facets": {
+      "variant": [
+        "American",
+        "buttermilk",
+        "calcium reduced",
+        "cultured",
+        "fat-free",
+        "filled",
+        "homemade",
+        "human",
+        "indian buffalo",
+        "low sodium",
+        "low-fat",
+        "mature",
+        "non-soy",
+        "nonfat",
+        "parmesan",
+        "powder",
+        "producer",
+        "provolone",
+        "reduced-fat",
+        "sheep",
+        "sweetened",
+        "vitamin a and vitamin d",
+        "whole",
+        "without added vitamin a",
+        "without added vitamin a and vitamin d",
+        "without added vitamin d"
+      ],
+      "form": [
+        "canned",
+        "condensed",
+        "dried",
+        "dry",
+        "evaporated",
+        "frozen",
+        "instant",
+        "powdered"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "sour dressing",
+    "category": "Dairy and Egg Products",
+    "suggested_facets": {
+      "variant": [
+        "cultured",
+        "filled cream-type",
+        "non-butterfat"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "whey",
+    "category": "Dairy and Egg Products",
+    "suggested_facets": {
+      "variant": [
+        "acid",
+        "bell"
+      ],
+      "form": [
+        "dried"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "yogurt",
+    "category": "Dairy and Egg Products",
+    "suggested_facets": {
+      "variant": [
+        "11g protein/8 oz",
+        "9 g protein/8 oz",
+        "Greek",
+        "apricot",
+        "blackberry",
+        "blueberry",
+        "chobani",
+        "dannon oikos",
+        "fruit",
+        "fruit on bottom",
+        "fruit variety",
+        "low fat",
+        "low fat.",
+        "low-fat",
+        "mixed berry blend",
+        "non-fat",
+        "nonfat",
+        "plain",
+        "pomegranate",
+        "raspberry",
+        "strawberry",
+        "sweetened",
+        "whole"
+      ],
+      "form": [
+        "frozen"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "butter",
+    "category": "Fats and Oils",
+    "suggested_facets": {
+      "variant": [
+        "light",
+        "powder",
+        "stick",
+        "without fat"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "cheese",
+    "category": "Fats and Oils",
+    "suggested_facets": {
+      "variant": [
+        "fat-free",
+        "light",
+        "low calorie"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "coconut",
+    "category": "Fats and Oils",
+    "suggested_facets": {
+      "variant": [
+        "confection fat"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "cod",
+    "category": "Fats and Oils",
+    "suggested_facets": {
+      "form": [
+        "sliced"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "corn",
+    "category": "Fats and Oils",
+    "suggested_facets": {
+      "variant": [
+        "and olive",
+        "industrial and retail",
+        "stick"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "cream",
+    "category": "Fats and Oils",
+    "suggested_facets": {
+      "variant": [
+        "cholesterol-free",
+        "fat-free",
+        "poppyseed",
+        "reduced calorie"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "honey",
+    "category": "Fats and Oils",
+    "suggested_facets": {
+      "variant": [
+        "fat-free",
+        "reduced calorie"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "industrial",
+    "category": "Fats and Oils",
+    "suggested_facets": {
+      "variant": [
+        "pourable clear fry",
+        "pourable liquid fry shortening"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "margarine",
+    "category": "Fats and Oils",
+    "suggested_facets": {
+      "variant": [
+        "35-39% fat",
+        "40-49% fat",
+        "spread",
+        "tub"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "margarine-like",
+    "category": "Fats and Oils",
+    "suggested_facets": {
+      "variant": [
+        "reduced calorie",
+        "tub",
+        "vegetable oil-butter spread"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "margarine-like shortening",
+    "category": "Fats and Oils",
+    "suggested_facets": {
+      "variant": [
+        "cottonseed",
+        "for flaky pastries",
+        "industrial",
+        "non-dairy",
+        "principal use flaky pastries"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "margarine-like spread",
+    "category": "Fats and Oils",
+    "suggested_facets": {
+      "variant": [
+        "benecol light spread",
+        "smart beat smart squeeze",
+        "smart beat super light without saturated fat"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "mayonnaise",
+    "category": "Fats and Oils",
+    "suggested_facets": {
+      "variant": [
+        "cholesterol-free",
+        "low calorie or diet",
+        "low sodium",
+        "reduced-calorie or diet",
+        "reduced-fat"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "oil",
+    "category": "Fats and Oils",
+    "suggested_facets": {
+      "variant": [
+        "(partially hydrogenated) and cottonseed",
+        "67-70% fat",
+        "all purpose",
+        "approximately 37% fat",
+        "canola",
+        "canola for salads",
+        "canola with antifoaming agent",
+        "confection fat",
+        "cottonseed",
+        "enova",
+        "fat-free",
+        "filling fat",
+        "filling fat (non-hydrogenated)",
+        "for woks and light frying",
+        "fully hydrogenated",
+        "hard",
+        "high oleic",
+        "high oleic (70% and over)",
+        "high oleic (70%)",
+        "high stability",
+        "intermediate grade product",
+        "linoleic",
+        "linoleic (less than 60%)",
+        "liquid",
+        "low linolenic",
+        "margarine-butter blend",
+        "menhaden",
+        "mid-oleic",
+        "natreon canola",
+        "non trans",
+        "non-dairy",
+        "original",
+        "palm",
+        "palm and palm kernel",
+        "palm kernel",
+        "palm kernel (hydrogenated)",
+        "principal uses candy coatings",
+        "principal uses icings and fillings",
+        "principal uses popcorn and flavoring vegetables",
+        "principal uses salads",
+        "refined",
+        "roasting nuts",
+        "soft",
+        "soybean",
+        "soybean (hydrogenated)",
+        "soybean (hydrogenated) and cottonseed",
+        "soybean (hydrogenated) and cottonseed (hydrogenated)",
+        "soybean (hydrogenated) and palm (hydrogenated)",
+        "soybean (partially hydrogenated)-cottonseed (partially hydrogenated)",
+        "soybean and partially hydrogenated soybean",
+        "stick",
+        "stick or tub",
+        "stick/tub/bottle",
+        "sunflower",
+        "sweetened",
+        "tub",
+        "ultra low linolenic",
+        "used for whipped toppings",
+        "wheat",
+        "woks and light frying"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "olive oil",
+    "category": "Fats and Oils",
+    "suggested_facets": {
+      "variant": [
+        "extra light",
+        "virgin"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "salad dressing",
+    "category": "Fats and Oils",
+    "suggested_facets": {
+      "variant": [
+        "French",
+        "Italian",
+        "assorted flavors",
+        "bell",
+        "buttermilk",
+        "caesar",
+        "caesar dressing",
+        "coleslaw",
+        "cottonseed",
+        "fat-free",
+        "green",
+        "home recipe",
+        "kraft mayo light mayonnaise",
+        "light",
+        "lite",
+        "low calorie",
+        "mayonnaise",
+        "mayonnaise and mayonnaise-type",
+        "mayonnaise type",
+        "mayonnaise-like",
+        "mayonnaise-type",
+        "no cholesterol",
+        "nonfat",
+        "omega plus light",
+        "peppercorn dressing",
+        "ranch dressing",
+        "reduced calorie",
+        "reduced-fat",
+        "russian dressing",
+        "sesame seed dressing",
+        "smart balance",
+        "soybean",
+        "soybean without cholesterol",
+        "spray-style dressing",
+        "thousand island",
+        "thousand island dressing"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "salt",
+    "category": "Fats and Oils",
+    "suggested_facets": {
+      "variant": [
+        "French",
+        "Italian",
+        "butter-margarine blend",
+        "composite",
+        "reduced-fat",
+        "stick",
+        "tub"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "sauce",
+    "category": "Fats and Oils",
+    "suggested_facets": {
+      "variant": [
+        "industrial",
+        "use for baking"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "shortening frying (heavy duty)",
+    "category": "Fats and Oils",
+    "suggested_facets": {
+      "variant": [
+        "linoleic (less than 1%)",
+        "palm (hydrogenated)",
+        "soybean (hydrogenated)"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "special purpose for cakes and frostings",
+    "category": "Fats and Oils",
+    "suggested_facets": {
+      "variant": [
+        "soybean (hydrogenated)",
+        "soybean (hydrogenated) palm and cottonseed"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "vegetable",
+    "category": "Fats and Oils",
+    "suggested_facets": {
+      "variant": [
+        "composite",
+        "household"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "yogurt",
+    "category": "Fats and Oils",
+    "suggested_facets": {
+      "variant": [
+        "approximately 40% fat",
+        "stick",
+        "tub"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "bass",
+    "category": "Finfish and Shellfish Products",
+    "suggested_facets": {
+      "form": [
+        "cooked",
+        "dry",
+        "raw"
+      ],
+      "variant": [
+        "freshwater",
+        "mixed species"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "bluefish",
+    "category": "Finfish and Shellfish Products",
+    "suggested_facets": {
+      "form": [
+        "cooked",
+        "dry",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "burbot",
+    "category": "Finfish and Shellfish Products",
+    "suggested_facets": {
+      "form": [
+        "cooked",
+        "dry",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "butterfish",
+    "category": "Finfish and Shellfish Products",
+    "suggested_facets": {
+      "form": [
+        "cooked",
+        "dry",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "carp",
+    "category": "Finfish and Shellfish Products",
+    "suggested_facets": {
+      "form": [
+        "cooked",
+        "dry",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "catfish",
+    "category": "Finfish and Shellfish Products",
+    "suggested_facets": {
+      "variant": [
+        "channel",
+        "farmed",
+        "wild"
+      ],
+      "form": [
+        "cooked",
+        "dry",
+        "fried",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "caviar",
+    "category": "Finfish and Shellfish Products",
+    "suggested_facets": {
+      "variant": [
+        "black",
+        "granular"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "cisco",
+    "category": "Finfish and Shellfish Products",
+    "suggested_facets": {
+      "form": [
+        "raw",
+        "smoked"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "cod",
+    "category": "Finfish and Shellfish Products",
+    "suggested_facets": {
+      "variant": [
+        "Atlantic",
+        "Pacific",
+        "solids and liquid",
+        "wild"
+      ],
+      "form": [
+        "canned",
+        "cooked",
+        "dried",
+        "dry",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "croaker",
+    "category": "Finfish and Shellfish Products",
+    "suggested_facets": {
+      "variant": [
+        "Atlantic"
+      ],
+      "form": [
+        "cooked",
+        "fried",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "crustaceans",
+    "category": "Finfish and Shellfish Products",
+    "suggested_facets": {
+      "variant": [
+        "alaska king",
+        "blue",
+        "blue swimming",
+        "crayfish",
+        "dungeness",
+        "farmed",
+        "home recipe",
+        "lump",
+        "made from surimi",
+        "mixed species",
+        "moist heat",
+        "northern",
+        "queen",
+        "refrigerated",
+        "wild"
+      ],
+      "form": [
+        "canned",
+        "cooked",
+        "pasteurized",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "cusk",
+    "category": "Finfish and Shellfish Products",
+    "suggested_facets": {
+      "form": [
+        "cooked",
+        "dry",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "drum",
+    "category": "Finfish and Shellfish Products",
+    "suggested_facets": {
+      "variant": [
+        "freshwater"
+      ],
+      "form": [
+        "cooked",
+        "dry",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "eel",
+    "category": "Finfish and Shellfish Products",
+    "suggested_facets": {
+      "variant": [
+        "mixed species"
+      ],
+      "form": [
+        "cooked",
+        "dry",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "flatfish (flounder and sole species)",
+    "category": "Finfish and Shellfish Products",
+    "suggested_facets": {
+      "form": [
+        "cooked",
+        "dry",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "grouper",
+    "category": "Finfish and Shellfish Products",
+    "suggested_facets": {
+      "variant": [
+        "mixed species"
+      ],
+      "form": [
+        "cooked",
+        "dry",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "haddock",
+    "category": "Finfish and Shellfish Products",
+    "suggested_facets": {
+      "form": [
+        "cooked",
+        "dry",
+        "raw",
+        "smoked"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "halibut",
+    "category": "Finfish and Shellfish Products",
+    "suggested_facets": {
+      "variant": [
+        "Atlantic",
+        "greenland"
+      ],
+      "form": [
+        "cooked",
+        "dry",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "herring",
+    "category": "Finfish and Shellfish Products",
+    "suggested_facets": {
+      "variant": [
+        "Atlantic",
+        "Pacific",
+        "kippered"
+      ],
+      "form": [
+        "cooked",
+        "dry",
+        "pickled",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "ling",
+    "category": "Finfish and Shellfish Products",
+    "suggested_facets": {
+      "form": [
+        "cooked",
+        "dry",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "lingcod",
+    "category": "Finfish and Shellfish Products",
+    "suggested_facets": {
+      "form": [
+        "cooked",
+        "dry",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "mackerel",
+    "category": "Finfish and Shellfish Products",
+    "suggested_facets": {
+      "variant": [
+        "Atlantic",
+        "Pacific",
+        "jack",
+        "king",
+        "mixed species",
+        "salted",
+        "spanish"
+      ],
+      "form": [
+        "canned",
+        "cooked",
+        "dry",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "mahimahi",
+    "category": "Finfish and Shellfish Products",
+    "suggested_facets": {
+      "form": [
+        "cooked",
+        "dry",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "milkfish",
+    "category": "Finfish and Shellfish Products",
+    "suggested_facets": {
+      "form": [
+        "cooked",
+        "dry",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "mollusks",
+    "category": "Finfish and Shellfish Products",
+    "suggested_facets": {
+      "form": [
+        "baked",
+        "canned",
+        "cooked",
+        "dry",
+        "fried",
+        "raw",
+        "steamed"
+      ],
+      "variant": [
+        "Pacific",
+        "abalone",
+        "blue",
+        "common",
+        "conch",
+        "cuttlefish",
+        "eastern",
+        "farmed",
+        "liquid",
+        "mixed species",
+        "moist heat",
+        "snail",
+        "unspecified",
+        "whelk",
+        "wild"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "monkfish",
+    "category": "Finfish and Shellfish Products",
+    "suggested_facets": {
+      "form": [
+        "cooked",
+        "dry",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "mullet",
+    "category": "Finfish and Shellfish Products",
+    "suggested_facets": {
+      "form": [
+        "cooked",
+        "dry",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "ocean perch",
+    "category": "Finfish and Shellfish Products",
+    "suggested_facets": {
+      "variant": [
+        "Atlantic"
+      ],
+      "form": [
+        "cooked",
+        "dry",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "oil",
+    "category": "Finfish and Shellfish Products",
+    "suggested_facets": {
+      "variant": [
+        "Atlantic",
+        "european"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "orange",
+    "category": "Finfish and Shellfish Products",
+    "suggested_facets": {
+      "form": [
+        "cooked",
+        "dry",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "perch",
+    "category": "Finfish and Shellfish Products",
+    "suggested_facets": {
+      "variant": [
+        "mixed species"
+      ],
+      "form": [
+        "cooked",
+        "dry",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "pike",
+    "category": "Finfish and Shellfish Products",
+    "suggested_facets": {
+      "variant": [
+        "northern",
+        "walleye"
+      ],
+      "form": [
+        "cooked",
+        "dry",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "pollock",
+    "category": "Finfish and Shellfish Products",
+    "suggested_facets": {
+      "variant": [
+        "Atlantic",
+        "alaska"
+      ],
+      "form": [
+        "cooked",
+        "dry",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "pompano",
+    "category": "Finfish and Shellfish Products",
+    "suggested_facets": {
+      "variant": [
+        "florida"
+      ],
+      "form": [
+        "cooked",
+        "dry",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "pout",
+    "category": "Finfish and Shellfish Products",
+    "suggested_facets": {
+      "variant": [
+        "ocean"
+      ],
+      "form": [
+        "cooked",
+        "dry",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "rockfish",
+    "category": "Finfish and Shellfish Products",
+    "suggested_facets": {
+      "variant": [
+        "Pacific",
+        "mixed species"
+      ],
+      "form": [
+        "cooked",
+        "dry",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "roe",
+    "category": "Finfish and Shellfish Products",
+    "suggested_facets": {
+      "variant": [
+        "mixed species"
+      ],
+      "form": [
+        "cooked",
+        "dry",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "sablefish",
+    "category": "Finfish and Shellfish Products",
+    "suggested_facets": {
+      "form": [
+        "cooked",
+        "dry",
+        "raw",
+        "smoked"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "salmon",
+    "category": "Finfish and Shellfish Products",
+    "suggested_facets": {
+      "variant": [
+        "Atlantic",
+        "breaded",
+        "chinook",
+        "chum",
+        "coho",
+        "farmed",
+        "moist heat",
+        "pink",
+        "sockeye",
+        "solids with bone and liquid",
+        "total can contents",
+        "wild",
+        "without skin and bones"
+      ],
+      "form": [
+        "canned",
+        "cooked",
+        "dry",
+        "frozen",
+        "raw",
+        "smoked"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "scup",
+    "category": "Finfish and Shellfish Products",
+    "suggested_facets": {
+      "form": [
+        "cooked",
+        "dry",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "seatrout",
+    "category": "Finfish and Shellfish Products",
+    "suggested_facets": {
+      "variant": [
+        "mixed species"
+      ],
+      "form": [
+        "cooked",
+        "dry",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "shad",
+    "category": "Finfish and Shellfish Products",
+    "suggested_facets": {
+      "variant": [
+        "American"
+      ],
+      "form": [
+        "cooked",
+        "dry",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "shark",
+    "category": "Finfish and Shellfish Products",
+    "suggested_facets": {
+      "variant": [
+        "mixed species"
+      ],
+      "form": [
+        "cooked",
+        "fried",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "sheepshead",
+    "category": "Finfish and Shellfish Products",
+    "suggested_facets": {
+      "form": [
+        "cooked",
+        "dry",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "shrimp",
+    "category": "Finfish and Shellfish Products",
+    "suggested_facets": {
+      "variant": [
+        "farm raised",
+        "made from surimi",
+        "mixed species",
+        "moist heat (may contain additives to retain moisture)"
+      ],
+      "form": [
+        "canned",
+        "cooked",
+        "fried",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "smelt",
+    "category": "Finfish and Shellfish Products",
+    "suggested_facets": {
+      "variant": [
+        "rainbow"
+      ],
+      "form": [
+        "cooked",
+        "dry",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "snapper",
+    "category": "Finfish and Shellfish Products",
+    "suggested_facets": {
+      "variant": [
+        "mixed species"
+      ],
+      "form": [
+        "cooked",
+        "dry",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "spot",
+    "category": "Finfish and Shellfish Products",
+    "suggested_facets": {
+      "form": [
+        "cooked",
+        "dry",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "sturgeon",
+    "category": "Finfish and Shellfish Products",
+    "suggested_facets": {
+      "variant": [
+        "mixed species"
+      ],
+      "form": [
+        "cooked",
+        "dry",
+        "raw",
+        "smoked"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "sucker",
+    "category": "Finfish and Shellfish Products",
+    "suggested_facets": {
+      "variant": [
+        "white"
+      ],
+      "form": [
+        "cooked",
+        "dry",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "sunfish",
+    "category": "Finfish and Shellfish Products",
+    "suggested_facets": {
+      "variant": [
+        "pumpkin seed"
+      ],
+      "form": [
+        "cooked",
+        "dry",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "swordfish",
+    "category": "Finfish and Shellfish Products",
+    "suggested_facets": {
+      "form": [
+        "cooked",
+        "dry",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "tilapia",
+    "category": "Finfish and Shellfish Products",
+    "suggested_facets": {
+      "variant": [
+        "farm raised"
+      ],
+      "form": [
+        "cooked",
+        "dry",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "tilefish",
+    "category": "Finfish and Shellfish Products",
+    "suggested_facets": {
+      "form": [
+        "cooked",
+        "dry",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "trout",
+    "category": "Finfish and Shellfish Products",
+    "suggested_facets": {
+      "variant": [
+        "brook",
+        "farmed",
+        "mixed species",
+        "new york state",
+        "rainbow",
+        "wild"
+      ],
+      "form": [
+        "cooked",
+        "dry",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "tuna",
+    "category": "Finfish and Shellfish Products",
+    "suggested_facets": {
+      "variant": [
+        "bluefin",
+        "light",
+        "skipjack",
+        "white",
+        "yellowfin"
+      ],
+      "form": [
+        "cooked",
+        "dry",
+        "fresh",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "turbot",
+    "category": "Finfish and Shellfish Products",
+    "suggested_facets": {
+      "variant": [
+        "european"
+      ],
+      "form": [
+        "cooked",
+        "dry",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "whitefish",
+    "category": "Finfish and Shellfish Products",
+    "suggested_facets": {
+      "variant": [
+        "mixed species"
+      ],
+      "form": [
+        "cooked",
+        "dry",
+        "raw",
+        "smoked"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "whiting",
+    "category": "Finfish and Shellfish Products",
+    "suggested_facets": {
+      "variant": [
+        "mixed species"
+      ],
+      "form": [
+        "cooked",
+        "dry",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "wolffish",
+    "category": "Finfish and Shellfish Products",
+    "suggested_facets": {
+      "variant": [
+        "Atlantic"
+      ],
+      "form": [
+        "cooked",
+        "dry",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "yellowtail",
+    "category": "Finfish and Shellfish Products",
+    "suggested_facets": {
+      "variant": [
+        "mixed species"
+      ],
+      "form": [
+        "cooked",
+        "dry",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "apple",
+    "category": "Fruits and Fruit Juices",
+    "suggested_facets": {
+      "variant": [
+        "drained",
+        "fuji",
+        "gala",
+        "golden delicious",
+        "granny smith",
+        "microwave",
+        "red",
+        "sulfured",
+        "sweetened",
+        "uncooked",
+        "unsweetened",
+        "without skin"
+      ],
+      "form": [
+        "boiled",
+        "canned",
+        "cooked",
+        "dried",
+        "frozen",
+        "raw",
+        "sliced",
+        "stewed"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "apple juice",
+    "category": "Fruits and Fruit Juices",
+    "suggested_facets": {
+      "variant": [
+        "and potassium",
+        "c and e",
+        "calcium",
+        "unsweetened",
+        "without added ascorbic acid"
+      ],
+      "form": [
+        "canned",
+        "concentrate",
+        "frozen"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "applesauce",
+    "category": "Fruits and Fruit Juices",
+    "suggested_facets": {
+      "variant": [
+        "sweetened",
+        "unsweetened"
+      ],
+      "form": [
+        "canned"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "apricots",
+    "category": "Fruits and Fruit Juices",
+    "suggested_facets": {
+      "form": [
+        "canned",
+        "dehydrated",
+        "dried",
+        "frozen",
+        "raw",
+        "stewed"
+      ],
+      "variant": [
+        "solids and liquids",
+        "sulfured",
+        "sweetened",
+        "uncooked"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "avocado",
+    "category": "Fruits and Fruit Juices",
+    "suggested_facets": {
+      "variant": [
+        "california",
+        "florida",
+        "hass"
+      ],
+      "form": [
+        "peeled",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "banana",
+    "category": "Fruits and Fruit Juices",
+    "suggested_facets": {
+      "form": [
+        "dehydrated",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "blackberries",
+    "category": "Fruits and Fruit Juices",
+    "suggested_facets": {
+      "variant": [
+        "unsweetened"
+      ],
+      "form": [
+        "frozen",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "blueberries",
+    "category": "Fruits and Fruit Juices",
+    "suggested_facets": {
+      "form": [
+        "dried",
+        "frozen",
+        "raw"
+      ],
+      "variant": [
+        "sweetened",
+        "unsweetened",
+        "wild"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "candied fruit",
+    "category": "Fruits and Fruit Juices",
+    "suggested_facets": {
+      "variant": [
+        "purple",
+        "solids and liquids"
+      ],
+      "form": [
+        "canned",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "cherry",
+    "category": "Fruits and Fruit Juices",
+    "suggested_facets": {
+      "variant": [
+        "bell",
+        "drained",
+        "red",
+        "sour",
+        "sweetened",
+        "tart",
+        "unsweetened"
+      ],
+      "form": [
+        "canned",
+        "dried",
+        "frozen",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "cranberries",
+    "category": "Fruits and Fruit Juices",
+    "suggested_facets": {
+      "form": [
+        "dried",
+        "raw"
+      ],
+      "variant": [
+        "sweetened"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "currants",
+    "category": "Fruits and Fruit Juices",
+    "suggested_facets": {
+      "variant": [
+        "black",
+        "red",
+        "zante"
+      ],
+      "form": [
+        "dried",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "dates",
+    "category": "Fruits and Fruit Juices",
+    "suggested_facets": {
+      "variant": [
+        "deglet noor",
+        "medjool"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "figs",
+    "category": "Fruits and Fruit Juices",
+    "suggested_facets": {
+      "variant": [
+        "solids and liquids",
+        "uncooked"
+      ],
+      "form": [
+        "canned",
+        "dried",
+        "raw",
+        "stewed"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "grape",
+    "category": "Fruits and Fruit Juices",
+    "suggested_facets": {
+      "variant": [
+        "American",
+        "green",
+        "muscadine",
+        "red",
+        "seedless",
+        "solids and liquids",
+        "such as thompson seedless)",
+        "thompson seedless",
+        "unsweetened",
+        "white"
+      ],
+      "form": [
+        "canned",
+        "concentrate",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "grapefruit",
+    "category": "Fruits and Fruit Juices",
+    "suggested_facets": {
+      "variant": [
+        "all areas",
+        "california",
+        "california and arizona",
+        "florida",
+        "red",
+        "sections",
+        "solids and liquids",
+        "white"
+      ],
+      "form": [
+        "canned",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "guava nectar",
+    "category": "Fruits and Fruit Juices",
+    "suggested_facets": {
+      "form": [
+        "canned"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "guavas",
+    "category": "Fruits and Fruit Juices",
+    "suggested_facets": {
+      "variant": [
+        "common",
+        "strawberry"
+      ],
+      "form": [
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "juice",
+    "category": "Fruits and Fruit Juices",
+    "suggested_facets": {
+      "variant": [
+        "bell",
+        "berry boost",
+        "blue machine",
+        "bolthouse farms",
+        "bottled",
+        "drained",
+        "green",
+        "ocean spray",
+        "odwalla",
+        "original superfood",
+        "pink",
+        "purple",
+        "red",
+        "refrigerated",
+        "solids and liquids",
+        "sweetened",
+        "unsweetened",
+        "white",
+        "yellow"
+      ],
+      "form": [
+        "canned",
+        "concentrate",
+        "frozen",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "jujube",
+    "category": "Fruits and Fruit Juices",
+    "suggested_facets": {
+      "form": [
+        "dried",
+        "fresh",
+        "raw"
+      ],
+      "variant": [
+        "chinese"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "kiwifruit",
+    "category": "Fruits and Fruit Juices",
+    "suggested_facets": {
+      "variant": [
+        "green",
+        "zespri sungold"
+      ],
+      "form": [
+        "peeled",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "lemon",
+    "category": "Fruits and Fruit Juices",
+    "suggested_facets": {
+      "variant": [
+        "bottled",
+        "concord",
+        "without peel"
+      ],
+      "form": [
+        "canned",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "lime",
+    "category": "Fruits and Fruit Juices",
+    "suggested_facets": {
+      "form": [
+        "canned",
+        "raw"
+      ],
+      "variant": [
+        "unsweetened"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "litchis",
+    "category": "Fruits and Fruit Juices",
+    "suggested_facets": {
+      "form": [
+        "dried",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "longans",
+    "category": "Fruits and Fruit Juices",
+    "suggested_facets": {
+      "form": [
+        "dried",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "mandarin",
+    "category": "Fruits and Fruit Juices",
+    "suggested_facets": {
+      "form": [
+        "peeled",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "mango",
+    "category": "Fruits and Fruit Juices",
+    "suggested_facets": {
+      "variant": [
+        "ataulfo",
+        "sweetened",
+        "tommy atkins"
+      ],
+      "form": [
+        "canned",
+        "dried",
+        "peeled",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "melon",
+    "category": "Fruits and Fruit Juices",
+    "suggested_facets": {
+      "variant": [
+        "cantaloupe",
+        "casaba",
+        "honeydew"
+      ],
+      "form": [
+        "frozen",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "nance",
+    "category": "Fruits and Fruit Juices",
+    "suggested_facets": {
+      "variant": [
+        "unsweetened"
+      ],
+      "form": [
+        "frozen"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "olives",
+    "category": "Fruits and Fruit Juices",
+    "suggested_facets": {
+      "variant": [
+        "green",
+        "manzanilla",
+        "stuffed with pimiento"
+      ],
+      "form": [
+        "canned",
+        "pickled"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "orange",
+    "category": "Fruits and Fruit Juices",
+    "suggested_facets": {
+      "form": [
+        "canned",
+        "concentrate",
+        "frozen",
+        "raw"
+      ],
+      "variant": [
+        "california",
+        "chilled",
+        "d",
+        "drained",
+        "e",
+        "florida",
+        "unsweetened",
+        "valencias"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "peaches",
+    "category": "Fruits and Fruit Juices",
+    "suggested_facets": {
+      "variant": [
+        "solids and liquids",
+        "sulfured",
+        "sweetened",
+        "uncooked",
+        "yellow"
+      ],
+      "form": [
+        "canned",
+        "dehydrated",
+        "dried",
+        "frozen",
+        "raw",
+        "sliced",
+        "stewed"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "pear",
+    "category": "Fruits and Fruit Juices",
+    "suggested_facets": {
+      "form": [
+        "canned",
+        "dried",
+        "raw",
+        "stewed"
+      ],
+      "variant": [
+        "asian",
+        "green",
+        "red",
+        "solids and liquids",
+        "sulfured",
+        "uncooked"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "persimmons",
+    "category": "Fruits and Fruit Juices",
+    "suggested_facets": {
+      "variant": [
+        "japanese",
+        "native"
+      ],
+      "form": [
+        "dried",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "pineapple",
+    "category": "Fruits and Fruit Juices",
+    "suggested_facets": {
+      "form": [
+        "canned",
+        "frozen",
+        "raw"
+      ],
+      "variant": [
+        "bell",
+        "chunks",
+        "solids and liquids",
+        "sweetened",
+        "traditional varieties"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "plantains",
+    "category": "Fruits and Fruit Juices",
+    "suggested_facets": {
+      "variant": [
+        "green",
+        "latino restaurant",
+        "yellow"
+      ],
+      "form": [
+        "baked",
+        "boiled",
+        "fried",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "plum",
+    "category": "Fruits and Fruit Juices",
+    "suggested_facets": {
+      "variant": [
+        "black",
+        "uncooked"
+      ],
+      "form": [
+        "dried",
+        "raw",
+        "stewed"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "prunes",
+    "category": "Fruits and Fruit Juices",
+    "suggested_facets": {
+      "variant": [
+        "uncooked"
+      ],
+      "form": [
+        "dehydrated",
+        "stewed"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "raisins",
+    "category": "Fruits and Fruit Juices",
+    "suggested_facets": {
+      "variant": [
+        "dark",
+        "golden",
+        "seeded",
+        "seedless"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "raspberries",
+    "category": "Fruits and Fruit Juices",
+    "suggested_facets": {
+      "form": [
+        "frozen",
+        "raw"
+      ],
+      "variant": [
+        "puree",
+        "red",
+        "seedless",
+        "sweetened",
+        "unsweetened"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "rhubarb",
+    "category": "Fruits and Fruit Juices",
+    "suggested_facets": {
+      "form": [
+        "cooked",
+        "frozen",
+        "raw"
+      ],
+      "variant": [
+        "uncooked"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "rose-apples",
+    "category": "Fruits and Fruit Juices",
+    "suggested_facets": {
+      "form": [
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "sauce",
+    "category": "Fruits and Fruit Juices",
+    "suggested_facets": {
+      "variant": [
+        "jellied",
+        "ocean spray",
+        "sweetened",
+        "whole"
+      ],
+      "form": [
+        "canned",
+        "cooked"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "strawberries",
+    "category": "Fruits and Fruit Juices",
+    "suggested_facets": {
+      "form": [
+        "frozen",
+        "raw",
+        "sliced"
+      ],
+      "variant": [
+        "sweetened",
+        "unsweetened"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "sugar",
+    "category": "Fruits and Fruit Juices",
+    "suggested_facets": {
+      "form": [
+        "dried",
+        "stewed"
+      ],
+      "variant": [
+        "sulfured"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "syrup",
+    "category": "Fruits and Fruit Juices",
+    "suggested_facets": {
+      "variant": [
+        "bell",
+        "drained",
+        "pitted",
+        "purple",
+        "red",
+        "solids and liquids",
+        "sour",
+        "spiced",
+        "tropical",
+        "wild",
+        "without skin"
+      ],
+      "form": [
+        "canned"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "cod",
+    "category": "Lamb, Veal, and Game Products",
+    "suggested_facets": {
+      "variant": [
+        "chuck",
+        "deer",
+        "trimmed to 0\" fat"
+      ],
+      "form": [
+        "braised",
+        "cooked",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "game meat",
+    "category": "Lamb, Veal, and Game Products",
+    "suggested_facets": {
+      "variant": [
+        "antelope",
+        "bear",
+        "beaver",
+        "beefalo",
+        "boar",
+        "buffalo",
+        "caribou",
+        "deer",
+        "domesticated",
+        "elk",
+        "horse",
+        "loin",
+        "moose",
+        "muskrat",
+        "opossum",
+        "pan-broiled",
+        "rabbit",
+        "raccoon",
+        "ribeye",
+        "round",
+        "simmered",
+        "sirloin",
+        "squirrel",
+        "steak",
+        "tenderloin",
+        "top round",
+        "trimmed to 0\" fat",
+        "wild"
+      ],
+      "form": [
+        "broiled",
+        "cooked",
+        "ground",
+        "raw",
+        "roasted",
+        "stewed"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "lamb",
+    "category": "Lamb, Veal, and Game Products",
+    "suggested_facets": {
+      "variant": [
+        "arm",
+        "australian",
+        "blade",
+        "bottom",
+        "brains",
+        "breast",
+        "center slice",
+        "choice",
+        "chump",
+        "chump off",
+        "composite of trimmed retail cuts",
+        "cubed for stew (leg and shoulder)",
+        "cubed for stew or kabob (leg and shoulder)",
+        "denuded",
+        "external fat",
+        "flap",
+        "fore-shank",
+        "foreshank",
+        "frenched",
+        "heart",
+        "heel on",
+        "hind-shank",
+        "hindshank",
+        "imported",
+        "intermuscular fat",
+        "kidney",
+        "leg",
+        "leg chop/steak",
+        "liver",
+        "loin",
+        "neck chops",
+        "netted shoulder",
+        "new zealand",
+        "rack",
+        "rack - fully frenched",
+        "rack - partly frenched",
+        "rib",
+        "roast",
+        "rolled",
+        "seam fat",
+        "separable fat",
+        "shank half",
+        "shank off",
+        "shoulder",
+        "sirloin",
+        "soaked and simmered",
+        "square-cut shoulder",
+        "square-cut shoulder chops",
+        "subcutaneous fat",
+        "sweetbread",
+        "swiss",
+        "tenderloin",
+        "testes",
+        "trimmed to 0\" fat",
+        "trimmed to 1/4\" fat",
+        "trimmed to 1/8\" fat",
+        "trotter off",
+        "tunnel-boned leg",
+        "whole"
+      ],
+      "form": [
+        "braised",
+        "broiled",
+        "cooked",
+        "fresh",
+        "fried",
+        "frozen",
+        "grilled",
+        "ground",
+        "raw",
+        "roasted"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "veal",
+    "category": "Lamb, Veal, and Game Products",
+    "suggested_facets": {
+      "variant": [
+        "arm",
+        "australian",
+        "blade",
+        "brain",
+        "breaded",
+        "breast",
+        "cap off",
+        "chop",
+        "cutlet",
+        "external fat only",
+        "fore",
+        "foreshank",
+        "heart",
+        "hind",
+        "imported",
+        "kidneys",
+        "leg",
+        "leg (top round)",
+        "liver",
+        "loin",
+        "lungs",
+        "mechanically separated",
+        "not breaded",
+        "osso buco",
+        "pancreas",
+        "plate half",
+        "point half",
+        "rib",
+        "seam fat only",
+        "separable fat",
+        "shank",
+        "shank (fore and hind)",
+        "shoulder",
+        "sirloin",
+        "spleen",
+        "thymus",
+        "tongue",
+        "top round",
+        "variety meats and by-products",
+        "whole"
+      ],
+      "form": [
+        "braised",
+        "broiled",
+        "cooked",
+        "fresh",
+        "grilled",
+        "ground",
+        "pan-fried",
+        "raw",
+        "roasted"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "bean",
+    "category": "Legumes and Legume Products",
+    "suggested_facets": {
+      "variant": [
+        "French",
+        "adzuki",
+        "barbecue",
+        "bengal gram)",
+        "black",
+        "brown",
+        "cannellini",
+        "carioca (0% moisture)",
+        "chili",
+        "cranberry (0% moisture)",
+        "cranberry (roman)",
+        "drained and rinsed",
+        "fat-free",
+        "great northern",
+        "great northern (0% moisture)",
+        "kidney",
+        "large",
+        "light tan (0% moisture)",
+        "low sodium",
+        "mature seed",
+        "mature seeds",
+        "navy",
+        "pink",
+        "pink (0% moisture)",
+        "pinto",
+        "plain",
+        "ranch style",
+        "red",
+        "reduced sodium",
+        "sodium added",
+        "solids and liquid",
+        "solids and liquids",
+        "sweetened",
+        "tan (0% moisture)",
+        "thin seeded (baby)",
+        "traditional",
+        "traditional style",
+        "white",
+        "yellow"
+      ],
+      "form": [
+        "baked",
+        "boiled",
+        "canned",
+        "cooked",
+        "dry",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "chicken",
+    "category": "Legumes and Legume Products",
+    "suggested_facets": {
+      "variant": [
+        "breaded",
+        "meatless"
+      ],
+      "form": [
+        "fried"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "chickpea",
+    "category": "Legumes and Legume Products",
+    "suggested_facets": {
+      "variant": [
+        "bengal gram)",
+        "drained",
+        "low sodium",
+        "mature seeds",
+        "prepared",
+        "solids and liquids"
+      ],
+      "form": [
+        "boiled",
+        "canned",
+        "cooked",
+        "dry",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "chocolate",
+    "category": "Legumes and Legume Products",
+    "suggested_facets": {
+      "variant": [
+        "light",
+        "nonfat",
+        "soymilk",
+        "vitamins a and d"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "coffee",
+    "category": "Legumes and Legume Products",
+    "suggested_facets": {
+      "variant": [
+        "soymilk",
+        "unsweetened"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "cowpeas",
+    "category": "Legumes and Legume Products",
+    "suggested_facets": {
+      "variant": [
+        "catjang",
+        "common (blackeyes",
+        "crowder",
+        "mature seeds",
+        "plain",
+        "southern)"
+      ],
+      "form": [
+        "boiled",
+        "canned",
+        "cooked",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "cream",
+    "category": "Legumes and Legume Products",
+    "suggested_facets": {
+      "variant": [
+        "vitasoy organic classic original soymilk"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "falafel",
+    "category": "Legumes and Legume Products",
+    "suggested_facets": {
+      "variant": [
+        "home-prepared",
+        "prepared"
+      ],
+      "form": [
+        "baked"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "lentil",
+    "category": "Legumes and Legume Products",
+    "suggested_facets": {
+      "form": [
+        "boiled",
+        "cooked",
+        "dry",
+        "raw"
+      ],
+      "variant": [
+        "mature seeds",
+        "red"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "lupins",
+    "category": "Legumes and Legume Products",
+    "suggested_facets": {
+      "variant": [
+        "mature seeds"
+      ],
+      "form": [
+        "boiled",
+        "cooked",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "mothbeans",
+    "category": "Legumes and Legume Products",
+    "suggested_facets": {
+      "variant": [
+        "mature seeds"
+      ],
+      "form": [
+        "boiled",
+        "cooked",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "pea",
+    "category": "Legumes and Legume Products",
+    "suggested_facets": {
+      "form": [
+        "boiled",
+        "cooked",
+        "dry",
+        "raw"
+      ],
+      "variant": [
+        "green",
+        "mature seeds",
+        "split"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "peanut",
+    "category": "Legumes and Legume Products",
+    "suggested_facets": {
+      "variant": [
+        "chunk style",
+        "chunky",
+        "reduced sodium",
+        "reduced-fat",
+        "smooth",
+        "smooth style"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "peanuts",
+    "category": "Legumes and Legume Products",
+    "suggested_facets": {
+      "form": [
+        "boiled",
+        "cooked",
+        "raw"
+      ],
+      "variant": [
+        "defatted",
+        "oil-roasted",
+        "spanish",
+        "valencia",
+        "virginia"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "salt",
+    "category": "Legumes and Legume Products",
+    "suggested_facets": {
+      "variant": [
+        "mature seeds"
+      ],
+      "form": [
+        "boiled",
+        "cooked",
+        "roasted"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "silk nog",
+    "category": "Legumes and Legume Products",
+    "suggested_facets": {
+      "variant": [
+        "soymilk"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "soy",
+    "category": "Legumes and Legume Products",
+    "suggested_facets": {
+      "variant": [
+        "defatted",
+        "dried-frozen (koyadofu)",
+        "firm",
+        "full-fat",
+        "hard",
+        "low fat",
+        "low-fat",
+        "plain",
+        "potassium type",
+        "produced by acid wash",
+        "produced by alcohol extraction",
+        "refrigerated",
+        "silken",
+        "soft",
+        "sweetened"
+      ],
+      "form": [
+        "fermented",
+        "fried",
+        "raw",
+        "roasted"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "soy sauce",
+    "category": "Legumes and Legume Products",
+    "suggested_facets": {
+      "variant": [
+        "low sodium",
+        "made from hydrolyzed vegetable protein",
+        "reduced sodium"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "soybeans",
+    "category": "Legumes and Legume Products",
+    "suggested_facets": {
+      "variant": [
+        "mature seeds",
+        "salted"
+      ],
+      "form": [
+        "boiled",
+        "cooked",
+        "dry",
+        "raw",
+        "roasted"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "soymilk (all flavors)",
+    "category": "Legumes and Legume Products",
+    "suggested_facets": {
+      "variant": [
+        "enhanced",
+        "low-fat",
+        "nonfat",
+        "unsweetened",
+        "vitamins a and d"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "tempeh",
+    "category": "Legumes and Legume Products",
+    "suggested_facets": {
+      "form": [
+        "cooked"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "vanilla",
+    "category": "Legumes and Legume Products",
+    "suggested_facets": {
+      "variant": [
+        "light",
+        "soymilk",
+        "unsweetened",
+        "vitamins a and d"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "vegetarian fillets",
+    "category": "Legumes and Legume Products",
+    "suggested_facets": {
+      "variant": [
+        "unprepared",
+        "vegetarian"
+      ],
+      "form": [
+        "canned"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "acorns",
+    "category": "Nut and Seed Products",
+    "suggested_facets": {
+      "form": [
+        "dried",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "almonds",
+    "category": "Nut and Seed Products",
+    "suggested_facets": {
+      "form": [
+        "blanched"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "brazilnuts",
+    "category": "Nut and Seed Products",
+    "suggested_facets": {
+      "form": [
+        "dried",
+        "raw"
+      ],
+      "variant": [
+        "unblanched"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "breadfruit seeds",
+    "category": "Nut and Seed Products",
+    "suggested_facets": {
+      "form": [
+        "boiled",
+        "raw",
+        "roasted"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "breadnut tree seeds",
+    "category": "Nut and Seed Products",
+    "suggested_facets": {
+      "form": [
+        "dried",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "butter",
+    "category": "Nut and Seed Products",
+    "suggested_facets": {
+      "variant": [
+        "paste",
+        "tahini",
+        "type of kernels unspecified"
+      ],
+      "form": [
+        "raw",
+        "roasted"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "cashews",
+    "category": "Nut and Seed Products",
+    "suggested_facets": {
+      "form": [
+        "raw"
+      ],
+      "variant": [
+        "plain"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "chestnuts",
+    "category": "Nut and Seed Products",
+    "suggested_facets": {
+      "variant": [
+        "chinese",
+        "european",
+        "japanese",
+        "unpeeled"
+      ],
+      "form": [
+        "boiled",
+        "dried",
+        "peeled",
+        "raw",
+        "roasted"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "coconut",
+    "category": "Nut and Seed Products",
+    "suggested_facets": {
+      "variant": [
+        "creamed",
+        "flaked",
+        "packaged",
+        "sweetened"
+      ],
+      "form": [
+        "canned",
+        "dried",
+        "raw",
+        "shredded",
+        "toasted"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "cottonseed meal",
+    "category": "Nut and Seed Products",
+    "suggested_facets": {
+      "variant": [
+        "partially defatted",
+        "partially defatted (glandless)"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "flour",
+    "category": "Nut and Seed Products",
+    "suggested_facets": {
+      "variant": [
+        "chestnut",
+        "full fat",
+        "high-fat",
+        "low fat (glandless)",
+        "low-fat",
+        "partially defatted",
+        "partially defatted (glandless)"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "ginkgo nuts",
+    "category": "Nut and Seed Products",
+    "suggested_facets": {
+      "form": [
+        "canned",
+        "dried",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "hazelnuts",
+    "category": "Nut and Seed Products",
+    "suggested_facets": {
+      "form": [
+        "blanched"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "lotus seeds",
+    "category": "Nut and Seed Products",
+    "suggested_facets": {
+      "form": [
+        "dried",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "macadamia",
+    "category": "Nut and Seed Products",
+    "suggested_facets": {
+      "form": [
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "mixed nuts",
+    "category": "Nut and Seed Products",
+    "suggested_facets": {
+      "form": [
+        "dry",
+        "roasted"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "oil",
+    "category": "Nut and Seed Products",
+    "suggested_facets": {
+      "variant": [
+        "salted",
+        "smoke flavor"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "pine nuts",
+    "category": "Nut and Seed Products",
+    "suggested_facets": {
+      "form": [
+        "dried"
+      ],
+      "variant": [
+        "pinyon"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "pistachios",
+    "category": "Nut and Seed Products",
+    "suggested_facets": {
+      "form": [
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "safflower seed kernels",
+    "category": "Nut and Seed Products",
+    "suggested_facets": {
+      "form": [
+        "dried"
+      ],
+      "variant": [
+        "partially defatted"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "salt",
+    "category": "Nut and Seed Products",
+    "suggested_facets": {
+      "variant": [
+        "chosen roaster",
+        "plain",
+        "unflavored",
+        "wheat-based",
+        "whole"
+      ],
+      "form": [
+        "dry",
+        "roasted",
+        "toasted"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "sesame seeds",
+    "category": "Nut and Seed Products",
+    "suggested_facets": {
+      "form": [
+        "dried",
+        "roasted"
+      ],
+      "variant": [
+        "whole"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "squash",
+    "category": "Nut and Seed Products",
+    "suggested_facets": {
+      "form": [
+        "dried",
+        "roasted"
+      ],
+      "variant": [
+        "whole"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "sunflower seed kernels",
+    "category": "Nut and Seed Products",
+    "suggested_facets": {
+      "form": [
+        "dried",
+        "dry",
+        "roasted",
+        "toasted"
+      ],
+      "variant": [
+        "hulled"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "walnuts",
+    "category": "Nut and Seed Products",
+    "suggested_facets": {
+      "variant": [
+        "black",
+        "english",
+        "glazed"
+      ],
+      "form": [
+        "dried"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "pork",
+    "category": "Pork Products",
+    "suggested_facets": {
+      "variant": [
+        "and shoulder)",
+        "and spareribs",
+        "and spareribs)",
+        "arm picnic",
+        "backribs",
+        "blade",
+        "blade (chops or roasts)",
+        "blade (chops)",
+        "blade (roasts)",
+        "blade (steaks)",
+        "blade roll",
+        "boston (roasts)",
+        "boston (steaks)",
+        "brain",
+        "breast",
+        "center slice",
+        "chitterlings",
+        "composite of separable fat",
+        "composite of trimmed leg",
+        "composite of trimmed retail cuts (leg",
+        "cooked-roasted",
+        "country-style",
+        "country-style ribs",
+        "crumbles",
+        "ears",
+        "enhanced",
+        "extra lean",
+        "extra lean (approximately 4% fat)",
+        "extra lean (approximately 5% fat)",
+        "feet",
+        "heart",
+        "jowl",
+        "kidneys",
+        "leaf fat",
+        "lean and fat",
+        "lean only",
+        "liver",
+        "loin",
+        "low sodium",
+        "lungs",
+        "mechanically separated",
+        "oriental style",
+        "pan-broil",
+        "pan-broiled",
+        "pancreas",
+        "patties",
+        "peppercorn-flavored",
+        "petite tender",
+        "pre-sliced",
+        "reduced sodium",
+        "reduced/low sodium",
+        "rendered fat",
+        "restaurant",
+        "rib",
+        "rump",
+        "rump half",
+        "separable fat",
+        "shank",
+        "shank half",
+        "shoulder",
+        "shoulder petite tender",
+        "shoulder)",
+        "simmered",
+        "sirloin",
+        "slice",
+        "spareribs",
+        "spiral slice",
+        "spleen",
+        "steak",
+        "stomach",
+        "tail",
+        "tenderloin",
+        "teriyaki-flavored",
+        "tongue",
+        "unprepared",
+        "variety meats and by-products",
+        "whole"
+      ],
+      "form": [
+        "baked",
+        "braised",
+        "broiled",
+        "canned",
+        "cooked",
+        "cured",
+        "dehydrated",
+        "fresh",
+        "frozen",
+        "ground",
+        "microwaved",
+        "pan-fried",
+        "pickled",
+        "raw",
+        "roasted",
+        "sliced"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "chicken",
+    "category": "Poultry Products",
+    "suggested_facets": {
+      "variant": [
+        "and giblets and neck",
+        "back",
+        "barbecue flavored",
+        "batter",
+        "battered",
+        "bbq",
+        "breaded",
+        "breast",
+        "broiler",
+        "capons",
+        "cornish game hens",
+        "dark meat",
+        "drumstick",
+        "feet",
+        "from dark meat",
+        "giblets",
+        "glazed",
+        "heart",
+        "leg",
+        "light meat",
+        "liver",
+        "neck",
+        "no broth",
+        "original seasoning",
+        "roasting",
+        "rotisserie",
+        "simmered",
+        "skin",
+        "skin (drumsticks and thighs)",
+        "stewing",
+        "thigh",
+        "uncooked",
+        "whole",
+        "wing"
+      ],
+      "form": [
+        "boiled",
+        "braised",
+        "canned",
+        "cooked",
+        "fried",
+        "frozen",
+        "grilled",
+        "ground",
+        "microwaved",
+        "pan-fried",
+        "raw",
+        "roasted",
+        "stewed"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "duck",
+    "category": "Poultry Products",
+    "suggested_facets": {
+      "variant": [
+        "bone in",
+        "breast",
+        "domesticated",
+        "leg",
+        "liver",
+        "white",
+        "wild",
+        "young duckling"
+      ],
+      "form": [
+        "braised",
+        "broiled",
+        "cooked",
+        "raw",
+        "roasted"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "goose",
+    "category": "Poultry Products",
+    "suggested_facets": {
+      "form": [
+        "cooked",
+        "raw",
+        "roasted",
+        "smoked"
+      ],
+      "variant": [
+        "breast",
+        "domesticated",
+        "liver"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "guinea hen",
+    "category": "Poultry Products",
+    "suggested_facets": {
+      "variant": [
+        "young hen"
+      ],
+      "form": [
+        "cooked",
+        "raw",
+        "roasted"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "pheasant",
+    "category": "Poultry Products",
+    "suggested_facets": {
+      "variant": [
+        "breast",
+        "leg",
+        "total edible"
+      ],
+      "form": [
+        "cooked",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "poultry",
+    "category": "Poultry Products",
+    "suggested_facets": {
+      "variant": [
+        "from backs and necks with skin",
+        "from backs and necks without skin",
+        "from mature hens",
+        "mechanically deboned"
+      ],
+      "form": [
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "quail",
+    "category": "Poultry Products",
+    "suggested_facets": {
+      "variant": [
+        "breast",
+        "total edible"
+      ],
+      "form": [
+        "cooked",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "squab",
+    "category": "Poultry Products",
+    "suggested_facets": {
+      "form": [
+        "raw"
+      ],
+      "variant": [
+        "light meat without skin"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "turkey",
+    "category": "Poultry Products",
+    "suggested_facets": {
+      "variant": [
+        "back",
+        "bone removed",
+        "breast",
+        "crumbles",
+        "drumstick",
+        "fat-free",
+        "fryer-roasters",
+        "giblets",
+        "gizzard",
+        "light and dark meat",
+        "light or dark meat",
+        "neck",
+        "pan-broiled",
+        "pan-broiled crumbles",
+        "pan-browned",
+        "patties",
+        "pre-basted",
+        "seasoned",
+        "separable fat",
+        "simmered",
+        "skin (light and dark)",
+        "skin and bone removed",
+        "thigh",
+        "whole",
+        "wing"
+      ],
+      "form": [
+        "broiled",
+        "canned",
+        "cooked",
+        "diced",
+        "frozen",
+        "ground",
+        "raw",
+        "roasted",
+        "smoked"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "basil",
+    "category": "Spices and Herbs",
+    "suggested_facets": {
+      "form": [
+        "dried",
+        "fresh"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "bay leaf",
+    "category": "Spices and Herbs",
+    "suggested_facets": {
+      "form": [
+        "dried"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "dill weed",
+    "category": "Spices and Herbs",
+    "suggested_facets": {
+      "form": [
+        "dried",
+        "fresh"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "mustard",
+    "category": "Spices and Herbs",
+    "suggested_facets": {
+      "variant": [
+        "prepared",
+        "yellow"
+      ],
+      "form": [
+        "ground"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "pepper",
+    "category": "Spices and Herbs",
+    "suggested_facets": {
+      "variant": [
+        "black",
+        "red",
+        "white"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "rosemary",
+    "category": "Spices and Herbs",
+    "suggested_facets": {
+      "form": [
+        "dried",
+        "fresh"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "seasoning mix",
+    "category": "Spices and Herbs",
+    "suggested_facets": {
+      "variant": [
+        "chili",
+        "coriander & annatto",
+        "original",
+        "sazon",
+        "taco"
+      ],
+      "form": [
+        "dry"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "spearmint",
+    "category": "Spices and Herbs",
+    "suggested_facets": {
+      "form": [
+        "dried",
+        "fresh"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "thyme",
+    "category": "Spices and Herbs",
+    "suggested_facets": {
+      "form": [
+        "dried",
+        "fresh"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "vanilla",
+    "category": "Spices and Herbs",
+    "suggested_facets": {
+      "variant": [
+        "alcohol",
+        "no alcohol"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "vinegar",
+    "category": "Spices and Herbs",
+    "suggested_facets": {
+      "variant": [
+        "balsamic",
+        "cider",
+        "distilled",
+        "red"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "amaranth leaves",
+    "category": "Vegetables and Vegetable Products",
+    "suggested_facets": {
+      "form": [
+        "boiled",
+        "cooked",
+        "raw"
+      ],
+      "variant": [
+        "drained"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "arrowhead",
+    "category": "Vegetables and Vegetable Products",
+    "suggested_facets": {
+      "variant": [
+        "drained"
+      ],
+      "form": [
+        "boiled",
+        "cooked",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "artichokes",
+    "category": "Vegetables and Vegetable Products",
+    "suggested_facets": {
+      "variant": [
+        "French",
+        "drained",
+        "unprepared"
+      ],
+      "form": [
+        "boiled",
+        "cooked",
+        "frozen",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "arugula",
+    "category": "Vegetables and Vegetable Products",
+    "suggested_facets": {
+      "variant": [
+        "baby"
+      ],
+      "form": [
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "asparagus",
+    "category": "Vegetables and Vegetable Products",
+    "suggested_facets": {
+      "variant": [
+        "drained",
+        "green",
+        "solids and liquids",
+        "unprepared"
+      ],
+      "form": [
+        "boiled",
+        "canned",
+        "cooked",
+        "frozen",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "balsam-pear (bitter gourd)",
+    "category": "Vegetables and Vegetable Products",
+    "suggested_facets": {
+      "variant": [
+        "drained",
+        "leafy tips",
+        "pods"
+      ],
+      "form": [
+        "boiled",
+        "cooked",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "bamboo shoots",
+    "category": "Vegetables and Vegetable Products",
+    "suggested_facets": {
+      "variant": [
+        "drained"
+      ],
+      "form": [
+        "boiled",
+        "canned",
+        "cooked",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "bean",
+    "category": "Vegetables and Vegetable Products",
+    "suggested_facets": {
+      "variant": [
+        "all styles",
+        "baby",
+        "drained",
+        "fava",
+        "fordhook",
+        "green",
+        "immature seeds",
+        "in pod",
+        "kidney",
+        "mature seeds",
+        "mung",
+        "navy",
+        "pinto",
+        "seasoned",
+        "snap",
+        "solids and liquids",
+        "sprouted",
+        "unprepared",
+        "yellow"
+      ],
+      "form": [
+        "boiled",
+        "canned",
+        "cooked",
+        "frozen",
+        "microwaved",
+        "raw",
+        "steamed",
+        "stir-fried"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "beet greens",
+    "category": "Vegetables and Vegetable Products",
+    "suggested_facets": {
+      "variant": [
+        "drained"
+      ],
+      "form": [
+        "boiled",
+        "cooked",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "beets",
+    "category": "Vegetables and Vegetable Products",
+    "suggested_facets": {
+      "form": [
+        "boiled",
+        "canned",
+        "cooked",
+        "pickled",
+        "raw"
+      ],
+      "variant": [
+        "drained",
+        "harvard",
+        "solids and liquids"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "borage",
+    "category": "Vegetables and Vegetable Products",
+    "suggested_facets": {
+      "variant": [
+        "drained"
+      ],
+      "form": [
+        "boiled",
+        "cooked",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "bread",
+    "category": "Vegetables and Vegetable Products",
+    "suggested_facets": {
+      "variant": [
+        "bell"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "broccoli",
+    "category": "Vegetables and Vegetable Products",
+    "suggested_facets": {
+      "form": [
+        "boiled",
+        "chopped",
+        "cooked",
+        "frozen",
+        "raw"
+      ],
+      "variant": [
+        "chinese",
+        "drained",
+        "flower clusters",
+        "leaves",
+        "spears",
+        "stalks",
+        "unprepared"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "brussels sprouts",
+    "category": "Vegetables and Vegetable Products",
+    "suggested_facets": {
+      "form": [
+        "boiled",
+        "cooked",
+        "frozen",
+        "raw"
+      ],
+      "variant": [
+        "drained",
+        "unprepared"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "butterbur",
+    "category": "Vegetables and Vegetable Products",
+    "suggested_facets": {
+      "variant": [
+        "drained"
+      ],
+      "form": [
+        "boiled",
+        "canned",
+        "cooked",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "cabbage",
+    "category": "Vegetables and Vegetable Products",
+    "suggested_facets": {
+      "variant": [
+        "and pointed types)",
+        "chinese (pak-choi)",
+        "chinese (pe-tsai)",
+        "common",
+        "common (danish",
+        "domestic",
+        "drained",
+        "freshly harvest",
+        "japanese style",
+        "kimchi",
+        "napa",
+        "red",
+        "savoy",
+        "stored"
+      ],
+      "form": [
+        "boiled",
+        "cooked",
+        "fresh",
+        "pickled",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "cardoon",
+    "category": "Vegetables and Vegetable Products",
+    "suggested_facets": {
+      "variant": [
+        "drained"
+      ],
+      "form": [
+        "boiled",
+        "cooked",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "carrot",
+    "category": "Vegetables and Vegetable Products",
+    "suggested_facets": {
+      "form": [
+        "boiled",
+        "canned",
+        "cooked",
+        "dehydrated",
+        "frozen",
+        "raw"
+      ],
+      "variant": [
+        "baby",
+        "drained",
+        "solids and liquids"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "catsup",
+    "category": "Vegetables and Vegetable Products",
+    "suggested_facets": {
+      "variant": [
+        "low sodium"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "cauliflower",
+    "category": "Vegetables and Vegetable Products",
+    "suggested_facets": {
+      "form": [
+        "boiled",
+        "cooked",
+        "frozen",
+        "raw"
+      ],
+      "variant": [
+        "drained",
+        "green",
+        "unprepared"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "celeriac",
+    "category": "Vegetables and Vegetable Products",
+    "suggested_facets": {
+      "variant": [
+        "drained"
+      ],
+      "form": [
+        "boiled",
+        "cooked",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "celery",
+    "category": "Vegetables and Vegetable Products",
+    "suggested_facets": {
+      "form": [
+        "boiled",
+        "cooked",
+        "raw"
+      ],
+      "variant": [
+        "drained"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "chard",
+    "category": "Vegetables and Vegetable Products",
+    "suggested_facets": {
+      "variant": [
+        "drained",
+        "swiss"
+      ],
+      "form": [
+        "boiled",
+        "cooked",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "chayote",
+    "category": "Vegetables and Vegetable Products",
+    "suggested_facets": {
+      "variant": [
+        "drained",
+        "fruit"
+      ],
+      "form": [
+        "boiled",
+        "cooked",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "chicory greens",
+    "category": "Vegetables and Vegetable Products",
+    "suggested_facets": {
+      "form": [
+        "raw"
+      ],
+      "variant": [
+        "witloof"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "chives",
+    "category": "Vegetables and Vegetable Products",
+    "suggested_facets": {
+      "form": [
+        "freeze-dried",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "chrysanthemum",
+    "category": "Vegetables and Vegetable Products",
+    "suggested_facets": {
+      "variant": [
+        "drained",
+        "garland"
+      ],
+      "form": [
+        "boiled",
+        "cooked",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "collards",
+    "category": "Vegetables and Vegetable Products",
+    "suggested_facets": {
+      "form": [
+        "boiled",
+        "chopped",
+        "cooked",
+        "frozen",
+        "raw"
+      ],
+      "variant": [
+        "drained",
+        "unprepared"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "corn",
+    "category": "Vegetables and Vegetable Products",
+    "suggested_facets": {
+      "variant": [
+        "bell",
+        "cut off cob",
+        "drained",
+        "kernels",
+        "kernels cut off cob",
+        "kernels on cob",
+        "mashed",
+        "prepared",
+        "solids and liquids",
+        "unprepared",
+        "vacuum pack",
+        "white",
+        "whole",
+        "winter",
+        "yellow"
+      ],
+      "form": [
+        "baked",
+        "boiled",
+        "canned",
+        "cooked",
+        "fresh",
+        "frozen",
+        "microwaved",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "cowpeas",
+    "category": "Vegetables and Vegetable Products",
+    "suggested_facets": {
+      "variant": [
+        "drained",
+        "young pods with seeds"
+      ],
+      "form": [
+        "boiled",
+        "cooked",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "cress",
+    "category": "Vegetables and Vegetable Products",
+    "suggested_facets": {
+      "variant": [
+        "drained",
+        "garden"
+      ],
+      "form": [
+        "boiled",
+        "cooked",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "cucumber",
+    "category": "Vegetables and Vegetable Products",
+    "suggested_facets": {
+      "form": [
+        "peeled",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "dandelion greens",
+    "category": "Vegetables and Vegetable Products",
+    "suggested_facets": {
+      "form": [
+        "boiled",
+        "cooked",
+        "raw"
+      ],
+      "variant": [
+        "drained"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "dock",
+    "category": "Vegetables and Vegetable Products",
+    "suggested_facets": {
+      "variant": [
+        "drained"
+      ],
+      "form": [
+        "boiled",
+        "cooked",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "edamame",
+    "category": "Vegetables and Vegetable Products",
+    "suggested_facets": {
+      "variant": [
+        "prepared",
+        "unprepared"
+      ],
+      "form": [
+        "frozen"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "eggplant",
+    "category": "Vegetables and Vegetable Products",
+    "suggested_facets": {
+      "form": [
+        "boiled",
+        "cooked",
+        "pickled",
+        "raw"
+      ],
+      "variant": [
+        "drained"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "fiddlehead ferns",
+    "category": "Vegetables and Vegetable Products",
+    "suggested_facets": {
+      "variant": [
+        "unprepared"
+      ],
+      "form": [
+        "frozen",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "flour",
+    "category": "Vegetables and Vegetable Products",
+    "suggested_facets": {
+      "variant": [
+        "cassava"
+      ],
+      "form": [
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "ginger root",
+    "category": "Vegetables and Vegetable Products",
+    "suggested_facets": {
+      "form": [
+        "canned",
+        "pickled",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "gourd",
+    "category": "Vegetables and Vegetable Products",
+    "suggested_facets": {
+      "variant": [
+        "dishcloth (towelgourd)",
+        "drained",
+        "white-flowered (calabash)"
+      ],
+      "form": [
+        "boiled",
+        "cooked",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "grape",
+    "category": "Vegetables and Vegetable Products",
+    "suggested_facets": {
+      "form": [
+        "canned",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "hearts of palm",
+    "category": "Vegetables and Vegetable Products",
+    "suggested_facets": {
+      "form": [
+        "canned",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "hyacinth-beans",
+    "category": "Vegetables and Vegetable Products",
+    "suggested_facets": {
+      "variant": [
+        "drained",
+        "immature seeds"
+      ],
+      "form": [
+        "boiled",
+        "cooked",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "juice",
+    "category": "Vegetables and Vegetable Products",
+    "suggested_facets": {
+      "variant": [
+        "bolthouse farms",
+        "daily greens",
+        "low sodium"
+      ],
+      "form": [
+        "canned"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "jute",
+    "category": "Vegetables and Vegetable Products",
+    "suggested_facets": {
+      "variant": [
+        "drained",
+        "potherb"
+      ],
+      "form": [
+        "boiled",
+        "cooked",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "kale",
+    "category": "Vegetables and Vegetable Products",
+    "suggested_facets": {
+      "form": [
+        "boiled",
+        "cooked",
+        "frozen",
+        "raw"
+      ],
+      "variant": [
+        "drained",
+        "unprepared"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "kohlrabi",
+    "category": "Vegetables and Vegetable Products",
+    "suggested_facets": {
+      "form": [
+        "boiled",
+        "cooked",
+        "raw"
+      ],
+      "variant": [
+        "drained"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "lambsquarters",
+    "category": "Vegetables and Vegetable Products",
+    "suggested_facets": {
+      "variant": [
+        "drained"
+      ],
+      "form": [
+        "boiled",
+        "cooked",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "leeks",
+    "category": "Vegetables and Vegetable Products",
+    "suggested_facets": {
+      "variant": [
+        "drained"
+      ],
+      "form": [
+        "boiled",
+        "cooked",
+        "freeze-dried",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "lentil",
+    "category": "Vegetables and Vegetable Products",
+    "suggested_facets": {
+      "variant": [
+        "sprouted"
+      ],
+      "form": [
+        "cooked",
+        "raw",
+        "stir-fried"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "lettuce",
+    "category": "Vegetables and Vegetable Products",
+    "suggested_facets": {
+      "variant": [
+        "butterhead (includes boston and bibb types)",
+        "green",
+        "iceberg",
+        "red",
+        "romaine"
+      ],
+      "form": [
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "lotus root",
+    "category": "Vegetables and Vegetable Products",
+    "suggested_facets": {
+      "variant": [
+        "drained",
+        "root"
+      ],
+      "form": [
+        "boiled",
+        "cooked",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "mountain yam",
+    "category": "Vegetables and Vegetable Products",
+    "suggested_facets": {
+      "variant": [
+        "hawaii"
+      ],
+      "form": [
+        "cooked",
+        "raw",
+        "steamed"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "mushroom",
+    "category": "Vegetables and Vegetable Products",
+    "suggested_facets": {
+      "variant": [
+        "Italian",
+        "beech",
+        "brown",
+        "chanterelle",
+        "drained",
+        "enoki",
+        "exposed to ultraviolet light",
+        "lion's mane",
+        "maitake",
+        "morel",
+        "or crimini",
+        "pioppini",
+        "portabella",
+        "shiitake",
+        "straw",
+        "white"
+      ],
+      "form": [
+        "boiled",
+        "canned",
+        "cooked",
+        "dried",
+        "grilled",
+        "microwaved",
+        "raw",
+        "stir-fried"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "mustard",
+    "category": "Vegetables and Vegetable Products",
+    "suggested_facets": {
+      "form": [
+        "boiled",
+        "cooked",
+        "frozen",
+        "raw"
+      ],
+      "variant": [
+        "drained",
+        "salted",
+        "unprepared"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "nopales",
+    "category": "Vegetables and Vegetable Products",
+    "suggested_facets": {
+      "form": [
+        "cooked",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "okra",
+    "category": "Vegetables and Vegetable Products",
+    "suggested_facets": {
+      "form": [
+        "boiled",
+        "cooked",
+        "frozen",
+        "raw"
+      ],
+      "variant": [
+        "drained",
+        "unprepared"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "onion",
+    "category": "Vegetables and Vegetable Products",
+    "suggested_facets": {
+      "variant": [
+        "bell",
+        "breaded",
+        "drained",
+        "green",
+        "prepared",
+        "red",
+        "spring or scallions (includes tops and bulb)",
+        "tops only",
+        "unprepared",
+        "welsh",
+        "white",
+        "whole",
+        "yellow"
+      ],
+      "form": [
+        "boiled",
+        "chopped",
+        "cooked",
+        "dehydrated",
+        "fried",
+        "frozen",
+        "raw",
+        "sauteed"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "parsley",
+    "category": "Vegetables and Vegetable Products",
+    "suggested_facets": {
+      "form": [
+        "freeze-dried",
+        "fresh"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "parsnips",
+    "category": "Vegetables and Vegetable Products",
+    "suggested_facets": {
+      "form": [
+        "boiled",
+        "cooked",
+        "raw"
+      ],
+      "variant": [
+        "drained"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "pea",
+    "category": "Vegetables and Vegetable Products",
+    "suggested_facets": {
+      "variant": [
+        "bell",
+        "brine pack",
+        "drained",
+        "drained and rinsed",
+        "edible-podded",
+        "green",
+        "seasoned",
+        "shellie",
+        "sodium added",
+        "solids and liquids",
+        "unprepared",
+        "whole",
+        "yellow"
+      ],
+      "form": [
+        "boiled",
+        "canned",
+        "cooked",
+        "frozen",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "pepper",
+    "category": "Vegetables and Vegetable Products",
+    "suggested_facets": {
+      "variant": [
+        "ancho",
+        "bell",
+        "chili",
+        "drained",
+        "excluding seeds",
+        "green",
+        "hot",
+        "hungarian",
+        "jalapeno",
+        "pasilla",
+        "pods",
+        "red",
+        "serrano",
+        "solids and liquids",
+        "sun-dried",
+        "unprepared",
+        "yellow"
+      ],
+      "form": [
+        "boiled",
+        "canned",
+        "chopped",
+        "cooked",
+        "dried",
+        "freeze-dried",
+        "frozen",
+        "pickled",
+        "raw",
+        "sauteed"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "pickle relish",
+    "category": "Vegetables and Vegetable Products",
+    "suggested_facets": {
+      "variant": [
+        "bell",
+        "hamburger"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "pickles",
+    "category": "Vegetables and Vegetable Products",
+    "suggested_facets": {
+      "variant": [
+        "bell",
+        "chowchow",
+        "dill",
+        "dill or kosher dill",
+        "low sodium",
+        "reduced sodium",
+        "sour"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "pigeonpeas",
+    "category": "Vegetables and Vegetable Products",
+    "suggested_facets": {
+      "variant": [
+        "drained",
+        "immature seeds"
+      ],
+      "form": [
+        "boiled",
+        "cooked",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "pokeberry shoots",
+    "category": "Vegetables and Vegetable Products",
+    "suggested_facets": {
+      "form": [
+        "boiled",
+        "cooked",
+        "raw"
+      ],
+      "variant": [
+        "drained"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "potato",
+    "category": "Vegetables and Vegetable Products",
+    "suggested_facets": {
+      "variant": [
+        "as purchased",
+        "au gratin",
+        "brown",
+        "candied",
+        "cottage-cut",
+        "cross cut",
+        "crosscut",
+        "drained",
+        "extruded",
+        "flesh",
+        "gold",
+        "home-prepared",
+        "home-prepared from recipe using margarine",
+        "home-prepared with margarine",
+        "in skin",
+        "mashed",
+        "o'brien",
+        "plain",
+        "prepared",
+        "red",
+        "refrigerated",
+        "russet",
+        "shoestring",
+        "skin",
+        "steak",
+        "unprepared",
+        "wedge cut",
+        "white",
+        "whole",
+        "without skin",
+        "yellow"
+      ],
+      "form": [
+        "baked",
+        "boiled",
+        "canned",
+        "cooked",
+        "dehydrated",
+        "dry",
+        "fried",
+        "frozen",
+        "microwaved",
+        "raw",
+        "roasted",
+        "shredded",
+        "steamed"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "pumpkin",
+    "category": "Vegetables and Vegetable Products",
+    "suggested_facets": {
+      "form": [
+        "boiled",
+        "canned",
+        "cooked",
+        "raw"
+      ],
+      "variant": [
+        "drained",
+        "flowers"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "pumpkin leaves",
+    "category": "Vegetables and Vegetable Products",
+    "suggested_facets": {
+      "form": [
+        "boiled",
+        "cooked",
+        "raw"
+      ],
+      "variant": [
+        "drained",
+        "leaves"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "purslane",
+    "category": "Vegetables and Vegetable Products",
+    "suggested_facets": {
+      "form": [
+        "boiled",
+        "cooked",
+        "raw"
+      ],
+      "variant": [
+        "drained"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "radishes",
+    "category": "Vegetables and Vegetable Products",
+    "suggested_facets": {
+      "variant": [
+        "drained",
+        "hawaiian style",
+        "oriental",
+        "white"
+      ],
+      "form": [
+        "boiled",
+        "cooked",
+        "dried",
+        "pickled",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "rutabagas",
+    "category": "Vegetables and Vegetable Products",
+    "suggested_facets": {
+      "form": [
+        "boiled",
+        "cooked",
+        "raw"
+      ],
+      "variant": [
+        "drained"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "salsify",
+    "category": "Vegetables and Vegetable Products",
+    "suggested_facets": {
+      "form": [
+        "boiled",
+        "cooked",
+        "raw"
+      ],
+      "variant": [
+        "drained"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "salt",
+    "category": "Vegetables and Vegetable Products",
+    "suggested_facets": {
+      "variant": [
+        "drained",
+        "drumstick",
+        "green",
+        "immature seeds",
+        "leafy tips",
+        "red",
+        "tahitian",
+        "unprepared"
+      ],
+      "form": [
+        "baked",
+        "boiled",
+        "canned",
+        "chopped",
+        "cooked",
+        "frozen",
+        "raw",
+        "steamed"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "seaweed",
+    "category": "Vegetables and Vegetable Products",
+    "suggested_facets": {
+      "variant": [
+        "agar",
+        "canadian cultivated emi-tsunomata",
+        "irishmoss",
+        "kelp",
+        "laver",
+        "rehydrated",
+        "spirulina",
+        "wakame"
+      ],
+      "form": [
+        "dried",
+        "dry",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "sesbania flower",
+    "category": "Vegetables and Vegetable Products",
+    "suggested_facets": {
+      "form": [
+        "cooked",
+        "raw",
+        "steamed"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "shallots",
+    "category": "Vegetables and Vegetable Products",
+    "suggested_facets": {
+      "form": [
+        "freeze-dried",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "soybeans",
+    "category": "Vegetables and Vegetable Products",
+    "suggested_facets": {
+      "variant": [
+        "drained",
+        "green"
+      ],
+      "form": [
+        "boiled",
+        "cooked",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "spinach",
+    "category": "Vegetables and Vegetable Products",
+    "suggested_facets": {
+      "variant": [
+        "baby",
+        "drained",
+        "solids and liquids"
+      ],
+      "form": [
+        "boiled",
+        "canned",
+        "chopped",
+        "cooked",
+        "frozen",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "squash",
+    "category": "Vegetables and Vegetable Products",
+    "suggested_facets": {
+      "variant": [
+        "Italian",
+        "baby",
+        "butternut",
+        "crookneck and straightneck",
+        "drained",
+        "green",
+        "hubbard",
+        "includes skin",
+        "mashed",
+        "solid",
+        "spaghetti",
+        "summer",
+        "unprepared",
+        "winter",
+        "yellow"
+      ],
+      "form": [
+        "baked",
+        "boiled",
+        "canned",
+        "cooked",
+        "frozen",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "taro",
+    "category": "Vegetables and Vegetable Products",
+    "suggested_facets": {
+      "form": [
+        "cooked",
+        "raw",
+        "steamed"
+      ],
+      "variant": [
+        "leaves",
+        "shoots",
+        "tahitian"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "tomato",
+    "category": "Vegetables and Vegetable Products",
+    "suggested_facets": {
+      "form": [
+        "canned",
+        "cooked",
+        "crushed",
+        "diced",
+        "raw",
+        "stewed"
+      ],
+      "variant": [
+        "drained",
+        "green",
+        "low sodium",
+        "paste",
+        "puree",
+        "red",
+        "roma",
+        "spanish style",
+        "sun-dried",
+        "yellow"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "tree fern",
+    "category": "Vegetables and Vegetable Products",
+    "suggested_facets": {
+      "form": [
+        "cooked"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "turnip greens",
+    "category": "Vegetables and Vegetable Products",
+    "suggested_facets": {
+      "form": [
+        "boiled",
+        "canned",
+        "cooked",
+        "frozen",
+        "raw"
+      ],
+      "variant": [
+        "drained",
+        "solids and liquids",
+        "unprepared"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "turnips",
+    "category": "Vegetables and Vegetable Products",
+    "suggested_facets": {
+      "variant": [
+        "drained",
+        "unprepared"
+      ],
+      "form": [
+        "boiled",
+        "cooked",
+        "frozen",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "vegetables",
+    "category": "Vegetables and Vegetable Products",
+    "suggested_facets": {
+      "variant": [
+        "drained",
+        "mixed",
+        "solids and liquids",
+        "unprepared"
+      ],
+      "form": [
+        "boiled",
+        "canned",
+        "cooked",
+        "frozen"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "water",
+    "category": "Vegetables and Vegetable Products",
+    "suggested_facets": {
+      "form": [
+        "boiled",
+        "cooked",
+        "raw"
+      ],
+      "variant": [
+        "drained"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "waterchestnuts",
+    "category": "Vegetables and Vegetable Products",
+    "suggested_facets": {
+      "variant": [
+        "chinese",
+        "solids and liquids"
+      ],
+      "form": [
+        "canned",
+        "raw"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "waxgourd",
+    "category": "Vegetables and Vegetable Products",
+    "suggested_facets": {
+      "form": [
+        "boiled",
+        "cooked",
+        "raw"
+      ],
+      "variant": [
+        "drained"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "yam",
+    "category": "Vegetables and Vegetable Products",
+    "suggested_facets": {
+      "form": [
+        "baked",
+        "boiled",
+        "cooked",
+        "raw"
+      ],
+      "variant": [
+        "drained"
+      ]
+    }
+  },
+  {
+    "base_ingredient": "yambean (jicama)",
+    "category": "Vegetables and Vegetable Products",
+    "suggested_facets": {
+      "variant": [
+        "drained"
+      ],
+      "form": [
+        "boiled",
+        "cooked",
+        "raw"
+      ]
+    }
+  }
+]

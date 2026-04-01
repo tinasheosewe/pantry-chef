@@ -19,12 +19,20 @@ OUTPUT = Path(__file__).parent / "ml_outputs" / "filtered_groups.json"
 
 # ── Categories to drop entirely ──────────────────────────────────────────────
 DROP_CATEGORIES = {
+    # Non-food / irrelevant
     "Baby Foods",
     "American Indian/Alaska Native Foods",
     "Restaurant Foods",
     "Fast Foods",
     "Meals, Entrees, and Side Dishes",
     "Breakfast Cereals",
+    # Prepared/composite foods — not raw ingredients
+    "Baked Products",
+    "Beverages",
+    "Soups, Sauces, and Gravies",
+    "Sweets",
+    "Snacks",
+    "Sausages and Luncheon Meats",
 }
 
 # ── Keywords in group_name or base_ingredient that signal non-home-cooking ───
