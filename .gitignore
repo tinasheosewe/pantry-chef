@@ -11,6 +11,19 @@ DerivedData/
 *.dSYM
 build/
 
+# Python
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.env
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
 # Swift Package Manager
 .build/
 .swiftpm/
