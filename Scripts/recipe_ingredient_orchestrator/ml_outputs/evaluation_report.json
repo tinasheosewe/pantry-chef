@@ -79,24 +79,24 @@
     "tfidf_agglomerative": {
       "approach": "tfidf_agglomerative",
       "total_items": 7924,
-      "total_groups": 614,
-      "singleton_count": 34,
-      "singleton_rate": 0.05537459283387622,
-      "avg_group_size": 12.905537459283387,
-      "median_group_size": 4,
-      "max_group_size": 603,
-      "groups_with_facets": 578,
-      "facet_rate": 0.9413680781758957,
-      "avg_facets_per_group": 1.6211072664359862,
+      "total_groups": 1402,
+      "singleton_count": 237,
+      "singleton_rate": 0.16904422253922968,
+      "avg_group_size": 5.651925820256776,
+      "median_group_size": 3,
+      "max_group_size": 50,
+      "groups_with_facets": 1154,
+      "facet_rate": 0.8231098430813124,
+      "avg_facets_per_group": 1.6091854419410745,
       "base_homogeneity": 1.0,
       "category_consistency": 0.0,
       "size_distribution": {
-        "1 (singleton)": 34,
-        "2-5": 338,
-        "6-10": 94,
-        "11-20": 64,
-        "21-50": 47,
-        "50+": 37
+        "1 (singleton)": 237,
+        "2-5": 774,
+        "6-10": 193,
+        "11-20": 129,
+        "21-50": 69,
+        "50+": 0
       }
     },
     "taxonomy_guided": {
@@ -150,10 +150,10 @@
     "group": [
       {
         "approach": "tfidf_agglomerative",
-        "total_groups": 614,
-        "singleton_rate": 5.5,
-        "facet_rate": 94.1,
-        "avg_group_size": 12.9
+        "total_groups": 1402,
+        "singleton_rate": 16.9,
+        "facet_rate": 82.3,
+        "avg_group_size": 5.7
       },
       {
         "approach": "taxonomy_guided",
