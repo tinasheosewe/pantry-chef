@@ -25,6 +25,11 @@ targets:
   PantryChef:
     type: application
     platform: iOS
+    settings:
+      base:
+        CODE_SIGN_STYLE: Automatic
+        DEVELOPMENT_TEAM: WZ7SK754J9
+        CODE_SIGN_IDENTITY: "Apple Development"
     sources:
       - PantryChef
     configFiles:
