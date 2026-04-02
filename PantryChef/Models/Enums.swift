@@ -3,61 +3,70 @@ import SwiftUI
 
 // MARK: - Food Category
 enum FoodCategory: String, Codable, CaseIterable, Identifiable {
-    case dairy = "Dairy"
+    case alcohol = "Alcohol & Spirits"
+    case bakingSupplies = "Baking & Sweeteners"
+    case beverages = "Beverages"
+    case breads = "Breads & Bakery"
+    case canned = "Canned & Jarred"
+    case condiments = "Condiments & Sauces"
+    case dairy = "Dairy & Eggs"
+    case frozenFoods = "Frozen Foods"
+    case grains = "Grains & Cereals"
+    case legumes = "Legumes & Beans"
+    case nuts = "Nuts & Seeds"
+    case oils = "Oils & Fats"
+    case other = "Other"
+    case pasta = "Pasta & Noodles"
     case produce = "Produce"
     case protein = "Protein"
-    case grains = "Grains & Cereals"
-    case spices = "Spices & Herbs"
-    case condiments = "Condiments & Sauces"
-    case bakingSupplies = "Baking Supplies"
-    case frozenFoods = "Frozen Foods"
-    case canned = "Canned & Jarred"
-    case beverages = "Beverages"
     case snacks = "Snacks"
-    case oils = "Oils & Fats"
-    case pasta = "Pasta & Noodles"
-    case nuts = "Nuts & Seeds"
-    case other = "Other"
+    case spices = "Spices & Herbs"
 
     var id: String { rawValue }
 
     var icon: String {
         switch self {
+        case .alcohol: return "wineglass.fill"
+        case .bakingSupplies: return "birthday.cake.fill"
+        case .beverages: return "mug.fill"
+        case .breads: return "basket.fill"
+        case .canned: return "archivebox.fill"
+        case .condiments: return "waterbottle.fill"
         case .dairy: return "cup.and.saucer.fill"
+        case .frozenFoods: return "snowflake"
+        case .grains: return "circle.grid.3x3.fill"
+        case .legumes: return "leaf.circle.fill"
+        case .nuts: return "oval.fill"
+        case .oils: return "drop.fill"
+        case .other: return "bag.fill"
+        case .pasta: return "fork.knife"
         case .produce: return "leaf.fill"
         case .protein: return "fish.fill"
-        case .grains: return "circle.grid.3x3.fill"
-        case .spices: return "flame.fill"
-        case .condiments: return "waterbottle.fill"
-        case .bakingSupplies: return "birthday.cake.fill"
-        case .frozenFoods: return "snowflake"
-        case .canned: return "archivebox.fill"
-        case .beverages: return "mug.fill"
         case .snacks: return "popcorn.fill"
-        case .oils: return "drop.fill"
-        case .pasta: return "fork.knife"
-        case .nuts: return "oval.fill"
-        case .other: return "bag.fill"
+        case .spices: return "flame.fill"
         }
     }
 
     var color: Color {
         switch self {
+        case .alcohol:        return Color(red: 0.58, green: 0.22, blue: 0.44) // burgundy
+        case .bakingSupplies: return Color(red: 0.94, green: 0.53, blue: 0.68) // rose
+        case .beverages:      return Color(red: 0.06, green: 0.73, blue: 0.70) // teal
+        case .breads:         return Color(red: 0.82, green: 0.68, blue: 0.46) // wheat
+        case .canned:         return Color(red: 0.73, green: 0.56, blue: 0.41) // warm brown
+        case .condiments:     return Color(red: 0.62, green: 0.44, blue: 0.87) // lavender
         case .dairy:          return Color(red: 0.38, green: 0.65, blue: 0.96) // sky blue
+        case .frozenFoods:    return Color(red: 0.35, green: 0.78, blue: 0.88) // ice blue
+        case .grains:         return Color(red: 0.96, green: 0.72, blue: 0.26) // golden
+        case .legumes:        return Color(red: 0.55, green: 0.72, blue: 0.36) // olive green
+        case .nuts:           return Color(red: 0.78, green: 0.66, blue: 0.48) // warm tan
+        case .oils:           return Color(red: 0.88, green: 0.70, blue: 0.18) // golden oil
+        case .other:          return Color(red: 0.62, green: 0.65, blue: 0.70) // cool gray
+        case .pasta:          return Color(red: 0.48, green: 0.40, blue: 0.82) // soft indigo
         case .produce:        return Color(red: 0.13, green: 0.77, blue: 0.37) // emerald
         case .protein:        return Color(red: 0.94, green: 0.44, blue: 0.44) // salmon
-        case .grains:         return Color(red: 0.96, green: 0.72, blue: 0.26) // golden
-        case .spices:         return Color(red: 0.98, green: 0.62, blue: 0.20) // amber
-        case .condiments:     return Color(red: 0.62, green: 0.44, blue: 0.87) // lavender
-        case .bakingSupplies: return Color(red: 0.94, green: 0.53, blue: 0.68) // rose
-        case .frozenFoods:    return Color(red: 0.35, green: 0.78, blue: 0.88) // ice blue
-        case .canned:         return Color(red: 0.73, green: 0.56, blue: 0.41) // warm brown
-        case .beverages:      return Color(red: 0.06, green: 0.73, blue: 0.70) // teal
         case .snacks:         return Color(red: 0.96, green: 0.80, blue: 0.22) // bright yellow
-        case .oils:           return Color(red: 0.88, green: 0.70, blue: 0.18) // golden oil
-        case .pasta:          return Color(red: 0.48, green: 0.40, blue: 0.82) // soft indigo
-        case .nuts:           return Color(red: 0.78, green: 0.66, blue: 0.48) // warm tan
-        case .other:          return Color(red: 0.62, green: 0.65, blue: 0.70) // cool gray
+        case .spices:         return Color(red: 0.98, green: 0.62, blue: 0.20) // amber
         }
     }
 }
@@ -141,13 +150,16 @@ extension FoodCategory {
         }
 
         switch s {
-        case let x where x.contains("dairy") || x.contains("cheese") || x.contains("milk"): return .dairy
+        case let x where x.contains("alcohol") || x.contains("spirit") || x.contains("wine") || x.contains("beer") || x.contains("liquor") || x.contains("liqueur"): return .alcohol
+        case let x where x.contains("dairy") || x.contains("cheese") || x.contains("milk") || x.contains("egg"): return .dairy
         case let x where x.contains("produce") || x.contains("vegetable") || x.contains("fruit"): return .produce
         case let x where x.contains("protein") || x.contains("meat") || x.contains("seafood") || x.contains("poultry"): return .protein
-        case let x where x.contains("grain") || x.contains("cereal") || x.contains("bread") || x.contains("bakery"): return .grains
+        case let x where x.contains("legume") || x.contains("bean") || x.contains("lentil"): return .legumes
+        case let x where x.contains("bread") || x.contains("bakery"): return .breads
+        case let x where x.contains("grain") || x.contains("cereal"): return .grains
         case let x where x.contains("spice") || x.contains("herb") || x.contains("seasoning"): return .spices
         case let x where x.contains("condiment") || x.contains("sauce"): return .condiments
-        case let x where x.contains("baking"): return .bakingSupplies
+        case let x where x.contains("baking") || x.contains("sweetener"): return .bakingSupplies
         case let x where x.contains("frozen"): return .frozenFoods
         case let x where x.contains("canned") || x.contains("jarred"): return .canned
         case let x where x.contains("beverage"): return .beverages

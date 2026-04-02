@@ -102,6 +102,7 @@
 		D4BA98D0B99FF6C34D32168B /* RuntimeStores.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF043648CCB725C24B0A51F2 /* RuntimeStores.swift */; };
 		D5316F377083EA6C299007C4 /* PantryItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1D59BC258942DB87FCB1ABA /* PantryItem.swift */; };
 		DD9DA71A8A0D1E8A532CA2F7 /* Components.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1BCAFB2A3481F128E68F9AB /* Components.swift */; };
+		E170BE5955170F8412479C16 /* catalog.json in Resources */ = {isa = PBXBuildFile; fileRef = 67106B750F48353E27DE5B0D /* catalog.json */; };
 		E2969078C5F1A750D6A88589 /* AppLaunchOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0C49A659EE21F5019A9DF94 /* AppLaunchOptions.swift */; };
 		E2DFBABBF1C8DB6BFC943E83 /* PCFields.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6A5860298C4C17F58EAD29 /* PCFields.swift */; };
 		E33D4C161D7067B91D51F80F /* PreparedDishViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A690A6DFC4505930CDD76AF7 /* PreparedDishViewModel.swift */; };
@@ -190,6 +191,7 @@
 		62DE2268B3EFB64D9F107FC2 /* AppState+Recipes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AppState+Recipes.swift"; sourceTree = "<group>"; };
 		62F4E42A0869501AB92F81F2 /* input_audio_transcription_completed_sparse_usage.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_audio_transcription_completed_sparse_usage.json; sourceTree = "<group>"; };
 		6416169718348896F47576A2 /* PCContainers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PCContainers.swift; sourceTree = "<group>"; };
+		67106B750F48353E27DE5B0D /* catalog.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = catalog.json; sourceTree = "<group>"; };
 		6871CCC4A1E586AE0BDC6A91 /* MealPlan.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MealPlan.swift; sourceTree = "<group>"; };
 		6A6018CBC83EBB7329C47E4A /* MealPlanView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MealPlanView.swift; sourceTree = "<group>"; };
 		6B6A5860298C4C17F58EAD29 /* PCFields.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PCFields.swift; sourceTree = "<group>"; };
@@ -360,6 +362,7 @@
 		42CE5C297D1F9B87FDFBEF45 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				67106B750F48353E27DE5B0D /* catalog.json */,
 				ECEFEB3FB5265EBF48F4495C /* seed_recipes.json */,
 			);
 			path = Resources;
@@ -854,6 +857,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				1AA2B9C2A703EC39FFBB5F2D /* Assets.xcassets in Resources */,
+				E170BE5955170F8412479C16 /* catalog.json in Resources */,
 				AACC56B00F6BECBD683E04A1 /* seed_recipes.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
