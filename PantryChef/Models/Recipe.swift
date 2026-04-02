@@ -277,19 +277,19 @@ struct Recipe: Identifiable, Codable, Hashable {
     private static let sf9 = UUID(uuidString: "10000000-0000-0000-0000-000000000009")!  // plate
 
     // MARK: - Sample Data
-    static let sample = TrustedRecipeCanonicalizer.canonicalize(Recipe(
+    static let sample = Recipe(
         id: stirFryId,
         title: "Simple Chicken Stir Fry",
         description: "A quick and healthy chicken stir fry with vegetables.",
         ingredients: [
-            Ingredient(name: "Chicken Breast", quantity: 500, unit: .gram, category: .protein),
-            Ingredient(name: "Onion", quantity: 1, unit: .whole, category: .produce),
-            Ingredient(name: "Garlic", quantity: 3, unit: .clove, category: .produce),
-            Ingredient(name: "Soy Sauce", quantity: 2, unit: .tablespoon, category: .condiments),
-            Ingredient(name: "Olive Oil", quantity: 2, unit: .tablespoon, category: .oils),
-            Ingredient(name: "Rice", quantity: 2, unit: .cup, category: .grains),
-            Ingredient(name: "Bell Pepper", quantity: 1, unit: .whole, category: .produce),
-            Ingredient(name: "Salt", quantity: 1, unit: .pinch, category: .spices, isOptional: true),
+            Ingredient(name: "Chicken Breast", quantity: 500, unit: .gram, category: .protein, catalogItemID: "chicken", facets: [.init(key: .variant, value: "breast")]),
+            Ingredient(name: "Onion", quantity: 1, unit: .whole, category: .produce, catalogItemID: "onion"),
+            Ingredient(name: "Garlic", quantity: 3, unit: .clove, category: .produce, catalogItemID: "garlic"),
+            Ingredient(name: "Soy Sauce", quantity: 2, unit: .tablespoon, category: .condiments, catalogItemID: "soy-sauce"),
+            Ingredient(name: "Olive Oil", quantity: 2, unit: .tablespoon, category: .oils, catalogItemID: "olive-oil"),
+            Ingredient(name: "Rice", quantity: 2, unit: .cup, category: .grains, catalogItemID: "rice"),
+            Ingredient(name: "Bell Pepper", quantity: 1, unit: .whole, category: .produce, catalogItemID: "pepper", facets: [.init(key: .variant, value: "bell")]),
+            Ingredient(name: "Salt", quantity: 1, unit: .pinch, category: .spices, isOptional: true, catalogItemID: "salt"),
         ],
         steps: [
             RecipeStep(stepNumber: 1, instruction: "Cook the rice according to package directions.", timerMinutes: 15, estimatedDurationSeconds: 900, tasks: [
@@ -337,7 +337,7 @@ struct Recipe: Identifiable, Codable, Hashable {
             sodium: 580
         ),
         isFavorite: true
-    ))
+    )
 
     // Avocado Toast tasks
     private static let at0 = UUID(uuidString: "20000000-0000-0000-0000-000000000000")!  // toast bread
@@ -358,16 +358,16 @@ struct Recipe: Identifiable, Codable, Hashable {
 
     static let samples: [Recipe] = [
         sample,
-        TrustedRecipeCanonicalizer.canonicalize(Recipe(
+        Recipe(
             id: avocadoId,
             title: "Avocado Toast",
             description: "Quick, healthy, and delicious breakfast.",
             ingredients: [
-                Ingredient(name: "Bread", quantity: 2, unit: .slice, category: .grains),
-                Ingredient(name: "Avocado", quantity: 1, unit: .whole, category: .produce),
-                Ingredient(name: "Salt", quantity: 1, unit: .pinch, category: .spices),
-                Ingredient(name: "Lemon Juice", quantity: 1, unit: .tablespoon, category: .produce, isOptional: true),
-                Ingredient(name: "Red Pepper Flakes", quantity: 1, unit: .pinch, category: .spices, isOptional: true),
+                Ingredient(name: "Bread", quantity: 2, unit: .slice, category: .grains, catalogItemID: "bread"),
+                Ingredient(name: "Avocado", quantity: 1, unit: .whole, category: .produce, catalogItemID: "avocado"),
+                Ingredient(name: "Salt", quantity: 1, unit: .pinch, category: .spices, catalogItemID: "salt"),
+                Ingredient(name: "Lemon Juice", quantity: 1, unit: .tablespoon, category: .produce, isOptional: true, catalogItemID: "lemon-juice"),
+                Ingredient(name: "Red Pepper Flakes", quantity: 1, unit: .pinch, category: .spices, isOptional: true, catalogItemID: "chili-flakes"),
             ],
             steps: [
                 RecipeStep(stepNumber: 1, instruction: "Toast the bread until golden and crispy.", estimatedDurationSeconds: 180, tasks: [
@@ -392,19 +392,19 @@ struct Recipe: Identifiable, Codable, Hashable {
             mealType: .breakfast,
             cuisine: .american,
             nutrition: NutritionInfo(calories: 280, protein: 6, carbohydrates: 30, fat: 16, fiber: 8, sugar: 2, sodium: 300)
-        )),
-        TrustedRecipeCanonicalizer.canonicalize(Recipe(
+        ),
+        Recipe(
             id: friedRiceId,
             title: "Egg Fried Rice",
             description: "A classic quick dinner using leftover rice.",
             ingredients: [
-                Ingredient(name: "Rice", quantity: 3, unit: .cup, category: .grains),
-                Ingredient(name: "Eggs", quantity: 3, unit: .piece, category: .dairy),
-                Ingredient(name: "Soy Sauce", quantity: 3, unit: .tablespoon, category: .condiments),
-                Ingredient(name: "Garlic", quantity: 2, unit: .clove, category: .produce),
-                Ingredient(name: "Onion", quantity: 1, unit: .whole, category: .produce),
-                Ingredient(name: "Olive Oil", quantity: 2, unit: .tablespoon, category: .oils),
-                Ingredient(name: "Salt", quantity: 1, unit: .pinch, category: .spices, isOptional: true),
+                Ingredient(name: "Rice", quantity: 3, unit: .cup, category: .grains, catalogItemID: "rice"),
+                Ingredient(name: "Eggs", quantity: 3, unit: .piece, category: .dairy, catalogItemID: "egg"),
+                Ingredient(name: "Soy Sauce", quantity: 3, unit: .tablespoon, category: .condiments, catalogItemID: "soy-sauce"),
+                Ingredient(name: "Garlic", quantity: 2, unit: .clove, category: .produce, catalogItemID: "garlic"),
+                Ingredient(name: "Onion", quantity: 1, unit: .whole, category: .produce, catalogItemID: "onion"),
+                Ingredient(name: "Olive Oil", quantity: 2, unit: .tablespoon, category: .oils, catalogItemID: "olive-oil"),
+                Ingredient(name: "Salt", quantity: 1, unit: .pinch, category: .spices, isOptional: true, catalogItemID: "salt"),
             ],
             steps: [
                 RecipeStep(stepNumber: 1, instruction: "Heat oil in a large pan or wok over high heat.", estimatedDurationSeconds: 60, tasks: [
@@ -434,7 +434,7 @@ struct Recipe: Identifiable, Codable, Hashable {
             mealType: .dinner,
             cuisine: .chinese,
             nutrition: NutritionInfo(calories: 380, protein: 14, carbohydrates: 52, fat: 12, fiber: 2, sugar: 3, sodium: 700)
-        )),
+        ),
     ]
 }
 

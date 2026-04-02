@@ -207,7 +207,7 @@ private struct ShoppingAddItemView: View {
                         HStack(spacing: 12) {
                             CategoryIcon(category: selectedItem.category, size: 28)
                             VStack(alignment: .leading, spacing: 4) {
-                                Text(selectedItem.name)
+                                Text(selectedItem.titleCasedName)
                                     .font(.subheadline)
                                     .fontWeight(.semibold)
                                 if let facetSummary = viewModel.selectedFacetSummary {

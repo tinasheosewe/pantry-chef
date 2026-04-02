@@ -125,7 +125,7 @@ final class ShoppingAddItemViewModel {
                 id: item.id,
                 catalogItemID: item.id,
                 facets: normalizedFacets(for: candidate.facets, item: item),
-                displayName: item.name,
+                displayName: item.titleCasedName,
                 category: item.category
             )
             appendSuggestion(suggestion, for: item, query: query, to: &suggestions, indexesByCatalogID: &indexesByCatalogID)

@@ -12,22 +12,6 @@ enum IngredientLexicon {
         }
     }
 
-    enum CatalogPhraseSource: String, Hashable, Sendable {
-        case name
-        case alias
-        case template
-    }
-
-    struct CatalogPhrase: Hashable, Sendable {
-        let text: String
-        let lookupKey: String
-        let normalized: String
-        let tokens: [String]
-        let itemID: String
-        let facets: [PantryFacetSelection]
-        let source: CatalogPhraseSource
-    }
-
     static func parse(_ value: String) -> ParsedText {
         let lookup = lookupKey(value)
         let normalized = normalizeIngredient(value)
@@ -51,17 +35,15 @@ enum IngredientLexicon {
     static func normalizeIngredient(_ name: String) -> String {
         var normalized = lookupKey(name)
 
-        for regex in stripRegexes {
-            normalized = regex.stringByReplacingMatches(
-                in: normalized,
-                range: NSRange(normalized.startIndex..., in: normalized),
-                withTemplate: ""
-            )
+        // Remove multi-word strip phrases first (few entries)
+        for phrase in stripMultiWordPhrases {
+            normalized = normalized.replacingOccurrences(of: phrase, with: " ")
         }
 
+        // Token-based single-word removal (replaces 2220 regex operations)
         normalized = normalized
-            .components(separatedBy: .whitespaces)
-            .filter { !$0.isEmpty }
+            .split(separator: " ")
+            .filter { !stripWordSet.contains(String($0)) }
             .joined(separator: " ")
 
         if normalized.hasSuffix("ies") {
@@ -126,58 +108,7 @@ enum IngredientLexicon {
         return 1 - Double(distance) / Double(maxLength)
     }
 
-    static func generatedCatalogPhrases(for item: PantryCatalogItemDefinition) -> [CatalogPhrase] {
-        var phrases: [CatalogPhrase] = []
-        var seenKeys: Set<String> = []
-
-        func register(_ text: String, source: CatalogPhraseSource, explicitFacets: [PantryFacetSelection]? = nil) {
-            let lookup = lookupKey(text)
-            guard !lookup.isEmpty else { return }
-
-            let facets = explicitFacets ?? inferredFacets(forLookupKey: lookup, item: item)
-            let facetKey = facets
-                .sorted { $0.key.rawValue < $1.key.rawValue }
-                .map { "\($0.key.rawValue)=\($0.value)" }
-                .joined(separator: "|")
-            let dedupeKey = [item.id, source.rawValue, facetKey, lookup].joined(separator: "::")
-            guard seenKeys.insert(dedupeKey).inserted else { return }
-
-            let normalized = normalizeIngredient(text)
-            phrases.append(
-                CatalogPhrase(
-                    text: text,
-                    lookupKey: lookup,
-                    normalized: normalized,
-                    tokens: tokenize(normalized),
-                    itemID: item.id,
-                    facets: facets,
-                    source: source
-                )
-            )
-        }
-
-        register(item.name, source: .name)
-        item.aliases.forEach { register($0, source: .alias) }
-
-        if !item.defaultSelections.isEmpty {
-            register(item.displayName(for: item.defaultSelections), source: .template, explicitFacets: item.defaultSelections)
-        }
-
-        for definition in item.facets {
-            for option in definition.options {
-                let selection = PantryFacetSelection(key: definition.key, value: option)
-                register(item.displayName(for: [selection]), source: .template, explicitFacets: [selection])
-
-                for alias in item.aliases where !lookupKey(alias).contains(lookupKey(option)) {
-                    register("\(option) \(alias)", source: .template, explicitFacets: [selection])
-                }
-            }
-        }
-
-        return phrases
-    }
-
-    private static func inferredFacets(forLookupKey lookup: String, item: PantryCatalogItemDefinition) -> [PantryFacetSelection] {
+    static func inferredFacets(forLookupKey lookup: String, item: PantryCatalogItemDefinition) -> [PantryFacetSelection] {
         item.facets.compactMap { definition in
             guard let option = definition.options.first(where: { option in
                 let optionKey = lookupKey(option)
@@ -223,7 +154,7 @@ enum IngredientLexicon {
     /// Strip words combining universal modifiers with catalog facet options.
     /// Universal modifiers are defined in PantryCatalog.universalModifiers.
     /// Facet options are derived from all catalog items.
-    private static let stripWords: [String] = {
+    private static let allStripKeys: [String] = {
         var words = PantryCatalog.universalModifiers
         for item in PantryCatalog.allItems {
             for facet in item.facets {
@@ -232,16 +163,17 @@ enum IngredientLexicon {
                 }
             }
         }
-        return Array(words)
+        let keys = words.map(lookupKey)
+        return keys
     }()
 
-    private static let stripRegexes: [NSRegularExpression] = {
-        stripWords.compactMap { word in
-            try? NSRegularExpression(
-                pattern: "\\b\(NSRegularExpression.escapedPattern(for: lookupKey(word)))\\b",
-                options: [.caseInsensitive]
-            )
-        }
+    private static let stripWordSet: Set<String> = {
+        Set(allStripKeys.filter { !$0.contains(" ") })
+    }()
+
+    private static let stripMultiWordPhrases: [String] = {
+        // Sort longest first so longer phrases are removed before shorter subphrases
+        allStripKeys.filter { $0.contains(" ") }.sorted { $0.count > $1.count }
     }()
 
     /// Synonym groups combining universal synonyms with catalog item aliases.

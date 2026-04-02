@@ -38,9 +38,6 @@ final class IngredientCandidateParser: IngredientCandidateParserProtocol {
         let stage: RetrievalStage
     }
 
-    private static let catalogPhrases = PantryCatalog.allItems.flatMap(IngredientLexicon.generatedCatalogPhrases(for:))
-    private static let catalogPhraseIndex = CatalogPhraseIndex(phrases: catalogPhrases)
-
     private let maxCandidates: Int
     private let cacheLock = NSLock()
     private var cachedCandidatesByKey: [CacheKey: [IngredientResolutionCandidate]] = [:]
@@ -86,107 +83,150 @@ final class IngredientCandidateParser: IngredientCandidateParserProtocol {
             return []
         }
         let queryLookupTokenSet = Set(IngredientLexicon.tokenize(query.lookupKey))
-        let phraseIndex = Self.catalogPhraseIndex
 
         var candidatesByID: [String: ScoredCandidate] = [:]
 
-        register(
-            phrases: phraseIndex.exactPhrases(source: .name, lookupKey: query.lookupKey),
-            stage: .exactName,
-            score: 1,
-            rationale: { phrase in "Exact catalog name match for \(phrase.text)." },
-            into: &candidatesByID
-        )
-
-        register(
-            phrases: phraseIndex.exactPhrases(source: .alias, lookupKey: query.lookupKey),
-            stage: .exactAlias,
-            score: 0.995,
-            rationale: { phrase in "Exact alias match for \(phrase.text)." },
-            into: &candidatesByID
-        )
-
-        register(
-            phrases: phraseIndex.exactPhrases(source: .template, lookupKey: query.lookupKey),
-            stage: .exactTemplate,
-            score: 0.99,
-            rationale: { phrase in "Exact facet template match for \(phrase.text)." },
-            into: &candidatesByID
-        )
-
-        if !queryLookupTokenSet.isEmpty {
+        // Stage 1 & 2: Exact name/alias via aliasIndex
+        if let itemID = PantryCatalog.resolveAlias(query.lookupKey),
+           let item = PantryCatalog.item(id: itemID) {
+            let isName = PantryCatalog.nameKeySet.contains(query.lookupKey)
+            let facets = IngredientLexicon.inferredFacets(forLookupKey: query.lookupKey, item: item)
             register(
-                phrases: phraseIndex.templatePhrases(matchingTokenSet: queryLookupTokenSet, excludingLookupKey: query.lookupKey),
-                stage: .exactTemplate,
-                score: ResolutionThresholds.exactTemplateToken,
-                rationale: { phrase in "Exact facet template token match for \(phrase.text)." },
+                item: item, facets: facets,
+                stage: isName ? .exactName : .exactAlias,
+                score: isName ? 1.0 : 0.995,
+                rationale: isName
+                    ? "Exact catalog name match for \(item.name)."
+                    : "Exact alias match for \(item.name).",
                 into: &candidatesByID
             )
         }
 
+        // Stage 3: Template matching — decompose query into item + facet options
+        let tokenCandidateIDs = PantryCatalog.itemIDs(matchingAnyToken: queryLookupTokenSet)
+        let facetCandidateIDs = PantryCatalog.itemIDs(matchingFacetTokens: queryLookupTokenSet)
+        let templateCandidateIDs = tokenCandidateIDs.union(facetCandidateIDs)
+
+        for itemID in templateCandidateIDs {
+            guard let item = PantryCatalog.item(id: itemID) else { continue }
+
+            // Check each single-facet template against query lookupKey
+            for definition in item.facets {
+                for option in definition.options {
+                    let selection = PantryFacetSelection(key: definition.key, value: option)
+                    let templateName = item.displayName(for: [selection])
+                    let templateKey = IngredientLexicon.lookupKey(templateName)
+
+                    if templateKey == query.lookupKey {
+                        register(
+                            item: item, facets: [selection],
+                            stage: .exactTemplate, score: 0.99,
+                            rationale: "Exact facet template match for \(templateName).",
+                            into: &candidatesByID
+                        )
+                    }
+                }
+            }
+
+            // Also check token-set matching for reordered tokens
+            if queryLookupTokenSet.count > 1 {
+                let nameTokens = Set(IngredientLexicon.tokenize(IngredientLexicon.lookupKey(item.name)))
+                for definition in item.facets {
+                    for option in definition.options {
+                        let optionTokens = Set(IngredientLexicon.tokenize(IngredientLexicon.lookupKey(option)))
+                        let templateTokenSet = nameTokens.union(optionTokens)
+                        if templateTokenSet == queryLookupTokenSet && templateTokenSet != nameTokens {
+                            let selection = PantryFacetSelection(key: definition.key, value: option)
+                            let candidateKey = candidateID(for: item.id, facets: [selection])
+                            if candidatesByID[candidateKey] == nil {
+                                register(
+                                    item: item, facets: [selection],
+                                    stage: .exactTemplate,
+                                    score: ResolutionThresholds.exactTemplateToken,
+                                    rationale: "Exact facet template token match for \(option) \(item.name).",
+                                    into: &candidatesByID
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // Stage 4: Synonym expansion
         let synonymLookups = IngredientLexicon.synonymLookupGroup(for: ingredient.rawName)
             .subtracting([query.lookupKey])
         if !synonymLookups.isEmpty {
-            register(
-                phrases: phraseIndex.phrases(withLookupKeys: synonymLookups),
-                stage: .exactSynonym,
-                score: 0.96,
-                rationale: { phrase in "Synonym expansion linked \(ingredient.rawName) to \(phrase.text)." },
-                into: &candidatesByID
-            )
+            for synonymKey in synonymLookups {
+                if let itemID = PantryCatalog.resolveAlias(synonymKey),
+                   let item = PantryCatalog.item(id: itemID) {
+                    let facets = IngredientLexicon.inferredFacets(forLookupKey: synonymKey, item: item)
+                    register(
+                        item: item, facets: facets,
+                        stage: .exactSynonym, score: 0.96,
+                        rationale: "Synonym expansion linked \(ingredient.rawName) to \(item.name).",
+                        into: &candidatesByID
+                    )
+                }
+            }
         }
 
+        // Stage 5: Lexical (token overlap scoring)
         if !query.tokens.isEmpty {
             let synonymTokens = synonymLookups.flatMap(IngredientLexicon.tokenize)
             let expandedQueryTokens = Array(Set(query.tokens + synonymTokens))
+            let lexicalCandidateIDs = PantryCatalog.itemIDs(matchingAnyToken: Set(expandedQueryTokens))
 
-            for phrase in phraseIndex.lexicalCandidates(
-                queryTokens: expandedQueryTokens,
-                lookupKey: query.lookupKey,
-                synonymLookups: synonymLookups
-            ) {
-                let tokenScore = IngredientLexicon.weightedTokenScore(
-                    queryTokens: expandedQueryTokens,
-                    candidateTokens: phrase.tokens
-                )
+            for itemID in lexicalCandidateIDs {
+                guard let item = PantryCatalog.item(id: itemID) else { continue }
+                scoreLexicalItem(item, query: query, expandedQueryTokens: expandedQueryTokens, into: &candidatesByID)
 
-                let containmentScore: Double
-                if phrase.lookupKey.contains(query.lookupKey) || query.lookupKey.contains(phrase.lookupKey) {
-                    containmentScore = ResolutionThresholds.containment
-                } else {
-                    containmentScore = 0
+                // Also score aliases
+                for alias in item.aliases {
+                    let aliasNormalized = IngredientLexicon.normalizeIngredient(alias)
+                    let aliasTokens = IngredientLexicon.tokenize(aliasNormalized)
+                    let aliasLookup = IngredientLexicon.lookupKey(alias)
+                    let tokenScore = IngredientLexicon.weightedTokenScore(queryTokens: expandedQueryTokens, candidateTokens: aliasTokens)
+                    let containmentScore: Double = (aliasLookup.contains(query.lookupKey) || query.lookupKey.contains(aliasLookup))
+                        ? ResolutionThresholds.containment : 0
+                    let combinedScore = max(tokenScore, containmentScore)
+                    guard combinedScore >= ResolutionThresholds.combinedLexical else { continue }
+
+                    let facets = IngredientLexicon.inferredFacets(forLookupKey: query.lookupKey, item: item)
+                    register(
+                        item: item, facets: facets,
+                        stage: .lexical, score: min(0.94, combinedScore),
+                        rationale: containmentScore > 0
+                            ? "Strong lexical phrase overlap with \(alias)."
+                            : "Weighted token retrieval suggests \(alias).",
+                        into: &candidatesByID
+                    )
                 }
-
-                let combinedScore = max(tokenScore, containmentScore)
-                guard combinedScore >= ResolutionThresholds.combinedLexical else { continue }
-
-                register(
-                    phrase: phrase,
-                    stage: .lexical,
-                    score: min(0.94, combinedScore),
-                    rationale: containmentScore > 0
-                        ? "Strong lexical phrase overlap with \(phrase.text)."
-                        : "Weighted token retrieval suggests \(phrase.text).",
-                    into: &candidatesByID
-                )
             }
 
-            registerGenericFallbacks(
-                query: query,
-                candidatePhrases: phraseIndex.genericFallbackCandidates(for: expandedQueryTokens),
-                into: &candidatesByID
-            )
+            // Generic fallbacks
+            registerGenericFallbacks(query: query, candidateItemIDs: lexicalCandidateIDs, into: &candidatesByID)
         }
 
-        for phrase in phraseIndex.fuzzyCandidates(normalized: query.normalized, queryTokens: query.tokens) {
-            let fuzzyScore = IngredientLexicon.fuzzySimilarity(query.normalized, phrase.normalized)
+        // Stage 6: Fuzzy
+        let normalizedTokens = IngredientLexicon.tokenize(query.normalized)
+        var fuzzyCandidateIDs = PantryCatalog.itemIDs(matchingAnyToken: Set(normalizedTokens))
+        if fuzzyCandidateIDs.isEmpty {
+            // Broader fallback: all items (rare case, 780 items is still fast)
+            fuzzyCandidateIDs = Set(PantryCatalog.allItems.map(\.id))
+        }
+
+        for itemID in fuzzyCandidateIDs {
+            guard let item = PantryCatalog.item(id: itemID) else { continue }
+            let itemNormalized = IngredientLexicon.normalizeIngredient(item.name)
+            let fuzzyScore = IngredientLexicon.fuzzySimilarity(query.normalized, itemNormalized)
             guard fuzzyScore >= ResolutionThresholds.fuzzy else { continue }
 
+            let facets = IngredientLexicon.inferredFacets(forLookupKey: query.lookupKey, item: item)
             register(
-                phrase: phrase,
-                stage: .fuzzy,
-                score: min(0.82, fuzzyScore),
-                rationale: "Fuzzy retrieval kept \(phrase.text) in consideration.",
+                item: item, facets: facets,
+                stage: .fuzzy, score: min(0.82, fuzzyScore),
+                rationale: "Fuzzy retrieval kept \(item.name) in consideration.",
                 into: &candidatesByID
             )
         }
@@ -334,15 +374,14 @@ final class IngredientCandidateParser: IngredientCandidateParserProtocol {
 
     private func registerGenericFallbacks(
         query: IngredientLexicon.ParsedText,
-        candidatePhrases: [IngredientLexicon.CatalogPhrase],
+        candidateItemIDs: Set<String>,
         into candidatesByID: inout [String: ScoredCandidate]
     ) {
         let queryTokenSet = Set(query.tokens)
         guard !queryTokenSet.isEmpty else { return }
 
-        for phrase in candidatePhrases where phrase.source != .template {
-            guard phrase.facets.first(where: { $0.key == .variant || $0.key == .base || $0.key == .form }) == nil else { continue }
-            guard let item = PantryCatalog.item(id: phrase.itemID) else { continue }
+        for itemID in candidateItemIDs {
+            guard let item = PantryCatalog.item(id: itemID) else { continue }
 
             let genericFacetKey: PantryFacetKey?
             if item.supports(.variant) {
@@ -356,19 +395,22 @@ final class IngredientCandidateParser: IngredientCandidateParserProtocol {
             }
             guard let genericFacetKey else { continue }
 
-            let phraseTokenSet = Set(phrase.tokens)
-            guard !phraseTokenSet.isEmpty, phraseTokenSet.isSubset(of: queryTokenSet) else { continue }
+            let itemNormalized = IngredientLexicon.normalizeIngredient(item.name)
+            let itemTokens = IngredientLexicon.tokenize(itemNormalized)
+            let itemTokenSet = Set(itemTokens)
+            guard !itemTokenSet.isEmpty, itemTokenSet.isSubset(of: queryTokenSet) else { continue }
 
             let meaningfulExtraTokens = query.tokens.filter {
-                !phraseTokenSet.contains($0) && !Self.nonSpecificDescriptorTokens.contains($0)
+                !itemTokenSet.contains($0) && !Self.nonSpecificDescriptorTokens.contains($0)
             }
             guard !meaningfulExtraTokens.isEmpty else { continue }
 
             let tokenScore = IngredientLexicon.weightedTokenScore(
                 queryTokens: query.tokens,
-                candidateTokens: phrase.tokens
+                candidateTokens: itemTokens
             )
-            let containmentBoost = query.lookupKey.contains(phrase.lookupKey) ? 0.08 : 0
+            let itemLookup = IngredientLexicon.lookupKey(item.name)
+            let containmentBoost = query.lookupKey.contains(itemLookup) ? 0.08 : 0
             let score = min(0.92, max(0.8, tokenScore + 0.08 + containmentBoost))
 
             register(
@@ -382,46 +424,31 @@ final class IngredientCandidateParser: IngredientCandidateParserProtocol {
         }
     }
 
-    private func register(
-        phrases: [IngredientLexicon.CatalogPhrase],
-        stage: RetrievalStage,
-        score: Double,
-        rationale: (IngredientLexicon.CatalogPhrase) -> String,
+    private func scoreLexicalItem(
+        _ item: PantryCatalogItemDefinition,
+        query: IngredientLexicon.ParsedText,
+        expandedQueryTokens: [String],
         into candidatesByID: inout [String: ScoredCandidate]
     ) {
-        for phrase in phrases {
-            register(phrase: phrase, stage: stage, score: score, rationale: rationale(phrase), into: &candidatesByID)
-        }
-    }
+        let itemNormalized = IngredientLexicon.normalizeIngredient(item.name)
+        let itemTokens = IngredientLexicon.tokenize(itemNormalized)
+        let itemLookup = IngredientLexicon.lookupKey(item.name)
 
-    private func register(
-        phrase: IngredientLexicon.CatalogPhrase,
-        stage: RetrievalStage,
-        score: Double,
-        rationale: String,
-        into candidatesByID: inout [String: ScoredCandidate]
-    ) {
-        guard let item = PantryCatalog.item(id: phrase.itemID) else { return }
+        let tokenScore = IngredientLexicon.weightedTokenScore(queryTokens: expandedQueryTokens, candidateTokens: itemTokens)
+        let containmentScore: Double = (itemLookup.contains(query.lookupKey) || query.lookupKey.contains(itemLookup))
+            ? ResolutionThresholds.containment : 0
+        let combinedScore = max(tokenScore, containmentScore)
+        guard combinedScore >= ResolutionThresholds.combinedLexical else { return }
 
-        let candidate = IngredientResolutionCandidate(
-            id: candidateID(for: item.id, facets: phrase.facets),
-            catalogItemID: item.id,
-            facets: phrase.facets,
-            displayName: item.displayName(for: phrase.facets),
-            score: score,
-            rationale: rationale,
-            supportedFacets: item.facets
+        let facets = IngredientLexicon.inferredFacets(forLookupKey: query.lookupKey, item: item)
+        register(
+            item: item, facets: facets,
+            stage: .lexical, score: min(0.94, combinedScore),
+            rationale: containmentScore > 0
+                ? "Strong lexical phrase overlap with \(item.name)."
+                : "Weighted token retrieval suggests \(item.name).",
+            into: &candidatesByID
         )
-
-        if let existing = candidatesByID[candidate.id] {
-            if candidate.score > existing.candidate.score ||
-                (candidate.score == existing.candidate.score && stage.rawValue < existing.stage.rawValue) {
-                candidatesByID[candidate.id] = ScoredCandidate(candidate: candidate, stage: stage)
-            }
-            return
-        }
-
-        candidatesByID[candidate.id] = ScoredCandidate(candidate: candidate, stage: stage)
     }
 
     private func register(
@@ -464,128 +491,6 @@ final class IngredientCandidateParser: IngredientCandidateParserProtocol {
     private static let nonSpecificDescriptorTokens: Set<String> = [
         "meat", "cut", "cuts", "piece", "pieces", "protein"
     ]
-}
-
-private struct CatalogPhraseIndex {
-    private let phrases: [IngredientLexicon.CatalogPhrase]
-    private let exactPhraseIndices: [IngredientLexicon.CatalogPhraseSource: [String: [Int]]]
-    private let lookupKeyIndices: [String: [Int]]
-    private let templateTokenSetIndices: [String: [Int]]
-    private let tokenToPhraseIndices: [String: Set<Int>]
-    private let normalizedLengthIndices: [Int: Set<Int>]
-    private let leadingCharacterIndices: [Character: Set<Int>]
-
-    init(phrases: [IngredientLexicon.CatalogPhrase]) {
-        self.phrases = phrases
-
-        var exactPhraseIndices: [IngredientLexicon.CatalogPhraseSource: [String: [Int]]] = [:]
-        var lookupKeyIndices: [String: [Int]] = [:]
-        var templateTokenSetIndices: [String: [Int]] = [:]
-        var tokenToPhraseIndices: [String: Set<Int>] = [:]
-        var normalizedLengthIndices: [Int: Set<Int>] = [:]
-        var leadingCharacterIndices: [Character: Set<Int>] = [:]
-
-        for (index, phrase) in phrases.enumerated() {
-            exactPhraseIndices[phrase.source, default: [:]][phrase.lookupKey, default: []].append(index)
-            lookupKeyIndices[phrase.lookupKey, default: []].append(index)
-
-            if phrase.source == .template {
-                templateTokenSetIndices[Self.tokenSetKey(phrase.tokens), default: []].append(index)
-            }
-
-            for token in Set(phrase.tokens) {
-                tokenToPhraseIndices[token, default: []].insert(index)
-            }
-
-            normalizedLengthIndices[phrase.normalized.count, default: []].insert(index)
-            if let leadingCharacter = phrase.normalized.first {
-                leadingCharacterIndices[leadingCharacter, default: []].insert(index)
-            }
-        }
-
-        self.exactPhraseIndices = exactPhraseIndices
-        self.lookupKeyIndices = lookupKeyIndices
-        self.templateTokenSetIndices = templateTokenSetIndices
-        self.tokenToPhraseIndices = tokenToPhraseIndices
-        self.normalizedLengthIndices = normalizedLengthIndices
-        self.leadingCharacterIndices = leadingCharacterIndices
-    }
-
-    func exactPhrases(source: IngredientLexicon.CatalogPhraseSource, lookupKey: String) -> [IngredientLexicon.CatalogPhrase] {
-        phrases(at: exactPhraseIndices[source]?[lookupKey] ?? [])
-    }
-
-    func phrases(withLookupKeys lookupKeys: Set<String>) -> [IngredientLexicon.CatalogPhrase] {
-        phrases(at: Set(lookupKeys.flatMap { lookupKeyIndices[$0] ?? [] }))
-    }
-
-    func templatePhrases(matchingTokenSet tokenSet: Set<String>, excludingLookupKey lookupKey: String) -> [IngredientLexicon.CatalogPhrase] {
-        phrases(at: templateTokenSetIndices[Self.tokenSetKey(tokenSet)] ?? []).filter { $0.lookupKey != lookupKey }
-    }
-
-    func lexicalCandidates(
-        queryTokens: [String],
-        lookupKey: String,
-        synonymLookups: Set<String>
-    ) -> [IngredientLexicon.CatalogPhrase] {
-        var indices = Set(lookupKeyIndices[lookupKey] ?? [])
-        for synonymLookup in synonymLookups {
-            indices.formUnion(lookupKeyIndices[synonymLookup] ?? [])
-        }
-
-        for token in Set(queryTokens) {
-            indices.formUnion(tokenToPhraseIndices[token] ?? [])
-        }
-
-        return phrases(at: indices)
-    }
-
-    func genericFallbackCandidates(for queryTokens: [String]) -> [IngredientLexicon.CatalogPhrase] {
-        phrases(at: candidateIndices(for: queryTokens))
-    }
-
-    func fuzzyCandidates(normalized: String, queryTokens: [String]) -> [IngredientLexicon.CatalogPhrase] {
-        var indices = candidateIndices(for: queryTokens)
-
-        if indices.isEmpty {
-            let normalizedLength = normalized.count
-            for length in max(0, normalizedLength - 2)...(normalizedLength + 2) {
-                indices.formUnion(normalizedLengthIndices[length] ?? [])
-            }
-        }
-
-        if let leadingCharacter = normalized.first,
-           let leadingCandidates = leadingCharacterIndices[leadingCharacter],
-           !indices.isEmpty {
-            indices.formIntersection(leadingCandidates)
-        }
-
-        if indices.isEmpty {
-            indices = candidateIndices(for: IngredientLexicon.tokenize(normalized))
-        }
-
-        return phrases(at: indices)
-    }
-
-    private func candidateIndices(for queryTokens: [String]) -> Set<Int> {
-        var indices: Set<Int> = []
-        for token in Set(queryTokens) {
-            indices.formUnion(tokenToPhraseIndices[token] ?? [])
-        }
-        return indices
-    }
-
-    private func phrases(at indices: [Int]) -> [IngredientLexicon.CatalogPhrase] {
-        indices.map { phrases[$0] }
-    }
-
-    private func phrases(at indices: Set<Int>) -> [IngredientLexicon.CatalogPhrase] {
-        indices.sorted().map { phrases[$0] }
-    }
-
-    private static func tokenSetKey<S: Sequence>(_ tokens: S) -> String where S.Element == String {
-        Array(tokens).sorted().joined(separator: "|")
-    }
 }
 
 final class RecipeIngredientResolver: RecipeIngredientResolverProtocol {

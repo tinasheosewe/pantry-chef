@@ -219,7 +219,7 @@ struct PantryCatalogItemDefinition: Identifiable, Hashable, Sendable, Codable {
         let orderedSelections = orderedKeys.compactMap { key in
             selections.first(where: { $0.key == key })
         }
-        guard !orderedSelections.isEmpty else { return name }
+        guard !orderedSelections.isEmpty else { return titleCasedName }
 
         var prefixWords: [String] = []
         var suffixWords: [String] = []
@@ -233,6 +233,10 @@ struct PantryCatalogItemDefinition: Identifiable, Hashable, Sendable, Codable {
         }
 
         return (prefixWords + [name] + suffixWords).map(Self.titleCase).joined(separator: " ")
+    }
+
+    var titleCasedName: String {
+        Self.titleCase(name)
     }
 
     private static func titleCase(_ value: String) -> String {
@@ -317,13 +321,16 @@ enum PantryCatalog {
         }
         do {
             let data = try Data(contentsOf: url)
-            return try JSONDecoder().decode([PantryCatalogItemDefinition].self, from: data)
+            let items = try JSONDecoder().decode([PantryCatalogItemDefinition].self, from: data)
+            return items
         } catch {
             fatalError("Failed to decode catalog.json: \(error)")
         }
     }()
 
-    private static let itemsByID = Dictionary(uniqueKeysWithValues: allItems.map { ($0.id, $0) })
+    private static let itemsByID: [String: PantryCatalogItemDefinition] = {
+        Dictionary(uniqueKeysWithValues: allItems.map { ($0.id, $0) })
+    }()
     private static let aliasIndex: [String: String] = {
         var result: [String: String] = [:]
         for item in allItems {
@@ -334,6 +341,68 @@ enum PantryCatalog {
         }
         return result
     }()
+
+    /// Maps normalized facet option values to the item IDs that contain them.
+    private static let facetOptionIndex: [String: [String]] = {
+        var result: [String: [String]] = [:]
+        for item in allItems {
+            for facet in item.facets {
+                for option in facet.options {
+                    let key = normalizeLookupKey(option)
+                    result[key, default: []].append(item.id)
+                }
+            }
+        }
+        return result
+    }()
+
+    /// Set of normalized lookup keys that are primary item names (not aliases).
+    static let nameKeySet: Set<String> = {
+        Set(allItems.map { normalizeLookupKey($0.name) })
+    }()
+
+    /// Maps individual tokens from item names and aliases to item IDs.
+    static let tokenIndex: [String: Set<String>] = {
+        var result: [String: Set<String>] = [:]
+        for item in allItems {
+            for token in IngredientLexicon.tokenize(IngredientLexicon.lookupKey(item.name)) {
+                result[token, default: []].insert(item.id)
+            }
+            for alias in item.aliases {
+                for token in IngredientLexicon.tokenize(IngredientLexicon.lookupKey(alias)) {
+                    result[token, default: []].insert(item.id)
+                }
+            }
+        }
+        return result
+    }()
+
+    /// Resolve a normalized lookup key to an item ID via the alias index.
+    static func resolveAlias(_ lookupKey: String) -> String? {
+        aliasIndex[lookupKey]
+    }
+
+    /// Returns item IDs that share at least one token with the given set.
+    static func itemIDs(matchingAnyToken tokens: Set<String>) -> Set<String> {
+        var result: Set<String> = []
+        for token in tokens {
+            if let ids = tokenIndex[token] {
+                result.formUnion(ids)
+            }
+        }
+        return result
+    }
+
+    /// Returns item IDs that have a facet option matching any of the given tokens.
+    static func itemIDs(matchingFacetTokens tokens: Set<String>) -> Set<String> {
+        var result: Set<String> = []
+        for token in tokens {
+            if let ids = facetOptionIndex[token] {
+                for id in ids { result.insert(id) }
+            }
+        }
+        return result
+    }
 
     static func item(id: String?) -> PantryCatalogItemDefinition? {
         guard let id else { return nil }
@@ -352,15 +421,25 @@ enum PantryCatalog {
             return allItems.sorted { $0.name < $1.name }
         }
 
-        return allItems
-            .filter { item in
-                normalizeLookupKey(item.name).contains(normalizedQuery) ||
-                item.aliases.contains(where: { normalizeLookupKey($0).contains(normalizedQuery) })
+        var matchedIDs = Set<String>()
+
+        // Name & alias matches
+        for item in allItems {
+            if normalizeLookupKey(item.name).contains(normalizedQuery) ||
+                item.aliases.contains(where: { normalizeLookupKey($0).contains(normalizedQuery) }) {
+                matchedIDs.insert(item.id)
             }
-            .sorted { $0.name < $1.name }
+        }
+
+        // Facet option matches (e.g. "filet mignon" → beef)
+        for (option, itemIDs) in facetOptionIndex where option.contains(normalizedQuery) {
+            for id in itemIDs { matchedIDs.insert(id) }
+        }
+
+        return matchedIDs.compactMap { itemsByID[$0] }.sorted { $0.name < $1.name }
     }
 
-    private static func normalizeLookupKey(_ value: String) -> String {
+    static func normalizeLookupKey(_ value: String) -> String {
         IngredientLexicon.lookupKey(value)
     }
 }

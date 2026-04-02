@@ -612,7 +612,7 @@ struct BulkAddPantryView: View {
             CategoryIcon(category: item.category, size: 40)
 
             VStack(alignment: .leading, spacing: 4) {
-                Text(item.name)
+                Text(item.titleCasedName)
                     .font(.subheadline)
                     .fontWeight(.semibold)
                     .foregroundStyle(PCColors.textPrimary)
@@ -1097,7 +1097,7 @@ struct PantryIntakeFormSections: View {
                             HStack(spacing: 10) {
                                 CategoryIcon(category: item.category, size: 28)
                                 VStack(alignment: .leading, spacing: 2) {
-                                    Text(item.name)
+                                    Text(item.titleCasedName)
                                         .foregroundStyle(PCColors.textPrimary)
                                     Text(item.category.rawValue)
                                         .font(.caption)

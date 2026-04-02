@@ -77,7 +77,7 @@ struct ShoppingItem: Identifiable, Codable, Hashable {
     }
 
     var displayName: String {
-        resolvedCatalogItem?.name ?? name
+        resolvedCatalogItem?.displayName(for: facets) ?? name
     }
 
     var facetSummary: String? {
