@@ -1,0 +1,178 @@
+{
+  "Dairy & Eggs": [
+    "clotted cream",
+    "evaporated milk",
+    "paneer",
+    "quark",
+    "skyr"
+  ],
+  "Grains & Cereals": [
+    "bran",
+    "fonio",
+    "freekeh",
+    "kamut",
+    "spelt",
+    "teff"
+  ],
+  "Protein": [
+    "black cod",
+    "boar",
+    "bologna",
+    "carp",
+    "corned beef",
+    "elk",
+    "goat",
+    "herring",
+    "octopus",
+    "pastrami",
+    "pollock",
+    "rockfish",
+    "surimi",
+    "swai",
+    "walleye"
+  ],
+  "Baking & Sweeteners": [
+    "agave syrup",
+    "apple butter",
+    "date syrup",
+    "glucose syrup",
+    "golden syrup",
+    "potato starch",
+    "rice syrup",
+    "sorghum syrup"
+  ],
+  "Spices & Herbs": [
+    "ajwain",
+    "aleppo pepper",
+    "chili flakes",
+    "chili pepper",
+    "grains of paradise",
+    "kaffir lime leaf",
+    "lemon balm",
+    "licorice root",
+    "monosodium glutamate",
+    "onion powder",
+    "peppercorn (pink)",
+    "star anise",
+    "szechuan peppercorn"
+  ],
+  "Frozen Foods": [
+    "frozen berries",
+    "frozen chicken nuggets",
+    "frozen dumplings",
+    "frozen garlic bread",
+    "frozen lasagna",
+    "frozen mixed vegetables",
+    "frozen pizza",
+    "frozen ravioli",
+    "frozen waffles"
+  ],
+  "Produce": [
+    "broccolini",
+    "cactus (nopales)",
+    "celeriac",
+    "cherimoya",
+    "cress",
+    "dragon fruit",
+    "goji berry",
+    "guava",
+    "longan",
+    "lotus root",
+    "lychee",
+    "mizuna",
+    "ramps",
+    "romanesco",
+    "salsify",
+    "scallion",
+    "taro",
+    "yam"
+  ],
+  "Condiments & Sauces": [
+    "chimichurri",
+    "duck sauce",
+    "remoulade"
+  ],
+  "Beverages": [
+    "energy drink",
+    "ginger beer",
+    "kombucha",
+    "lemonade",
+    "sports drink",
+    "vegetable juice"
+  ],
+  "Snacks": [
+    "beef jerky",
+    "fruit leather",
+    "granola bar",
+    "pork rind",
+    "rice cake"
+  ],
+  "Oils & Fats": [
+    "corn oil",
+    "duck fat",
+    "flaxseed oil",
+    "hemp oil",
+    "palm oil",
+    "pumpkin seed oil",
+    "rice bran oil",
+    "safflower oil"
+  ],
+  "Canned & Jarred": [
+    "coconut cream",
+    "refried beans"
+  ],
+  "Nuts & Seeds": [
+    "ginkgo nut",
+    "lotus seed",
+    "tiger nut",
+    "watermelon seed"
+  ],
+  "Pasta & Noodles": [
+    "cellophane noodle",
+    "ramen",
+    "soba",
+    "udon"
+  ],
+  "Alcohol & Spirits": [
+    "absinthe",
+    "aquavit",
+    "grappa",
+    "mezcal",
+    "ouzo",
+    "pisco",
+    "schnapps",
+    "shochu",
+    "soju",
+    "vermouth"
+  ],
+  "Legumes & Beans": [
+    "adzuki bean",
+    "black-eyed pea",
+    "cannellini bean",
+    "fava bean",
+    "great northern bean",
+    "kidney bean",
+    "lima bean",
+    "mung bean",
+    "navy bean",
+    "pigeon pea"
+  ],
+  "Breads & Bakery": [
+    "cornbread",
+    "croissant",
+    "crumpet",
+    "english muffin",
+    "naan",
+    "phyllo dough",
+    "puff pastry",
+    "scone"
+  ],
+  "Other": [
+    "bouillon",
+    "caviar",
+    "gelatin",
+    "jackfruit",
+    "lecithin",
+    "textured vegetable protein"
+  ]
+}

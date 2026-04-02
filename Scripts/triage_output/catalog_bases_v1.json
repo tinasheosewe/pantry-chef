@@ -1,0 +1,6582 @@
+{
+  "Dairy & Eggs": [
+    {
+      "base": "almond milk"
+    },
+    {
+      "base": "american cheese"
+    },
+    {
+      "base": "asiago cheese"
+    },
+    {
+      "base": "blue cheese"
+    },
+    {
+      "base": "bocconcini"
+    },
+    {
+      "base": "brie"
+    },
+    {
+      "base": "burrata"
+    },
+    {
+      "base": "butter"
+    },
+    {
+      "base": "buttermilk"
+    },
+    {
+      "base": "camembert"
+    },
+    {
+      "base": "cheddar cheese",
+      "variants": [
+        "cheddar"
+      ]
+    },
+    {
+      "base": "cheese",
+      "variants": [
+        "garlic cheese",
+        "low-fat cheese",
+        "monterey jack and cheddar cheese"
+      ]
+    },
+    {
+      "base": "cheese blend"
+    },
+    {
+      "base": "cheese spread"
+    },
+    {
+      "base": "cheez whiz"
+    },
+    {
+      "base": "chihuahua cheese"
+    },
+    {
+      "base": "chocolate milk"
+    },
+    {
+      "base": "chèvre"
+    },
+    {
+      "base": "coconut milk yogurt"
+    },
+    {
+      "base": "coffee creamer"
+    },
+    {
+      "base": "cotija",
+      "variants": [
+        "cotija cheese"
+      ]
+    },
+    {
+      "base": "cottage cheese"
+    },
+    {
+      "base": "cream",
+      "variants": [
+        "coffee cream",
+        "double cream",
+        "heavy cream",
+        "light cream",
+        "single cream",
+        "sweet cream"
+      ]
+    },
+    {
+      "base": "cream cheese"
+    },
+    {
+      "base": "crema"
+    },
+    {
+      "base": "crème fraîche"
+    },
+    {
+      "base": "curd"
+    },
+    {
+      "base": "egg",
+      "variants": [
+        "egg and water"
+      ]
+    },
+    {
+      "base": "egg substitute"
+    },
+    {
+      "base": "egg white"
+    },
+    {
+      "base": "egg yolk"
+    },
+    {
+      "base": "english cheese"
+    },
+    {
+      "base": "evaporated milk"
+    },
+    {
+      "base": "farmer cheese"
+    },
+    {
+      "base": "feta",
+      "variants": [
+        "feta cheese"
+      ]
+    },
+    {
+      "base": "feta cheese"
+    },
+    {
+      "base": "fontina",
+      "variants": [
+        "fontina cheese"
+      ]
+    },
+    {
+      "base": "goat cheese",
+      "variants": [
+        "chèvre"
+      ]
+    },
+    {
+      "base": "gorgonzola",
+      "variants": [
+        "gorgonzola cheese"
+      ]
+    },
+    {
+      "base": "gouda",
+      "variants": [
+        "gouda cheese"
+      ]
+    },
+    {
+      "base": "grana padano"
+    },
+    {
+      "base": "greek yogurt"
+    },
+    {
+      "base": "gruyère",
+      "variants": [
+        "gruyere cheese",
+        "gruyère cheese"
+      ]
+    },
+    {
+      "base": "half and half"
+    },
+    {
+      "base": "half-and-half",
+      "variants": [
+        "half and half"
+      ]
+    },
+    {
+      "base": "halloumi"
+    },
+    {
+      "base": "hard cheese"
+    },
+    {
+      "base": "havarti cheese"
+    },
+    {
+      "base": "jack cheese"
+    },
+    {
+      "base": "jarlsberg cheese"
+    },
+    {
+      "base": "kefir"
+    },
+    {
+      "base": "lemon yogurt"
+    },
+    {
+      "base": "longhorn cheese"
+    },
+    {
+      "base": "manchego cheese"
+    },
+    {
+      "base": "mascarpone",
+      "variants": [
+        "mascarpone cheese"
+      ]
+    },
+    {
+      "base": "mexican cheese"
+    },
+    {
+      "base": "mexican cheese blend"
+    },
+    {
+      "base": "mexican crema"
+    },
+    {
+      "base": "milk",
+      "variants": [
+        "low fat milk"
+      ]
+    },
+    {
+      "base": "milk powder"
+    },
+    {
+      "base": "monterey jack cheese",
+      "variants": [
+        "monterey jack"
+      ]
+    },
+    {
+      "base": "mozzarella cheese",
+      "variants": [
+        "mozzarella ball"
+      ]
+    },
+    {
+      "base": "muenster cheese"
+    },
+    {
+      "base": "neufchâtel",
+      "variants": [
+        "neufchatel cheese"
+      ]
+    },
+    {
+      "base": "non-dairy milk"
+    },
+    {
+      "base": "paneer"
+    },
+    {
+      "base": "parmesan cheese"
+    },
+    {
+      "base": "parmigiano-reggiano"
+    },
+    {
+      "base": "pecorino",
+      "variants": [
+        "pecorino cheese"
+      ]
+    },
+    {
+      "base": "pecorino romano"
+    },
+    {
+      "base": "pepper cheese"
+    },
+    {
+      "base": "pepper jack cheese"
+    },
+    {
+      "base": "powdered buttermilk"
+    },
+    {
+      "base": "processed cheese"
+    },
+    {
+      "base": "provolone"
+    },
+    {
+      "base": "quail egg"
+    },
+    {
+      "base": "queso fresco"
+    },
+    {
+      "base": "rice milk"
+    },
+    {
+      "base": "ricotta"
+    },
+    {
+      "base": "ricotta salata"
+    },
+    {
+      "base": "romano"
+    },
+    {
+      "base": "romano cheese"
+    },
+    {
+      "base": "roquefort",
+      "variants": [
+        "roquefort cheese"
+      ]
+    },
+    {
+      "base": "roquefort cheese"
+    },
+    {
+      "base": "smoked gouda"
+    },
+    {
+      "base": "sour cream",
+      "variants": [
+        "sour cream and yogurt"
+      ]
+    },
+    {
+      "base": "soured milk"
+    },
+    {
+      "base": "soy milk"
+    },
+    {
+      "base": "soy yogurt"
+    },
+    {
+      "base": "stilton",
+      "variants": [
+        "stilton cheese"
+      ]
+    },
+    {
+      "base": "strawberry yogurt"
+    },
+    {
+      "base": "string cheese"
+    },
+    {
+      "base": "swiss cheese"
+    },
+    {
+      "base": "tasty cheese"
+    },
+    {
+      "base": "vanilla almond milk"
+    },
+    {
+      "base": "vanilla custard"
+    },
+    {
+      "base": "vanilla yogurt"
+    },
+    {
+      "base": "vegan cream cheese"
+    },
+    {
+      "base": "velveeta cheese",
+      "variants": [
+        "velveeta"
+      ]
+    },
+    {
+      "base": "whey"
+    },
+    {
+      "base": "whipped cream"
+    },
+    {
+      "base": "whipped topping"
+    },
+    {
+      "base": "white cheese"
+    },
+    {
+      "base": "yogurt",
+      "variants": [
+        "greek yogurt",
+        "nonfat yogurt",
+        "plain yogurt",
+        "vanilla greek yogurt"
+      ]
+    },
+    {
+      "base": "yogurt cheese"
+    }
+  ],
+  "Produce": [
+    {
+      "base": "acorn squash"
+    },
+    {
+      "base": "alfalfa sprout"
+    },
+    {
+      "base": "anaheim chili"
+    },
+    {
+      "base": "anaheim pepper"
+    },
+    {
+      "base": "ancho chili"
+    },
+    {
+      "base": "apple",
+      "variants": [
+        "fuji apple",
+        "gala apple",
+        "granny smith apple",
+        "green apple",
+        "mcintosh apple"
+      ]
+    },
+    {
+      "base": "apricot"
+    },
+    {
+      "base": "artichoke",
+      "variants": [
+        "artichoke bottom",
+        "artichoke heart"
+      ]
+    },
+    {
+      "base": "artichoke heart"
+    },
+    {
+      "base": "arugula"
+    },
+    {
+      "base": "asian pear"
+    },
+    {
+      "base": "asparagus",
+      "variants": [
+        "white asparagus"
+      ]
+    },
+    {
+      "base": "avocado",
+      "variants": [
+        "hass avocado"
+      ]
+    },
+    {
+      "base": "baby corn"
+    },
+    {
+      "base": "bamboo shoot"
+    },
+    {
+      "base": "banana"
+    },
+    {
+      "base": "banana leaf"
+    },
+    {
+      "base": "banana pepper"
+    },
+    {
+      "base": "bean sprout"
+    },
+    {
+      "base": "beet",
+      "variants": [
+        "golden beet"
+      ]
+    },
+    {
+      "base": "beet green"
+    },
+    {
+      "base": "belgian endive"
+    },
+    {
+      "base": "bell pepper",
+      "variants": [
+        "green bell pepper",
+        "orange bell pepper",
+        "red bell pepper",
+        "yellow bell pepper"
+      ]
+    },
+    {
+      "base": "berry",
+      "variants": [
+        "mixed berry"
+      ]
+    },
+    {
+      "base": "black mushroom"
+    },
+    {
+      "base": "black truffle"
+    },
+    {
+      "base": "blackberry"
+    },
+    {
+      "base": "blood orange"
+    },
+    {
+      "base": "blood orange juice"
+    },
+    {
+      "base": "blueberry"
+    },
+    {
+      "base": "bok choy"
+    },
+    {
+      "base": "broccoli",
+      "variants": [
+        "broccoli floret",
+        "broccoli spear"
+      ]
+    },
+    {
+      "base": "broccoli rabe"
+    },
+    {
+      "base": "broccoli slaw"
+    },
+    {
+      "base": "broccolini"
+    },
+    {
+      "base": "brown mushroom"
+    },
+    {
+      "base": "brussels sprout"
+    },
+    {
+      "base": "butternut squash"
+    },
+    {
+      "base": "button mushroom"
+    },
+    {
+      "base": "cabbage",
+      "variants": [
+        "chinese cabbage",
+        "green cabbage",
+        "napa cabbage",
+        "red cabbage",
+        "savoy cabbage"
+      ]
+    },
+    {
+      "base": "cantaloupe"
+    },
+    {
+      "base": "caper berry"
+    },
+    {
+      "base": "carrot",
+      "variants": [
+        "baby carrot"
+      ]
+    },
+    {
+      "base": "cauliflower",
+      "variants": [
+        "cauliflower floret"
+      ]
+    },
+    {
+      "base": "celeriac"
+    },
+    {
+      "base": "celery",
+      "variants": [
+        "celery leaves"
+      ]
+    },
+    {
+      "base": "chanterelle mushroom"
+    },
+    {
+      "base": "chard"
+    },
+    {
+      "base": "chayote"
+    },
+    {
+      "base": "cherry",
+      "variants": [
+        "black cherry",
+        "green cherry"
+      ]
+    },
+    {
+      "base": "cherry pepper"
+    },
+    {
+      "base": "cherry tomato"
+    },
+    {
+      "base": "chestnut mushroom"
+    },
+    {
+      "base": "chicory"
+    },
+    {
+      "base": "chili pepper",
+      "variants": [
+        "chile pepper",
+        "chili",
+        "green chili",
+        "green chili pepper",
+        "poblano chili pepper",
+        "red chile",
+        "red chili",
+        "red chili pepper"
+      ]
+    },
+    {
+      "base": "chinese vegetable"
+    },
+    {
+      "base": "chipotle",
+      "variants": [
+        "chipotle chile",
+        "chipotle pepper"
+      ]
+    },
+    {
+      "base": "chipotle chili"
+    },
+    {
+      "base": "cilantro root"
+    },
+    {
+      "base": "citron"
+    },
+    {
+      "base": "citrus fruit"
+    },
+    {
+      "base": "citrus zest"
+    },
+    {
+      "base": "clementine"
+    },
+    {
+      "base": "coconut"
+    },
+    {
+      "base": "coconut meat"
+    },
+    {
+      "base": "coleslaw"
+    },
+    {
+      "base": "coleslaw mix",
+      "variants": [
+        "coleslaw"
+      ]
+    },
+    {
+      "base": "collard green"
+    },
+    {
+      "base": "corn",
+      "variants": [
+        "corn cob",
+        "corn kernel",
+        "corn on the cob",
+        "shoepeg corn",
+        "white corn",
+        "white shoepeg corn"
+      ]
+    },
+    {
+      "base": "corn husk"
+    },
+    {
+      "base": "cranberry"
+    },
+    {
+      "base": "cremini mushroom",
+      "variants": [
+        "baby bella mushroom"
+      ]
+    },
+    {
+      "base": "cuban pepper"
+    },
+    {
+      "base": "cucumber",
+      "variants": [
+        "english cucumber",
+        "lebanese cucumber",
+        "persian cucumber"
+      ]
+    },
+    {
+      "base": "currant"
+    },
+    {
+      "base": "curry leaf"
+    },
+    {
+      "base": "daikon"
+    },
+    {
+      "base": "daikon radish"
+    },
+    {
+      "base": "dandelion green"
+    },
+    {
+      "base": "date",
+      "variants": [
+        "medjool date"
+      ]
+    },
+    {
+      "base": "delicata squash"
+    },
+    {
+      "base": "edible flower"
+    },
+    {
+      "base": "eggplant",
+      "variants": [
+        "japanese eggplant"
+      ]
+    },
+    {
+      "base": "endive",
+      "variants": [
+        "belgian endive"
+      ]
+    },
+    {
+      "base": "enoki mushroom"
+    },
+    {
+      "base": "escarole"
+    },
+    {
+      "base": "fennel"
+    },
+    {
+      "base": "fennel frond"
+    },
+    {
+      "base": "fig",
+      "variants": [
+        "mission fig"
+      ]
+    },
+    {
+      "base": "fresno chile"
+    },
+    {
+      "base": "frisée"
+    },
+    {
+      "base": "fruit"
+    },
+    {
+      "base": "galangal"
+    },
+    {
+      "base": "garlic"
+    },
+    {
+      "base": "garlic chive"
+    },
+    {
+      "base": "garlic shoot"
+    },
+    {
+      "base": "ginger"
+    },
+    {
+      "base": "goji berry"
+    },
+    {
+      "base": "golden raisin"
+    },
+    {
+      "base": "gooseberry"
+    },
+    {
+      "base": "grape",
+      "variants": [
+        "green grape",
+        "red grape",
+        "white grape"
+      ]
+    },
+    {
+      "base": "grape leaf"
+    },
+    {
+      "base": "grapefruit"
+    },
+    {
+      "base": "green bean"
+    },
+    {
+      "base": "green chile"
+    },
+    {
+      "base": "green onion"
+    },
+    {
+      "base": "greens"
+    },
+    {
+      "base": "guajillo chili"
+    },
+    {
+      "base": "habanero chili"
+    },
+    {
+      "base": "habanero pepper"
+    },
+    {
+      "base": "haricot vert"
+    },
+    {
+      "base": "hibiscus flower"
+    },
+    {
+      "base": "honeydew melon"
+    },
+    {
+      "base": "horseradish"
+    },
+    {
+      "base": "hot pepper"
+    },
+    {
+      "base": "jalapeño",
+      "variants": [
+        "jalapeño chili",
+        "jalapeño pepper"
+      ]
+    },
+    {
+      "base": "jalapeño chili"
+    },
+    {
+      "base": "jerusalem artichoke"
+    },
+    {
+      "base": "jicama"
+    },
+    {
+      "base": "kabocha squash"
+    },
+    {
+      "base": "kale"
+    },
+    {
+      "base": "kiwi"
+    },
+    {
+      "base": "kohlrabi"
+    },
+    {
+      "base": "kombu"
+    },
+    {
+      "base": "kumquat"
+    },
+    {
+      "base": "leaf lettuce",
+      "variants": [
+        "red leaf lettuce"
+      ]
+    },
+    {
+      "base": "leek"
+    },
+    {
+      "base": "lemon",
+      "variants": [
+        "lemon twist"
+      ]
+    },
+    {
+      "base": "lemon juice"
+    },
+    {
+      "base": "lemon peel"
+    },
+    {
+      "base": "lemon zest"
+    },
+    {
+      "base": "lemongrass"
+    },
+    {
+      "base": "lettuce",
+      "variants": [
+        "bibb lettuce",
+        "boston lettuce",
+        "butter lettuce",
+        "green leaf lettuce",
+        "iceberg lettuce",
+        "romaine lettuce"
+      ]
+    },
+    {
+      "base": "lime"
+    },
+    {
+      "base": "lime and lemon"
+    },
+    {
+      "base": "lime juice"
+    },
+    {
+      "base": "lime leaf"
+    },
+    {
+      "base": "lime peel"
+    },
+    {
+      "base": "lime zest"
+    },
+    {
+      "base": "mandarin orange"
+    },
+    {
+      "base": "mango"
+    },
+    {
+      "base": "melon"
+    },
+    {
+      "base": "mesclun"
+    },
+    {
+      "base": "meyer lemon"
+    },
+    {
+      "base": "meyer lemon juice"
+    },
+    {
+      "base": "microgreen"
+    },
+    {
+      "base": "mixed dried fruit"
+    },
+    {
+      "base": "mixed greens"
+    },
+    {
+      "base": "mixed mushroom"
+    },
+    {
+      "base": "mixed vegetables"
+    },
+    {
+      "base": "morel"
+    },
+    {
+      "base": "mung bean sprout"
+    },
+    {
+      "base": "mushroom",
+      "variants": [
+        "crimini mushroom",
+        "portabella mushroom",
+        "portobello mushroom"
+      ]
+    },
+    {
+      "base": "mustard green"
+    },
+    {
+      "base": "nectarine"
+    },
+    {
+      "base": "nori"
+    },
+    {
+      "base": "okra"
+    },
+    {
+      "base": "olive",
+      "variants": [
+        "kalamata olive"
+      ]
+    },
+    {
+      "base": "onion",
+      "variants": [
+        "bermuda onion",
+        "fried onion",
+        "pearl onion",
+        "red onion",
+        "spanish onion",
+        "sweet onion",
+        "vidalia onion",
+        "white onion",
+        "yellow onion"
+      ]
+    },
+    {
+      "base": "orange"
+    },
+    {
+      "base": "orange juice"
+    },
+    {
+      "base": "orange zest"
+    },
+    {
+      "base": "oyster mushroom"
+    },
+    {
+      "base": "papaya",
+      "variants": [
+        "green papaya"
+      ]
+    },
+    {
+      "base": "parsnip"
+    },
+    {
+      "base": "pasilla chile"
+    },
+    {
+      "base": "passion fruit"
+    },
+    {
+      "base": "pattypan squash"
+    },
+    {
+      "base": "pea",
+      "variants": [
+        "green pea"
+      ]
+    },
+    {
+      "base": "pea pod"
+    },
+    {
+      "base": "pea shoot"
+    },
+    {
+      "base": "peach",
+      "variants": [
+        "peach slice"
+      ]
+    },
+    {
+      "base": "pear",
+      "variants": [
+        "anjou pear",
+        "bosc pear"
+      ]
+    },
+    {
+      "base": "pear tomato"
+    },
+    {
+      "base": "peas and carrots"
+    },
+    {
+      "base": "pepperoncini"
+    },
+    {
+      "base": "persimmon"
+    },
+    {
+      "base": "persimmon pulp"
+    },
+    {
+      "base": "pimento"
+    },
+    {
+      "base": "pimiento"
+    },
+    {
+      "base": "pineapple",
+      "variants": [
+        "pineapple chunk",
+        "pineapple ring"
+      ]
+    },
+    {
+      "base": "piquillo pepper"
+    },
+    {
+      "base": "plantain",
+      "variants": [
+        "green plantain"
+      ]
+    },
+    {
+      "base": "plum"
+    },
+    {
+      "base": "plum tomato"
+    },
+    {
+      "base": "poblano",
+      "variants": [
+        "poblano pepper"
+      ]
+    },
+    {
+      "base": "poblano pepper",
+      "variants": [
+        "poblano chili"
+      ]
+    },
+    {
+      "base": "pomegranate"
+    },
+    {
+      "base": "pomegranate seed"
+    },
+    {
+      "base": "porcini mushroom"
+    },
+    {
+      "base": "portobello mushroom",
+      "variants": [
+        "portabella mushroom"
+      ]
+    },
+    {
+      "base": "potato",
+      "variants": [
+        "baking potato",
+        "gold potato",
+        "new potato",
+        "red potato",
+        "russet potato",
+        "waxy potato",
+        "yukon gold potato"
+      ]
+    },
+    {
+      "base": "potato purée"
+    },
+    {
+      "base": "prune"
+    },
+    {
+      "base": "pumpkin"
+    },
+    {
+      "base": "quince"
+    },
+    {
+      "base": "radicchio"
+    },
+    {
+      "base": "radish"
+    },
+    {
+      "base": "radish sprout"
+    },
+    {
+      "base": "raisin"
+    },
+    {
+      "base": "raisin and cranberry"
+    },
+    {
+      "base": "raisin and date"
+    },
+    {
+      "base": "ramp"
+    },
+    {
+      "base": "raspberry"
+    },
+    {
+      "base": "raspberry purée"
+    },
+    {
+      "base": "red currant"
+    },
+    {
+      "base": "rhubarb"
+    },
+    {
+      "base": "romaine lettuce",
+      "variants": [
+        "romaine lettuce heart"
+      ]
+    },
+    {
+      "base": "rose petal"
+    },
+    {
+      "base": "rutabaga"
+    },
+    {
+      "base": "salad green"
+    },
+    {
+      "base": "salad greens",
+      "variants": [
+        "salad green"
+      ]
+    },
+    {
+      "base": "scotch bonnet pepper"
+    },
+    {
+      "base": "seaweed"
+    },
+    {
+      "base": "semi-dried tomato"
+    },
+    {
+      "base": "serrano chili",
+      "variants": [
+        "serrano chile",
+        "serrano pepper"
+      ]
+    },
+    {
+      "base": "serrano pepper"
+    },
+    {
+      "base": "shallot"
+    },
+    {
+      "base": "shiitake mushroom"
+    },
+    {
+      "base": "slaw mix"
+    },
+    {
+      "base": "snap pea",
+      "variants": [
+        "sugar snap pea"
+      ]
+    },
+    {
+      "base": "snow pea"
+    },
+    {
+      "base": "snow pea sprout"
+    },
+    {
+      "base": "sorrel"
+    },
+    {
+      "base": "sour cherry"
+    },
+    {
+      "base": "spaghetti squash"
+    },
+    {
+      "base": "spinach"
+    },
+    {
+      "base": "spring green"
+    },
+    {
+      "base": "spring mix"
+    },
+    {
+      "base": "sprout"
+    },
+    {
+      "base": "squash",
+      "variants": [
+        "yellow squash"
+      ]
+    },
+    {
+      "base": "squash blossom"
+    },
+    {
+      "base": "star fruit"
+    },
+    {
+      "base": "straw mushroom"
+    },
+    {
+      "base": "strawberry",
+      "variants": [
+        "sweetened strawberry"
+      ]
+    },
+    {
+      "base": "strawberry purée"
+    },
+    {
+      "base": "sugar snap pea"
+    },
+    {
+      "base": "sultana"
+    },
+    {
+      "base": "summer squash"
+    },
+    {
+      "base": "sun-dried tomato"
+    },
+    {
+      "base": "swede"
+    },
+    {
+      "base": "sweet pepper"
+    },
+    {
+      "base": "sweet potato"
+    },
+    {
+      "base": "swiss chard"
+    },
+    {
+      "base": "tamarind"
+    },
+    {
+      "base": "tamarind pulp"
+    },
+    {
+      "base": "tangerine"
+    },
+    {
+      "base": "thai chile"
+    },
+    {
+      "base": "thai chili pepper"
+    },
+    {
+      "base": "tomatillo"
+    },
+    {
+      "base": "tomato",
+      "variants": [
+        "beefsteak tomato",
+        "cherry tomato",
+        "grape tomato",
+        "green tomato",
+        "plum tomato",
+        "roma tomato",
+        "yellow tomato"
+      ]
+    },
+    {
+      "base": "truffle"
+    },
+    {
+      "base": "turnip"
+    },
+    {
+      "base": "turnip green"
+    },
+    {
+      "base": "vegetable"
+    },
+    {
+      "base": "water chestnut"
+    },
+    {
+      "base": "watercress"
+    },
+    {
+      "base": "watermelon"
+    },
+    {
+      "base": "wax bean"
+    },
+    {
+      "base": "wild mushroom"
+    },
+    {
+      "base": "winter squash"
+    },
+    {
+      "base": "yam"
+    },
+    {
+      "base": "yellow bean"
+    },
+    {
+      "base": "yellow squash"
+    },
+    {
+      "base": "zucchini"
+    }
+  ],
+  "Protein": [
+    {
+      "base": "anchovy",
+      "variants": [
+        "anchovy fillet"
+      ]
+    },
+    {
+      "base": "andouille sausage"
+    },
+    {
+      "base": "bacon",
+      "variants": [
+        "bacon bits"
+      ]
+    },
+    {
+      "base": "bass"
+    },
+    {
+      "base": "beef",
+      "variants": [
+        "beef brisket",
+        "beef chuck",
+        "beef chuck roast",
+        "beef cube",
+        "beef flank steak",
+        "beef rib",
+        "beef round",
+        "beef round steak",
+        "beef shank",
+        "beef short rib",
+        "beef sirloin",
+        "beef sirloin steak",
+        "beef steak",
+        "beef stew meat",
+        "beef tenderloin",
+        "beef tenderloin steak",
+        "beef top round steak",
+        "beef top sirloin steak",
+        "brisket",
+        "chuck roast",
+        "chuck steak",
+        "cube steak",
+        "filet mignon",
+        "flank steak",
+        "london broil",
+        "new york strip steak",
+        "pot roast",
+        "rib eye steak",
+        "rib roast",
+        "rib-eye steak",
+        "roast beef",
+        "round steak",
+        "rump roast",
+        "rump steak",
+        "short rib",
+        "sirloin",
+        "sirloin steak",
+        "sirloin tip roast",
+        "skirt steak",
+        "steak",
+        "stew meat",
+        "stewing beef",
+        "tenderloin",
+        "top round steak",
+        "top sirloin steak"
+      ]
+    },
+    {
+      "base": "beef bone"
+    },
+    {
+      "base": "beef liver"
+    },
+    {
+      "base": "bison"
+    },
+    {
+      "base": "bologna"
+    },
+    {
+      "base": "bonito flakes"
+    },
+    {
+      "base": "bratwurst"
+    },
+    {
+      "base": "breakfast sausage"
+    },
+    {
+      "base": "buffalo",
+      "variants": [
+        "buffalo meat"
+      ]
+    },
+    {
+      "base": "calamari"
+    },
+    {
+      "base": "canadian bacon"
+    },
+    {
+      "base": "catfish"
+    },
+    {
+      "base": "caviar"
+    },
+    {
+      "base": "chicken",
+      "variants": [
+        "chicken breast",
+        "chicken carcass",
+        "chicken cutlet",
+        "chicken drumstick",
+        "chicken finger",
+        "chicken leg",
+        "chicken leg quarter",
+        "chicken parts",
+        "chicken strip",
+        "chicken tender",
+        "chicken tenderloin",
+        "chicken thigh",
+        "chicken thigh fillet",
+        "chicken wing",
+        "rotisserie chicken",
+        "whole chicken"
+      ]
+    },
+    {
+      "base": "chicken bone"
+    },
+    {
+      "base": "chicken gizzard"
+    },
+    {
+      "base": "chicken liver"
+    },
+    {
+      "base": "chicken sausage"
+    },
+    {
+      "base": "chinese sausage"
+    },
+    {
+      "base": "chorizo"
+    },
+    {
+      "base": "clam",
+      "variants": [
+        "littleneck clam"
+      ]
+    },
+    {
+      "base": "cod",
+      "variants": [
+        "cod fillet"
+      ]
+    },
+    {
+      "base": "corned beef"
+    },
+    {
+      "base": "cornish hen"
+    },
+    {
+      "base": "crab",
+      "variants": [
+        "crab meat"
+      ]
+    },
+    {
+      "base": "crawfish",
+      "variants": [
+        "crawfish tail"
+      ]
+    },
+    {
+      "base": "cutlet"
+    },
+    {
+      "base": "duck",
+      "variants": [
+        "duck breast",
+        "duck leg"
+      ]
+    },
+    {
+      "base": "fish",
+      "variants": [
+        "fish fillet"
+      ]
+    },
+    {
+      "base": "flounder",
+      "variants": [
+        "flounder fillet"
+      ]
+    },
+    {
+      "base": "foie gras"
+    },
+    {
+      "base": "frankfurter"
+    },
+    {
+      "base": "goose"
+    },
+    {
+      "base": "ground beef",
+      "variants": [
+        "burger patty",
+        "ground round",
+        "hamburger patty"
+      ]
+    },
+    {
+      "base": "ground chicken"
+    },
+    {
+      "base": "ground lamb"
+    },
+    {
+      "base": "ground meat"
+    },
+    {
+      "base": "ground sirloin"
+    },
+    {
+      "base": "ground veal"
+    },
+    {
+      "base": "grouper"
+    },
+    {
+      "base": "haddock",
+      "variants": [
+        "haddock fillet"
+      ]
+    },
+    {
+      "base": "halibut",
+      "variants": [
+        "halibut steak"
+      ]
+    },
+    {
+      "base": "ham",
+      "variants": [
+        "black forest ham",
+        "country ham",
+        "ham steak",
+        "serrano ham"
+      ]
+    },
+    {
+      "base": "ham bone"
+    },
+    {
+      "base": "ham hock",
+      "variants": [
+        "smoked ham hock"
+      ]
+    },
+    {
+      "base": "hen",
+      "variants": [
+        "cornish game hen"
+      ]
+    },
+    {
+      "base": "hot dog"
+    },
+    {
+      "base": "hot sausage"
+    },
+    {
+      "base": "imitation crab"
+    },
+    {
+      "base": "lamb",
+      "variants": [
+        "lamb chop",
+        "lamb leg",
+        "lamb loin",
+        "lamb loin chop",
+        "lamb shank",
+        "lamb shoulder",
+        "lamb stew meat",
+        "rack of lamb"
+      ]
+    },
+    {
+      "base": "lardon"
+    },
+    {
+      "base": "liver"
+    },
+    {
+      "base": "lobster",
+      "variants": [
+        "lobster tail"
+      ]
+    },
+    {
+      "base": "mackerel"
+    },
+    {
+      "base": "mahi mahi",
+      "variants": [
+        "mahi mahi fillet"
+      ]
+    },
+    {
+      "base": "meat"
+    },
+    {
+      "base": "meat bone"
+    },
+    {
+      "base": "meatball"
+    },
+    {
+      "base": "meatloaf"
+    },
+    {
+      "base": "monkfish"
+    },
+    {
+      "base": "mortadella"
+    },
+    {
+      "base": "mussel"
+    },
+    {
+      "base": "mutton"
+    },
+    {
+      "base": "orange roughy"
+    },
+    {
+      "base": "oxtail"
+    },
+    {
+      "base": "oyster"
+    },
+    {
+      "base": "pancetta"
+    },
+    {
+      "base": "pastrami"
+    },
+    {
+      "base": "pepperoni",
+      "variants": [
+        "turkey pepperoni"
+      ]
+    },
+    {
+      "base": "pheasant"
+    },
+    {
+      "base": "polish sausage"
+    },
+    {
+      "base": "pork",
+      "variants": [
+        "baby back rib",
+        "baby back ribs",
+        "country-style pork rib",
+        "pork butt",
+        "pork chop",
+        "pork cutlet",
+        "pork fillet",
+        "pork loin",
+        "pork loin chop",
+        "pork loin roast",
+        "pork rib",
+        "pork rib chop",
+        "pork roast",
+        "pork shoulder",
+        "pork shoulder roast",
+        "pork spare rib",
+        "pork sparerib",
+        "pork steak",
+        "pork tenderloin",
+        "sparerib",
+        "spareribs"
+      ]
+    },
+    {
+      "base": "pork belly"
+    },
+    {
+      "base": "pork rind"
+    },
+    {
+      "base": "prawn"
+    },
+    {
+      "base": "prosciutto",
+      "variants": [
+        "prosciutto di parma"
+      ]
+    },
+    {
+      "base": "quail"
+    },
+    {
+      "base": "rabbit"
+    },
+    {
+      "base": "red snapper"
+    },
+    {
+      "base": "rib"
+    },
+    {
+      "base": "salami",
+      "variants": [
+        "genoa salami"
+      ]
+    },
+    {
+      "base": "salmon",
+      "variants": [
+        "pink salmon",
+        "red salmon",
+        "salmon fillet",
+        "sockeye salmon"
+      ]
+    },
+    {
+      "base": "salmon roe"
+    },
+    {
+      "base": "salt pork"
+    },
+    {
+      "base": "sardine"
+    },
+    {
+      "base": "sausage",
+      "variants": [
+        "andouille sausage",
+        "beef sausage",
+        "bratwurst",
+        "breakfast sausage",
+        "italian pork sausage",
+        "italian sausage",
+        "kielbasa sausage",
+        "pork sausage",
+        "sausage meat",
+        "spicy sausage",
+        "sweet italian sausage",
+        "turkey sausage"
+      ]
+    },
+    {
+      "base": "sausage link"
+    },
+    {
+      "base": "scallop",
+      "variants": [
+        "bay scallop",
+        "sea scallop"
+      ]
+    },
+    {
+      "base": "sea bass",
+      "variants": [
+        "sea bass fillet"
+      ]
+    },
+    {
+      "base": "seafood"
+    },
+    {
+      "base": "seitan"
+    },
+    {
+      "base": "shrimp",
+      "variants": [
+        "baby shrimp",
+        "rock shrimp"
+      ]
+    },
+    {
+      "base": "smoked bacon"
+    },
+    {
+      "base": "smoked haddock"
+    },
+    {
+      "base": "smoked ham"
+    },
+    {
+      "base": "smoked salmon"
+    },
+    {
+      "base": "smoked sausage"
+    },
+    {
+      "base": "snapper",
+      "variants": [
+        "red snapper fillet"
+      ]
+    },
+    {
+      "base": "sole",
+      "variants": [
+        "sole fillet"
+      ]
+    },
+    {
+      "base": "soppressata"
+    },
+    {
+      "base": "soy protein"
+    },
+    {
+      "base": "speck"
+    },
+    {
+      "base": "squid"
+    },
+    {
+      "base": "swordfish",
+      "variants": [
+        "swordfish steak"
+      ]
+    },
+    {
+      "base": "tempeh"
+    },
+    {
+      "base": "tilapia",
+      "variants": [
+        "tilapia fillet"
+      ]
+    },
+    {
+      "base": "tofu"
+    },
+    {
+      "base": "trout",
+      "variants": [
+        "rainbow trout",
+        "smoked trout"
+      ]
+    },
+    {
+      "base": "tuna",
+      "variants": [
+        "ahi tuna",
+        "tuna steak",
+        "white tuna"
+      ]
+    },
+    {
+      "base": "turkey",
+      "variants": [
+        "turkey breast",
+        "turkey breast cutlet",
+        "turkey breast deli meat",
+        "turkey breast tenderloin",
+        "turkey cutlet",
+        "turkey leg",
+        "turkey tenderloin"
+      ]
+    },
+    {
+      "base": "turkey bacon"
+    },
+    {
+      "base": "turkey carcass"
+    },
+    {
+      "base": "turkey drippings"
+    },
+    {
+      "base": "turkey ham"
+    },
+    {
+      "base": "veal",
+      "variants": [
+        "veal cutlet",
+        "veal scallop",
+        "veal shoulder"
+      ]
+    },
+    {
+      "base": "venison"
+    },
+    {
+      "base": "white fish",
+      "variants": [
+        "white fish fillet"
+      ]
+    },
+    {
+      "base": "whitefish"
+    },
+    {
+      "base": "wiener"
+    }
+  ],
+  "Grains & Cereals": [
+    {
+      "base": "amaranth"
+    },
+    {
+      "base": "barley"
+    },
+    {
+      "base": "bran"
+    },
+    {
+      "base": "bran cereal"
+    },
+    {
+      "base": "bran flakes"
+    },
+    {
+      "base": "buckwheat"
+    },
+    {
+      "base": "buckwheat flour"
+    },
+    {
+      "base": "buckwheat groats",
+      "variants": [
+        "buckwheat groat"
+      ]
+    },
+    {
+      "base": "bulgur",
+      "variants": [
+        "bulgur wheat"
+      ]
+    },
+    {
+      "base": "cereal"
+    },
+    {
+      "base": "cheerios"
+    },
+    {
+      "base": "chex cereal"
+    },
+    {
+      "base": "cold cereal"
+    },
+    {
+      "base": "corn flakes",
+      "variants": [
+        "corn flake",
+        "cornflake",
+        "cornflake cereal",
+        "cornflake crumbs",
+        "cornflakes"
+      ]
+    },
+    {
+      "base": "cornmeal",
+      "variants": [
+        "yellow cornmeal"
+      ]
+    },
+    {
+      "base": "cornmeal mix"
+    },
+    {
+      "base": "couscous"
+    },
+    {
+      "base": "cracked wheat"
+    },
+    {
+      "base": "cream of wheat"
+    },
+    {
+      "base": "crispix cereal"
+    },
+    {
+      "base": "crispy rice cereal"
+    },
+    {
+      "base": "farina"
+    },
+    {
+      "base": "farro"
+    },
+    {
+      "base": "fiber cereal"
+    },
+    {
+      "base": "gari"
+    },
+    {
+      "base": "granola"
+    },
+    {
+      "base": "grape-nuts cereal"
+    },
+    {
+      "base": "grits"
+    },
+    {
+      "base": "hominy"
+    },
+    {
+      "base": "instant rice"
+    },
+    {
+      "base": "israeli couscous"
+    },
+    {
+      "base": "masa harina"
+    },
+    {
+      "base": "matzo cake meal"
+    },
+    {
+      "base": "millet"
+    },
+    {
+      "base": "muesli"
+    },
+    {
+      "base": "oat bran"
+    },
+    {
+      "base": "oat flour"
+    },
+    {
+      "base": "oats",
+      "variants": [
+        "oatmeal",
+        "quick oats",
+        "steel-cut oats"
+      ]
+    },
+    {
+      "base": "pearl couscous"
+    },
+    {
+      "base": "polenta"
+    },
+    {
+      "base": "popcorn",
+      "variants": [
+        "popcorn kernel"
+      ]
+    },
+    {
+      "base": "potato flakes"
+    },
+    {
+      "base": "puffed rice cereal"
+    },
+    {
+      "base": "quinoa",
+      "variants": [
+        "red quinoa"
+      ]
+    },
+    {
+      "base": "quinoa flakes"
+    },
+    {
+      "base": "raisin bran cereal"
+    },
+    {
+      "base": "rice",
+      "variants": [
+        "arborio rice",
+        "basmati rice",
+        "black rice",
+        "brown basmati rice",
+        "brown rice",
+        "glutinous rice",
+        "jasmine rice",
+        "long grain rice",
+        "risotto",
+        "short-grain rice",
+        "spanish rice",
+        "sticky rice",
+        "sushi rice",
+        "white rice",
+        "yellow rice"
+      ]
+    },
+    {
+      "base": "rice cereal"
+    },
+    {
+      "base": "rice chex"
+    },
+    {
+      "base": "rice flour"
+    },
+    {
+      "base": "rice krispies"
+    },
+    {
+      "base": "rice mix"
+    },
+    {
+      "base": "rice paper"
+    },
+    {
+      "base": "rye"
+    },
+    {
+      "base": "semolina"
+    },
+    {
+      "base": "sorghum"
+    },
+    {
+      "base": "stuffing mix"
+    },
+    {
+      "base": "tapioca"
+    },
+    {
+      "base": "tapioca flour"
+    },
+    {
+      "base": "wheat"
+    },
+    {
+      "base": "wheat berries",
+      "variants": [
+        "wheat berry"
+      ]
+    },
+    {
+      "base": "wheat bran"
+    },
+    {
+      "base": "wheat cereal"
+    },
+    {
+      "base": "wheat chex cereal"
+    },
+    {
+      "base": "wheat germ"
+    },
+    {
+      "base": "wild rice"
+    }
+  ],
+  "Spices & Herbs": [
+    {
+      "base": "accent seasoning"
+    },
+    {
+      "base": "achiote paste"
+    },
+    {
+      "base": "adobo seasoning"
+    },
+    {
+      "base": "aleppo pepper"
+    },
+    {
+      "base": "all-purpose seasoning"
+    },
+    {
+      "base": "allspice"
+    },
+    {
+      "base": "allspice berry"
+    },
+    {
+      "base": "amchur"
+    },
+    {
+      "base": "ancho chili"
+    },
+    {
+      "base": "ancho powder"
+    },
+    {
+      "base": "anise"
+    },
+    {
+      "base": "anise oil"
+    },
+    {
+      "base": "anise seed"
+    },
+    {
+      "base": "annatto seed"
+    },
+    {
+      "base": "apple pie spice"
+    },
+    {
+      "base": "asafetida"
+    },
+    {
+      "base": "asafoetida"
+    },
+    {
+      "base": "barbecue seasoning"
+    },
+    {
+      "base": "basil"
+    },
+    {
+      "base": "bay leaf"
+    },
+    {
+      "base": "bay seasoning"
+    },
+    {
+      "base": "beau monde seasoning"
+    },
+    {
+      "base": "black cardamom",
+      "variants": [
+        "black cardamom pod"
+      ]
+    },
+    {
+      "base": "black pepper"
+    },
+    {
+      "base": "black salt"
+    },
+    {
+      "base": "blackening seasoning"
+    },
+    {
+      "base": "bouquet garni"
+    },
+    {
+      "base": "brown cardamom"
+    },
+    {
+      "base": "cajun seasoning"
+    },
+    {
+      "base": "caraway seed"
+    },
+    {
+      "base": "cardamom"
+    },
+    {
+      "base": "cayenne pepper"
+    },
+    {
+      "base": "celery",
+      "variants": [
+        "celery flakes"
+      ]
+    },
+    {
+      "base": "celery salt"
+    },
+    {
+      "base": "celery seed"
+    },
+    {
+      "base": "chaat masala"
+    },
+    {
+      "base": "chervil"
+    },
+    {
+      "base": "chicken seasoning"
+    },
+    {
+      "base": "chile de arbol"
+    },
+    {
+      "base": "chili flake"
+    },
+    {
+      "base": "chili flakes"
+    },
+    {
+      "base": "chili powder"
+    },
+    {
+      "base": "chili seasoning"
+    },
+    {
+      "base": "chili seasoning mix"
+    },
+    {
+      "base": "chinese five spice"
+    },
+    {
+      "base": "chipotle chile"
+    },
+    {
+      "base": "chipotle pepper"
+    },
+    {
+      "base": "chipotle powder"
+    },
+    {
+      "base": "chive"
+    },
+    {
+      "base": "chives"
+    },
+    {
+      "base": "cilantro",
+      "variants": [
+        "cilantro stem"
+      ]
+    },
+    {
+      "base": "cinnamon"
+    },
+    {
+      "base": "cinnamon stick"
+    },
+    {
+      "base": "clove"
+    },
+    {
+      "base": "coriander"
+    },
+    {
+      "base": "coriander leaf"
+    },
+    {
+      "base": "coriander seed"
+    },
+    {
+      "base": "crab boil seasoning"
+    },
+    {
+      "base": "creole seasoning"
+    },
+    {
+      "base": "cumin"
+    },
+    {
+      "base": "cumin seed"
+    },
+    {
+      "base": "curry leaf"
+    },
+    {
+      "base": "curry powder"
+    },
+    {
+      "base": "dill"
+    },
+    {
+      "base": "dill seed"
+    },
+    {
+      "base": "epazote"
+    },
+    {
+      "base": "fajita seasoning"
+    },
+    {
+      "base": "fennel seed"
+    },
+    {
+      "base": "fenugreek"
+    },
+    {
+      "base": "fenugreek leaf"
+    },
+    {
+      "base": "filé powder"
+    },
+    {
+      "base": "five spice powder"
+    },
+    {
+      "base": "five-spice powder"
+    },
+    {
+      "base": "garam masala"
+    },
+    {
+      "base": "garlic",
+      "variants": [
+        "garlic granules"
+      ]
+    },
+    {
+      "base": "garlic and herb seasoning"
+    },
+    {
+      "base": "garlic pepper seasoning"
+    },
+    {
+      "base": "garlic powder"
+    },
+    {
+      "base": "garlic salt"
+    },
+    {
+      "base": "ginger"
+    },
+    {
+      "base": "ginger paste"
+    },
+    {
+      "base": "greek seasoning"
+    },
+    {
+      "base": "green peppercorn"
+    },
+    {
+      "base": "grill seasoning"
+    },
+    {
+      "base": "herb seasoning"
+    },
+    {
+      "base": "herbes de provence"
+    },
+    {
+      "base": "herbs"
+    },
+    {
+      "base": "horseradish"
+    },
+    {
+      "base": "italian herb blend"
+    },
+    {
+      "base": "italian herb seasoning"
+    },
+    {
+      "base": "italian seasoning"
+    },
+    {
+      "base": "jerk seasoning"
+    },
+    {
+      "base": "juniper berry"
+    },
+    {
+      "base": "lavender"
+    },
+    {
+      "base": "lemon balm"
+    },
+    {
+      "base": "lemon pepper"
+    },
+    {
+      "base": "lemon thyme"
+    },
+    {
+      "base": "lemon verbena"
+    },
+    {
+      "base": "mace"
+    },
+    {
+      "base": "madras curry powder"
+    },
+    {
+      "base": "marjoram"
+    },
+    {
+      "base": "masala"
+    },
+    {
+      "base": "meat tenderizer"
+    },
+    {
+      "base": "mexican oregano"
+    },
+    {
+      "base": "mint"
+    },
+    {
+      "base": "mixed herbs"
+    },
+    {
+      "base": "mixed spice"
+    },
+    {
+      "base": "monosodium glutamate"
+    },
+    {
+      "base": "moroccan seasoning"
+    },
+    {
+      "base": "mrs. dash"
+    },
+    {
+      "base": "msg"
+    },
+    {
+      "base": "mustard powder"
+    },
+    {
+      "base": "mustard seed"
+    },
+    {
+      "base": "nutmeg"
+    },
+    {
+      "base": "old bay seasoning"
+    },
+    {
+      "base": "onion flake"
+    },
+    {
+      "base": "onion powder"
+    },
+    {
+      "base": "onion salt"
+    },
+    {
+      "base": "oregano"
+    },
+    {
+      "base": "pandan leaf"
+    },
+    {
+      "base": "paprika",
+      "variants": [
+        "sweet hungarian paprika",
+        "sweet paprika"
+      ]
+    },
+    {
+      "base": "parsley",
+      "variants": [
+        "italian parsley"
+      ]
+    },
+    {
+      "base": "peppercorn"
+    },
+    {
+      "base": "peppermint"
+    },
+    {
+      "base": "peppermint oil"
+    },
+    {
+      "base": "pickling spice"
+    },
+    {
+      "base": "pickling spices"
+    },
+    {
+      "base": "pie spice"
+    },
+    {
+      "base": "pimentón"
+    },
+    {
+      "base": "pink peppercorn"
+    },
+    {
+      "base": "pizza seasoning"
+    },
+    {
+      "base": "poultry seasoning"
+    },
+    {
+      "base": "pumpkin pie spice"
+    },
+    {
+      "base": "pumpkin spice"
+    },
+    {
+      "base": "ras el hanout"
+    },
+    {
+      "base": "red chili flakes"
+    },
+    {
+      "base": "red chili powder"
+    },
+    {
+      "base": "red pepper flakes"
+    },
+    {
+      "base": "rosemary"
+    },
+    {
+      "base": "saffron"
+    },
+    {
+      "base": "sage"
+    },
+    {
+      "base": "salad supreme seasoning"
+    },
+    {
+      "base": "salt"
+    },
+    {
+      "base": "salt substitute"
+    },
+    {
+      "base": "savory"
+    },
+    {
+      "base": "sazon seasoning"
+    },
+    {
+      "base": "seafood seasoning"
+    },
+    {
+      "base": "seasoned salt"
+    },
+    {
+      "base": "seasoning mix"
+    },
+    {
+      "base": "shiso leaf"
+    },
+    {
+      "base": "sichuan peppercorn"
+    },
+    {
+      "base": "smoked paprika"
+    },
+    {
+      "base": "spanish paprika"
+    },
+    {
+      "base": "spearmint"
+    },
+    {
+      "base": "spice"
+    },
+    {
+      "base": "spices"
+    },
+    {
+      "base": "spike seasoning"
+    },
+    {
+      "base": "star anise"
+    },
+    {
+      "base": "steak seasoning"
+    },
+    {
+      "base": "sumac"
+    },
+    {
+      "base": "summer savory"
+    },
+    {
+      "base": "sweet paprika"
+    },
+    {
+      "base": "taco seasoning"
+    },
+    {
+      "base": "taco seasoning mix"
+    },
+    {
+      "base": "tarragon"
+    },
+    {
+      "base": "thai basil"
+    },
+    {
+      "base": "thyme"
+    },
+    {
+      "base": "turmeric"
+    },
+    {
+      "base": "wasabi"
+    },
+    {
+      "base": "wasabi paste"
+    },
+    {
+      "base": "wasabi powder"
+    },
+    {
+      "base": "white pepper"
+    },
+    {
+      "base": "white peppercorn"
+    },
+    {
+      "base": "za'atar"
+    }
+  ],
+  "Condiments & Sauces": [
+    {
+      "base": "a-1 sauce"
+    },
+    {
+      "base": "a.1. sauce"
+    },
+    {
+      "base": "adobo sauce"
+    },
+    {
+      "base": "aioli"
+    },
+    {
+      "base": "alfredo sauce"
+    },
+    {
+      "base": "anchovy paste"
+    },
+    {
+      "base": "apple butter"
+    },
+    {
+      "base": "apple cider vinegar"
+    },
+    {
+      "base": "apricot jam"
+    },
+    {
+      "base": "balsamic reduction"
+    },
+    {
+      "base": "balsamic vinaigrette"
+    },
+    {
+      "base": "balsamic vinegar"
+    },
+    {
+      "base": "barbecue sauce"
+    },
+    {
+      "base": "basil pesto"
+    },
+    {
+      "base": "bean dip"
+    },
+    {
+      "base": "bean paste"
+    },
+    {
+      "base": "black bean sauce"
+    },
+    {
+      "base": "black vinegar"
+    },
+    {
+      "base": "blackberry jam"
+    },
+    {
+      "base": "blue cheese dressing"
+    },
+    {
+      "base": "blueberry jam"
+    },
+    {
+      "base": "brown sauce"
+    },
+    {
+      "base": "browning sauce",
+      "variants": [
+        "gravy browning sauce"
+      ]
+    },
+    {
+      "base": "buffalo sauce"
+    },
+    {
+      "base": "buffalo wing sauce"
+    },
+    {
+      "base": "béchamel sauce"
+    },
+    {
+      "base": "caesar dressing"
+    },
+    {
+      "base": "caramel sauce"
+    },
+    {
+      "base": "catalina dressing"
+    },
+    {
+      "base": "champagne vinegar"
+    },
+    {
+      "base": "cheese sauce"
+    },
+    {
+      "base": "cherry jam"
+    },
+    {
+      "base": "chicken bouillon powder"
+    },
+    {
+      "base": "chicken soup base"
+    },
+    {
+      "base": "chicken stock powder"
+    },
+    {
+      "base": "chile garlic paste"
+    },
+    {
+      "base": "chile paste"
+    },
+    {
+      "base": "chile sauce"
+    },
+    {
+      "base": "chili garlic sauce"
+    },
+    {
+      "base": "chili oil"
+    },
+    {
+      "base": "chili paste"
+    },
+    {
+      "base": "chili sauce"
+    },
+    {
+      "base": "chipotle paste"
+    },
+    {
+      "base": "chipotle sauce"
+    },
+    {
+      "base": "chocolate hazelnut spread"
+    },
+    {
+      "base": "chocolate sauce"
+    },
+    {
+      "base": "chocolate syrup"
+    },
+    {
+      "base": "chutney"
+    },
+    {
+      "base": "cocktail sauce"
+    },
+    {
+      "base": "coconut aminos"
+    },
+    {
+      "base": "cream sauce"
+    },
+    {
+      "base": "creamed horseradish"
+    },
+    {
+      "base": "currant jelly"
+    },
+    {
+      "base": "curry paste"
+    },
+    {
+      "base": "dashi"
+    },
+    {
+      "base": "demi-glace"
+    },
+    {
+      "base": "dressing mix"
+    },
+    {
+      "base": "duck sauce"
+    },
+    {
+      "base": "enchilada sauce",
+      "variants": [
+        "green enchilada sauce",
+        "red enchilada sauce"
+      ]
+    },
+    {
+      "base": "fig jam"
+    },
+    {
+      "base": "fish sauce"
+    },
+    {
+      "base": "french dressing"
+    },
+    {
+      "base": "fudge sauce",
+      "variants": [
+        "fudge topping"
+      ]
+    },
+    {
+      "base": "garlic chili sauce"
+    },
+    {
+      "base": "garlic juice"
+    },
+    {
+      "base": "garlic paste"
+    },
+    {
+      "base": "garlic sauce"
+    },
+    {
+      "base": "ginger garlic paste"
+    },
+    {
+      "base": "ginger juice"
+    },
+    {
+      "base": "ginger syrup"
+    },
+    {
+      "base": "gochujang"
+    },
+    {
+      "base": "grape jelly"
+    },
+    {
+      "base": "gravy",
+      "variants": [
+        "brown gravy",
+        "chicken gravy",
+        "turkey gravy"
+      ]
+    },
+    {
+      "base": "green curry paste"
+    },
+    {
+      "base": "grenadine"
+    },
+    {
+      "base": "guacamole"
+    },
+    {
+      "base": "harissa"
+    },
+    {
+      "base": "heinz 57 sauce"
+    },
+    {
+      "base": "hoisin sauce"
+    },
+    {
+      "base": "hollandaise sauce"
+    },
+    {
+      "base": "honey mustard"
+    },
+    {
+      "base": "horseradish"
+    },
+    {
+      "base": "horseradish cream"
+    },
+    {
+      "base": "horseradish sauce"
+    },
+    {
+      "base": "hot pepper sauce"
+    },
+    {
+      "base": "hot sauce"
+    },
+    {
+      "base": "hummus"
+    },
+    {
+      "base": "italian dressing"
+    },
+    {
+      "base": "italian dressing mix"
+    },
+    {
+      "base": "jalapeño juice"
+    },
+    {
+      "base": "kecap manis"
+    },
+    {
+      "base": "ketchup"
+    },
+    {
+      "base": "kimchi"
+    },
+    {
+      "base": "kitchen bouquet"
+    },
+    {
+      "base": "lemon curd"
+    },
+    {
+      "base": "lemon juice"
+    },
+    {
+      "base": "lime juice"
+    },
+    {
+      "base": "liquid aminos"
+    },
+    {
+      "base": "liquid smoke"
+    },
+    {
+      "base": "maggi seasoning"
+    },
+    {
+      "base": "malt vinegar"
+    },
+    {
+      "base": "mango chutney"
+    },
+    {
+      "base": "marinara sauce"
+    },
+    {
+      "base": "marmalade"
+    },
+    {
+      "base": "marmite"
+    },
+    {
+      "base": "mayonnaise",
+      "variants": [
+        "olive oil mayonnaise"
+      ]
+    },
+    {
+      "base": "miracle whip"
+    },
+    {
+      "base": "mirin"
+    },
+    {
+      "base": "miso",
+      "variants": [
+        "miso paste",
+        "red miso",
+        "yellow miso"
+      ]
+    },
+    {
+      "base": "mustard",
+      "variants": [
+        "dijon mustard",
+        "english mustard",
+        "french mustard",
+        "grainy mustard",
+        "honey dijon mustard",
+        "horseradish mustard",
+        "stone-ground mustard",
+        "whole grain dijon mustard",
+        "wholegrain mustard",
+        "yellow mustard"
+      ]
+    },
+    {
+      "base": "olive tapenade"
+    },
+    {
+      "base": "onion juice"
+    },
+    {
+      "base": "onion soup mix"
+    },
+    {
+      "base": "orange blossom water"
+    },
+    {
+      "base": "orange flower water"
+    },
+    {
+      "base": "orange marmalade"
+    },
+    {
+      "base": "oyster sauce"
+    },
+    {
+      "base": "pasta sauce"
+    },
+    {
+      "base": "peach preserves"
+    },
+    {
+      "base": "peanut butter"
+    },
+    {
+      "base": "peanut sauce"
+    },
+    {
+      "base": "pesto"
+    },
+    {
+      "base": "picante sauce"
+    },
+    {
+      "base": "pickapeppa sauce"
+    },
+    {
+      "base": "pickle juice",
+      "variants": [
+        "dill pickle juice"
+      ]
+    },
+    {
+      "base": "pickle relish"
+    },
+    {
+      "base": "pickled ginger"
+    },
+    {
+      "base": "pico de gallo"
+    },
+    {
+      "base": "pineapple preserves"
+    },
+    {
+      "base": "pizza sauce"
+    },
+    {
+      "base": "plum sauce"
+    },
+    {
+      "base": "pomegranate molasses"
+    },
+    {
+      "base": "ponzu"
+    },
+    {
+      "base": "poppy seed dressing"
+    },
+    {
+      "base": "preserve"
+    },
+    {
+      "base": "ranch dressing"
+    },
+    {
+      "base": "ranch dressing mix"
+    },
+    {
+      "base": "raspberry preserves"
+    },
+    {
+      "base": "raspberry sauce"
+    },
+    {
+      "base": "raspberry vinegar"
+    },
+    {
+      "base": "red currant jelly"
+    },
+    {
+      "base": "red curry paste"
+    },
+    {
+      "base": "red pepper sauce"
+    },
+    {
+      "base": "red wine vinegar"
+    },
+    {
+      "base": "relish",
+      "variants": [
+        "dill pickle relish",
+        "dill relish"
+      ]
+    },
+    {
+      "base": "rice vinegar",
+      "variants": [
+        "brown rice vinegar",
+        "rice wine vinegar"
+      ]
+    },
+    {
+      "base": "rice wine vinegar"
+    },
+    {
+      "base": "rose water"
+    },
+    {
+      "base": "rosewater"
+    },
+    {
+      "base": "salad dressing"
+    },
+    {
+      "base": "salsa",
+      "variants": [
+        "green chili salsa",
+        "tomatillo salsa"
+      ]
+    },
+    {
+      "base": "salsa verde"
+    },
+    {
+      "base": "sambal oelek"
+    },
+    {
+      "base": "seasoned rice vinegar"
+    },
+    {
+      "base": "sherry vinegar"
+    },
+    {
+      "base": "shrimp paste"
+    },
+    {
+      "base": "sofrito"
+    },
+    {
+      "base": "soy sauce",
+      "variants": [
+        "light soy sauce"
+      ]
+    },
+    {
+      "base": "spaghetti sauce",
+      "variants": [
+        "ragu sauce"
+      ]
+    },
+    {
+      "base": "sriracha"
+    },
+    {
+      "base": "steak sauce"
+    },
+    {
+      "base": "stir-fry sauce"
+    },
+    {
+      "base": "strawberry jelly"
+    },
+    {
+      "base": "strawberry preserves"
+    },
+    {
+      "base": "strawberry syrup"
+    },
+    {
+      "base": "sweet and sour mix"
+    },
+    {
+      "base": "sweet and sour sauce"
+    },
+    {
+      "base": "sweet chili sauce"
+    },
+    {
+      "base": "sweet relish"
+    },
+    {
+      "base": "sweet soy sauce"
+    },
+    {
+      "base": "tabasco sauce"
+    },
+    {
+      "base": "taco sauce"
+    },
+    {
+      "base": "tahini"
+    },
+    {
+      "base": "tamari"
+    },
+    {
+      "base": "tamarind concentrate"
+    },
+    {
+      "base": "tamarind paste"
+    },
+    {
+      "base": "tandoori paste"
+    },
+    {
+      "base": "tarragon vinegar"
+    },
+    {
+      "base": "tartar sauce"
+    },
+    {
+      "base": "teriyaki sauce",
+      "variants": [
+        "teriyaki marinade"
+      ]
+    },
+    {
+      "base": "thousand island dressing"
+    },
+    {
+      "base": "tomato chutney"
+    },
+    {
+      "base": "tzatziki sauce"
+    },
+    {
+      "base": "vegemite"
+    },
+    {
+      "base": "vinaigrette"
+    },
+    {
+      "base": "vinegar"
+    },
+    {
+      "base": "white balsamic vinegar"
+    },
+    {
+      "base": "white sauce"
+    },
+    {
+      "base": "white vinegar"
+    },
+    {
+      "base": "white wine vinegar"
+    },
+    {
+      "base": "wine vinegar"
+    },
+    {
+      "base": "wing sauce"
+    },
+    {
+      "base": "worcestershire sauce"
+    }
+  ],
+  "Baking & Sweeteners": [
+    {
+      "base": "active dry yeast"
+    },
+    {
+      "base": "agar"
+    },
+    {
+      "base": "agave nectar"
+    },
+    {
+      "base": "agave syrup"
+    },
+    {
+      "base": "almond bark"
+    },
+    {
+      "base": "almond extract"
+    },
+    {
+      "base": "almond flour"
+    },
+    {
+      "base": "almond paste"
+    },
+    {
+      "base": "anise extract"
+    },
+    {
+      "base": "arrowroot",
+      "variants": [
+        "arrowroot powder"
+      ]
+    },
+    {
+      "base": "arrowroot flour"
+    },
+    {
+      "base": "arrowroot starch"
+    },
+    {
+      "base": "artificial sweetener"
+    },
+    {
+      "base": "baking chips"
+    },
+    {
+      "base": "baking chocolate",
+      "variants": [
+        "semisweet chocolate baking square"
+      ]
+    },
+    {
+      "base": "baking mix",
+      "variants": [
+        "bisquick"
+      ]
+    },
+    {
+      "base": "baking powder"
+    },
+    {
+      "base": "baking soda"
+    },
+    {
+      "base": "banana extract"
+    },
+    {
+      "base": "barley flour"
+    },
+    {
+      "base": "biscuit mix",
+      "variants": [
+        "biscuit baking mix"
+      ]
+    },
+    {
+      "base": "bittersweet chocolate"
+    },
+    {
+      "base": "black treacle"
+    },
+    {
+      "base": "brandy extract"
+    },
+    {
+      "base": "brewer's yeast"
+    },
+    {
+      "base": "brown rice flour"
+    },
+    {
+      "base": "brown sugar"
+    },
+    {
+      "base": "brown sugar substitute"
+    },
+    {
+      "base": "brownie mix"
+    },
+    {
+      "base": "butter chips"
+    },
+    {
+      "base": "butter extract"
+    },
+    {
+      "base": "buttercream"
+    },
+    {
+      "base": "butterscotch chips",
+      "variants": [
+        "butterscotch chip"
+      ]
+    },
+    {
+      "base": "butterscotch pudding"
+    },
+    {
+      "base": "cacao nibs"
+    },
+    {
+      "base": "cacao powder"
+    },
+    {
+      "base": "cake",
+      "variants": [
+        "chocolate cake"
+      ]
+    },
+    {
+      "base": "cake mix",
+      "variants": [
+        "angel food cake mix",
+        "butter cake mix",
+        "butter pecan cake mix",
+        "chocolate cake mix",
+        "devil's food cake mix",
+        "lemon cake mix",
+        "orange cake mix",
+        "spice cake mix",
+        "strawberry cake mix",
+        "vanilla cake mix",
+        "white cake mix",
+        "yellow cake mix"
+      ]
+    },
+    {
+      "base": "cake yeast"
+    },
+    {
+      "base": "candied cherry"
+    },
+    {
+      "base": "candied fruit"
+    },
+    {
+      "base": "candied peel"
+    },
+    {
+      "base": "candy melts"
+    },
+    {
+      "base": "cane syrup"
+    },
+    {
+      "base": "caramel"
+    },
+    {
+      "base": "caramel syrup"
+    },
+    {
+      "base": "caramel topping"
+    },
+    {
+      "base": "carob chips",
+      "variants": [
+        "carob chip"
+      ]
+    },
+    {
+      "base": "carob powder"
+    },
+    {
+      "base": "cherry gelatin"
+    },
+    {
+      "base": "chestnut flour"
+    },
+    {
+      "base": "chickpea flour"
+    },
+    {
+      "base": "chocolate",
+      "variants": [
+        "baker's chocolate",
+        "bittersweet chocolate",
+        "chocolate bar",
+        "chocolate chunk",
+        "dark chocolate",
+        "german chocolate",
+        "mexican chocolate",
+        "sweet chocolate",
+        "unsweetened chocolate"
+      ]
+    },
+    {
+      "base": "chocolate bar"
+    },
+    {
+      "base": "chocolate candies",
+      "variants": [
+        "chocolate kiss"
+      ]
+    },
+    {
+      "base": "chocolate chip cookie"
+    },
+    {
+      "base": "chocolate chips",
+      "variants": [
+        "mint chocolate chip",
+        "semi-sweet chocolate chip",
+        "semisweet chocolate chip"
+      ]
+    },
+    {
+      "base": "chocolate cookie",
+      "variants": [
+        "chocolate cookie crumb"
+      ]
+    },
+    {
+      "base": "chocolate curl"
+    },
+    {
+      "base": "chocolate extract"
+    },
+    {
+      "base": "chocolate frosting"
+    },
+    {
+      "base": "chocolate fudge topping"
+    },
+    {
+      "base": "chocolate ganache"
+    },
+    {
+      "base": "chocolate glaze"
+    },
+    {
+      "base": "chocolate hazelnut spread"
+    },
+    {
+      "base": "chocolate icing"
+    },
+    {
+      "base": "chocolate mix"
+    },
+    {
+      "base": "chocolate pudding mix",
+      "variants": [
+        "chocolate pudding",
+        "instant chocolate pudding mix"
+      ]
+    },
+    {
+      "base": "chocolate square"
+    },
+    {
+      "base": "chocolate syrup"
+    },
+    {
+      "base": "chocolate wafer",
+      "variants": [
+        "chocolate wafer crumbs"
+      ]
+    },
+    {
+      "base": "cinnamon sugar"
+    },
+    {
+      "base": "cocoa mix"
+    },
+    {
+      "base": "cocoa powder",
+      "variants": [
+        "cocoa",
+        "dutch-process cocoa powder"
+      ]
+    },
+    {
+      "base": "coconut",
+      "variants": [
+        "shredded coconut"
+      ]
+    },
+    {
+      "base": "coconut extract"
+    },
+    {
+      "base": "coconut flavoring"
+    },
+    {
+      "base": "coconut flour"
+    },
+    {
+      "base": "coconut nectar"
+    },
+    {
+      "base": "coconut sugar"
+    },
+    {
+      "base": "coconut syrup"
+    },
+    {
+      "base": "coffee extract"
+    },
+    {
+      "base": "cookie",
+      "variants": [
+        "cookie crumb"
+      ]
+    },
+    {
+      "base": "cookie dough",
+      "variants": [
+        "sugar cookie dough"
+      ]
+    },
+    {
+      "base": "cookie mix",
+      "variants": [
+        "sugar cookie mix"
+      ]
+    },
+    {
+      "base": "corn flour"
+    },
+    {
+      "base": "corn muffin mix"
+    },
+    {
+      "base": "corn syrup",
+      "variants": [
+        "dark corn syrup"
+      ]
+    },
+    {
+      "base": "cornbread mix"
+    },
+    {
+      "base": "cornmeal"
+    },
+    {
+      "base": "cornstarch"
+    },
+    {
+      "base": "cream cheese frosting"
+    },
+    {
+      "base": "cream of tartar"
+    },
+    {
+      "base": "custard powder"
+    },
+    {
+      "base": "dark chocolate chips",
+      "variants": [
+        "dark chocolate chip"
+      ]
+    },
+    {
+      "base": "desiccated coconut"
+    },
+    {
+      "base": "dried coconut",
+      "variants": [
+        "coconut flake"
+      ]
+    },
+    {
+      "base": "dulce de leche"
+    },
+    {
+      "base": "dutch-process cocoa powder"
+    },
+    {
+      "base": "erythritol"
+    },
+    {
+      "base": "espresso powder",
+      "variants": [
+        "instant espresso powder"
+      ]
+    },
+    {
+      "base": "flour",
+      "variants": [
+        "seasoned flour"
+      ]
+    },
+    {
+      "base": "food coloring",
+      "variants": [
+        "food coloring gel",
+        "green food coloring",
+        "orange food coloring",
+        "red food coloring",
+        "yellow food coloring"
+      ]
+    },
+    {
+      "base": "frosting"
+    },
+    {
+      "base": "fructose"
+    },
+    {
+      "base": "fruit pectin"
+    },
+    {
+      "base": "ganache"
+    },
+    {
+      "base": "gelatin",
+      "variants": [
+        "gelatin sheet"
+      ]
+    },
+    {
+      "base": "gelatin dessert",
+      "variants": [
+        "cherry gelatin",
+        "lemon gelatin",
+        "lemon gelatin dessert",
+        "lime gelatin",
+        "orange gelatin",
+        "strawberry gelatin"
+      ]
+    },
+    {
+      "base": "glaze"
+    },
+    {
+      "base": "gluten"
+    },
+    {
+      "base": "golden syrup"
+    },
+    {
+      "base": "graham cracker",
+      "variants": [
+        "graham cracker crumbs"
+      ]
+    },
+    {
+      "base": "graham cracker crumb",
+      "variants": [
+        "chocolate graham cracker crumb"
+      ]
+    },
+    {
+      "base": "graham flour"
+    },
+    {
+      "base": "guar gum"
+    },
+    {
+      "base": "honey",
+      "variants": [
+        "orange blossom honey"
+      ]
+    },
+    {
+      "base": "honey sugar"
+    },
+    {
+      "base": "honey syrup"
+    },
+    {
+      "base": "ice cream topping"
+    },
+    {
+      "base": "icing"
+    },
+    {
+      "base": "instant tapioca"
+    },
+    {
+      "base": "jaggery"
+    },
+    {
+      "base": "jam"
+    },
+    {
+      "base": "jelly"
+    },
+    {
+      "base": "lemon extract"
+    },
+    {
+      "base": "lemon flavoring"
+    },
+    {
+      "base": "lemon gelatin"
+    },
+    {
+      "base": "lemon pudding"
+    },
+    {
+      "base": "lemon pudding mix"
+    },
+    {
+      "base": "lime gelatin"
+    },
+    {
+      "base": "liquid sweetener"
+    },
+    {
+      "base": "maca powder"
+    },
+    {
+      "base": "malt powder"
+    },
+    {
+      "base": "malt syrup"
+    },
+    {
+      "base": "maple extract"
+    },
+    {
+      "base": "maple sugar"
+    },
+    {
+      "base": "maple syrup"
+    },
+    {
+      "base": "marshmallow",
+      "variants": [
+        "mini marshmallow"
+      ]
+    },
+    {
+      "base": "marshmallow creme"
+    },
+    {
+      "base": "marshmallow fluff"
+    },
+    {
+      "base": "marzipan"
+    },
+    {
+      "base": "matzo meal"
+    },
+    {
+      "base": "meringue"
+    },
+    {
+      "base": "meringue powder"
+    },
+    {
+      "base": "milk chocolate"
+    },
+    {
+      "base": "milk chocolate chips",
+      "variants": [
+        "milk chocolate chip"
+      ]
+    },
+    {
+      "base": "millet flour"
+    },
+    {
+      "base": "mint extract"
+    },
+    {
+      "base": "mixed citrus peel"
+    },
+    {
+      "base": "molasses",
+      "variants": [
+        "blackstrap molasses"
+      ]
+    },
+    {
+      "base": "muscovado sugar"
+    },
+    {
+      "base": "orange extract",
+      "variants": [
+        "orange flavoring"
+      ]
+    },
+    {
+      "base": "orange gelatin"
+    },
+    {
+      "base": "palm sugar"
+    },
+    {
+      "base": "pancake mix"
+    },
+    {
+      "base": "pancake syrup"
+    },
+    {
+      "base": "pastry cream"
+    },
+    {
+      "base": "pastry flour"
+    },
+    {
+      "base": "peach gelatin dessert"
+    },
+    {
+      "base": "peanut butter chips"
+    },
+    {
+      "base": "pectin"
+    },
+    {
+      "base": "peppermint extract"
+    },
+    {
+      "base": "pineapple syrup"
+    },
+    {
+      "base": "pistachio pudding"
+    },
+    {
+      "base": "pistachio pudding mix"
+    },
+    {
+      "base": "potato flour"
+    },
+    {
+      "base": "potato starch"
+    },
+    {
+      "base": "powdered sugar"
+    },
+    {
+      "base": "pudding"
+    },
+    {
+      "base": "pudding mix",
+      "variants": [
+        "instant pudding"
+      ]
+    },
+    {
+      "base": "pumpkin butter"
+    },
+    {
+      "base": "quinoa flour"
+    },
+    {
+      "base": "raisin and currant"
+    },
+    {
+      "base": "raspberry gelatin"
+    },
+    {
+      "base": "raw sugar"
+    },
+    {
+      "base": "rice flour",
+      "variants": [
+        "sweet rice flour"
+      ]
+    },
+    {
+      "base": "rice syrup",
+      "variants": [
+        "brown rice syrup"
+      ]
+    },
+    {
+      "base": "rum extract"
+    },
+    {
+      "base": "rum flavoring"
+    },
+    {
+      "base": "rye flour"
+    },
+    {
+      "base": "self-rising flour"
+    },
+    {
+      "base": "semisweet chocolate"
+    },
+    {
+      "base": "semolina flour"
+    },
+    {
+      "base": "sherbet",
+      "variants": [
+        "lime sherbet"
+      ]
+    },
+    {
+      "base": "shortbread cookie"
+    },
+    {
+      "base": "shredded coconut",
+      "variants": [
+        "sweetened shredded coconut"
+      ]
+    },
+    {
+      "base": "simple syrup"
+    },
+    {
+      "base": "sorghum flour"
+    },
+    {
+      "base": "soy flour"
+    },
+    {
+      "base": "sparkling sugar"
+    },
+    {
+      "base": "spelt flour"
+    },
+    {
+      "base": "splenda"
+    },
+    {
+      "base": "splenda sugar blend"
+    },
+    {
+      "base": "sprinkle"
+    },
+    {
+      "base": "sprinkles",
+      "variants": [
+        "chocolate sprinkles",
+        "rainbow sprinkles"
+      ]
+    },
+    {
+      "base": "starch"
+    },
+    {
+      "base": "stevia",
+      "variants": [
+        "liquid stevia",
+        "stevia extract"
+      ]
+    },
+    {
+      "base": "strawberry extract"
+    },
+    {
+      "base": "strawberry gelatin"
+    },
+    {
+      "base": "strawberry gelatin dessert"
+    },
+    {
+      "base": "strawberry glaze"
+    },
+    {
+      "base": "strawberry jam"
+    },
+    {
+      "base": "streusel topping"
+    },
+    {
+      "base": "sucanat"
+    },
+    {
+      "base": "sucralose"
+    },
+    {
+      "base": "sugar",
+      "variants": [
+        "decorating sugar",
+        "sanding sugar",
+        "turbinado sugar"
+      ]
+    },
+    {
+      "base": "sugar substitute"
+    },
+    {
+      "base": "sugar syrup"
+    },
+    {
+      "base": "sweetener"
+    },
+    {
+      "base": "swerve sweetener"
+    },
+    {
+      "base": "syrup"
+    },
+    {
+      "base": "tapioca"
+    },
+    {
+      "base": "tapioca pearl"
+    },
+    {
+      "base": "tapioca starch"
+    },
+    {
+      "base": "toffee",
+      "variants": [
+        "toffee bits"
+      ]
+    },
+    {
+      "base": "treacle"
+    },
+    {
+      "base": "truvia"
+    },
+    {
+      "base": "turbinado sugar"
+    },
+    {
+      "base": "vanilla"
+    },
+    {
+      "base": "vanilla bean",
+      "variants": [
+        "vanilla bean seed"
+      ]
+    },
+    {
+      "base": "vanilla frosting"
+    },
+    {
+      "base": "vanilla pudding mix",
+      "variants": [
+        "vanilla instant pudding",
+        "vanilla pudding"
+      ]
+    },
+    {
+      "base": "vanilla sugar"
+    },
+    {
+      "base": "vanilla wafer"
+    },
+    {
+      "base": "wheat gluten",
+      "variants": [
+        "vital wheat gluten"
+      ]
+    },
+    {
+      "base": "whipped topping mix",
+      "variants": [
+        "dream whip"
+      ]
+    },
+    {
+      "base": "white chocolate"
+    },
+    {
+      "base": "white chocolate chips",
+      "variants": [
+        "white chocolate chip"
+      ]
+    },
+    {
+      "base": "white syrup"
+    },
+    {
+      "base": "whole wheat flour"
+    },
+    {
+      "base": "xanthan gum"
+    },
+    {
+      "base": "xylitol"
+    },
+    {
+      "base": "yeast",
+      "variants": [
+        "active dry yeast",
+        "cake yeast",
+        "instant yeast"
+      ]
+    }
+  ],
+  "Frozen Foods": [
+    {
+      "base": "hash brown",
+      "variants": [
+        "hash brown potato",
+        "tater tot"
+      ]
+    },
+    {
+      "base": "ice cream",
+      "variants": [
+        "butter pecan ice cream",
+        "chocolate ice cream",
+        "coffee ice cream",
+        "mint chocolate chip ice cream",
+        "strawberry ice cream",
+        "vanilla ice cream"
+      ]
+    },
+    {
+      "base": "popsicle"
+    },
+    {
+      "base": "sherbet",
+      "variants": [
+        "lemon sherbet",
+        "orange sherbet",
+        "pineapple sherbet",
+        "raspberry sherbet"
+      ]
+    },
+    {
+      "base": "sorbet",
+      "variants": [
+        "lemon sorbet",
+        "raspberry sorbet"
+      ]
+    }
+  ],
+  "Canned & Jarred": [
+    {
+      "base": "apple jelly"
+    },
+    {
+      "base": "apple pie filling"
+    },
+    {
+      "base": "applesauce"
+    },
+    {
+      "base": "apricot preserves"
+    },
+    {
+      "base": "beef base"
+    },
+    {
+      "base": "beef bouillon"
+    },
+    {
+      "base": "beef bouillon cube"
+    },
+    {
+      "base": "beef broth"
+    },
+    {
+      "base": "beef consommé"
+    },
+    {
+      "base": "beef gravy"
+    },
+    {
+      "base": "beef stock"
+    },
+    {
+      "base": "beef stock cube"
+    },
+    {
+      "base": "blueberry pie filling"
+    },
+    {
+      "base": "bone broth"
+    },
+    {
+      "base": "bouillon"
+    },
+    {
+      "base": "bouillon cube"
+    },
+    {
+      "base": "bread and butter pickle"
+    },
+    {
+      "base": "broccoli cheese soup"
+    },
+    {
+      "base": "broccoli soup"
+    },
+    {
+      "base": "broth"
+    },
+    {
+      "base": "canned chili"
+    },
+    {
+      "base": "canned green chili"
+    },
+    {
+      "base": "canned mushroom"
+    },
+    {
+      "base": "canned peach",
+      "variants": [
+        "canned sliced peach"
+      ]
+    },
+    {
+      "base": "canned pineapple",
+      "variants": [
+        "crushed pineapple",
+        "pineapple with juice"
+      ]
+    },
+    {
+      "base": "canned sliced mushroom"
+    },
+    {
+      "base": "canned tomatoes with green chilies",
+      "variants": [
+        "canned tomato with green chili",
+        "rotel tomatoes",
+        "tomato and green chili"
+      ]
+    },
+    {
+      "base": "canned tuna",
+      "variants": [
+        "tuna in oil"
+      ]
+    },
+    {
+      "base": "caper"
+    },
+    {
+      "base": "celery soup"
+    },
+    {
+      "base": "cheddar cheese soup"
+    },
+    {
+      "base": "cheese soup"
+    },
+    {
+      "base": "cherry pie filling"
+    },
+    {
+      "base": "cherry preserves"
+    },
+    {
+      "base": "chicken and rice soup"
+    },
+    {
+      "base": "chicken base"
+    },
+    {
+      "base": "chicken bouillon"
+    },
+    {
+      "base": "chicken bouillon cube"
+    },
+    {
+      "base": "chicken bouillon granule"
+    },
+    {
+      "base": "chicken broth",
+      "variants": [
+        "low sodium chicken broth"
+      ]
+    },
+    {
+      "base": "chicken gumbo soup"
+    },
+    {
+      "base": "chicken noodle soup"
+    },
+    {
+      "base": "chicken rice soup"
+    },
+    {
+      "base": "chicken soup"
+    },
+    {
+      "base": "chicken stock"
+    },
+    {
+      "base": "chicken stock cube"
+    },
+    {
+      "base": "chicken-flavored soup powder"
+    },
+    {
+      "base": "clam broth"
+    },
+    {
+      "base": "clam juice"
+    },
+    {
+      "base": "coconut cream"
+    },
+    {
+      "base": "coconut milk"
+    },
+    {
+      "base": "condensed cream of mushroom soup"
+    },
+    {
+      "base": "condensed tomato soup"
+    },
+    {
+      "base": "consommé"
+    },
+    {
+      "base": "corn",
+      "variants": [
+        "mexicorn",
+        "whole kernel corn"
+      ]
+    },
+    {
+      "base": "cranberry sauce"
+    },
+    {
+      "base": "cream of broccoli soup"
+    },
+    {
+      "base": "cream of celery soup"
+    },
+    {
+      "base": "cream of chicken soup"
+    },
+    {
+      "base": "cream of coconut"
+    },
+    {
+      "base": "cream of mushroom chicken soup"
+    },
+    {
+      "base": "cream of mushroom soup"
+    },
+    {
+      "base": "cream of potato soup"
+    },
+    {
+      "base": "cream of shrimp soup"
+    },
+    {
+      "base": "cream soup"
+    },
+    {
+      "base": "cream style corn",
+      "variants": [
+        "cream-style corn"
+      ]
+    },
+    {
+      "base": "creamed corn"
+    },
+    {
+      "base": "evaporated milk"
+    },
+    {
+      "base": "fig preserve"
+    },
+    {
+      "base": "fish stock"
+    },
+    {
+      "base": "french onion soup"
+    },
+    {
+      "base": "fruit cocktail"
+    },
+    {
+      "base": "fruit preserve"
+    },
+    {
+      "base": "golden mushroom soup"
+    },
+    {
+      "base": "gravy mix"
+    },
+    {
+      "base": "guava paste"
+    },
+    {
+      "base": "heart of palm"
+    },
+    {
+      "base": "hominy"
+    },
+    {
+      "base": "jellied cranberry sauce"
+    },
+    {
+      "base": "lamb stock"
+    },
+    {
+      "base": "lemon pie filling"
+    },
+    {
+      "base": "limeade concentrate"
+    },
+    {
+      "base": "maraschino cherry"
+    },
+    {
+      "base": "marinara sauce"
+    },
+    {
+      "base": "marinated artichoke"
+    },
+    {
+      "base": "marinated artichoke hearts"
+    },
+    {
+      "base": "mushroom broth"
+    },
+    {
+      "base": "mushroom soup"
+    },
+    {
+      "base": "olive",
+      "variants": [
+        "black olive",
+        "green olive",
+        "kalamata olive",
+        "nicoise olives",
+        "stuffed olive"
+      ]
+    },
+    {
+      "base": "onion soup"
+    },
+    {
+      "base": "onion soup mix"
+    },
+    {
+      "base": "orange juice concentrate"
+    },
+    {
+      "base": "passata"
+    },
+    {
+      "base": "peach jam"
+    },
+    {
+      "base": "peach pie filling"
+    },
+    {
+      "base": "pickle",
+      "variants": [
+        "cornichon",
+        "dill pickle",
+        "gherkin",
+        "sweet pickle"
+      ]
+    },
+    {
+      "base": "pie filling"
+    },
+    {
+      "base": "pimento"
+    },
+    {
+      "base": "pimento-stuffed olive"
+    },
+    {
+      "base": "plum jam"
+    },
+    {
+      "base": "pork and beans"
+    },
+    {
+      "base": "potato soup"
+    },
+    {
+      "base": "pumpkin pie filling"
+    },
+    {
+      "base": "pumpkin pie mix"
+    },
+    {
+      "base": "pumpkin puree",
+      "variants": [
+        "pumpkin purée"
+      ]
+    },
+    {
+      "base": "raspberry jam"
+    },
+    {
+      "base": "sauerkraut"
+    },
+    {
+      "base": "seafood stock"
+    },
+    {
+      "base": "shrimp soup"
+    },
+    {
+      "base": "shrimp stock"
+    },
+    {
+      "base": "soup mix"
+    },
+    {
+      "base": "spaghetti sauce"
+    },
+    {
+      "base": "spaghetti sauce mix"
+    },
+    {
+      "base": "spam"
+    },
+    {
+      "base": "stewed tomato"
+    },
+    {
+      "base": "stock"
+    },
+    {
+      "base": "strawberry gelatin"
+    },
+    {
+      "base": "strawberry pie filling"
+    },
+    {
+      "base": "sun-dried tomato in oil"
+    },
+    {
+      "base": "sweet gherkin"
+    },
+    {
+      "base": "sweetened condensed milk"
+    },
+    {
+      "base": "tomato and chili sauce",
+      "variants": [
+        "tomato and chili"
+      ]
+    },
+    {
+      "base": "tomato passata"
+    },
+    {
+      "base": "tomato paste"
+    },
+    {
+      "base": "tomato puree"
+    },
+    {
+      "base": "tomato sauce"
+    },
+    {
+      "base": "tomato soup"
+    },
+    {
+      "base": "turkey broth"
+    },
+    {
+      "base": "turkey stock"
+    },
+    {
+      "base": "veal stock"
+    },
+    {
+      "base": "vegetable bouillon"
+    },
+    {
+      "base": "vegetable bouillon cube"
+    },
+    {
+      "base": "vegetable soup"
+    },
+    {
+      "base": "vegetable soup mix"
+    },
+    {
+      "base": "vegetable stock"
+    },
+    {
+      "base": "vegetable stock powder"
+    },
+    {
+      "base": "whole berry cranberry sauce"
+    }
+  ],
+  "Beverages": [
+    {
+      "base": "7 up",
+      "variants": [
+        "7-up"
+      ]
+    },
+    {
+      "base": "apple cider"
+    },
+    {
+      "base": "apple juice"
+    },
+    {
+      "base": "apricot juice"
+    },
+    {
+      "base": "apricot nectar"
+    },
+    {
+      "base": "beet juice"
+    },
+    {
+      "base": "black tea"
+    },
+    {
+      "base": "bloody mary mix"
+    },
+    {
+      "base": "carbonated water"
+    },
+    {
+      "base": "carrot juice"
+    },
+    {
+      "base": "chai tea"
+    },
+    {
+      "base": "cherry juice"
+    },
+    {
+      "base": "cider"
+    },
+    {
+      "base": "clementine juice"
+    },
+    {
+      "base": "club soda"
+    },
+    {
+      "base": "coconut water"
+    },
+    {
+      "base": "coffee"
+    },
+    {
+      "base": "coffee bean"
+    },
+    {
+      "base": "cola"
+    },
+    {
+      "base": "cranberry juice"
+    },
+    {
+      "base": "cranberry juice cocktail"
+    },
+    {
+      "base": "eggnog"
+    },
+    {
+      "base": "espresso"
+    },
+    {
+      "base": "fruit juice"
+    },
+    {
+      "base": "fruit nectar"
+    },
+    {
+      "base": "ginger ale"
+    },
+    {
+      "base": "ginger beer"
+    },
+    {
+      "base": "grape juice"
+    },
+    {
+      "base": "grapefruit juice"
+    },
+    {
+      "base": "green tea"
+    },
+    {
+      "base": "green tea powder"
+    },
+    {
+      "base": "grenadine"
+    },
+    {
+      "base": "hawaiian punch"
+    },
+    {
+      "base": "instant coffee"
+    },
+    {
+      "base": "instant espresso"
+    },
+    {
+      "base": "instant tea"
+    },
+    {
+      "base": "juice"
+    },
+    {
+      "base": "kool-aid"
+    },
+    {
+      "base": "lemon lime beverage"
+    },
+    {
+      "base": "lemon-lime soda"
+    },
+    {
+      "base": "lemonade"
+    },
+    {
+      "base": "lemonade concentrate"
+    },
+    {
+      "base": "lemonade mix"
+    },
+    {
+      "base": "limeade"
+    },
+    {
+      "base": "mango juice"
+    },
+    {
+      "base": "mango nectar"
+    },
+    {
+      "base": "maraschino cherry juice"
+    },
+    {
+      "base": "margarita mix"
+    },
+    {
+      "base": "matcha"
+    },
+    {
+      "base": "matcha powder"
+    },
+    {
+      "base": "orange soda"
+    },
+    {
+      "base": "passion fruit juice"
+    },
+    {
+      "base": "peach juice"
+    },
+    {
+      "base": "peach nectar"
+    },
+    {
+      "base": "pear juice"
+    },
+    {
+      "base": "pear nectar"
+    },
+    {
+      "base": "pineapple juice"
+    },
+    {
+      "base": "pink lemonade"
+    },
+    {
+      "base": "pomegranate juice"
+    },
+    {
+      "base": "raspberry juice"
+    },
+    {
+      "base": "root beer"
+    },
+    {
+      "base": "seltzer"
+    },
+    {
+      "base": "seltzer water"
+    },
+    {
+      "base": "soda water"
+    },
+    {
+      "base": "sour mix"
+    },
+    {
+      "base": "sparkling water"
+    },
+    {
+      "base": "tamarind juice"
+    },
+    {
+      "base": "tang"
+    },
+    {
+      "base": "tangerine juice"
+    },
+    {
+      "base": "tea"
+    },
+    {
+      "base": "tea bag"
+    },
+    {
+      "base": "tea leaf"
+    },
+    {
+      "base": "tomato juice"
+    },
+    {
+      "base": "tonic water"
+    },
+    {
+      "base": "vanilla soymilk"
+    },
+    {
+      "base": "vegetable juice"
+    },
+    {
+      "base": "white grape juice"
+    }
+  ],
+  "Snacks": [
+    {
+      "base": "amaretti cookie"
+    },
+    {
+      "base": "banana chips"
+    },
+    {
+      "base": "biscotti"
+    },
+    {
+      "base": "brownie"
+    },
+    {
+      "base": "butter cracker"
+    },
+    {
+      "base": "butterfinger bar"
+    },
+    {
+      "base": "candy"
+    },
+    {
+      "base": "candy cane"
+    },
+    {
+      "base": "candy corn"
+    },
+    {
+      "base": "caramel candy"
+    },
+    {
+      "base": "cheese cracker"
+    },
+    {
+      "base": "chip"
+    },
+    {
+      "base": "chocolate bar"
+    },
+    {
+      "base": "chocolate candy"
+    },
+    {
+      "base": "chocolate cookie"
+    },
+    {
+      "base": "chocolate kiss"
+    },
+    {
+      "base": "chocolate sandwich cookie"
+    },
+    {
+      "base": "chocolate wafer"
+    },
+    {
+      "base": "chocolate wafer cookie"
+    },
+    {
+      "base": "cinnamon candy"
+    },
+    {
+      "base": "cinnamon graham cracker"
+    },
+    {
+      "base": "club cracker"
+    },
+    {
+      "base": "coconut chip"
+    },
+    {
+      "base": "cookie"
+    },
+    {
+      "base": "corn chex"
+    },
+    {
+      "base": "corn chip",
+      "variants": [
+        "corn chips"
+      ]
+    },
+    {
+      "base": "corn tortilla chip"
+    },
+    {
+      "base": "cracker"
+    },
+    {
+      "base": "doritos"
+    },
+    {
+      "base": "dried cranberry"
+    },
+    {
+      "base": "dried fruit"
+    },
+    {
+      "base": "french fried onion"
+    },
+    {
+      "base": "french fries"
+    },
+    {
+      "base": "fudge"
+    },
+    {
+      "base": "graham cracker"
+    },
+    {
+      "base": "gumdrop"
+    },
+    {
+      "base": "gummy worm"
+    },
+    {
+      "base": "heath bar"
+    },
+    {
+      "base": "ice cream cone"
+    },
+    {
+      "base": "jelly bean"
+    },
+    {
+      "base": "lollipop"
+    },
+    {
+      "base": "m&m's"
+    },
+    {
+      "base": "macaroon"
+    },
+    {
+      "base": "marshmallow"
+    },
+    {
+      "base": "mint candy"
+    },
+    {
+      "base": "nilla wafer"
+    },
+    {
+      "base": "onion ring"
+    },
+    {
+      "base": "oreo",
+      "variants": [
+        "oreo cookie"
+      ]
+    },
+    {
+      "base": "peppermint candy"
+    },
+    {
+      "base": "pita chip"
+    },
+    {
+      "base": "popcorn"
+    },
+    {
+      "base": "potato chip"
+    },
+    {
+      "base": "pretzel"
+    },
+    {
+      "base": "pretzel stick"
+    },
+    {
+      "base": "pretzel twist"
+    },
+    {
+      "base": "red hot candy"
+    },
+    {
+      "base": "ritz cracker"
+    },
+    {
+      "base": "saltine cracker"
+    },
+    {
+      "base": "snickers bar"
+    },
+    {
+      "base": "toffee"
+    },
+    {
+      "base": "toffee bar"
+    },
+    {
+      "base": "tortilla chip",
+      "variants": [
+        "tortilla chips"
+      ]
+    },
+    {
+      "base": "twinkie"
+    },
+    {
+      "base": "vanilla caramel"
+    },
+    {
+      "base": "vanilla wafer"
+    },
+    {
+      "base": "wheat cracker"
+    }
+  ],
+  "Oils & Fats": [
+    {
+      "base": "almond oil"
+    },
+    {
+      "base": "avocado oil"
+    },
+    {
+      "base": "bacon drippings"
+    },
+    {
+      "base": "bacon grease"
+    },
+    {
+      "base": "butter flavored shortening"
+    },
+    {
+      "base": "butter oil"
+    },
+    {
+      "base": "butter-flavored cooking spray"
+    },
+    {
+      "base": "butter-margarine blend"
+    },
+    {
+      "base": "buttery spread"
+    },
+    {
+      "base": "canola oil"
+    },
+    {
+      "base": "canola oil cooking spray"
+    },
+    {
+      "base": "cocoa butter"
+    },
+    {
+      "base": "coconut butter"
+    },
+    {
+      "base": "coconut oil"
+    },
+    {
+      "base": "cooking oil"
+    },
+    {
+      "base": "cooking spray"
+    },
+    {
+      "base": "corn oil"
+    },
+    {
+      "base": "dark sesame oil"
+    },
+    {
+      "base": "drippings"
+    },
+    {
+      "base": "flavored oil"
+    },
+    {
+      "base": "flaxseed oil"
+    },
+    {
+      "base": "garlic butter"
+    },
+    {
+      "base": "garlic oil"
+    },
+    {
+      "base": "ghee"
+    },
+    {
+      "base": "grapeseed oil"
+    },
+    {
+      "base": "hazelnut oil"
+    },
+    {
+      "base": "lard"
+    },
+    {
+      "base": "margarine"
+    },
+    {
+      "base": "mustard oil"
+    },
+    {
+      "base": "neutral oil"
+    },
+    {
+      "base": "nonstick vegetable oil spray"
+    },
+    {
+      "base": "oil"
+    },
+    {
+      "base": "olive oil"
+    },
+    {
+      "base": "olive oil cooking spray"
+    },
+    {
+      "base": "olive oil spray"
+    },
+    {
+      "base": "peanut oil"
+    },
+    {
+      "base": "rapeseed oil"
+    },
+    {
+      "base": "rice bran oil"
+    },
+    {
+      "base": "safflower oil"
+    },
+    {
+      "base": "schmaltz"
+    },
+    {
+      "base": "sesame oil"
+    },
+    {
+      "base": "shortening"
+    },
+    {
+      "base": "suet"
+    },
+    {
+      "base": "sunflower oil"
+    },
+    {
+      "base": "toasted sesame oil"
+    },
+    {
+      "base": "truffle oil"
+    },
+    {
+      "base": "vegan butter"
+    },
+    {
+      "base": "vegetable oil"
+    },
+    {
+      "base": "vegetable oil cooking spray"
+    },
+    {
+      "base": "vegetable oil spray"
+    },
+    {
+      "base": "vegetable shortening"
+    },
+    {
+      "base": "walnut oil"
+    },
+    {
+      "base": "white truffle oil"
+    }
+  ],
+  "Pasta & Noodles": [
+    {
+      "base": "angel hair pasta"
+    },
+    {
+      "base": "bean thread noodle"
+    },
+    {
+      "base": "bucatini"
+    },
+    {
+      "base": "capellini"
+    },
+    {
+      "base": "cavatappi"
+    },
+    {
+      "base": "cheese ravioli"
+    },
+    {
+      "base": "cheese tortellini"
+    },
+    {
+      "base": "chinese egg noodle"
+    },
+    {
+      "base": "chinese noodle"
+    },
+    {
+      "base": "chow mein noodle"
+    },
+    {
+      "base": "ditalini"
+    },
+    {
+      "base": "egg noodle"
+    },
+    {
+      "base": "farfalle"
+    },
+    {
+      "base": "fettuccine",
+      "variants": [
+        "spinach fettuccine"
+      ]
+    },
+    {
+      "base": "fusilli"
+    },
+    {
+      "base": "glass noodles"
+    },
+    {
+      "base": "gnocchi"
+    },
+    {
+      "base": "hokkien noodle"
+    },
+    {
+      "base": "lasagna noodle",
+      "variants": [
+        "lasagna",
+        "lasagna sheet"
+      ]
+    },
+    {
+      "base": "linguine"
+    },
+    {
+      "base": "macaroni"
+    },
+    {
+      "base": "manicotti"
+    },
+    {
+      "base": "mein noodle"
+    },
+    {
+      "base": "noodle"
+    },
+    {
+      "base": "orecchiette"
+    },
+    {
+      "base": "orzo"
+    },
+    {
+      "base": "pappardelle"
+    },
+    {
+      "base": "pasta"
+    },
+    {
+      "base": "pasta shell",
+      "variants": [
+        "jumbo pasta shell"
+      ]
+    },
+    {
+      "base": "penne"
+    },
+    {
+      "base": "potato gnocchi"
+    },
+    {
+      "base": "ramen noodle"
+    },
+    {
+      "base": "ravioli"
+    },
+    {
+      "base": "rice noodle"
+    },
+    {
+      "base": "rice vermicelli"
+    },
+    {
+      "base": "rigatoni"
+    },
+    {
+      "base": "rotelle"
+    },
+    {
+      "base": "rotini"
+    },
+    {
+      "base": "short pasta"
+    },
+    {
+      "base": "soba noodle"
+    },
+    {
+      "base": "spaghetti",
+      "variants": [
+        "wheat spaghetti"
+      ]
+    },
+    {
+      "base": "spaghettini"
+    },
+    {
+      "base": "tagliatelle"
+    },
+    {
+      "base": "tortellini"
+    },
+    {
+      "base": "udon noodle"
+    },
+    {
+      "base": "vermicelli",
+      "variants": [
+        "vermicelli noodle"
+      ]
+    },
+    {
+      "base": "wide noodle"
+    },
+    {
+      "base": "ziti"
+    }
+  ],
+  "Nuts & Seeds": [
+    {
+      "base": "almond",
+      "variants": [
+        "slivered almond"
+      ]
+    },
+    {
+      "base": "almond butter"
+    },
+    {
+      "base": "almond meal"
+    },
+    {
+      "base": "black sesame seed"
+    },
+    {
+      "base": "black walnut"
+    },
+    {
+      "base": "brazil nut"
+    },
+    {
+      "base": "cashew"
+    },
+    {
+      "base": "cashew butter"
+    },
+    {
+      "base": "chestnut"
+    },
+    {
+      "base": "chia seed"
+    },
+    {
+      "base": "dried coconut"
+    },
+    {
+      "base": "flax seed"
+    },
+    {
+      "base": "flaxseed"
+    },
+    {
+      "base": "flaxseed meal"
+    },
+    {
+      "base": "hazelnut"
+    },
+    {
+      "base": "hazelnut meal"
+    },
+    {
+      "base": "hemp seed"
+    },
+    {
+      "base": "macadamia nut"
+    },
+    {
+      "base": "mixed nuts",
+      "variants": [
+        "mixed nut"
+      ]
+    },
+    {
+      "base": "nigella seed"
+    },
+    {
+      "base": "nut"
+    },
+    {
+      "base": "nut butter"
+    },
+    {
+      "base": "peanut"
+    },
+    {
+      "base": "pecan"
+    },
+    {
+      "base": "pecan and walnut"
+    },
+    {
+      "base": "pine nut"
+    },
+    {
+      "base": "pistachio"
+    },
+    {
+      "base": "poppy seed"
+    },
+    {
+      "base": "pumpkin seed"
+    },
+    {
+      "base": "seed"
+    },
+    {
+      "base": "sesame paste"
+    },
+    {
+      "base": "sesame seed"
+    },
+    {
+      "base": "sunflower seed",
+      "variants": [
+        "sunflower kernel"
+      ]
+    },
+    {
+      "base": "sunflower seed butter"
+    },
+    {
+      "base": "walnut"
+    },
+    {
+      "base": "walnut and almond"
+    }
+  ],
+  "Alcohol & Spirits": [
+    {
+      "base": "absinthe"
+    },
+    {
+      "base": "alcohol"
+    },
+    {
+      "base": "ale"
+    },
+    {
+      "base": "almond liqueur"
+    },
+    {
+      "base": "amaretto"
+    },
+    {
+      "base": "apple brandy"
+    },
+    {
+      "base": "applejack"
+    },
+    {
+      "base": "apricot brandy"
+    },
+    {
+      "base": "armagnac"
+    },
+    {
+      "base": "baileys irish cream"
+    },
+    {
+      "base": "banana liqueur"
+    },
+    {
+      "base": "beer"
+    },
+    {
+      "base": "bitters"
+    },
+    {
+      "base": "blue curaçao"
+    },
+    {
+      "base": "bourbon"
+    },
+    {
+      "base": "brandy"
+    },
+    {
+      "base": "brown ale"
+    },
+    {
+      "base": "burgundy wine"
+    },
+    {
+      "base": "butterscotch schnapps"
+    },
+    {
+      "base": "cabernet sauvignon wine"
+    },
+    {
+      "base": "cachaça"
+    },
+    {
+      "base": "calvados"
+    },
+    {
+      "base": "campari"
+    },
+    {
+      "base": "cassis liqueur"
+    },
+    {
+      "base": "chablis"
+    },
+    {
+      "base": "chambord"
+    },
+    {
+      "base": "champagne"
+    },
+    {
+      "base": "chardonnay"
+    },
+    {
+      "base": "cherry brandy"
+    },
+    {
+      "base": "chinese rice wine"
+    },
+    {
+      "base": "chocolate liqueur"
+    },
+    {
+      "base": "coconut rum"
+    },
+    {
+      "base": "coffee liqueur"
+    },
+    {
+      "base": "cognac"
+    },
+    {
+      "base": "cointreau"
+    },
+    {
+      "base": "cooking sherry"
+    },
+    {
+      "base": "cream sherry"
+    },
+    {
+      "base": "crème de cacao"
+    },
+    {
+      "base": "crème de cassis"
+    },
+    {
+      "base": "crème de menthe"
+    },
+    {
+      "base": "dark beer"
+    },
+    {
+      "base": "dark rum"
+    },
+    {
+      "base": "dry wine"
+    },
+    {
+      "base": "elderflower liqueur"
+    },
+    {
+      "base": "frangelico"
+    },
+    {
+      "base": "galliano"
+    },
+    {
+      "base": "gin"
+    },
+    {
+      "base": "grand marnier"
+    },
+    {
+      "base": "grappa"
+    },
+    {
+      "base": "green crème de menthe"
+    },
+    {
+      "base": "guinness stout"
+    },
+    {
+      "base": "hard cider"
+    },
+    {
+      "base": "hazelnut liqueur"
+    },
+    {
+      "base": "irish cream liqueur"
+    },
+    {
+      "base": "kahlua",
+      "variants": [
+        "kahlúa"
+      ]
+    },
+    {
+      "base": "kirsch"
+    },
+    {
+      "base": "lager beer"
+    },
+    {
+      "base": "light beer"
+    },
+    {
+      "base": "limoncello"
+    },
+    {
+      "base": "liqueur"
+    },
+    {
+      "base": "liquor"
+    },
+    {
+      "base": "madeira wine"
+    },
+    {
+      "base": "maraschino liqueur"
+    },
+    {
+      "base": "marsala wine"
+    },
+    {
+      "base": "melon liqueur"
+    },
+    {
+      "base": "merlot"
+    },
+    {
+      "base": "orange bitters"
+    },
+    {
+      "base": "orange liqueur"
+    },
+    {
+      "base": "ouzo"
+    },
+    {
+      "base": "pale ale"
+    },
+    {
+      "base": "peach schnapps"
+    },
+    {
+      "base": "peppermint schnapps"
+    },
+    {
+      "base": "pernod"
+    },
+    {
+      "base": "pinot noir"
+    },
+    {
+      "base": "pisco"
+    },
+    {
+      "base": "port"
+    },
+    {
+      "base": "prosecco"
+    },
+    {
+      "base": "raspberry liqueur"
+    },
+    {
+      "base": "red wine"
+    },
+    {
+      "base": "rice wine"
+    },
+    {
+      "base": "riesling wine"
+    },
+    {
+      "base": "rosé wine"
+    },
+    {
+      "base": "ruby port"
+    },
+    {
+      "base": "rum"
+    },
+    {
+      "base": "rye whiskey"
+    },
+    {
+      "base": "sake"
+    },
+    {
+      "base": "sauternes"
+    },
+    {
+      "base": "schnapps"
+    },
+    {
+      "base": "scotch"
+    },
+    {
+      "base": "scotch whisky"
+    },
+    {
+      "base": "shaoxing wine"
+    },
+    {
+      "base": "sherry"
+    },
+    {
+      "base": "southern comfort"
+    },
+    {
+      "base": "sparkling wine"
+    },
+    {
+      "base": "spiced rum"
+    },
+    {
+      "base": "stout"
+    },
+    {
+      "base": "sweet sherry"
+    },
+    {
+      "base": "sweet vermouth"
+    },
+    {
+      "base": "sweet white wine"
+    },
+    {
+      "base": "tequila"
+    },
+    {
+      "base": "tia maria"
+    },
+    {
+      "base": "vanilla vodka"
+    },
+    {
+      "base": "vermouth"
+    },
+    {
+      "base": "vodka"
+    },
+    {
+      "base": "whiskey"
+    },
+    {
+      "base": "white crème de cacao"
+    },
+    {
+      "base": "white rum"
+    },
+    {
+      "base": "white vermouth"
+    },
+    {
+      "base": "white wine"
+    },
+    {
+      "base": "wine"
+    }
+  ],
+  "Legumes & Beans": [
+    {
+      "base": "adzuki bean"
+    },
+    {
+      "base": "baked beans"
+    },
+    {
+      "base": "bean"
+    },
+    {
+      "base": "black bean"
+    },
+    {
+      "base": "black-eyed pea"
+    },
+    {
+      "base": "broad bean"
+    },
+    {
+      "base": "butter bean"
+    },
+    {
+      "base": "cannellini bean"
+    },
+    {
+      "base": "chana dal"
+    },
+    {
+      "base": "chickpea",
+      "variants": [
+        "canned chickpea"
+      ]
+    },
+    {
+      "base": "chili bean"
+    },
+    {
+      "base": "cranberry bean"
+    },
+    {
+      "base": "edamame"
+    },
+    {
+      "base": "fava bean"
+    },
+    {
+      "base": "french lentil"
+    },
+    {
+      "base": "green lentil"
+    },
+    {
+      "base": "green pea"
+    },
+    {
+      "base": "kidney bean",
+      "variants": [
+        "red kidney bean"
+      ]
+    },
+    {
+      "base": "lentil"
+    },
+    {
+      "base": "lima bean",
+      "variants": [
+        "baby lima bean"
+      ]
+    },
+    {
+      "base": "mixed bean"
+    },
+    {
+      "base": "moong dal"
+    },
+    {
+      "base": "mung bean"
+    },
+    {
+      "base": "navy bean"
+    },
+    {
+      "base": "pigeon pea"
+    },
+    {
+      "base": "pinto bean"
+    },
+    {
+      "base": "pork and beans"
+    },
+    {
+      "base": "puy lentil"
+    },
+    {
+      "base": "ranch style beans"
+    },
+    {
+      "base": "red bean"
+    },
+    {
+      "base": "red lentil"
+    },
+    {
+      "base": "refried beans"
+    },
+    {
+      "base": "soybean"
+    },
+    {
+      "base": "split pea"
+    },
+    {
+      "base": "urad dal"
+    },
+    {
+      "base": "white bean"
+    },
+    {
+      "base": "yellow split pea"
+    }
+  ],
+  "Breads & Bakery": [
+    {
+      "base": "amaretti cookie"
+    },
+    {
+      "base": "angel food cake"
+    },
+    {
+      "base": "bagel"
+    },
+    {
+      "base": "baguette",
+      "variants": [
+        "sourdough baguette"
+      ]
+    },
+    {
+      "base": "biscuit",
+      "variants": [
+        "buttermilk biscuit",
+        "refrigerator biscuit"
+      ]
+    },
+    {
+      "base": "biscuit dough"
+    },
+    {
+      "base": "bread",
+      "variants": [
+        "french bread",
+        "italian bread",
+        "multigrain bread",
+        "pumpernickel bread",
+        "raisin bread",
+        "rye bread",
+        "sandwich bread",
+        "sourdough bread",
+        "wheat bread",
+        "white bread",
+        "whole wheat bread"
+      ]
+    },
+    {
+      "base": "bread cube",
+      "variants": [
+        "bread cubes"
+      ]
+    },
+    {
+      "base": "bread dough"
+    },
+    {
+      "base": "bread mix"
+    },
+    {
+      "base": "breadcrumb",
+      "variants": [
+        "bread crumb",
+        "buttered breadcrumbs",
+        "italian breadcrumb",
+        "italian seasoned breadcrumb",
+        "whole wheat breadcrumbs"
+      ]
+    },
+    {
+      "base": "breadstick"
+    },
+    {
+      "base": "brioche"
+    },
+    {
+      "base": "bun",
+      "variants": [
+        "brioche bun",
+        "burger bun",
+        "hamburger bun",
+        "hot dog bun",
+        "sandwich bun",
+        "slider bun"
+      ]
+    },
+    {
+      "base": "butter cookie"
+    },
+    {
+      "base": "cake"
+    },
+    {
+      "base": "challah"
+    },
+    {
+      "base": "ciabatta",
+      "variants": [
+        "ciabatta roll"
+      ]
+    },
+    {
+      "base": "cinnamon roll"
+    },
+    {
+      "base": "corn flake crumb"
+    },
+    {
+      "base": "cornbread"
+    },
+    {
+      "base": "cracker",
+      "variants": [
+        "oyster crackers",
+        "saltine cracker",
+        "soda cracker"
+      ]
+    },
+    {
+      "base": "cracker crumb"
+    },
+    {
+      "base": "cracker meal"
+    },
+    {
+      "base": "cracker pie crust"
+    },
+    {
+      "base": "crepe"
+    },
+    {
+      "base": "crescent roll"
+    },
+    {
+      "base": "croissant"
+    },
+    {
+      "base": "crostini"
+    },
+    {
+      "base": "crouton"
+    },
+    {
+      "base": "digestive biscuit"
+    },
+    {
+      "base": "dough",
+      "variants": [
+        "bread dough"
+      ]
+    },
+    {
+      "base": "doughnut"
+    },
+    {
+      "base": "dumpling"
+    },
+    {
+      "base": "dumpling wrapper"
+    },
+    {
+      "base": "egg bread"
+    },
+    {
+      "base": "egg roll wrapper"
+    },
+    {
+      "base": "english muffin"
+    },
+    {
+      "base": "flatbread"
+    },
+    {
+      "base": "focaccia"
+    },
+    {
+      "base": "garlic bread"
+    },
+    {
+      "base": "gingersnap cookie",
+      "variants": [
+        "gingersnap"
+      ]
+    },
+    {
+      "base": "graham cracker",
+      "variants": [
+        "chocolate graham cracker"
+      ]
+    },
+    {
+      "base": "graham cracker crumb"
+    },
+    {
+      "base": "graham cracker crust",
+      "variants": [
+        "graham cracker pie crust"
+      ]
+    },
+    {
+      "base": "hot roll mix"
+    },
+    {
+      "base": "ladyfinger"
+    },
+    {
+      "base": "muffin"
+    },
+    {
+      "base": "naan"
+    },
+    {
+      "base": "oreo cookie crumb"
+    },
+    {
+      "base": "pancake"
+    },
+    {
+      "base": "panko breadcrumb",
+      "variants": [
+        "panko bread crumb"
+      ]
+    },
+    {
+      "base": "pastry"
+    },
+    {
+      "base": "pastry dough"
+    },
+    {
+      "base": "pastry shell"
+    },
+    {
+      "base": "phyllo dough"
+    },
+    {
+      "base": "pie"
+    },
+    {
+      "base": "pie crust",
+      "variants": [
+        "chocolate pie crust",
+        "pie shell"
+      ]
+    },
+    {
+      "base": "pie crust mix"
+    },
+    {
+      "base": "pie dough",
+      "variants": [
+        "pie pastry"
+      ]
+    },
+    {
+      "base": "pita",
+      "variants": [
+        "pita bread"
+      ]
+    },
+    {
+      "base": "pizza crust"
+    },
+    {
+      "base": "pizza dough"
+    },
+    {
+      "base": "pound cake"
+    },
+    {
+      "base": "puff pastry",
+      "variants": [
+        "puff pastry sheet"
+      ]
+    },
+    {
+      "base": "roll",
+      "variants": [
+        "bread roll",
+        "crusty roll",
+        "dinner roll",
+        "french roll",
+        "hard roll",
+        "hoagie roll",
+        "sandwich roll"
+      ]
+    },
+    {
+      "base": "saltine cracker crumb",
+      "variants": [
+        "saltine cracker crumbs"
+      ]
+    },
+    {
+      "base": "shortcrust pastry"
+    },
+    {
+      "base": "sponge cake"
+    },
+    {
+      "base": "spring roll wrapper"
+    },
+    {
+      "base": "stuffing"
+    },
+    {
+      "base": "stuffing mix",
+      "variants": [
+        "cornbread stuffing mix"
+      ]
+    },
+    {
+      "base": "sugar cookie"
+    },
+    {
+      "base": "taco shell"
+    },
+    {
+      "base": "tart shell"
+    },
+    {
+      "base": "tortilla",
+      "variants": [
+        "corn tortilla",
+        "flour tortilla",
+        "wheat tortilla"
+      ]
+    },
+    {
+      "base": "tostada"
+    },
+    {
+      "base": "tostada shell"
+    },
+    {
+      "base": "waffle"
+    },
+    {
+      "base": "wonton wrapper"
+    }
+  ],
+  "Other": [
+    {
+      "base": "alum"
+    },
+    {
+      "base": "baking spray"
+    },
+    {
+      "base": "brine"
+    },
+    {
+      "base": "butter flavoring"
+    },
+    {
+      "base": "citric acid"
+    },
+    {
+      "base": "coffee creamer"
+    },
+    {
+      "base": "custard"
+    },
+    {
+      "base": "flax egg"
+    },
+    {
+      "base": "fruit pectin"
+    },
+    {
+      "base": "glycerin"
+    },
+    {
+      "base": "ice"
+    },
+    {
+      "base": "ice water"
+    },
+    {
+      "base": "mincemeat"
+    },
+    {
+      "base": "msg"
+    },
+    {
+      "base": "nutritional yeast"
+    },
+    {
+      "base": "paraffin"
+    },
+    {
+      "base": "pectin"
+    },
+    {
+      "base": "protein powder"
+    },
+    {
+      "base": "psyllium husk"
+    },
+    {
+      "base": "salt water"
+    },
+    {
+      "base": "sausage casing"
+    },
+    {
+      "base": "sourdough starter"
+    },
+    {
+      "base": "soy"
+    },
+    {
+      "base": "vanilla whey protein powder"
+    },
+    {
+      "base": "water"
+    }
+  ]
+}
