@@ -606,10 +606,7 @@ struct BulkAddPantryView: View {
 
     private func catalogItemRow(item: PantryCatalogItemDefinition, viewModel: PantryViewModel) -> some View {
         let isSelected = viewModel.bulkAdd.isCatalogItemSelected(item)
-        let previewDraft = viewModel.bulkAdd.draft(for: item)
-        let savedDefault = viewModel.bulkAdd.savedDefault(for: item.id)
         let displayName = viewModel.bulkAdd.catalogDisplayName(for: item)
-        let hasSearchFacets = !viewModel.bulkAdd.catalogResolvedFacets(for: item).isEmpty
         let isExpanded = viewModel.bulkAdd.expandedItemIDs.contains(item.id)
         let drafts = viewModel.bulkAdd.stagedDrafts(for: item.id)
 
@@ -626,22 +623,6 @@ struct BulkAddPantryView: View {
                     Text(item.category.rawValue)
                         .font(.caption)
                         .foregroundStyle(PCColors.textSecondary)
-
-                    if !isExpanded {
-                        if !hasSearchFacets, let defaultLabel = catalogDefaultLabel(for: previewDraft, savedDefault: savedDefault) {
-                            Text(defaultLabel)
-                                .font(.caption2)
-                                .foregroundStyle(PCColors.info)
-                                .lineLimit(1)
-                        }
-
-                        ForEach(catalogFacetOptions(for: item), id: \.self) { facetLine in
-                            Text(facetLine)
-                                .font(.caption2)
-                                .foregroundStyle(PCColors.textSecondary)
-                                .lineLimit(1)
-                        }
-                    }
                 }
 
                 Spacer()
@@ -943,34 +924,6 @@ struct BulkAddPantryView: View {
             .padding(.vertical, 10)
         }
         .background(.ultraThinMaterial)
-    }
-
-    private func catalogDefaultLabel(for draft: PantryIntakeRowDraft, savedDefault: PantryItemDefaultPreference?) -> String? {
-        let prefix = savedDefault == nil ? "Catalog default" : "Your default"
-
-        if let facetSummary = summaryText(for: draft.selectedFacets) {
-            return "\(prefix): \(facetSummary)"
-        }
-
-        if savedDefault != nil {
-            return "\(prefix): \(draft.displayName)"
-        }
-
-        return nil
-    }
-
-    private func catalogFacetOptions(for item: PantryCatalogItemDefinition) -> [String] {
-        item.facets.map { definition in
-            let options = Array(definition.options.prefix(AppConfig.facetOptionsMaxShown)).map(humanizedFacetValue)
-            let hiddenCount = max(definition.options.count - options.count, 0)
-            let suffix = hiddenCount > 0 ? ", +\(hiddenCount) more" : ""
-            return "\(definition.key.title): \(options.joined(separator: ", "))\(suffix)"
-        }
-    }
-
-    private func summaryText(for facets: [PantryFacetSelection]) -> String? {
-        guard !facets.isEmpty else { return nil }
-        return facets.map { humanizedFacetValue($0.value) }.joined(separator: " • ")
     }
 
     private func reviewSummary(for draft: PantryIntakeRowDraft) -> String {

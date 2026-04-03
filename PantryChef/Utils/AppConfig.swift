@@ -45,7 +45,6 @@ enum AppConfig {
 
     // UI Limits
     static let pantrySearchMaxResults = 6
-    static let facetOptionsMaxShown = 3
     static let matchingItemsDropdownMax = 8
 
     static func isMissing(_ value: String) -> Bool {
