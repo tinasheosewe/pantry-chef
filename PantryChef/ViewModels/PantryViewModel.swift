@@ -37,6 +37,9 @@ final class PantryBulkAddViewModel {
     private(set) var catalogSearchResults: [CatalogSearchResult] = []
     private(set) var filteredCatalogItems: [PantryCatalogItemDefinition] = []
 
+    /// When set, this item is forced to the top of search results once, then cleared.
+    var highlightedItemID: String?
+
     func updateCatalogSearch() {
         let normalizedQuery = debouncedCatalogSearchText.trimmed
         if normalizedQuery.isEmpty {
@@ -45,7 +48,7 @@ final class PantryBulkAddViewModel {
             if let selectedCatalogCategory {
                 items = items.filter { $0.category == selectedCatalogCategory }
             }
-            filteredCatalogItems = items
+            filteredCatalogItems = promoteHighlightedItem(in: items)
             return
         }
 
@@ -55,7 +58,19 @@ final class PantryBulkAddViewModel {
             filtered = filtered.filter { $0.item.category == selectedCatalogCategory }
         }
         catalogSearchResults = filtered
-        filteredCatalogItems = filtered.map(\.item)
+        filteredCatalogItems = promoteHighlightedItem(in: filtered.map(\.item))
+    }
+
+    private func promoteHighlightedItem(in items: [PantryCatalogItemDefinition]) -> [PantryCatalogItemDefinition] {
+        guard let highlightID = highlightedItemID else { return items }
+        var result = items
+        if let idx = result.firstIndex(where: { $0.id == highlightID }) {
+            let item = result.remove(at: idx)
+            result.insert(item, at: 0)
+        } else if let item = PantryCatalog.item(id: highlightID) {
+            result.insert(item, at: 0)
+        }
+        return result
     }
 
     func catalogDisplayName(for item: PantryCatalogItemDefinition) -> String {
@@ -96,7 +111,7 @@ final class PantryBulkAddViewModel {
     }
 
     var isShowingCategoryBrowser: Bool {
-        selectedCatalogCategory == nil && debouncedCatalogSearchText.isEmpty
+        selectedCatalogCategory == nil && debouncedCatalogSearchText.isEmpty && highlightedItemID == nil
     }
 
     func reset() {
@@ -108,10 +123,12 @@ final class PantryBulkAddViewModel {
         unresolvedTokens = []
         stagedRows = []
         expandedItemIDs = []
+        highlightedItemID = nil
         updateCatalogSearch()
     }
 
     func onCatalogSearchTextChanged() {
+        highlightedItemID = nil
         SearchQuerySupport.schedule(text: catalogSearchText, debouncer: catalogSearchDebouncer) {
             self.debouncedCatalogSearchText = $0
             self.updateCatalogSearch()
@@ -124,6 +141,7 @@ final class PantryBulkAddViewModel {
     }
 
     func onCatalogCategoryChanged() {
+        highlightedItemID = nil
         updateCatalogSearch()
     }
 

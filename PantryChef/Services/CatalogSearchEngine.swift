@@ -25,20 +25,26 @@ enum CatalogSearchEngine {
     // MARK: - Prebuilt key sets for fuzzy correction
 
     /// All unique tokens from item names/aliases (keys of tokenIndex).
-    private static let nameTokenKeys: [String] = {
+    private static var nameTokenKeys: [String] = {
         Array(PantryCatalog.tokenIndex.keys)
     }()
 
     /// All unique single-token facet option keys.
-    private static let facetSingleTokenKeys: [String] = {
-        // Only include single-token keys (multi-token facet options are handled separately)
+    private static var facetSingleTokenKeys: [String] = {
         PantryCatalog.facetTokenToItems.keys.filter { !$0.contains(" ") }.map { $0 }
     }()
 
     /// All unique multi-token facet option keys.
-    private static let facetMultiTokenKeys: [String] = {
+    private static var facetMultiTokenKeys: [String] = {
         PantryCatalog.facetTokenToItems.keys.filter { $0.contains(" ") }.map { $0 }
     }()
+
+    /// Rebuild cached key sets after the catalog changes (e.g. user item registration).
+    static func invalidateCache() {
+        nameTokenKeys = Array(PantryCatalog.tokenIndex.keys)
+        facetSingleTokenKeys = PantryCatalog.facetTokenToItems.keys.filter { !$0.contains(" ") }.map { $0 }
+        facetMultiTokenKeys = PantryCatalog.facetTokenToItems.keys.filter { $0.contains(" ") }.map { $0 }
+    }
 
     // MARK: - Public API
 

@@ -520,6 +520,8 @@ struct BulkAddPantryView: View {
                     appState: viewModel.appState
                 ) { itemID in
                     if let catalogItem = PantryCatalog.item(id: itemID) {
+                        viewModel.bulkAdd.highlightedItemID = itemID
+                        viewModel.bulkAdd.applyCatalogSearchImmediately()
                         viewModel.bulkAdd.toggleCatalogItemSelection(catalogItem)
                     }
                 }
@@ -592,6 +594,8 @@ struct BulkAddPantryView: View {
 
                             Spacer()
                         }
+                    } else if viewModel.bulkAdd.highlightedItemID != nil {
+                        SectionHeader(title: "New Ingredient", subtitle: "Select options for your custom item")
                     } else if !viewModel.bulkAdd.debouncedCatalogSearchText.isEmpty {
                         SectionHeader(title: "Search Results", subtitle: "Cross-category matches")
                     }
@@ -645,9 +649,12 @@ struct BulkAddPantryView: View {
             "Search the ingredient catalog",
             text: Binding(
                 get: { viewModel.bulkAdd.catalogSearchText },
-                set: {
-                    viewModel.bulkAdd.catalogSearchText = $0
-                    viewModel.bulkAdd.onCatalogSearchTextChanged()
+                set: { newValue in
+                    let old = viewModel.bulkAdd.catalogSearchText
+                    viewModel.bulkAdd.catalogSearchText = newValue
+                    if newValue != old {
+                        viewModel.bulkAdd.onCatalogSearchTextChanged()
+                    }
                 }
             ),
             focus: $isCatalogSearchFocused,

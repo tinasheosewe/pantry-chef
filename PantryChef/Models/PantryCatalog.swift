@@ -476,6 +476,7 @@ enum PantryCatalog {
         nameKeySet = Set(merged.map { normalizeLookupKey($0.name) })
         facetTokenToItems = buildFacetTokenToItems(from: merged)
         tokenIndex = buildTokenIndex(from: merged)
+        CatalogSearchEngine.invalidateCache()
     }
 
     // MARK: - Loading
