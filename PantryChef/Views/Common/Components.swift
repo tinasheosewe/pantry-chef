@@ -1,5 +1,13 @@
 import SwiftUI
 
+extension Image {
+    func pcTopBarIcon() -> some View {
+        self
+            .font(.system(size: 18, weight: .semibold))
+            .frame(width: 20, height: 20)
+    }
+}
+
 // MARK: - Screen Shells
 struct AppScreen<Content: View>: View {
     private let screenID: String

@@ -40,7 +40,7 @@ struct PantryView: View {
                         showIngredientSettings = true
                     } label: {
                         Image(systemName: "gearshape")
-                            .font(.title3)
+                            .pcTopBarIcon()
                     }
                 }
                 ToolbarItem(placement: .topBarTrailing) {
@@ -48,7 +48,7 @@ struct PantryView: View {
                         viewModel.prepareBulkAdd()
                     } label: {
                         Image(systemName: "plus.circle.fill")
-                            .font(.title3)
+                            .pcTopBarIcon()
                     }
                 }
             }

@@ -61,6 +61,7 @@ struct RecipeListView: View {
                         }
                     } label: {
                         Image(systemName: "arrow.up.arrow.down.circle")
+                            .pcTopBarIcon()
                     }
                     .accessibilityIdentifier("recipes.toolbar.sortMenu")
                 }
@@ -86,7 +87,7 @@ struct RecipeListView: View {
                         }
                     } label: {
                         Image(systemName: "plus.circle.fill")
-                            .font(.title3)
+                            .pcTopBarIcon()
                     }
                     .accessibilityIdentifier("recipes.toolbar.addMenu")
                 }
