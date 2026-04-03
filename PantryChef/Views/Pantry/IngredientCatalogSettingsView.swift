@@ -181,7 +181,7 @@ struct IngredientCatalogSettingsView: View {
                             .font(.subheadline)
                             .fontWeight(.semibold)
                             .foregroundStyle(PCColors.textPrimary)
-                        if selectedTab == .catalog && (PantryCatalog.facetExtensions[item.id] != nil || PantryCatalog.aliasExtensions[item.id] != nil || PantryCatalog.orphanedExtensions[item.id] != nil || PantryCatalog.defaultOverrides[item.id] != nil) {
+                        if selectedTab == .catalog && PantryCatalog.hasUserModifications(catalogItemID: item.id) {
                             Text("Modified")
                                 .font(.caption2)
                                 .fontWeight(.medium)
@@ -206,6 +206,8 @@ struct IngredientCatalogSettingsView: View {
                     .font(.caption)
                     .foregroundStyle(PCColors.textSecondary)
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
         .contentShape(Rectangle())

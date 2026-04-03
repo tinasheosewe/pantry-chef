@@ -70,6 +70,10 @@ private func resetCatalog(store: MockUserCatalogStore? = nil) {
     PantryCatalog.loadUserData(from: s)
 }
 
+private func firstCatalogItem(supporting key: PantryFacetKey) -> PantryCatalogItemDefinition? {
+    PantryCatalog.allItems.first { !$0.isUserDefined && $0.supports(key) }
+}
+
 // MARK: - B1: Frequency Tracker Tests
 
 final class FrequencyTrackerTests: XCTestCase {
@@ -310,27 +314,26 @@ final class PantryCatalogCRUDTests: XCTestCase {
     }
 
     func testApplyMergeAddsFacetExtensions() {
-        // Pick a known catalog item
-        guard let existingItem = PantryCatalog.allItems.first(where: { !$0.isUserDefined }) else {
-            XCTFail("No catalog items found")
+        guard let existingItem = firstCatalogItem(supporting: .form) else {
+            XCTFail("No catalog item with .form facet found")
             return
         }
 
         PantryCatalog.applyMerge(
             catalogItemID: existingItem.id,
-            mergedFacets: [.variant: ["TestVariant"]],
+            mergedFacets: [.form: ["TestForm"]],
             mergedAliases: ["test-alias"]
         )
 
         let updated = PantryCatalog.item(id: existingItem.id)
-        let variantFacet = updated?.facets.first(where: { $0.key == .variant })
-        XCTAssertTrue(variantFacet?.options.contains("TestVariant") ?? false)
+        let formFacet = updated?.facets.first(where: { $0.key == .form })
+        XCTAssertTrue(formFacet?.options.contains("TestForm") ?? false)
         XCTAssertEqual(store.saveFacetExtensionsCallCount, 1)
     }
 
     func testResetExtensionsClearsModifications() {
-        guard let existingItem = PantryCatalog.allItems.first(where: { !$0.isUserDefined }) else {
-            XCTFail("No catalog items found")
+        guard let existingItem = firstCatalogItem(supporting: .form) else {
+            XCTFail("No catalog item with .form facet found")
             return
         }
 
@@ -349,12 +352,16 @@ final class PantryCatalogCRUDTests: XCTestCase {
     func testLoadUserDataRestoresState() {
         let preloadStore = MockUserCatalogStore()
         let preItem = makeTestItem(id: "user-preloaded", name: "Preloaded", isUserDefined: true)
+        guard let catalogItem = firstCatalogItem(supporting: .form) else {
+            XCTFail("No catalog item with .form facet found")
+            return
+        }
         preloadStore.savedUserItems = [preItem]
-        preloadStore.savedFacetExtensions = ["some-id": ["variant": ["Red"]]]
+        preloadStore.savedFacetExtensions = [catalogItem.id: ["form": ["Red"]]]
 
         PantryCatalog.loadUserData(from: preloadStore)
         XCTAssertNotNil(PantryCatalog.item(id: "user-preloaded"))
-        XCTAssertEqual(PantryCatalog.facetExtensions["some-id"]?["variant"], ["Red"])
+        XCTAssertEqual(PantryCatalog.facetExtensions[catalogItem.id]?["form"], ["Red"])
     }
 }
 
@@ -391,8 +398,8 @@ final class CatalogNotificationTests: XCTestCase {
     }
 
     func testResetExtensionsPostsNotification() {
-        guard let existing = PantryCatalog.allItems.first(where: { !$0.isUserDefined }) else {
-            XCTFail("No catalog items")
+        guard let existing = firstCatalogItem(supporting: .form) else {
+            XCTFail("No catalog item with .form facet found")
             return
         }
         PantryCatalog.applyMerge(catalogItemID: existing.id, mergedFacets: [.form: ["X"]], mergedAliases: [])
@@ -477,28 +484,26 @@ final class CatalogScenarioTests: XCTestCase {
     }
 
     func testExtendCatalogItemThenReset() {
-        guard let catalogItem = PantryCatalog.allItems.first(where: { !$0.isUserDefined }) else {
-            XCTFail("Need at least one catalog item")
+        guard let catalogItem = firstCatalogItem(supporting: .form) else {
+            XCTFail("Need a catalog item with a .form facet")
             return
         }
 
-        let originalFacetCount = catalogItem.facets.count
+        let originalOptions = catalogItem.options(for: .form)
 
-        // Extend with new facets
         PantryCatalog.applyMerge(
             catalogItemID: catalogItem.id,
-            mergedFacets: [.texture: ["Crunchy", "Smooth"]],
+            mergedFacets: [.form: ["Crunchy", "Smooth"]],
             mergedAliases: ["alias-1"]
         )
 
         let extended = PantryCatalog.item(id: catalogItem.id)!
-        let textureFacet = extended.facets.first(where: { $0.key == .texture })
-        XCTAssertTrue(textureFacet?.options.contains("Crunchy") ?? false)
+        let formFacet = extended.facets.first(where: { $0.key == .form })
+        XCTAssertTrue(formFacet?.options.contains("Crunchy") ?? false)
 
-        // Reset
         PantryCatalog.resetExtensions(catalogItemID: catalogItem.id)
         let reset = PantryCatalog.item(id: catalogItem.id)!
-        XCTAssertEqual(reset.facets.count, originalFacetCount)
+        XCTAssertEqual(reset.options(for: .form), originalOptions)
     }
 
     func testApplyMergeIsAdditive() throws {
@@ -542,9 +547,9 @@ final class CatalogScenarioTests: XCTestCase {
     }
 }
 
-// MARK: - B10: Facet Migration Map Tests
+// MARK: - B10: Catalog Sanitization Tests
 
-final class FacetMigrationTests: XCTestCase {
+final class CatalogSanitizationTests: XCTestCase {
     private var store: MockUserCatalogStore!
 
     override func setUp() {
@@ -557,64 +562,50 @@ final class FacetMigrationTests: XCTestCase {
         super.tearDown()
     }
 
-    func testOrphanedExtensionPreserved() {
-        guard let catalogItem = PantryCatalog.allItems.first(where: { !$0.isUserDefined }) else {
-            XCTFail("Need catalog items")
+    func testInvalidFacetExtensionsAreDroppedOnLoad() {
+        guard let catalogItem = firstCatalogItem(supporting: .form) else {
+            XCTFail("Need a catalog item with a .form facet")
             return
         }
 
-        // Inject an extension with an unrecognized facet key
         store.savedFacetExtensions = [catalogItem.id: ["nonexistent_key": ["ValueA", "ValueB"]]]
         PantryCatalog.loadUserData(from: store)
 
-        // The unrecognized key should appear in orphanedExtensions
-        let orphans = PantryCatalog.orphanedExtensions[catalogItem.id]
-        XCTAssertNotNil(orphans, "Orphaned extensions should be preserved")
-        XCTAssertEqual(orphans?["nonexistent_key"], ["ValueA", "ValueB"])
+        XCTAssertNil(PantryCatalog.facetExtensions[catalogItem.id], "Unsupported facet keys should be scrubbed")
+        XCTAssertTrue(store.savedFacetExtensions.isEmpty, "Sanitized facet extension data should be persisted back")
     }
 
-    func testRecognizedExtensionNotOrphaned() {
-        guard let catalogItem = PantryCatalog.allItems.first(where: { !$0.isUserDefined }) else {
-            XCTFail("Need catalog items")
+    func testRecognizedFacetExtensionsStillLoad() {
+        guard let catalogItem = firstCatalogItem(supporting: .form) else {
+            XCTFail("Need a catalog item with a .form facet")
             return
         }
 
-        // Inject an extension with a valid facet key
-        store.savedFacetExtensions = [catalogItem.id: ["variant": ["TestVariant"]]]
+        store.savedFacetExtensions = [catalogItem.id: ["form": ["TestVariant"]]]
         PantryCatalog.loadUserData(from: store)
 
-        // Should NOT appear in orphaned
-        let orphans = PantryCatalog.orphanedExtensions[catalogItem.id]
-        XCTAssertNil(orphans, "Recognized key should not be orphaned")
-
-        // Should appear on the item
         let item = PantryCatalog.item(id: catalogItem.id)
-        let variantFacet = item?.facets.first(where: { $0.key == .variant })
-        XCTAssertTrue(variantFacet?.options.contains("TestVariant") ?? false)
+        let formFacet = item?.facets.first(where: { $0.key == .form })
+        XCTAssertTrue(formFacet?.options.contains("TestVariant") ?? false)
     }
 
-    func testMixedRecognizedAndOrphanedExtensions() {
+    func testFacetDefaultOverrideEntriesAreDroppedOnLoad() {
         guard let catalogItem = PantryCatalog.allItems.first(where: { !$0.isUserDefined }) else {
             XCTFail("Need catalog items")
             return
         }
 
-        store.savedFacetExtensions = [
+        store.savedDefaultOverrides = [
             catalogItem.id: [
-                "form": ["NewForm"],
-                "bogus_key": ["OrphanValue"]
+                "defaultStorage": PantryStorage.frozen.rawValue,
+                "facet.form": "diced"
             ]
         ]
         PantryCatalog.loadUserData(from: store)
 
-        // Recognized key applied
-        let item = PantryCatalog.item(id: catalogItem.id)
-        let formFacet = item?.facets.first(where: { $0.key == .form })
-        XCTAssertTrue(formFacet?.options.contains("NewForm") ?? false)
-
-        // Unrecognized key orphaned
-        let orphans = PantryCatalog.orphanedExtensions[catalogItem.id]
-        XCTAssertEqual(orphans?["bogus_key"], ["OrphanValue"])
+        XCTAssertEqual(PantryCatalog.defaultOverrides[catalogItem.id]?["defaultStorage"], PantryStorage.frozen.rawValue)
+        XCTAssertNil(PantryCatalog.defaultOverrides[catalogItem.id]?["facet.form"])
+        XCTAssertNil(store.savedDefaultOverrides[catalogItem.id]?["facet.form"])
     }
 }
 
@@ -782,15 +773,15 @@ final class CatalogExtensionSaveTests: XCTestCase {
     }
 
     func testApplyMergeDoesNotCallSaveUserItems() {
-        guard let catalogItem = PantryCatalog.allItems.first(where: { !$0.isUserDefined }) else {
-            XCTFail("Need catalog items")
+        guard let catalogItem = firstCatalogItem(supporting: .form) else {
+            XCTFail("Need a catalog item with a .form facet")
             return
         }
 
         let beforeCount = store.saveUserItemsCallCount
         PantryCatalog.applyMerge(
             catalogItemID: catalogItem.id,
-            mergedFacets: [.variant: ["ExtTest"]],
+            mergedFacets: [.form: ["ExtTest"]],
             mergedAliases: []
         )
         XCTAssertEqual(store.saveUserItemsCallCount, beforeCount,
@@ -809,9 +800,10 @@ final class CatalogExtensionSaveTests: XCTestCase {
         }
 
         let originalItem = catalogItem
+        let mergeKey = try XCTUnwrap(catalogItem.facets.first?.key)
         PantryCatalog.applyMerge(
             catalogItemID: catalogItem.id,
-            mergedFacets: [.variant: ["AddedVariant"]],
+            mergedFacets: [mergeKey: ["AddedVariant"]],
             mergedAliases: ["added-alias"]
         )
 
@@ -825,6 +817,7 @@ final class CatalogExtensionSaveTests: XCTestCase {
                               "Original option '\(option)' for \(facet.key) must persist")
             }
         }
+        XCTAssertTrue(updated.options(for: mergeKey).contains("AddedVariant"))
 
         PantryCatalog.resetExtensions(catalogItemID: catalogItem.id)
     }

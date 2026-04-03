@@ -222,94 +222,99 @@ struct PantryItemBatchRow: View {
     }
 
     private var singleItemRow: some View {
-        let item = batch.representativeItem
-        return Button {
-            onEditItem(item)
-        } label: {
-            PantryItemRow(item: item)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .contentShape(Rectangle())
-        }
-        .buttonStyle(.plain)
-        .swipeActions(edge: .trailing) {
-            Button(role: .destructive) {
-                onDeleteItem(item)
-            } label: {
-                Label("Delete", systemImage: "trash")
+        pantryItemRow(item: batch.representativeItem)
+            .contentShape(Rectangle())
+            .swipeActions(edge: .trailing) {
+                Button("Edit") {
+                    onEditItem(batch.representativeItem)
+                }
+                .tint(PCColors.accent)
+
+                Button("Delete", role: .destructive) {
+                    onDeleteItem(batch.representativeItem)
+                }
             }
-            .tint(.red)
-        }
     }
 
     private var expandableBatchRow: some View {
-        DisclosureGroup(isExpanded: $isExpanded) {
-            ForEach(batch.items) { item in
-                Button {
-                    onEditItem(item)
-                } label: {
-                    batchItemDetailRow(item)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .contentShape(Rectangle())
-                }
-                .buttonStyle(.plain)
-                .swipeActions(edge: .trailing) {
-                    Button(role: .destructive) {
-                        onDeleteItem(item)
-                    } label: {
-                        Label("Delete", systemImage: "trash")
+        VStack(spacing: 0) {
+            HStack(spacing: 12) {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(batch.representativeItem.name)
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+
+                    HStack(spacing: 8) {
+                        if !batch.displayQuantity.isEmpty {
+                            Text(batch.displayQuantity)
+                        }
+
+                        Label(batch.representativeItem.storage.rawValue, systemImage: batch.representativeItem.storage.icon)
+                            .font(.caption)
+                            .foregroundStyle(PCColors.textSecondary)
+
+                        Text("\(batch.items.count) batches")
+                            .font(.caption)
+                            .foregroundStyle(PCColors.textSecondary)
                     }
-                    .tint(.red)
+                }
+
+                Spacer()
+
+                if batch.earliestExpiry != nil {
+                    ExpiryBadge(status: batch.expiryStatus, daysLeft: batch.daysUntilExpiry)
+                }
+
+                Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
+                    .font(.caption)
+                    .foregroundStyle(PCColors.textSecondary)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.vertical, 4)
+            .contentShape(Rectangle())
+            .onTapGesture {
+                withAnimation(.easeInOut(duration: 0.2)) {
+                    isExpanded.toggle()
                 }
             }
-        } label: {
-            collapsedBatchSummary
+
+            if isExpanded {
+                VStack(spacing: 0) {
+                    ForEach(batch.items) { item in
+                        Divider()
+                        pantryItemRow(item: item)
+                            .padding(.leading, 16)
+                            .swipeActions(edge: .trailing) {
+                                Button("Edit") {
+                                    onEditItem(item)
+                                }
+                                .tint(PCColors.accent)
+
+                                Button("Delete", role: .destructive) {
+                                    onDeleteItem(item)
+                                }
+                            }
+                    }
+                }
+                .padding(.top, 6)
+            }
         }
     }
 
-    private var collapsedBatchSummary: some View {
+    private func pantryItemRow(item: PantryItem) -> some View {
         HStack(spacing: 12) {
             VStack(alignment: .leading, spacing: 4) {
-                Text(batch.representativeItem.name)
+                Text(item.name)
                     .font(.subheadline)
                     .fontWeight(.medium)
 
                 HStack(spacing: 8) {
-                    if !batch.displayQuantity.isEmpty {
-                        Text(batch.displayQuantity)
+                    if !item.displayQuantity.isEmpty {
+                        Text(item.displayQuantity)
                     }
 
-                    Label(batch.representativeItem.storage.rawValue, systemImage: batch.representativeItem.storage.icon)
+                    Label(item.storage.rawValue, systemImage: item.storage.icon)
                         .font(.caption)
-                        .foregroundStyle(PCColors.textSecondary)
-                }
-            }
-
-            Spacer()
-
-            if batch.earliestExpiry != nil {
-                ExpiryBadge(status: batch.expiryStatus, daysLeft: batch.daysUntilExpiry)
-            }
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.vertical, 4)
-    }
-
-    private func batchItemDetailRow(_ item: PantryItem) -> some View {
-        HStack(spacing: 12) {
-            VStack(alignment: .leading, spacing: 2) {
-                if !item.displayQuantity.isEmpty {
-                    Text(item.displayQuantity)
-                        .font(.caption)
-                        .foregroundStyle(PCColors.textPrimary)
-                }
-
-                if let expiryDate = item.expiryDate {
-                    Text(expiryDate.formatted(date: .abbreviated, time: .omitted))
-                        .font(.caption2)
-                        .foregroundStyle(PCColors.textSecondary)
-                } else {
-                    Text("No expiry")
-                        .font(.caption2)
                         .foregroundStyle(PCColors.textSecondary)
                 }
             }
@@ -320,12 +325,11 @@ struct PantryItemBatchRow: View {
                 ExpiryBadge(status: item.expiryStatus, daysLeft: item.daysUntilExpiry)
             }
         }
-        .padding(.leading, 16)
+        .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.vertical, 4)
     }
 }
 
-// MARK: - Add Pantry Item View
 struct AddPantryItemView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var draft: PantryIntakeRowDraft
@@ -530,108 +534,120 @@ struct BulkAddPantryView: View {
     }
 
     private func addTab(viewModel: PantryViewModel) -> some View {
-        AppScrollView {
-            VStack(alignment: .leading, spacing: 16) {
-                catalogSearchBar(viewModel: viewModel)
+        ScrollViewReader { proxy in
+            AppScrollView {
+                VStack(alignment: .leading, spacing: 16) {
+                    Color.clear
+                        .frame(height: 0)
+                        .id("catalog-search-top")
 
-                if viewModel.bulkAdd.isShowingCategoryBrowser {
-                    VStack(alignment: .leading, spacing: 10) {
-                        SectionHeader(title: "Browse Categories", subtitle: "Step into a pantry type instead of scrolling the whole ontology")
-                        LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
-                            ForEach(viewModel.bulkAdd.categoryCounts, id: \.0) { category, count in
-                                VStack(alignment: .leading, spacing: 8) {
-                                    CategoryIcon(category: category, size: 34)
-                                    Text(category.rawValue)
+                    catalogSearchBar(viewModel: viewModel)
+
+                    if viewModel.bulkAdd.isShowingCategoryBrowser {
+                        VStack(alignment: .leading, spacing: 10) {
+                            SectionHeader(title: "Browse Categories", subtitle: "Step into a pantry type instead of scrolling the whole ontology")
+                            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
+                                ForEach(viewModel.bulkAdd.categoryCounts, id: \.0) { category, count in
+                                    VStack(alignment: .leading, spacing: 8) {
+                                        CategoryIcon(category: category, size: 34)
+                                        Text(category.rawValue)
+                                            .font(.subheadline)
+                                            .fontWeight(.semibold)
+                                            .foregroundStyle(PCColors.textPrimary)
+                                            .multilineTextAlignment(.leading)
+                                    }
+                                    .frame(maxWidth: .infinity, minHeight: 96, alignment: .leading)
+                                    .padding(14)
+                                    .background(PCColors.cardBackground)
+                                    .clipShape(RoundedRectangle(cornerRadius: 18))
+                                    .shadow(color: Color.black.opacity(0.04), radius: 10, x: 0, y: 4)
+                                    .contentShape(RoundedRectangle(cornerRadius: 18))
+                                    .onTapGesture {
+                                        viewModel.bulkAdd.selectedCatalogCategory = category
+                                        viewModel.bulkAdd.onCatalogCategoryChanged()
+                                    }
+                                }
+                            }
+                        }
+
+                        VStack(alignment: .leading, spacing: 10) {
+                            SectionHeader(title: "Common Staples", subtitle: "Fast picks for pantry setup")
+                            VStack(spacing: 10) {
+                                ForEach(viewModel.bulkAdd.commonItems) { item in
+                                    catalogItemRow(item: item, viewModel: viewModel)
+                                }
+                            }
+                        }
+                    } else {
+                        if let category = viewModel.bulkAdd.selectedCatalogCategory {
+                            HStack(spacing: 10) {
+                                Button {
+                                    viewModel.bulkAdd.selectedCatalogCategory = nil
+                                    viewModel.bulkAdd.catalogSearchText = ""
+                                    viewModel.bulkAdd.applyCatalogSearchImmediately()
+                                } label: {
+                                    Label("Back", systemImage: "chevron.left")
                                         .font(.subheadline)
                                         .fontWeight(.semibold)
                                         .foregroundStyle(PCColors.textPrimary)
-                                        .multilineTextAlignment(.leading)
                                 }
-                                .frame(maxWidth: .infinity, minHeight: 96, alignment: .leading)
-                                .padding(14)
-                                .background(PCColors.cardBackground)
-                                .clipShape(RoundedRectangle(cornerRadius: 18))
-                                .shadow(color: Color.black.opacity(0.04), radius: 10, x: 0, y: 4)
-                                .contentShape(RoundedRectangle(cornerRadius: 18))
-                                .onTapGesture {
-                                    viewModel.bulkAdd.selectedCatalogCategory = category
-                                    viewModel.bulkAdd.onCatalogCategoryChanged()
+
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text(category.rawValue)
+                                        .font(.headline)
+                                        .foregroundStyle(PCColors.textPrimary)
+                                    Text(viewModel.bulkAdd.debouncedCatalogSearchText.isEmpty ? "Browse this category" : "Search scoped to this category")
+                                        .font(.caption)
+                                        .foregroundStyle(PCColors.textSecondary)
                                 }
-                            }
-                        }
-                    }
 
-                    VStack(alignment: .leading, spacing: 10) {
-                        SectionHeader(title: "Common Staples", subtitle: "Fast picks for pantry setup")
-                        VStack(spacing: 10) {
-                            ForEach(viewModel.bulkAdd.commonItems) { item in
-                                catalogItemRow(item: item, viewModel: viewModel)
+                                Spacer()
                             }
+                        } else if viewModel.bulkAdd.highlightedItemID != nil {
+                            SectionHeader(title: "New Ingredient", subtitle: "Select options for your custom item")
+                        } else if !viewModel.bulkAdd.debouncedCatalogSearchText.isEmpty {
+                            SectionHeader(title: "Search Results", subtitle: "Cross-category matches")
                         }
-                    }
-                } else {
-                    if let category = viewModel.bulkAdd.selectedCatalogCategory {
-                        HStack(spacing: 10) {
-                            Button {
-                                viewModel.bulkAdd.selectedCatalogCategory = nil
-                                viewModel.bulkAdd.catalogSearchText = ""
-                                viewModel.bulkAdd.applyCatalogSearchImmediately()
-                            } label: {
-                                Label("Back", systemImage: "chevron.left")
-                                    .font(.subheadline)
-                                    .fontWeight(.semibold)
-                                    .foregroundStyle(PCColors.textPrimary)
-                            }
 
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text(category.rawValue)
-                                    .font(.headline)
-                                    .foregroundStyle(PCColors.textPrimary)
-                                Text(viewModel.bulkAdd.debouncedCatalogSearchText.isEmpty ? "Browse this category" : "Search scoped to this category")
+                        VStack(alignment: .leading, spacing: 10) {
+                            if viewModel.bulkAdd.filteredCatalogItems.isEmpty {
+                                Text("No catalog items matched that filter.")
                                     .font(.caption)
                                     .foregroundStyle(PCColors.textSecondary)
                             }
-
-                            Spacer()
-                        }
-                    } else if viewModel.bulkAdd.highlightedItemID != nil {
-                        SectionHeader(title: "New Ingredient", subtitle: "Select options for your custom item")
-                    } else if !viewModel.bulkAdd.debouncedCatalogSearchText.isEmpty {
-                        SectionHeader(title: "Search Results", subtitle: "Cross-category matches")
-                    }
-
-                    VStack(alignment: .leading, spacing: 10) {
-                        if viewModel.bulkAdd.filteredCatalogItems.isEmpty {
-                            Text("No catalog items matched that filter.")
-                                .font(.caption)
-                                .foregroundStyle(PCColors.textSecondary)
-                        }
-                        VStack(spacing: 10) {
-                            ForEach(viewModel.bulkAdd.filteredCatalogItems) { item in
-                                catalogItemRow(item: item, viewModel: viewModel)
+                            VStack(spacing: 10) {
+                                ForEach(viewModel.bulkAdd.filteredCatalogItems) { item in
+                                    catalogItemRow(item: item, viewModel: viewModel)
+                                }
                             }
-                        }
 
-                        if !viewModel.bulkAdd.catalogSearchText.trimmed.isEmpty {
-                            Button {
-                                customItemName = viewModel.bulkAdd.catalogSearchText.trimmed
-                            } label: {
-                                Label("Add \"\(viewModel.bulkAdd.catalogSearchText.trimmed)\" as a custom pantry item", systemImage: "square.and.pencil")
-                                    .font(.subheadline)
-                                    .fontWeight(.semibold)
-                                    .foregroundStyle(PCColors.textPrimary)
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                    .padding(14)
-                                    .background(PCColors.cardBackground)
-                                    .clipShape(RoundedRectangle(cornerRadius: 16))
+                            if !viewModel.bulkAdd.catalogSearchText.trimmed.isEmpty {
+                                Button {
+                                    customItemName = viewModel.bulkAdd.catalogSearchText.trimmed
+                                } label: {
+                                    Label("Add \"\(viewModel.bulkAdd.catalogSearchText.trimmed)\" as a custom pantry item", systemImage: "square.and.pencil")
+                                        .font(.subheadline)
+                                        .fontWeight(.semibold)
+                                        .foregroundStyle(PCColors.textPrimary)
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                        .padding(14)
+                                        .background(PCColors.cardBackground)
+                                        .clipShape(RoundedRectangle(cornerRadius: 16))
+                                }
+                                .buttonStyle(.plain)
                             }
-                            .buttonStyle(.plain)
                         }
                     }
                 }
+                .padding(.horizontal)
+                .padding(.vertical, 16)
             }
-            .padding(.horizontal)
-            .padding(.vertical, 16)
+            .onChange(of: viewModel.bulkAdd.highlightedItemID) { _, highlightedID in
+                guard highlightedID != nil else { return }
+                withAnimation(.easeInOut(duration: 0.25)) {
+                    proxy.scrollTo("catalog-search-top", anchor: .top)
+                }
+            }
         }
         .simultaneousGesture(
             DragGesture(minimumDistance: 8)
@@ -831,13 +847,13 @@ struct BulkAddPantryView: View {
                         .padding(.vertical, 5)
                         .background(
                             Capsule()
-                                .fill(isOnHand ? PCColors.accent.opacity(0.2) : PCColors.surfaceSecondary)
+                                .fill(isOnHand ? PCColors.accent.opacity(0.2) : PCColors.fillTertiary)
                         )
                         .overlay(
                             Capsule()
                                 .strokeBorder(isOnHand ? PCColors.accent : Color.clear, lineWidth: 1)
                         )
-                        .foregroundStyle(isOnHand ? PCColors.accent : PCColors.textSecondary)
+                        .foregroundStyle(isOnHand ? PCColors.accent : PCColors.textPrimary)
                 }
                 .buttonStyle(.plain)
 
@@ -856,13 +872,13 @@ struct BulkAddPantryView: View {
                         .padding(.vertical, 5)
                         .background(
                             Capsule()
-                                .fill(!isOnHand ? PCColors.accent.opacity(0.2) : PCColors.surfaceSecondary)
+                                .fill(!isOnHand ? PCColors.accent.opacity(0.2) : PCColors.fillTertiary)
                         )
                         .overlay(
                             Capsule()
                                 .strokeBorder(!isOnHand ? PCColors.accent : Color.clear, lineWidth: 1)
                         )
-                        .foregroundStyle(!isOnHand ? PCColors.accent : PCColors.textSecondary)
+                        .foregroundStyle(!isOnHand ? PCColors.accent : PCColors.textPrimary)
                 }
                 .buttonStyle(.plain)
             }
@@ -1286,6 +1302,31 @@ struct PantryIntakeFormSections: View {
         self.onResetDefault = onResetDefault
     }
 
+    private var defaultActions: [AppFormActionSection.Action] {
+        var actions: [AppFormActionSection.Action] = []
+
+        if let onSaveDefault {
+            actions.append(
+                AppFormActionSection.Action(
+                    title: saveDefaultButtonTitle,
+                    isDisabled: isSaveDefaultDisabled,
+                    handler: onSaveDefault
+                )
+            )
+        }
+
+        if hasSavedDefault, let onResetDefault {
+            actions.append(
+                AppFormActionSection.Action(
+                    title: "Reset to Catalog Default",
+                    handler: onResetDefault
+                )
+            )
+        }
+
+        return actions
+    }
+
     var body: some View {
         Section(draft.isCustomItem ? "Custom Item" : "Catalog Item") {
             if let selectedItem = draft.selectedItem {
@@ -1447,26 +1488,11 @@ struct PantryIntakeFormSections: View {
         }
 
         if draft.selectedItem != nil && (onSaveDefault != nil || (hasSavedDefault && onResetDefault != nil)) {
-            Section {
-                if let onSaveDefault {
-                    Button(saveDefaultButtonTitle) {
-                        onSaveDefault()
-                    }
-                    .disabled(isSaveDefaultDisabled)
-                }
-
-                if hasSavedDefault, let onResetDefault {
-                    Button("Reset to Catalog Default") {
-                        onResetDefault()
-                    }
-                }
-            } header: {
-                Text("Defaults")
-            } footer: {
-                Text("These defaults will be reused the next time you add this catalog item.")
-                    .font(.caption)
-                    .foregroundStyle(PCColors.textSecondary)
-            }
+            AppFormActionSection(
+                title: "Defaults",
+                message: "These defaults will be reused the next time you add this catalog item.",
+                actions: defaultActions
+            )
         }
 
         if !draft.warnings.isEmpty {

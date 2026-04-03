@@ -7,6 +7,13 @@ extension AppState {
         await pantryDomainService.addPantryItem(item, state: self)
     }
 
+    func removePantryItems(catalogItemID: String) async {
+        let matchingItems = pantryItems.filter { $0.catalogItemID == catalogItemID }
+        for item in matchingItems {
+            await removePantryItem(item)
+        }
+    }
+
     func removePantryItem(_ item: PantryItem) async {
         await pantryDomainService.removePantryItem(item, state: self)
     }

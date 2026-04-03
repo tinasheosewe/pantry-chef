@@ -8,6 +8,99 @@ extension Image {
     }
 }
 
+struct AppFormActionSection: View {
+    struct Action {
+        let title: String
+        let systemImage: String?
+        let role: ButtonRole?
+        let foregroundColor: Color?
+        let isDisabled: Bool
+        let isCentered: Bool
+        let handler: () -> Void
+
+        init(
+            title: String,
+            systemImage: String? = nil,
+            role: ButtonRole? = nil,
+            foregroundColor: Color? = nil,
+            isDisabled: Bool = false,
+            isCentered: Bool = false,
+            handler: @escaping () -> Void
+        ) {
+            self.title = title
+            self.systemImage = systemImage
+            self.role = role
+            self.foregroundColor = foregroundColor
+            self.isDisabled = isDisabled
+            self.isCentered = isCentered
+            self.handler = handler
+        }
+    }
+
+    private let title: String?
+    private let message: String?
+    private let actions: [Action]
+
+    init(
+        title: String? = nil,
+        message: String? = nil,
+        actions: [Action]
+    ) {
+        self.title = title
+        self.message = message
+        self.actions = actions
+    }
+
+    var body: some View {
+        Section {
+            ForEach(Array(actions.enumerated()), id: \.offset) { _, action in
+                Button(role: action.role, action: action.handler) {
+                    HStack {
+                        if action.isCentered {
+                            Spacer()
+                        }
+                        if let systemImage = action.systemImage {
+                            Label(action.title, systemImage: systemImage)
+                        } else {
+                            Text(action.title)
+                        }
+                        Spacer()
+                    }
+                    .foregroundStyle(actionColor(for: action))
+                }
+                .disabled(action.isDisabled)
+            }
+        } header: {
+            if let title {
+                Text(title)
+            }
+        } footer: {
+            if let message {
+                Text(message)
+                    .font(.caption)
+                    .foregroundStyle(PCColors.textSecondary)
+            }
+        }
+    }
+
+    private func actionColor(for action: Action) -> Color {
+        if action.isDisabled {
+            return PCColors.textTertiary
+        }
+
+        if let foregroundColor = action.foregroundColor {
+            return foregroundColor
+        }
+
+        switch action.role {
+        case .destructive:
+            return PCColors.expired
+        default:
+            return PCColors.accent
+        }
+    }
+}
+
 // MARK: - Screen Shells
 struct AppScreen<Content: View>: View {
     private let screenID: String
