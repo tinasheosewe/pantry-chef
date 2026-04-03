@@ -610,48 +610,88 @@ struct BulkAddPantryView: View {
         let savedDefault = viewModel.bulkAdd.savedDefault(for: item.id)
         let displayName = viewModel.bulkAdd.catalogDisplayName(for: item)
         let hasSearchFacets = !viewModel.bulkAdd.catalogResolvedFacets(for: item).isEmpty
+        let isExpanded = viewModel.bulkAdd.expandedItemID == item.id
+        let stagedDraft = viewModel.bulkAdd.stagedDraft(for: item.id)
 
-        return HStack(spacing: 12) {
-            CategoryIcon(category: item.category, size: 40)
+        return VStack(spacing: 0) {
+            HStack(spacing: 12) {
+                CategoryIcon(category: item.category, size: 40)
 
-            VStack(alignment: .leading, spacing: 4) {
-                Text(displayName)
-                    .font(.subheadline)
-                    .fontWeight(.semibold)
-                    .foregroundStyle(PCColors.textPrimary)
-                Text(item.category.rawValue)
-                    .font(.caption)
-                    .foregroundStyle(PCColors.textSecondary)
-
-                if !hasSearchFacets, let defaultLabel = catalogDefaultLabel(for: previewDraft, savedDefault: savedDefault) {
-                    Text(defaultLabel)
-                        .font(.caption2)
-                        .foregroundStyle(PCColors.info)
-                        .lineLimit(1)
-                }
-
-                ForEach(catalogFacetOptions(for: item), id: \.self) { facetLine in
-                    Text(facetLine)
-                        .font(.caption2)
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(displayName)
+                        .font(.subheadline)
+                        .fontWeight(.semibold)
+                        .foregroundStyle(PCColors.textPrimary)
+                    Text(item.category.rawValue)
+                        .font(.caption)
                         .foregroundStyle(PCColors.textSecondary)
-                        .lineLimit(1)
+
+                    if !isExpanded {
+                        if !hasSearchFacets, let defaultLabel = catalogDefaultLabel(for: previewDraft, savedDefault: savedDefault) {
+                            Text(defaultLabel)
+                                .font(.caption2)
+                                .foregroundStyle(PCColors.info)
+                                .lineLimit(1)
+                        }
+
+                        ForEach(catalogFacetOptions(for: item), id: \.self) { facetLine in
+                            Text(facetLine)
+                                .font(.caption2)
+                                .foregroundStyle(PCColors.textSecondary)
+                                .lineLimit(1)
+                        }
+                    }
+                }
+
+                Spacer()
+
+                HStack(spacing: 6) {
+                    Image(systemName: isSelected ? "checkmark.circle.fill" : "plus.circle")
+                        .font(.subheadline)
+                    Text(isSelected ? "Added" : "Add")
+                        .font(.caption)
+                        .fontWeight(.semibold)
+                }
+                .padding(.horizontal, 12)
+                .padding(.vertical, 8)
+                .background(isSelected ? PCColors.accent : PCColors.fillTertiary)
+                .foregroundStyle(isSelected ? Color.white : PCColors.textPrimary)
+                .clipShape(Capsule())
+                .onTapGesture {
+                    if isSelected {
+                        viewModel.bulkAdd.toggleCatalogItemSelection(item)
+                    }
                 }
             }
 
-            Spacer()
+            if isExpanded, let draft = stagedDraft {
+                VStack(alignment: .leading, spacing: 10) {
+                    Divider()
+                        .padding(.vertical, 4)
 
-            HStack(spacing: 6) {
-                Image(systemName: isSelected ? "checkmark.circle.fill" : "plus.circle")
-                    .font(.subheadline)
-                Text(isSelected ? "Added" : "Add")
-                    .font(.caption)
-                    .fontWeight(.semibold)
+                    ForEach(item.facets, id: \.key) { facetDef in
+                        ChipPicker(
+                            label: facetDef.key.title,
+                            options: facetDef.options,
+                            selection: draft.selectedFacetValues[facetDef.key]
+                        ) { value in
+                            viewModel.bulkAdd.updateStagedFacet(itemID: item.id, key: facetDef.key, value: value)
+                        }
+                    }
+
+                    ChipPicker(
+                        label: "Storage",
+                        options: PantryStorage.allCases.map(\.rawValue),
+                        selection: draft.storage?.rawValue
+                    ) { value in
+                        if let value, let storage = PantryStorage(rawValue: value) {
+                            viewModel.bulkAdd.updateStagedStorage(itemID: item.id, storage: storage)
+                        }
+                    }
+                }
+                .padding(.top, 4)
+                .transition(.opacity.combined(with: .move(edge: .top)))
             }
-            .padding(.horizontal, 12)
-            .padding(.vertical, 8)
-            .background(isSelected ? PCColors.accent : PCColors.fillTertiary)
-            .foregroundStyle(isSelected ? Color.white : PCColors.textPrimary)
-            .clipShape(Capsule())
         }
         .padding(14)
         .background(isSelected ? PCColors.accent.opacity(0.12) : PCColors.cardBackground)
@@ -663,7 +703,15 @@ struct BulkAddPantryView: View {
         .shadow(color: Color.black.opacity(0.04), radius: 10, x: 0, y: 4)
         .contentShape(RoundedRectangle(cornerRadius: 18))
         .onTapGesture {
-            viewModel.bulkAdd.toggleCatalogItemSelection(item)
+            withAnimation(.easeInOut(duration: 0.25)) {
+                if !isSelected {
+                    viewModel.bulkAdd.toggleCatalogItemSelection(item)
+                } else if isExpanded {
+                    viewModel.bulkAdd.collapseExpanded()
+                } else {
+                    viewModel.bulkAdd.expandedItemID = item.id
+                }
+            }
         }
     }
 
