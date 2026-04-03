@@ -152,13 +152,14 @@ struct CustomIngredientDefinitionView: View {
                 HStack {
                     Text("Name")
                     Spacer()
-                    Text(draft.name)
-                        .foregroundStyle(PCColors.textSecondary)
+                    Text(draft.titleCasedName)
+                        .pcFormValueStyle(.readOnly)
                 }
             } else {
                 TextField("Ingredient name", text: $draft.name)
                     .autocorrectionDisabled()
                     .textInputAutocapitalization(.words)
+                    .pcFormValueStyle(.editable)
             }
 
             Picker("Category", selection: $draft.category) {
@@ -166,6 +167,7 @@ struct CustomIngredientDefinitionView: View {
                     Text(cat.rawValue).tag(cat)
                 }
             }
+            .pcFormValueStyle(isEditable: !isCatalogItem)
             .disabled(isCatalogItem)
         } header: {
             Text("Ingredient")
@@ -225,11 +227,12 @@ struct CustomIngredientDefinitionView: View {
                     HStack {
                         if isBase {
                             Text(options[idx])
-                                .foregroundStyle(PCColors.textSecondary)
+                                .pcFormValueStyle(.readOnly)
                         } else {
                             TextField(key.title.lowercased(), text: facetOptionBinding(key: key, index: idx))
                                 .autocorrectionDisabled()
                                 .textInputAutocapitalization(.words)
+                                .pcFormValueStyle(.editable)
                                 .focused($focusedOption, equals: FacetOptionFocus(key: key, index: idx))
                             Button {
                                 withAnimation {
@@ -248,6 +251,7 @@ struct CustomIngredientDefinitionView: View {
                 TextField("Add \(key.title.lowercased())...", text: bindingForNewOption(key))
                     .autocorrectionDisabled()
                     .textInputAutocapitalization(.words)
+                    .pcFormValueStyle(.editable)
                     .focused($focusedOption, equals: FacetOptionFocus(key: key, index: -1))
             } header: {
                 HStack {
@@ -320,6 +324,7 @@ struct CustomIngredientDefinitionView: View {
                     Label(storage.rawValue, systemImage: storage.icon).tag(storage)
                 }
             }
+            .pcFormValueStyle(.editable)
 
             Picker("Default Unit", selection: Binding(
                 get: { draft.defaultUnit ?? .piece },
@@ -329,6 +334,7 @@ struct CustomIngredientDefinitionView: View {
                     Text(unit.rawValue).tag(unit)
                 }
             }
+            .pcFormValueStyle(.editable)
 
             ForEach(draft.sortedFacetKeys) { key in
                 let options = editingOptions[key] ?? []
@@ -339,6 +345,7 @@ struct CustomIngredientDefinitionView: View {
                             Text(CustomIngredientDraft.titleCase(option)).tag(option.lowercased())
                         }
                     }
+                    .pcFormValueStyle(.editable)
                 }
             }
         }

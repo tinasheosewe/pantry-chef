@@ -587,11 +587,12 @@ struct CustomIngredientDraft {
         facets = definition.facets.filter { !$0.value.isEmpty }
     }
 
+    var titleCasedName: String {
+        PantryCatalogItemDefinition.titleCase(name)
+    }
+
     static func titleCase(_ value: String) -> String {
-        value
-            .split(separator: " ")
-            .map { $0.prefix(1).uppercased() + $0.dropFirst().lowercased() }
-            .joined(separator: " ")
+        PantryCatalogItemDefinition.titleCase(value)
     }
 
     func buildDefinition() -> PantryCatalogItemDefinition {
@@ -614,7 +615,7 @@ struct CustomIngredientDraft {
 
         return PantryCatalogItemDefinition(
             id: itemID,
-            name: Self.titleCase(name.trimmed),
+            name: titleCasedName.trimmed,
             category: category,
             defaultUnit: defaultUnit,
             defaultQuantity: nil,

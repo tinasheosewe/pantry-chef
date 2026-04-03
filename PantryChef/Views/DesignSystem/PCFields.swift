@@ -1,5 +1,39 @@
 import SwiftUI
 
+enum PCFormValueEmphasis {
+    case editable
+    case readOnly
+
+    var foregroundStyle: Color {
+        switch self {
+        case .editable:
+            return PCColors.textPrimary
+        case .readOnly:
+            return PCColors.textSecondary
+        }
+    }
+}
+
+private struct PCFormValueStyleModifier: ViewModifier {
+    let emphasis: PCFormValueEmphasis
+
+    func body(content: Content) -> some View {
+        content
+            .foregroundStyle(emphasis.foregroundStyle)
+            .tint(emphasis.foregroundStyle)
+    }
+}
+
+extension View {
+    func pcFormValueStyle(_ emphasis: PCFormValueEmphasis) -> some View {
+        modifier(PCFormValueStyleModifier(emphasis: emphasis))
+    }
+
+    func pcFormValueStyle(isEditable: Bool) -> some View {
+        pcFormValueStyle(isEditable ? .editable : .readOnly)
+    }
+}
+
 // MARK: - PCTextField
 
 struct PCTextField: View {

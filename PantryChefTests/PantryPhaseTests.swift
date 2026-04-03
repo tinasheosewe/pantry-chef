@@ -182,6 +182,12 @@ final class CustomIngredientDraftTests: XCTestCase {
         XCTAssertEqual(definition.name, "Brown Sugar")
     }
 
+    func testTitleCasedNameUsesSharedFormatter() {
+        let draft = CustomIngredientDraft(name: "brown sugar")
+        XCTAssertEqual(draft.titleCasedName, "Brown Sugar")
+        XCTAssertEqual(CustomIngredientDraft.titleCase("brown sugar"), PantryCatalogItemDefinition.titleCase("brown sugar"))
+    }
+
     func testBuildDefinitionGeneratesUserPrefixID() {
         let draft = CustomIngredientDraft(name: "My Special Ingredient")
         let definition = draft.buildDefinition()
@@ -913,5 +919,66 @@ final class CatalogEdgeCaseTests: XCTestCase {
                        "Duplicate option should not be added again")
 
         PantryCatalog.resetExtensions(catalogItemID: catalogItem.id)
+    }
+}
+
+// MARK: - B17: Ingredient Catalog Settings Search Tests
+
+final class IngredientCatalogSettingsSearchTests: XCTestCase {
+    func testCatalogSearchUsesSharedSearchResultsForAliasQueries() {
+        let steak = makeTestItem(id: "steak", name: "steak", category: .protein)
+        let unrelated = makeTestItem(id: "chicken", name: "chicken", category: .protein)
+
+        let results = IngredientCatalogSettingsSupport.filteredCatalogItems(
+            searchText: "ribeye",
+            allItems: [unrelated, steak],
+            search: { query in
+                XCTAssertEqual(query, "ribeye")
+                return [
+                    CatalogSearchResult(
+                        id: "steak:variant-ribeye",
+                        catalogItemID: steak.id,
+                        facets: [PantryFacetSelection(key: .variant, value: "ribeye")],
+                        displayName: "Ribeye Steak",
+                        score: 1,
+                        item: steak
+                    )
+                ]
+            }
+        )
+
+        XCTAssertEqual(results.map(\.id), ["steak"])
+        XCTAssertEqual(results.first?.titleCasedName, "Steak")
+    }
+
+    func testCatalogSearchDeduplicatesMultipleFacetResultsForSameBaseItem() {
+        let steak = makeTestItem(id: "steak", name: "steak", category: .protein)
+
+        let results = IngredientCatalogSettingsSupport.filteredCatalogItems(
+            searchText: "steak",
+            allItems: [steak],
+            search: { _ in
+                [
+                    CatalogSearchResult(
+                        id: "steak:variant-ribeye",
+                        catalogItemID: steak.id,
+                        facets: [PantryFacetSelection(key: .variant, value: "ribeye")],
+                        displayName: "Ribeye Steak",
+                        score: 1,
+                        item: steak
+                    ),
+                    CatalogSearchResult(
+                        id: "steak:variant-sirloin",
+                        catalogItemID: steak.id,
+                        facets: [PantryFacetSelection(key: .variant, value: "sirloin")],
+                        displayName: "Sirloin Steak",
+                        score: 0.9,
+                        item: steak
+                    )
+                ]
+            }
+        )
+
+        XCTAssertEqual(results.map(\.id), ["steak"])
     }
 }

@@ -1,5 +1,32 @@
 import SwiftUI
 
+enum IngredientCatalogSettingsSupport {
+    static func filteredCustomItems(
+        searchText: String,
+        items: [PantryCatalogItemDefinition]
+    ) -> [PantryCatalogItemDefinition] {
+        guard !searchText.trimmed.isEmpty else { return items }
+        let query = searchText.lowercased()
+        return items.filter { $0.name.lowercased().contains(query) }
+    }
+
+    static func filteredCatalogItems(
+        searchText: String,
+        allItems: [PantryCatalogItemDefinition] = PantryCatalog.allItems,
+        search: (String) -> [CatalogSearchResult] = CatalogSearchEngine.search
+    ) -> [PantryCatalogItemDefinition] {
+        let items = allItems.filter { !$0.isUserDefined }
+        let query = searchText.trimmed
+        guard !query.isEmpty else { return items }
+
+        var seenItemIDs: Set<String> = []
+        return search(query)
+            .map(\.item)
+            .filter { !$0.isUserDefined }
+            .filter { seenItemIDs.insert($0.id).inserted }
+    }
+}
+
 struct IngredientCatalogSettingsView: View {
     enum SettingsTab: String, CaseIterable {
         case custom = "Custom"
@@ -18,18 +45,18 @@ struct IngredientCatalogSettingsView: View {
 
     private var customItems: [PantryCatalogItemDefinition] {
         _ = refreshToken
-        let items = PantryCatalog.userItems
-        if customSearchText.trimmed.isEmpty { return items }
-        let query = customSearchText.lowercased()
-        return items.filter { $0.name.lowercased().contains(query) }
+        return IngredientCatalogSettingsSupport.filteredCustomItems(
+            searchText: customSearchText,
+            items: PantryCatalog.userItems
+        )
     }
 
     private var catalogItems: [PantryCatalogItemDefinition] {
         _ = refreshToken
-        let items = PantryCatalog.allItems.filter { !$0.isUserDefined }
-        if catalogSearchText.trimmed.isEmpty { return items }
-        let query = catalogSearchText.lowercased()
-        return items.filter { $0.name.lowercased().contains(query) }
+        return IngredientCatalogSettingsSupport.filteredCatalogItems(
+            searchText: catalogSearchText,
+            allItems: PantryCatalog.allItems
+        )
     }
 
     var body: some View {

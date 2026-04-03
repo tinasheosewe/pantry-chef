@@ -248,7 +248,7 @@ struct PantryCatalogItemDefinition: Identifiable, Hashable, Sendable, Codable {
         Self.titleCase(name)
     }
 
-    private static func titleCase(_ value: String) -> String {
+    static func titleCase(_ value: String) -> String {
         value
             .split(separator: " ")
             .map { $0.prefix(1).uppercased() + $0.dropFirst().lowercased() }
@@ -272,7 +272,7 @@ enum UserCatalogError: LocalizedError, Equatable {
         switch self {
         case .idCollision(let existingItemID):
             return "An item with ID \"\(existingItemID)\" already exists in the catalog."
-        case .nameCollision(let _, let existingItemName):
+        case .nameCollision(_, let existingItemName):
             return "\"\(existingItemName)\" already exists in the catalog. Add a facet value to that item instead."
         case .duplicateUserItem(let existingItemID):
             return "A custom item with ID \"\(existingItemID)\" already exists."
