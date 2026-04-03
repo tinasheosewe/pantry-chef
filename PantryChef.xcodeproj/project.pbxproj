@@ -44,6 +44,7 @@
 		508A8C15F4C812E456420B25 /* PantryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B585DE3DA29960A7CB2860B /* PantryView.swift */; };
 		577489D1FDE099174E3B155D /* PCCards.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB6A25657C4CC1FCAB95F7F2 /* PCCards.swift */; };
 		59E7344CE47BB5BDC9272C27 /* StorageService.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3D174F06F17C2D1BFB041DA /* StorageService.swift */; };
+		616A7478713A2BA6C125F5CF /* CustomIngredientDefinitionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C78558EAE02479A593579DC /* CustomIngredientDefinitionView.swift */; };
 		61712D04368D56811143ED92 /* UseUpIngredientsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21A5DD983D3216A1D0EE3D87 /* UseUpIngredientsView.swift */; };
 		64F2B5992FF1EB74F106E85D /* TelemetryReporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A16DF6ABA8E8C73E7BB93F32 /* TelemetryReporter.swift */; };
 		657A2E5E956EC7AF581D1107 /* UseUpIngredientsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0DD4A7E7181EAD1A6C40A8C /* UseUpIngredientsViewModel.swift */; };
@@ -54,6 +55,7 @@
 		6D8C5A595FCBB6CCDDC04E1C /* AppState+DataLoading.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EAAD60B1F09A9BEAEB2530E /* AppState+DataLoading.swift */; };
 		702D1AB45BF8E3C4686150EC /* AppState+CookQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38EF41207A71B0226F4AE042 /* AppState+CookQueue.swift */; };
 		7A6DC2A6BFD6CD5A6C24A629 /* input_audio_transcription_completed_multilingual.json in Resources */ = {isa = PBXBuildFile; fileRef = 877E52465510E708BA84311A /* input_audio_transcription_completed_multilingual.json */; };
+		7B0AC042FD276E793F018C2A /* AddCustomTraitSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3065525BCF8D39F39CD9B74B /* AddCustomTraitSheet.swift */; };
 		7D544902270DFDB5E477AACC /* CatalogSearchEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 177EB0A8E95D3FAE1B5CF7E4 /* CatalogSearchEngine.swift */; };
 		7E916317C189D58C4B2E423F /* MultiCookModeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C5141EDE2DF8A7E7FE5272F /* MultiCookModeView.swift */; };
 		7E9E0EC8D2DF08744A3DA912 /* RecipeBuilderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F620C25FCD846DF01FBA6193 /* RecipeBuilderView.swift */; };
@@ -80,6 +82,7 @@
 		A0B9078EECBE9B9B964AA673 /* HomeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A2FCAFEA6E108A131976BB6 /* HomeViewModel.swift */; };
 		A60697B00B0962F79098D956 /* RecipeIngredientResolutionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 896275EB19EF8D062E8C4CF2 /* RecipeIngredientResolutionTests.swift */; };
 		A7BE072CF5A59A9C1C39DDC0 /* PreparedDishesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E5E0771207C64AAD3C1FF85 /* PreparedDishesView.swift */; };
+		A95F2F30E6FAC1AF0CE3EBEA /* IngredientCatalogSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 244B70B40ED7FCA85632DC31 /* IngredientCatalogSettingsView.swift */; };
 		AACC56B00F6BECBD683E04A1 /* seed_recipes.json in Resources */ = {isa = PBXBuildFile; fileRef = ECEFEB3FB5265EBF48F4495C /* seed_recipes.json */; };
 		AAE5217491FCFC20BDD0F4D2 /* IngredientGatheringView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EA22B8C9EBE087DD4134429 /* IngredientGatheringView.swift */; };
 		AE4890EEE479B57124C34451 /* PantryChefTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E8FF9A527CDB04F721C3543 /* PantryChefTests.swift */; };
@@ -95,6 +98,7 @@
 		BEF3C4BD035396EA28D62B91 /* RecipeGateway.swift in Sources */ = {isa = PBXBuildFile; fileRef = 901D7319E7C60C7CEB9042E5 /* RecipeGateway.swift */; };
 		C28D694AB5C384FA11EDFC88 /* NavigationCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3246A6F6E9D886C1C08E731 /* NavigationCoordinator.swift */; };
 		C30BF3D9F7998F0623A3A444 /* MultiRecipeScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4847B23D0DA66AC6F8967869 /* MultiRecipeScheduler.swift */; };
+		C3C577D08879D20CAB6AFBC8 /* AddCustomFacetValueSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9E7065495C2D7D72B8357E2 /* AddCustomFacetValueSheet.swift */; };
 		C652D63FF853AC0B3617B793 /* Enums.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A3FFC7DAF8A7D9B0FE8D2E4 /* Enums.swift */; };
 		CA94F1A8E6D699739D9711F5 /* PCStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B2DF5BBC6A74E57EAB2A74B /* PCStatus.swift */; };
 		CEB6C5BAC6DF90ED425F2AF0 /* output_audio_buffer_cleared.json in Resources */ = {isa = PBXBuildFile; fileRef = 59485E1388AA5B4BFC221609 /* output_audio_buffer_cleared.json */; };
@@ -123,6 +127,7 @@
 		F3383FF48144D37F217B76BC /* PantryIntake.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EB9699BE6FCAA589DEAB869 /* PantryIntake.swift */; };
 		F358597185087199BDC71CEF /* RecipeIngredientResolutionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76DFA2EE9B6B77FB3CEAD7C7 /* RecipeIngredientResolutionService.swift */; };
 		F5E7B24EBB863A621EACD3C3 /* RealtimeConversationFunctionCallEventTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB4028F2212A34CB27DE289 /* RealtimeConversationFunctionCallEventTests.swift */; };
+		F79FF17869FC709D84B93BC8 /* UserCatalogStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E8B2D4D276D1DB31BFD0269 /* UserCatalogStore.swift */; };
 		F8BF10D5E967874C8FE95144 /* CookModeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29A005FB449A4D6EEDDC5019 /* CookModeViewModel.swift */; };
 		F8DE114FC1BBD7853215BDED /* PantryDomainService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D4F15E25A563FD1CFD20CDA /* PantryDomainService.swift */; };
 		F94AD6868174BE16C45A5E7C /* MealPlanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A6018CBC83EBB7329C47E4A /* MealPlanView.swift */; };
@@ -170,11 +175,13 @@
 		21A5DD983D3216A1D0EE3D87 /* UseUpIngredientsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UseUpIngredientsView.swift; sourceTree = "<group>"; };
 		229E0C49040C5DEDB1C58497 /* StorageRecords.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageRecords.swift; sourceTree = "<group>"; };
 		22B0009FB6945B57184CD3F9 /* RecipeListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeListView.swift; sourceTree = "<group>"; };
+		244B70B40ED7FCA85632DC31 /* IngredientCatalogSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IngredientCatalogSettingsView.swift; sourceTree = "<group>"; };
 		2456253A7978D367C59AFB91 /* PCRows.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PCRows.swift; sourceTree = "<group>"; };
 		27FA8B69F646DD1AF1D4C296 /* MultiCookModeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiCookModeViewModel.swift; sourceTree = "<group>"; };
 		28C5AD9227107BB812ED3728 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		29A005FB449A4D6EEDDC5019 /* CookModeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CookModeViewModel.swift; sourceTree = "<group>"; };
 		2EAF4BBB6D4452027050DF1E /* AppError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppError.swift; sourceTree = "<group>"; };
+		3065525BCF8D39F39CD9B74B /* AddCustomTraitSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddCustomTraitSheet.swift; sourceTree = "<group>"; };
 		307EA05195746AB97A8E9AA8 /* MultiCookSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiCookSelectionView.swift; sourceTree = "<group>"; };
 		32047EE127BD9837C9FAA049 /* MealPlanViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MealPlanViewModel.swift; sourceTree = "<group>"; };
 		34AECBCA11EFCCD5883FF78F /* InlineQuantityStepper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InlineQuantityStepper.swift; sourceTree = "<group>"; };
@@ -182,11 +189,13 @@
 		3B2DF5BBC6A74E57EAB2A74B /* PCStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PCStatus.swift; sourceTree = "<group>"; };
 		3B585DE3DA29960A7CB2860B /* PantryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PantryView.swift; sourceTree = "<group>"; };
 		3CCA0ED31795974F5631D861 /* ShoppingDomainService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShoppingDomainService.swift; sourceTree = "<group>"; };
+		3E8B2D4D276D1DB31BFD0269 /* UserCatalogStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserCatalogStore.swift; sourceTree = "<group>"; };
 		3E8FF9A527CDB04F721C3543 /* PantryChefTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PantryChefTests.swift; sourceTree = "<group>"; };
 		441EAFD71E8F3A9148E9E00F /* IngredientMatcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IngredientMatcher.swift; sourceTree = "<group>"; };
 		44FECA685551A0C757FC6819 /* PantryCookReview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PantryCookReview.swift; sourceTree = "<group>"; };
 		4837E6CAAC96B8EBCC3F4AA5 /* PCTokens.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PCTokens.swift; sourceTree = "<group>"; };
 		4847B23D0DA66AC6F8967869 /* MultiRecipeScheduler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiRecipeScheduler.swift; sourceTree = "<group>"; };
+		4C78558EAE02479A593579DC /* CustomIngredientDefinitionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomIngredientDefinitionView.swift; sourceTree = "<group>"; };
 		4EA22B8C9EBE087DD4134429 /* IngredientGatheringView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IngredientGatheringView.swift; sourceTree = "<group>"; };
 		59485E1388AA5B4BFC221609 /* output_audio_buffer_cleared.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = output_audio_buffer_cleared.json; sourceTree = "<group>"; };
 		5A2FCAFEA6E108A131976BB6 /* HomeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewModel.swift; sourceTree = "<group>"; };
@@ -231,6 +240,7 @@
 		A583969D363695B85BA85C0A /* AudioPipelineHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPipelineHelper.swift; sourceTree = "<group>"; };
 		A690A6DFC4505930CDD76AF7 /* PreparedDishViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreparedDishViewModel.swift; sourceTree = "<group>"; };
 		A7C356229D8B81C55AF86BF9 /* AppState+AI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AppState+AI.swift"; sourceTree = "<group>"; };
+		A9E7065495C2D7D72B8357E2 /* AddCustomFacetValueSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddCustomFacetValueSheet.swift; sourceTree = "<group>"; };
 		AD6E44F08B08E0C299DB08E1 /* PantryChefUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PantryChefUITests.swift; sourceTree = "<group>"; };
 		AF842C069F39670D33B9A65A /* PantryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PantryViewModel.swift; sourceTree = "<group>"; };
 		B0DD4A7E7181EAD1A6C40A8C /* UseUpIngredientsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UseUpIngredientsViewModel.swift; sourceTree = "<group>"; };
@@ -502,6 +512,10 @@
 		78578178816C505A179E8FD6 /* Pantry */ = {
 			isa = PBXGroup;
 			children = (
+				A9E7065495C2D7D72B8357E2 /* AddCustomFacetValueSheet.swift */,
+				3065525BCF8D39F39CD9B74B /* AddCustomTraitSheet.swift */,
+				4C78558EAE02479A593579DC /* CustomIngredientDefinitionView.swift */,
+				244B70B40ED7FCA85632DC31 /* IngredientCatalogSettingsView.swift */,
 				3B585DE3DA29960A7CB2860B /* PantryView.swift */,
 			);
 			path = Pantry;
@@ -696,6 +710,7 @@
 				E3D174F06F17C2D1BFB041DA /* StorageService.swift */,
 				ECB3F6705AF4F41CD3F95E39 /* SubstitutionRepository.swift */,
 				A16DF6ABA8E8C73E7BB93F32 /* TelemetryReporter.swift */,
+				3E8B2D4D276D1DB31BFD0269 /* UserCatalogStore.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -892,6 +907,8 @@
 				3EDDE63220993866A47B95CB /* AIOutputValidator.swift in Sources */,
 				8A83DC607C8342D82632581C /* AIService.swift in Sources */,
 				2964163BF95AFA9D43BB0502 /* ActiveCooksManager.swift in Sources */,
+				C3C577D08879D20CAB6AFBC8 /* AddCustomFacetValueSheet.swift in Sources */,
+				7B0AC042FD276E793F018C2A /* AddCustomTraitSheet.swift in Sources */,
 				69F60B663B95A83DCECBB89D /* AppConfig.swift in Sources */,
 				4209855AE41E88CABEC911CD /* AppError.swift in Sources */,
 				E2969078C5F1A750D6A88589 /* AppLaunchOptions.swift in Sources */,
@@ -917,10 +934,12 @@
 				38E40AB1FFA12E925B6FEDB2 /* CookQueueDomainService.swift in Sources */,
 				E65689240EF156179AF2AA65 /* CookQueueView.swift in Sources */,
 				4989D8E647DC91F018FEE6D2 /* CookingSession.swift in Sources */,
+				616A7478713A2BA6C125F5CF /* CustomIngredientDefinitionView.swift in Sources */,
 				C652D63FF853AC0B3617B793 /* Enums.swift in Sources */,
 				91A5BFABB50C47C670FB37F7 /* Extensions.swift in Sources */,
 				FA512CE71A7270B2649B8999 /* HomeView.swift in Sources */,
 				A0B9078EECBE9B9B964AA673 /* HomeViewModel.swift in Sources */,
+				A95F2F30E6FAC1AF0CE3EBEA /* IngredientCatalogSettingsView.swift in Sources */,
 				AAE5217491FCFC20BDD0F4D2 /* IngredientGatheringView.swift in Sources */,
 				6C6D1EB4465F98F5AC4C06CB /* IngredientLexicon.swift in Sources */,
 				9C482ADB26F2BED8CB3ABBD3 /* IngredientMatcher.swift in Sources */,
@@ -988,6 +1007,7 @@
 				64F2B5992FF1EB74F106E85D /* TelemetryReporter.swift in Sources */,
 				61712D04368D56811143ED92 /* UseUpIngredientsView.swift in Sources */,
 				657A2E5E956EC7AF581D1107 /* UseUpIngredientsViewModel.swift in Sources */,
+				F79FF17869FC709D84B93BC8 /* UserCatalogStore.swift in Sources */,
 				987236F06382EB09A69A05BC /* ViewModelSupport.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

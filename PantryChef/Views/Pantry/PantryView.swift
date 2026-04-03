@@ -3,6 +3,7 @@ import SwiftUI
 struct PantryView: View {
     @State private var viewModel: PantryViewModel
     @State private var editingItem: PantryItem?
+    @State private var showIngredientSettings = false
 
     private let isEmbedded: Bool
 
@@ -35,16 +36,28 @@ struct PantryView: View {
             .navigationTitle("Pantry")
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
-                    Button {
-                        viewModel.prepareBulkAdd()
-                    } label: {
-                        Image(systemName: "plus.circle.fill")
-                            .font(.title3)
+                    HStack(spacing: 16) {
+                        Button {
+                            showIngredientSettings = true
+                        } label: {
+                            Image(systemName: "gearshape")
+                                .font(.body)
+                        }
+
+                        Button {
+                            viewModel.prepareBulkAdd()
+                        } label: {
+                            Image(systemName: "plus.circle.fill")
+                                .font(.title3)
+                        }
                     }
                 }
             }
             .sheet(isPresented: $viewModel.showAddItem) {
                 BulkAddPantryView(viewModel: viewModel)
+            }
+            .sheet(isPresented: $showIngredientSettings) {
+                IngredientCatalogSettingsView(appState: viewModel.appState)
             }
             .background {
                 Color.clear
@@ -318,6 +331,7 @@ struct AddPantryItemView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var draft: PantryIntakeRowDraft
     @State private var savedDefault: PantryItemDefaultPreference?
+    @State private var facetExtensionTarget: FacetExtensionTarget?
 
     private let existingItem: PantryItem?
     private let savedDefaultForItem: (String) -> PantryItemDefaultPreference?
@@ -403,10 +417,28 @@ struct AddPantryItemView: View {
                 }
             }
         }
+        .sheet(item: $facetExtensionTarget) { target in
+            AddCustomFacetValueSheet(
+                itemID: target.itemID,
+                itemName: target.itemName,
+                facetKey: target.facetKey
+            ) { newValue in
+                draft.setFacet(target.facetKey, value: newValue)
+            }
+        }
         .onChange(of: draft.selectedItemID) {
             savedDefault = draft.selectedItemID.flatMap(savedDefaultForItem)
         }
     }
+}
+
+struct FacetExtensionTarget: Identifiable {
+    let draftID: UUID
+    let itemID: String
+    let itemName: String
+    let facetKey: PantryFacetKey
+
+    var id: String { "\(draftID)-\(itemID)-\(facetKey.rawValue)" }
 }
 
 struct BulkAddPantryView: View {
@@ -415,6 +447,8 @@ struct BulkAddPantryView: View {
     @State private var editingDraft: PantryIntakeRowDraft?
     @State private var isSaving = false
     @State private var showingReview = false
+    @State private var facetExtensionTarget: FacetExtensionTarget?
+    @State private var customItemName: String?
     @FocusState private var isCatalogSearchFocused: Bool
 
     var body: some View {
@@ -467,6 +501,30 @@ struct BulkAddPantryView: View {
                 viewModel.bulkAdd.updateStagedRow(updatedDraft)
             }
         }
+        .sheet(item: $facetExtensionTarget) { target in
+            AddCustomFacetValueSheet(
+                itemID: target.itemID,
+                itemName: target.itemName,
+                facetKey: target.facetKey
+            ) { newValue in
+                viewModel.bulkAdd.updateStagedFacet(draftID: target.draftID, key: target.facetKey, value: newValue)
+            }
+        }
+        .sheet(isPresented: Binding(
+            get: { customItemName != nil },
+            set: { if !$0 { customItemName = nil } }
+        )) {
+            if let name = customItemName {
+                CustomIngredientDefinitionView(
+                    name: name,
+                    appState: viewModel.appState
+                ) { itemID in
+                    if let catalogItem = PantryCatalog.item(id: itemID) {
+                        viewModel.bulkAdd.toggleCatalogItemSelection(catalogItem)
+                    }
+                }
+            }
+        }
     }
 
     private func addTab(viewModel: PantryViewModel) -> some View {
@@ -486,9 +544,6 @@ struct BulkAddPantryView: View {
                                         .fontWeight(.semibold)
                                         .foregroundStyle(PCColors.textPrimary)
                                         .multilineTextAlignment(.leading)
-                                    Text("\(count) items")
-                                        .font(.caption)
-                                        .foregroundStyle(PCColors.textSecondary)
                                 }
                                 .frame(maxWidth: .infinity, minHeight: 96, alignment: .leading)
                                 .padding(14)
@@ -555,8 +610,7 @@ struct BulkAddPantryView: View {
 
                         if !viewModel.bulkAdd.catalogSearchText.trimmed.isEmpty {
                             Button {
-                                viewModel.bulkAdd.stageCustomItem(named: viewModel.bulkAdd.catalogSearchText)
-                                showingReview = true
+                                customItemName = viewModel.bulkAdd.catalogSearchText.trimmed
                             } label: {
                                 Label("Add \"\(viewModel.bulkAdd.catalogSearchText.trimmed)\" as a custom pantry item", systemImage: "square.and.pencil")
                                     .font(.subheadline)
@@ -725,6 +779,13 @@ struct BulkAddPantryView: View {
                     selection: draft.selectedFacetValues[facetDef.key]
                 ) { value in
                     viewModel.bulkAdd.updateStagedFacet(draftID: draft.id, key: facetDef.key, value: value)
+                } onAddCustom: {
+                    facetExtensionTarget = FacetExtensionTarget(
+                        draftID: draft.id,
+                        itemID: item.id,
+                        itemName: item.name,
+                        facetKey: facetDef.key
+                    )
                 }
             }
 
@@ -1022,6 +1083,7 @@ struct PantryDraftEditorView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var draft: PantryIntakeRowDraft
     @State private var savedDefault: PantryItemDefaultPreference?
+    @State private var facetExtensionTarget: FacetExtensionTarget?
     private let savedDefaultForItem: (String) -> PantryItemDefaultPreference?
     private let saveDefault: (PantryIntakeRowDraft) -> Void
     private let removeDefault: (String) -> Void
@@ -1094,6 +1156,15 @@ struct PantryDraftEditorView: View {
                         dismiss()
                     }
                 }
+            }
+        }
+        .sheet(item: $facetExtensionTarget) { target in
+            AddCustomFacetValueSheet(
+                itemID: target.itemID,
+                itemName: target.itemName,
+                facetKey: target.facetKey
+            ) { newValue in
+                draft.setFacet(target.facetKey, value: newValue)
             }
         }
         .onChange(of: draft.selectedItemID) {

@@ -5,6 +5,7 @@ struct ChipPicker: View {
     let options: [String]
     let selection: String?
     let onSelect: (String?) -> Void
+    var onAddCustom: (() -> Void)? = nil
 
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
@@ -31,6 +32,25 @@ struct ChipPicker: View {
                                 .overlay(
                                     Capsule()
                                         .stroke(isActive ? Color.clear : PCColors.textSecondary.opacity(0.3), lineWidth: 0.5)
+                                )
+                        }
+                        .buttonStyle(.plain)
+                    }
+                    if let onAddCustom {
+                        Button {
+                            onAddCustom()
+                        } label: {
+                            Image(systemName: "plus")
+                                .font(.caption)
+                                .fontWeight(.medium)
+                                .padding(.horizontal, 10)
+                                .padding(.vertical, 6)
+                                .background(PCColors.fillTertiary)
+                                .foregroundStyle(PCColors.accent)
+                                .clipShape(Capsule())
+                                .overlay(
+                                    Capsule()
+                                        .stroke(PCColors.accent.opacity(0.4), lineWidth: 0.5)
                                 )
                         }
                         .buttonStyle(.plain)

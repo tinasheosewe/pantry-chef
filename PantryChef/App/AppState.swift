@@ -411,6 +411,7 @@ final class AppState {
         self.mealPlanDomainService = mealPlanDomainService ?? MealPlanDomainService()
         self.cookQueueDomainService = cookQueueDomainService ?? CookQueueDomainService()
         IngredientMatcher.substitutionRepository = substitutionRepository
+        PantryCatalog.loadUserData(from: UserCatalogStore())
         pantryItems = PantryItem.samples
         preparedDishes = []
         preparedDishHistory = []

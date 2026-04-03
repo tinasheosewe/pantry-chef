@@ -215,18 +215,6 @@ final class PantryBulkAddViewModel {
         selectedTab = .review
     }
 
-    func stageCustomItem(named name: String) {
-        let trimmedName = name.trimmed
-        guard !trimmedName.isEmpty else { return }
-
-        var draft = PantryIntakeRowDraft()
-        draft.searchText = trimmedName
-        draft.enableCustomItemMode()
-        stagedRows.append(draft)
-        unresolvedTokens = []
-        selectedTab = .review
-    }
-
     func updateStagedRow(_ draft: PantryIntakeRowDraft) {
         stagedRows.update(draft)
     }

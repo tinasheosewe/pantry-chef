@@ -103,17 +103,18 @@ struct PantryCatalogItemDefinition: Identifiable, Hashable, Sendable, Codable {
     let defaultQuantity: Double?
     let defaultStorage: PantryStorage
     let aliases: [String]
-    let facets: [PantryFacetDefinition]
+    var facets: [PantryFacetDefinition]
     let defaultSelections: [PantryFacetSelection]
     let substitutions: [PantrySubstitutionDefinition]
     let unitOverrides: [PantryFacetKey: [String: MeasurementUnit]]
     let freshnessByStorage: [PantryStorage: ClosedRange<Int>]
+    let isUserDefined: Bool
 
     // MARK: - Codable
 
     private enum CodingKeys: String, CodingKey {
         case id, name, category, defaultUnit, defaultQuantity, defaultStorage
-        case aliases, facets, defaultSelections, freshnessByStorage
+        case aliases, facets, defaultSelections, freshnessByStorage, isUserDefined
     }
 
     init(from decoder: Decoder) throws {
@@ -129,6 +130,7 @@ struct PantryCatalogItemDefinition: Identifiable, Hashable, Sendable, Codable {
         defaultSelections = try c.decodeIfPresent([PantryFacetSelection].self, forKey: .defaultSelections) ?? []
         substitutions = []
         unitOverrides = [:]
+        isUserDefined = try c.decodeIfPresent(Bool.self, forKey: .isUserDefined) ?? false
 
         // Decode freshnessByStorage: { "Pantry": [180, 365], ... } → [PantryStorage: ClosedRange<Int>]
         let rawFreshness = try c.decodeIfPresent([String: [Int]].self, forKey: .freshnessByStorage) ?? [:]
@@ -151,6 +153,7 @@ struct PantryCatalogItemDefinition: Identifiable, Hashable, Sendable, Codable {
         try c.encode(aliases, forKey: .aliases)
         try c.encode(facets, forKey: .facets)
         try c.encode(defaultSelections, forKey: .defaultSelections)
+        try c.encode(isUserDefined, forKey: .isUserDefined)
         var rawFreshness: [String: [Int]] = [:]
         for (storage, range) in freshnessByStorage {
             rawFreshness[storage.rawValue] = [range.lowerBound, range.upperBound]
@@ -172,7 +175,8 @@ struct PantryCatalogItemDefinition: Identifiable, Hashable, Sendable, Codable {
         defaultSelections: [PantryFacetSelection],
         substitutions: [PantrySubstitutionDefinition],
         unitOverrides: [PantryFacetKey: [String: MeasurementUnit]],
-        freshnessByStorage: [PantryStorage: ClosedRange<Int>]
+        freshnessByStorage: [PantryStorage: ClosedRange<Int>],
+        isUserDefined: Bool = false
     ) {
         self.id = id
         self.name = name
@@ -186,6 +190,7 @@ struct PantryCatalogItemDefinition: Identifiable, Hashable, Sendable, Codable {
         self.substitutions = substitutions
         self.unitOverrides = unitOverrides
         self.freshnessByStorage = freshnessByStorage
+        self.isUserDefined = isUserDefined
     }
 
     func supports(_ key: PantryFacetKey) -> Bool {
@@ -252,6 +257,29 @@ struct PantryCatalogItemDefinition: Identifiable, Hashable, Sendable, Codable {
     ]
 }
 
+enum UserCatalogError: LocalizedError, Equatable {
+    case idCollision(existingItemID: String)
+    case nameCollision(existingItemID: String, existingItemName: String)
+    case duplicateUserItem(existingItemID: String)
+    case duplicateFacetValue(itemName: String, facetKey: String, value: String)
+    case itemNotFound(itemID: String)
+
+    var errorDescription: String? {
+        switch self {
+        case .idCollision(let existingItemID):
+            return "An item with ID \"\(existingItemID)\" already exists in the catalog."
+        case .nameCollision(let _, let existingItemName):
+            return "\"\(existingItemName)\" already exists in the catalog. Add a facet value to that item instead."
+        case .duplicateUserItem(let existingItemID):
+            return "A custom item with ID \"\(existingItemID)\" already exists."
+        case .duplicateFacetValue(let itemName, let facetKey, let value):
+            return "\"\(value)\" already exists for \(facetKey) on \(itemName)."
+        case .itemNotFound(let itemID):
+            return "Item \"\(itemID)\" not found in catalog."
+        }
+    }
+}
+
 enum PantryCatalog {
     /// Universal ingredient modifiers that should be stripped during normalization.
     /// These are common qualifiers that apply across many ingredient types.
@@ -315,7 +343,9 @@ enum PantryCatalog {
         ["cream cheese", "neufchatel"]
     ]
 
-    static let allItems: [PantryCatalogItemDefinition] = {
+    // MARK: - Bundle items (immutable)
+
+    private static let bundleItems: [PantryCatalogItemDefinition] = {
         guard let url = Bundle.main.url(forResource: "catalog", withExtension: "json") else {
             fatalError("catalog.json not found in app bundle")
         }
@@ -328,24 +358,53 @@ enum PantryCatalog {
         }
     }()
 
-    private static let itemsByID: [String: PantryCatalogItemDefinition] = {
+    // MARK: - User data (mutable)
+
+    private(set) static var userItems: [PantryCatalogItemDefinition] = []
+    private(set) static var facetExtensions: [String: [String: [String]]] = [:]
+    private static var store: UserCatalogStoreProtocol?
+
+    // MARK: - Merged items + indices
+
+    private(set) static var allItems: [PantryCatalogItemDefinition] = {
+        bundleItems
+    }()
+
+    private(set) static var itemsByID: [String: PantryCatalogItemDefinition] = {
         Dictionary(uniqueKeysWithValues: allItems.map { ($0.id, $0) })
     }()
-    private static let aliasIndex: [String: String] = {
+    private(set) static var aliasIndex: [String: String] = {
+        buildAliasIndex(from: allItems)
+    }()
+    private(set) static var facetOptionIndex: [String: [String]] = {
+        buildFacetOptionIndex(from: allItems)
+    }()
+    static var nameKeySet: Set<String> = {
+        Set(allItems.map { normalizeLookupKey($0.name) })
+    }()
+    static var facetTokenToItems: [String: [(itemID: String, key: PantryFacetKey, value: String)]] = {
+        buildFacetTokenToItems(from: allItems)
+    }()
+    static var tokenIndex: [String: Set<String>] = {
+        buildTokenIndex(from: allItems)
+    }()
+
+    // MARK: - Index builders
+
+    private static func buildAliasIndex(from items: [PantryCatalogItemDefinition]) -> [String: String] {
         var result: [String: String] = [:]
-        for item in allItems {
+        for item in items {
             result[normalizeLookupKey(item.name)] = item.id
             for alias in item.aliases {
                 result[normalizeLookupKey(alias)] = item.id
             }
         }
         return result
-    }()
+    }
 
-    /// Maps normalized facet option values to the item IDs that contain them.
-    private static let facetOptionIndex: [String: [String]] = {
+    private static func buildFacetOptionIndex(from items: [PantryCatalogItemDefinition]) -> [String: [String]] {
         var result: [String: [String]] = [:]
-        for item in allItems {
+        for item in items {
             for facet in item.facets {
                 for option in facet.options {
                     let key = normalizeLookupKey(option)
@@ -354,18 +413,11 @@ enum PantryCatalog {
             }
         }
         return result
-    }()
+    }
 
-    /// Set of normalized lookup keys that are primary item names (not aliases).
-    static let nameKeySet: Set<String> = {
-        Set(allItems.map { normalizeLookupKey($0.name) })
-    }()
-
-    /// Maps a normalized facet‐option token to (itemID, facetKey, facetValue) tuples,
-    /// so that a search token can be resolved to the specific facet selection it represents.
-    static let facetTokenToItems: [String: [(itemID: String, key: PantryFacetKey, value: String)]] = {
+    private static func buildFacetTokenToItems(from items: [PantryCatalogItemDefinition]) -> [String: [(itemID: String, key: PantryFacetKey, value: String)]] {
         var result: [String: [(itemID: String, key: PantryFacetKey, value: String)]] = [:]
-        for item in allItems {
+        for item in items {
             for facet in item.facets {
                 for option in facet.options {
                     let key = normalizeLookupKey(option)
@@ -374,12 +426,11 @@ enum PantryCatalog {
             }
         }
         return result
-    }()
+    }
 
-    /// Maps individual tokens from item names and aliases to item IDs.
-    static let tokenIndex: [String: Set<String>] = {
+    private static func buildTokenIndex(from items: [PantryCatalogItemDefinition]) -> [String: Set<String>] {
         var result: [String: Set<String>] = [:]
-        for item in allItems {
+        for item in items {
             for token in IngredientLexicon.tokenize(IngredientLexicon.lookupKey(item.name)) {
                 result[token, default: []].insert(item.id)
             }
@@ -390,7 +441,145 @@ enum PantryCatalog {
             }
         }
         return result
-    }()
+    }
+
+    // MARK: - Rebuild
+
+    private static func rebuildIndices() {
+        var merged = bundleItems
+        // Apply facet extensions to bundle items
+        if !facetExtensions.isEmpty {
+            merged = merged.map { item in
+                guard let extensions = facetExtensions[item.id] else { return item }
+                var mutableItem = item
+                mutableItem.facets = item.facets.map { facetDef in
+                    guard let newValues = extensions[facetDef.key.rawValue] else { return facetDef }
+                    let existingSet = Set(facetDef.options)
+                    let additions = newValues.filter { !existingSet.contains($0) }
+                    guard !additions.isEmpty else { return facetDef }
+                    return PantryFacetDefinition(key: facetDef.key, options: facetDef.options + additions)
+                }
+                // Add entirely new facet keys from extensions
+                let existingKeys = Set(mutableItem.facets.map(\.key))
+                for (keyRaw, values) in extensions {
+                    guard let facetKey = PantryFacetKey(rawValue: keyRaw), !existingKeys.contains(facetKey) else { continue }
+                    mutableItem.facets.append(PantryFacetDefinition(key: facetKey, options: values))
+                }
+                return mutableItem
+            }
+        }
+        merged += userItems
+        allItems = merged
+        itemsByID = Dictionary(uniqueKeysWithValues: merged.map { ($0.id, $0) })
+        aliasIndex = buildAliasIndex(from: merged)
+        facetOptionIndex = buildFacetOptionIndex(from: merged)
+        nameKeySet = Set(merged.map { normalizeLookupKey($0.name) })
+        facetTokenToItems = buildFacetTokenToItems(from: merged)
+        tokenIndex = buildTokenIndex(from: merged)
+    }
+
+    // MARK: - Loading
+
+    static func loadUserData(from store: UserCatalogStoreProtocol) {
+        self.store = store
+        userItems = store.loadUserItems()
+        facetExtensions = store.loadFacetExtensions()
+        rebuildIndices()
+    }
+
+    // MARK: - Mutation: User Items
+
+    @discardableResult
+    static func registerUserItem(_ item: PantryCatalogItemDefinition) -> Result<Void, UserCatalogError> {
+        // Validate ID prefix
+        let itemID = item.id
+        guard itemID.hasPrefix("user-") else {
+            return .failure(.idCollision(existingItemID: itemID))
+        }
+
+        // Check bundle ID collision
+        if bundleItems.contains(where: { $0.id == itemID }) {
+            return .failure(.idCollision(existingItemID: itemID))
+        }
+
+        // Check name/alias collision with bundle items
+        let nameKey = normalizeLookupKey(item.name)
+        let allKeys = [nameKey] + item.aliases.map { normalizeLookupKey($0) }
+        for key in allKeys {
+            if let existingID = aliasIndex[key] {
+                if let existing = itemsByID[existingID], !existing.isUserDefined {
+                    return .failure(.nameCollision(existingItemID: existingID, existingItemName: existing.name))
+                }
+                if existing(isUserItem: existingID) {
+                    return .failure(.duplicateUserItem(existingItemID: existingID))
+                }
+            }
+        }
+
+        // Ensure isUserDefined is true
+        var newItem = item
+        if !newItem.isUserDefined {
+            newItem = PantryCatalogItemDefinition(
+                id: newItem.id, name: newItem.name, category: newItem.category,
+                defaultUnit: newItem.defaultUnit, defaultQuantity: newItem.defaultQuantity,
+                defaultStorage: newItem.defaultStorage, aliases: newItem.aliases,
+                facets: newItem.facets, defaultSelections: newItem.defaultSelections,
+                substitutions: newItem.substitutions, unitOverrides: newItem.unitOverrides,
+                freshnessByStorage: newItem.freshnessByStorage, isUserDefined: true
+            )
+        }
+
+        userItems.append(newItem)
+        store?.saveUserItems(userItems)
+        rebuildIndices()
+        return .success(())
+    }
+
+    static func removeUserItem(id: String) {
+        userItems.removeAll { $0.id == id }
+        store?.saveUserItems(userItems)
+        rebuildIndices()
+    }
+
+    private static func existing(isUserItem id: String) -> Bool {
+        userItems.contains { $0.id == id }
+    }
+
+    // MARK: - Mutation: Facet Extensions
+
+    @discardableResult
+    static func addFacetExtension(catalogItemID: String, key: PantryFacetKey, value: String) -> Result<Void, UserCatalogError> {
+        guard let item = itemsByID[catalogItemID] else {
+            return .failure(.itemNotFound(itemID: catalogItemID))
+        }
+
+        // Check for duplicate value across bundle options + existing extensions
+        let existingOptions = item.options(for: key)
+        let normalizedValue = value.trimmingCharacters(in: .whitespaces)
+        if existingOptions.contains(where: { $0.lowercased() == normalizedValue.lowercased() }) {
+            return .failure(.duplicateFacetValue(itemName: item.name, facetKey: key.title, value: normalizedValue))
+        }
+
+        facetExtensions[catalogItemID, default: [:]][key.rawValue, default: []].append(normalizedValue)
+        store?.saveFacetExtensions(facetExtensions)
+        rebuildIndices()
+        return .success(())
+    }
+
+    static func removeFacetExtension(catalogItemID: String, key: PantryFacetKey, value: String) {
+        facetExtensions[catalogItemID]?[key.rawValue]?.removeAll { $0 == value }
+        // Clean up empty entries
+        if facetExtensions[catalogItemID]?[key.rawValue]?.isEmpty == true {
+            facetExtensions[catalogItemID]?.removeValue(forKey: key.rawValue)
+        }
+        if facetExtensions[catalogItemID]?.isEmpty == true {
+            facetExtensions.removeValue(forKey: catalogItemID)
+        }
+        store?.saveFacetExtensions(facetExtensions)
+        rebuildIndices()
+    }
+
+    // MARK: - Queries
 
     /// Resolve a normalized lookup key to an item ID via the alias index.
     static func resolveAlias(_ lookupKey: String) -> String? {

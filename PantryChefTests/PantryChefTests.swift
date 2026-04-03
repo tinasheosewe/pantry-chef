@@ -4709,18 +4709,6 @@ final class PantryBulkAddViewModelTests: XCTestCase {
         XCTAssertEqual(stagedOffset, 4)
     }
 
-    func testStageCustomItemCreatesEditableCustomDraft() {
-        let bulk = PantryBulkAddViewModel(preferenceStore: MockPantryItemPreferenceStore())
-
-        bulk.stageCustomItem(named: "House Chili Paste")
-
-        XCTAssertEqual(bulk.stagedRows.count, 1)
-        XCTAssertTrue(bulk.stagedRows[0].isCustomItem)
-        XCTAssertEqual(bulk.stagedRows[0].searchText, "House Chili Paste")
-        XCTAssertEqual(bulk.stagedRows[0].storage, .pantry)
-        XCTAssertEqual(bulk.selectedTab, .review)
-    }
-
     func testRemoveDefaultFallsBackToCatalogDefaults() throws {
         let preferenceStore = MockPantryItemPreferenceStore()
         var savedDraft = PantryIntakeRowDraft(itemDefinition: try XCTUnwrap(PantryCatalog.item(id: "bread")))

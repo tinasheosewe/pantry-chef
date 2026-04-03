@@ -961,6 +961,128 @@ final class AIService: AIServiceProtocol {
         ] as [String: Any]
     ]
 
+    /// Schema for AI-generated ingredient definitions.
+    private static let ingredientDefinitionSchema: [String: Any] = [
+        "name": "ingredient_definition",
+        "strict": true,
+        "schema": [
+            "type": "object",
+            "properties": [
+                "category": [
+                    "type": "string",
+                    "enum": FoodCategory.allCases.map(\.rawValue)
+                ] as [String: Any],
+                "defaultStorage": [
+                    "type": "string",
+                    "enum": PantryStorage.allCases.map(\.rawValue)
+                ] as [String: Any],
+                "defaultUnit": [
+                    "type": ["string", "null"],
+                    "enum": [NSNull()] + MeasurementUnit.allCases.map(\.rawValue) as [Any]
+                ] as [String: Any],
+                "facets": [
+                    "type": "array",
+                    "items": [
+                        "type": "object",
+                        "properties": [
+                            "key": [
+                                "type": "string",
+                                "enum": PantryFacetKey.allCases.map(\.rawValue)
+                            ] as [String: Any],
+                            "options": [
+                                "type": "array",
+                                "items": ["type": "string"]
+                            ] as [String: Any]
+                        ] as [String: Any],
+                        "required": ["key", "options"],
+                        "additionalProperties": false
+                    ] as [String: Any]
+                ] as [String: Any]
+            ] as [String: Any],
+            "required": ["category", "defaultStorage", "defaultUnit", "facets"],
+            "additionalProperties": false
+        ] as [String: Any]
+    ]
+
+    // MARK: - Ingredient Definition Generation
+
+    func generateIngredientDefinition(name: String) async -> AIIngredientDefinition? {
+        let prompt = """
+        You are a food ingredient expert. Given the name of a food ingredient, generate a structured definition for a pantry catalog.
+
+        Ingredient name: "\(name)"
+
+        Return a JSON object with:
+        - "category": the food category (e.g. "Produce", "Protein", "Dairy & Eggs")
+        - "defaultStorage": how this ingredient is typically stored ("Pantry", "Refrigerated", or "Frozen")
+        - "defaultUnit": the most common measurement unit for purchasing this ingredient, or null if "piece" is most natural
+        - "facets": an array of attribute dimensions. Each facet has:
+          - "key": one of "variant", "form", "preservation", "processing", "preparation", "texture", "concentration", "base"
+          - "options": an array of common values for that facet
+
+        Facet key descriptions:
+        - "variant": sub-types or cultivars (e.g. for milk: whole, skim, 2%; for apple: granny smith, fuji, gala)
+        - "form": physical form (e.g. ground, sliced, diced, whole, fillet, steak)
+        - "preservation": how it's preserved (e.g. fresh, canned, dried, frozen, smoked)
+        - "processing": level of processing (e.g. raw, roasted, blanched, fermented)
+        - "preparation": prep state (e.g. peeled, deveined, deboned, marinated)
+        - "texture": texture characteristics (e.g. creamy, crunchy, smooth, chunky)
+        - "concentration": strength/concentration (e.g. light, regular, double, concentrated, extra virgin)
+        - "base": base ingredient for compound items (e.g. for broth: chicken, beef, vegetable)
+
+        Only include facets that genuinely apply to this ingredient. Most ingredients have 2-4 relevant facets.
+        Each facet should have 2-8 common options. Be practical — include options a home cook would actually use.
+        """
+
+        guard let response = await sendChatRequest(
+            prompt: prompt,
+            maxTokens: 1024,
+            responseFormat: ["type": "json_schema", "json_schema": Self.ingredientDefinitionSchema]
+        ) else { return nil }
+
+        guard let data = response.data(using: .utf8) else { return nil }
+
+        do {
+            guard let json = try JSONSerialization.jsonObject(with: data) as? [String: Any] else { return nil }
+
+            guard let categoryRaw = json["category"] as? String,
+                  let category = FoodCategory(rawValue: categoryRaw),
+                  let storageRaw = json["defaultStorage"] as? String,
+                  let storage = PantryStorage(rawValue: storageRaw) else {
+                AppLog.warn("[AIService] Failed to parse ingredient definition: missing required fields")
+                return nil
+            }
+
+            let defaultUnit: MeasurementUnit?
+            if let unitRaw = json["defaultUnit"] as? String {
+                defaultUnit = MeasurementUnit(rawValue: unitRaw)
+            } else {
+                defaultUnit = nil
+            }
+
+            var facets: [PantryFacetKey: [String]] = [:]
+            if let facetArray = json["facets"] as? [[String: Any]] {
+                for facetObj in facetArray {
+                    guard let keyRaw = facetObj["key"] as? String,
+                          let key = PantryFacetKey(rawValue: keyRaw),
+                          let options = facetObj["options"] as? [String],
+                          !options.isEmpty else { continue }
+                    facets[key] = options
+                }
+            }
+
+            return AIIngredientDefinition(
+                category: category,
+                defaultStorage: storage,
+                defaultUnit: defaultUnit,
+                facets: facets
+            )
+        } catch {
+            AppLog.warn("[AIService] Failed to decode ingredient definition: \(error)")
+            return nil
+        }
+    }
+
     func parseRecipeFromText(_ extractedText: String) async -> RecipeImportResult? {
         let prompt = """
         Parse the following text into a structured recipe. The text may come from a website, \

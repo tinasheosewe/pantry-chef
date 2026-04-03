@@ -65,6 +65,7 @@ struct PantryIntakeRowDraft: Identifiable {
     var customCategory: FoodCategory = .other
     var selectedItemID: String?
     var selectedFacetValues: [PantryFacetKey: String] = [:]
+    var customFacetKeys: Set<PantryFacetKey> = []
     var storage: PantryStorage?
     var quantityText: String = ""
     var quantityWasEdited = false
@@ -141,11 +142,23 @@ struct PantryIntakeRowDraft: Identifiable {
     }
 
     var facetDefinitions: [PantryFacetDefinition] {
-        selectedItem?.facets ?? []
+        if isCustomItem {
+            return customFacetKeys.sorted(by: { $0.rawValue < $1.rawValue }).map { key in
+                let value = selectedFacetValues[key] ?? ""
+                return PantryFacetDefinition(key: key, options: value.isEmpty ? [] : [value])
+            }
+        }
+        return selectedItem?.facets ?? []
     }
 
     var selectedFacets: [PantryFacetSelection] {
-        facetDefinitions.compactMap { definition in
+        if isCustomItem {
+            return customFacetKeys.compactMap { key in
+                guard let value = selectedFacetValues[key], !value.isEmpty else { return nil }
+                return PantryFacetSelection(key: key, value: value)
+            }
+        }
+        return facetDefinitions.compactMap { definition in
             guard let value = selectedFacetValues[definition.key], definition.options.contains(value) else {
                 return nil
             }
@@ -425,8 +438,8 @@ struct PantryIntakeRowDraft: Identifiable {
                 expiryDate: resolvedExpiryDate,
                 dateAdded: existingDateAdded ?? Date(),
                 notes: notesValue,
-                catalogItemID: nil,
-                facets: [],
+                catalogItemID: selectedItemID,
+                facets: selectedFacets,
                 storage: storage,
                 freshnessSource: expiryDateWasEdited ? .userProvided : PantryFreshnessSource.none,
                 quantityMode: parsedQuantity == nil ? .presenceOnly : .exact
@@ -495,5 +508,94 @@ struct PantryIntakeRowDraft: Identifiable {
             return String(Int(value))
         }
         return String(value)
+    }
+}
+
+// MARK: - Custom Ingredient Definition
+
+struct AIIngredientDefinition {
+    let category: FoodCategory
+    let defaultStorage: PantryStorage
+    let defaultUnit: MeasurementUnit?
+    let facets: [PantryFacetKey: [String]]
+}
+
+struct CustomIngredientDraft {
+    var name: String
+    var category: FoodCategory = .other
+    var defaultStorage: PantryStorage = .pantry
+    var defaultUnit: MeasurementUnit? = nil
+    var facets: [PantryFacetKey: [String]] = [:]
+
+    var nameCollisionWarning: String? {
+        let trimmed = name.trimmed
+        guard !trimmed.isEmpty else { return nil }
+        if let existing = PantryCatalog.resolveExact(name: trimmed) {
+            return "\"\(existing.titleCasedName)\" already exists in the catalog. Consider using that instead."
+        }
+        return nil
+    }
+
+    var sortedFacetKeys: [PantryFacetKey] {
+        facets.keys.sorted { $0.rawValue < $1.rawValue }
+    }
+
+    var unusedFacetKeys: [PantryFacetKey] {
+        PantryFacetKey.allCases.filter { facets[$0] == nil }
+    }
+
+    mutating func addFacetOption(_ key: PantryFacetKey, value: String) {
+        let trimmed = value.trimmed
+        guard !trimmed.isEmpty else { return }
+        var options = facets[key] ?? []
+        guard !options.contains(where: { $0.caseInsensitiveCompare(trimmed) == .orderedSame }) else { return }
+        options.append(trimmed)
+        facets[key] = options
+    }
+
+    mutating func removeFacetOption(_ key: PantryFacetKey, value: String) {
+        facets[key]?.removeAll { $0 == value }
+        if facets[key]?.isEmpty == true {
+            facets.removeValue(forKey: key)
+        }
+    }
+
+    mutating func removeFacet(_ key: PantryFacetKey) {
+        facets.removeValue(forKey: key)
+    }
+
+    mutating func applyAIDefinition(_ definition: AIIngredientDefinition) {
+        category = definition.category
+        defaultStorage = definition.defaultStorage
+        defaultUnit = definition.defaultUnit
+        facets = definition.facets.filter { !$0.value.isEmpty }
+    }
+
+    func buildDefinition() -> PantryCatalogItemDefinition {
+        let sanitizedName = name.trimmed.lowercased()
+            .replacingOccurrences(of: " ", with: "-")
+            .filter { $0.isLetter || $0.isNumber || $0 == "-" }
+        let itemID = "user-\(sanitizedName)"
+
+        let facetDefs: [PantryFacetDefinition] = sortedFacetKeys.compactMap { key in
+            guard let options = facets[key], !options.isEmpty else { return nil }
+            return PantryFacetDefinition(key: key, options: options)
+        }
+
+        return PantryCatalogItemDefinition(
+            id: itemID,
+            name: name.trimmed,
+            category: category,
+            defaultUnit: defaultUnit,
+            defaultQuantity: nil,
+            defaultStorage: defaultStorage,
+            aliases: [],
+            facets: facetDefs,
+            defaultSelections: [],
+            substitutions: [],
+            unitOverrides: [:],
+            freshnessByStorage: [:],
+            isUserDefined: true
+        )
     }
 }

@@ -101,6 +101,7 @@ protocol AIServiceProtocol: AnyObject, Sendable {
     func suggestRecipeNames(ingredients: [String], strictIngredients: Bool, requireAllIngredients: Bool, excludeNames: [String]) async -> RecipeNameSuggestionsResult
     func generateRecipeFromSuggestion(_ suggestion: RecipeNameSuggestion, ingredients: [String], strictIngredients: Bool, requireAllIngredients: Bool) async -> Recipe?
     func generateBatchSchedule(recipes: [Recipe]) async throws -> LLMBatchSchedule
+    func generateIngredientDefinition(name: String) async -> AIIngredientDefinition?
 }
 
 // MARK: - Recipe Generation Preferences

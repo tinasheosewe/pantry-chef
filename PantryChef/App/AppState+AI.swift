@@ -46,4 +46,8 @@ extension AppState {
     func modifyRecipe(_ recipe: Recipe, feedback: String) async -> RecipeGenerationResult? {
         await recipeDomainService.modifyRecipe(recipe, feedback: feedback, state: self)
     }
+
+    func generateIngredientDefinition(name: String) async -> AIIngredientDefinition? {
+        await aiService.generateIngredientDefinition(name: name)
+    }
 }
