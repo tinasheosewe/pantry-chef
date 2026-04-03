@@ -186,6 +186,9 @@ private struct ShoppingAddItemView: View {
                         text: viewModel.isCustomItem ? $viewModel.customItemName : $viewModel.searchText
                     )
                     .appTextEntry(autocapitalization: .words, autocorrectionDisabled: true)
+                    .onChange(of: viewModel.searchText) {
+                        viewModel.onSearchTextChanged()
+                    }
 
                     if viewModel.isCustomItem {
                         Button("Back to Catalog Search") {

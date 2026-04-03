@@ -121,7 +121,7 @@ enum IngredientLexicon {
         }
     }
 
-    private static func levenshteinDistance(_ lhs: String, _ rhs: String) -> Int {
+    static func levenshteinDistance(_ lhs: String, _ rhs: String) -> Int {
         let lhsChars = Array(lhs)
         let rhsChars = Array(rhs)
         let lhsCount = lhsChars.count

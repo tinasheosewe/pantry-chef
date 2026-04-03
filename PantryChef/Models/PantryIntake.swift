@@ -120,7 +120,7 @@ struct PantryIntakeRowDraft: Identifiable {
 
     var matchingItems: [PantryCatalogItemDefinition] {
         guard !searchText.trimmed.isEmpty else { return [] }
-        return PantryCatalog.search(searchText)
+        return CatalogSearchEngine.search(searchText).map(\.item)
     }
 
     var estimatedExpiryDate: Date? {

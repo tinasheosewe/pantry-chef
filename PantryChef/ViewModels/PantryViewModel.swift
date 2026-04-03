@@ -22,6 +22,7 @@ final class PantryBulkAddViewModel {
 
     init(preferenceStore: PantryItemPreferenceStoreProtocol) {
         self.preferenceStore = preferenceStore
+        updateCatalogSearch()
     }
 
     var categoryCounts: [(FoodCategory, Int)] {
@@ -32,17 +33,36 @@ final class PantryBulkAddViewModel {
         }
     }
 
-    var filteredCatalogItems: [PantryCatalogItemDefinition] {
-        let normalizedQuery = debouncedCatalogSearchText.trimmed
-        var items = normalizedQuery.isEmpty
-            ? PantryCatalog.allItems.sorted { $0.name < $1.name }
-            : PantryCatalog.search(normalizedQuery)
+    private(set) var catalogSearchResults: [CatalogSearchResult] = []
+    private(set) var filteredCatalogItems: [PantryCatalogItemDefinition] = []
 
-        if let selectedCatalogCategory {
-            items = items.filter { $0.category == selectedCatalogCategory }
+    func updateCatalogSearch() {
+        let normalizedQuery = debouncedCatalogSearchText.trimmed
+        if normalizedQuery.isEmpty {
+            catalogSearchResults = []
+            var items = PantryCatalog.allItems.sorted { $0.name < $1.name }
+            if let selectedCatalogCategory {
+                items = items.filter { $0.category == selectedCatalogCategory }
+            }
+            filteredCatalogItems = items
+            return
         }
 
-        return items
+        let results = CatalogSearchEngine.search(normalizedQuery)
+        var filtered = results
+        if let selectedCatalogCategory {
+            filtered = filtered.filter { $0.item.category == selectedCatalogCategory }
+        }
+        catalogSearchResults = filtered
+        filteredCatalogItems = filtered.map(\.item)
+    }
+
+    func catalogDisplayName(for item: PantryCatalogItemDefinition) -> String {
+        catalogSearchResults.first(where: { $0.catalogItemID == item.id })?.displayName ?? item.titleCasedName
+    }
+
+    func catalogResolvedFacets(for item: PantryCatalogItemDefinition) -> [PantryFacetSelection] {
+        catalogSearchResults.first(where: { $0.catalogItemID == item.id })?.facets ?? []
     }
 
     var commonItems: [PantryCatalogItemDefinition] {
@@ -55,7 +75,7 @@ final class PantryBulkAddViewModel {
     var searchPreviewResults: [PantryCatalogItemDefinition] {
         let token = trailingSearchToken
         guard !token.isEmpty else { return [] }
-        return Array(PantryCatalog.search(token).prefix(AppConfig.pantrySearchMaxResults))
+        return Array(CatalogSearchEngine.search(token).prefix(AppConfig.pantrySearchMaxResults).map(\.item))
     }
 
     var trailingSearchToken: String {
@@ -86,20 +106,37 @@ final class PantryBulkAddViewModel {
         searchComposerText = ""
         unresolvedTokens = []
         stagedRows = []
+        updateCatalogSearch()
     }
 
     func onCatalogSearchTextChanged() {
         SearchQuerySupport.schedule(text: catalogSearchText, debouncer: catalogSearchDebouncer) {
             self.debouncedCatalogSearchText = $0
+            self.updateCatalogSearch()
         }
     }
 
     func applyCatalogSearchImmediately() {
         debouncedCatalogSearchText = SearchQuerySupport.normalized(catalogSearchText)
+        updateCatalogSearch()
+    }
+
+    func onCatalogCategoryChanged() {
+        updateCatalogSearch()
     }
 
     func stageCatalogItem(_ item: PantryCatalogItemDefinition) {
-        stagedRows.append(draft(for: item))
+        var d = draft(for: item)
+        let resolvedFacets = catalogResolvedFacets(for: item)
+        if !resolvedFacets.isEmpty {
+            // Search specified facets — clear catalog defaults so only
+            // the search-resolved facets are pre-selected.
+            d.selectedFacetValues = [:]
+            for facet in resolvedFacets {
+                d.selectedFacetValues[facet.key] = facet.value
+            }
+        }
+        stagedRows.append(d)
     }
 
     func draft(for item: PantryCatalogItemDefinition) -> PantryIntakeRowDraft {
@@ -193,8 +230,8 @@ final class PantryBulkAddViewModel {
             return exact
         }
 
-        let results = PantryCatalog.search(token)
-        return results.count == 1 ? results[0] : nil
+        let results = CatalogSearchEngine.search(token)
+        return results.count == 1 ? results[0].item : nil
     }
 
     private func tokenize(_ input: String) -> [String] {

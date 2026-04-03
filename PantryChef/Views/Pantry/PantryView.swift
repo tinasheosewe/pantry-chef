@@ -498,6 +498,7 @@ struct BulkAddPantryView: View {
                                 .contentShape(RoundedRectangle(cornerRadius: 18))
                                 .onTapGesture {
                                     viewModel.bulkAdd.selectedCatalogCategory = category
+                                    viewModel.bulkAdd.onCatalogCategoryChanged()
                                 }
                             }
                         }
@@ -607,12 +608,14 @@ struct BulkAddPantryView: View {
         let isSelected = viewModel.bulkAdd.isCatalogItemSelected(item)
         let previewDraft = viewModel.bulkAdd.draft(for: item)
         let savedDefault = viewModel.bulkAdd.savedDefault(for: item.id)
+        let displayName = viewModel.bulkAdd.catalogDisplayName(for: item)
+        let hasSearchFacets = !viewModel.bulkAdd.catalogResolvedFacets(for: item).isEmpty
 
         return HStack(spacing: 12) {
             CategoryIcon(category: item.category, size: 40)
 
             VStack(alignment: .leading, spacing: 4) {
-                Text(item.titleCasedName)
+                Text(displayName)
                     .font(.subheadline)
                     .fontWeight(.semibold)
                     .foregroundStyle(PCColors.textPrimary)
@@ -620,7 +623,7 @@ struct BulkAddPantryView: View {
                     .font(.caption)
                     .foregroundStyle(PCColors.textSecondary)
 
-                if let defaultLabel = catalogDefaultLabel(for: previewDraft, savedDefault: savedDefault) {
+                if !hasSearchFacets, let defaultLabel = catalogDefaultLabel(for: previewDraft, savedDefault: savedDefault) {
                     Text(defaultLabel)
                         .font(.caption2)
                         .foregroundStyle(PCColors.info)

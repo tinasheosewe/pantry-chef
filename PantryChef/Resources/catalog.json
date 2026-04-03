@@ -128,7 +128,6 @@
         "key": "concentration",
         "options": [
           "regular",
-          "spicy",
           "mild"
         ]
       }
@@ -587,7 +586,6 @@
         "key": "preservation",
         "options": [
           "canned",
-          "salted",
           "oil-packed",
           "fresh",
           "frozen"
@@ -596,10 +594,7 @@
       {
         "key": "form",
         "options": [
-          "whole",
-          "fillet",
-          "minced",
-          "paste"
+          "minced"
         ]
       },
       {
@@ -607,8 +602,7 @@
         "options": [
           "raw",
           "cooked",
-          "smoked",
-          "marinated"
+          "smoked"
         ]
       }
     ],
@@ -1048,8 +1042,7 @@
       {
         "key": "texture",
         "options": [
-          "smooth",
-          "chunky"
+          "smooth"
         ]
       }
     ],
@@ -1306,7 +1299,6 @@
         "options": [
           "whole",
           "chopped",
-          "washed",
           "pre-cut"
         ]
       },
@@ -1400,7 +1392,6 @@
         "key": "form",
         "options": [
           "whole",
-          "trimmed",
           "chopped",
           "spears",
           "cut"
@@ -1475,7 +1466,6 @@
         "options": [
           "whole",
           "halved",
-          "sliced",
           "diced",
           "mashed"
         ]
@@ -1546,7 +1536,6 @@
         "options": [
           "cold-pressed",
           "expeller-pressed",
-          "refined",
           "unrefined"
         ]
       }
@@ -1554,10 +1543,6 @@
     "defaultSelections": [
       {
         "key": "variant",
-        "value": "refined"
-      },
-      {
-        "key": "processing",
         "value": "refined"
       }
     ],
@@ -1730,7 +1715,6 @@
         "key": "form",
         "options": [
           "sliced",
-          "slab",
           "diced",
           "crumbled",
           "bits"
@@ -2167,8 +2151,7 @@
         "key": "concentration",
         "options": [
           "regular",
-          "double-concentrated",
-          "glaze"
+          "double-concentrated"
         ]
       },
       {
@@ -2914,8 +2897,6 @@
         "key": "form",
         "options": [
           "steak",
-          "roast",
-          "ground",
           "cubed",
           "sliced",
           "shredded",
@@ -2946,10 +2927,6 @@
     "defaultSelections": [
       {
         "key": "variant",
-        "value": "ground"
-      },
-      {
-        "key": "form",
         "value": "ground"
       }
     ],
@@ -3363,8 +3340,6 @@
         "key": "form",
         "options": [
           "steak",
-          "roast",
-          "ground",
           "cubed",
           "sliced",
           "shredded"
@@ -3392,10 +3367,6 @@
     "defaultSelections": [
       {
         "key": "variant",
-        "value": "ground"
-      },
-      {
-        "key": "form",
         "value": "ground"
       }
     ],
@@ -3852,12 +3823,8 @@
         "key": "form",
         "options": [
           "steak",
-          "chop",
-          "roast",
-          "ground",
           "cubed",
-          "sliced",
-          "sausage"
+          "sliced"
         ]
       },
       {
@@ -3883,10 +3850,6 @@
       {
         "key": "variant",
         "value": "loin"
-      },
-      {
-        "key": "form",
-        "value": "chop"
       }
     ],
     "freshnessByStorage": {
@@ -4175,8 +4138,7 @@
         "key": "processing",
         "options": [
           "aged",
-          "blended",
-          "single barrel"
+          "blended"
         ]
       }
     ],
@@ -4345,7 +4307,6 @@
         "key": "preservation",
         "options": [
           "fresh",
-          "smoked",
           "cured",
           "frozen"
         ]
@@ -4733,7 +4694,6 @@
       {
         "key": "form",
         "options": [
-          "whole",
           "sliced",
           "diced",
           "shredded"
@@ -4744,7 +4704,6 @@
         "options": [
           "fresh",
           "frozen",
-          "smoked",
           "cured"
         ]
       },
@@ -4763,10 +4722,6 @@
       {
         "key": "variant",
         "value": "flat cut"
-      },
-      {
-        "key": "form",
-        "value": "whole"
       }
     ],
     "freshnessByStorage": {
@@ -5321,16 +5276,14 @@
         "options": [
           "stick",
           "block",
-          "spread",
-          "whipped"
+          "spread"
         ]
       },
       {
         "key": "processing",
         "options": [
           "pasteurized",
-          "raw",
-          "clarified"
+          "raw"
         ]
       }
     ],
@@ -5385,8 +5338,7 @@
       {
         "key": "form",
         "options": [
-          "liquid",
-          "powdered"
+          "liquid"
         ]
       },
       {
@@ -5520,23 +5472,12 @@
           "artisanal",
           "industrial"
         ]
-      },
-      {
-        "key": "processing",
-        "options": [
-          "aged",
-          "unaged"
-        ]
       }
     ],
     "defaultSelections": [
       {
         "key": "variant",
         "value": "white"
-      },
-      {
-        "key": "processing",
-        "value": "unaged"
       }
     ],
     "freshnessByStorage": {
@@ -5688,8 +5629,7 @@
         "options": [
           "whole",
           "slice",
-          "mini",
-          "cupcake"
+          "mini"
         ]
       },
       {
@@ -5753,10 +5693,8 @@
       {
         "key": "form",
         "options": [
-          "whole",
           "sliced",
-          "diced",
-          "rings"
+          "diced"
         ]
       },
       {
@@ -5940,10 +5878,8 @@
       {
         "key": "texture",
         "options": [
-          "chewy",
           "crunchy",
-          "smooth",
-          "hard"
+          "smooth"
         ]
       }
     ],
@@ -6595,8 +6531,7 @@
         "key": "preservation",
         "options": [
           "fresh",
-          "frozen",
-          "smoked"
+          "frozen"
         ]
       },
       {
@@ -6879,7 +6814,6 @@
         "key": "form",
         "options": [
           "whole eggs",
-          "pasteurized",
           "malossol"
         ]
       },
@@ -7122,9 +7056,7 @@
       {
         "key": "form",
         "options": [
-          "dry",
-          "fresh",
-          "frozen"
+          "dry"
         ]
       },
       {
@@ -7881,7 +7813,6 @@
         "key": "form",
         "options": [
           "whole",
-          "pitted",
           "halved",
           "sliced"
         ]
@@ -7893,8 +7824,7 @@
           "frozen",
           "dried",
           "canned",
-          "preserved",
-          "maraschino"
+          "preserved"
         ]
       },
       {
@@ -7988,7 +7918,6 @@
         "options": [
           "whole",
           "peeled",
-          "roasted",
           "puree",
           "flour"
         ]
@@ -8119,7 +8048,6 @@
       {
         "key": "form",
         "options": [
-          "whole",
           "boneless",
           "bone-in",
           "diced",
@@ -8323,8 +8251,7 @@
         "key": "texture",
         "options": [
           "smooth",
-          "chunky",
-          "crispy"
+          "chunky"
         ]
       },
       {
@@ -8449,8 +8376,7 @@
       {
         "key": "form",
         "options": [
-          "powder",
-          "blend"
+          "powder"
         ]
       }
     ],
@@ -8511,7 +8437,6 @@
         "key": "concentration",
         "options": [
           "regular",
-          "hot",
           "mild",
           "extra hot"
         ]
@@ -8848,8 +8773,7 @@
         "key": "texture",
         "options": [
           "smooth",
-          "creamy",
-          "crunchy"
+          "creamy"
         ]
       }
     ],
@@ -9833,8 +9757,7 @@
         "key": "processing",
         "options": [
           "cold-pressed",
-          "expeller-pressed",
-          "refined"
+          "expeller-pressed"
         ]
       }
     ],
@@ -10553,8 +10476,7 @@
         "key": "form",
         "options": [
           "whole",
-          "crushed",
-          "scoops"
+          "crushed"
         ]
       }
     ],
@@ -10597,8 +10519,7 @@
       {
         "key": "form",
         "options": [
-          "whole",
-          "mini"
+          "whole"
         ]
       },
       {
@@ -10721,7 +10642,6 @@
         "options": [
           "toasted",
           "roasted",
-          "salted",
           "flavored"
         ]
       }
@@ -10918,7 +10838,6 @@
         "key": "form",
         "options": [
           "whole",
-          "sliced",
           "shredded",
           "cubed"
         ]
@@ -10927,7 +10846,6 @@
         "key": "preservation",
         "options": [
           "fresh",
-          "canned",
           "frozen"
         ]
       },
@@ -11569,16 +11487,14 @@
         "options": [
           "whole",
           "tail meat",
-          "peeled",
-          "cooked"
+          "peeled"
         ]
       },
       {
         "key": "preservation",
         "options": [
           "fresh",
-          "frozen",
-          "cooked"
+          "frozen"
         ]
       },
       {
@@ -11649,14 +11565,6 @@
         ]
       },
       {
-        "key": "concentration",
-        "options": [
-          "heavy",
-          "light",
-          "double"
-        ]
-      },
-      {
         "key": "processing",
         "options": [
           "pasteurized",
@@ -11717,7 +11625,6 @@
         "options": [
           "block",
           "spread",
-          "whipped",
           "tub"
         ]
       },
@@ -12133,7 +12040,6 @@
         "key": "form",
         "options": [
           "whole",
-          "mini",
           "sliced"
         ]
       },
@@ -12269,7 +12175,6 @@
       {
         "key": "processing",
         "options": [
-          "cultured",
           "pasteurized"
         ]
       }
@@ -12436,7 +12341,6 @@
         "key": "form",
         "options": [
           "whole",
-          "dried",
           "chopped"
         ]
       },
@@ -13026,7 +12930,6 @@
         "key": "processing",
         "options": [
           "cooked",
-          "smoked",
           "seasoned"
         ]
       }
@@ -13540,7 +13443,6 @@
       {
         "key": "form",
         "options": [
-          "whole",
           "boneless",
           "bone-in",
           "sliced",
@@ -13551,9 +13453,7 @@
         "key": "preservation",
         "options": [
           "fresh",
-          "frozen",
-          "smoked",
-          "confit"
+          "frozen"
         ]
       },
       {
@@ -13562,8 +13462,7 @@
           "raw",
           "cooked",
           "roasted",
-          "smoked",
-          "confit"
+          "smoked"
         ]
       }
     ],
@@ -13807,8 +13706,7 @@
         "options": [
           "whole",
           "petals",
-          "chopped",
-          "crystallized"
+          "chopped"
         ]
       },
       {
@@ -13878,7 +13776,6 @@
         "options": [
           "whole",
           "yolk",
-          "white",
           "liquid",
           "powdered",
           "hard-boiled",
@@ -13946,9 +13843,7 @@
       {
         "key": "form",
         "options": [
-          "dry",
-          "fresh",
-          "frozen"
+          "dry"
         ]
       },
       {
@@ -14261,10 +14156,6 @@
         "key": "form",
         "options": [
           "whole",
-          "steak",
-          "chop",
-          "roast",
-          "ground",
           "cubed"
         ]
       },
@@ -14288,10 +14179,6 @@
     "defaultSelections": [
       {
         "key": "variant",
-        "value": "steak"
-      },
-      {
-        "key": "form",
         "value": "steak"
       }
     ],
@@ -17991,8 +17878,7 @@
           "fresh",
           "dried",
           "pickled",
-          "fermented",
-          "black garlic"
+          "fermented"
         ]
       },
       {
@@ -18606,9 +18492,7 @@
       {
         "key": "form",
         "options": [
-          "dry",
-          "fresh",
-          "frozen"
+          "dry"
         ]
       },
       {
@@ -18684,7 +18568,6 @@
           "boneless",
           "diced",
           "sliced",
-          "ground",
           "chop"
         ]
       },
@@ -18763,7 +18646,6 @@
         "key": "processing",
         "options": [
           "pasteurized",
-          "raw",
           "homogenized"
         ]
       }
@@ -18872,8 +18754,6 @@
       {
         "key": "preservation",
         "options": [
-          "dried",
-          "fresh",
           "frozen"
         ]
       }
@@ -18881,10 +18761,6 @@
     "defaultSelections": [
       {
         "key": "variant",
-        "value": "dried"
-      },
-      {
-        "key": "preservation",
         "value": "dried"
       }
     ],
@@ -18977,11 +18853,9 @@
       {
         "key": "form",
         "options": [
-          "whole",
           "bone-in",
           "boneless",
-          "sliced",
-          "ground"
+          "sliced"
         ]
       },
       {
@@ -18989,7 +18863,6 @@
         "options": [
           "fresh",
           "frozen",
-          "smoked",
           "canned"
         ]
       },
@@ -19380,7 +19253,6 @@
         "options": [
           "whole",
           "halved",
-          "segmented",
           "juiced"
         ]
       },
@@ -19490,7 +19362,6 @@
       {
         "key": "processing",
         "options": [
-          "aged",
           "unaged"
         ]
       }
@@ -19601,7 +19472,6 @@
         "key": "form",
         "options": [
           "whole",
-          "trimmed",
           "cut",
           "sliced"
         ]
@@ -19788,7 +19658,6 @@
         "key": "processing",
         "options": [
           "raw",
-          "instant",
           "precooked"
         ]
       }
@@ -19903,8 +19772,6 @@
       {
         "key": "texture",
         "options": [
-          "chunky",
-          "smooth",
           "creamy"
         ]
       }
@@ -19913,10 +19780,6 @@
       {
         "key": "variant",
         "value": "classic"
-      },
-      {
-        "key": "texture",
-        "value": "chunky"
       }
     ],
     "freshnessByStorage": {
@@ -20087,7 +19950,6 @@
       {
         "key": "form",
         "options": [
-          "whole",
           "sliced",
           "diced",
           "shaved",
@@ -20353,14 +20215,6 @@
           "unrefined",
           "refined",
           "cold-pressed"
-        ]
-      },
-      {
-        "key": "processing",
-        "options": [
-          "cold-pressed",
-          "refined",
-          "unrefined"
         ]
       }
     ],
@@ -20912,8 +20766,7 @@
         "key": "texture",
         "options": [
           "coarse",
-          "smooth",
-          "creamy"
+          "smooth"
         ]
       }
     ],
@@ -20969,7 +20822,6 @@
         "options": [
           "whole",
           "mini",
-          "jumbo",
           "sliced"
         ]
       },
@@ -21793,8 +21645,7 @@
         "options": [
           "whole leaves",
           "chopped",
-          "shredded",
-          "baby"
+          "shredded"
         ]
       },
       {
@@ -21915,8 +21766,7 @@
         "key": "form",
         "options": [
           "liquid",
-          "drinkable",
-          "cultured"
+          "drinkable"
         ]
       },
       {
@@ -21984,9 +21834,7 @@
       {
         "key": "concentration",
         "options": [
-          "regular",
-          "reduced sugar",
-          "reduced sodium"
+          "reduced sugar"
         ]
       }
     ],
@@ -22047,9 +21895,6 @@
       {
         "key": "preservation",
         "options": [
-          "smoked",
-          "fresh",
-          "cooked",
           "frozen"
         ]
       },
@@ -22235,8 +22080,7 @@
           "whole",
           "sliced",
           "diced",
-          "julienned",
-          "peeled"
+          "julienned"
         ]
       },
       {
@@ -22422,7 +22266,6 @@
         "key": "form",
         "options": [
           "liquid",
-          "ultra-pasteurized",
           "carton"
         ]
       },
@@ -22490,10 +22333,8 @@
           "whole",
           "bone-in",
           "boneless",
-          "chop",
           "steak",
-          "diced",
-          "ground"
+          "diced"
         ]
       },
       {
@@ -22613,8 +22454,7 @@
         "key": "form",
         "options": [
           "sheet",
-          "dry",
-          "fresh"
+          "dry"
         ]
       },
       {
@@ -22839,8 +22679,6 @@
           "whole",
           "sliced",
           "wedged",
-          "zested",
-          "juiced",
           "halved"
         ]
       },
@@ -23106,14 +22944,6 @@
           "chopped",
           "sliced",
           "minced"
-        ]
-      },
-      {
-        "key": "preservation",
-        "options": [
-          "fresh",
-          "dried",
-          "frozen"
         ]
       },
       {
@@ -23667,10 +23497,6 @@
       {
         "key": "form",
         "options": [
-          "whole",
-          "tail",
-          "claw",
-          "meat",
           "chunks",
           "shelled"
         ]
@@ -23697,10 +23523,6 @@
       {
         "key": "variant",
         "value": "maine"
-      },
-      {
-        "key": "form",
-        "value": "tail"
       }
     ],
     "freshnessByStorage": {
@@ -23785,8 +23607,7 @@
         "options": [
           "whole",
           "sliced",
-          "julienned",
-          "peeled"
+          "julienned"
         ]
       },
       {
@@ -23857,8 +23678,7 @@
         "options": [
           "dried",
           "fresh",
-          "canned",
-          "roasted"
+          "canned"
         ]
       },
       {
@@ -24091,14 +23911,6 @@
           "cold-pressed",
           "unrefined"
         ]
-      },
-      {
-        "key": "processing",
-        "options": [
-          "cold-pressed",
-          "refined",
-          "unrefined"
-        ]
       }
     ],
     "defaultSelections": [
@@ -24231,9 +24043,6 @@
       {
         "key": "form",
         "options": [
-          "fillet",
-          "steak",
-          "whole",
           "cubed"
         ]
       },
@@ -24257,10 +24066,6 @@
     "defaultSelections": [
       {
         "key": "variant",
-        "value": "fillet"
-      },
-      {
-        "key": "form",
         "value": "fillet"
       }
     ],
@@ -24577,9 +24382,7 @@
       {
         "key": "concentration",
         "options": [
-          "regular",
-          "reduced salt",
-          "extra strong"
+          "regular"
         ]
       }
     ],
@@ -24616,7 +24419,6 @@
         "key": "variant",
         "options": [
           "regular",
-          "mini",
           "jumbo",
           "vegan",
           "flavored"
@@ -24950,8 +24752,7 @@
       {
         "key": "concentration",
         "options": [
-          "regular",
-          "light"
+          "regular"
         ]
       }
     ],
@@ -25121,8 +24922,7 @@
         "key": "preservation",
         "options": [
           "fresh",
-          "frozen",
-          "cooked"
+          "frozen"
         ]
       },
       {
@@ -25407,7 +25207,6 @@
         "options": [
           "pasteurized",
           "ultra-pasteurized",
-          "raw",
           "homogenized"
         ]
       }
@@ -25867,8 +25666,7 @@
         "key": "form",
         "options": [
           "whole",
-          "filled",
-          "ice cream"
+          "filled"
         ]
       }
     ],
@@ -26111,8 +25909,7 @@
       {
         "key": "processing",
         "options": [
-          "raw",
-          "toasted"
+          "raw"
         ]
       }
     ],
@@ -26431,9 +26228,7 @@
       {
         "key": "form",
         "options": [
-          "whole",
-          "shelled",
-          "meat"
+          "shelled"
         ]
       },
       {
@@ -26460,10 +26255,6 @@
       {
         "key": "variant",
         "value": "blue"
-      },
-      {
-        "key": "form",
-        "value": "whole"
       }
     ],
     "freshnessByStorage": {
@@ -26505,7 +26296,6 @@
         "key": "texture",
         "options": [
           "smooth",
-          "whole grain",
           "coarse"
         ]
       }
@@ -26624,8 +26414,7 @@
       {
         "key": "processing",
         "options": [
-          "cold-pressed",
-          "refined"
+          "cold-pressed"
         ]
       }
     ],
@@ -26727,9 +26516,7 @@
           "whole",
           "bone-in",
           "boneless",
-          "chop",
           "roast",
-          "ground",
           "diced"
         ]
       },
@@ -27077,8 +26864,6 @@
         "key": "form",
         "options": [
           "dry",
-          "fresh",
-          "frozen",
           "instant"
         ]
       },
@@ -27396,12 +27181,10 @@
       {
         "key": "variant",
         "options": [
-          "rolled",
           "steel-cut",
           "instant",
           "quick",
-          "old-fashioned",
-          "whole"
+          "old-fashioned"
         ]
       },
       {
@@ -27418,15 +27201,8 @@
         "options": [
           "raw",
           "toasted",
-          "instant",
           "precooked"
         ]
-      }
-    ],
-    "defaultSelections": [
-      {
-        "key": "variant",
-        "value": "rolled"
       }
     ],
     "freshnessByStorage": {
@@ -27468,7 +27244,6 @@
       {
         "key": "form",
         "options": [
-          "whole",
           "cleaned",
           "sliced",
           "diced",
@@ -27547,8 +27322,7 @@
           "fillet",
           "whole",
           "steak",
-          "sliced",
-          "canned"
+          "sliced"
         ]
       },
       {
@@ -27557,7 +27331,6 @@
           "fresh",
           "frozen",
           "canned",
-          "smoked",
           "salted"
         ]
       },
@@ -27814,9 +27587,7 @@
         "options": [
           "cold-pressed",
           "refined",
-          "unrefined",
-          "extra virgin",
-          "virgin"
+          "unrefined"
         ]
       }
     ],
@@ -28196,8 +27967,7 @@
       {
         "key": "form",
         "options": [
-          "dry",
-          "fresh"
+          "dry"
         ]
       },
       {
@@ -28257,9 +28027,6 @@
       {
         "key": "form",
         "options": [
-          "steak",
-          "fillet",
-          "ground",
           "diced",
           "sliced"
         ]
@@ -28283,10 +28050,6 @@
     "defaultSelections": [
       {
         "key": "variant",
-        "value": "steak"
-      },
-      {
-        "key": "form",
         "value": "steak"
       }
     ],
@@ -28365,9 +28128,7 @@
       {
         "key": "form",
         "options": [
-          "whole",
-          "cut",
-          "sliced"
+          "cut"
         ]
       },
       {
@@ -28438,9 +28199,7 @@
         "options": [
           "whole",
           "shucked",
-          "half shell",
-          "smoked",
-          "canned"
+          "half shell"
         ]
       },
       {
@@ -28518,13 +28277,6 @@
           "thick",
           "smooth"
         ]
-      },
-      {
-        "key": "concentration",
-        "options": [
-          "regular",
-          "reduced sodium"
-        ]
       }
     ],
     "defaultSelections": [
@@ -28560,13 +28312,6 @@
         "key": "variant",
         "options": [
           "red",
-          "refined",
-          "unrefined"
-        ]
-      },
-      {
-        "key": "processing",
-        "options": [
           "refined",
           "unrefined"
         ]
@@ -29118,8 +28863,6 @@
         "key": "form",
         "options": [
           "dry",
-          "fresh",
-          "frozen",
           "stuffed"
         ]
       },
@@ -29264,7 +29007,6 @@
         "key": "preservation",
         "options": [
           "cured",
-          "smoked",
           "refrigerated",
           "vacuum-packed"
         ]
@@ -29614,16 +29356,14 @@
         "key": "texture",
         "options": [
           "smooth",
-          "chunky",
-          "creamy"
+          "chunky"
         ]
       },
       {
         "key": "concentration",
         "options": [
           "regular",
-          "lite",
-          "reduced fat"
+          "lite"
         ]
       }
     ],
@@ -29672,8 +29412,6 @@
       {
         "key": "processing",
         "options": [
-          "refined",
-          "unrefined",
           "cold-pressed"
         ]
       }
@@ -29918,14 +29656,6 @@
           "cold-pressed",
           "unrefined"
         ]
-      },
-      {
-        "key": "processing",
-        "options": [
-          "cold-pressed",
-          "refined",
-          "unrefined"
-        ]
       }
     ],
     "defaultSelections": [
@@ -30153,8 +29883,6 @@
       {
         "key": "form",
         "options": [
-          "stick",
-          "sliced",
           "diced",
           "whole"
         ]
@@ -30163,7 +29891,6 @@
         "key": "preservation",
         "options": [
           "cured",
-          "smoked",
           "refrigerated",
           "shelf-stable"
         ]
@@ -30181,10 +29908,6 @@
       {
         "key": "variant",
         "value": "classic"
-      },
-      {
-        "key": "form",
-        "value": "sliced"
       }
     ],
     "freshnessByStorage": {
@@ -30403,7 +30126,6 @@
       {
         "key": "form",
         "options": [
-          "whole",
           "boneless",
           "bone-in",
           "diced",
@@ -30849,8 +30571,6 @@
       {
         "key": "variant",
         "options": [
-          "whole",
-          "split",
           "yellow",
           "green"
         ]
@@ -30875,10 +30595,6 @@
       }
     ],
     "defaultSelections": [
-      {
-        "key": "variant",
-        "value": "split"
-      },
       {
         "key": "preservation",
         "value": "dried"
@@ -31217,14 +30933,6 @@
           "cold-pressed",
           "unrefined"
         ]
-      },
-      {
-        "key": "processing",
-        "options": [
-          "cold-pressed",
-          "refined",
-          "unrefined"
-        ]
       }
     ],
     "defaultSelections": [
@@ -31550,7 +31258,6 @@
         "key": "form",
         "options": [
           "meal",
-          "precooked",
           "tube"
         ]
       },
@@ -31558,7 +31265,6 @@
         "key": "processing",
         "options": [
           "raw",
-          "instant",
           "precooked"
         ]
       }
@@ -31615,8 +31321,7 @@
         "options": [
           "whole",
           "halved",
-          "arils",
-          "juice"
+          "arils"
         ]
       },
       {
@@ -31911,10 +31616,7 @@
           "boneless",
           "diced",
           "sliced",
-          "ground",
           "shredded",
-          "steak",
-          "chop",
           "roast"
         ]
       },
@@ -32129,8 +31831,7 @@
         "key": "form",
         "options": [
           "coarse",
-          "fine",
-          "instant"
+          "fine"
         ]
       },
       {
@@ -32475,8 +32176,7 @@
         "key": "preservation",
         "options": [
           "fresh",
-          "frozen",
-          "cooked"
+          "frozen"
         ]
       },
       {
@@ -32772,8 +32472,7 @@
       {
         "key": "variant",
         "options": [
-          "whole",
-          "powdered"
+          "whole"
         ]
       },
       {
@@ -33179,13 +32878,6 @@
           "refined",
           "cold-pressed"
         ]
-      },
-      {
-        "key": "processing",
-        "options": [
-          "cold-pressed",
-          "refined"
-        ]
       }
     ],
     "defaultSelections": [
@@ -33232,11 +32924,8 @@
       {
         "key": "form",
         "options": [
-          "whole",
           "bone-in",
-          "boneless",
-          "breast",
-          "leg"
+          "boneless"
         ]
       },
       {
@@ -33500,7 +33189,6 @@
       {
         "key": "form",
         "options": [
-          "whole",
           "bone-in",
           "boneless",
           "diced",
@@ -33752,17 +33440,13 @@
       {
         "key": "form",
         "options": [
-          "dry",
-          "fresh",
-          "frozen"
+          "dry"
         ]
       },
       {
         "key": "preservation",
         "options": [
-          "dried",
-          "fresh",
-          "frozen"
+          "dried"
         ]
       }
     ],
@@ -34014,13 +33698,6 @@
         ]
       },
       {
-        "key": "form",
-        "options": [
-          "fresh",
-          "frozen"
-        ]
-      },
-      {
         "key": "preservation",
         "options": [
           "fresh",
@@ -34032,10 +33709,6 @@
       {
         "key": "variant",
         "value": "cheese"
-      },
-      {
-        "key": "form",
-        "value": "fresh"
       }
     ],
     "freshnessByStorage": {
@@ -34297,14 +33970,6 @@
           "cold-pressed",
           "unrefined"
         ]
-      },
-      {
-        "key": "processing",
-        "options": [
-          "refined",
-          "cold-pressed",
-          "unrefined"
-        ]
       }
     ],
     "defaultSelections": [
@@ -34443,9 +34108,7 @@
       {
         "key": "form",
         "options": [
-          "dry",
-          "fresh",
-          "frozen"
+          "dry"
         ]
       },
       {
@@ -34655,8 +34318,7 @@
         "key": "form",
         "options": [
           "tub",
-          "basket",
-          "smoked"
+          "basket"
         ]
       },
       {
@@ -34726,9 +34388,7 @@
       {
         "key": "preservation",
         "options": [
-          "cooked",
-          "roasted",
-          "deli"
+          "cooked"
         ]
       },
       {
@@ -34796,8 +34456,7 @@
       {
         "key": "preservation",
         "options": [
-          "cooked",
-          "roasted"
+          "cooked"
         ]
       },
       {
@@ -35113,7 +34772,6 @@
       {
         "key": "form",
         "options": [
-          "whole",
           "sliced",
           "shredded",
           "pulled"
@@ -35122,8 +34780,7 @@
       {
         "key": "preservation",
         "options": [
-          "cooked",
-          "rotisserie"
+          "cooked"
         ]
       },
       {
@@ -35137,10 +34794,6 @@
     "defaultSelections": [
       {
         "key": "variant",
-        "value": "whole"
-      },
-      {
-        "key": "form",
         "value": "whole"
       }
     ],
@@ -35244,7 +34897,6 @@
       {
         "key": "processing",
         "options": [
-          "aged",
           "unaged",
           "blended"
         ]
@@ -35353,10 +35005,7 @@
       {
         "key": "variant",
         "options": [
-          "whole",
           "berries",
-          "flour",
-          "cracked",
           "pumpernickel",
           "dark",
           "light"
@@ -35380,10 +35029,6 @@
       }
     ],
     "defaultSelections": [
-      {
-        "key": "variant",
-        "value": "whole"
-      },
       {
         "key": "form",
         "value": "whole"
@@ -35480,13 +35125,6 @@
           "cold-pressed",
           "high oleic",
           "high linoleic"
-        ]
-      },
-      {
-        "key": "processing",
-        "options": [
-          "refined",
-          "cold-pressed"
         ]
       }
     ],
@@ -35890,7 +35528,6 @@
         "key": "form",
         "options": [
           "whole",
-          "peeled",
           "sliced",
           "shredded"
         ]
@@ -36015,8 +35652,6 @@
       {
         "key": "form",
         "options": [
-          "whole",
-          "fillet",
           "shredded",
           "chunks"
         ]
@@ -36176,8 +35811,6 @@
         "key": "preservation",
         "options": [
           "fresh",
-          "smoked",
-          "cooked",
           "dried"
         ]
       },
@@ -36813,7 +36446,6 @@
         "options": [
           "raw",
           "cooked",
-          "marinated",
           "grilled"
         ]
       }
@@ -36856,9 +36488,7 @@
         "key": "variant",
         "options": [
           "durum",
-          "whole wheat",
-          "fine",
-          "coarse"
+          "whole wheat"
         ]
       },
       {
@@ -37202,8 +36832,7 @@
       {
         "key": "preservation",
         "options": [
-          "dried",
-          "toasted"
+          "dried"
         ]
       }
     ],
@@ -37271,9 +36900,7 @@
           "peeled",
           "deveined",
           "tail-on",
-          "tail-off",
-          "raw",
-          "cooked"
+          "tail-off"
         ]
       },
       {
@@ -37281,7 +36908,6 @@
         "options": [
           "fresh",
           "frozen",
-          "cooked",
           "dried"
         ]
       },
@@ -37531,8 +37157,7 @@
       {
         "key": "preservation",
         "options": [
-          "smoked",
-          "cured"
+          "smoked"
         ]
       },
       {
@@ -37690,8 +37315,7 @@
       {
         "key": "form",
         "options": [
-          "dry",
-          "fresh"
+          "dry"
         ]
       },
       {
@@ -37910,8 +37534,7 @@
       {
         "key": "form",
         "options": [
-          "dry",
-          "fresh"
+          "dry"
         ]
       },
       {
@@ -37998,11 +37621,8 @@
       {
         "key": "variant",
         "options": [
-          "whole",
           "white",
-          "red",
-          "flour",
-          "pearled"
+          "red"
         ]
       },
       {
@@ -38010,7 +37630,6 @@
         "options": [
           "whole",
           "flour",
-          "popped",
           "pearled"
         ]
       },
@@ -38024,10 +37643,6 @@
       }
     ],
     "defaultSelections": [
-      {
-        "key": "variant",
-        "value": "whole"
-      },
       {
         "key": "form",
         "value": "whole"
@@ -38517,7 +38132,6 @@
       {
         "key": "processing",
         "options": [
-          "refined",
           "expeller-pressed",
           "cold-pressed"
         ]
@@ -38682,8 +38296,6 @@
       {
         "key": "variant",
         "options": [
-          "whole",
-          "flour",
           "white",
           "whole grain",
           "berries"
@@ -38706,10 +38318,6 @@
       }
     ],
     "defaultSelections": [
-      {
-        "key": "variant",
-        "value": "whole"
-      },
       {
         "key": "form",
         "value": "whole"
@@ -38759,7 +38367,6 @@
           "whole",
           "chopped",
           "shredded",
-          "baby",
           "pre-washed"
         ]
       },
@@ -39609,7 +39216,6 @@
         "options": [
           "white",
           "brown",
-          "powdered",
           "demerara",
           "turbinado",
           "raw",
@@ -39708,7 +39314,6 @@
       {
         "key": "processing",
         "options": [
-          "refined",
           "cold-pressed",
           "expeller-pressed"
         ]
@@ -40121,8 +39726,6 @@
       {
         "key": "form",
         "options": [
-          "steak",
-          "fillet",
           "diced",
           "whole"
         ]
@@ -40148,10 +39751,6 @@
     "defaultSelections": [
       {
         "key": "variant",
-        "value": "steak"
-      },
-      {
-        "key": "form",
         "value": "steak"
       }
     ],
@@ -40503,7 +40102,6 @@
         "key": "form",
         "options": [
           "solid",
-          "rendered",
           "block"
         ]
       },
@@ -40565,7 +40163,6 @@
         "options": [
           "whole pod",
           "pulp",
-          "paste",
           "concentrate"
         ]
       },
@@ -40701,7 +40298,6 @@
       {
         "key": "concentration",
         "options": [
-          "regular",
           "double-concentrated"
         ]
       }
@@ -40750,7 +40346,6 @@
         "options": [
           "pearls",
           "instant",
-          "granulated",
           "flour",
           "starch"
         ]
@@ -40816,7 +40411,6 @@
         "key": "form",
         "options": [
           "whole",
-          "peeled",
           "cubed",
           "sliced",
           "mashed"
@@ -41043,9 +40637,7 @@
         "key": "variant",
         "options": [
           "brown",
-          "ivory",
-          "whole",
-          "flour"
+          "ivory"
         ]
       },
       {
@@ -41064,10 +40656,6 @@
       }
     ],
     "defaultSelections": [
-      {
-        "key": "variant",
-        "value": "whole"
-      },
       {
         "key": "form",
         "value": "whole"
@@ -41236,14 +40824,12 @@
       {
         "key": "texture",
         "options": [
-          "smooth",
-          "thick"
+          "smooth"
         ]
       },
       {
         "key": "concentration",
         "options": [
-          "regular",
           "lite",
           "reduced sodium"
         ]
@@ -41522,8 +41108,7 @@
         "key": "preservation",
         "options": [
           "fresh",
-          "frozen",
-          "smoked"
+          "frozen"
         ]
       },
       {
@@ -41793,9 +41378,7 @@
         "key": "form",
         "options": [
           "ready-to-drink",
-          "concentrate",
-          "canned",
-          "bottled"
+          "concentrate"
         ]
       },
       {
@@ -42085,13 +41668,6 @@
         ]
       },
       {
-        "key": "form",
-        "options": [
-          "fresh",
-          "frozen"
-        ]
-      },
-      {
         "key": "preservation",
         "options": [
           "fresh",
@@ -42103,10 +41679,6 @@
       {
         "key": "variant",
         "value": "cheese"
-      },
-      {
-        "key": "form",
-        "value": "fresh"
       }
     ],
     "freshnessByStorage": {
@@ -42547,7 +42119,6 @@
       {
         "key": "form",
         "options": [
-          "whole",
           "boneless",
           "bone-in",
           "sliced",
@@ -42560,7 +42131,6 @@
         "options": [
           "fresh",
           "frozen",
-          "smoked",
           "cured"
         ]
       },
@@ -42857,9 +42427,7 @@
       {
         "key": "form",
         "options": [
-          "fresh",
-          "dry",
-          "frozen"
+          "dry"
         ]
       },
       {
@@ -42875,10 +42443,6 @@
       {
         "key": "variant",
         "value": "regular"
-      },
-      {
-        "key": "form",
-        "value": "fresh"
       }
     ],
     "freshnessByStorage": {
@@ -42913,8 +42477,6 @@
       {
         "key": "variant",
         "options": [
-          "whole",
-          "split",
           "dehusked",
           "with skin"
         ]
@@ -42937,10 +42499,6 @@
       }
     ],
     "defaultSelections": [
-      {
-        "key": "variant",
-        "value": "split"
-      },
       {
         "key": "preservation",
         "value": "dried"
@@ -42984,7 +42542,6 @@
         "options": [
           "extract",
           "bean",
-          "paste",
           "powder",
           "essence",
           "imitation",
@@ -43062,8 +42619,7 @@
           "bone-in",
           "boneless",
           "sliced",
-          "diced",
-          "ground"
+          "diced"
         ]
       },
       {
@@ -43260,9 +42816,7 @@
         "key": "form",
         "options": [
           "ready-to-drink",
-          "concentrate",
-          "canned",
-          "bottled"
+          "concentrate"
         ]
       },
       {
@@ -43448,9 +43002,6 @@
           "whole",
           "bone-in",
           "boneless",
-          "steak",
-          "roast",
-          "ground",
           "diced",
           "sliced"
         ]
@@ -43480,10 +43031,6 @@
     "defaultSelections": [
       {
         "key": "variant",
-        "value": "ground"
-      },
-      {
-        "key": "form",
         "value": "ground"
       }
     ],
@@ -43830,9 +43377,7 @@
       {
         "key": "processing",
         "options": [
-          "cold-pressed",
-          "refined",
-          "unrefined"
+          "cold-pressed"
         ]
       }
     ],
@@ -43872,7 +43417,6 @@
         "options": [
           "paste",
           "powder",
-          "fresh",
           "tube"
         ]
       },
@@ -43984,9 +43528,7 @@
         "key": "variant",
         "options": [
           "fresh",
-          "canned",
-          "sliced",
-          "whole"
+          "canned"
         ]
       },
       {
@@ -44000,8 +43542,6 @@
       {
         "key": "preservation",
         "options": [
-          "fresh",
-          "canned",
           "frozen"
         ]
       },
@@ -44208,7 +43748,6 @@
         "options": [
           "whole",
           "shelled",
-          "roasted",
           "ground",
           "flour"
         ]
@@ -44273,10 +43812,7 @@
           "durum",
           "spelt",
           "emmer",
-          "kamut",
-          "whole",
-          "flour",
-          "berries"
+          "kamut"
         ]
       },
       {
@@ -44351,13 +43887,6 @@
         ]
       },
       {
-        "key": "form",
-        "options": [
-          "liquid",
-          "powder"
-        ]
-      },
-      {
         "key": "processing",
         "options": [
           "pasteurized",
@@ -44368,10 +43897,6 @@
     "defaultSelections": [
       {
         "key": "variant",
-        "value": "liquid"
-      },
-      {
-        "key": "form",
         "value": "liquid"
       }
     ],
@@ -44490,9 +44015,7 @@
         "key": "processing",
         "options": [
           "aged",
-          "unaged",
-          "blended",
-          "single malt"
+          "unaged"
         ]
       }
     ],
@@ -44672,11 +44195,9 @@
       {
         "key": "variant",
         "options": [
-          "whole",
           "cultivated",
           "natural",
-          "long grain",
-          "broken"
+          "long grain"
         ]
       },
       {
@@ -44697,10 +44218,6 @@
       }
     ],
     "defaultSelections": [
-      {
-        "key": "variant",
-        "value": "whole"
-      },
       {
         "key": "form",
         "value": "whole"
@@ -44855,13 +44372,6 @@
         "options": [
           "thin"
         ]
-      },
-      {
-        "key": "concentration",
-        "options": [
-          "regular",
-          "reduced sodium"
-        ]
       }
     ],
     "defaultSelections": [
@@ -45011,13 +44521,6 @@
         ]
       },
       {
-        "key": "form",
-        "options": [
-          "fresh",
-          "frozen"
-        ]
-      },
-      {
         "key": "preservation",
         "options": [
           "fresh",
@@ -45029,10 +44532,6 @@
       {
         "key": "variant",
         "value": "regular"
-      },
-      {
-        "key": "form",
-        "value": "fresh"
       }
     ],
     "freshnessByStorage": {
@@ -45164,8 +44663,7 @@
       {
         "key": "preservation",
         "options": [
-          "dried",
-          "fresh"
+          "dried"
         ]
       }
     ],
@@ -45244,8 +44742,7 @@
         "key": "texture",
         "options": [
           "creamy",
-          "thick",
-          "drinkable"
+          "thick"
         ]
       }
     ],

@@ -361,6 +361,21 @@ enum PantryCatalog {
         Set(allItems.map { normalizeLookupKey($0.name) })
     }()
 
+    /// Maps a normalized facet‐option token to (itemID, facetKey, facetValue) tuples,
+    /// so that a search token can be resolved to the specific facet selection it represents.
+    static let facetTokenToItems: [String: [(itemID: String, key: PantryFacetKey, value: String)]] = {
+        var result: [String: [(itemID: String, key: PantryFacetKey, value: String)]] = [:]
+        for item in allItems {
+            for facet in item.facets {
+                for option in facet.options {
+                    let key = normalizeLookupKey(option)
+                    result[key, default: []].append((itemID: item.id, key: facet.key, value: option))
+                }
+            }
+        }
+        return result
+    }()
+
     /// Maps individual tokens from item names and aliases to item IDs.
     static let tokenIndex: [String: Set<String>] = {
         var result: [String: Set<String>] = [:]
@@ -413,30 +428,6 @@ enum PantryCatalog {
         let normalized = normalizeLookupKey(name)
         guard let id = aliasIndex[normalized] else { return nil }
         return itemsByID[id]
-    }
-
-    static func search(_ query: String) -> [PantryCatalogItemDefinition] {
-        let normalizedQuery = normalizeLookupKey(query)
-        guard !normalizedQuery.isEmpty else {
-            return allItems.sorted { $0.name < $1.name }
-        }
-
-        var matchedIDs = Set<String>()
-
-        // Name & alias matches
-        for item in allItems {
-            if normalizeLookupKey(item.name).contains(normalizedQuery) ||
-                item.aliases.contains(where: { normalizeLookupKey($0).contains(normalizedQuery) }) {
-                matchedIDs.insert(item.id)
-            }
-        }
-
-        // Facet option matches (e.g. "filet mignon" → beef)
-        for (option, itemIDs) in facetOptionIndex where option.contains(normalizedQuery) {
-            for id in itemIDs { matchedIDs.insert(id) }
-        }
-
-        return matchedIDs.compactMap { itemsByID[$0] }.sorted { $0.name < $1.name }
     }
 
     static func normalizeLookupKey(_ value: String) -> String {

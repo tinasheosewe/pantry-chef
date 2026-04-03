@@ -105,38 +105,36 @@ final class ShoppingAddItemViewModel {
     var selectedCatalogItemID: String?
     var selectedFacets: [PantryFacetSelection] = []
 
-    private let parser = IngredientCandidateParser()
+    private(set) var searchResults: [ShoppingCatalogSuggestion] = []
+    @ObservationIgnored private let searchDebouncer = TaskDebouncer()
     private var quantityWasEdited = false
     private var unitWasEdited = false
 
-    var searchResults: [ShoppingCatalogSuggestion] {
-        let query = searchText.trimmed
+    func onSearchTextChanged() {
+        SearchQuerySupport.schedule(text: searchText, debouncer: searchDebouncer) { [self] debounced in
+            self.updateSearchResults(for: debounced)
+        }
+    }
+
+    private func updateSearchResults(for query: String) {
         guard !query.isEmpty else {
-            return Array(PantryCatalog.allItems.sorted { $0.name < $1.name }.prefix(20)).map(defaultSuggestion)
+            searchResults = PantryCatalog.allItems
+                .sorted { $0.name < $1.name }
+                .prefix(20)
+                .map { defaultSuggestion($0) }
+            return
         }
 
-        var suggestions: [ShoppingCatalogSuggestion] = []
-        var indexesByCatalogID: [String: Int] = [:]
-
-        let ingredient = Ingredient(name: query)
-        for candidate in parser.candidates(for: ingredient) {
-            guard let item = PantryCatalog.item(id: candidate.catalogItemID) else { continue }
-            let suggestion = ShoppingCatalogSuggestion(
-                id: item.id,
-                catalogItemID: item.id,
-                facets: normalizedFacets(for: candidate.facets, item: item),
-                displayName: item.titleCasedName,
-                category: item.category
+        let results = CatalogSearchEngine.search(query)
+        searchResults = results.map { result in
+            ShoppingCatalogSuggestion(
+                id: result.id,
+                catalogItemID: result.catalogItemID,
+                facets: normalizedFacets(for: result.facets, item: result.item),
+                displayName: result.displayName,
+                category: result.item.category
             )
-            appendSuggestion(suggestion, for: item, query: query, to: &suggestions, indexesByCatalogID: &indexesByCatalogID)
         }
-
-        for item in PantryCatalog.search(query) {
-            let suggestion = defaultSuggestion(item)
-            appendSuggestion(suggestion, for: item, query: query, to: &suggestions, indexesByCatalogID: &indexesByCatalogID)
-        }
-
-        return Array(suggestions.prefix(20))
     }
 
     var selectedItem: PantryCatalogItemDefinition? {
@@ -242,7 +240,7 @@ final class ShoppingAddItemViewModel {
     }
 
     func suggestionBaseName(_ suggestion: ShoppingCatalogSuggestion) -> String {
-        PantryCatalog.item(id: suggestion.catalogItemID)?.name ?? suggestion.displayName
+        suggestion.displayName
     }
 
     func suggestionFacetSummary(_ suggestion: ShoppingCatalogSuggestion) -> String? {
@@ -284,42 +282,6 @@ final class ShoppingAddItemViewModel {
             }
             return selection
         }
-    }
-
-    private func appendSuggestion(
-        _ suggestion: ShoppingCatalogSuggestion,
-        for item: PantryCatalogItemDefinition,
-        query: String,
-        to suggestions: inout [ShoppingCatalogSuggestion],
-        indexesByCatalogID: inout [String: Int]
-    ) {
-        if let existingIndex = indexesByCatalogID[suggestion.catalogItemID] {
-            let existingSuggestion = suggestions[existingIndex]
-            if shouldPreferSuggestion(suggestion, over: existingSuggestion, for: item, query: query) {
-                suggestions[existingIndex] = suggestion
-            }
-            return
-        }
-
-        indexesByCatalogID[suggestion.catalogItemID] = suggestions.count
-        suggestions.append(suggestion)
-    }
-
-    private func shouldPreferSuggestion(
-        _ candidate: ShoppingCatalogSuggestion,
-        over existing: ShoppingCatalogSuggestion,
-        for item: PantryCatalogItemDefinition,
-        query: String
-    ) -> Bool {
-        let normalizedQuery = IngredientMatcher.normalize(query)
-        let normalizedItemName = IngredientMatcher.normalize(item.name)
-        guard normalizedQuery == normalizedItemName else { return false }
-
-        let defaultFacets = searchDefaultFacets(for: item)
-        let existingFacets = normalizedFacets(for: existing.facets, item: item)
-        let candidateFacets = normalizedFacets(for: candidate.facets, item: item)
-
-        return candidateFacets == defaultFacets && existingFacets != defaultFacets
     }
 
     private func availableFacetSummary(for item: PantryCatalogItemDefinition) -> String? {
