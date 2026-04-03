@@ -108,7 +108,7 @@ struct PantryCatalogItemDefinition: Identifiable, Hashable, Sendable, Codable {
     var defaultStorage: PantryStorage
     let aliases: [String]
     var facets: [PantryFacetDefinition]
-    let defaultSelections: [PantryFacetSelection]
+    var defaultSelections: [PantryFacetSelection]
     let substitutions: [PantrySubstitutionDefinition]
     let unitOverrides: [PantryFacetKey: [String: MeasurementUnit]]
     let freshnessByStorage: [PantryStorage: ClosedRange<Int>]
@@ -504,6 +504,22 @@ enum PantryCatalog {
                 if let unitRaw = overrides["defaultUnit"],
                    let unit = MeasurementUnit(rawValue: unitRaw) {
                     mutableItem.defaultUnit = unit
+                }
+                // Apply facet default selection overrides
+                let facetPrefix = "facet."
+                let facetOverrides = overrides.filter { $0.key.hasPrefix(facetPrefix) }
+                if !facetOverrides.isEmpty {
+                    var selections = Dictionary(mutableItem.defaultSelections.map { ($0.key, $0.value) }, uniquingKeysWith: { _, last in last })
+                    for (overrideKey, value) in facetOverrides {
+                        let rawKey = String(overrideKey.dropFirst(facetPrefix.count))
+                        guard let facetKey = PantryFacetKey(rawValue: rawKey) else { continue }
+                        if value.isEmpty {
+                            selections.removeValue(forKey: facetKey)
+                        } else {
+                            selections[facetKey] = value
+                        }
+                    }
+                    mutableItem.defaultSelections = selections.map { PantryFacetSelection(key: $0.key, value: $0.value) }
                 }
                 return mutableItem
             }

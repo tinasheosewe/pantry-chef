@@ -50,6 +50,9 @@ struct CustomIngredientDefinitionView: View {
             for facet in item.facets {
                 d.facets[facet.key] = facet.options
             }
+            for selection in item.defaultSelections {
+                d.defaultSelections[selection.key] = selection.value
+            }
             _draft = State(initialValue: d)
         } else {
             _draft = State(initialValue: CustomIngredientDraft(name: ""))
@@ -326,6 +329,18 @@ struct CustomIngredientDefinitionView: View {
                     Text(unit.rawValue).tag(unit)
                 }
             }
+
+            ForEach(draft.sortedFacetKeys) { key in
+                let options = editingOptions[key] ?? []
+                if !options.isEmpty {
+                    Picker("Default \(key.title)", selection: facetDefaultBinding(key)) {
+                        Text("None").tag("" as String)
+                        ForEach(options, id: \.self) { option in
+                            Text(CustomIngredientDraft.titleCase(option)).tag(option.lowercased())
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -491,6 +506,19 @@ struct CustomIngredientDefinitionView: View {
         if draft.defaultUnit != baseItem.defaultUnit {
             overrides["defaultUnit"] = (draft.defaultUnit ?? .piece).rawValue
         }
+        // Facet default selections
+        let baseDefaults = Dictionary(baseItem.defaultSelections.map { ($0.key, $0.value) }, uniquingKeysWith: { _, last in last })
+        for (key, value) in draft.defaultSelections {
+            if baseDefaults[key] != value {
+                overrides["facet.\(key.rawValue)"] = value
+            }
+        }
+        // If a base default was removed (set to "None"), store empty string to indicate removal
+        for (key, _) in baseDefaults {
+            if draft.defaultSelections[key] == nil {
+                overrides["facet.\(key.rawValue)"] = ""
+            }
+        }
         PantryCatalog.setDefaultOverrides(catalogItemID: existingID, overrides: overrides)
 
         onSave?(existingID)
@@ -513,6 +541,19 @@ struct CustomIngredientDefinitionView: View {
         Binding(
             get: { newOptionText[key] ?? "" },
             set: { newOptionText[key] = $0 }
+        )
+    }
+
+    private func facetDefaultBinding(_ key: PantryFacetKey) -> Binding<String> {
+        Binding(
+            get: { draft.defaultSelections[key] ?? "" },
+            set: { newValue in
+                if newValue.isEmpty {
+                    draft.defaultSelections.removeValue(forKey: key)
+                } else {
+                    draft.defaultSelections[key] = newValue
+                }
+            }
         )
     }
 

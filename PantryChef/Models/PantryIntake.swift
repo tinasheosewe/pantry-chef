@@ -537,6 +537,7 @@ struct CustomIngredientDraft {
     var defaultStorage: PantryStorage = .pantry
     var defaultUnit: MeasurementUnit? = nil
     var facets: [PantryFacetKey: [String]] = [:]
+    var defaultSelections: [PantryFacetKey: String] = [:]
 
     var nameCollisionWarning: String? {
         let trimmed = name.trimmed
@@ -566,6 +567,9 @@ struct CustomIngredientDraft {
 
     mutating func removeFacetOption(_ key: PantryFacetKey, value: String) {
         facets[key]?.removeAll { $0 == value }
+        if defaultSelections[key] == value {
+            defaultSelections.removeValue(forKey: key)
+        }
         if facets[key]?.isEmpty == true {
             facets.removeValue(forKey: key)
         }
@@ -573,6 +577,7 @@ struct CustomIngredientDraft {
 
     mutating func removeFacet(_ key: PantryFacetKey) {
         facets.removeValue(forKey: key)
+        defaultSelections.removeValue(forKey: key)
     }
 
     mutating func applyAIDefinition(_ definition: AIIngredientDefinition) {
@@ -600,6 +605,13 @@ struct CustomIngredientDraft {
             return PantryFacetDefinition(key: key, options: options)
         }
 
+        let facetDefaults: [PantryFacetSelection] = sortedFacetKeys.compactMap { key in
+            guard let value = defaultSelections[key] else { return nil }
+            // Only include if the value is actually one of the facet options
+            guard let options = facets[key], options.contains(where: { $0.caseInsensitiveCompare(value) == .orderedSame }) else { return nil }
+            return PantryFacetSelection(key: key, value: value)
+        }
+
         return PantryCatalogItemDefinition(
             id: itemID,
             name: Self.titleCase(name.trimmed),
@@ -609,7 +621,7 @@ struct CustomIngredientDraft {
             defaultStorage: defaultStorage,
             aliases: [],
             facets: facetDefs,
-            defaultSelections: [],
+            defaultSelections: facetDefaults,
             substitutions: [],
             unitOverrides: [:],
             freshnessByStorage: [:],
