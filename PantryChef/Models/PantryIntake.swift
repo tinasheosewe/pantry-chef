@@ -115,6 +115,13 @@ struct PantryIntakeRowDraft: Identifiable {
         }
     }
 
+    /// Creates a blank draft linked to a catalog item but with no defaults applied.
+    init(blankFor itemDefinition: PantryCatalogItemDefinition) {
+        self.init()
+        selectedItemID = itemDefinition.id
+        isCustomItem = itemDefinition.isUserDefined
+    }
+
     var selectedItem: PantryCatalogItemDefinition? {
         PantryCatalog.item(id: selectedItemID)
     }
@@ -283,6 +290,10 @@ struct PantryIntakeRowDraft: Identifiable {
         refreshSuggestedUnit(for: item)
         refreshSuggestedQuantity(for: item)
         refreshPrefilledExpiryDate()
+        if item.category.defaultsToOnHand {
+            quantityText = ""
+            unit = nil
+        }
     }
 
     mutating func resetToCatalogDefaults() {
@@ -503,7 +514,7 @@ struct PantryIntakeRowDraft: Identifiable {
         quantityText = Self.quantityString(suggestedQuantity)
     }
 
-    private static func quantityString(_ value: Double) -> String {
+    static func quantityString(_ value: Double) -> String {
         if value == value.rounded() {
             return String(Int(value))
         }
@@ -571,6 +582,13 @@ struct CustomIngredientDraft {
         facets = definition.facets.filter { !$0.value.isEmpty }
     }
 
+    static func titleCase(_ value: String) -> String {
+        value
+            .split(separator: " ")
+            .map { $0.prefix(1).uppercased() + $0.dropFirst().lowercased() }
+            .joined(separator: " ")
+    }
+
     func buildDefinition() -> PantryCatalogItemDefinition {
         let sanitizedName = name.trimmed.lowercased()
             .replacingOccurrences(of: " ", with: "-")
@@ -584,7 +602,7 @@ struct CustomIngredientDraft {
 
         return PantryCatalogItemDefinition(
             id: itemID,
-            name: name.trimmed,
+            name: Self.titleCase(name.trimmed),
             category: category,
             defaultUnit: defaultUnit,
             defaultQuantity: nil,

@@ -8,6 +8,12 @@ protocol UserCatalogStoreProtocol: AnyObject {
 
     func loadFacetExtensions() -> [String: [String: [String]]]
     func saveFacetExtensions(_ extensions: [String: [String: [String]]])
+
+    func loadAliasExtensions() -> [String: [String]]
+    func saveAliasExtensions(_ extensions: [String: [String]])
+
+    func loadDefaultOverrides() -> [String: [String: String]]
+    func saveDefaultOverrides(_ overrides: [String: [String: String]])
 }
 
 // MARK: - UserDefaults Implementation
@@ -16,17 +22,23 @@ final class UserCatalogStore: UserCatalogStoreProtocol {
     private let userDefaults: UserDefaults
     private let itemsKey: String
     private let facetExtensionsKey: String
+    private let aliasExtensionsKey: String
+    private let defaultOverridesKey: String
     private let encoder = JSONEncoder()
     private let decoder = JSONDecoder()
 
     init(
         userDefaults: UserDefaults = .standard,
         itemsKey: String = "pantry.user.catalog.items",
-        facetExtensionsKey: String = "pantry.user.facet.extensions"
+        facetExtensionsKey: String = "pantry.user.facet.extensions",
+        aliasExtensionsKey: String = "pantry.user.alias.extensions",
+        defaultOverridesKey: String = "pantry.user.default.overrides"
     ) {
         self.userDefaults = userDefaults
         self.itemsKey = itemsKey
         self.facetExtensionsKey = facetExtensionsKey
+        self.aliasExtensionsKey = aliasExtensionsKey
+        self.defaultOverridesKey = defaultOverridesKey
     }
 
     func loadUserItems() -> [PantryCatalogItemDefinition] {
@@ -74,6 +86,54 @@ final class UserCatalogStore: UserCatalogStoreProtocol {
             userDefaults.set(data, forKey: facetExtensionsKey)
         } catch {
             AppLog.warn("[UserCatalogStore] Failed to persist facet extensions: \(error.localizedDescription)")
+        }
+    }
+
+    func loadAliasExtensions() -> [String: [String]] {
+        guard let data = userDefaults.data(forKey: aliasExtensionsKey) else { return [:] }
+        do {
+            return try decoder.decode([String: [String]].self, from: data)
+        } catch {
+            AppLog.warn("[UserCatalogStore] Discarding unreadable alias extensions: \(error.localizedDescription)")
+            userDefaults.removeObject(forKey: aliasExtensionsKey)
+            return [:]
+        }
+    }
+
+    func saveAliasExtensions(_ extensions: [String: [String]]) {
+        guard !extensions.isEmpty else {
+            userDefaults.removeObject(forKey: aliasExtensionsKey)
+            return
+        }
+        do {
+            let data = try encoder.encode(extensions)
+            userDefaults.set(data, forKey: aliasExtensionsKey)
+        } catch {
+            AppLog.warn("[UserCatalogStore] Failed to persist alias extensions: \(error.localizedDescription)")
+        }
+    }
+
+    func loadDefaultOverrides() -> [String: [String: String]] {
+        guard let data = userDefaults.data(forKey: defaultOverridesKey) else { return [:] }
+        do {
+            return try decoder.decode([String: [String: String]].self, from: data)
+        } catch {
+            AppLog.warn("[UserCatalogStore] Discarding unreadable default overrides: \(error.localizedDescription)")
+            userDefaults.removeObject(forKey: defaultOverridesKey)
+            return [:]
+        }
+    }
+
+    func saveDefaultOverrides(_ overrides: [String: [String: String]]) {
+        guard !overrides.isEmpty else {
+            userDefaults.removeObject(forKey: defaultOverridesKey)
+            return
+        }
+        do {
+            let data = try encoder.encode(overrides)
+            userDefaults.set(data, forKey: defaultOverridesKey)
+        } catch {
+            AppLog.warn("[UserCatalogStore] Failed to persist default overrides: \(error.localizedDescription)")
         }
     }
 }

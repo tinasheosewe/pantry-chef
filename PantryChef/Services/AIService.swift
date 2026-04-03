@@ -961,6 +961,123 @@ final class AIService: AIServiceProtocol {
         ] as [String: Any]
     ]
 
+    // MARK: - Ingredient Merge Verification
+
+    private static let ingredientMergeSchema: [String: Any] = [
+        "name": "ingredient_merge",
+        "strict": true,
+        "schema": [
+            "type": "object",
+            "properties": [
+                "shouldMerge": [
+                    "type": "boolean"
+                ] as [String: Any],
+                "mergedFacets": [
+                    "type": "array",
+                    "items": [
+                        "type": "object",
+                        "properties": [
+                            "key": [
+                                "type": "string",
+                                "enum": PantryFacetKey.allCases.map(\.rawValue)
+                            ] as [String: Any],
+                            "options": [
+                                "type": "array",
+                                "items": ["type": "string"]
+                            ] as [String: Any]
+                        ] as [String: Any],
+                        "required": ["key", "options"],
+                        "additionalProperties": false
+                    ] as [String: Any]
+                ] as [String: Any],
+                "mergedAliases": [
+                    "type": "array",
+                    "items": ["type": "string"]
+                ] as [String: Any]
+            ] as [String: Any],
+            "required": ["shouldMerge", "mergedFacets", "mergedAliases"],
+            "additionalProperties": false
+        ] as [String: Any]
+    ]
+
+    struct IngredientMergeResult {
+        let shouldMerge: Bool
+        let mergedFacets: [PantryFacetKey: [String]]
+        let mergedAliases: [String]
+    }
+
+    func verifyAndMergeIngredient(
+        name: String,
+        baseItem: PantryCatalogItemDefinition
+    ) async -> IngredientMergeResult? {
+        let facetDescription = baseItem.facets.map { facet in
+            "  - \(facet.key.rawValue): [\(facet.options.joined(separator: ", "))]"
+        }.joined(separator: "\n")
+
+        let aliasDescription = baseItem.aliases.isEmpty
+            ? "None"
+            : baseItem.aliases.joined(separator: ", ")
+
+        let prompt = """
+        You are a food ingredient expert. Determine whether "\(name)" is essentially the same \
+        ingredient as "\(baseItem.name)" (just a variant, regional name, or brand name) or a \
+        genuinely different ingredient.
+
+        Existing catalog item:
+        - Name: \(baseItem.name)
+        - Category: \(baseItem.category.rawValue)
+        - Aliases: \(aliasDescription)
+        - Facets:
+        \(facetDescription)
+
+        New ingredient name: "\(name)"
+
+        Return:
+        - "shouldMerge": true if "\(name)" is the same ingredient as "\(baseItem.name)", false otherwise
+        - "mergedFacets": if shouldMerge is true, the combined facets (existing + any new options the \
+        new name implies). Keep ALL existing options and ADD new ones. If shouldMerge is false, return empty array.
+        - "mergedAliases": if shouldMerge is true, aliases to add (including "\(name)" itself). \
+        If shouldMerge is false, return empty array.
+        """
+
+        guard let response = await sendChatRequest(
+            prompt: prompt,
+            maxTokens: 1024,
+            responseFormat: ["type": "json_schema", "json_schema": Self.ingredientMergeSchema]
+        ) else { return nil }
+
+        guard let data = response.data(using: .utf8) else { return nil }
+
+        do {
+            guard let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+                  let shouldMerge = json["shouldMerge"] as? Bool else {
+                return nil
+            }
+
+            var mergedFacets: [PantryFacetKey: [String]] = [:]
+            if let facetArray = json["mergedFacets"] as? [[String: Any]] {
+                for facetObj in facetArray {
+                    guard let keyRaw = facetObj["key"] as? String,
+                          let key = PantryFacetKey(rawValue: keyRaw),
+                          let options = facetObj["options"] as? [String],
+                          !options.isEmpty else { continue }
+                    mergedFacets[key] = options
+                }
+            }
+
+            let mergedAliases = (json["mergedAliases"] as? [String]) ?? []
+
+            return IngredientMergeResult(
+                shouldMerge: shouldMerge,
+                mergedFacets: mergedFacets,
+                mergedAliases: mergedAliases
+            )
+        } catch {
+            AppLog.warn("[AIService] Failed to decode merge result: \(error)")
+            return nil
+        }
+    }
+
     /// Schema for AI-generated ingredient definitions.
     private static let ingredientDefinitionSchema: [String: Any] = [
         "name": "ingredient_definition",

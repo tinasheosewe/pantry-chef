@@ -7,8 +7,23 @@ struct CustomIngredientDefinitionView: View {
     @State private var autoFillError: String?
     @State private var registrationError: String?
     @State private var newOptionText: [PantryFacetKey: String] = [:]
+    @State private var editingOptions: [PantryFacetKey: [String]] = [:]
+    @FocusState private var focusedOption: FacetOptionFocus?
     @State private var showingAddFacetPicker = false
     @State private var showDeleteConfirmation = false
+    @State private var showResetConfirmation = false
+    @State private var foldCandidate: FoldCandidate?
+    @State private var showFoldAlert = false
+
+    private struct FacetOptionFocus: Hashable {
+        let key: PantryFacetKey
+        let index: Int // -1 = the trailing "add" row
+    }
+
+    private struct FoldCandidate {
+        let baseItem: PantryCatalogItemDefinition
+        let mergeResult: AIService.IngredientMergeResult
+    }
 
     private let appState: AppState
     private let existingItemID: String?
@@ -43,6 +58,15 @@ struct CustomIngredientDefinitionView: View {
 
     private var isEditing: Bool { existingItemID != nil }
 
+    private var isUserDefinedItem: Bool {
+        guard let id = existingItemID else { return false }
+        return PantryCatalog.item(id: id)?.isUserDefined == true
+    }
+
+    private var isCatalogItem: Bool {
+        isEditing && !isUserDefinedItem
+    }
+
     private var canSave: Bool {
         !draft.name.trimmed.isEmpty && !isAutoFilling
     }
@@ -56,9 +80,15 @@ struct CustomIngredientDefinitionView: View {
                 addFacetSection
                 storageAndUnitSection
 
-                if isEditing {
+                if isEditing && isUserDefinedItem {
                     deleteSection
+                } else if isCatalogItem {
+                    resetSection
                 }
+            }
+            .onAppear {
+                guard editingOptions.isEmpty else { return }
+                refreshEditingOptions()
             }
             .navigationTitle(isEditing ? "Edit Ingredient" : "New Ingredient")
             .navigationBarTitleDisplayMode(.inline)
@@ -86,6 +116,26 @@ struct CustomIngredientDefinitionView: View {
             } message: {
                 Text("This will permanently remove \"\(draft.name)\" from your catalog. Existing pantry items using this ingredient will become unresolved.")
             }
+            .confirmationDialog(
+                "Reset to Defaults",
+                isPresented: $showResetConfirmation,
+                titleVisibility: .visible
+            ) {
+                Button("Reset", role: .destructive) { resetCatalogItem() }
+            } message: {
+                Text("This will remove all custom facet values and aliases added to this ingredient, restoring the original catalog definition.")
+            }
+            .alert(
+                "Existing Ingredient Found",
+                isPresented: $showFoldAlert
+            ) {
+                Button("Fold In") { applyFold() }
+                Button("Keep as New", role: .cancel) { foldCandidate = nil }
+            } message: {
+                if let candidate = foldCandidate {
+                    Text("\"\(draft.name)\" looks like it belongs under \"\(candidate.baseItem.titleCasedName)\". Fold it in to enrich the existing item?")
+                }
+            }
         }
         .presentationDetents([.large])
     }
@@ -95,15 +145,25 @@ struct CustomIngredientDefinitionView: View {
     @ViewBuilder
     private var nameAndCategorySection: some View {
         Section {
-            TextField("Ingredient name", text: $draft.name)
-                .autocorrectionDisabled()
-                .textInputAutocapitalization(.words)
+            if isCatalogItem {
+                HStack {
+                    Text("Name")
+                    Spacer()
+                    Text(draft.name)
+                        .foregroundStyle(PCColors.textSecondary)
+                }
+            } else {
+                TextField("Ingredient name", text: $draft.name)
+                    .autocorrectionDisabled()
+                    .textInputAutocapitalization(.words)
+            }
 
             Picker("Category", selection: $draft.category) {
                 ForEach(FoodCategory.allCases) { cat in
                     Text(cat.rawValue).tag(cat)
                 }
             }
+            .disabled(isCatalogItem)
         } header: {
             Text("Ingredient")
         } footer: {
@@ -154,38 +214,75 @@ struct CustomIngredientDefinitionView: View {
     @ViewBuilder
     private var facetsSections: some View {
         ForEach(draft.sortedFacetKeys) { key in
+            let options = editingOptions[key] ?? []
+            let baseOpts = baseOptionSet(for: key)
             Section {
-                ForEach(draft.facets[key] ?? [], id: \.self) { option in
-                    Text(option.capitalized)
-                }
-                .onDelete { offsets in
-                    deleteFacetOptions(key: key, at: offsets)
-                }
-
-                HStack {
-                    TextField("Add \(key.title.lowercased())...", text: bindingForNewOption(key))
-                        .autocorrectionDisabled()
-                        .textInputAutocapitalization(.words)
-                        .onSubmit { commitNewOption(key) }
-
-                    Button {
-                        commitNewOption(key)
-                    } label: {
-                        Image(systemName: "plus.circle.fill")
-                            .foregroundStyle(PCColors.accent)
+                ForEach(options.indices, id: \.self) { idx in
+                    let isBase = isCatalogItem && baseOpts.contains(options[idx].lowercased())
+                    HStack {
+                        if isBase {
+                            Text(options[idx])
+                                .foregroundStyle(PCColors.textSecondary)
+                        } else {
+                            TextField(key.title.lowercased(), text: facetOptionBinding(key: key, index: idx))
+                                .autocorrectionDisabled()
+                                .textInputAutocapitalization(.words)
+                                .focused($focusedOption, equals: FacetOptionFocus(key: key, index: idx))
+                            Button {
+                                withAnimation {
+                                    removeEditingOption(key: key, index: idx)
+                                }
+                            } label: {
+                                Image(systemName: "xmark.circle.fill")
+                                    .foregroundStyle(PCColors.textSecondary.opacity(0.6))
+                            }
+                            .buttonStyle(.plain)
+                        }
                     }
-                    .disabled((newOptionText[key] ?? "").trimmed.isEmpty)
                 }
+
+                // Trailing "add" row
+                TextField("Add \(key.title.lowercased())...", text: bindingForNewOption(key))
+                    .autocorrectionDisabled()
+                    .textInputAutocapitalization(.words)
+                    .focused($focusedOption, equals: FacetOptionFocus(key: key, index: -1))
             } header: {
                 HStack {
                     Text(key.title)
                     Spacer()
-                    Button {
-                        withAnimation { draft.removeFacet(key) }
-                    } label: {
-                        Image(systemName: "trash")
-                            .font(.caption)
-                            .foregroundStyle(.red.opacity(0.7))
+                    if !isCatalogItem || !isBaseFacetKey(key) {
+                        Button {
+                            withAnimation {
+                                draft.removeFacet(key)
+                                editingOptions.removeValue(forKey: key)
+                            }
+                        } label: {
+                            Image(systemName: "trash")
+                                .font(.caption)
+                                .foregroundStyle(.red.opacity(0.7))
+                        }
+                    }
+                }
+            }
+        }
+        .onChange(of: focusedOption) { oldFocus, _ in
+            guard let old = oldFocus else { return }
+            // Commit trailing add-row text into the options list
+            if old.index == -1 {
+                let text = (newOptionText[old.key] ?? "").trimmed
+                if !text.isEmpty {
+                    ensureEditingOptions(old.key)
+                    editingOptions[old.key]?.append(text)
+                    newOptionText[old.key] = ""
+                }
+            } else {
+                // Remove row if user cleared it and moved away (skip base options)
+                if let opts = editingOptions[old.key], old.index < opts.count {
+                    let isBase = isCatalogItem && baseOptionSet(for: old.key).contains(opts[old.index].lowercased())
+                    if opts[old.index].trimmed.isEmpty && !isBase {
+                        withAnimation {
+                            removeEditingOption(key: old.key, index: old.index)
+                        }
                     }
                 }
             }
@@ -247,6 +344,24 @@ struct CustomIngredientDefinitionView: View {
         }
     }
 
+    @ViewBuilder
+    private var resetSection: some View {
+        if let itemID = existingItemID,
+           PantryCatalog.facetExtensions[itemID] != nil || PantryCatalog.aliasExtensions[itemID] != nil || PantryCatalog.defaultOverrides[itemID] != nil {
+            Section {
+                Button(role: .destructive) {
+                    showResetConfirmation = true
+                } label: {
+                    HStack {
+                        Spacer()
+                        Label("Reset to Defaults", systemImage: "arrow.counterclockwise")
+                        Spacer()
+                    }
+                }
+            }
+        }
+    }
+
     private var autoFillOverlay: some View {
         ZStack {
             Color.black.opacity(0.15)
@@ -275,8 +390,15 @@ struct CustomIngredientDefinitionView: View {
         autoFillError = nil
         isAutoFilling = true
         Task {
-            if let definition = await appState.generateIngredientDefinition(name: draft.name.trimmed) {
+            let trimmedName = draft.name.trimmed
+            if let definition = await appState.generateIngredientDefinition(name: trimmedName) {
                 draft.applyAIDefinition(definition)
+                refreshEditingOptions()
+
+                // Check for fold-into-existing candidate
+                if !isEditing {
+                    await checkFoldCandidate(name: trimmedName)
+                }
             } else {
                 autoFillError = "Could not generate definition. You can fill in the fields manually."
             }
@@ -284,11 +406,44 @@ struct CustomIngredientDefinitionView: View {
         }
     }
 
+    private func checkFoldCandidate(name: String) async {
+        // Local match: check top search result
+        let results = CatalogSearchEngine.search(name)
+        guard let topResult = results.first,
+              topResult.score >= 0.5,
+              !topResult.item.isUserDefined else { return }
+
+        let baseItem = topResult.item
+
+        // LLM verify + merge
+        guard let mergeResult = await appState.verifyAndMergeIngredient(
+            name: name,
+            baseItem: baseItem
+        ), mergeResult.shouldMerge else { return }
+
+        foldCandidate = FoldCandidate(baseItem: baseItem, mergeResult: mergeResult)
+        showFoldAlert = true
+    }
+
+    private func applyFold() {
+        guard let candidate = foldCandidate else { return }
+        PantryCatalog.applyMerge(
+            catalogItemID: candidate.baseItem.id,
+            mergedFacets: candidate.mergeResult.mergedFacets,
+            mergedAliases: candidate.mergeResult.mergedAliases
+        )
+        dismiss()
+    }
+
     private func save() {
+        syncAllEditingOptionsToDraft()
         registrationError = nil
 
-        if isEditing, let existingID = existingItemID {
-            // Remove old entry, register updated one
+        if isCatalogItem, let existingID = existingItemID {
+            // Catalog item: compute diff and apply as extensions
+            saveCatalogExtensions(existingID: existingID)
+        } else if isEditing, let existingID = existingItemID {
+            // User-defined item: remove old, register updated
             PantryCatalog.removeUserItem(id: existingID)
             let definition = draft.buildDefinition()
             let result = PantryCatalog.registerUserItem(definition)
@@ -297,11 +452,10 @@ struct CustomIngredientDefinitionView: View {
                 onSave?(definition.id)
                 dismiss()
             case .failure(let error):
-                // Re-register old one on failure — but it was already removed.
-                // The user will need to fix the issue.
                 registrationError = error.localizedDescription
             }
         } else {
+            // New item
             let definition = draft.buildDefinition()
             let result = PantryCatalog.registerUserItem(definition)
             switch result {
@@ -312,6 +466,41 @@ struct CustomIngredientDefinitionView: View {
                 registrationError = error.localizedDescription
             }
         }
+    }
+
+    private func saveCatalogExtensions(existingID: String) {
+        guard let baseItem = PantryCatalog.bundleItem(id: existingID) else { return }
+
+        // Compute facet diff against the unextended base item
+        var extensions: [String: [String]] = [:]
+        for (key, draftOptions) in draft.facets {
+            let baseOptions = Set(baseItem.options(for: key).map { $0.lowercased() })
+            let extensionOptions = draftOptions.filter { !baseOptions.contains($0.lowercased()) }
+            if !extensionOptions.isEmpty {
+                extensions[key.rawValue] = extensionOptions
+            }
+        }
+
+        PantryCatalog.setFacetExtensions(catalogItemID: existingID, extensions: extensions)
+
+        // Compute default overrides against the base item
+        var overrides: [String: String] = [:]
+        if draft.defaultStorage != baseItem.defaultStorage {
+            overrides["defaultStorage"] = draft.defaultStorage.rawValue
+        }
+        if draft.defaultUnit != baseItem.defaultUnit {
+            overrides["defaultUnit"] = (draft.defaultUnit ?? .piece).rawValue
+        }
+        PantryCatalog.setDefaultOverrides(catalogItemID: existingID, overrides: overrides)
+
+        onSave?(existingID)
+        dismiss()
+    }
+
+    private func resetCatalogItem() {
+        guard let existingID = existingItemID else { return }
+        PantryCatalog.resetExtensions(catalogItemID: existingID)
+        dismiss()
     }
 
     private func deleteIngredient() {
@@ -327,20 +516,76 @@ struct CustomIngredientDefinitionView: View {
         )
     }
 
-    private func commitNewOption(_ key: PantryFacetKey) {
-        let text = (newOptionText[key] ?? "").trimmed
-        guard !text.isEmpty else { return }
-        draft.addFacetOption(key, value: text)
-        newOptionText[key] = ""
+    /// Single source of truth: copies draft.facets → editingOptions with titlecasing.
+    private func refreshEditingOptions() {
+        for (key, values) in draft.facets {
+            editingOptions[key] = values.map { CustomIngredientDraft.titleCase($0) }
+        }
     }
 
-    private func deleteFacetOptions(key: PantryFacetKey, at offsets: IndexSet) {
-        guard var options = draft.facets[key] else { return }
-        options.remove(atOffsets: offsets)
-        if options.isEmpty {
-            draft.facets.removeValue(forKey: key)
-        } else {
-            draft.facets[key] = options
+    private func ensureEditingOptions(_ key: PantryFacetKey) {
+        if editingOptions[key] == nil {
+            editingOptions[key] = (draft.facets[key] ?? []).map { CustomIngredientDraft.titleCase($0) }
+        }
+    }
+
+    /// Returns the set of base (bundle) facet options for a key, lowercased.
+    private func baseOptionSet(for key: PantryFacetKey) -> Set<String> {
+        guard isCatalogItem, let itemID = existingItemID,
+              let baseItem = PantryCatalog.bundleItem(id: itemID) else { return [] }
+        return Set(baseItem.options(for: key).map { $0.lowercased() })
+    }
+
+    /// Whether this facet key exists in the original bundle item.
+    private func isBaseFacetKey(_ key: PantryFacetKey) -> Bool {
+        guard isCatalogItem, let itemID = existingItemID,
+              let baseItem = PantryCatalog.bundleItem(id: itemID) else { return false }
+        return baseItem.facets.contains { $0.key == key }
+    }
+
+    private func facetOptionBinding(key: PantryFacetKey, index: Int) -> Binding<String> {
+        Binding(
+            get: {
+                ensureEditingOptions(key)
+                let opts = editingOptions[key] ?? []
+                guard index < opts.count else { return "" }
+                return opts[index]
+            },
+            set: { newValue in
+                ensureEditingOptions(key)
+                guard index < (editingOptions[key]?.count ?? 0) else { return }
+                editingOptions[key]?[index] = newValue
+            }
+        )
+    }
+
+    private func removeEditingOption(key: PantryFacetKey, index: Int) {
+        ensureEditingOptions(key)
+        guard index < (editingOptions[key]?.count ?? 0) else { return }
+        editingOptions[key]?.remove(at: index)
+        syncEditingOptionsToDraft(key: key)
+    }
+
+    private func syncEditingOptionsToDraft(key: PantryFacetKey) {
+        let current = editingOptions[key] ?? []
+        // Rebuild: remove all then re-add (store lowercase)
+        draft.facets[key] = nil
+        for opt in current where !opt.trimmed.isEmpty {
+            draft.addFacetOption(key, value: opt.trimmed.lowercased())
+        }
+    }
+
+    private func syncAllEditingOptionsToDraft() {
+        for key in editingOptions.keys {
+            syncEditingOptionsToDraft(key: key)
+        }
+        // Also commit any trailing add-row text
+        for (key, text) in newOptionText {
+            let trimmed = text.trimmed
+            if !trimmed.isEmpty {
+                draft.addFacetOption(key, value: trimmed.lowercased())
+                newOptionText[key] = ""
+            }
         }
     }
 }

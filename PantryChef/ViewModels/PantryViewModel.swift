@@ -21,9 +21,26 @@ final class PantryBulkAddViewModel {
     @ObservationIgnored private let catalogSearchDebouncer = TaskDebouncer()
     @ObservationIgnored private let preferenceStore: PantryItemPreferenceStoreProtocol
 
+    @ObservationIgnored private var catalogChangeObserver: Any?
+
     init(preferenceStore: PantryItemPreferenceStoreProtocol) {
         self.preferenceStore = preferenceStore
         updateCatalogSearch()
+        catalogChangeObserver = NotificationCenter.default.addObserver(
+            forName: .pantryCatalogDidChange,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            Task { @MainActor in
+                self?.updateCatalogSearch()
+            }
+        }
+    }
+
+    deinit {
+        if let observer = catalogChangeObserver {
+            NotificationCenter.default.removeObserver(observer)
+        }
     }
 
     var categoryCounts: [(FoodCategory, Int)] {
@@ -42,9 +59,15 @@ final class PantryBulkAddViewModel {
 
     func updateCatalogSearch() {
         let normalizedQuery = debouncedCatalogSearchText.trimmed
+        let freq = PantryAddFrequencyTracker.frequencies()
         if normalizedQuery.isEmpty {
             catalogSearchResults = []
-            var items = PantryCatalog.allItems.sorted { $0.name < $1.name }
+            var items = PantryCatalog.allItems.sorted {
+                let f0 = freq[$0.id] ?? 0
+                let f1 = freq[$1.id] ?? 0
+                if f0 != f1 { return f0 > f1 }
+                return $0.name < $1.name
+            }
             if let selectedCatalogCategory {
                 items = items.filter { $0.category == selectedCatalogCategory }
             }
@@ -56,6 +79,11 @@ final class PantryBulkAddViewModel {
         var filtered = results
         if let selectedCatalogCategory {
             filtered = filtered.filter { $0.item.category == selectedCatalogCategory }
+        }
+        // Stable sort: relevance is primary (already sorted), frequency as tiebreaker
+        filtered.sort {
+            if $0.score != $1.score { return $0.score > $1.score }
+            return (freq[$0.item.id] ?? 0) > (freq[$1.item.id] ?? 0)
         }
         catalogSearchResults = filtered
         filteredCatalogItems = promoteHighlightedItem(in: filtered.map(\.item))
@@ -127,8 +155,15 @@ final class PantryBulkAddViewModel {
         updateCatalogSearch()
     }
 
-    func onCatalogSearchTextChanged() {
+    /// Centralized handler for any catalog navigation change (search text, category, etc.).
+    /// Resets transient UI state that shouldn't persist across navigation.
+    private func onCatalogNavigationChanged() {
         highlightedItemID = nil
+        expandedItemIDs = []
+    }
+
+    func onCatalogSearchTextChanged() {
+        onCatalogNavigationChanged()
         SearchQuerySupport.schedule(text: catalogSearchText, debouncer: catalogSearchDebouncer) {
             self.debouncedCatalogSearchText = $0
             self.updateCatalogSearch()
@@ -141,7 +176,7 @@ final class PantryBulkAddViewModel {
     }
 
     func onCatalogCategoryChanged() {
-        highlightedItemID = nil
+        onCatalogNavigationChanged()
         updateCatalogSearch()
     }
 
@@ -186,7 +221,7 @@ final class PantryBulkAddViewModel {
     }
 
     func addAnotherInstance(_ item: PantryCatalogItemDefinition) {
-        stageCatalogItem(item)
+        stagedRows.append(PantryIntakeRowDraft(blankFor: item))
     }
 
     func stagedDrafts(for itemID: String) -> [PantryIntakeRowDraft] {
@@ -247,14 +282,29 @@ final class PantryBulkAddViewModel {
         stagedRows[idx].setStorage(storage)
     }
 
-    func updateStagedUnit(draftID: UUID, unit: MeasurementUnit) {
+    func updateStagedUnit(draftID: UUID, unit: MeasurementUnit?) {
         guard let idx = stagedRows.firstIndex(where: { $0.id == draftID }) else { return }
-        stagedRows[idx].setUnit(unit)
+        if let unit {
+            stagedRows[idx].setUnit(unit)
+        } else {
+            stagedRows[idx].unit = nil
+            stagedRows[idx].unitWasEdited = false
+        }
     }
 
     func updateStagedQuantity(draftID: UUID, quantity: String) {
         guard let idx = stagedRows.firstIndex(where: { $0.id == draftID }) else { return }
         stagedRows[idx].setQuantityText(quantity)
+    }
+
+    func updateStagedQuantity(draftID: UUID, quantity: Double?) {
+        guard let idx = stagedRows.firstIndex(where: { $0.id == draftID }) else { return }
+        if let quantity {
+            stagedRows[idx].setQuantityText(PantryIntakeRowDraft.quantityString(quantity))
+        } else {
+            stagedRows[idx].quantityText = ""
+            stagedRows[idx].quantityWasEdited = false
+        }
     }
 
     func removeStagedRow(_ draft: PantryIntakeRowDraft) {

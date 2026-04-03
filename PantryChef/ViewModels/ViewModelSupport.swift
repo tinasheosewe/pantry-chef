@@ -81,6 +81,9 @@ struct PantryActions {
         for draft in drafts {
             guard let item = draft.buildItem() else { continue }
             await inventoryGateway.upsertPantryItem(item)
+            if let catalogID = draft.selectedItemID {
+                PantryAddFrequencyTracker.recordAddition(catalogItemID: catalogID)
+            }
             addedCount += 1
         }
         return addedCount

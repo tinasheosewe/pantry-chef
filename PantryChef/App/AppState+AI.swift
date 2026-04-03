@@ -50,4 +50,11 @@ extension AppState {
     func generateIngredientDefinition(name: String) async -> AIIngredientDefinition? {
         await aiService.generateIngredientDefinition(name: name)
     }
+
+    func verifyAndMergeIngredient(
+        name: String,
+        baseItem: PantryCatalogItemDefinition
+    ) async -> AIService.IngredientMergeResult? {
+        await aiService.verifyAndMergeIngredient(name: name, baseItem: baseItem)
+    }
 }

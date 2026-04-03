@@ -1,5 +1,9 @@
 import Foundation
 
+extension Notification.Name {
+    static let pantryCatalogDidChange = Notification.Name("PantryCatalogDidChange")
+}
+
 enum PantryStorage: String, Codable, CaseIterable, Identifiable, Sendable {
     case pantry = "Pantry"
     case refrigerated = "Refrigerated"
@@ -99,9 +103,9 @@ struct PantryCatalogItemDefinition: Identifiable, Hashable, Sendable, Codable {
     let id: String
     let name: String
     let category: FoodCategory
-    let defaultUnit: MeasurementUnit?
+    var defaultUnit: MeasurementUnit?
     let defaultQuantity: Double?
-    let defaultStorage: PantryStorage
+    var defaultStorage: PantryStorage
     let aliases: [String]
     var facets: [PantryFacetDefinition]
     let defaultSelections: [PantryFacetSelection]
@@ -362,7 +366,17 @@ enum PantryCatalog {
 
     private(set) static var userItems: [PantryCatalogItemDefinition] = []
     private(set) static var facetExtensions: [String: [String: [String]]] = [:]
+    private(set) static var aliasExtensions: [String: [String]] = [:]
+    private(set) static var defaultOverrides: [String: [String: String]] = [:]
     private static var store: UserCatalogStoreProtocol?
+
+    /// Maps old facet key rawValues to their current PantryFacetKey.
+    /// Populate this when renaming facet keys to auto-migrate user extensions.
+    static let facetKeyMigrations: [String: PantryFacetKey] = [:]
+
+    /// Extension data whose facet key could not be resolved (neither current nor migrated).
+    /// Keyed by item ID → unknown key raw value → values. Preserved so user data is not silently lost.
+    private(set) static var orphanedExtensions: [String: [String: [String]]] = [:]
 
     // MARK: - Merged items + indices
 
@@ -447,6 +461,7 @@ enum PantryCatalog {
 
     private static func rebuildIndices() {
         var merged = bundleItems
+        var orphans: [String: [String: [String]]] = [:]
         // Apply facet extensions to bundle items
         if !facetExtensions.isEmpty {
             merged = merged.map { item in
@@ -462,21 +477,54 @@ enum PantryCatalog {
                 // Add entirely new facet keys from extensions
                 let existingKeys = Set(mutableItem.facets.map(\.key))
                 for (keyRaw, values) in extensions {
-                    guard let facetKey = PantryFacetKey(rawValue: keyRaw), !existingKeys.contains(facetKey) else { continue }
+                    // Try migration map first, then direct init
+                    let resolved = facetKeyMigrations[keyRaw] ?? PantryFacetKey(rawValue: keyRaw)
+                    guard let facetKey = resolved, !existingKeys.contains(facetKey) else {
+                        // If resolved but already exists, it was handled above; skip.
+                        // If nil, this key is orphaned — preserve it.
+                        if resolved == nil {
+                            orphans[item.id, default: [:]][keyRaw] = values
+                        }
+                        continue
+                    }
                     mutableItem.facets.append(PantryFacetDefinition(key: facetKey, options: values))
                 }
                 return mutableItem
             }
         }
+        // Apply default overrides (storage, unit) to bundle items
+        if !defaultOverrides.isEmpty {
+            merged = merged.map { item in
+                guard let overrides = defaultOverrides[item.id] else { return item }
+                var mutableItem = item
+                if let storageRaw = overrides["defaultStorage"],
+                   let storage = PantryStorage(rawValue: storageRaw) {
+                    mutableItem.defaultStorage = storage
+                }
+                if let unitRaw = overrides["defaultUnit"],
+                   let unit = MeasurementUnit(rawValue: unitRaw) {
+                    mutableItem.defaultUnit = unit
+                }
+                return mutableItem
+            }
+        }
+        orphanedExtensions = orphans
         merged += userItems
         allItems = merged
         itemsByID = Dictionary(uniqueKeysWithValues: merged.map { ($0.id, $0) })
         aliasIndex = buildAliasIndex(from: merged)
+        // Merge user alias extensions into the alias index
+        for (itemID, aliases) in aliasExtensions {
+            for alias in aliases {
+                aliasIndex[normalizeLookupKey(alias)] = itemID
+            }
+        }
         facetOptionIndex = buildFacetOptionIndex(from: merged)
         nameKeySet = Set(merged.map { normalizeLookupKey($0.name) })
         facetTokenToItems = buildFacetTokenToItems(from: merged)
         tokenIndex = buildTokenIndex(from: merged)
         CatalogSearchEngine.invalidateCache()
+        NotificationCenter.default.post(name: .pantryCatalogDidChange, object: nil)
     }
 
     // MARK: - Loading
@@ -485,6 +533,8 @@ enum PantryCatalog {
         self.store = store
         userItems = store.loadUserItems()
         facetExtensions = store.loadFacetExtensions()
+        aliasExtensions = store.loadAliasExtensions()
+        defaultOverrides = store.loadDefaultOverrides()
         rebuildIndices()
     }
 
@@ -501,6 +551,11 @@ enum PantryCatalog {
         // Check bundle ID collision
         if bundleItems.contains(where: { $0.id == itemID }) {
             return .failure(.idCollision(existingItemID: itemID))
+        }
+
+        // Check user item ID collision
+        if userItems.contains(where: { $0.id == itemID }) {
+            return .failure(.duplicateUserItem(existingItemID: itemID))
         }
 
         // Check name/alias collision with bundle items
@@ -578,6 +633,96 @@ enum PantryCatalog {
         }
         store?.saveFacetExtensions(facetExtensions)
         rebuildIndices()
+    }
+
+    /// Returns the original bundle-catalog item (before extensions), or nil if not a catalog item.
+    static func bundleItem(id: String) -> PantryCatalogItemDefinition? {
+        bundleItems.first { $0.id == id }
+    }
+
+    /// Replace all facet extensions for a catalog item. Supports both addition and removal.
+    static func setFacetExtensions(catalogItemID: String, extensions: [String: [String]]) {
+        if extensions.isEmpty {
+            facetExtensions.removeValue(forKey: catalogItemID)
+        } else {
+            facetExtensions[catalogItemID] = extensions
+        }
+        store?.saveFacetExtensions(facetExtensions)
+        rebuildIndices()
+    }
+
+    /// Set default overrides (storage, unit) for a catalog item.
+    static func setDefaultOverrides(catalogItemID: String, overrides: [String: String]) {
+        if overrides.isEmpty {
+            defaultOverrides.removeValue(forKey: catalogItemID)
+        } else {
+            defaultOverrides[catalogItemID] = overrides
+        }
+        store?.saveDefaultOverrides(defaultOverrides)
+        rebuildIndices()
+    }
+
+    // MARK: - Mutation: Alias Extensions
+
+    static func addAliasExtensions(catalogItemID: String, aliases: [String]) {
+        guard itemsByID[catalogItemID] != nil else { return }
+        var existing = aliasExtensions[catalogItemID] ?? []
+        let existingSet = Set(existing.map { $0.lowercased() })
+        for alias in aliases where !existingSet.contains(alias.lowercased()) {
+            existing.append(alias)
+        }
+        aliasExtensions[catalogItemID] = existing
+        store?.saveAliasExtensions(aliasExtensions)
+        rebuildIndices()
+    }
+
+    /// Apply a merge result from AI verification: add facet options (additive) and alias extensions.
+    static func applyMerge(
+        catalogItemID: String,
+        mergedFacets: [PantryFacetKey: [String]],
+        mergedAliases: [String]
+    ) {
+        guard let item = itemsByID[catalogItemID] else { return }
+
+        // Additive facet merge: union existing + LLM-returned options
+        for (key, newOptions) in mergedFacets {
+            let existingOptions = Set(item.options(for: key).map { $0.lowercased() })
+            for option in newOptions where !existingOptions.contains(option.lowercased()) {
+                facetExtensions[catalogItemID, default: [:]][key.rawValue, default: []].append(option)
+            }
+        }
+        store?.saveFacetExtensions(facetExtensions)
+
+        // Additive alias merge
+        if !mergedAliases.isEmpty {
+            addAliasExtensions(catalogItemID: catalogItemID, aliases: mergedAliases)
+        } else {
+            rebuildIndices()
+        }
+    }
+
+    static func removeAliasExtensions(catalogItemID: String) {
+        aliasExtensions.removeValue(forKey: catalogItemID)
+        store?.saveAliasExtensions(aliasExtensions)
+        rebuildIndices()
+    }
+
+    /// Remove all user extensions (facets + aliases) for a catalog item, restoring original definition.
+    static func resetExtensions(catalogItemID: String) {
+        var changed = false
+        if facetExtensions.removeValue(forKey: catalogItemID) != nil {
+            store?.saveFacetExtensions(facetExtensions)
+            changed = true
+        }
+        if aliasExtensions.removeValue(forKey: catalogItemID) != nil {
+            store?.saveAliasExtensions(aliasExtensions)
+            changed = true
+        }
+        if defaultOverrides.removeValue(forKey: catalogItemID) != nil {
+            store?.saveDefaultOverrides(defaultOverrides)
+            changed = true
+        }
+        if changed { rebuildIndices() }
     }
 
     // MARK: - Queries

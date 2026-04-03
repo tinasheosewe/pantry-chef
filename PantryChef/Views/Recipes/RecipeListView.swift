@@ -47,6 +47,26 @@ struct RecipeListView: View {
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Menu {
+                        ForEach(RecipeViewModel.SortOrder.allCases, id: \.self) { order in
+                            Button {
+                                viewModel.sortOrder = order
+                            } label: {
+                                HStack {
+                                    Text(order.rawValue)
+                                    if viewModel.sortOrder == order {
+                                        Image(systemName: "checkmark")
+                                    }
+                                }
+                            }
+                        }
+                    } label: {
+                        Image(systemName: "arrow.up.arrow.down.circle")
+                    }
+                    .accessibilityIdentifier("recipes.toolbar.sortMenu")
+                }
+
+                ToolbarItem(placement: .topBarTrailing) {
+                    Menu {
                         Button { viewModel.showAddRecipe = true } label: {
                             Label("Add Recipe", systemImage: "square.and.pencil")
                         }
@@ -69,26 +89,6 @@ struct RecipeListView: View {
                             .font(.title3)
                     }
                     .accessibilityIdentifier("recipes.toolbar.addMenu")
-                }
-
-                ToolbarItem(placement: .topBarTrailing) {
-                    Menu {
-                        ForEach(RecipeViewModel.SortOrder.allCases, id: \.self) { order in
-                            Button {
-                                viewModel.sortOrder = order
-                            } label: {
-                                HStack {
-                                    Text(order.rawValue)
-                                    if viewModel.sortOrder == order {
-                                        Image(systemName: "checkmark")
-                                    }
-                                }
-                            }
-                        }
-                    } label: {
-                        Image(systemName: "arrow.up.arrow.down.circle")
-                    }
-                    .accessibilityIdentifier("recipes.toolbar.sortMenu")
                 }
             }
             .sheet(isPresented: $viewModel.showAddRecipe) {

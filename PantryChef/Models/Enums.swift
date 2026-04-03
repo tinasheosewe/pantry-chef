@@ -69,6 +69,13 @@ enum FoodCategory: String, Codable, CaseIterable, Identifiable {
         case .spices:         return Color(red: 0.98, green: 0.62, blue: 0.20) // amber
         }
     }
+
+    var defaultsToOnHand: Bool {
+        switch self {
+        case .spices, .bakingSupplies, .condiments, .oils: return true
+        default: return false
+        }
+    }
 }
 
 // MARK: - Measurement Unit

@@ -35,21 +35,20 @@ struct PantryView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             .navigationTitle("Pantry")
             .toolbar {
-                ToolbarItem(placement: .primaryAction) {
-                    HStack(spacing: 16) {
-                        Button {
-                            showIngredientSettings = true
-                        } label: {
-                            Image(systemName: "gearshape")
-                                .font(.body)
-                        }
-
-                        Button {
-                            viewModel.prepareBulkAdd()
-                        } label: {
-                            Image(systemName: "plus.circle.fill")
-                                .font(.title3)
-                        }
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        showIngredientSettings = true
+                    } label: {
+                        Image(systemName: "gearshape")
+                            .font(.title3)
+                    }
+                }
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        viewModel.prepareBulkAdd()
+                    } label: {
+                        Image(systemName: "plus.circle.fill")
+                            .font(.title3)
                     }
                 }
             }
@@ -449,6 +448,7 @@ struct BulkAddPantryView: View {
     @State private var showingReview = false
     @State private var facetExtensionTarget: FacetExtensionTarget?
     @State private var customItemName: String?
+    @State private var showAllUnitsDrafts: Set<UUID> = []
     @FocusState private var isCatalogSearchFocused: Bool
 
     var body: some View {
@@ -689,32 +689,31 @@ struct BulkAddPantryView: View {
                 Spacer()
 
                 HStack(spacing: 6) {
-                    Image(systemName: isSelected ? "checkmark.circle.fill" : "plus.circle")
+                    Image(systemName: isSelected ? "minus.circle.fill" : "plus.circle")
                         .font(.subheadline)
-                    Text(isSelected ? "Added" : "Add")
+                    Text(isSelected ? "Remove" : "Add")
                         .font(.caption)
                         .fontWeight(.semibold)
                 }
                 .padding(.horizontal, 12)
                 .padding(.vertical, 8)
-                .background(isSelected ? PCColors.accent : PCColors.fillTertiary)
+                .background(isSelected ? PCColors.expired.opacity(0.85) : PCColors.fillTertiary)
                 .foregroundStyle(isSelected ? Color.white : PCColors.textPrimary)
                 .clipShape(Capsule())
+                .contentShape(Capsule())
                 .onTapGesture {
-                    if isSelected {
-                        withAnimation(.easeInOut(duration: 0.25)) {
-                            viewModel.bulkAdd.toggleCatalogItemSelection(item)
-                        }
+                    withAnimation(.easeInOut(duration: 0.25)) {
+                        viewModel.bulkAdd.toggleCatalogItemSelection(item)
                     }
                 }
             }
             .contentShape(Rectangle())
             .onTapGesture {
                 withAnimation(.easeInOut(duration: 0.25)) {
-                    if !isSelected {
-                        viewModel.bulkAdd.toggleCatalogItemSelection(item)
-                    } else {
+                    if isSelected {
                         viewModel.bulkAdd.toggleExpanded(item.id)
+                    } else {
+                        viewModel.bulkAdd.toggleCatalogItemSelection(item)
                     }
                 }
             }
@@ -806,21 +805,98 @@ struct BulkAddPantryView: View {
                 }
             }
 
-            ChipPicker(
-                label: "Unit",
-                options: MeasurementUnit.contextualUnits(for: item.category).map(\.rawValue),
-                selection: draft.unit?.rawValue
-            ) { value in
-                if let value, let unit = MeasurementUnit(rawValue: value) {
-                    viewModel.bulkAdd.updateStagedUnit(draftID: draft.id, unit: unit)
+            HStack(spacing: 8) {
+                Text("Tracking")
+                    .font(.caption)
+                    .foregroundStyle(PCColors.textSecondary)
+
+                let isOnHand = draft.quantityText.isEmpty && draft.unit == nil
+                Button {
+                    if isOnHand {
+                        // Switch to exact: set a default unit from the category
+                        if let suggestedUnit = item.suggestedUnit(for: draft.selectedFacets) {
+                            viewModel.bulkAdd.updateStagedUnit(draftID: draft.id, unit: suggestedUnit)
+                        }
+                        viewModel.bulkAdd.updateStagedQuantity(draftID: draft.id, quantity: 1.0 as Double?)
+                    } else {
+                        // Switch to on-hand: clear quantity and unit
+                        viewModel.bulkAdd.updateStagedQuantity(draftID: draft.id, quantity: nil as Double?)
+                        viewModel.bulkAdd.updateStagedUnit(draftID: draft.id, unit: nil)
+                    }
+                } label: {
+                    Text("On Hand")
+                        .font(.caption)
+                        .fontWeight(.medium)
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 5)
+                        .background(
+                            Capsule()
+                                .fill(isOnHand ? PCColors.accent.opacity(0.2) : PCColors.surfaceSecondary)
+                        )
+                        .overlay(
+                            Capsule()
+                                .strokeBorder(isOnHand ? PCColors.accent : Color.clear, lineWidth: 1)
+                        )
+                        .foregroundStyle(isOnHand ? PCColors.accent : PCColors.textSecondary)
                 }
+                .buttonStyle(.plain)
+
+                Button {
+                    if !isOnHand { return }
+                    // Switch to exact mode
+                    if let suggestedUnit = item.suggestedUnit(for: draft.selectedFacets) {
+                        viewModel.bulkAdd.updateStagedUnit(draftID: draft.id, unit: suggestedUnit)
+                    }
+                    viewModel.bulkAdd.updateStagedQuantity(draftID: draft.id, quantity: 1.0 as Double?)
+                } label: {
+                    Text("Exact")
+                        .font(.caption)
+                        .fontWeight(.medium)
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 5)
+                        .background(
+                            Capsule()
+                                .fill(!isOnHand ? PCColors.accent.opacity(0.2) : PCColors.surfaceSecondary)
+                        )
+                        .overlay(
+                            Capsule()
+                                .strokeBorder(!isOnHand ? PCColors.accent : Color.clear, lineWidth: 1)
+                        )
+                        .foregroundStyle(!isOnHand ? PCColors.accent : PCColors.textSecondary)
+                }
+                .buttonStyle(.plain)
             }
 
-            InlineQuantityStepper(
-                quantity: draft.parsedQuantity,
-                unit: draft.unit
-            ) { newQuantity in
-                viewModel.bulkAdd.updateStagedQuantity(draftID: draft.id, quantity: newQuantity)
+            if !(draft.quantityText.isEmpty && draft.unit == nil) {
+                let unitOptions = showAllUnitsDrafts.contains(draft.id)
+                    ? MeasurementUnit.allCases.map(\.rawValue)
+                    : MeasurementUnit.contextualUnits(for: item.category).map(\.rawValue)
+                ChipPicker(
+                    label: "Unit",
+                    options: unitOptions,
+                    selection: draft.unit?.rawValue
+                ) { value in
+                    if let value, let unit = MeasurementUnit(rawValue: value) {
+                        viewModel.bulkAdd.updateStagedUnit(draftID: draft.id, unit: unit)
+                    }
+                }
+                if !showAllUnitsDrafts.contains(draft.id) {
+                    Button {
+                        showAllUnitsDrafts.insert(draft.id)
+                    } label: {
+                        Text("See all units")
+                            .font(.caption2)
+                            .foregroundStyle(PCColors.accent)
+                    }
+                    .buttonStyle(.plain)
+                }
+
+                InlineQuantityStepper(
+                    quantity: draft.parsedQuantity,
+                    unit: draft.unit
+                ) { newQuantity in
+                    viewModel.bulkAdd.updateStagedQuantity(draftID: draft.id, quantity: newQuantity)
+                }
             }
 
             if draftCount > 1 {

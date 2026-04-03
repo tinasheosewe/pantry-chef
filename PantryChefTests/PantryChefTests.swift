@@ -293,6 +293,9 @@ final class MockAIService: AIServiceProtocol {
         if let result = batchScheduleToReturn { return result }
         throw BatchScheduleError.llmRequestFailed
     }
+
+    func generateIngredientDefinition(name: String) async -> AIIngredientDefinition? { nil }
+    func verifyAndMergeIngredient(name: String, baseItem: PantryCatalogItemDefinition) async -> AIService.IngredientMergeResult? { nil }
 }
 
 final class MockPantryItemPreferenceStore: PantryItemPreferenceStoreProtocol {
