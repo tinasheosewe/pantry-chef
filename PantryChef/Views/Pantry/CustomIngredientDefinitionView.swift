@@ -532,7 +532,7 @@ struct CustomIngredientDefinitionView: View {
 
                 // Check for fold-into-existing candidate
                 if !isEditing {
-                    if let candidate = await resolveFoldCandidate(name: trimmedName) {
+                    if let candidate = await resolveFoldCandidate(for: draft) {
                         activeAlert = .fold(candidate, .autoFill)
                     }
                 }
@@ -543,22 +543,30 @@ struct CustomIngredientDefinitionView: View {
         }
     }
 
-    private func resolveFoldCandidate(name: String) async -> FoldCandidate? {
-        // Local match: check top search result
-        let results = CatalogSearchEngine.search(name)
-        guard let topResult = results.first,
-              topResult.score >= 0.5,
-              !topResult.item.isUserDefined else { return nil }
+    private func resolveFoldCandidate(for draft: CustomIngredientDraft) async -> FoldCandidate? {
+        let trimmedName = draft.name.trimmed
+        guard !trimmedName.isEmpty else { return nil }
 
-        let baseItem = topResult.item
+        let candidates = CatalogSearchEngine.collisionCandidates(
+            name: trimmedName,
+            category: draft.category,
+            facets: draft.facets
+        )
 
-        // LLM verify + merge
-        guard let mergeResult = await appState.verifyAndMergeIngredient(
-            name: name,
-            baseItem: baseItem
-        ), mergeResult.shouldMerge else { return nil }
+        for candidate in candidates where !candidate.item.isUserDefined {
+            guard let mergeResult = await appState.verifyAndMergeIngredient(
+                name: trimmedName,
+                baseItem: candidate.item,
+                generatedCategory: draft.category,
+                generatedFacets: draft.facets
+            ), mergeResult.shouldMerge else {
+                continue
+            }
 
-        return FoldCandidate(baseItem: baseItem, mergeResult: mergeResult)
+            return FoldCandidate(baseItem: candidate.item, mergeResult: mergeResult)
+        }
+
+        return nil
     }
 
     private func save() {
@@ -567,12 +575,11 @@ struct CustomIngredientDefinitionView: View {
         registrationError = nil
 
         if !isEditing && !hasRejectedFoldSuggestion {
-            let trimmedName = draft.name.trimmed
-            guard !trimmedName.isEmpty else { return }
+            guard !draft.name.trimmed.isEmpty else { return }
 
             isResolvingFold = true
             Task { @MainActor in
-                let candidate = await resolveFoldCandidate(name: trimmedName)
+                let candidate = await resolveFoldCandidate(for: draft)
                 isResolvingFold = false
 
                 if let candidate {

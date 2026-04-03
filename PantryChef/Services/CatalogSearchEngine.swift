@@ -214,6 +214,75 @@ enum CatalogSearchEngine {
         return Array(results.prefix(maxResults))
     }
 
+    static func collisionCandidates(
+        name: String,
+        category: FoodCategory? = nil,
+        facets: [PantryFacetKey: [String]] = [:],
+        limit: Int = 6
+    ) -> [CatalogSearchResult] {
+        let trimmedName = name.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmedName.isEmpty else { return [] }
+
+        let normalizedFacetValues = normalizedCollisionFacetValues(from: facets)
+        let lookupQueries = collisionQueries(name: trimmedName, facetValues: normalizedFacetValues)
+        var resultsByItemID: [String: CatalogSearchResult] = [:]
+        var scoresByItemID: [String: Double] = [:]
+
+        func record(_ result: CatalogSearchResult, bonus: Double) {
+            guard !result.item.isUserDefined else { return }
+
+            let itemID = result.item.id
+            let candidateScore = result.score + bonus
+
+            if let existing = scoresByItemID[itemID], existing >= candidateScore {
+                return
+            }
+
+            scoresByItemID[itemID] = candidateScore
+            resultsByItemID[itemID] = result
+        }
+
+        if let exactItem = PantryCatalog.resolveExact(name: trimmedName), !exactItem.isUserDefined {
+            record(defaultResult(for: exactItem), bonus: 1.4)
+        }
+
+        for (index, query) in lookupQueries.enumerated() {
+            let queryBonus = index == 0 ? 0.85 : 0.55
+            for result in search(query) {
+                record(result, bonus: queryBonus)
+            }
+        }
+
+        let facetTokens = collisionFacetTokens(from: normalizedFacetValues)
+        if !facetTokens.isEmpty {
+            for itemID in PantryCatalog.itemIDs(matchingFacetTokens: facetTokens) {
+                guard let item = PantryCatalog.item(id: itemID), !item.isUserDefined else { continue }
+                let overlapBonus = collisionFacetOverlapBonus(item: item, normalizedFacetValues: normalizedFacetValues)
+                guard overlapBonus > 0 else { continue }
+                record(defaultResult(for: item), bonus: overlapBonus)
+            }
+        }
+
+        if let category, category != .other {
+            for itemID in resultsByItemID.keys {
+                guard let item = PantryCatalog.item(id: itemID), item.category == category else { continue }
+                scoresByItemID[itemID, default: 0] += 0.15
+            }
+        }
+
+        return resultsByItemID.values
+            .sorted {
+                let lhsScore = scoresByItemID[$0.item.id] ?? 0
+                let rhsScore = scoresByItemID[$1.item.id] ?? 0
+                if lhsScore == rhsScore {
+                    return $0.item.name < $1.item.name
+                }
+                return lhsScore > rhsScore
+            }
+            .prefix(limit)
+            .map { $0 }
+    }
+
     // MARK: - Token Classification
 
     private struct ClassifiedToken {
@@ -325,5 +394,89 @@ enum CatalogSearchEngine {
             score: 0,
             item: item
         )
+    }
+
+    private static func normalizedCollisionFacetValues(from facets: [PantryFacetKey: [String]]) -> [String] {
+        var seen: Set<String> = []
+        var values: [String] = []
+
+        for facetValues in facets.values {
+            for value in facetValues {
+                let normalized = PantryCatalog.normalizeLookupKey(value)
+                guard !normalized.isEmpty, seen.insert(normalized).inserted else { continue }
+                values.append(normalized)
+            }
+        }
+
+        return values
+    }
+
+    private static func collisionQueries(name: String, facetValues: [String]) -> [String] {
+        var seen: Set<String> = []
+        var queries: [String] = []
+
+        func append(_ query: String) {
+            let trimmed = query.trimmingCharacters(in: .whitespacesAndNewlines)
+            guard !trimmed.isEmpty else { return }
+            let normalized = PantryCatalog.normalizeLookupKey(trimmed)
+            guard !normalized.isEmpty, seen.insert(normalized).inserted else { return }
+            queries.append(trimmed)
+        }
+
+        append(name)
+
+        let topFacetValues = Array(facetValues.prefix(3))
+        for value in topFacetValues {
+            append("\(name) \(value)")
+        }
+
+        if !topFacetValues.isEmpty {
+            append(([name] + topFacetValues).joined(separator: " "))
+        }
+
+        return queries
+    }
+
+    private static func collisionFacetTokens(from normalizedFacetValues: [String]) -> Set<String> {
+        var tokens: Set<String> = Set(normalizedFacetValues)
+        for value in normalizedFacetValues {
+            tokens.formUnion(IngredientLexicon.tokenize(value))
+        }
+        return tokens
+    }
+
+    private static func collisionFacetOverlapBonus(
+        item: PantryCatalogItemDefinition,
+        normalizedFacetValues: [String]
+    ) -> Double {
+        guard !normalizedFacetValues.isEmpty else { return 0 }
+
+        let itemKeys = collisionComparisonKeys(for: item)
+        let overlapCount = normalizedFacetValues.filter { itemKeys.contains($0) }.count
+        guard overlapCount > 0 else { return 0 }
+
+        return 0.45 + (Double(overlapCount - 1) * 0.12)
+    }
+
+    private static func collisionComparisonKeys(for item: PantryCatalogItemDefinition) -> Set<String> {
+        var keys: Set<String> = [PantryCatalog.normalizeLookupKey(item.name)]
+
+        for alias in item.aliases {
+            let normalized = PantryCatalog.normalizeLookupKey(alias)
+            if !normalized.isEmpty {
+                keys.insert(normalized)
+            }
+        }
+
+        for facet in item.facets {
+            for option in facet.options {
+                let normalized = PantryCatalog.normalizeLookupKey(option)
+                if !normalized.isEmpty {
+                    keys.insert(normalized)
+                }
+            }
+        }
+
+        return keys
     }
 }

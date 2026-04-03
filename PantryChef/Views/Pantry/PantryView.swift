@@ -847,13 +847,13 @@ struct BulkAddPantryView: View {
                         .padding(.vertical, 5)
                         .background(
                             Capsule()
-                                .fill(isOnHand ? PCColors.accent.opacity(0.2) : PCColors.fillTertiary)
+                                .fill(isOnHand ? PCColors.accent : PCColors.fillTertiary)
                         )
                         .overlay(
                             Capsule()
-                                .strokeBorder(isOnHand ? PCColors.accent : Color.clear, lineWidth: 1)
+                                .strokeBorder(isOnHand ? Color.clear : PCColors.textSecondary.opacity(0.3), lineWidth: 0.5)
                         )
-                        .foregroundStyle(isOnHand ? PCColors.accent : PCColors.textPrimary)
+                        .foregroundStyle(isOnHand ? Color.white : PCColors.textPrimary)
                 }
                 .buttonStyle(.plain)
 
@@ -872,13 +872,13 @@ struct BulkAddPantryView: View {
                         .padding(.vertical, 5)
                         .background(
                             Capsule()
-                                .fill(!isOnHand ? PCColors.accent.opacity(0.2) : PCColors.fillTertiary)
+                                .fill(!isOnHand ? PCColors.accent : PCColors.fillTertiary)
                         )
                         .overlay(
                             Capsule()
-                                .strokeBorder(!isOnHand ? PCColors.accent : Color.clear, lineWidth: 1)
+                                .strokeBorder(!isOnHand ? Color.clear : PCColors.textSecondary.opacity(0.3), lineWidth: 0.5)
                         )
-                        .foregroundStyle(!isOnHand ? PCColors.accent : PCColors.textPrimary)
+                        .foregroundStyle(!isOnHand ? Color.white : PCColors.textPrimary)
                 }
                 .buttonStyle(.plain)
             }

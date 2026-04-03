@@ -723,36 +723,48 @@ final class FoldCandidateGuardTests: XCTestCase {
         resetCatalog()
     }
 
-    func testSearchResultBelowThresholdNotAFoldCandidate() {
-        // Search for something that won't match well
-        let results = CatalogSearchEngine.search("xyznonexistent")
-        // If there are results at all, none should have score >= 0.5
-        for result in results {
-            if result.score < 0.5 {
-                // This is correct — a result below 0.5 should not be used as fold candidate
-                // The view's checkFoldCandidate guards against this
-                break
-            }
+    func testCollisionCandidatesCanSurfaceFacetMatchedCatalogItem() throws {
+        guard let catalogItem = PantryCatalog.allItems.first(where: {
+            !$0.isUserDefined && !$0.facets.isEmpty && $0.facets.contains(where: { !$0.options.isEmpty })
+        }) else {
+            throw XCTSkip("No catalog item with facet options")
         }
-        // If no results, that's also fine — no fold candidate possible
-        XCTAssertTrue(results.isEmpty || results[0].score < 0.5,
-                       "Nonsensical query should not produce high-score matches")
+
+        let facet = try XCTUnwrap(catalogItem.facets.first(where: { !$0.options.isEmpty }))
+        let facetValue = try XCTUnwrap(facet.options.first)
+
+        let results = CatalogSearchEngine.collisionCandidates(
+            name: "FoldTestUniqueXYZ",
+            category: catalogItem.category,
+            facets: [facet.key: [facetValue]]
+        )
+
+        XCTAssertTrue(
+            results.contains(where: { $0.item.id == catalogItem.id }),
+            "Facet-aware collision candidates should include items matched through generated facets"
+        )
     }
 
-    func testUserDefinedItemNotAFoldCandidate() {
-        // Register a user item then search for it
+    func testCollisionCandidatesExcludeUserDefinedItems() {
         let store = MockUserCatalogStore()
         resetCatalog(store: store)
 
-        let item = makeTestItem(id: "user-fold-test", name: "FoldTestUniqueXYZ", isUserDefined: true)
+        let item = makeTestItem(
+            id: "user-fold-test",
+            name: "FoldTestUniqueXYZ",
+            category: .protein,
+            facets: [PantryFacetDefinition(key: .form, options: ["Steak"])],
+            isUserDefined: true
+        )
         _ = PantryCatalog.registerUserItem(item)
 
-        let results = CatalogSearchEngine.search("FoldTestUniqueXYZ")
-        if let top = results.first, top.score >= 0.5 {
-            XCTAssertTrue(top.item.isUserDefined,
-                          "Top match for user-defined item should be user-defined")
-            // The view's checkFoldCandidate skips user-defined items
-        }
+        let results = CatalogSearchEngine.collisionCandidates(
+            name: "FoldTestUniqueXYZ",
+            category: .protein,
+            facets: [.form: ["Steak"]]
+        )
+
+        XCTAssertFalse(results.contains(where: { $0.item.id == item.id }))
     }
 }
 

@@ -1008,7 +1008,9 @@ final class AIService: AIServiceProtocol {
 
     func verifyAndMergeIngredient(
         name: String,
-        baseItem: PantryCatalogItemDefinition
+        baseItem: PantryCatalogItemDefinition,
+        generatedCategory: FoodCategory?,
+        generatedFacets: [PantryFacetKey: [String]]
     ) async -> IngredientMergeResult? {
         let facetDescription = baseItem.facets.map { facet in
             "  - \(facet.key.rawValue): [\(facet.options.joined(separator: ", "))]"
@@ -1017,6 +1019,32 @@ final class AIService: AIServiceProtocol {
         let aliasDescription = baseItem.aliases.isEmpty
             ? "None"
             : baseItem.aliases.joined(separator: ", ")
+
+        let generatedFacetDescription: String = {
+            guard !generatedFacets.isEmpty else { return "None" }
+            return generatedFacets
+                .sorted { $0.key.rawValue < $1.key.rawValue }
+                .map { key, values in
+                    let cleaned = values
+                        .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+                        .filter { !$0.isEmpty }
+                    return "  - \(key.rawValue): [\(cleaned.joined(separator: ", "))]"
+                }
+                .joined(separator: "\n")
+        }()
+
+        let generatedCategoryDescription = generatedCategory?.rawValue ?? "Unknown"
+
+        let overlapSignals: [String] = generatedFacets.compactMap { key, values in
+            let baseOptions = Set(baseItem.options(for: key).map { $0.lowercased() })
+            let overlappingValues = values.filter { baseOptions.contains($0.lowercased()) }
+            guard !overlappingValues.isEmpty else { return nil }
+            return "\(key.rawValue): \(overlappingValues.joined(separator: ", "))"
+        }
+
+        let overlapSignalDescription = overlapSignals.isEmpty
+            ? "None"
+            : overlapSignals.joined(separator: "; ")
 
         let prompt = """
         You are a food ingredient expert. Determine whether "\(name)" is essentially the same \
@@ -1030,10 +1058,39 @@ final class AIService: AIServiceProtocol {
         - Facets:
         \(facetDescription)
 
-        New ingredient name: "\(name)"
+                New ingredient under review:
+                - Name: \(name)
+                - AI-generated category: \(generatedCategoryDescription)
+                - AI-generated facets:
+                \(generatedFacetDescription)
+
+                Local match signals already detected:
+                - Overlapping generated facet values with the existing item: \(overlapSignalDescription)
+
+                Canonicalization policy:
+                - Prefer broad canonical ingredients as the base item when the new ingredient is just a species,
+                    cut, form, preservation state, preparation style, or regional name of that ingredient.
+                - If the new ingredient can be represented by adding aliases and facet values to the existing item,
+                    set shouldMerge to true.
+                - Create a new ingredient only when it is genuinely a different food, not just a subtype or cut.
+                - Use the generated category and generated facets as first-class evidence. Do not ignore them just
+                    because the new ingredient name is unfamiliar.
+
+                Positive merge examples:
+                - picanha -> beef
+                - ribeye -> beef
+                - pork belly -> pork
+                - chicken thigh -> chicken
+                - scallion -> green onion
+
+                Negative merge examples:
+                - beef -> pork
+                - beef -> lamb
+                - milk -> cream cheese
+                - flour -> cornstarch
 
         Return:
-        - "shouldMerge": true if "\(name)" is the same ingredient as "\(baseItem.name)", false otherwise
+                - "shouldMerge": true if "\(name)" should be folded into "\(baseItem.name)", false otherwise
         - "mergedFacets": if shouldMerge is true, the combined facets (existing + any new options the \
         new name implies). Keep ALL existing options and ADD new ones. If shouldMerge is false, return empty array.
         - "mergedAliases": if shouldMerge is true, aliases to add (including "\(name)" itself). \

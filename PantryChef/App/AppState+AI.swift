@@ -53,8 +53,15 @@ extension AppState {
 
     func verifyAndMergeIngredient(
         name: String,
-        baseItem: PantryCatalogItemDefinition
+        baseItem: PantryCatalogItemDefinition,
+        generatedCategory: FoodCategory? = nil,
+        generatedFacets: [PantryFacetKey: [String]] = [:]
     ) async -> AIService.IngredientMergeResult? {
-        await aiService.verifyAndMergeIngredient(name: name, baseItem: baseItem)
+        await aiService.verifyAndMergeIngredient(
+            name: name,
+            baseItem: baseItem,
+            generatedCategory: generatedCategory,
+            generatedFacets: generatedFacets
+        )
     }
 }

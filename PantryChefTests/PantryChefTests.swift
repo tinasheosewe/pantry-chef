@@ -295,7 +295,12 @@ final class MockAIService: AIServiceProtocol {
     }
 
     func generateIngredientDefinition(name: String) async -> AIIngredientDefinition? { nil }
-    func verifyAndMergeIngredient(name: String, baseItem: PantryCatalogItemDefinition) async -> AIService.IngredientMergeResult? { nil }
+    func verifyAndMergeIngredient(
+        name: String,
+        baseItem: PantryCatalogItemDefinition,
+        generatedCategory: FoodCategory?,
+        generatedFacets: [PantryFacetKey: [String]]
+    ) async -> AIService.IngredientMergeResult? { nil }
 }
 
 final class MockPantryItemPreferenceStore: PantryItemPreferenceStoreProtocol {
