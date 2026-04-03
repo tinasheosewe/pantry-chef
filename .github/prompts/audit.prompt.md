@@ -47,6 +47,18 @@ Perform a comprehensive, deep audit of the entire codebase. Scan every file meth
 - Magic numbers/strings that should be named constants or enums
 - Unused imports, unused variables, unused parameters
 
+### Design Patterns & Code Health
+- Redundant or dead code — unused functions, unreachable branches, duplicate logic that should be merged into a single canonical implementation
+- Direct coupling to concrete types where a protocol, facade, or interface abstraction should be used instead — callers should depend on abstractions, not implementations
+- Missing or incomplete facade layers — internal subsystems (storage, AI, catalog, realtime) accessed directly by ViewModels or Views instead of through a clean service interface
+- God objects — classes or structs accumulating too many responsibilities that should be distributed across focused, single-purpose types
+- Feature envy — types that reach into the internals of other types instead of asking for what they need through a defined interface
+- Primitive obsession — raw strings, dictionaries, or untyped collections used where a dedicated model or strong type would eliminate ambiguity and encode intent
+- Divergent change / shotgun surgery — a single logical change requiring edits scattered across many files, indicating poor cohesion or missing abstractions
+- Law of Demeter violations — deep chains of property access (a.b.c.d) that expose implementation details and create fragile coupling
+- Missing value-object boundaries — concepts that are semantically distinct but represented as the same primitive type, making them easy to confuse or swap
+- Inconsistent layering — some features properly channeled through domain services while equivalent features still bypass them and mutate state directly, creating two parallel patterns for the same kind of work
+
 ### Concurrency
 - Unprotected shared mutable state
 - Main-thread-blocking operations (network, disk I/O on main thread)
@@ -58,6 +70,31 @@ Perform a comprehensive, deep audit of the entire codebase. Scan every file meth
 - Untested error paths and edge cases
 - Tests that test implementation details instead of behavior
 - Missing mocks for external dependencies
+
+## Testing Requirements
+
+After completing the audit and resolving all findings, ensure the project has robust, comprehensive test coverage across all test types:
+
+### Coverage Expectations
+- **Unit tests** — every significant function, model, service, and helper must have unit tests covering the happy path, edge cases, and error paths
+- **Scenario / integration tests** — every major user-facing flow must be covered by an end-to-end scenario test (e.g., pantry intake → recipe suggestion → cook mode → post-cook review, meal plan → shopping list generation, AI recipe generation, ingredient resolution pipeline, substitution discovery)
+- **ViewModel tests** — every ViewModel must have tests covering state initialization, user action handling, loading/error states, and data transformation logic
+- **UI tests** — every primary tab and navigation flow must have a UI test: Home, Pantry, Recipes, Meal Plan, Shopping, Cook Mode, Multi-Cook Mode; include empty-state rendering, search, item editing, and key modal flows
+- **Performance / baseline tests** — performance-critical paths (recipe filtering, pantry matching, ingredient parsing, catalog search) must have budget assertions
+
+### What to Look For
+- Features with no test file at all — create one
+- Flows that span multiple layers (e.g., ViewModel → DomainService → StorageService → AppState) with no integration scenario
+- AI-powered features (recipe generation, modification, healthier version, leftover transformer, shopping list AI, ingredient resolution) with no tests for prompt construction, response parsing, or output validation
+- Edge cases not covered: empty pantry, zero-quantity items, duplicate ingredients, offline/no-data states, first-run bootstrap
+- Mock infrastructure gaps — if a service has no mock/stub, add one so dependent components can be tested in isolation
+
+### Actions Required
+1. Identify every untested feature, flow, ViewModel, and service
+2. Write the missing tests — do not leave any flow, feature, or public API without test coverage
+3. Run the full test suite and fix every failure — do not leave any test red
+4. Ensure the project builds cleanly with no compile errors or warnings before and after adding tests
+5. If adding new Swift source files to the test targets, regenerate the project with `xcodegen generate` before running `xcodebuild`
 
 ### Dependencies & Configuration
 - Hardcoded secrets, API keys, or URLs that should be in config
