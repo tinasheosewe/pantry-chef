@@ -610,10 +610,11 @@ struct BulkAddPantryView: View {
         let savedDefault = viewModel.bulkAdd.savedDefault(for: item.id)
         let displayName = viewModel.bulkAdd.catalogDisplayName(for: item)
         let hasSearchFacets = !viewModel.bulkAdd.catalogResolvedFacets(for: item).isEmpty
-        let isExpanded = viewModel.bulkAdd.expandedItemID == item.id
-        let stagedDraft = viewModel.bulkAdd.stagedDraft(for: item.id)
+        let isExpanded = viewModel.bulkAdd.expandedItemIDs.contains(item.id)
+        let drafts = viewModel.bulkAdd.stagedDrafts(for: item.id)
 
         return VStack(spacing: 0) {
+            // MARK: Header row
             HStack(spacing: 12) {
                 CategoryIcon(category: item.category, size: 40)
 
@@ -659,35 +660,45 @@ struct BulkAddPantryView: View {
                 .clipShape(Capsule())
                 .onTapGesture {
                     if isSelected {
+                        withAnimation(.easeInOut(duration: 0.25)) {
+                            viewModel.bulkAdd.toggleCatalogItemSelection(item)
+                        }
+                    }
+                }
+            }
+            .contentShape(Rectangle())
+            .onTapGesture {
+                withAnimation(.easeInOut(duration: 0.25)) {
+                    if !isSelected {
                         viewModel.bulkAdd.toggleCatalogItemSelection(item)
+                    } else {
+                        viewModel.bulkAdd.toggleExpanded(item.id)
                     }
                 }
             }
 
-            if isExpanded, let draft = stagedDraft {
-                VStack(alignment: .leading, spacing: 10) {
+            // MARK: Expanded area — per-draft sub-rows
+            if isExpanded {
+                VStack(alignment: .leading, spacing: 12) {
                     Divider()
-                        .padding(.vertical, 4)
+                        .padding(.top, 6)
 
-                    ForEach(item.facets, id: \.key) { facetDef in
-                        ChipPicker(
-                            label: facetDef.key.title,
-                            options: facetDef.options,
-                            selection: draft.selectedFacetValues[facetDef.key]
-                        ) { value in
-                            viewModel.bulkAdd.updateStagedFacet(itemID: item.id, key: facetDef.key, value: value)
-                        }
+                    ForEach(drafts) { draft in
+                        catalogDraftSubRow(item: item, draft: draft, draftCount: drafts.count, viewModel: viewModel)
                     }
 
-                    ChipPicker(
-                        label: "Storage",
-                        options: PantryStorage.allCases.map(\.rawValue),
-                        selection: draft.storage?.rawValue
-                    ) { value in
-                        if let value, let storage = PantryStorage(rawValue: value) {
-                            viewModel.bulkAdd.updateStagedStorage(itemID: item.id, storage: storage)
+                    Button {
+                        withAnimation(.easeInOut(duration: 0.2)) {
+                            viewModel.bulkAdd.addAnotherInstance(item)
                         }
+                    } label: {
+                        Label("Add another", systemImage: "plus.circle")
+                            .font(.caption)
+                            .fontWeight(.medium)
+                            .foregroundStyle(PCColors.accent)
                     }
+                    .buttonStyle(.plain)
+                    .padding(.top, 2)
                 }
                 .padding(.top, 4)
                 .transition(.opacity.combined(with: .move(edge: .top)))
@@ -701,16 +712,70 @@ struct BulkAddPantryView: View {
         )
         .clipShape(RoundedRectangle(cornerRadius: 18))
         .shadow(color: Color.black.opacity(0.04), radius: 10, x: 0, y: 4)
-        .contentShape(RoundedRectangle(cornerRadius: 18))
-        .onTapGesture {
-            withAnimation(.easeInOut(duration: 0.25)) {
-                if !isSelected {
-                    viewModel.bulkAdd.toggleCatalogItemSelection(item)
-                } else if isExpanded {
-                    viewModel.bulkAdd.collapseExpanded()
-                } else {
-                    viewModel.bulkAdd.expandedItemID = item.id
+    }
+
+    @ViewBuilder
+    private func catalogDraftSubRow(item: PantryCatalogItemDefinition, draft: PantryIntakeRowDraft, draftCount: Int, viewModel: PantryViewModel) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            if draftCount > 1 {
+                HStack {
+                    Text(draft.displayName)
+                        .font(.caption)
+                        .fontWeight(.medium)
+                        .foregroundStyle(PCColors.textPrimary)
+                    Spacer()
+                    Button {
+                        withAnimation(.easeInOut(duration: 0.2)) {
+                            viewModel.bulkAdd.removeStagedInstance(draftID: draft.id)
+                        }
+                    } label: {
+                        Image(systemName: "xmark.circle.fill")
+                            .font(.subheadline)
+                            .foregroundStyle(PCColors.textSecondary)
+                    }
+                    .buttonStyle(.plain)
                 }
+            }
+
+            ForEach(item.facets, id: \.key) { facetDef in
+                ChipPicker(
+                    label: facetDef.key.title,
+                    options: facetDef.options,
+                    selection: draft.selectedFacetValues[facetDef.key]
+                ) { value in
+                    viewModel.bulkAdd.updateStagedFacet(draftID: draft.id, key: facetDef.key, value: value)
+                }
+            }
+
+            ChipPicker(
+                label: "Storage",
+                options: PantryStorage.allCases.map(\.rawValue),
+                selection: draft.storage?.rawValue
+            ) { value in
+                if let value, let storage = PantryStorage(rawValue: value) {
+                    viewModel.bulkAdd.updateStagedStorage(draftID: draft.id, storage: storage)
+                }
+            }
+
+            ChipPicker(
+                label: "Unit",
+                options: MeasurementUnit.contextualUnits(for: item.category).map(\.rawValue),
+                selection: draft.unit?.rawValue
+            ) { value in
+                if let value, let unit = MeasurementUnit(rawValue: value) {
+                    viewModel.bulkAdd.updateStagedUnit(draftID: draft.id, unit: unit)
+                }
+            }
+
+            InlineQuantityStepper(
+                quantity: draft.parsedQuantity,
+                unit: draft.unit
+            ) { newQuantity in
+                viewModel.bulkAdd.updateStagedQuantity(draftID: draft.id, quantity: newQuantity)
+            }
+
+            if draftCount > 1 {
+                Divider()
             }
         }
     }

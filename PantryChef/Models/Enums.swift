@@ -109,6 +109,39 @@ enum MeasurementUnit: String, Codable, CaseIterable, Identifiable {
         }
     }
 
+    static func contextualUnits(for category: FoodCategory) -> [MeasurementUnit] {
+        switch category {
+        case .protein:
+            return [.pound, .ounce, .kilogram, .gram, .piece, .whole, .package]
+        case .dairy:
+            return [.cup, .fluidOunce, .milliliter, .liter, .piece, .whole, .ounce, .gram, .package]
+        case .produce:
+            return [.piece, .bunch, .pound, .ounce, .kilogram, .gram, .whole]
+        case .spices:
+            return [.teaspoon, .tablespoon, .ounce, .gram, .milliliter, .pinch, .toTaste]
+        case .oils:
+            return [.tablespoon, .cup, .fluidOunce, .milliliter, .liter, .splash]
+        case .grains, .pasta, .legumes:
+            return [.cup, .pound, .ounce, .kilogram, .gram, .package]
+        case .bakingSupplies:
+            return [.cup, .tablespoon, .teaspoon, .ounce, .gram, .pound, .kilogram, .milliliter, .package]
+        case .condiments:
+            return [.tablespoon, .teaspoon, .cup, .fluidOunce, .milliliter, .ounce, .gram]
+        case .beverages, .alcohol:
+            return [.fluidOunce, .cup, .milliliter, .liter, .can]
+        case .breads:
+            return [.loaf, .slice, .piece, .whole, .gram, .ounce, .package]
+        case .canned:
+            return [.can, .cup, .ounce, .gram, .milliliter, .piece]
+        case .frozenFoods:
+            return [.package, .piece, .ounce, .pound, .gram, .kilogram, .cup]
+        case .nuts, .snacks:
+            return [.cup, .ounce, .gram, .pound, .kilogram, .package]
+        case .other:
+            return [.piece, .cup, .ounce, .gram, .pound, .kilogram, .tablespoon, .milliliter, .package]
+        }
+    }
+
     static func parse(_ string: String?) -> MeasurementUnit? {
         guard let raw = string?.lowercased().trimmingCharacters(in: .whitespacesAndNewlines), !raw.isEmpty else {
             return nil

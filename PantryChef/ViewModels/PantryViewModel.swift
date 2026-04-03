@@ -17,7 +17,7 @@ final class PantryBulkAddViewModel {
     var searchComposerText = ""
     var unresolvedTokens: [String] = []
     var stagedRows: [PantryIntakeRowDraft] = []
-    var expandedItemID: String?
+    var expandedItemIDs: Set<String> = []
     @ObservationIgnored private let catalogSearchDebouncer = TaskDebouncer()
     @ObservationIgnored private let preferenceStore: PantryItemPreferenceStoreProtocol
 
@@ -107,7 +107,7 @@ final class PantryBulkAddViewModel {
         searchComposerText = ""
         unresolvedTokens = []
         stagedRows = []
-        expandedItemID = nil
+        expandedItemIDs = []
         updateCatalogSearch()
     }
 
@@ -152,10 +152,35 @@ final class PantryBulkAddViewModel {
     func toggleCatalogItemSelection(_ item: PantryCatalogItemDefinition) {
         if isCatalogItemSelected(item) {
             stagedRows.removeAll { $0.selectedItemID == item.id }
-            if expandedItemID == item.id { expandedItemID = nil }
+            expandedItemIDs.remove(item.id)
         } else {
             stageCatalogItem(item)
-            expandedItemID = item.id
+            expandedItemIDs.insert(item.id)
+        }
+    }
+
+    func toggleExpanded(_ itemID: String) {
+        if expandedItemIDs.contains(itemID) {
+            expandedItemIDs.remove(itemID)
+        } else {
+            expandedItemIDs.insert(itemID)
+        }
+    }
+
+    func addAnotherInstance(_ item: PantryCatalogItemDefinition) {
+        stageCatalogItem(item)
+    }
+
+    func stagedDrafts(for itemID: String) -> [PantryIntakeRowDraft] {
+        stagedRows.filter { $0.selectedItemID == itemID }
+    }
+
+    func removeStagedInstance(draftID: UUID) {
+        guard let idx = stagedRows.firstIndex(where: { $0.id == draftID }) else { return }
+        let itemID = stagedRows[idx].selectedItemID
+        stagedRows.remove(at: idx)
+        if let itemID, !stagedRows.contains(where: { $0.selectedItemID == itemID }) {
+            expandedItemIDs.remove(itemID)
         }
     }
 
@@ -206,22 +231,24 @@ final class PantryBulkAddViewModel {
         stagedRows.update(draft)
     }
 
-    func updateStagedFacet(itemID: String, key: PantryFacetKey, value: String?) {
-        guard let idx = stagedRows.firstIndex(where: { $0.selectedItemID == itemID }) else { return }
+    func updateStagedFacet(draftID: UUID, key: PantryFacetKey, value: String?) {
+        guard let idx = stagedRows.firstIndex(where: { $0.id == draftID }) else { return }
         stagedRows[idx].setFacet(key, value: value)
     }
 
-    func updateStagedStorage(itemID: String, storage: PantryStorage) {
-        guard let idx = stagedRows.firstIndex(where: { $0.selectedItemID == itemID }) else { return }
+    func updateStagedStorage(draftID: UUID, storage: PantryStorage) {
+        guard let idx = stagedRows.firstIndex(where: { $0.id == draftID }) else { return }
         stagedRows[idx].setStorage(storage)
     }
 
-    func stagedDraft(for itemID: String) -> PantryIntakeRowDraft? {
-        stagedRows.first { $0.selectedItemID == itemID }
+    func updateStagedUnit(draftID: UUID, unit: MeasurementUnit) {
+        guard let idx = stagedRows.firstIndex(where: { $0.id == draftID }) else { return }
+        stagedRows[idx].setUnit(unit)
     }
 
-    func collapseExpanded() {
-        expandedItemID = nil
+    func updateStagedQuantity(draftID: UUID, quantity: String) {
+        guard let idx = stagedRows.firstIndex(where: { $0.id == draftID }) else { return }
+        stagedRows[idx].setQuantityText(quantity)
     }
 
     func removeStagedRow(_ draft: PantryIntakeRowDraft) {
