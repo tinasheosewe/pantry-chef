@@ -54,85 +54,28 @@ extension AppState {
     // MARK: - Shopping Helpers
 
     func shouldIncludeInShoppingList(_ ingredient: Ingredient) -> Bool {
-        guard !isExcludedShoppingIngredient(named: ingredient.name) else {
-            return false
-        }
-
-        let exactMatchIngredient: Ingredient
-        if ingredient.catalogItemID != nil {
-            exactMatchIngredient = ingredient
-        } else if let catalogItemID = IngredientMatcher.resolvedCatalogItemID(for: ingredient.name) {
-            exactMatchIngredient = ingredient.resolved(to: catalogItemID, facets: ingredient.facets)
-        } else {
-            exactMatchIngredient = ingredient
-        }
-
-        return !pantryItems.contains { pantryItem in
-            IngredientMatcher.pantryItemMatchesIngredient(pantryItem, ingredient: exactMatchIngredient)
-                && IngredientMatcher.hasEnoughQuantity(pantryItem: pantryItem, ingredient: exactMatchIngredient)
-        }
+        ShoppingListPolicy.shouldIncludeInShoppingList(ingredient, pantryItems: pantryItems)
     }
 
     func isExcludedShoppingIngredient(named name: String) -> Bool {
-        let normalized = IngredientLexicon.lookupKey(name)
-        let tokens = Set(normalized.split(separator: " ").map(String.init))
-        let waterModifiers: Set<String> = ["cold", "hot", "warm", "ice", "iced", "boiling", "filtered"]
-        let ignoredWaterTokens = waterModifiers.union(["water"])
-
-        if normalized == "water" {
-            return true
-        }
-
-        return !tokens.isEmpty
-            && tokens.contains("water")
-            && tokens.subtracting(ignoredWaterTokens).isEmpty
+        ShoppingListPolicy.isExcludedShoppingIngredient(named: name)
     }
 
     func mergeShoppingItems(existing: [ShoppingItem], additions: [ShoppingItem]) -> [ShoppingItem] {
-        var merged = existing
-
-        for item in additions {
-            guard !isExcludedShoppingIngredient(named: item.name) else { continue }
-
-            if let index = merged.firstIndex(where: { $0.matchesIdentity(of: item) }) {
-                merged[index] = mergeShoppingItem(merged[index], with: item)
-            } else {
-                merged.append(item)
-            }
-        }
-
-        return merged
+        ShoppingListPolicy.mergeShoppingItems(
+            existing: existing,
+            additions: additions,
+            mergeRecipeSources: mergedRecipeSources,
+            combineQuantity: combinedQuantity
+        )
     }
 
     func mergeShoppingItem(_ existing: ShoppingItem, with addition: ShoppingItem) -> ShoppingItem {
-        var merged = existing
-        merged.catalogItemID = existing.catalogItemID ?? addition.catalogItemID
-        merged.name = merged.resolvedCatalogItem?.displayName(for: merged.facets) ?? (
-            existing.name.count <= addition.name.count ? existing.name : addition.name
-        )
-
-        if merged.category == .other {
-            merged.category = addition.category
-        }
-
-        merged.recipeSource = mergedRecipeSources(existing.recipeSource, addition.recipeSource)
-
-        switch combinedQuantity(
-            existingQuantity: existing.quantity,
-            existingUnit: existing.unit,
-            addedQuantity: addition.quantity,
-            addedUnit: addition.unit
-        ) {
-        case let .merged(quantity, unit):
-            merged.quantity = quantity
-            merged.unit = unit
-        case .keepExisting:
-            break
-        case let .replaceExisting(quantity, unit):
-            merged.quantity = quantity
-            merged.unit = unit
-        }
-
-        return merged
+        ShoppingListPolicy.mergeShoppingItems(
+            existing: [existing],
+            additions: [addition],
+            mergeRecipeSources: mergedRecipeSources,
+            combineQuantity: combinedQuantity
+        ).first ?? existing
     }
 }

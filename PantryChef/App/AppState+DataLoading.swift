@@ -23,9 +23,7 @@ extension AppState {
                 let persistedDiscover = snapshot.recipes.filter { !$0.source.isUserRecipe }
                 setDiscoverRecipes(mergedDiscoverRecipes(withPersisted: persistedDiscover))
 
-                let sanitizedPlan = sanitizeMealPlanEntries(snapshot.mealPlan)
-                setMealPlanEntries(sanitizedPlan.visibleEntries)
-                await purgeMealPlanEntries(sanitizedPlan.removedEntries)
+                await applySanitizedMealPlanEntries(snapshot.mealPlan)
 
                 setShoppingItemsValue(snapshot.shoppingItems)
                 setCookQueueValue(snapshot.cookQueue)
@@ -72,9 +70,7 @@ extension AppState {
 
         do {
             let fetchedPlan = try await storageService.fetchMealPlan()
-            let sanitizedPlan = sanitizeMealPlanEntries(fetchedPlan)
-            setMealPlanEntries(sanitizedPlan.visibleEntries)
-            await purgeMealPlanEntries(sanitizedPlan.removedEntries)
+            await applySanitizedMealPlanEntries(fetchedPlan)
         } catch {
             failures.append(error.localizedDescription)
         }

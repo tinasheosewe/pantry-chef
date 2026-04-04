@@ -15,6 +15,10 @@ extension AppState {
         await mealPlanDomainService.applyMealLoggingRequests(requests, state: self)
     }
 
+    func applySanitizedMealPlanEntries(_ entries: [MealPlanEntry]) async {
+        await mealPlanDomainService.applySanitizedMealPlanEntries(entries, state: self)
+    }
+
     func addToMealPlan(_ entry: MealPlanEntry, replaceExistingSlot: Bool = false) async {
         await mealPlanDomainService.addToMealPlan(entry, replaceExistingSlot: replaceExistingSlot, state: self)
     }

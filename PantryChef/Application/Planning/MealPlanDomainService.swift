@@ -18,6 +18,7 @@ protocol MealPlanDomainServicing {
     func mealLoggingRequests(from selections: [MealPlanEatenLoggingSelection], state: any MealPlanDomainState) -> [MealPlanEatenLoggingRequest]
     func validateMealLoggingRequests(_ requests: [MealPlanEatenLoggingRequest], state: any MealPlanDomainState) -> Bool
     func applyMealLoggingRequests(_ requests: [MealPlanEatenLoggingRequest], state: any MealPlanDomainState) async -> Bool
+    func applySanitizedMealPlanEntries(_ entries: [MealPlanEntry], state: any MealPlanDomainState) async
     func addToMealPlan(_ entry: MealPlanEntry, replaceExistingSlot: Bool, state: any MealPlanDomainState) async
     func addToMealPlan(_ entries: [MealPlanEntry], replaceExistingSlot: Bool, state: any MealPlanDomainState) async
     func removeFromMealPlan(_ entry: MealPlanEntry, state: any MealPlanDomainState) async
@@ -111,6 +112,12 @@ struct MealPlanDomainService: MealPlanDomainServicing {
         await addToMealPlan([entry], replaceExistingSlot: replaceExistingSlot, state: state)
     }
 
+    func applySanitizedMealPlanEntries(_ entries: [MealPlanEntry], state: any MealPlanDomainState) async {
+        let sanitizedPlan = sanitizeMealPlanEntries(entries)
+        state.setMealPlanEntries(sanitizedPlan.visibleEntries)
+        await purgeMealPlanEntries(sanitizedPlan.removedEntries, state: state)
+    }
+
     func addToMealPlan(_ entries: [MealPlanEntry], replaceExistingSlot: Bool, state: any MealPlanDomainState) async {
         let plannedEntries = entries.filter(\.isPlanned)
         guard !plannedEntries.isEmpty else { return }
@@ -129,7 +136,7 @@ struct MealPlanDomainService: MealPlanDomainServicing {
                 state.mealPlan.append(saved)
             }
 
-            state.setMealPlanEntries(sanitizeMealPlanEntries(state.mealPlan).visibleEntries)
+            await applySanitizedMealPlanEntries(state.mealPlan, state: state)
         } catch {
             state.pushError(.storage(error))
         }
@@ -153,7 +160,7 @@ struct MealPlanDomainService: MealPlanDomainServicing {
             let updated = try await state.storageService.updateMealPlanEntry(entry)
             if let index = state.mealPlan.firstIndex(where: { $0.id == entry.id }) {
                 state.mealPlan[index] = updated
-                state.setMealPlanEntries(sanitizeMealPlanEntries(state.mealPlan).visibleEntries)
+                await applySanitizedMealPlanEntries(state.mealPlan, state: state)
             }
         } catch {
             state.pushError(.storage(error))
@@ -168,7 +175,7 @@ struct MealPlanDomainService: MealPlanDomainServicing {
         guard validateMealLoggingRequests(requests, state: state) else { return }
         guard await applyMealLoggingRequests(requests, state: state) else { return }
 
-        state.setMealPlanEntries(sanitizeMealPlanEntries(state.mealPlan).visibleEntries)
+        await applySanitizedMealPlanEntries(state.mealPlan, state: state)
     }
 
     func logMealPlanEntriesEaten(_ entries: [MealPlanEntry], state: any MealPlanDomainState) async {
