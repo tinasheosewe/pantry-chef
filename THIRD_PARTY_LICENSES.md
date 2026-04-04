@@ -14,6 +14,18 @@ This repository currently uses a small number of third-party code dependencies, 
   - Integration: vendored package under `Vendor/swift-realtime-openai`.
   - Local modifications: documented in `Vendor/swift-realtime-openai/PantryChefForkNotes.md`.
 
+## Adapted Code
+
+- `Fuse-Swift` (bitap algorithm)
+  - Source: https://github.com/krisk/fuse-swift (archived)
+  - Author: Kirollos Risk
+  - License: MIT
+  - Usage: The bitap (shift-or) fuzzy substring search algorithm was adapted
+    from `Fuse/Classes/Fuse.swift` and `Fuse/Classes/FuseUtilities.swift` into
+    `PantryChef/Services/BitapSearcher.swift`. The multi-property search,
+    async dispatch, and highlight-range utilities were not used.
+  - Local file: `PantryChef/Services/BitapSearcher.swift`
+
 ## Bundled Data Status
 
 - No third-party substitution dataset is bundled.

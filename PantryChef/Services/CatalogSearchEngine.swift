@@ -1,5 +1,7 @@
 import Foundation
 
+// MARK: - Result
+
 struct CatalogSearchResult: Identifiable, Hashable {
     let id: String
     let catalogItemID: String
@@ -8,211 +10,346 @@ struct CatalogSearchResult: Identifiable, Hashable {
     let score: Double
     let item: PantryCatalogItemDefinition
 
-    func hash(into hasher: inout Hasher) {
-        hasher.combine(id)
+    func hash(into hasher: inout Hasher) { hasher.combine(id) }
+
+    static func == (lhs: Self, rhs: Self) -> Bool { lhs.id == rhs.id }
+}
+
+// MARK: - Token Classification
+
+/// Classifies a single query token against the catalog's prebuilt indexes.
+enum TokenClassifier {
+
+    enum Match {
+        /// Exact hit in the name/alias token index.
+        case name(itemIDs: Set<String>)
+        /// Exact hit in the facet option index.
+        case facet(entries: [FacetEntry])
+        /// Exact hit in both name and facet indexes.
+        case nameAndFacet(nameIDs: Set<String>, facetEntries: [FacetEntry])
+        /// Fuzzy match (Levenshtein ≤ maxDistance) to a name token.
+        case fuzzyName(itemIDs: Set<String>, corrected: String)
+        /// Fuzzy match (Levenshtein ≤ maxDistance) to a facet token.
+        case fuzzyFacet(entries: [FacetEntry], corrected: String)
+        /// Bitap approximate substring hit on a name token.
+        case bitapName(itemIDs: Set<String>, target: String)
+        /// Bitap approximate substring hit on a facet token.
+        case bitapFacet(entries: [FacetEntry], target: String)
+        /// Prefix of a name token (e.g. "a" → "apple").
+        case prefixName(itemIDs: Set<String>)
+        /// Prefix of a facet token.
+        case prefixFacet(entries: [FacetEntry])
+        /// No match at all.
+        case unmatched
     }
 
-    static func == (lhs: CatalogSearchResult, rhs: CatalogSearchResult) -> Bool {
-        lhs.id == rhs.id
+    typealias FacetEntry = (itemID: String, key: PantryFacetKey, value: String)
+
+    /// Classifies `token` by trying strategies in priority order:
+    /// exact → fuzzy (Levenshtein) → bitap substring → prefix → unmatched.
+    static func classify(
+        _ token: String,
+        nameKeys: [String],
+        facetKeys: [String],
+        maxEditDistance: Int
+    ) -> Match {
+        // 1. Exact lookup
+        if let exact = exactMatch(token) { return exact }
+
+        // 2. Levenshtein fuzzy (for short edits like typos)
+        if let fuzzy = levenshteinMatch(token, nameKeys: nameKeys, facetKeys: facetKeys, maxDistance: maxEditDistance) {
+            return fuzzy
+        }
+
+        // 3. Bitap fuzzy substring (catches typo + longer candidate, e.g. "chese" in "cheesecloth")
+        if let bitap = bitapMatch(token, nameKeys: nameKeys, facetKeys: facetKeys) {
+            return bitap
+        }
+
+        // 4. Prefix (short partial input, e.g. "a" → "apple")
+        if let prefix = prefixMatch(token, nameKeys: nameKeys, facetKeys: facetKeys) {
+            return prefix
+        }
+
+        return .unmatched
+    }
+
+    // MARK: - Strategies
+
+    private static func exactMatch(_ token: String) -> Match? {
+        let nameHit = PantryCatalog.tokenIndex[token]
+        let facetHit = PantryCatalog.facetTokenToItems[token]
+
+        switch (nameHit, facetHit) {
+        case let (n?, f?): return .nameAndFacet(nameIDs: n, facetEntries: f)
+        case let (n?, nil): return .name(itemIDs: n)
+        case let (nil, f?): return .facet(entries: f)
+        default: return nil
+        }
+    }
+
+    private static func levenshteinMatch(
+        _ token: String,
+        nameKeys: [String],
+        facetKeys: [String],
+        maxDistance: Int
+    ) -> Match? {
+        var bestDistance = maxDistance + 1
+        var bestNameKey: String?
+        var bestFacetKey: String?
+
+        for key in nameKeys {
+            let dist = IngredientLexicon.levenshteinDistance(token, key)
+            if dist < bestDistance {
+                bestDistance = dist
+                bestNameKey = key
+                bestFacetKey = nil
+            }
+        }
+
+        for key in facetKeys {
+            let dist = IngredientLexicon.levenshteinDistance(token, key)
+            if dist < bestDistance {
+                bestDistance = dist
+                bestNameKey = nil
+                bestFacetKey = key
+            }
+        }
+
+        guard bestDistance <= maxDistance else { return nil }
+
+        if let key = bestNameKey, let ids = PantryCatalog.tokenIndex[key] {
+            return .fuzzyName(itemIDs: ids, corrected: key)
+        }
+        if let key = bestFacetKey, let entries = PantryCatalog.facetTokenToItems[key] {
+            return .fuzzyFacet(entries: entries, corrected: key)
+        }
+        return nil
+    }
+
+    private static func bitapMatch(
+        _ token: String,
+        nameKeys: [String],
+        facetKeys: [String]
+    ) -> Match? {
+        guard let pattern = BitapSearcher.createPattern(from: token) else { return nil }
+        // Only use bitap when the token is long enough that Levenshtein didn't help
+        // but short enough for the bitap word-size limit.
+        guard token.count >= 3 else { return nil }
+
+        var bestScore = 1.0
+        var bestNameKey: String?
+        var bestFacetKey: String?
+
+        for key in nameKeys {
+            if let match = BitapSearcher.search(pattern, in: key, threshold: 0.4) {
+                if match.score < bestScore {
+                    bestScore = match.score
+                    bestNameKey = key
+                    bestFacetKey = nil
+                }
+            }
+        }
+
+        for key in facetKeys {
+            if let match = BitapSearcher.search(pattern, in: key, threshold: 0.4) {
+                if match.score < bestScore {
+                    bestScore = match.score
+                    bestNameKey = nil
+                    bestFacetKey = key
+                }
+            }
+        }
+
+        if let key = bestNameKey, let ids = PantryCatalog.tokenIndex[key] {
+            return .bitapName(itemIDs: ids, target: key)
+        }
+        if let key = bestFacetKey, let entries = PantryCatalog.facetTokenToItems[key] {
+            return .bitapFacet(entries: entries, target: key)
+        }
+        return nil
+    }
+
+    private static func prefixMatch(
+        _ token: String,
+        nameKeys: [String],
+        facetKeys: [String]
+    ) -> Match? {
+        var nameIDs: Set<String> = []
+        var facetEntries: [FacetEntry] = []
+
+        for key in nameKeys where key.hasPrefix(token) && key != token {
+            if let ids = PantryCatalog.tokenIndex[key] {
+                nameIDs.formUnion(ids)
+            }
+        }
+
+        for key in facetKeys where key.hasPrefix(token) && key != token {
+            if let entries = PantryCatalog.facetTokenToItems[key] {
+                facetEntries.append(contentsOf: entries)
+            }
+        }
+
+        if !nameIDs.isEmpty && !facetEntries.isEmpty {
+            return .nameAndFacet(nameIDs: nameIDs, facetEntries: facetEntries)
+        }
+        if !nameIDs.isEmpty { return .prefixName(itemIDs: nameIDs) }
+        if !facetEntries.isEmpty { return .prefixFacet(entries: facetEntries) }
+        return nil
     }
 }
 
+// MARK: - Candidate Scoring
+
+/// Accumulates match evidence for a single candidate item and computes a
+/// relevance score.
+struct CandidateAccumulator {
+    var matchedNameTokens: Set<String> = []
+    var resolvedFacets: [PantryFacetKey: String] = [:]
+    var exactCount = 0
+    var fuzzyCount = 0
+    var aliasMatch = false
+
+    mutating func addNameToken(_ token: String, exact: Bool) {
+        matchedNameTokens.insert(token)
+        if exact { exactCount += 1 } else { fuzzyCount += 1 }
+    }
+
+    mutating func addFacet(key: PantryFacetKey, value: String, exact: Bool) {
+        resolvedFacets[key] = value
+        if exact { exactCount += 1 } else { fuzzyCount += 1 }
+    }
+}
+
+enum CandidateScorer {
+
+    struct ScoredCandidate {
+        let item: PantryCatalogItemDefinition
+        let facets: [PantryFacetSelection]
+        let score: Double
+    }
+
+    /// Scores a candidate item given its accumulated evidence.
+    static func score(
+        item: PantryCatalogItemDefinition,
+        accumulator acc: CandidateAccumulator,
+        totalQueryTokens: Int,
+        lookupKey: String
+    ) -> ScoredCandidate? {
+        let matchedTokenCount = acc.matchedNameTokens.count
+            + (acc.resolvedFacets.isEmpty ? 0 : acc.resolvedFacets.count)
+        let coverage = Double(matchedTokenCount) / Double(max(totalQueryTokens, 1))
+
+        guard coverage > 0.3 || acc.aliasMatch else { return nil }
+
+        var score: Double
+        if acc.aliasMatch {
+            score = 1.0
+        } else {
+            let exactRatio = acc.exactCount > 0
+                ? Double(acc.exactCount) / Double(acc.exactCount + acc.fuzzyCount)
+                : 0.0
+
+            let itemNameTokens = Set(IngredientLexicon.tokenize(IngredientLexicon.lookupKey(item.name)))
+            let nameTokenOverlap = acc.matchedNameTokens.intersection(itemNameTokens)
+            let nameRelevance = itemNameTokens.isEmpty
+                ? 0.0
+                : Double(nameTokenOverlap.count) / Double(itemNameTokens.count)
+
+            score = coverage * 0.5 + exactRatio * 0.2 + nameRelevance * 0.3
+        }
+
+        // Bonus: combined name + facet evidence
+        if !acc.matchedNameTokens.isEmpty && !acc.resolvedFacets.isEmpty {
+            score += 0.05
+        }
+
+        // Bonus: item name starts with the full query
+        if IngredientLexicon.lookupKey(item.name).hasPrefix(lookupKey) {
+            score += 0.15
+        }
+
+        let facets = resolveFacets(for: item, from: acc)
+        return ScoredCandidate(item: item, facets: facets, score: min(1.0, score))
+    }
+
+    private static func resolveFacets(
+        for item: PantryCatalogItemDefinition,
+        from acc: CandidateAccumulator
+    ) -> [PantryFacetSelection] {
+        item.facets.compactMap { definition in
+            guard let value = acc.resolvedFacets[definition.key],
+                  definition.options.contains(value) else { return nil }
+            return PantryFacetSelection(key: definition.key, value: value)
+        }
+    }
+}
+
+// MARK: - Search Engine (Orchestrator)
+
+/// Orchestrates catalog search by composing token classification, candidate
+/// accumulation, and scoring into a single pipeline.
 enum CatalogSearchEngine {
 
     private static let maxResults = 20
     private static let maxFuzzyDistance = 2
 
-    // MARK: - Prebuilt key sets for fuzzy correction
+    // MARK: - Cached Index Keys
 
-    /// All unique tokens from item names/aliases (keys of tokenIndex).
     private static var nameTokenKeys: [String] = {
         Array(PantryCatalog.tokenIndex.keys)
     }()
 
-    /// All unique single-token facet option keys.
     private static var facetSingleTokenKeys: [String] = {
         PantryCatalog.facetTokenToItems.keys.filter { !$0.contains(" ") }.map { $0 }
     }()
 
-    /// All unique multi-token facet option keys.
     private static var facetMultiTokenKeys: [String] = {
         PantryCatalog.facetTokenToItems.keys.filter { $0.contains(" ") }.map { $0 }
     }()
 
-    /// Rebuild cached key sets after the catalog changes (e.g. user item registration).
     static func invalidateCache() {
         nameTokenKeys = Array(PantryCatalog.tokenIndex.keys)
-        facetSingleTokenKeys = PantryCatalog.facetTokenToItems.keys.filter { !$0.contains(" ") }.map { $0 }
-        facetMultiTokenKeys = PantryCatalog.facetTokenToItems.keys.filter { $0.contains(" ") }.map { $0 }
+        facetSingleTokenKeys = PantryCatalog.facetTokenToItems.keys
+            .filter { !$0.contains(" ") }.map { $0 }
+        facetMultiTokenKeys = PantryCatalog.facetTokenToItems.keys
+            .filter { $0.contains(" ") }.map { $0 }
     }
 
     // MARK: - Public API
 
     static func search(_ query: String) -> [CatalogSearchResult] {
         let trimmed = query.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmed.isEmpty else {
-            return PantryCatalog.allItems
-                .sorted { $0.name < $1.name }
-                .prefix(maxResults)
-                .map { defaultResult(for: $0) }
-        }
+        guard !trimmed.isEmpty else { return allItemsFallback() }
 
         let lookupKey = IngredientLexicon.lookupKey(trimmed)
-        guard !lookupKey.isEmpty else {
-            return PantryCatalog.allItems
-                .sorted { $0.name < $1.name }
-                .prefix(maxResults)
-                .map { defaultResult(for: $0) }
-        }
+        guard !lookupKey.isEmpty else { return allItemsFallback() }
 
         let queryTokens = IngredientLexicon.tokenize(lookupKey)
 
-        // Step 1: Check for multi-token facet match first (e.g. "filet mignon")
-        var consumedByMultiTokenFacet: Set<Int> = []
-        var multiTokenFacetMatches: [(key: String, entries: [(itemID: String, key: PantryFacetKey, value: String)])] = []
-        if queryTokens.count >= 2 {
-            for facetKey in facetMultiTokenKeys {
-                if lookupKey.contains(facetKey), let entries = PantryCatalog.facetTokenToItems[facetKey] {
-                    multiTokenFacetMatches.append((key: facetKey, entries: entries))
-                    let facetTokens = Set(IngredientLexicon.tokenize(facetKey))
-                    for (i, token) in queryTokens.enumerated() {
-                        if facetTokens.contains(token) {
-                            consumedByMultiTokenFacet.insert(i)
-                        }
-                    }
-                }
-            }
-        }
+        // Phase 1: Multi-token facet matches (e.g. "filet mignon")
+        let (multiTokenFacetMatches, consumedIndices) = matchMultiTokenFacets(lookupKey: lookupKey, queryTokens: queryTokens)
 
-        // Step 2: Classify each remaining token
-        var classifiedTokens: [ClassifiedToken] = []
-        for (i, token) in queryTokens.enumerated() {
-            if consumedByMultiTokenFacet.contains(i) { continue }
-            classifiedTokens.append(classifyToken(token))
-        }
+        // Phase 2: Classify each unconsumed token
+        let classifications = classifyUnconsumedTokens(queryTokens: queryTokens, consumedIndices: consumedIndices)
 
-        // Step 3: Collect candidate item IDs from all matched tokens
-        var candidateScores: [String: CandidateAccumulator] = [:]
+        // Phase 3: Accumulate candidates
+        var candidates = accumulateCandidates(
+            multiTokenMatches: multiTokenFacetMatches,
+            classifications: classifications
+        )
 
-        // From multi-token facet matches
-        for match in multiTokenFacetMatches {
-            for entry in match.entries {
-                candidateScores[entry.itemID, default: CandidateAccumulator()]
-                    .addFacet(key: entry.key, value: entry.value, exact: true)
-            }
-        }
+        // Phase 4: Alias resolution
+        resolveAliases(into: &candidates, lookupKey: lookupKey, queryTokens: queryTokens, consumedIndices: consumedIndices)
 
-        // From classified single tokens
-        for ct in classifiedTokens {
-            switch ct.kind {
-            case .nameToken(let itemIDs):
-                for id in itemIDs {
-                    candidateScores[id, default: CandidateAccumulator()]
-                        .addNameToken(ct.original, exact: true)
-                }
-            case .facetToken(let entries):
-                for entry in entries {
-                    candidateScores[entry.itemID, default: CandidateAccumulator()]
-                        .addFacet(key: entry.key, value: entry.value, exact: true)
-                }
-            case .fuzzyNameToken(let itemIDs, let corrected):
-                for id in itemIDs {
-                    candidateScores[id, default: CandidateAccumulator()]
-                        .addNameToken(corrected, exact: false)
-                }
-            case .fuzzyFacetToken(let entries, _):
-                for entry in entries {
-                    candidateScores[entry.itemID, default: CandidateAccumulator()]
-                        .addFacet(key: entry.key, value: entry.value, exact: false)
-                }
-            case .bothNameAndFacet(let nameIDs, let facetEntries):
-                for id in nameIDs {
-                    candidateScores[id, default: CandidateAccumulator()]
-                        .addNameToken(ct.original, exact: true)
-                }
-                for entry in facetEntries {
-                    candidateScores[entry.itemID, default: CandidateAccumulator()]
-                        .addFacet(key: entry.key, value: entry.value, exact: true)
-                }
-            case .unmatched:
-                break
-            }
-        }
+        // Phase 5: Score and rank
+        let totalQueryTokens = classifications.count + (multiTokenFacetMatches.isEmpty ? 0 : 1)
+        guard totalQueryTokens > 0 else { return allItemsFallback() }
 
-        // Step 4: Also add items via full lookupKey exact alias match (handles "chicken breast" as a single alias)
-        if let aliasItemID = PantryCatalog.resolveAlias(lookupKey),
-           let item = PantryCatalog.item(id: aliasItemID) {
-            var acc = candidateScores[aliasItemID] ?? CandidateAccumulator()
-            acc.aliasMatch = true
-            // Infer facets from the alias
-            let facets = IngredientLexicon.inferredFacets(forLookupKey: lookupKey, item: item)
-            for f in facets {
-                acc.addFacet(key: f.key, value: f.value, exact: true)
-            }
-            for token in queryTokens where !consumedByMultiTokenFacet.contains(queryTokens.firstIndex(of: token) ?? -1) {
-                acc.addNameToken(token, exact: true)
-            }
-            candidateScores[aliasItemID] = acc
-        }
-
-        // Step 5: Score and build results
-        let totalQueryTokens = classifiedTokens.count + (multiTokenFacetMatches.isEmpty ? 0 : 1)
-        guard totalQueryTokens > 0 else {
-            return PantryCatalog.allItems
-                .sorted { $0.name < $1.name }
-                .prefix(maxResults)
-                .map { defaultResult(for: $0) }
-        }
-
-        var results: [CatalogSearchResult] = []
-        for (itemID, acc) in candidateScores {
-            guard let item = PantryCatalog.item(id: itemID) else { continue }
-
-            let matchedTokenCount = acc.matchedNameTokens.count + (acc.resolvedFacets.isEmpty ? 0 : acc.resolvedFacets.count)
-            let coverage = Double(matchedTokenCount) / Double(totalQueryTokens)
-
-            // Require at least some coverage
-            guard coverage > 0.3 || acc.aliasMatch else { continue }
-
-            let exactRatio = acc.exactCount > 0
-                ? Double(acc.exactCount) / Double(acc.exactCount + acc.fuzzyCount)
-                : 0.0
-
-            // Check if name tokens actually belong to this item
-            let itemNameTokens = Set(IngredientLexicon.tokenize(IngredientLexicon.lookupKey(item.name)))
-            let nameTokenOverlap = acc.matchedNameTokens.intersection(itemNameTokens)
-            let nameRelevance = itemNameTokens.isEmpty ? 0.0 : Double(nameTokenOverlap.count) / Double(itemNameTokens.count)
-
-            var score = 0.0
-            if acc.aliasMatch {
-                score = 1.0
-            } else {
-                score = coverage * 0.5 + exactRatio * 0.2 + nameRelevance * 0.3
-            }
-
-            // Bonus for having both name and facet matches
-            if !acc.matchedNameTokens.isEmpty && !acc.resolvedFacets.isEmpty {
-                score += 0.05
-            }
-
-            // Resolve facet selections for this specific item
-            let facets = resolveFacets(for: item, from: acc)
-            let displayName = item.displayName(for: facets)
-
-            let resultID = facets.isEmpty ? item.id : "\(item.id):\(facets.map(\.id).joined(separator: ","))"
-            results.append(CatalogSearchResult(
-                id: resultID,
-                catalogItemID: item.id,
-                facets: facets,
-                displayName: displayName,
-                score: min(1.0, score),
-                item: item
-            ))
-        }
-
-        results.sort { $0.score > $1.score }
-        return Array(results.prefix(maxResults))
+        return buildResults(from: candidates, totalQueryTokens: totalQueryTokens, lookupKey: lookupKey)
     }
+
+    // MARK: - Collision Candidates
 
     static func collisionCandidates(
         name: String,
@@ -230,14 +367,9 @@ enum CatalogSearchEngine {
 
         func record(_ result: CatalogSearchResult, bonus: Double) {
             guard !result.item.isUserDefined else { return }
-
             let itemID = result.item.id
             let candidateScore = result.score + bonus
-
-            if let existing = scoresByItemID[itemID], existing >= candidateScore {
-                return
-            }
-
+            guard candidateScore > (scoresByItemID[itemID] ?? -1) else { return }
             scoresByItemID[itemID] = candidateScore
             resultsByItemID[itemID] = result
         }
@@ -272,120 +404,181 @@ enum CatalogSearchEngine {
 
         return resultsByItemID.values
             .sorted {
-                let lhsScore = scoresByItemID[$0.item.id] ?? 0
-                let rhsScore = scoresByItemID[$1.item.id] ?? 0
-                if lhsScore == rhsScore {
-                    return $0.item.name < $1.item.name
-                }
-                return lhsScore > rhsScore
+                let lhs = scoresByItemID[$0.item.id] ?? 0
+                let rhs = scoresByItemID[$1.item.id] ?? 0
+                return lhs == rhs ? $0.item.name < $1.item.name : lhs > rhs
             }
             .prefix(limit)
             .map { $0 }
     }
 
-    // MARK: - Token Classification
+    // MARK: - Pipeline Phases
 
-    private struct ClassifiedToken {
-        let original: String
-        let kind: Kind
+    private typealias FacetEntry = TokenClassifier.FacetEntry
+    private typealias MultiTokenMatch = (key: String, entries: [FacetEntry])
 
-        enum Kind {
-            case nameToken(itemIDs: Set<String>)
-            case facetToken(entries: [(itemID: String, key: PantryFacetKey, value: String)])
-            case bothNameAndFacet(nameIDs: Set<String>, facetEntries: [(itemID: String, key: PantryFacetKey, value: String)])
-            case fuzzyNameToken(itemIDs: Set<String>, corrected: String)
-            case fuzzyFacetToken(entries: [(itemID: String, key: PantryFacetKey, value: String)], corrected: String)
-            case unmatched
-        }
-    }
+    private static func matchMultiTokenFacets(
+        lookupKey: String,
+        queryTokens: [String]
+    ) -> ([MultiTokenMatch], Set<Int>) {
+        var consumed: Set<Int> = []
+        var matches: [MultiTokenMatch] = []
 
-    private static func classifyToken(_ token: String) -> ClassifiedToken {
-        let nameHit = PantryCatalog.tokenIndex[token]
-        let facetHit = PantryCatalog.facetTokenToItems[token]
+        guard queryTokens.count >= 2 else { return (matches, consumed) }
 
-        if let nameIDs = nameHit, let facetEntries = facetHit {
-            return ClassifiedToken(original: token, kind: .bothNameAndFacet(nameIDs: nameIDs, facetEntries: facetEntries))
-        }
-        if let nameIDs = nameHit {
-            return ClassifiedToken(original: token, kind: .nameToken(itemIDs: nameIDs))
-        }
-        if let facetEntries = facetHit {
-            return ClassifiedToken(original: token, kind: .facetToken(entries: facetEntries))
-        }
-
-        // Fuzzy fallback — find best match within edit distance 2
-        return fuzzyCorrect(token)
-    }
-
-    private static func fuzzyCorrect(_ token: String) -> ClassifiedToken {
-        var bestDistance = maxFuzzyDistance + 1
-        var bestNameKey: String?
-        var bestFacetKey: String?
-
-        for key in nameTokenKeys {
-            let dist = IngredientLexicon.levenshteinDistance(token, key)
-            if dist < bestDistance {
-                bestDistance = dist
-                bestNameKey = key
-                bestFacetKey = nil
+        for facetKey in facetMultiTokenKeys {
+            guard lookupKey.contains(facetKey),
+                  let entries = PantryCatalog.facetTokenToItems[facetKey] else { continue }
+            matches.append((key: facetKey, entries: entries))
+            let facetTokens = Set(IngredientLexicon.tokenize(facetKey))
+            for (i, token) in queryTokens.enumerated() where facetTokens.contains(token) {
+                consumed.insert(i)
             }
         }
 
-        for key in facetSingleTokenKeys {
-            let dist = IngredientLexicon.levenshteinDistance(token, key)
-            if dist < bestDistance {
-                bestDistance = dist
-                bestNameKey = nil
-                bestFacetKey = key
+        return (matches, consumed)
+    }
+
+    private static func classifyUnconsumedTokens(
+        queryTokens: [String],
+        consumedIndices: Set<Int>
+    ) -> [TokenClassifier.Match] {
+        queryTokens.enumerated()
+            .filter { !consumedIndices.contains($0.offset) }
+            .map { TokenClassifier.classify(
+                $0.element,
+                nameKeys: nameTokenKeys,
+                facetKeys: facetSingleTokenKeys,
+                maxEditDistance: maxFuzzyDistance
+            ) }
+    }
+
+    private static func accumulateCandidates(
+        multiTokenMatches: [MultiTokenMatch],
+        classifications: [TokenClassifier.Match]
+    ) -> [String: CandidateAccumulator] {
+        var candidates: [String: CandidateAccumulator] = [:]
+
+        // Multi-token facet matches
+        for match in multiTokenMatches {
+            for entry in match.entries {
+                candidates[entry.itemID, default: CandidateAccumulator()]
+                    .addFacet(key: entry.key, value: entry.value, exact: true)
             }
         }
 
-        if bestDistance <= maxFuzzyDistance {
-            if let nameKey = bestNameKey, let ids = PantryCatalog.tokenIndex[nameKey] {
-                return ClassifiedToken(original: token, kind: .fuzzyNameToken(itemIDs: ids, corrected: nameKey))
-            }
-            if let facetKey = bestFacetKey, let entries = PantryCatalog.facetTokenToItems[facetKey] {
-                return ClassifiedToken(original: token, kind: .fuzzyFacetToken(entries: entries, corrected: facetKey))
-            }
+        // Classified single tokens
+        for classification in classifications {
+            applyClassification(classification, to: &candidates)
         }
 
-        return ClassifiedToken(original: token, kind: .unmatched)
+        return candidates
     }
 
-    // MARK: - Accumulator
+    private static func applyClassification(
+        _ match: TokenClassifier.Match,
+        to candidates: inout [String: CandidateAccumulator]
+    ) {
+        switch match {
+        case .name(let ids):
+            for id in ids { candidates[id, default: CandidateAccumulator()].addNameToken("", exact: true) }
 
-    private struct CandidateAccumulator {
-        var matchedNameTokens: Set<String> = []
-        var resolvedFacets: [PantryFacetKey: String] = [:]
-        var exactCount = 0
-        var fuzzyCount = 0
-        var aliasMatch = false
+        case .facet(let entries):
+            for e in entries { candidates[e.itemID, default: CandidateAccumulator()].addFacet(key: e.key, value: e.value, exact: true) }
 
-        mutating func addNameToken(_ token: String, exact: Bool) {
-            matchedNameTokens.insert(token)
-            if exact { exactCount += 1 } else { fuzzyCount += 1 }
-        }
+        case .nameAndFacet(let ids, let entries):
+            for id in ids { candidates[id, default: CandidateAccumulator()].addNameToken("", exact: true) }
+            for e in entries { candidates[e.itemID, default: CandidateAccumulator()].addFacet(key: e.key, value: e.value, exact: true) }
 
-        mutating func addFacet(key: PantryFacetKey, value: String, exact: Bool) {
-            resolvedFacets[key] = value
-            if exact { exactCount += 1 } else { fuzzyCount += 1 }
+        case .fuzzyName(let ids, let corrected):
+            for id in ids { candidates[id, default: CandidateAccumulator()].addNameToken(corrected, exact: false) }
+
+        case .fuzzyFacet(let entries, _):
+            for e in entries { candidates[e.itemID, default: CandidateAccumulator()].addFacet(key: e.key, value: e.value, exact: false) }
+
+        case .bitapName(let ids, let target):
+            for id in ids { candidates[id, default: CandidateAccumulator()].addNameToken(target, exact: false) }
+
+        case .bitapFacet(let entries, _):
+            for e in entries { candidates[e.itemID, default: CandidateAccumulator()].addFacet(key: e.key, value: e.value, exact: false) }
+
+        case .prefixName(let ids):
+            for id in ids { candidates[id, default: CandidateAccumulator()].addNameToken("", exact: false) }
+
+        case .prefixFacet(let entries):
+            for e in entries { candidates[e.itemID, default: CandidateAccumulator()].addFacet(key: e.key, value: e.value, exact: false) }
+
+        case .unmatched:
+            break
         }
     }
 
-    // MARK: - Helpers
+    private static func resolveAliases(
+        into candidates: inout [String: CandidateAccumulator],
+        lookupKey: String,
+        queryTokens: [String],
+        consumedIndices: Set<Int>
+    ) {
+        guard let aliasItemID = PantryCatalog.resolveAlias(lookupKey),
+              let item = PantryCatalog.item(id: aliasItemID) else { return }
 
-    private static func resolveFacets(
-        for item: PantryCatalogItemDefinition,
-        from acc: CandidateAccumulator
-    ) -> [PantryFacetSelection] {
-        item.facets.compactMap { definition in
-            guard let value = acc.resolvedFacets[definition.key],
-                  definition.options.contains(value) else { return nil }
-            return PantryFacetSelection(key: definition.key, value: value)
+        var acc = candidates[aliasItemID] ?? CandidateAccumulator()
+        acc.aliasMatch = true
+
+        for f in IngredientLexicon.inferredFacets(forLookupKey: lookupKey, item: item) {
+            acc.addFacet(key: f.key, value: f.value, exact: true)
         }
+        for token in queryTokens where !consumedIndices.contains(queryTokens.firstIndex(of: token) ?? -1) {
+            acc.addNameToken(token, exact: true)
+        }
+
+        candidates[aliasItemID] = acc
     }
 
-    private static func defaultResult(for item: PantryCatalogItemDefinition) -> CatalogSearchResult {
+    private static func buildResults(
+        from candidates: [String: CandidateAccumulator],
+        totalQueryTokens: Int,
+        lookupKey: String
+    ) -> [CatalogSearchResult] {
+        var results: [CatalogSearchResult] = []
+
+        for (itemID, acc) in candidates {
+            guard let item = PantryCatalog.item(id: itemID) else { continue }
+            guard let scored = CandidateScorer.score(
+                item: item,
+                accumulator: acc,
+                totalQueryTokens: totalQueryTokens,
+                lookupKey: lookupKey
+            ) else { continue }
+
+            let resultID = scored.facets.isEmpty
+                ? item.id
+                : "\(item.id):\(scored.facets.map(\.id).joined(separator: ","))"
+
+            results.append(CatalogSearchResult(
+                id: resultID,
+                catalogItemID: item.id,
+                facets: scored.facets,
+                displayName: item.displayName(for: scored.facets),
+                score: scored.score,
+                item: item
+            ))
+        }
+
+        results.sort { $0.score > $1.score }
+        return Array(results.prefix(maxResults))
+    }
+
+    // MARK: - Fallback & Helpers
+
+    private static func allItemsFallback() -> [CatalogSearchResult] {
+        PantryCatalog.allItems
+            .sorted { $0.name < $1.name }
+            .prefix(maxResults)
+            .map { defaultResult(for: $0) }
+    }
+
+    static func defaultResult(for item: PantryCatalogItemDefinition) -> CatalogSearchResult {
         CatalogSearchResult(
             id: item.id,
             catalogItemID: item.id,
@@ -396,10 +589,11 @@ enum CatalogSearchEngine {
         )
     }
 
+    // MARK: - Collision Helpers
+
     private static func normalizedCollisionFacetValues(from facets: [PantryFacetKey: [String]]) -> [String] {
         var seen: Set<String> = []
         var values: [String] = []
-
         for facetValues in facets.values {
             for value in facetValues {
                 let normalized = PantryCatalog.normalizeLookupKey(value)
@@ -407,7 +601,6 @@ enum CatalogSearchEngine {
                 values.append(normalized)
             }
         }
-
         return values
     }
 
@@ -424,12 +617,8 @@ enum CatalogSearchEngine {
         }
 
         append(name)
-
         let topFacetValues = Array(facetValues.prefix(3))
-        for value in topFacetValues {
-            append("\(name) \(value)")
-        }
-
+        for value in topFacetValues { append("\(name) \(value)") }
         if !topFacetValues.isEmpty {
             append(([name] + topFacetValues).joined(separator: " "))
         }
@@ -438,7 +627,7 @@ enum CatalogSearchEngine {
     }
 
     private static func collisionFacetTokens(from normalizedFacetValues: [String]) -> Set<String> {
-        var tokens: Set<String> = Set(normalizedFacetValues)
+        var tokens = Set(normalizedFacetValues)
         for value in normalizedFacetValues {
             tokens.formUnion(IngredientLexicon.tokenize(value))
         }
@@ -450,33 +639,24 @@ enum CatalogSearchEngine {
         normalizedFacetValues: [String]
     ) -> Double {
         guard !normalizedFacetValues.isEmpty else { return 0 }
-
         let itemKeys = collisionComparisonKeys(for: item)
         let overlapCount = normalizedFacetValues.filter { itemKeys.contains($0) }.count
         guard overlapCount > 0 else { return 0 }
-
         return 0.45 + (Double(overlapCount - 1) * 0.12)
     }
 
     private static func collisionComparisonKeys(for item: PantryCatalogItemDefinition) -> Set<String> {
         var keys: Set<String> = [PantryCatalog.normalizeLookupKey(item.name)]
-
         for alias in item.aliases {
-            let normalized = PantryCatalog.normalizeLookupKey(alias)
-            if !normalized.isEmpty {
-                keys.insert(normalized)
-            }
+            let n = PantryCatalog.normalizeLookupKey(alias)
+            if !n.isEmpty { keys.insert(n) }
         }
-
         for facet in item.facets {
             for option in facet.options {
-                let normalized = PantryCatalog.normalizeLookupKey(option)
-                if !normalized.isEmpty {
-                    keys.insert(normalized)
-                }
+                let n = PantryCatalog.normalizeLookupKey(option)
+                if !n.isEmpty { keys.insert(n) }
             }
         }
-
         return keys
     }
 }
