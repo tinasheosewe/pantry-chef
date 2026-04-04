@@ -81,7 +81,7 @@ struct PreparedDishesView: View {
                     }
                 } label: {
                     Image(systemName: "plus.circle.fill")
-                        .font(.title3)
+                        .pcTopBarIcon()
                 }
             }
         }

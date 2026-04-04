@@ -41,12 +41,6 @@ struct ShoppingListView: View {
                 ToolbarItem(placement: .primaryAction) {
                     Menu {
                         Button {
-                            showAddItem = true
-                        } label: {
-                            Label("Add Item", systemImage: "plus")
-                        }
-
-                        Button {
                             presentPantryReview()
                         } label: {
                             Label("Move Checked to Pantry", systemImage: "arrow.right.circle")
@@ -60,6 +54,14 @@ struct ShoppingListView: View {
                         }
                     } label: {
                         Image(systemName: "ellipsis.circle")
+                    }
+                }
+                ToolbarItem(placement: .primaryAction) {
+                    Button {
+                        showAddItem = true
+                    } label: {
+                        Image(systemName: "plus.circle.fill")
+                            .pcTopBarIcon()
                     }
                 }
             }
