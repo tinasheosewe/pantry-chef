@@ -360,7 +360,110 @@ struct RecipeDomainService: RecipeDomainServicing {
         return names.isEmpty ? draft.recipe.ingredients.map(\.rawName) : names
     }
 
+    // MARK: - Catalog Item Creation for Unknown Ingredients
+
+    private func createCatalogItemIfPossible(
+        for ingredientDraft: ResolvedIngredientDraft,
+        state: any RecipeDomainState
+    ) async -> String? {
+        let name = ingredientDraft.ingredient.rawName
+        let category = ingredientDraft.ingredient.category
+
+        let aiDefinition = await state.aiService.generateIngredientDefinition(name: name)
+        let resolvedCategory = aiDefinition?.category ?? category
+        let resolvedFacets = aiDefinition?.facets ?? [:]
+
+        let candidates = CatalogSearchEngine.collisionCandidates(
+            name: name,
+            category: resolvedCategory,
+            facets: resolvedFacets
+        )
+
+        for candidate in candidates {
+            guard let mergeResult = await state.aiService.verifyAndMergeIngredient(
+                name: name,
+                baseItem: candidate.item,
+                generatedCategory: resolvedCategory,
+                generatedFacets: resolvedFacets
+            ), mergeResult.shouldMerge else {
+                continue
+            }
+            PantryCatalog.applyMerge(
+                catalogItemID: candidate.item.id,
+                mergedFacets: mergeResult.mergedFacets,
+                mergedAliases: mergeResult.mergedAliases
+            )
+            return candidate.item.id
+        }
+
+        guard let aiDefinition else { return nil }
+
+        let itemID = "user-\(UUID().uuidString.lowercased())"
+        let facetDefinitions = aiDefinition.facets.map { PantryFacetDefinition(key: $0.key, options: $0.value) }
+        let newItem = PantryCatalogItemDefinition(
+            id: itemID,
+            name: name,
+            category: aiDefinition.category,
+            defaultUnit: aiDefinition.defaultUnit,
+            defaultQuantity: nil,
+            defaultStorage: aiDefinition.defaultStorage,
+            aliases: [],
+            facets: facetDefinitions,
+            defaultSelections: [],
+            substitutions: [],
+            unitOverrides: [:],
+            freshnessByStorage: [:],
+            isUserDefined: true
+        )
+
+        switch PantryCatalog.registerUserItem(newItem) {
+        case .success:
+            return itemID
+        case .failure(let error):
+            AppLog.warn("[RecipeDomainService] Failed to create catalog item for '\(name)': \(error)")
+            return nil
+        }
+    }
+
+    private func draftWithCreatedCatalogItems(
+        from draft: RecipeResolutionDraft,
+        state: any RecipeDomainState
+    ) async -> RecipeResolutionDraft {
+        var updatedDraft = draft
+        for index in updatedDraft.ingredients.indices {
+            guard updatedDraft.ingredients[index].status == .unknown else { continue }
+            guard let newID = await createCatalogItemIfPossible(
+                for: updatedDraft.ingredients[index],
+                state: state
+            ) else { continue }
+            applyCreatedCatalogItem(id: newID, to: index, in: &updatedDraft)
+        }
+        return updatedDraft
+    }
+
+    private func applyCreatedCatalogItem(id catalogItemID: String, to index: Int, in draft: inout RecipeResolutionDraft) {
+        let syntheticCandidate = IngredientResolutionCandidate(
+            id: catalogItemID,
+            catalogItemID: catalogItemID,
+            facets: [],
+            displayName: draft.ingredients[index].ingredient.rawName,
+            score: 1.0,
+            rationale: "AI catalog creation",
+            supportedFacets: []
+        )
+        draft.ingredients[index].candidates.append(syntheticCandidate)
+        draft.ingredients[index].selectedCandidateID = syntheticCandidate.id
+        draft.ingredients[index].status = .resolved
+        draft.ingredients[index].confidence = 1.0
+        draft.ingredients[index].rationale = "Created new catalog item"
+    }
+
     private func aiDisambiguatedRecipeDraft(from draft: RecipeResolutionDraft, state: any RecipeDomainState) async throws -> RecipeResolutionDraft {
+        var draft = draft
+        if draft.requiresIngredientEdits {
+            draft = await draftWithCreatedCatalogItems(from: draft, state: state)
+        }
+
         guard !draft.requiresIngredientEdits else {
             throw AppState.AIRecipeNormalizationError.disambiguationFailed(draft.unknownIngredients.map { $0.ingredient.rawName })
         }
@@ -430,47 +533,52 @@ struct RecipeDomainService: RecipeDomainServicing {
 
     private func bestEffortDisambiguatedDraft(from draft: RecipeResolutionDraft, state: any RecipeDomainState) async -> RecipeResolutionDraft {
         let ambiguousIngredients = draft.ambiguousIngredients
-        guard !ambiguousIngredients.isEmpty else {
-            return draft
-        }
-
-        let requests = ambiguousIngredients.map { ingredientDraft in
-            IngredientResolutionRequest(
-                ingredientID: ingredientDraft.ingredient.id,
-                rawName: ingredientDraft.ingredient.rawName,
-                quantity: ingredientDraft.ingredient.quantity,
-                unit: ingredientDraft.ingredient.unit,
-                category: ingredientDraft.ingredient.category,
-                notes: ingredientDraft.ingredient.notes,
-                candidates: ingredientDraft.candidates
-            )
-        }
-
-        guard let decisions = await state.aiService.disambiguateIngredients(requests),
-              decisions.count == requests.count else {
-            return draft
-        }
-
-        let decisionsByIngredient = Dictionary(uniqueKeysWithValues: decisions.map { ($0.ingredientID, $0) })
         var updatedDraft = draft
 
+        if !ambiguousIngredients.isEmpty {
+            let requests = ambiguousIngredients.map { ingredientDraft in
+                IngredientResolutionRequest(
+                    ingredientID: ingredientDraft.ingredient.id,
+                    rawName: ingredientDraft.ingredient.rawName,
+                    quantity: ingredientDraft.ingredient.quantity,
+                    unit: ingredientDraft.ingredient.unit,
+                    category: ingredientDraft.ingredient.category,
+                    notes: ingredientDraft.ingredient.notes,
+                    candidates: ingredientDraft.candidates
+                )
+            }
+
+            if let decisions = await state.aiService.disambiguateIngredients(requests),
+               decisions.count == requests.count {
+                let decisionsByIngredient = Dictionary(uniqueKeysWithValues: decisions.map { ($0.ingredientID, $0) })
+
+                for index in updatedDraft.ingredients.indices {
+                    guard updatedDraft.ingredients[index].status == .ambiguous else { continue }
+
+                    let ingredientDraft = updatedDraft.ingredients[index]
+                    guard let decision = decisionsByIngredient[ingredientDraft.ingredient.id],
+                          decision.status == .resolved,
+                          let selectedCandidateID = decision.selectedCandidateID,
+                          let candidate = ingredientDraft.candidates.first(where: { $0.id == selectedCandidateID }) else {
+                        continue
+                    }
+
+                    updatedDraft.ingredients[index].status = .resolved
+                    updatedDraft.ingredients[index].selectedCandidateID = candidate.id
+                    updatedDraft.ingredients[index].confidence = max(decision.confidence, candidate.score)
+                    updatedDraft.ingredients[index].rationale = decision.rationale
+                }
+            }
+        }
+
+        // Attempt catalog creation for any remaining unknown ingredients (best-effort)
         for index in updatedDraft.ingredients.indices {
-            guard updatedDraft.ingredients[index].status == .ambiguous else {
-                continue
-            }
-
-            let ingredientDraft = updatedDraft.ingredients[index]
-            guard let decision = decisionsByIngredient[ingredientDraft.ingredient.id],
-                  decision.status == .resolved,
-                  let selectedCandidateID = decision.selectedCandidateID,
-                  let candidate = ingredientDraft.candidates.first(where: { $0.id == selectedCandidateID }) else {
-                continue
-            }
-
-            updatedDraft.ingredients[index].status = .resolved
-            updatedDraft.ingredients[index].selectedCandidateID = candidate.id
-            updatedDraft.ingredients[index].confidence = max(decision.confidence, candidate.score)
-            updatedDraft.ingredients[index].rationale = decision.rationale
+            guard updatedDraft.ingredients[index].status == .unknown else { continue }
+            guard let newID = await createCatalogItemIfPossible(
+                for: updatedDraft.ingredients[index],
+                state: state
+            ) else { continue }
+            applyCreatedCatalogItem(id: newID, to: index, in: &updatedDraft)
         }
 
         return updatedDraft
