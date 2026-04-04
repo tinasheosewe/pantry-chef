@@ -47,6 +47,9 @@ enum TokenClassifier {
 
     /// Classifies `token` by trying strategies in priority order:
     /// exact → fuzzy (Levenshtein) → bitap substring → prefix → unmatched.
+    /// Levenshtein and bitap are skipped for tokens shorter than 3 chars because
+    /// edit-distance on very short strings matches almost anything, preventing the
+    /// prefix strategy from running and returning the expected results.
     static func classify(
         _ token: String,
         nameKeys: [String],
@@ -56,17 +59,19 @@ enum TokenClassifier {
         // 1. Exact lookup
         if let exact = exactMatch(token) { return exact }
 
-        // 2. Levenshtein fuzzy (for short edits like typos)
-        if let fuzzy = levenshteinMatch(token, nameKeys: nameKeys, facetKeys: facetKeys, maxDistance: maxEditDistance) {
-            return fuzzy
+        if token.count >= 3 {
+            // 2. Levenshtein fuzzy (for short edits like typos)
+            if let fuzzy = levenshteinMatch(token, nameKeys: nameKeys, facetKeys: facetKeys, maxDistance: maxEditDistance) {
+                return fuzzy
+            }
+
+            // 3. Bitap fuzzy substring (catches typo + longer candidate, e.g. "chese" in "cheesecloth")
+            if let bitap = bitapMatch(token, nameKeys: nameKeys, facetKeys: facetKeys) {
+                return bitap
+            }
         }
 
-        // 3. Bitap fuzzy substring (catches typo + longer candidate, e.g. "chese" in "cheesecloth")
-        if let bitap = bitapMatch(token, nameKeys: nameKeys, facetKeys: facetKeys) {
-            return bitap
-        }
-
-        // 4. Prefix (short partial input, e.g. "a" → "apple")
+        // 4. Prefix (short partial input, e.g. "a" → "apple", or "ap" → "apple")
         if let prefix = prefixMatch(token, nameKeys: nameKeys, facetKeys: facetKeys) {
             return prefix
         }
@@ -291,7 +296,6 @@ enum CandidateScorer {
 /// accumulation, and scoring into a single pipeline.
 enum CatalogSearchEngine {
 
-    private static let maxResults = 20
     private static let maxFuzzyDistance = 2
 
     // MARK: - Cached Index Keys
@@ -442,20 +446,20 @@ enum CatalogSearchEngine {
     private static func classifyUnconsumedTokens(
         queryTokens: [String],
         consumedIndices: Set<Int>
-    ) -> [TokenClassifier.Match] {
+    ) -> [(original: String, match: TokenClassifier.Match)] {
         queryTokens.enumerated()
             .filter { !consumedIndices.contains($0.offset) }
-            .map { TokenClassifier.classify(
+            .map { (original: $0.element, match: TokenClassifier.classify(
                 $0.element,
                 nameKeys: nameTokenKeys,
                 facetKeys: facetSingleTokenKeys,
                 maxEditDistance: maxFuzzyDistance
-            ) }
+            )) }
     }
 
     private static func accumulateCandidates(
         multiTokenMatches: [MultiTokenMatch],
-        classifications: [TokenClassifier.Match]
+        classifications: [(original: String, match: TokenClassifier.Match)]
     ) -> [String: CandidateAccumulator] {
         var candidates: [String: CandidateAccumulator] = [:]
 
@@ -468,8 +472,8 @@ enum CatalogSearchEngine {
         }
 
         // Classified single tokens
-        for classification in classifications {
-            applyClassification(classification, to: &candidates)
+        for (original, classification) in classifications {
+            applyClassification(classification, originalToken: original, to: &candidates)
         }
 
         return candidates
@@ -477,17 +481,19 @@ enum CatalogSearchEngine {
 
     private static func applyClassification(
         _ match: TokenClassifier.Match,
+        originalToken: String,
         to candidates: inout [String: CandidateAccumulator]
     ) {
         switch match {
         case .name(let ids):
-            for id in ids { candidates[id, default: CandidateAccumulator()].addNameToken("", exact: true) }
+            // Use the original query token so nameRelevance scoring works correctly.
+            for id in ids { candidates[id, default: CandidateAccumulator()].addNameToken(originalToken, exact: true) }
 
         case .facet(let entries):
             for e in entries { candidates[e.itemID, default: CandidateAccumulator()].addFacet(key: e.key, value: e.value, exact: true) }
 
         case .nameAndFacet(let ids, let entries):
-            for id in ids { candidates[id, default: CandidateAccumulator()].addNameToken("", exact: true) }
+            for id in ids { candidates[id, default: CandidateAccumulator()].addNameToken(originalToken, exact: true) }
             for e in entries { candidates[e.itemID, default: CandidateAccumulator()].addFacet(key: e.key, value: e.value, exact: true) }
 
         case .fuzzyName(let ids, let corrected):
@@ -503,7 +509,7 @@ enum CatalogSearchEngine {
             for e in entries { candidates[e.itemID, default: CandidateAccumulator()].addFacet(key: e.key, value: e.value, exact: false) }
 
         case .prefixName(let ids):
-            for id in ids { candidates[id, default: CandidateAccumulator()].addNameToken("", exact: false) }
+            for id in ids { candidates[id, default: CandidateAccumulator()].addNameToken(originalToken, exact: false) }
 
         case .prefixFacet(let entries):
             for e in entries { candidates[e.itemID, default: CandidateAccumulator()].addFacet(key: e.key, value: e.value, exact: false) }
@@ -566,7 +572,7 @@ enum CatalogSearchEngine {
         }
 
         results.sort { $0.score > $1.score }
-        return Array(results.prefix(maxResults))
+        return results
     }
 
     // MARK: - Fallback & Helpers
@@ -574,7 +580,6 @@ enum CatalogSearchEngine {
     private static func allItemsFallback() -> [CatalogSearchResult] {
         PantryCatalog.allItems
             .sorted { $0.name < $1.name }
-            .prefix(maxResults)
             .map { defaultResult(for: $0) }
     }
 
