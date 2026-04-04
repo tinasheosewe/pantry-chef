@@ -29,7 +29,15 @@ final class RecipeViewModel: AsyncActionHandling {
     @ObservationIgnored private var persistedMetricsStoreLoaded = false
     @ObservationIgnored private var persistedMetricSignatureOrder: [PantryMetricsSignature] = []
     @ObservationIgnored private let maxPersistedMetricSignatures = 8
-    @ObservationIgnored private var searchIndexCache: [SearchIndexCacheKey: RecipeSearchIndex] = [:]
+    @ObservationIgnored private var recipeEngineCache: [SearchIndexCacheKey: RankedTextSearchEngine<Recipe>] = [:]
+    private static let recipeSearchFields: [WeightedField<Recipe>] = [
+        WeightedField(weight: 1.0) { $0.title },
+        WeightedField(weight: 0.6) { $0.ingredients.map(\.name).joined(separator: " ") },
+        WeightedField(weight: 0.5) { $0.dietaryTags.map(\.rawValue).joined(separator: " ") },
+        WeightedField(weight: 0.5) { $0.cuisine?.rawValue ?? "" },
+        WeightedField(weight: 0.4) { $0.mealType?.rawValue ?? "" },
+        WeightedField(weight: 0.3) { $0.description ?? "" },
+    ]
     @ObservationIgnored private var ingredientDependencyIndexCache: [RecipeContentSignature: RecipeIngredientDependencyIndex] = [:]
     @ObservationIgnored private var pantryDependencyStateCache: [PantryMetricsSignature: PantryDependencyState] = [:]
     @ObservationIgnored private var hasPrewarmedDiscover = false
@@ -96,7 +104,7 @@ final class RecipeViewModel: AsyncActionHandling {
             recipes = applyMakeabilityFilter(recipes)
         }
 
-        let result = applySortOrder(recipes)
+        let result = localFilterQuery.isEmpty ? applySortOrder(recipes) : recipes
         cachedUserFilterKey = key
         cachedUserFilterResult = result
         return result
@@ -129,7 +137,9 @@ final class RecipeViewModel: AsyncActionHandling {
             recipes = applyMakeabilityFilter(recipes)
         }
 
-        recipes = applySortOrder(recipes)
+        if localFilterQuery.isEmpty {
+            recipes = applySortOrder(recipes)
+        }
 
         cachedDiscoverFilterKey = key
         cachedDiscoverFilterResult = recipes
@@ -142,18 +152,8 @@ final class RecipeViewModel: AsyncActionHandling {
         var recipes = input
 
         if !localFilterQuery.isEmpty {
-            let query = localFilterQuery
-            let index = searchIndex(for: recipes, cacheKey: searchIndexCacheKey(for: recipes))
-            let queryTokens = RecipeSearchIndex.tokenize(query)
-            if let candidateIDs = index.candidateIDs(for: queryTokens), !candidateIDs.isEmpty {
-                recipes = recipes.filter { recipe in
-                    candidateIDs.contains(recipe.id) && matchesQuery(recipe, query: query)
-                }
-            } else {
-                recipes = recipes.filter { recipe in
-                    matchesQuery(recipe, query: query)
-                }
-            }
+            let engine = recipeEngine(for: recipes, cacheKey: searchIndexCacheKey(for: recipes))
+            recipes = engine.search(localFilterQuery).map(\.item)
         }
 
         if let difficulty = selectedDifficulty {
@@ -504,20 +504,12 @@ final class RecipeViewModel: AsyncActionHandling {
         }
     }
 
-    private func matchesQuery(_ recipe: Recipe, query: String) -> Bool {
-        recipe.title.localizedCaseInsensitiveContains(query) ||
-        (recipe.description?.localizedCaseInsensitiveContains(query) ?? false) ||
-        recipe.ingredients.contains { $0.name.localizedCaseInsensitiveContains(query) } ||
-        (recipe.cuisine?.rawValue.localizedCaseInsensitiveContains(query) ?? false) ||
-        (recipe.mealType?.rawValue.localizedCaseInsensitiveContains(query) ?? false)
-    }
-
-    private func searchIndex(for recipes: [Recipe], cacheKey: SearchIndexCacheKey) -> RecipeSearchIndex {
-        if let cached = searchIndexCache[cacheKey] {
+    private func recipeEngine(for recipes: [Recipe], cacheKey: SearchIndexCacheKey) -> RankedTextSearchEngine<Recipe> {
+        if let cached = recipeEngineCache[cacheKey] {
             return cached
         }
-        let built = RecipeSearchIndex(recipes: recipes)
-        searchIndexCache[cacheKey] = built
+        let built = RankedTextSearchEngine(items: recipes, fields: Self.recipeSearchFields)
+        recipeEngineCache[cacheKey] = built
         return built
     }
 
@@ -794,63 +786,6 @@ private struct PersistedMetricEntry: Codable, Hashable {
 private struct PersistedRecipeMatchMetrics: Codable, Hashable {
     let recipeDigest: String
     let metrics: RecipeMatchMetrics
-}
-
-private struct RecipeSearchIndex {
-    let tokenToRecipeIDs: [String: Set<UUID>]
-
-    init(recipes: [Recipe]) {
-        var index: [String: Set<UUID>] = [:]
-        for recipe in recipes {
-            let searchable = [
-                recipe.title,
-                recipe.description ?? "",
-                recipe.cuisine?.rawValue ?? "",
-                recipe.mealType?.rawValue ?? "",
-                recipe.ingredients.map(\.name).joined(separator: " "),
-            ].joined(separator: " ")
-
-            for token in Self.tokenize(searchable) {
-                index[token, default: []].insert(recipe.id)
-            }
-        }
-        self.tokenToRecipeIDs = index
-    }
-
-    func candidateIDs(for queryTokens: [String]) -> Set<UUID>? {
-        guard !queryTokens.isEmpty else { return nil }
-        var resolvedSets: [Set<UUID>] = []
-
-        for token in queryTokens {
-            guard token.count >= 2 else { return nil }
-
-            var ids = tokenToRecipeIDs[token] ?? []
-            if ids.isEmpty {
-                for (indexedToken, indexedIDs) in tokenToRecipeIDs where indexedToken.hasPrefix(token) {
-                    ids.formUnion(indexedIDs)
-                }
-            }
-            if ids.isEmpty { return [] }
-            resolvedSets.append(ids)
-        }
-
-        guard var intersection = resolvedSets.first else { return nil }
-        for set in resolvedSets.dropFirst() {
-            intersection.formIntersection(set)
-            if intersection.isEmpty {
-                return []
-            }
-        }
-        return intersection
-    }
-
-    static func tokenize(_ text: String) -> [String] {
-        text
-            .lowercased()
-            .split { !$0.isLetter && !$0.isNumber }
-            .map(String.init)
-            .filter { !$0.isEmpty }
-    }
 }
 
 private struct RecipeIngredientDependencyIndex {

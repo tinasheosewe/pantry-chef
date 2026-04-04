@@ -24,9 +24,15 @@ struct MultiCookSelectionView: View {
     }
 
     private var filteredRecipes: [Recipe] {
-        SearchQuerySupport.filtered(availableRecipes, query: debouncedSearchText) { recipe in
-            [recipe.title, recipe.source.label, recipe.totalTimeDisplay].joined(separator: " ")
-        }
+        guard !debouncedSearchText.isEmpty else { return availableRecipes }
+        return RankedTextSearchEngine(items: availableRecipes, fields: [
+            WeightedField(weight: 1.0) { $0.title },
+            WeightedField(weight: 0.6) { $0.ingredients.map(\.name).joined(separator: " ") },
+            WeightedField(weight: 0.5) { $0.dietaryTags.map(\.rawValue).joined(separator: " ") },
+            WeightedField(weight: 0.5) { $0.cuisine?.rawValue ?? "" },
+            WeightedField(weight: 0.4) { $0.mealType?.rawValue ?? "" },
+            WeightedField(weight: 0.2) { $0.source.label },
+        ]).search(debouncedSearchText).map(\.item)
     }
 
     var body: some View {

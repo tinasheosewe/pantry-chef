@@ -78,9 +78,13 @@ final class UseUpIngredientsViewModel {
     }
 
     var filteredPantryItems: [PantryItem] {
-        let query = searchText.trimmingCharacters(in: .whitespaces).lowercased()
+        let query = searchText.trimmingCharacters(in: .whitespaces)
         guard !query.isEmpty else { return pantryItems }
-        return pantryItems.filter { $0.name.lowercased().contains(query) }
+        return RankedTextSearchEngine(items: pantryItems, fields: [
+            WeightedField(weight: 1.0) { $0.name },
+            WeightedField(weight: 0.5) { $0.facets.map(\.value).joined(separator: " ") },
+            WeightedField(weight: 0.4) { $0.category.rawValue },
+        ]).search(query).map(\.item)
     }
 
     var groupedPantryItems: [(FoodCategory, [PantryItem])] {

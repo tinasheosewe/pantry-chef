@@ -15,10 +15,12 @@ final class ShoppingViewModel: AsyncActionHandling {
     }
 
     var items: [ShoppingItem] {
-        SearchQuerySupport.filtered(
-            appState.shoppingItems,
-            query: SearchQuerySupport.normalized(searchText)
-        ) { $0.name }
+        let query = SearchQuerySupport.normalized(searchText)
+        guard !query.isEmpty else { return appState.shoppingItems }
+        return RankedTextSearchEngine(items: appState.shoppingItems, fields: [
+            WeightedField(weight: 1.0) { $0.name },
+            WeightedField(weight: 0.4) { $0.category.rawValue },
+        ]).search(query).map(\.item)
     }
 
     var groupedByCategory: [(FoodCategory, [ShoppingItem])] {

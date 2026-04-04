@@ -555,10 +555,11 @@ private struct MealPlanEatenSelectionView: View {
     @State private var reviewDrafts: [MealPlanEatenReviewDraft] = []
 
     private var filteredEntries: [MealPlanEntry] {
-        SearchQuerySupport.filtered(entries, query: debouncedSearchText) { entry in
-            [entry.displayName, entry.mealType.rawValue, entry.date.formatted(date: .abbreviated, time: .omitted)]
-                .joined(separator: " ")
-        }
+        guard !debouncedSearchText.isEmpty else { return entries }
+        return RankedTextSearchEngine(items: entries, fields: [
+            WeightedField(weight: 1.0) { $0.displayName },
+            WeightedField(weight: 0.4) { $0.mealType.rawValue },
+        ]).search(debouncedSearchText).map(\.item)
     }
 
     private var selectedEntries: [MealPlanEntry] {
@@ -978,11 +979,23 @@ struct MealPickerView: View {
     @State private var searchDebouncer = TaskDebouncer()
 
     var filteredRecipes: [Recipe] {
-        SearchQuerySupport.filtered(recipes, query: debouncedSearchText) { $0.title }
+        guard !debouncedSearchText.isEmpty else { return recipes }
+        return RankedTextSearchEngine(items: recipes, fields: [
+            WeightedField(weight: 1.0) { $0.title },
+            WeightedField(weight: 0.6) { $0.ingredients.map(\.name).joined(separator: " ") },
+            WeightedField(weight: 0.5) { $0.dietaryTags.map(\.rawValue).joined(separator: " ") },
+            WeightedField(weight: 0.5) { $0.cuisine?.rawValue ?? "" },
+            WeightedField(weight: 0.4) { $0.mealType?.rawValue ?? "" },
+        ]).search(debouncedSearchText).map(\.item)
     }
 
     var filteredPreparedDishes: [PreparedDish] {
-        SearchQuerySupport.filtered(preparedDishes, query: debouncedSearchText) { $0.name }
+        guard !debouncedSearchText.isEmpty else { return preparedDishes }
+        return RankedTextSearchEngine(items: preparedDishes, fields: [
+            WeightedField(weight: 1.0) { $0.name },
+            WeightedField(weight: 0.5) { $0.mealTypesSummary },
+            WeightedField(weight: 0.3) { $0.notes ?? "" },
+        ]).search(debouncedSearchText).map(\.item)
     }
 
     var body: some View {
@@ -1091,11 +1104,23 @@ struct MultiMealPickerView: View {
     @State private var searchDebouncer = TaskDebouncer()
 
     private var filteredRecipes: [Recipe] {
-        SearchQuerySupport.filtered(recipes, query: debouncedSearchText) { $0.title }
+        guard !debouncedSearchText.isEmpty else { return recipes }
+        return RankedTextSearchEngine(items: recipes, fields: [
+            WeightedField(weight: 1.0) { $0.title },
+            WeightedField(weight: 0.6) { $0.ingredients.map(\.name).joined(separator: " ") },
+            WeightedField(weight: 0.5) { $0.dietaryTags.map(\.rawValue).joined(separator: " ") },
+            WeightedField(weight: 0.5) { $0.cuisine?.rawValue ?? "" },
+            WeightedField(weight: 0.4) { $0.mealType?.rawValue ?? "" },
+        ]).search(debouncedSearchText).map(\.item)
     }
 
     private var filteredPreparedDishes: [PreparedDish] {
-        SearchQuerySupport.filtered(preparedDishes, query: debouncedSearchText) { $0.name }
+        guard !debouncedSearchText.isEmpty else { return preparedDishes }
+        return RankedTextSearchEngine(items: preparedDishes, fields: [
+            WeightedField(weight: 1.0) { $0.name },
+            WeightedField(weight: 0.5) { $0.mealTypesSummary },
+            WeightedField(weight: 0.3) { $0.notes ?? "" },
+        ]).search(debouncedSearchText).map(\.item)
     }
 
     var body: some View {

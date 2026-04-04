@@ -83,6 +83,7 @@
 		9F1CD7441C3C04EAF85D3371 /* Recipe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 732C449BE670E2788C0421ED /* Recipe.swift */; };
 		A0B9078EECBE9B9B964AA673 /* HomeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A2FCAFEA6E108A131976BB6 /* HomeViewModel.swift */; };
 		A60697B00B0962F79098D956 /* RecipeIngredientResolutionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 896275EB19EF8D062E8C4CF2 /* RecipeIngredientResolutionTests.swift */; };
+		A7653075B5F5A2AFC3EDBDB2 /* RankedTextSearchEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8101D29E78E38A0C3D0477A /* RankedTextSearchEngine.swift */; };
 		A7BE072CF5A59A9C1C39DDC0 /* PreparedDishesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E5E0771207C64AAD3C1FF85 /* PreparedDishesView.swift */; };
 		A95F2F30E6FAC1AF0CE3EBEA /* IngredientCatalogSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 244B70B40ED7FCA85632DC31 /* IngredientCatalogSettingsView.swift */; };
 		AACC56B00F6BECBD683E04A1 /* seed_recipes.json in Resources */ = {isa = PBXBuildFile; fileRef = ECEFEB3FB5265EBF48F4495C /* seed_recipes.json */; };
@@ -286,6 +287,7 @@
 		F1DC8288BBCA0F36FAC20468 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
 		F3EC0C92B205B172CE242110 /* UseUpIngredientsViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UseUpIngredientsViewModelTests.swift; sourceTree = "<group>"; };
 		F620C25FCD846DF01FBA6193 /* RecipeBuilderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeBuilderView.swift; sourceTree = "<group>"; };
+		F8101D29E78E38A0C3D0477A /* RankedTextSearchEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RankedTextSearchEngine.swift; sourceTree = "<group>"; };
 		F9D6320911E5D93399FD4833 /* AIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIService.swift; sourceTree = "<group>"; };
 		FB6A25657C4CC1FCAB95F7F2 /* PCCards.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PCCards.swift; sourceTree = "<group>"; };
 		FCBA40607E7081618BC69A02 /* swift-realtime-openai */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "swift-realtime-openai"; path = "Vendor/swift-realtime-openai"; sourceTree = SOURCE_ROOT; };
@@ -708,6 +710,7 @@
 				4847B23D0DA66AC6F8967869 /* MultiRecipeScheduler.swift */,
 				CA3FEFC1D069640D0CCBC291 /* NotificationService.swift */,
 				C03CAD07000A5F75BB029B1C /* Protocols.swift */,
+				F8101D29E78E38A0C3D0477A /* RankedTextSearchEngine.swift */,
 				5FF94D344E15CC2935F5283B /* RealtimeService.swift */,
 				BF4ACDEB952F0E92FF5A2FF7 /* RealtimeServiceProtocol.swift */,
 				76DFA2EE9B6B77FB3CEAD7C7 /* RecipeIngredientResolutionService.swift */,
@@ -991,6 +994,7 @@
 				E33D4C161D7067B91D51F80F /* PreparedDishViewModel.swift in Sources */,
 				A7BE072CF5A59A9C1C39DDC0 /* PreparedDishesView.swift in Sources */,
 				B24112BA95D8DCD56F830ABD /* Protocols.swift in Sources */,
+				A7653075B5F5A2AFC3EDBDB2 /* RankedTextSearchEngine.swift in Sources */,
 				0F0DFA82B7C463DDB2BE8294 /* RealtimeService.swift in Sources */,
 				36338DBD21E24BFD8E128018 /* RealtimeServiceProtocol.swift in Sources */,
 				9F1CD7441C3C04EAF85D3371 /* Recipe.swift in Sources */,

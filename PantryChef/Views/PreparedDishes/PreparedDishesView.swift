@@ -674,15 +674,17 @@ private struct PreparedDishHistoryPickerView: View {
     @State private var showingEditor = false
 
     private var filteredItems: [PreparedDishHistoryItem] {
-        SearchQuerySupport.filtered(appState.preparedDishHistory, query: debouncedSearchText) { item in
-            [item.name, item.mealTypesSummary, item.notes ?? ""].joined(separator: " ")
-        }
-        .sorted { lhs, rhs in
-            if lhs.recipeID != rhs.recipeID {
-                return lhs.recipeID != nil
+        guard !debouncedSearchText.isEmpty else {
+            return appState.preparedDishHistory.sorted { lhs, rhs in
+                if lhs.recipeID != rhs.recipeID { return lhs.recipeID != nil }
+                return lhs.lastUsedAt > rhs.lastUsedAt
             }
-            return lhs.lastUsedAt > rhs.lastUsedAt
         }
+        return RankedTextSearchEngine(items: appState.preparedDishHistory, fields: [
+            WeightedField(weight: 1.0) { $0.name },
+            WeightedField(weight: 0.5) { $0.mealTypesSummary },
+            WeightedField(weight: 0.3) { $0.notes ?? "" },
+        ]).search(debouncedSearchText).map(\.item)
     }
 
     var body: some View {
@@ -1063,10 +1065,11 @@ struct PreparedDishMealPlanSelectionView: View {
 
     private var filteredEntries: [MealPlanEntry] {
         let plannedEntries = appState.preparedFoodSourceEntriesFromMealPlan()
-        return SearchQuerySupport.filtered(plannedEntries, query: debouncedSearchText) { entry in
-            [entry.displayName, entry.mealType.rawValue, entry.date.formatted(date: .abbreviated, time: .omitted)]
-                .joined(separator: " ")
-        }
+        guard !debouncedSearchText.isEmpty else { return plannedEntries }
+        return RankedTextSearchEngine(items: plannedEntries, fields: [
+            WeightedField(weight: 1.0) { $0.displayName },
+            WeightedField(weight: 0.4) { $0.mealType.rawValue },
+        ]).search(debouncedSearchText).map(\.item)
     }
 
     private var selectedEntries: [MealPlanEntry] {
