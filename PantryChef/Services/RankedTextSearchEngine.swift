@@ -116,55 +116,12 @@ struct RankedTextSearchEngine<Item> {
 
     // MARK: - Token Classification
 
-    /// Classifies a query token using the same 4-strategy chain as `CatalogSearchEngine`:
-    /// exact → Levenshtein (≥3 chars) → Bitap (≥3 chars) → prefix.
-    ///
-    /// Returns `[(indexedToken, contributionMultiplier)]` — one or more indexed tokens
-    /// that should be credited for this query token, with their multipliers.
+    /// Resolves a single query token against this engine's index.
+    /// Delegates to `matchToken` for the fuzzy+prefix strategies; exact is
+    /// handled inline via the O(1) index dictionary.
     private func classifyToken(_ token: String) -> [(String, Double)] {
-        // 1. Exact match → full contribution (1.0×)
-        if index[token] != nil {
-            return [(token, 1.0)]
-        }
-
-        if token.count >= 3 {
-            // 2. Levenshtein fuzzy (edit distance ≤ 2 — handles typos like "chiken" → "chicken").
-            // Skipped for tokens < 3 chars because edit-distance on very short strings matches
-            // almost anything, preventing the prefix strategy from running.
-            var levBestToken: String?
-            var levBestDist = 3 // threshold is 2; initialise above threshold
-            for indexed in indexedTokens {
-                let d = IngredientLexicon.levenshteinDistance(token, indexed)
-                if d < levBestDist {
-                    levBestDist = d
-                    levBestToken = indexed
-                }
-            }
-            if let matched = levBestToken {
-                return [(matched, 0.5)]
-            }
-
-            // 3. Bitap approximate substring — catches typo-inside-longer-token,
-            // e.g. "chese" matching inside "cheesecloth".
-            if let pattern = BitapSearcher.createPattern(from: token) {
-                var bitapBestToken: String?
-                var bitapBestScore = 1.0
-                for indexed in indexedTokens {
-                    if let m = BitapSearcher.search(pattern, in: indexed, threshold: 0.4),
-                       m.score < bitapBestScore {
-                        bitapBestScore = m.score
-                        bitapBestToken = indexed
-                    }
-                }
-                if let matched = bitapBestToken {
-                    return [(matched, 0.5)]
-                }
-            }
-        }
-
-        // 4. Prefix match (0.8×) — handles partial input like "app" → "apple", "apricot".
-        let prefixMatches = indexedTokens.filter { $0.hasPrefix(token) && $0 != token }
-        return prefixMatches.map { ($0, 0.8) }
+        if index[token] != nil { return [(token, 1.0)] }
+        return matchToken(token, in: indexedTokens)
     }
 
     // MARK: - Tokenization
@@ -176,4 +133,50 @@ struct RankedTextSearchEngine<Item> {
             .map(String.init)
             .filter { !$0.isEmpty }
     }
+}
+
+// MARK: - Shared Token-Matching Core
+
+/// The single implementation of the 4-strategy token scan used by both
+/// `RankedTextSearchEngine` (generic) and `TokenClassifier` (catalog search).
+///
+/// Strategies applied in priority order (exact must be done by the caller first):
+///   1. Levenshtein fuzzy (edit distance ≤ `maxEditDistance`) — best hit, 0.5×
+///   2. Bitap approximate substring — best hit, 0.5×
+///   3. Prefix — all matching keys, 0.8× each
+///
+/// **To improve the matching algorithm, edit this function only.**
+/// Both engines automatically benefit.
+func matchToken(
+    _ token: String,
+    in keys: [String],
+    maxEditDistance: Int = 2
+) -> [(token: String, multiplier: Double)] {
+    guard !keys.isEmpty else { return [] }
+
+    if token.count >= 3 {
+        // Levenshtein — tolerates typos like "chiken" → "chicken"
+        var bestDist = maxEditDistance + 1
+        var bestKey: String?
+        for key in keys {
+            let d = IngredientLexicon.levenshteinDistance(token, key)
+            if d < bestDist { bestDist = d; bestKey = key }
+        }
+        if let key = bestKey { return [(key, 0.5)] }
+
+        // Bitap approximate substring — catches typo inside a longer token,
+        // e.g. "chese" matching "cheesecloth"
+        if let pattern = BitapSearcher.createPattern(from: token) {
+            var bestScore = 1.0
+            var bitapKey: String?
+            for key in keys {
+                if let m = BitapSearcher.search(pattern, in: key, threshold: 0.4),
+                   m.score < bestScore { bestScore = m.score; bitapKey = key }
+            }
+            if let key = bitapKey { return [(key, 0.5)] }
+        }
+    }
+
+    // Prefix — handles partial input like "app" → "apple", "apricot"
+    return keys.filter { $0.hasPrefix(token) && $0 != token }.map { ($0, 0.8) }
 }

@@ -46,36 +46,41 @@ enum TokenClassifier {
     typealias FacetEntry = (itemID: String, key: PantryFacetKey, value: String)
 
     /// Classifies `token` by trying strategies in priority order:
-    /// exact → fuzzy (Levenshtein) → bitap substring → prefix → unmatched.
-    /// Levenshtein and bitap are skipped for tokens shorter than 3 chars because
-    /// edit-distance on very short strings matches almost anything, preventing the
-    /// prefix strategy from running and returning the expected results.
+    /// exact → fuzzy (Levenshtein) → Bitap substring → prefix → unmatched.
     static func classify(
         _ token: String,
         nameKeys: [String],
         facetKeys: [String],
         maxEditDistance: Int
     ) -> Match {
-        // 1. Exact lookup
+        // 1. Exact — O(1) catalog index lookup, handled here before the linear scan
         if let exact = exactMatch(token) { return exact }
 
-        if token.count >= 3 {
-            // 2. Levenshtein fuzzy (for short edits like typos)
-            if let fuzzy = levenshteinMatch(token, nameKeys: nameKeys, facetKeys: facetKeys, maxDistance: maxEditDistance) {
-                return fuzzy
-            }
+        // 2–4. Fuzzy + prefix — delegate to shared core, merging both pools upfront
+        //      so the globally-best edit-distance match wins across name and facet tokens.
+        let hits = matchToken(token, in: nameKeys + facetKeys, maxEditDistance: maxEditDistance)
+        guard !hits.isEmpty else { return .unmatched }
 
-            // 3. Bitap fuzzy substring (catches typo + longer candidate, e.g. "chese" in "cheesecloth")
-            if let bitap = bitapMatch(token, nameKeys: nameKeys, facetKeys: facetKeys) {
-                return bitap
+        // Fuzzy hit (Levenshtein or Bitap) — single result, multiplier 0.5
+        if let hit = hits.first, hit.multiplier == 0.5 {
+            if let ids = PantryCatalog.tokenIndex[hit.token] {
+                return .fuzzyName(itemIDs: ids, corrected: hit.token)
+            }
+            if let entries = PantryCatalog.facetTokenToItems[hit.token] {
+                return .fuzzyFacet(entries: entries, corrected: hit.token)
             }
         }
 
-        // 4. Prefix (short partial input, e.g. "a" → "apple", or "ap" → "apple")
-        if let prefix = prefixMatch(token, nameKeys: nameKeys, facetKeys: facetKeys) {
-            return prefix
+        // Prefix hits — route each matched token to name or facet via catalog lookup
+        var nameIDs: Set<String> = []
+        var facetEntries: [FacetEntry] = []
+        for hit in hits {
+            if let ids = PantryCatalog.tokenIndex[hit.token] { nameIDs.formUnion(ids) }
+            if let entries = PantryCatalog.facetTokenToItems[hit.token] { facetEntries.append(contentsOf: entries) }
         }
-
+        if !nameIDs.isEmpty && !facetEntries.isEmpty { return .nameAndFacet(nameIDs: nameIDs, facetEntries: facetEntries) }
+        if !nameIDs.isEmpty { return .prefixName(itemIDs: nameIDs) }
+        if !facetEntries.isEmpty { return .prefixFacet(entries: facetEntries) }
         return .unmatched
     }
 
@@ -93,115 +98,6 @@ enum TokenClassifier {
         }
     }
 
-    private static func levenshteinMatch(
-        _ token: String,
-        nameKeys: [String],
-        facetKeys: [String],
-        maxDistance: Int
-    ) -> Match? {
-        var bestDistance = maxDistance + 1
-        var bestNameKey: String?
-        var bestFacetKey: String?
-
-        for key in nameKeys {
-            let dist = IngredientLexicon.levenshteinDistance(token, key)
-            if dist < bestDistance {
-                bestDistance = dist
-                bestNameKey = key
-                bestFacetKey = nil
-            }
-        }
-
-        for key in facetKeys {
-            let dist = IngredientLexicon.levenshteinDistance(token, key)
-            if dist < bestDistance {
-                bestDistance = dist
-                bestNameKey = nil
-                bestFacetKey = key
-            }
-        }
-
-        guard bestDistance <= maxDistance else { return nil }
-
-        if let key = bestNameKey, let ids = PantryCatalog.tokenIndex[key] {
-            return .fuzzyName(itemIDs: ids, corrected: key)
-        }
-        if let key = bestFacetKey, let entries = PantryCatalog.facetTokenToItems[key] {
-            return .fuzzyFacet(entries: entries, corrected: key)
-        }
-        return nil
-    }
-
-    private static func bitapMatch(
-        _ token: String,
-        nameKeys: [String],
-        facetKeys: [String]
-    ) -> Match? {
-        guard let pattern = BitapSearcher.createPattern(from: token) else { return nil }
-        // Only use bitap when the token is long enough that Levenshtein didn't help
-        // but short enough for the bitap word-size limit.
-        guard token.count >= 3 else { return nil }
-
-        var bestScore = 1.0
-        var bestNameKey: String?
-        var bestFacetKey: String?
-
-        for key in nameKeys {
-            if let match = BitapSearcher.search(pattern, in: key, threshold: 0.4) {
-                if match.score < bestScore {
-                    bestScore = match.score
-                    bestNameKey = key
-                    bestFacetKey = nil
-                }
-            }
-        }
-
-        for key in facetKeys {
-            if let match = BitapSearcher.search(pattern, in: key, threshold: 0.4) {
-                if match.score < bestScore {
-                    bestScore = match.score
-                    bestNameKey = nil
-                    bestFacetKey = key
-                }
-            }
-        }
-
-        if let key = bestNameKey, let ids = PantryCatalog.tokenIndex[key] {
-            return .bitapName(itemIDs: ids, target: key)
-        }
-        if let key = bestFacetKey, let entries = PantryCatalog.facetTokenToItems[key] {
-            return .bitapFacet(entries: entries, target: key)
-        }
-        return nil
-    }
-
-    private static func prefixMatch(
-        _ token: String,
-        nameKeys: [String],
-        facetKeys: [String]
-    ) -> Match? {
-        var nameIDs: Set<String> = []
-        var facetEntries: [FacetEntry] = []
-
-        for key in nameKeys where key.hasPrefix(token) && key != token {
-            if let ids = PantryCatalog.tokenIndex[key] {
-                nameIDs.formUnion(ids)
-            }
-        }
-
-        for key in facetKeys where key.hasPrefix(token) && key != token {
-            if let entries = PantryCatalog.facetTokenToItems[key] {
-                facetEntries.append(contentsOf: entries)
-            }
-        }
-
-        if !nameIDs.isEmpty && !facetEntries.isEmpty {
-            return .nameAndFacet(nameIDs: nameIDs, facetEntries: facetEntries)
-        }
-        if !nameIDs.isEmpty { return .prefixName(itemIDs: nameIDs) }
-        if !facetEntries.isEmpty { return .prefixFacet(entries: facetEntries) }
-        return nil
-    }
 }
 
 // MARK: - Candidate Scoring
