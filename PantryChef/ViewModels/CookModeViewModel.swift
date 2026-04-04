@@ -307,16 +307,20 @@ final class CookModeViewModel {
         switch name {
         case "next_step":
             guard !isLastStep else {
+                stopTimer()
+                stopConversation()
                 showCompletionScreen = true
                 return
             }
             stopTimer()
             currentStepIndex += 1
             autoStartTimerIfNeeded()
+            persistSession()
         case "previous_step":
             guard !isFirstStep else { return }
             stopTimer()
             currentStepIndex -= 1
+            persistSession()
         case "go_to_step":
             if let step = args["step_number"] as? Int {
                 let index = step - 1
@@ -324,6 +328,7 @@ final class CookModeViewModel {
                 stopTimer()
                 currentStepIndex = index
                 autoStartTimerIfNeeded()
+                persistSession()
             }
         case "repeat_step":
             // No navigation needed — the model will re-read it
@@ -711,7 +716,7 @@ final class CookModeViewModel {
                 )
             },
             currentStepIndex: currentStepIndex,
-            startedAt: Date(),
+            startedAt: sessionStore.load(recipeId: recipe.id)?.startedAt ?? Date(),
             backgroundedAt: Date(),
             isActive: true,
             expiryTimeoutSeconds: expiryDelay,
@@ -753,8 +758,8 @@ final class CookModeViewModel {
                 )
             },
             currentStepIndex: currentStepIndex,
-            startedAt: Date(),
-            backgroundedAt: Date(),
+            startedAt: sessionStore.load(recipeId: recipe.id)?.startedAt ?? Date(),
+            backgroundedAt: nil,
             isActive: true,
             expiryTimeoutSeconds: AppConfig.sessionExpiryTimeout,
             queueId: queueId,
@@ -767,6 +772,7 @@ final class CookModeViewModel {
 
     func cleanup() {
         stopTimer()
+        realtimeService.onFunctionCall = nil
         stopConversation()
     }
 }

@@ -25,6 +25,7 @@ enum IngredientLexicon {
 
     static func lookupKey(_ value: String) -> String {
         value
+            .folding(options: [.diacriticInsensitive, .widthInsensitive], locale: .current)
             .lowercased()
             .replacingOccurrences(of: "-", with: " ")
             .components(separatedBy: CharacterSet.alphanumerics.inverted)

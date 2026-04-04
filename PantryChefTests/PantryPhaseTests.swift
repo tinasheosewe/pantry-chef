@@ -427,14 +427,14 @@ final class TitleCaseRoundTripTests: XCTestCase {
     }
 
     func testRegisterAndRetrievePreservesTitleCase() {
-        var draft = CustomIngredientDraft(name: "brown sugar")
+        var draft = CustomIngredientDraft(name: "velvet dust")
         draft.category = .bakingSupplies
         let def = draft.buildDefinition()
         _ = PantryCatalog.registerUserItem(def)
 
         let retrieved = PantryCatalog.item(id: def.id)
-        XCTAssertEqual(retrieved?.name, "Brown Sugar")
-        XCTAssertEqual(retrieved?.titleCasedName, "Brown Sugar")
+        XCTAssertEqual(retrieved?.name, "Velvet Dust")
+        XCTAssertEqual(retrieved?.titleCasedName, "Velvet Dust")
     }
 }
 

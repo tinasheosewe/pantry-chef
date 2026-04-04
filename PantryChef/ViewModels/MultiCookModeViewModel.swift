@@ -255,22 +255,28 @@ final class MultiCookModeViewModel {
         switch name {
         case "next_block":
             guard !isLastBlock else {
+                stopTimer()
+                stopConversation()
+                clearSession()
                 showCompletionScreen = true
                 return
             }
             maybeStartPassiveTimer()
             stopTimer()
             currentBlockIndex += 1
+            persistSession()
         case "previous_block":
             guard !isFirstBlock else { return }
             stopTimer()
             currentBlockIndex -= 1
+            persistSession()
         case "go_to_block":
             if let block = args["block_number"] as? Int {
                 let index = block - 1
                 guard index >= 0 && index < blocks.count else { return }
                 stopTimer()
                 currentBlockIndex = index
+                persistSession()
             }
         case "start_timer":
             if let minutes = args["minutes"] as? Int {
@@ -281,7 +287,7 @@ final class MultiCookModeViewModel {
         case "stop_timer":
             stopTimer()
         case "finish_cooking":
-            stopConversation()
+            endSession()
             showCompletionScreen = true
         default:
             break
@@ -533,6 +539,7 @@ final class MultiCookModeViewModel {
     func cleanup() {
         passiveTickCancellable?.cancel()
         timerCancellable?.cancel()
+        realtimeService.onFunctionCall = nil
         stopConversation()
     }
 

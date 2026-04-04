@@ -102,20 +102,15 @@ struct PantryItem: Identifiable, Codable, Hashable {
     ]
 
     private static func normalizeFacets(_ facets: [PantryFacetSelection], for item: PantryCatalogItemDefinition?) -> [PantryFacetSelection] {
-        var facetsByKey: [PantryFacetKey: PantryFacetSelection] = [:]
-
-        for facet in facets {
-            guard facetsByKey[facet.key] == nil else { continue }
-            if let item {
-                guard item.supports(facet.key), item.options(for: facet.key).contains(facet.value) else {
-                    continue
-                }
+        guard let item else {
+            var facetsByKey: [PantryFacetKey: PantryFacetSelection] = [:]
+            for facet in facets where facetsByKey[facet.key] == nil {
+                facetsByKey[facet.key] = facet
             }
-            facetsByKey[facet.key] = facet
+            return PantryFacetKey.allCases.compactMap { facetsByKey[$0] }
         }
 
-        let orderedKeys = item?.facets.map(\.key) ?? PantryFacetKey.allCases
-        return orderedKeys.compactMap { facetsByKey[$0] }
+        return item.normalizedSelections(from: facets)
     }
 
     private static func normalizedQuantityMode(_ quantityMode: PantryQuantityMode?, quantity: Double?) -> PantryQuantityMode {

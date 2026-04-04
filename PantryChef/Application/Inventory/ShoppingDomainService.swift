@@ -143,7 +143,7 @@ struct ShoppingDomainService: ShoppingDomainServicing {
     }
 
     private func isExcludedShoppingIngredient(named name: String) -> Bool {
-        let normalized = IngredientMatcher.normalize(name)
+        let normalized = IngredientLexicon.lookupKey(name)
         let tokens = Set(normalized.split(separator: " ").map(String.init))
         let waterModifiers: Set<String> = ["cold", "hot", "warm", "ice", "iced", "boiling", "filtered"]
         let ignoredWaterTokens = waterModifiers.union(["water"])
@@ -184,7 +184,7 @@ struct ShoppingDomainService: ShoppingDomainServicing {
     ) -> ShoppingItem {
         var merged = existing
         merged.catalogItemID = existing.catalogItemID ?? addition.catalogItemID
-        merged.name = merged.resolvedCatalogItem?.name ?? (
+        merged.name = merged.resolvedCatalogItem?.displayName(for: merged.facets) ?? (
             existing.name.count <= addition.name.count ? existing.name : addition.name
         )
 

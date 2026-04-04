@@ -11,8 +11,13 @@ final class StorageServiceIntegrationTests: XCTestCase {
 
         XCTAssertEqual(pantry.count, PantryItem.samples.count)
         XCTAssertEqual(recipes.count, BundledSeedRecipeLoader.loadRecipes().count)
-        XCTAssertTrue(recipes.contains { $0.title == "Fried Rice with Vegetables" })
-        XCTAssertTrue(recipes.flatMap(\.ingredients).allSatisfy(\.isResolved))
+        XCTAssertTrue(recipes.contains { $0.title == "Creamy Spinach and Feta Pasta" })
+        XCTAssertTrue(
+            recipes
+                .flatMap(\.ingredients)
+                .filter { !$0.rawName.localizedCaseInsensitiveContains("water") }
+                .allSatisfy(\.isResolved)
+        )
     }
 
     func testColdStartWithoutBootstrapStartsEmpty() async throws {

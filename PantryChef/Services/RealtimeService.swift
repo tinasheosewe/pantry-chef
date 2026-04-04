@@ -122,8 +122,15 @@ final class RealtimeService: RealtimeServiceProtocol {
             return
         }
 
-        // Tear down any previous session
-        cleanUpConversation()
+        if conversation != nil || syncTask != nil || errorTask != nil || isConnected {
+            AppLog.info("[RealtimeService] Tearing down existing conversation before reconnect")
+            disconnect()
+            do {
+                try AVAudioSession.sharedInstance().setActive(true)
+            } catch {
+                AppLog.warn("Audio session reactivation warning: \(error.localizedDescription)")
+            }
+        }
 
         let sdkTools = convertTools(tools)
         statusMessage = "Connecting…"

@@ -83,6 +83,7 @@ final class IngredientCandidateParser: IngredientCandidateParserProtocol {
             return []
         }
         let queryLookupTokenSet = Set(IngredientLexicon.tokenize(query.lookupKey))
+        let lookupTokens = IngredientLexicon.tokenize(query.lookupKey)
 
         var candidatesByID: [String: ScoredCandidate] = [:]
 
@@ -114,8 +115,18 @@ final class IngredientCandidateParser: IngredientCandidateParserProtocol {
             for definition in item.facets {
                 for option in definition.options {
                     let selection = PantryFacetSelection(key: definition.key, value: option)
+                    let optionKey = IngredientLexicon.lookupKey(option)
                     let templateName = item.displayName(for: [selection])
                     let templateKey = IngredientLexicon.lookupKey(templateName)
+
+                    if optionKey == query.lookupKey {
+                        register(
+                            item: item, facets: [selection],
+                            stage: .exactTemplate, score: 0.99,
+                            rationale: "Exact facet option match for \(option).",
+                            into: &candidatesByID
+                        )
+                    }
 
                     if templateKey == query.lookupKey {
                         register(
@@ -150,6 +161,29 @@ final class IngredientCandidateParser: IngredientCandidateParserProtocol {
                         }
                     }
                 }
+
+                let inferredSelections = IngredientLexicon.inferredFacets(forLookupKey: query.lookupKey, item: item)
+                if inferredSelections.count > 1 {
+                    let matchesDefaultIdentity = Set(inferredSelections) == Set(item.defaultSelections)
+                    let inferredTokenSet = Set(
+                        inferredSelections.flatMap { selection in
+                            IngredientLexicon.tokenize(IngredientLexicon.lookupKey(selection.value))
+                        }
+                    )
+                    if matchesDefaultIdentity && (inferredTokenSet == queryLookupTokenSet || nameTokens.union(inferredTokenSet) == queryLookupTokenSet) {
+                        let candidateKey = candidateID(for: item.id, facets: inferredSelections)
+                        if candidatesByID[candidateKey] == nil {
+                            register(
+                                item: item,
+                                facets: inferredSelections,
+                                stage: .exactTemplate,
+                                score: ResolutionThresholds.exactTemplateToken,
+                                rationale: "Exact multi-facet template match for \(item.displayName(for: inferredSelections)).",
+                                into: &candidatesByID
+                            )
+                        }
+                    }
+                }
             }
         }
 
@@ -172,10 +206,12 @@ final class IngredientCandidateParser: IngredientCandidateParserProtocol {
         }
 
         // Stage 5: Lexical (token overlap scoring)
-        if !query.tokens.isEmpty {
+        if !query.tokens.isEmpty || !lookupTokens.isEmpty {
             let synonymTokens = synonymLookups.flatMap(IngredientLexicon.tokenize)
-            let expandedQueryTokens = Array(Set(query.tokens + synonymTokens))
-            let lexicalCandidateIDs = PantryCatalog.itemIDs(matchingAnyToken: Set(expandedQueryTokens))
+            let expandedQueryTokens = Array(Set(query.tokens + lookupTokens + synonymTokens))
+            let lexicalCandidateIDs = PantryCatalog
+                .itemIDs(matchingAnyToken: Set(expandedQueryTokens))
+                .union(PantryCatalog.itemIDs(matchingFacetTokens: Set(expandedQueryTokens)))
 
             for itemID in lexicalCandidateIDs {
                 guard let item = PantryCatalog.item(id: itemID) else { continue }
@@ -205,7 +241,12 @@ final class IngredientCandidateParser: IngredientCandidateParserProtocol {
             }
 
             // Generic fallbacks
-            registerGenericFallbacks(query: query, candidateItemIDs: lexicalCandidateIDs, into: &candidatesByID)
+            registerGenericFallbacks(
+                query: query,
+                lookupTokens: lookupTokens,
+                candidateItemIDs: lexicalCandidateIDs,
+                into: &candidatesByID
+            )
         }
 
         // Stage 6: Fuzzy
@@ -374,10 +415,12 @@ final class IngredientCandidateParser: IngredientCandidateParserProtocol {
 
     private func registerGenericFallbacks(
         query: IngredientLexicon.ParsedText,
+        lookupTokens: [String],
         candidateItemIDs: Set<String>,
         into candidatesByID: inout [String: ScoredCandidate]
     ) {
-        let queryTokenSet = Set(query.tokens)
+        let queryTokens = lookupTokens.isEmpty ? query.tokens : lookupTokens
+        let queryTokenSet = Set(queryTokens)
         guard !queryTokenSet.isEmpty else { return }
 
         for itemID in candidateItemIDs {
@@ -395,18 +438,17 @@ final class IngredientCandidateParser: IngredientCandidateParserProtocol {
             }
             guard let genericFacetKey else { continue }
 
-            let itemNormalized = IngredientLexicon.normalizeIngredient(item.name)
-            let itemTokens = IngredientLexicon.tokenize(itemNormalized)
+            let itemTokens = IngredientLexicon.tokenize(IngredientLexicon.lookupKey(item.name))
             let itemTokenSet = Set(itemTokens)
             guard !itemTokenSet.isEmpty, itemTokenSet.isSubset(of: queryTokenSet) else { continue }
 
-            let meaningfulExtraTokens = query.tokens.filter {
+            let meaningfulExtraTokens = queryTokens.filter {
                 !itemTokenSet.contains($0) && !Self.nonSpecificDescriptorTokens.contains($0)
             }
             guard !meaningfulExtraTokens.isEmpty else { continue }
 
             let tokenScore = IngredientLexicon.weightedTokenScore(
-                queryTokens: query.tokens,
+                queryTokens: queryTokens,
                 candidateTokens: itemTokens
             )
             let itemLookup = IngredientLexicon.lookupKey(item.name)
@@ -430,8 +472,7 @@ final class IngredientCandidateParser: IngredientCandidateParserProtocol {
         expandedQueryTokens: [String],
         into candidatesByID: inout [String: ScoredCandidate]
     ) {
-        let itemNormalized = IngredientLexicon.normalizeIngredient(item.name)
-        let itemTokens = IngredientLexicon.tokenize(itemNormalized)
+        let itemTokens = IngredientLexicon.tokenize(IngredientLexicon.lookupKey(item.name))
         let itemLookup = IngredientLexicon.lookupKey(item.name)
 
         let tokenScore = IngredientLexicon.weightedTokenScore(queryTokens: expandedQueryTokens, candidateTokens: itemTokens)

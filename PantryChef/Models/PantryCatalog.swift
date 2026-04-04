@@ -1,5 +1,53 @@
 import Foundation
 
+enum AppBundleResourceLocator {
+    private final class BundleMarker {}
+
+    static func url(forResource name: String, withExtension ext: String) -> URL? {
+        for bundle in candidateBundles() {
+            if let url = bundle.url(forResource: name, withExtension: ext) {
+                return url
+            }
+
+            if let resourceURL = bundle.resourceURL {
+                let directURL = resourceURL.appendingPathComponent("\(name).\(ext)")
+                if FileManager.default.fileExists(atPath: directURL.path) {
+                    return directURL
+                }
+            }
+        }
+
+        let sourceFallback = sourceResourcesURL().appendingPathComponent("\(name).\(ext)")
+        if FileManager.default.fileExists(atPath: sourceFallback.path) {
+            return sourceFallback
+        }
+
+        return nil
+    }
+
+    private static func candidateBundles() -> [Bundle] {
+        var bundles: [Bundle] = []
+        var seenPaths = Set<String>()
+
+        for bundle in [Bundle.main, Bundle(for: BundleMarker.self)] + Bundle.allBundles + Bundle.allFrameworks {
+            let path = bundle.bundleURL.standardizedFileURL.path
+            if seenPaths.insert(path).inserted {
+                bundles.append(bundle)
+            }
+        }
+
+        return bundles
+    }
+
+    private static func sourceResourcesURL(filePath: StaticString = #filePath) -> URL {
+        let fileURL = URL(fileURLWithPath: String(describing: filePath))
+        return fileURL
+            .deletingLastPathComponent()
+            .deletingLastPathComponent()
+            .appendingPathComponent("Resources", isDirectory: true)
+    }
+}
+
 extension Notification.Name {
     static let pantryCatalogDidChange = Notification.Name("PantryCatalogDidChange")
 }
@@ -223,10 +271,36 @@ struct PantryCatalogItemDefinition: Identifiable, Hashable, Sendable, Codable {
         defaultQuantity
     }
 
+    func normalizedSelections(
+        from selections: [PantryFacetSelection],
+        includeDefaults: Bool = false
+    ) -> [PantryFacetSelection] {
+        var selectionsByKey: [PantryFacetKey: PantryFacetSelection] = [:]
+        var explicitKeys: Set<PantryFacetKey> = []
+
+        if includeDefaults {
+            for selection in defaultSelections {
+                if let normalized = normalizedSelection(from: selection) {
+                    selectionsByKey[normalized.key] = normalized
+                }
+            }
+        }
+
+        for selection in selections {
+            guard let normalized = normalizedSelection(from: selection) else { continue }
+            guard explicitKeys.insert(normalized.key).inserted else { continue }
+            selectionsByKey[normalized.key] = normalized
+        }
+
+        return facets.compactMap { definition in
+            selectionsByKey[definition.key]
+        }
+    }
+
     func displayName(for selections: [PantryFacetSelection]) -> String {
         let orderedKeys: [PantryFacetKey] = [.variant, .form, .preservation, .processing, .preparation, .texture, .concentration, .base]
         let orderedSelections = orderedKeys.compactMap { key in
-            selections.first(where: { $0.key == key })
+            selections.first(where: { $0.key == key && $0.value.lowercased() != "none" })
         }
         guard !orderedSelections.isEmpty else { return titleCasedName }
 
@@ -253,6 +327,20 @@ struct PantryCatalogItemDefinition: Identifiable, Hashable, Sendable, Codable {
             .split(separator: " ")
             .map { $0.prefix(1).uppercased() + $0.dropFirst().lowercased() }
             .joined(separator: " ")
+    }
+
+    private func normalizedSelection(from selection: PantryFacetSelection) -> PantryFacetSelection? {
+        if supports(selection.key), options(for: selection.key).contains(selection.value) {
+            return selection
+        }
+
+        guard let remappedDefinition = facets.first(where: { definition in
+            definition.key != selection.key && definition.options.contains(selection.value)
+        }) else {
+            return nil
+        }
+
+        return PantryFacetSelection(key: remappedDefinition.key, value: selection.value)
     }
 
     private static let suffixFacetValues: Set<String> = [
@@ -350,15 +438,17 @@ enum PantryCatalog {
     // MARK: - Bundle items (immutable)
 
     private static let bundleItems: [PantryCatalogItemDefinition] = {
-        guard let url = Bundle.main.url(forResource: "catalog", withExtension: "json") else {
-            fatalError("catalog.json not found in app bundle")
+        guard let url = AppBundleResourceLocator.url(forResource: "catalog", withExtension: "json") else {
+            AppLog.error("[PantryCatalog] catalog.json not found in app bundle")
+            return []
         }
         do {
             let data = try Data(contentsOf: url)
             let items = try JSONDecoder().decode([PantryCatalogItemDefinition].self, from: data)
             return items
         } catch {
-            fatalError("Failed to decode catalog.json: \(error)")
+            AppLog.error("[PantryCatalog] Failed to decode catalog.json: \(error.localizedDescription)")
+            return []
         }
     }()
 
@@ -404,6 +494,16 @@ enum PantryCatalog {
             result[normalizeLookupKey(item.name)] = item.id
             for alias in item.aliases {
                 result[normalizeLookupKey(alias)] = item.id
+            }
+
+            for facet in item.facets {
+                for option in facet.options {
+                    let selection = PantryFacetSelection(key: facet.key, value: option)
+                    let templateKey = normalizeLookupKey(item.displayName(for: [selection]))
+                    if result[templateKey] == nil {
+                        result[templateKey] = item.id
+                    }
+                }
             }
         }
         return result

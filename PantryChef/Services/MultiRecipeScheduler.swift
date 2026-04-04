@@ -162,8 +162,11 @@ struct MultiRecipeScheduler {
 
     /// Individual recipe time in seconds using step-level durations.
     private static func recipeTimeSeconds(_ recipe: Recipe) -> Int {
+        if !recipe.steps.isEmpty {
+            return recipe.steps.reduce(0) { $0 + $1.effectiveDurationSeconds }
+        }
         if let total = recipe.totalTimeMinutes { return total * 60 }
-        return recipe.steps.reduce(0) { $0 + $1.effectiveDurationSeconds }
+        return 0
     }
 
     /// Estimated interleaved time = longest recipe (assumes full parallelism).

@@ -4,12 +4,14 @@ import SwiftData
 final class PantryItemPreferenceStore: PantryItemPreferenceStoreProtocol {
     private let userDefaults: UserDefaults
     private let storageKey: String
+    private let backupStorageKey: String
     private let encoder = JSONEncoder()
     private let decoder = JSONDecoder()
 
     init(userDefaults: UserDefaults = .standard, storageKey: String = "pantry.item.default.preferences") {
         self.userDefaults = userDefaults
         self.storageKey = storageKey
+        self.backupStorageKey = "\(storageKey).backup"
     }
 
     func preference(for catalogItemID: String) -> PantryItemDefaultPreference? {
@@ -35,6 +37,9 @@ final class PantryItemPreferenceStore: PantryItemPreferenceStoreProtocol {
             return try decoder.decode([String: PantryItemDefaultPreference].self, from: data)
         } catch {
             AppLog.warn("[PantryItemPreferenceStore] Discarding unreadable pantry item default preferences: \(error.localizedDescription)")
+            if userDefaults.data(forKey: backupStorageKey) == nil {
+                userDefaults.set(data, forKey: backupStorageKey)
+            }
             userDefaults.removeObject(forKey: storageKey)
             return [:]
         }
@@ -126,13 +131,7 @@ actor StorageService: StorageServiceProtocol {
             try destroyPersistentStore(at: storeURL)
         }
         let configuration = ModelConfiguration(schema: schema, url: storeURL, cloudKitDatabase: .none)
-        do {
-            return try ModelContainer(for: schema, configurations: [configuration])
-        } catch {
-            AppLog.warn("[StorageService] Failed to open persistent store with current schema. Resetting store and retrying: \(error.localizedDescription)")
-            try destroyPersistentStore(at: storeURL)
-            return try ModelContainer(for: schema, configurations: [configuration])
-        }
+        return try ModelContainer(for: schema, configurations: [configuration])
     }
 
     private static func persistentStoreURL() throws -> URL {

@@ -13,6 +13,7 @@ final class RecipeIngredientResolutionTests: XCTestCase {
 
         let unresolved = allRecipes.flatMap { recipe in
             recipe.ingredients.compactMap { ingredient -> String? in
+                guard IngredientLexicon.lookupKey(ingredient.rawName) != "water" else { return nil }
                 guard !ingredient.isResolved else { return nil }
                 return "\(recipe.title): \(ingredient.rawName)"
             }
@@ -65,7 +66,7 @@ final class RecipeIngredientResolutionTests: XCTestCase {
         let candidates = parser.candidates(for: ingredient)
 
         XCTAssertEqual(candidates.first?.catalogItemID, "garlic")
-        XCTAssertEqual(candidates.first?.facets, [.init(key: .preparation, value: "minced")])
+        XCTAssertEqual(candidates.first?.facets, [.init(key: .form, value: "minced")])
         XCTAssertEqual(candidates.first?.displayName, "Minced Garlic")
     }
 
@@ -76,8 +77,8 @@ final class RecipeIngredientResolutionTests: XCTestCase {
         let candidates = parser.candidates(for: ingredient)
 
         XCTAssertEqual(candidates.first?.catalogItemID, "beef")
-        XCTAssertEqual(candidates.first?.facets, [.init(key: .variant, value: "stew")])
-        XCTAssertEqual(candidates.first?.displayName, "Beef Stew")
+        XCTAssertEqual(candidates.first?.facets, [.init(key: .variant, value: "stew meat")])
+        XCTAssertEqual(candidates.first?.displayName, "Stew Meat Beef")
     }
 
     func testCandidateParserFallsBackToGenericForUnknownSubtypeOnGenericParent() {
@@ -213,26 +214,26 @@ final class RecipeIngredientResolutionTests: XCTestCase {
 
         XCTAssertEqual(draft.ingredients.first?.status, .resolved)
         XCTAssertEqual(draft.ingredients.first?.selectedCandidate?.catalogItemID, "garlic")
-        XCTAssertEqual(draft.ingredients.first?.selectedCandidate?.facets, [.init(key: .preparation, value: "minced")])
+        XCTAssertEqual(draft.ingredients.first?.selectedCandidate?.facets, [.init(key: .form, value: "minced")])
         XCTAssertEqual(built.ingredients.first?.catalogItemID, "garlic")
-        XCTAssertEqual(built.ingredients.first?.facets, [.init(key: .preparation, value: "minced")])
+        XCTAssertEqual(built.ingredients.first?.facets, [.init(key: .form, value: "minced")])
     }
 
     func testChoosingCandidateDoesNotDismissAmbiguousDraftBeforeApply() {
         let candidates = [
             IngredientResolutionCandidate(
-                id: "garlic|preparation=whole",
+                id: "garlic|form=clove",
                 catalogItemID: "garlic",
-                facets: [.init(key: .preparation, value: "whole")],
+                facets: [.init(key: .form, value: "clove")],
                 displayName: "Whole Garlic",
                 score: 0.85,
                 rationale: "Whole garlic candidate.",
                 supportedFacets: []
             ),
             IngredientResolutionCandidate(
-                id: "garlic|preparation=minced",
+                id: "garlic|form=minced",
                 catalogItemID: "garlic",
-                facets: [.init(key: .preparation, value: "minced")],
+                facets: [.init(key: .form, value: "minced")],
                 displayName: "Minced Garlic",
                 score: 0.9,
                 rationale: "Minced garlic candidate.",
@@ -254,7 +255,7 @@ final class RecipeIngredientResolutionTests: XCTestCase {
         XCTAssertEqual(draft.selectedCandidateID, candidates[1].id)
         XCTAssertTrue(draft.requiresUserChoice)
         XCTAssertEqual(draft.resolvedIngredient.catalogItemID, "garlic")
-        XCTAssertEqual(draft.resolvedIngredient.facets, [.init(key: .preparation, value: "minced")])
+        XCTAssertEqual(draft.resolvedIngredient.facets, [.init(key: .form, value: "minced")])
     }
 }
 

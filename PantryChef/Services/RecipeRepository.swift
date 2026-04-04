@@ -28,7 +28,7 @@ final class RecipeRepository: RecipeCatalogProviding {
 
     private var seedCacheURL: URL {
         FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)[0]
-            .appendingPathComponent("seed_recipes_cache_v1.json")
+            .appendingPathComponent("seed_recipes_cache_v3.json")
     }
 
     private init() {}
@@ -206,7 +206,9 @@ final class RecipeRepository: RecipeCatalogProviding {
         do {
             let data = try JSONEncoder().encode(cachedRecipeStore)
             try data.write(to: cacheURL, options: .atomic)
-        } catch { }
+        } catch {
+            AppLog.warn("[RecipeRepository] Failed to persist cached recipes: \(error.localizedDescription)")
+        }
     }
 
     private func rebuildMergedDiscoverRecipes() {
@@ -243,7 +245,9 @@ final class RecipeRepository: RecipeCatalogProviding {
                 attributes: nil
             )
             try data.write(to: seedCacheURL, options: .atomic)
-        } catch { }
+        } catch {
+            AppLog.warn("[RecipeRepository] Failed to persist seed recipe cache: \(error.localizedDescription)")
+        }
     }
 
     private func seedResourceFingerprint(for url: URL) -> String? {
@@ -262,7 +266,7 @@ private struct SeedRecipeCachePayload: Codable {
 
 enum BundledSeedRecipeLoader {
     static func resourceURL() -> URL? {
-        Bundle.main.url(forResource: "seed_recipes", withExtension: "json")
+        AppBundleResourceLocator.url(forResource: "seed_recipes", withExtension: "json")
     }
 
     static func loadRecipes() -> [Recipe] {
@@ -292,7 +296,9 @@ enum BundledSeedRecipeLoader {
                         quantity: ing.quantity,
                         unit: MeasurementUnit.parse(ing.unit),
                         category: FoodCategory.infer(from: ing.category),
-                        isOptional: ing.isOptional ?? false
+                        isOptional: ing.isOptional ?? false,
+                        catalogItemID: ing.catalogEntryId,
+                        facets: ing.facetSelections ?? []
                     )
                 },
                 steps: seed.steps.map { step in
@@ -332,6 +338,8 @@ enum BundledSeedRecipeLoader {
         let unit: String?
         let category: String?
         let isOptional: Bool?
+        let catalogEntryId: String?
+        let facetSelections: [PantryFacetSelection]?
     }
 
     private struct SeedStep: Decodable {

@@ -200,21 +200,7 @@ struct ShoppingItem: Identifiable, Codable, Hashable {
         for item: PantryCatalogItemDefinition?
     ) -> [PantryFacetSelection] {
         guard let item else { return [] }
-
-        var facetsByKey: [PantryFacetKey: PantryFacetSelection] = [:]
-
-        for facet in item.defaultSelections {
-            facetsByKey[facet.key] = facet
-        }
-
-        for facet in facets {
-            guard item.options(for: facet.key).contains(facet.value) else { continue }
-            facetsByKey[facet.key] = facet
-        }
-
-        return item.facets.compactMap { definition in
-            facetsByKey[definition.key]
-        }
+        return item.normalizedSelections(from: facets)
     }
 
     private static func humanizedFacetValue(_ value: String) -> String {

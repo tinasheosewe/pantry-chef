@@ -153,8 +153,15 @@ final class UseUpIngredientsViewModel {
             excludeNames: []
         )
 
-        suggestions = result.suggestions
-        previousNames = result.suggestions.map(\.name)
+        let sortedSuggestions = result.suggestions.sorted { lhs, rhs in
+            if lhs.confidenceScore == rhs.confidenceScore {
+                return lhs.name.localizedCaseInsensitiveCompare(rhs.name) == .orderedAscending
+            }
+            return lhs.confidenceScore > rhs.confidenceScore
+        }
+
+        suggestions = sortedSuggestions
+        previousNames = sortedSuggestions.map(\.name)
         noResultsMessage = result.message
         isLoadingSuggestions = false
         _ = await cycling
@@ -170,8 +177,15 @@ final class UseUpIngredientsViewModel {
             excludeNames: previousNames
         )
 
-        suggestions.append(contentsOf: result.suggestions)
-        previousNames.append(contentsOf: result.suggestions.map(\.name))
+        let sortedSuggestions = result.suggestions.sorted { lhs, rhs in
+            if lhs.confidenceScore == rhs.confidenceScore {
+                return lhs.name.localizedCaseInsensitiveCompare(rhs.name) == .orderedAscending
+            }
+            return lhs.confidenceScore > rhs.confidenceScore
+        }
+
+        suggestions.append(contentsOf: sortedSuggestions)
+        previousNames.append(contentsOf: sortedSuggestions.map(\.name))
         if let message = result.message, suggestions.isEmpty {
             noResultsMessage = message
         }

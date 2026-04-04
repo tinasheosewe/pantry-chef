@@ -135,6 +135,43 @@ enum IngredientMatcher {
             }
         }
 
+        let unresolvedKey = unresolvedMatchKey(for: ingredient.rawName)
+        if let pantryCandidates = index.unresolvedItemsByMatchKey[unresolvedKey],
+           pantryCandidates.contains(where: { hasEnoughQuantity(candidate: $0, ingredient: ingredient) }) {
+            return true
+        }
+
+        if let resolvedIngredientItem = resolvedCatalogItem(for: ingredient.rawName) {
+            let requiredFacets = inferredFacets(for: ingredient.rawName, item: resolvedIngredientItem)
+
+            if let pantryCandidates = index.resolvedItemsByCatalogID[resolvedIngredientItem.id],
+               pantryCandidates.contains(where: {
+                   pantryFacetsSatisfy(requiredFacets, pantryFacets: $0.facets)
+                       && hasEnoughQuantity(candidate: $0, ingredient: ingredient)
+               }) {
+                return true
+            }
+
+            return pantry.contains { pantryItem in
+                if let pantryResolvedItem = resolvedCatalogItem(for: pantryItem.name, catalogItemID: pantryItem.catalogItemID),
+                   pantryResolvedItem.id == resolvedIngredientItem.id {
+                    let pantryFacets = pantryItem.catalogItemID == nil
+                        ? inferredFacets(for: pantryItem.name, item: pantryResolvedItem)
+                        : Set(pantryItem.facets)
+
+                    return pantryFacetsSatisfy(requiredFacets, pantryFacets: pantryFacets)
+                        && hasEnoughQuantity(pantryItem: pantryItem, ingredient: ingredient)
+                }
+
+                guard pantryItem.catalogItemID == nil else {
+                    return false
+                }
+
+                return namesMatch(pantryItem.name, ingredient.rawName)
+                    && hasEnoughQuantity(pantryItem: pantryItem, ingredient: ingredient)
+            }
+        }
+
         return pantry.contains { pantryItem in
             namesMatch(pantryItem.name, ingredient.rawName)
                 && hasEnoughQuantity(pantryItem: pantryItem, ingredient: ingredient)
@@ -204,7 +241,9 @@ enum IngredientMatcher {
         pantryFacets: Set<PantryFacetSelection>
     ) -> Bool {
         guard !requiredFacets.isEmpty else { return true }
-        guard !pantryFacets.isEmpty else { return true }
+        guard !pantryFacets.isEmpty else {
+            return requiredFacets.allSatisfy { $0.value == "none" }
+        }
 
         let pantryFacetValues = Dictionary(uniqueKeysWithValues: pantryFacets.map { ($0.key, $0.value) })
         for requiredFacet in requiredFacets {
@@ -247,6 +286,32 @@ enum IngredientMatcher {
         return ["raw:\(unresolvedKey)"]
     }
 
+    private static func inferredFacets(
+        for name: String,
+        item: PantryCatalogItemDefinition
+    ) -> Set<PantryFacetSelection> {
+        let lookup = PantryCatalog.normalizeLookupKey(name)
+        guard !lookup.isEmpty else { return [] }
+
+        var inferred: [PantryFacetSelection] = []
+        for definition in item.facets {
+            let matches = definition.options.filter { option in
+                let normalizedOption = PantryCatalog.normalizeLookupKey(option)
+                guard !normalizedOption.isEmpty, normalizedOption != "none" else {
+                    return false
+                }
+
+                return lookup.contains(normalizedOption)
+            }
+
+            if matches.count == 1 {
+                inferred.append(PantryFacetSelection(key: definition.key, value: matches[0]))
+            }
+        }
+
+        return Set(item.normalizedSelections(from: inferred))
+    }
+
     /// Normalized name comparison with synonym awareness.
     static func namesMatch(_ a: String, _ b: String) -> Bool {
         let na = normalize(a)
@@ -254,13 +319,12 @@ enum IngredientMatcher {
         let lookupA = IngredientLexicon.lookupKey(a)
         let lookupB = IngredientLexicon.lookupKey(b)
 
-        // Direct match
-        if na == nb { return true }
-
         if lookupA == lookupB { return true }
 
         // Containment (handles "chicken breast" matching "chicken")
-        if na.contains(nb) || nb.contains(na) { return true }
+        if !lookupA.isEmpty && !lookupB.isEmpty && (lookupA.contains(lookupB) || lookupB.contains(lookupA)) {
+            return true
+        }
 
         // Synonym check
         let lookupSynsA = IngredientLexicon.synonymLookupGroup(for: a)
@@ -268,17 +332,12 @@ enum IngredientMatcher {
         if !lookupSynsA.isEmpty && lookupSynsA == lookupSynsB { return true }
         if lookupSynsA.contains(lookupB) || lookupSynsB.contains(lookupA) { return true }
 
-        let synsA = synonymGroup(for: na)
-        let synsB = synonymGroup(for: nb)
+        let synsA = na.isEmpty ? Set<String>() : synonymGroup(for: na)
+        let synsB = nb.isEmpty ? Set<String>() : synonymGroup(for: nb)
         if !synsA.isEmpty && synsA == synsB { return true }
 
         // Check if either normalized name matches any synonym of the other
-        if synsA.contains(nb) || synsB.contains(na) { return true }
-
-        // Token overlap for compound names: "bell pepper" vs "red bell pepper"
-        let tokensA = Set(IngredientLexicon.tokenize(na))
-        let tokensB = Set(IngredientLexicon.tokenize(nb))
-        if IngredientLexicon.tokenSubsetMatch(tokensA, tokensB) { return true }
+        if (!nb.isEmpty && synsA.contains(nb)) || (!na.isEmpty && synsB.contains(na)) { return true }
 
         return false
     }

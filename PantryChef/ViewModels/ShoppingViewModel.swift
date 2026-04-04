@@ -116,6 +116,11 @@ final class ShoppingAddItemViewModel {
         }
     }
 
+    func applySearchTextImmediately() {
+        searchDebouncer.cancel()
+        updateSearchResults(for: SearchQuerySupport.normalized(searchText))
+    }
+
     private func updateSearchResults(for query: String) {
         guard !query.isEmpty else {
             searchResults = PantryCatalog.allItems
@@ -125,15 +130,24 @@ final class ShoppingAddItemViewModel {
             return
         }
 
+        let lookupKey = IngredientLexicon.lookupKey(query)
         let results = CatalogSearchEngine.search(query)
-        searchResults = results.map { result in
-            ShoppingCatalogSuggestion(
-                id: result.id,
-                catalogItemID: result.catalogItemID,
-                facets: normalizedFacets(for: result.facets, item: result.item),
-                displayName: result.displayName,
-                category: result.item.category
-            )
+        var seenCatalogItemIDs = Set<String>()
+        searchResults = results.compactMap { result in
+            guard seenCatalogItemIDs.insert(result.catalogItemID).inserted else { return nil }
+
+            let hasExplicitFacetMatch = !IngredientLexicon.inferredFacets(forLookupKey: lookupKey, item: result.item).isEmpty
+            if hasExplicitFacetMatch {
+                return ShoppingCatalogSuggestion(
+                    id: result.id,
+                    catalogItemID: result.catalogItemID,
+                    facets: normalizedFacets(for: result.facets, item: result.item),
+                    displayName: result.displayName,
+                    category: result.item.category
+                )
+            }
+
+            return defaultSuggestion(result.item)
         }
     }
 
@@ -270,7 +284,7 @@ final class ShoppingAddItemViewModel {
             id: item.id,
             catalogItemID: item.id,
             facets: searchDefaultFacets(for: item),
-            displayName: item.name,
+            displayName: item.titleCasedName,
             category: item.category
         )
     }
@@ -319,17 +333,6 @@ final class ShoppingAddItemViewModel {
         item: PantryCatalogItemDefinition?
     ) -> [PantryFacetSelection] {
         guard let item else { return [] }
-
-        var facetsByKey: [PantryFacetKey: PantryFacetSelection] = [:]
-        for facet in item.defaultSelections {
-            facetsByKey[facet.key] = facet
-        }
-        for facet in facets where item.options(for: facet.key).contains(facet.value) {
-            facetsByKey[facet.key] = facet
-        }
-
-        return item.facets.compactMap { definition in
-            facetsByKey[definition.key]
-        }
+        return item.normalizedSelections(from: facets)
     }
 }

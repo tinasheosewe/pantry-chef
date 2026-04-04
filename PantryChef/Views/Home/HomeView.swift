@@ -441,11 +441,17 @@ struct HomeView: View {
 
                         Spacer()
 
-                        let elapsed = Int(Date().timeIntervalSince(session.backgroundedAt))
-                        let minutes = elapsed / 60
-                        Text(minutes < 1 ? "Just now" : "\(minutes)m ago")
-                            .font(PCFont.micro)
-                            .foregroundStyle(PCColors.textTertiary)
+                        if let backgroundedAt = session.backgroundedAt {
+                            let elapsed = Int(Date().timeIntervalSince(backgroundedAt))
+                            let minutes = elapsed / 60
+                            Text(minutes < 1 ? "Just now" : "\(minutes)m ago")
+                                .font(PCFont.micro)
+                                .foregroundStyle(PCColors.textTertiary)
+                        } else {
+                            Text("Live")
+                                .font(PCFont.micro)
+                                .foregroundStyle(PCColors.textTertiary)
+                        }
 
                         Image(systemName: "chevron.right")
                             .font(.caption)

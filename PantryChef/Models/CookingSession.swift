@@ -395,8 +395,8 @@ struct CookingSession: Codable, Identifiable {
     /// When the cooking session started.
     let startedAt: Date
 
-    /// When the background session was created.
-    let backgroundedAt: Date
+    /// When the session moved into background mode.
+    let backgroundedAt: Date?
 
     /// Whether the session is still active.
     var isActive: Bool
@@ -439,7 +439,7 @@ struct CookingSession: Codable, Identifiable {
         stepSummaries     = try c.decodeIfPresent([StepSummary].self, forKey: .stepSummaries) ?? []
         currentStepIndex  = try c.decode(Int.self,               forKey: .currentStepIndex)
         startedAt         = try c.decode(Date.self,              forKey: .startedAt)
-        backgroundedAt    = try c.decode(Date.self,              forKey: .backgroundedAt)
+        backgroundedAt    = try c.decodeIfPresent(Date.self,     forKey: .backgroundedAt)
         isActive          = try c.decodeIfPresent(Bool.self,     forKey: .isActive) ?? true
         expiryTimeoutSeconds = try c.decodeIfPresent(TimeInterval.self, forKey: .expiryTimeoutSeconds) ?? AppConfig.sessionExpiryTimeout
         multiCookSessionId   = try c.decodeIfPresent(UUID.self,  forKey: .multiCookSessionId)
@@ -455,7 +455,7 @@ struct CookingSession: Codable, Identifiable {
         stepSummaries: [StepSummary],
         currentStepIndex: Int,
         startedAt: Date,
-        backgroundedAt: Date,
+        backgroundedAt: Date? = nil,
         isActive: Bool,
         expiryTimeoutSeconds: TimeInterval = AppConfig.sessionExpiryTimeout,
         multiCookSessionId: UUID? = nil,
@@ -479,7 +479,8 @@ struct CookingSession: Codable, Identifiable {
     // MARK: - Computed
 
     var isExpired: Bool {
-        Date().timeIntervalSince(backgroundedAt) > expiryTimeoutSeconds
+        guard let backgroundedAt else { return false }
+        return Date().timeIntervalSince(backgroundedAt) > expiryTimeoutSeconds
     }
 
     // MARK: - Persistence (multi-session array)
