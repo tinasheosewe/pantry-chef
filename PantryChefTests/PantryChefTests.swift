@@ -294,13 +294,25 @@ final class MockAIService: AIServiceProtocol {
         throw BatchScheduleError.llmRequestFailed
     }
 
-    func generateIngredientDefinition(name: String) async -> AIIngredientDefinition? { nil }
+    var generateIngredientDefinitionToReturn: AIIngredientDefinition? = nil
+    var verifyAndMergeIngredientToReturn: AIService.IngredientMergeResult? = nil
+    var generateIngredientDefinitionCallCount = 0
+    var verifyAndMergeIngredientCallCount = 0
+
+    func generateIngredientDefinition(name: String) async -> AIIngredientDefinition? {
+        generateIngredientDefinitionCallCount += 1
+        return generateIngredientDefinitionToReturn
+    }
+
     func verifyAndMergeIngredient(
         name: String,
         baseItem: PantryCatalogItemDefinition,
         generatedCategory: FoodCategory?,
         generatedFacets: [PantryFacetKey: [String]]
-    ) async -> AIService.IngredientMergeResult? { nil }
+    ) async -> AIService.IngredientMergeResult? {
+        verifyAndMergeIngredientCallCount += 1
+        return verifyAndMergeIngredientToReturn
+    }
 }
 
 final class MockPantryItemPreferenceStore: PantryItemPreferenceStoreProtocol {
@@ -4250,6 +4262,201 @@ final class AppStateTests: XCTestCase {
         let result = await appState.getSubstitutions(for: makeRecipe())
         XCTAssertEqual(result.count, 1)
         XCTAssertEqual(ai.suggestSubstitutionsCallCount, 1)
+    }
+
+    // MARK: - Catalog Item Creation for Unknown Ingredients
+
+    /// Path A: ingredient cannot be resolved from the catalog, but AI can define it.
+    /// A new user item should be registered and the ingredient should resolve to it.
+    func testNormalizedAIRecipeCreatesNewCatalogItemForUnknownIngredient() async {
+        let storage = MockStorageService()
+        let ai = MockAIService()
+        let parser = StubIngredientCandidateParserForAppStateTests()
+        // Use a completely fictional name so the canonicalizer won't touch it and
+        // collisionCandidates returns nothing → straight to registerUserItem.
+        let ingredient = Ingredient(name: "xyzorganic florb", category: .produce)
+        parser.stubbedCandidates[ingredient.id] = []
+        ai.ingredientResolutionDecisionsToReturn = [
+            IngredientResolutionDecision(
+                ingredientID: ingredient.id,
+                status: .unknown,
+                selectedCandidateID: nil,
+                candidateIDs: [],
+                confidence: 0.1,
+                rationale: "No catalog match found."
+            )
+        ]
+        ai.generateIngredientDefinitionToReturn = AIIngredientDefinition(
+            category: .produce,
+            defaultStorage: .refrigerated,
+            defaultUnit: nil,
+            facets: [:]
+        )
+        // No merge result → skip fold path, go straight to registration
+        ai.verifyAndMergeIngredientToReturn = nil
+
+        let appState = AppState(
+            storageService: storage,
+            aiService: ai,
+            ingredientCandidateParser: parser,
+            pantryItemPreferenceStore: MockPantryItemPreferenceStore(),
+            shouldLoadOnInit: false
+        )
+        let recipe = makeRecipe(
+            title: "Florb Salad",
+            ingredients: [ingredient],
+            source: .aiGenerated
+        )
+
+        let normalized = await appState.normalizedAIRecipe(recipe)
+
+        let resolvedID = normalized?.recipe.ingredients.first?.catalogItemID
+        XCTAssertNotNil(normalized, "Normalization should succeed when AI can define the ingredient")
+        XCTAssertNotNil(resolvedID, "Ingredient should be assigned a catalog item ID")
+        XCTAssertTrue(resolvedID?.hasPrefix("user-") == true, "Newly created catalog items must start with 'user-'")
+        XCTAssertEqual(ai.generateIngredientDefinitionCallCount, 1)
+
+        // Cleanup the catalog item added as a side effect
+        if let id = resolvedID { PantryCatalog.removeUserItem(id: id) }
+    }
+
+    /// Path A: AI cannot generate a definition for the unknown ingredient.
+    /// normalizedAIRecipe should return nil and push an error.
+    func testNormalizedAIRecipeFailsWhenDefinitionUnavailableForUnknownIngredient() async {
+        let storage = MockStorageService()
+        let ai = MockAIService()
+        let parser = StubIngredientCandidateParserForAppStateTests()
+        let ingredient = Ingredient(name: "xyzorganic florb", category: .produce)
+        parser.stubbedCandidates[ingredient.id] = []
+        ai.ingredientResolutionDecisionsToReturn = [
+            IngredientResolutionDecision(
+                ingredientID: ingredient.id,
+                status: .unknown,
+                selectedCandidateID: nil,
+                candidateIDs: [],
+                confidence: 0.1,
+                rationale: "No catalog match found."
+            )
+        ]
+        // AI cannot produce a definition — creation must fail
+        ai.generateIngredientDefinitionToReturn = nil
+
+        let appState = AppState(
+            storageService: storage,
+            aiService: ai,
+            ingredientCandidateParser: parser,
+            pantryItemPreferenceStore: MockPantryItemPreferenceStore(),
+            shouldLoadOnInit: false
+        )
+        let recipe = makeRecipe(
+            title: "Florb Stew",
+            ingredients: [ingredient],
+            source: .aiGenerated
+        )
+
+        let normalized = await appState.normalizedAIRecipe(recipe)
+
+        XCTAssertNil(normalized, "Normalization should fail when AI cannot define the unknown ingredient")
+        XCTAssertEqual(appState.errorMessage, "Something went wrong. Please try again.")
+        XCTAssertEqual(ai.generateIngredientDefinitionCallCount, 1)
+    }
+
+    /// Path D (modifyRecipe): modified recipe has an unknown ingredient.
+    /// AI provides a definition → new user item created, ingredient resolved.
+    func testModifyRecipeCreatesNewCatalogItemForUnknownIngredient() async {
+        let storage = MockStorageService()
+        let ai = MockAIService()
+        let parser = StubIngredientCandidateParserForAppStateTests()
+        let unknownIngredient = Ingredient(name: "xyzorganic florb", category: .produce)
+        // Return the fictional ingredient from modifyRecipe
+        ai.recipesToReturn = [makeRecipe(
+            title: "Modified",
+            ingredients: [unknownIngredient],
+            source: .aiGenerated
+        )]
+        parser.stubbedCandidates[unknownIngredient.id] = []
+        ai.ingredientResolutionDecisionsToReturn = [
+            IngredientResolutionDecision(
+                ingredientID: unknownIngredient.id,
+                status: .unknown,
+                selectedCandidateID: nil,
+                candidateIDs: [],
+                confidence: 0.0,
+                rationale: "No catalog match."
+            )
+        ]
+        ai.generateIngredientDefinitionToReturn = AIIngredientDefinition(
+            category: .produce,
+            defaultStorage: .pantry,
+            defaultUnit: nil,
+            facets: [:]
+        )
+
+        let appState = AppState(
+            storageService: storage,
+            aiService: ai,
+            ingredientCandidateParser: parser,
+            pantryItemPreferenceStore: MockPantryItemPreferenceStore(),
+            shouldLoadOnInit: false
+        )
+
+        let result = await appState.modifyRecipe(
+            makeRecipe(title: "Base", source: .aiGenerated),
+            feedback: "add florb"
+        )
+
+        let resolvedID = result?.recipe?.ingredients.first?.catalogItemID
+        XCTAssertNotNil(result, "modifyRecipe should succeed in best-effort mode")
+        XCTAssertNotNil(resolvedID, "Unknown ingredient should be given a catalog item ID when AI can define it")
+        XCTAssertTrue(resolvedID?.hasPrefix("user-") == true, "Created catalog IDs must start with 'user-'")
+
+        if let id = resolvedID { PantryCatalog.removeUserItem(id: id) }
+    }
+
+    /// Path D (modifyRecipe): AI cannot define the unknown ingredient.
+    /// Best-effort mode: result is still returned, but ingredient has nil catalogItemID.
+    func testModifyRecipeReturnsBestEffortWhenCatalogCreationFails() async {
+        let storage = MockStorageService()
+        let ai = MockAIService()
+        let parser = StubIngredientCandidateParserForAppStateTests()
+        let unknownIngredient = Ingredient(name: "xyzorganic florb", category: .produce)
+        ai.recipesToReturn = [makeRecipe(
+            title: "Modified",
+            ingredients: [unknownIngredient],
+            source: .aiGenerated
+        )]
+        parser.stubbedCandidates[unknownIngredient.id] = []
+        ai.ingredientResolutionDecisionsToReturn = [
+            IngredientResolutionDecision(
+                ingredientID: unknownIngredient.id,
+                status: .unknown,
+                selectedCandidateID: nil,
+                candidateIDs: [],
+                confidence: 0.0,
+                rationale: "No catalog match."
+            )
+        ]
+        // AI fails to define → creation fails → ingredient stays unresolved
+        ai.generateIngredientDefinitionToReturn = nil
+
+        let appState = AppState(
+            storageService: storage,
+            aiService: ai,
+            ingredientCandidateParser: parser,
+            pantryItemPreferenceStore: MockPantryItemPreferenceStore(),
+            shouldLoadOnInit: false
+        )
+
+        let result = await appState.modifyRecipe(
+            makeRecipe(title: "Base", source: .aiGenerated),
+            feedback: "add florb"
+        )
+
+        XCTAssertNotNil(result, "modifyRecipe best-effort should still return a result even when creation fails")
+        XCTAssertNil(
+            result?.recipe?.ingredients.first?.catalogItemID,
+            "Ingredient should have nil catalogItemID when AI cannot define it"
+        )
     }
 }
 

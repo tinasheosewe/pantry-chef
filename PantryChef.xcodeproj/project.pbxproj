@@ -107,6 +107,7 @@
 		CEB6C5BAC6DF90ED425F2AF0 /* output_audio_buffer_cleared.json in Resources */ = {isa = PBXBuildFile; fileRef = 59485E1388AA5B4BFC221609 /* output_audio_buffer_cleared.json */; };
 		D08E43C8142148AD20B92E8F /* MultiCookModeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27FA8B69F646DD1AF1D4C296 /* MultiCookModeViewModel.swift */; };
 		D2EB2D4DE02AC5A87EC4E61C /* StorageRecords.swift in Sources */ = {isa = PBXBuildFile; fileRef = 229E0C49040C5DEDB1C58497 /* StorageRecords.swift */; };
+		02A3AFC6F9B74C66A9E4A1FF /* SearchEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D55A68135854C428E1B8A0E /* SearchEngineTests.swift */; };
 		D3EA8175F625D41869BD0FE6 /* AIOutputValidatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECFC30FF0F042389EE28B279 /* AIOutputValidatorTests.swift */; };
 		D4BA98D0B99FF6C34D32168B /* RuntimeStores.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF043648CCB725C24B0A51F2 /* RuntimeStores.swift */; };
 		D5316F377083EA6C299007C4 /* PantryItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1D59BC258942DB87FCB1ABA /* PantryItem.swift */; };
@@ -281,6 +282,7 @@
 		EC15A20340FBCF3E8A254DD2 /* ChipPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChipPicker.swift; sourceTree = "<group>"; };
 		ECB3F6705AF4F41CD3F95E39 /* SubstitutionRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubstitutionRepository.swift; sourceTree = "<group>"; };
 		ECEFEB3FB5265EBF48F4495C /* seed_recipes.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = seed_recipes.json; sourceTree = "<group>"; };
+		4D55A68135854C428E1B8A0E /* SearchEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchEngineTests.swift; sourceTree = "<group>"; };
 		ECFC30FF0F042389EE28B279 /* AIOutputValidatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIOutputValidatorTests.swift; sourceTree = "<group>"; };
 		EEDA55B940AC70BF502704BE /* IngredientLexicon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IngredientLexicon.swift; sourceTree = "<group>"; };
 		F1D59BC258942DB87FCB1ABA /* PantryItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PantryItem.swift; sourceTree = "<group>"; };
@@ -408,6 +410,7 @@
 			children = (
 				ECFC30FF0F042389EE28B279 /* AIOutputValidatorTests.swift */,
 				1DFAE1BDCC29122EE14D76CD /* MultiRecipeSchedulerTests.swift */,
+				4D55A68135854C428E1B8A0E /* SearchEngineTests.swift */,
 				3E8FF9A527CDB04F721C3543 /* PantryChefTests.swift */,
 				1ACAD6B1DC0222C72AB4AFFA /* PantryPhaseTests.swift */,
 				D7E12AFE391DFF6BE085D29A /* PerformanceBaselineTests.swift */,
@@ -1041,6 +1044,7 @@
 			files = (
 				D3EA8175F625D41869BD0FE6 /* AIOutputValidatorTests.swift in Sources */,
 				115A9D1415F89576DA8BC766 /* MultiRecipeSchedulerTests.swift in Sources */,
+				02A3AFC6F9B74C66A9E4A1FF /* SearchEngineTests.swift in Sources */,
 				AE4890EEE479B57124C34451 /* PantryChefTests.swift in Sources */,
 				962C7199EC6649D7BAF5E7CA /* PantryPhaseTests.swift in Sources */,
 				4F4D3C8D07370F9067A624AB /* PerformanceBaselineTests.swift in Sources */,
