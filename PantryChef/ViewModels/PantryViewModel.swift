@@ -53,6 +53,8 @@ final class PantryBulkAddViewModel {
 
     private(set) var catalogSearchResults: [CatalogSearchResult] = []
     private(set) var filteredCatalogItems: [PantryCatalogItemDefinition] = []
+    private(set) var displayNameByCatalogItemID: [String: String] = [:]
+    private(set) var resolvedFacetsByCatalogItemID: [String: [PantryFacetSelection]] = [:]
 
     /// When set, this item is forced to the top of search results once, then cleared.
     var highlightedItemID: String?
@@ -72,6 +74,8 @@ final class PantryBulkAddViewModel {
                 items = items.filter { $0.category == selectedCatalogCategory }
             }
             filteredCatalogItems = promoteHighlightedItem(in: items)
+            displayNameByCatalogItemID = [:]
+            resolvedFacetsByCatalogItemID = [:]
             return
         }
 
@@ -87,6 +91,18 @@ final class PantryBulkAddViewModel {
         }
         catalogSearchResults = filtered
         filteredCatalogItems = promoteHighlightedItem(in: filtered.map(\.item))
+        var displayNames: [String: String] = [:]
+        var resolvedFacets: [String: [PantryFacetSelection]] = [:]
+        for result in filtered {
+            if displayNames[result.catalogItemID] == nil {
+                displayNames[result.catalogItemID] = result.displayName
+            }
+            if resolvedFacets[result.catalogItemID] == nil {
+                resolvedFacets[result.catalogItemID] = result.facets
+            }
+        }
+        displayNameByCatalogItemID = displayNames
+        resolvedFacetsByCatalogItemID = resolvedFacets
     }
 
     private func promoteHighlightedItem(in items: [PantryCatalogItemDefinition]) -> [PantryCatalogItemDefinition] {
@@ -102,11 +118,11 @@ final class PantryBulkAddViewModel {
     }
 
     func catalogDisplayName(for item: PantryCatalogItemDefinition) -> String {
-        catalogSearchResults.first(where: { $0.catalogItemID == item.id })?.displayName ?? item.titleCasedName
+        displayNameByCatalogItemID[item.id] ?? item.titleCasedName
     }
 
     func catalogResolvedFacets(for item: PantryCatalogItemDefinition) -> [PantryFacetSelection] {
-        catalogSearchResults.first(where: { $0.catalogItemID == item.id })?.facets ?? []
+        resolvedFacetsByCatalogItemID[item.id] ?? []
     }
 
     var commonItems: [PantryCatalogItemDefinition] {
