@@ -93,7 +93,7 @@ struct PantryItem: Identifiable, Codable, Hashable {
         PantryItem(name: "Vegetable Broth", category: .canned, quantity: 1, unit: .liter,
                    catalogItemID: "broth", facets: [.init(key: .base, value: "vegetable")], storage: .pantry),
         PantryItem(name: "Salt", category: .spices, quantity: 1, unit: .package, catalogItemID: "salt", storage: .pantry),
-        PantryItem(name: "Black Pepper", category: .spices, quantity: 1, unit: .package, catalogItemID: "black-pepper", storage: .pantry),
+        PantryItem(name: "Black Pepper", category: .spices, quantity: 1, unit: .package, catalogItemID: "peppercorn", storage: .pantry),
         PantryItem(name: "Rice", category: .grains, quantity: 2, unit: .kilogram, catalogItemID: "rice", storage: .pantry),
         PantryItem(name: "Eggs", category: .dairy, quantity: 6, unit: .piece,
                    expiryDate: Calendar.current.date(byAdding: .day, value: 5, to: Date()), catalogItemID: "egg", storage: .refrigerated, freshnessSource: .estimated),

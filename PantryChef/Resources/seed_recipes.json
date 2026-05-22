@@ -35,8 +35,13 @@
         "quantity": 150.0,
         "unit": "g",
         "category": "Dairy",
-        "catalogEntryId": "feta",
-        "facetSelections": [],
+        "catalogEntryId": "cheese",
+        "facetSelections": [
+          {
+            "key": "variant",
+            "value": "feta"
+          }
+        ],
         "isOptional": false
       },
       {
@@ -71,8 +76,13 @@
         "quantity": 150.0,
         "unit": "ml",
         "category": "Dairy",
-        "catalogEntryId": "heavy-cream",
-        "facetSelections": [],
+        "catalogEntryId": "cream",
+        "facetSelections": [
+          {
+            "key": "variant",
+            "value": "heavy"
+          }
+        ],
         "isOptional": false
       },
       {
@@ -80,8 +90,17 @@
         "quantity": 0.5,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalogEntryId": "black-pepper",
-        "facetSelections": [],
+        "catalogEntryId": "peppercorn",
+        "facetSelections": [
+          {
+            "key": "variant",
+            "value": "black"
+          },
+          {
+            "key": "form",
+            "value": "ground"
+          }
+        ],
         "isOptional": false
       },
       {
@@ -89,8 +108,13 @@
         "quantity": 1.0,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalogEntryId": "table-salt",
-        "facetSelections": [],
+        "catalogEntryId": "salt",
+        "facetSelections": [
+          {
+            "key": "variant",
+            "value": "table"
+          }
+        ],
         "isOptional": false
       },
       {
@@ -98,8 +122,13 @@
         "quantity": 50.0,
         "unit": "g",
         "category": "Dairy",
-        "catalogEntryId": "parmesan",
-        "facetSelections": [],
+        "catalogEntryId": "cheese",
+        "facetSelections": [
+          {
+            "key": "variant",
+            "value": "parmesan"
+          }
+        ],
         "isOptional": true
       },
       {
@@ -107,7 +136,7 @@
         "quantity": 0.5,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalogEntryId": "red-pepper-flakes",
+        "catalogEntryId": "chili-flakes",
         "facetSelections": [],
         "isOptional": true
       },
@@ -190,8 +219,13 @@
         "quantity": 1.0,
         "unit": "can",
         "category": "Canned & Jarred",
-        "catalogEntryId": "canned-beans-chickpeas",
-        "facetSelections": [],
+        "catalogEntryId": "chickpea",
+        "facetSelections": [
+          {
+            "key": "preservation",
+            "value": "canned"
+          }
+        ],
         "isOptional": false
       },
       {
@@ -272,8 +306,13 @@
         "quantity": 0.5,
         "unit": "whole",
         "category": "Produce",
-        "catalogEntryId": "red-onion",
-        "facetSelections": [],
+        "catalogEntryId": "onion",
+        "facetSelections": [
+          {
+            "key": "variant",
+            "value": "red"
+          }
+        ],
         "isOptional": false
       },
       {
@@ -281,8 +320,13 @@
         "quantity": 0.25,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalogEntryId": "table-salt",
-        "facetSelections": [],
+        "catalogEntryId": "salt",
+        "facetSelections": [
+          {
+            "key": "variant",
+            "value": "table"
+          }
+        ],
         "isOptional": false
       },
       {
@@ -290,8 +334,17 @@
         "quantity": 0.25,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalogEntryId": "black-pepper",
-        "facetSelections": [],
+        "catalogEntryId": "peppercorn",
+        "facetSelections": [
+          {
+            "key": "variant",
+            "value": "black"
+          },
+          {
+            "key": "form",
+            "value": "ground"
+          }
+        ],
         "isOptional": false
       }
     ],
@@ -357,8 +410,13 @@
         "quantity": 1.0,
         "unit": "lb",
         "category": "Protein",
-        "catalogEntryId": "chicken-breast",
-        "facetSelections": [],
+        "catalogEntryId": "chicken",
+        "facetSelections": [
+          {
+            "key": "variant",
+            "value": "breast"
+          }
+        ],
         "isOptional": false
       },
       {
@@ -375,8 +433,17 @@
         "quantity": 1.0,
         "unit": "whole",
         "category": "Produce",
-        "catalogEntryId": "red-bell-pepper",
-        "facetSelections": [],
+        "catalogEntryId": "pepper",
+        "facetSelections": [
+          {
+            "key": "variant",
+            "value": "bell"
+          },
+          {
+            "key": "color",
+            "value": "red"
+          }
+        ],
         "isOptional": false
       },
       {
@@ -470,7 +537,7 @@
         "quantity": 2.0,
         "unit": "whole",
         "category": "Produce",
-        "catalogEntryId": "green-onion",
+        "catalogEntryId": "scallion",
         "facetSelections": [],
         "isOptional": true
       },
@@ -479,8 +546,17 @@
         "quantity": 0.5,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalogEntryId": "black-pepper",
-        "facetSelections": [],
+        "catalogEntryId": "peppercorn",
+        "facetSelections": [
+          {
+            "key": "variant",
+            "value": "black"
+          },
+          {
+            "key": "form",
+            "value": "ground"
+          }
+        ],
         "isOptional": false
       }
     ],
@@ -590,8 +666,13 @@
         "quantity": 0.25,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalogEntryId": "table-salt",
-        "facetSelections": [],
+        "catalogEntryId": "salt",
+        "facetSelections": [
+          {
+            "key": "variant",
+            "value": "table"
+          }
+        ],
         "isOptional": false
       },
       {
@@ -608,7 +689,7 @@
         "quantity": 1.0,
         "unit": "tbsp",
         "category": "Nuts & Seeds",
-        "catalogEntryId": "sesame-seeds",
+        "catalogEntryId": "sesame-seed",
         "facetSelections": [],
         "isOptional": false
       }
@@ -703,7 +784,6 @@
         "quantity": 2.0,
         "unit": "cup",
         "category": "Other",
-        "catalogEntryId": "water",
         "facetSelections": [],
         "isOptional": false
       },
@@ -712,8 +792,13 @@
         "quantity": 1.0,
         "unit": "cup",
         "category": "Produce",
-        "catalogEntryId": "cherry-tomato",
-        "facetSelections": [],
+        "catalogEntryId": "tomato",
+        "facetSelections": [
+          {
+            "key": "variant",
+            "value": "cherry"
+          }
+        ],
         "isOptional": false
       },
       {
@@ -730,8 +815,13 @@
         "quantity": 0.5,
         "unit": "whole",
         "category": "Produce",
-        "catalogEntryId": "red-onion",
-        "facetSelections": [],
+        "catalogEntryId": "onion",
+        "facetSelections": [
+          {
+            "key": "variant",
+            "value": "red"
+          }
+        ],
         "isOptional": false
       },
       {
@@ -739,8 +829,13 @@
         "quantity": 0.5,
         "unit": "cup",
         "category": "Dairy",
-        "catalogEntryId": "feta",
-        "facetSelections": [],
+        "catalogEntryId": "cheese",
+        "facetSelections": [
+          {
+            "key": "variant",
+            "value": "feta"
+          }
+        ],
         "isOptional": false
       },
       {
@@ -748,8 +843,13 @@
         "quantity": 0.5,
         "unit": "cup",
         "category": "Canned & Jarred",
-        "catalogEntryId": "olives-kalamata",
-        "facetSelections": [],
+        "catalogEntryId": "olive",
+        "facetSelections": [
+          {
+            "key": "variant",
+            "value": "kalamata"
+          }
+        ],
         "isOptional": false
       },
       {
@@ -784,8 +884,13 @@
         "quantity": 0.5,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalogEntryId": "table-salt",
-        "facetSelections": [],
+        "catalogEntryId": "salt",
+        "facetSelections": [
+          {
+            "key": "variant",
+            "value": "table"
+          }
+        ],
         "isOptional": false
       },
       {
@@ -793,8 +898,17 @@
         "quantity": 0.25,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalogEntryId": "black-pepper",
-        "facetSelections": [],
+        "catalogEntryId": "peppercorn",
+        "facetSelections": [
+          {
+            "key": "variant",
+            "value": "black"
+          },
+          {
+            "key": "form",
+            "value": "ground"
+          }
+        ],
         "isOptional": false
       }
     ],
@@ -869,8 +983,13 @@
         "quantity": 1.0,
         "unit": "lb",
         "category": "Protein",
-        "catalogEntryId": "ground-beef",
-        "facetSelections": [],
+        "catalogEntryId": "beef",
+        "facetSelections": [
+          {
+            "key": "variant",
+            "value": "ground"
+          }
+        ],
         "isOptional": false
       },
       {
@@ -878,8 +997,13 @@
         "quantity": 1.0,
         "unit": "whole",
         "category": "Produce",
-        "catalogEntryId": "yellow-onion",
-        "facetSelections": [],
+        "catalogEntryId": "onion",
+        "facetSelections": [
+          {
+            "key": "variant",
+            "value": "yellow"
+          }
+        ],
         "isOptional": false
       },
       {
@@ -914,8 +1038,13 @@
         "quantity": 1.0,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalogEntryId": "ground-coriander",
-        "facetSelections": [],
+        "catalogEntryId": "coriander",
+        "facetSelections": [
+          {
+            "key": "form",
+            "value": "ground"
+          }
+        ],
         "isOptional": false
       },
       {
@@ -932,8 +1061,17 @@
         "quantity": 0.25,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalogEntryId": "cayenne-pepper",
-        "facetSelections": [],
+        "catalogEntryId": "chili-powder",
+        "facetSelections": [
+          {
+            "key": "variant",
+            "value": "cayenne"
+          },
+          {
+            "key": "form",
+            "value": "powder"
+          }
+        ],
         "isOptional": true
       },
       {
@@ -941,8 +1079,13 @@
         "quantity": 1.0,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalogEntryId": "table-salt",
-        "facetSelections": [],
+        "catalogEntryId": "salt",
+        "facetSelections": [
+          {
+            "key": "variant",
+            "value": "table"
+          }
+        ],
         "isOptional": false
       },
       {
@@ -950,8 +1093,17 @@
         "quantity": 0.5,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalogEntryId": "black-pepper",
-        "facetSelections": [],
+        "catalogEntryId": "peppercorn",
+        "facetSelections": [
+          {
+            "key": "variant",
+            "value": "black"
+          },
+          {
+            "key": "form",
+            "value": "ground"
+          }
+        ],
         "isOptional": false
       },
       {
@@ -1041,8 +1193,13 @@
         "quantity": 6.0,
         "unit": "piece",
         "category": "Produce",
-        "catalogEntryId": "yellow-onion",
-        "facetSelections": [],
+        "catalogEntryId": "onion",
+        "facetSelections": [
+          {
+            "key": "variant",
+            "value": "yellow"
+          }
+        ],
         "isOptional": false
       },
       {
@@ -1059,8 +1216,13 @@
         "quantity": 4.0,
         "unit": "cup",
         "category": "Canned & Jarred",
-        "catalogEntryId": "beef-broth",
-        "facetSelections": [],
+        "catalogEntryId": "broth",
+        "facetSelections": [
+          {
+            "key": "variant",
+            "value": "beef"
+          }
+        ],
         "isOptional": false
       },
       {
@@ -1081,7 +1243,7 @@
         "name": "bay-leaves",
         "quantity": 2.0,
         "category": "Spices & Herbs",
-        "catalogEntryId": "bay-leaves",
+        "catalogEntryId": "bay-leaf",
         "facetSelections": [],
         "isOptional": false
       },
@@ -1099,8 +1261,13 @@
         "quantity": 0.5,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalogEntryId": "table-salt",
-        "facetSelections": [],
+        "catalogEntryId": "salt",
+        "facetSelections": [
+          {
+            "key": "variant",
+            "value": "table"
+          }
+        ],
         "isOptional": false
       },
       {
@@ -1108,8 +1275,17 @@
         "quantity": 0.5,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalogEntryId": "black-pepper",
-        "facetSelections": [],
+        "catalogEntryId": "peppercorn",
+        "facetSelections": [
+          {
+            "key": "variant",
+            "value": "black"
+          },
+          {
+            "key": "form",
+            "value": "ground"
+          }
+        ],
         "isOptional": false
       },
       {
@@ -1131,8 +1307,13 @@
         "quantity": 1.0,
         "unit": "cup",
         "category": "Dairy",
-        "catalogEntryId": "gruyere",
-        "facetSelections": [],
+        "catalogEntryId": "cheese",
+        "facetSelections": [
+          {
+            "key": "variant",
+            "value": "gruy\u00e8re"
+          }
+        ],
         "isOptional": false
       }
     ],
@@ -1222,7 +1403,7 @@
         "quantity": 1.0,
         "unit": "cup",
         "category": "Protein",
-        "catalogEntryId": "lentils",
+        "catalogEntryId": "lentil",
         "facetSelections": [],
         "isOptional": false
       },
@@ -1249,8 +1430,13 @@
         "quantity": 1.0,
         "unit": "whole",
         "category": "Produce",
-        "catalogEntryId": "yellow-onion",
-        "facetSelections": [],
+        "catalogEntryId": "onion",
+        "facetSelections": [
+          {
+            "key": "variant",
+            "value": "yellow"
+          }
+        ],
         "isOptional": false
       },
       {
@@ -1294,8 +1480,13 @@
         "quantity": 1.0,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalogEntryId": "ground-coriander",
-        "facetSelections": [],
+        "catalogEntryId": "coriander",
+        "facetSelections": [
+          {
+            "key": "form",
+            "value": "ground"
+          }
+        ],
         "isOptional": false
       },
       {
@@ -1303,7 +1494,7 @@
         "quantity": 0.5,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalogEntryId": "red-pepper-flakes",
+        "catalogEntryId": "chili-flakes",
         "facetSelections": [],
         "isOptional": true
       },
@@ -1312,8 +1503,13 @@
         "quantity": 4.0,
         "unit": "cup",
         "category": "Canned & Jarred",
-        "catalogEntryId": "vegetable-broth",
-        "facetSelections": [],
+        "catalogEntryId": "broth",
+        "facetSelections": [
+          {
+            "key": "variant",
+            "value": "vegetable"
+          }
+        ],
         "isOptional": false
       },
       {
@@ -1330,8 +1526,13 @@
         "quantity": 1.0,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalogEntryId": "table-salt",
-        "facetSelections": [],
+        "catalogEntryId": "salt",
+        "facetSelections": [
+          {
+            "key": "variant",
+            "value": "table"
+          }
+        ],
         "isOptional": false
       },
       {
@@ -1339,8 +1540,17 @@
         "quantity": 0.5,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalogEntryId": "black-pepper",
-        "facetSelections": [],
+        "catalogEntryId": "peppercorn",
+        "facetSelections": [
+          {
+            "key": "variant",
+            "value": "black"
+          },
+          {
+            "key": "form",
+            "value": "ground"
+          }
+        ],
         "isOptional": false
       },
       {
@@ -1483,8 +1693,13 @@
         "quantity": 0.5,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalogEntryId": "table-salt",
-        "facetSelections": [],
+        "catalogEntryId": "salt",
+        "facetSelections": [
+          {
+            "key": "variant",
+            "value": "table"
+          }
+        ],
         "isOptional": false
       },
       {
@@ -1492,13 +1707,8 @@
         "quantity": 1.0,
         "unit": "piece",
         "category": "Protein",
-        "catalogEntryId": "eggs",
-        "facetSelections": [
-          {
-            "key": "form",
-            "value": "whole"
-          }
-        ],
+        "catalogEntryId": "egg",
+        "facetSelections": [],
         "isOptional": false
       },
       {
@@ -1515,8 +1725,13 @@
         "quantity": 1.0,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalogEntryId": "vanilla-extract",
-        "facetSelections": [],
+        "catalogEntryId": "extract",
+        "facetSelections": [
+          {
+            "key": "variant",
+            "value": "vanilla"
+          }
+        ],
         "isOptional": false
       },
       {
@@ -1524,8 +1739,13 @@
         "quantity": 0.5,
         "unit": "cup",
         "category": "Baking Supplies",
-        "catalogEntryId": "chocolate-chips",
-        "facetSelections": [],
+        "catalogEntryId": "chocolate",
+        "facetSelections": [
+          {
+            "key": "form",
+            "value": "chips"
+          }
+        ],
         "isOptional": false
       }
     ],
@@ -1618,7 +1838,7 @@
         "quantity": 150.0,
         "unit": "g",
         "category": "Pasta & Noodles",
-        "catalogEntryId": "rice-noodles",
+        "catalogEntryId": "rice-noodle",
         "facetSelections": [],
         "isOptional": false
       },
@@ -1636,7 +1856,7 @@
         "quantity": 2.0,
         "unit": "piece",
         "category": "Protein",
-        "catalogEntryId": "eggs",
+        "catalogEntryId": "egg",
         "facetSelections": [],
         "isOptional": false
       },
@@ -1645,8 +1865,17 @@
         "quantity": 1.0,
         "unit": "whole",
         "category": "Produce",
-        "catalogEntryId": "red-bell-pepper",
-        "facetSelections": [],
+        "catalogEntryId": "pepper",
+        "facetSelections": [
+          {
+            "key": "variant",
+            "value": "bell"
+          },
+          {
+            "key": "color",
+            "value": "red"
+          }
+        ],
         "isOptional": false
       },
       {
@@ -1654,8 +1883,17 @@
         "quantity": 100.0,
         "unit": "g",
         "category": "Produce",
-        "catalogEntryId": "bean-sprouts",
-        "facetSelections": [],
+        "catalogEntryId": "beans",
+        "facetSelections": [
+          {
+            "key": "variant",
+            "value": "mung"
+          },
+          {
+            "key": "processing",
+            "value": "sprouted"
+          }
+        ],
         "isOptional": false
       },
       {
@@ -1663,7 +1901,7 @@
         "quantity": 2.0,
         "unit": "piece",
         "category": "Produce",
-        "catalogEntryId": "green-onion",
+        "catalogEntryId": "scallion",
         "facetSelections": [],
         "isOptional": false
       },
@@ -1708,7 +1946,7 @@
         "quantity": 30.0,
         "unit": "g",
         "category": "Nuts & Seeds",
-        "catalogEntryId": "peanuts",
+        "catalogEntryId": "peanut",
         "facetSelections": [],
         "isOptional": false
       },
@@ -1821,7 +2059,6 @@
         "quantity": 2.0,
         "unit": "cup",
         "category": "Other",
-        "catalogEntryId": "water",
         "facetSelections": [],
         "isOptional": false
       },
@@ -1830,7 +2067,7 @@
         "quantity": 2.0,
         "unit": "piece",
         "category": "Protein",
-        "catalogEntryId": "eggs",
+        "catalogEntryId": "egg",
         "facetSelections": [],
         "isOptional": false
       },
@@ -1862,8 +2099,13 @@
         "quantity": 1.0,
         "unit": "cup",
         "category": "Produce",
-        "catalogEntryId": "cherry-tomato",
-        "facetSelections": [],
+        "catalogEntryId": "tomato",
+        "facetSelections": [
+          {
+            "key": "variant",
+            "value": "cherry"
+          }
+        ],
         "isOptional": false
       },
       {
@@ -1880,8 +2122,13 @@
         "quantity": 0.25,
         "unit": "cup",
         "category": "Dairy",
-        "catalogEntryId": "feta",
-        "facetSelections": [],
+        "catalogEntryId": "cheese",
+        "facetSelections": [
+          {
+            "key": "variant",
+            "value": "feta"
+          }
+        ],
         "isOptional": true
       },
       {
@@ -1898,8 +2145,13 @@
         "quantity": 0.5,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalogEntryId": "table-salt",
-        "facetSelections": [],
+        "catalogEntryId": "salt",
+        "facetSelections": [
+          {
+            "key": "variant",
+            "value": "table"
+          }
+        ],
         "isOptional": false
       },
       {
@@ -1907,8 +2159,17 @@
         "quantity": 0.25,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalogEntryId": "black-pepper",
-        "facetSelections": [],
+        "catalogEntryId": "peppercorn",
+        "facetSelections": [
+          {
+            "key": "variant",
+            "value": "black"
+          },
+          {
+            "key": "form",
+            "value": "ground"
+          }
+        ],
         "isOptional": false
       }
     ],
@@ -1974,8 +2235,13 @@
         "quantity": 4.0,
         "unit": "piece",
         "category": "Protein",
-        "catalogEntryId": "chicken-breast",
-        "facetSelections": [],
+        "catalogEntryId": "chicken",
+        "facetSelections": [
+          {
+            "key": "variant",
+            "value": "breast"
+          }
+        ],
         "isOptional": false
       },
       {
@@ -2037,8 +2303,13 @@
         "quantity": 1.0,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalogEntryId": "table-salt",
-        "facetSelections": [],
+        "catalogEntryId": "salt",
+        "facetSelections": [
+          {
+            "key": "variant",
+            "value": "table"
+          }
+        ],
         "isOptional": false
       },
       {
@@ -2046,8 +2317,17 @@
         "quantity": 0.5,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalogEntryId": "black-pepper",
-        "facetSelections": [],
+        "catalogEntryId": "peppercorn",
+        "facetSelections": [
+          {
+            "key": "variant",
+            "value": "black"
+          },
+          {
+            "key": "form",
+            "value": "ground"
+          }
+        ],
         "isOptional": false
       }
     ],
@@ -2133,8 +2413,13 @@
         "quantity": 1.0,
         "unit": "whole",
         "category": "Produce",
-        "catalogEntryId": "yellow-onion",
-        "facetSelections": [],
+        "catalogEntryId": "onion",
+        "facetSelections": [
+          {
+            "key": "variant",
+            "value": "yellow"
+          }
+        ],
         "isOptional": false
       },
       {
@@ -2151,8 +2436,17 @@
         "quantity": 1.0,
         "unit": "can",
         "category": "Canned & Jarred",
-        "catalogEntryId": "canned-tomatoes-diced",
-        "facetSelections": [],
+        "catalogEntryId": "tomato",
+        "facetSelections": [
+          {
+            "key": "preservation",
+            "value": "canned"
+          },
+          {
+            "key": "form",
+            "value": "diced"
+          }
+        ],
         "isOptional": false
       },
       {
@@ -2160,8 +2454,13 @@
         "quantity": 4.0,
         "unit": "cup",
         "category": "Canned & Jarred",
-        "catalogEntryId": "vegetable-broth",
-        "facetSelections": [],
+        "catalogEntryId": "broth",
+        "facetSelections": [
+          {
+            "key": "variant",
+            "value": "vegetable"
+          }
+        ],
         "isOptional": false
       },
       {
@@ -2169,8 +2468,13 @@
         "quantity": 0.5,
         "unit": "cup",
         "category": "Dairy",
-        "catalogEntryId": "parmesan",
-        "facetSelections": [],
+        "catalogEntryId": "cheese",
+        "facetSelections": [
+          {
+            "key": "variant",
+            "value": "parmesan"
+          }
+        ],
         "isOptional": false
       },
       {
@@ -2196,8 +2500,13 @@
         "quantity": 0.5,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalogEntryId": "table-salt",
-        "facetSelections": [],
+        "catalogEntryId": "salt",
+        "facetSelections": [
+          {
+            "key": "variant",
+            "value": "table"
+          }
+        ],
         "isOptional": false
       },
       {
@@ -2205,8 +2514,17 @@
         "quantity": 0.25,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalogEntryId": "black-pepper",
-        "facetSelections": [],
+        "catalogEntryId": "peppercorn",
+        "facetSelections": [
+          {
+            "key": "variant",
+            "value": "black"
+          },
+          {
+            "key": "form",
+            "value": "ground"
+          }
+        ],
         "isOptional": false
       }
     ],
@@ -2290,8 +2608,13 @@
         "quantity": 2.0,
         "unit": "whole",
         "category": "Produce",
-        "catalogEntryId": "sweet-potato",
-        "facetSelections": [],
+        "catalogEntryId": "potato",
+        "facetSelections": [
+          {
+            "key": "variant",
+            "value": "sweet"
+          }
+        ],
         "isOptional": false
       },
       {
@@ -2299,8 +2622,17 @@
         "quantity": 1.0,
         "unit": "can",
         "category": "Canned & Jarred",
-        "catalogEntryId": "canned-beans-black",
-        "facetSelections": [],
+        "catalogEntryId": "beans",
+        "facetSelections": [
+          {
+            "key": "variant",
+            "value": "black"
+          },
+          {
+            "key": "preservation",
+            "value": "canned"
+          }
+        ],
         "isOptional": false
       },
       {
@@ -2322,8 +2654,13 @@
         "quantity": 1.0,
         "unit": "cup",
         "category": "Dairy",
-        "catalogEntryId": "cheddar",
-        "facetSelections": [],
+        "catalogEntryId": "cheese",
+        "facetSelections": [
+          {
+            "key": "variant",
+            "value": "cheddar"
+          }
+        ],
         "isOptional": false
       },
       {
@@ -2358,8 +2695,13 @@
         "quantity": 0.5,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalogEntryId": "table-salt",
-        "facetSelections": [],
+        "catalogEntryId": "salt",
+        "facetSelections": [
+          {
+            "key": "variant",
+            "value": "table"
+          }
+        ],
         "isOptional": false
       },
       {
@@ -2367,8 +2709,17 @@
         "quantity": 0.25,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalogEntryId": "black-pepper",
-        "facetSelections": [],
+        "catalogEntryId": "peppercorn",
+        "facetSelections": [
+          {
+            "key": "variant",
+            "value": "black"
+          },
+          {
+            "key": "form",
+            "value": "ground"
+          }
+        ],
         "isOptional": false
       },
       {
@@ -2385,8 +2736,13 @@
         "quantity": 1.0,
         "unit": "whole",
         "category": "Produce",
-        "catalogEntryId": "yellow-onion",
-        "facetSelections": [],
+        "catalogEntryId": "onion",
+        "facetSelections": [
+          {
+            "key": "variant",
+            "value": "yellow"
+          }
+        ],
         "isOptional": false
       },
       {
@@ -2556,8 +2912,13 @@
         "quantity": 0.5,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalogEntryId": "table-salt",
-        "facetSelections": [],
+        "catalogEntryId": "salt",
+        "facetSelections": [
+          {
+            "key": "variant",
+            "value": "table"
+          }
+        ],
         "isOptional": false
       },
       {
@@ -2565,8 +2926,17 @@
         "quantity": 0.25,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalogEntryId": "black-pepper",
-        "facetSelections": [],
+        "catalogEntryId": "peppercorn",
+        "facetSelections": [
+          {
+            "key": "variant",
+            "value": "black"
+          },
+          {
+            "key": "form",
+            "value": "ground"
+          }
+        ],
         "isOptional": false
       },
       {
@@ -2660,8 +3030,13 @@
         "quantity": 2.0,
         "unit": "can",
         "category": "Canned & Jarred",
-        "catalogEntryId": "canned-beans-chickpeas",
-        "facetSelections": [],
+        "catalogEntryId": "chickpea",
+        "facetSelections": [
+          {
+            "key": "preservation",
+            "value": "canned"
+          }
+        ],
         "isOptional": false
       },
       {
@@ -2678,8 +3053,13 @@
         "quantity": 1.0,
         "unit": "whole",
         "category": "Produce",
-        "catalogEntryId": "yellow-onion",
-        "facetSelections": [],
+        "catalogEntryId": "onion",
+        "facetSelections": [
+          {
+            "key": "variant",
+            "value": "yellow"
+          }
+        ],
         "isOptional": false
       },
       {
@@ -2723,8 +3103,17 @@
         "quantity": 1.0,
         "unit": "can",
         "category": "Canned & Jarred",
-        "catalogEntryId": "canned-tomatoes-diced",
-        "facetSelections": [],
+        "catalogEntryId": "tomato",
+        "facetSelections": [
+          {
+            "key": "preservation",
+            "value": "canned"
+          },
+          {
+            "key": "form",
+            "value": "diced"
+          }
+        ],
         "isOptional": false
       },
       {
@@ -2741,8 +3130,13 @@
         "quantity": 1.0,
         "unit": "cup",
         "category": "Canned & Jarred",
-        "catalogEntryId": "vegetable-broth",
-        "facetSelections": [],
+        "catalogEntryId": "broth",
+        "facetSelections": [
+          {
+            "key": "variant",
+            "value": "vegetable"
+          }
+        ],
         "isOptional": false
       },
       {
@@ -2768,8 +3162,13 @@
         "quantity": 1.0,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalogEntryId": "table-salt",
-        "facetSelections": [],
+        "catalogEntryId": "salt",
+        "facetSelections": [
+          {
+            "key": "variant",
+            "value": "table"
+          }
+        ],
         "isOptional": true
       },
       {
@@ -2777,8 +3176,17 @@
         "quantity": 0.5,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalogEntryId": "black-pepper",
-        "facetSelections": [],
+        "catalogEntryId": "peppercorn",
+        "facetSelections": [
+          {
+            "key": "variant",
+            "value": "black"
+          },
+          {
+            "key": "form",
+            "value": "ground"
+          }
+        ],
         "isOptional": true
       },
       {
@@ -2899,8 +3307,13 @@
         "quantity": 1.0,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalogEntryId": "vanilla-extract",
-        "facetSelections": [],
+        "catalogEntryId": "extract",
+        "facetSelections": [
+          {
+            "key": "variant",
+            "value": "vanilla"
+          }
+        ],
         "isOptional": false
       },
       {
@@ -2908,8 +3321,13 @@
         "quantity": 0.25,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalogEntryId": "table-salt",
-        "facetSelections": [],
+        "catalogEntryId": "salt",
+        "facetSelections": [
+          {
+            "key": "variant",
+            "value": "table"
+          }
+        ],
         "isOptional": true
       },
       {
@@ -2989,7 +3407,7 @@
         "quantity": 6.0,
         "unit": "piece",
         "category": "Protein",
-        "catalogEntryId": "eggs",
+        "catalogEntryId": "egg",
         "facetSelections": [],
         "isOptional": false
       },
@@ -3007,8 +3425,17 @@
         "quantity": 1.0,
         "unit": "whole",
         "category": "Produce",
-        "catalogEntryId": "red-bell-pepper",
-        "facetSelections": [],
+        "catalogEntryId": "pepper",
+        "facetSelections": [
+          {
+            "key": "variant",
+            "value": "bell"
+          },
+          {
+            "key": "color",
+            "value": "red"
+          }
+        ],
         "isOptional": false
       },
       {
@@ -3016,8 +3443,17 @@
         "quantity": 1.0,
         "unit": "whole",
         "category": "Produce",
-        "catalogEntryId": "yellow-bell-pepper",
-        "facetSelections": [],
+        "catalogEntryId": "pepper",
+        "facetSelections": [
+          {
+            "key": "variant",
+            "value": "bell"
+          },
+          {
+            "key": "color",
+            "value": "yellow"
+          }
+        ],
         "isOptional": false
       },
       {
@@ -3034,8 +3470,13 @@
         "quantity": 0.5,
         "unit": "whole",
         "category": "Produce",
-        "catalogEntryId": "yellow-onion",
-        "facetSelections": [],
+        "catalogEntryId": "onion",
+        "facetSelections": [
+          {
+            "key": "variant",
+            "value": "yellow"
+          }
+        ],
         "isOptional": false
       },
       {
@@ -3052,8 +3493,13 @@
         "quantity": 0.5,
         "unit": "cup",
         "category": "Dairy",
-        "catalogEntryId": "parmesan",
-        "facetSelections": [],
+        "catalogEntryId": "cheese",
+        "facetSelections": [
+          {
+            "key": "variant",
+            "value": "parmesan"
+          }
+        ],
         "isOptional": false
       },
       {
@@ -3070,8 +3516,13 @@
         "quantity": 0.5,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalogEntryId": "table-salt",
-        "facetSelections": [],
+        "catalogEntryId": "salt",
+        "facetSelections": [
+          {
+            "key": "variant",
+            "value": "table"
+          }
+        ],
         "isOptional": false
       },
       {
@@ -3079,8 +3530,17 @@
         "quantity": 0.25,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalogEntryId": "black-pepper",
-        "facetSelections": [],
+        "catalogEntryId": "peppercorn",
+        "facetSelections": [
+          {
+            "key": "variant",
+            "value": "black"
+          },
+          {
+            "key": "form",
+            "value": "ground"
+          }
+        ],
         "isOptional": false
       },
       {
@@ -3165,8 +3625,17 @@
         "quantity": 2.0,
         "unit": "piece",
         "category": "Protein",
-        "catalogEntryId": "salmon-fillet",
-        "facetSelections": [],
+        "catalogEntryId": "oily-fish",
+        "facetSelections": [
+          {
+            "key": "variant",
+            "value": "salmon"
+          },
+          {
+            "key": "form",
+            "value": "fillet"
+          }
+        ],
         "isOptional": false
       },
       {
@@ -3183,8 +3652,13 @@
         "quantity": 2.0,
         "unit": "tbsp",
         "category": "Condiments & Sauces",
-        "catalogEntryId": "dijon-mustard",
-        "facetSelections": [],
+        "catalogEntryId": "mustard",
+        "facetSelections": [
+          {
+            "key": "variant",
+            "value": "dijon"
+          }
+        ],
         "isOptional": false
       },
       {
@@ -3219,8 +3693,13 @@
         "quantity": 0.5,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalogEntryId": "table-salt",
-        "facetSelections": [],
+        "catalogEntryId": "salt",
+        "facetSelections": [
+          {
+            "key": "variant",
+            "value": "table"
+          }
+        ],
         "isOptional": false
       },
       {
@@ -3228,8 +3707,17 @@
         "quantity": 0.25,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalogEntryId": "black-pepper",
-        "facetSelections": [],
+        "catalogEntryId": "peppercorn",
+        "facetSelections": [
+          {
+            "key": "variant",
+            "value": "black"
+          },
+          {
+            "key": "form",
+            "value": "ground"
+          }
+        ],
         "isOptional": false
       },
       {
@@ -3357,7 +3845,7 @@
         "quantity": 1.0,
         "unit": "tbsp",
         "category": "Nuts & Seeds",
-        "catalogEntryId": "chia-seeds",
+        "catalogEntryId": "chia-seed",
         "facetSelections": [],
         "isOptional": true
       }

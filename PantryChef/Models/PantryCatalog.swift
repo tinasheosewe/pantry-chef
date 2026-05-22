@@ -96,6 +96,7 @@ enum PantryQuantityMode: String, Codable, CaseIterable, Sendable {
 }
 
 enum PantryFacetKey: String, Codable, CaseIterable, Identifiable, Sendable {
+    case color
     case variant
     case form
     case preservation
@@ -109,6 +110,7 @@ enum PantryFacetKey: String, Codable, CaseIterable, Identifiable, Sendable {
 
     var title: String {
         switch self {
+        case .color: return "Color"
         case .variant: return "Variant"
         case .form: return "Form"
         case .preservation: return "Preservation"
@@ -298,7 +300,7 @@ struct PantryCatalogItemDefinition: Identifiable, Hashable, Sendable, Codable {
     }
 
     func displayName(for selections: [PantryFacetSelection]) -> String {
-        let orderedKeys: [PantryFacetKey] = [.variant, .form, .preservation, .processing, .preparation, .texture, .concentration, .base]
+        let orderedKeys: [PantryFacetKey] = [.color, .variant, .form, .preservation, .processing, .preparation, .texture, .concentration, .base]
         let orderedSelections = orderedKeys.compactMap { key in
             selections.first(where: { $0.key == key && $0.value.lowercased() != "none" })
         }
@@ -415,7 +417,8 @@ enum PantryCatalog {
         ["all purpose flour", "plain flour", "ap flour"],
         ["bread flour", "strong flour"],
         ["olive oil", "extra virgin olive oil", "evoo"],
-        ["vegetable oil", "canola oil", "neutral oil"],
+        ["oil", "cooking oil", "neutral oil", "vegetable oil", "canola oil"],
+        ["nut", "nuts", "mixed nuts", "chopped nuts"],
         ["soy sauce", "shoyu", "tamari"],
         ["fish sauce", "nam pla"],
         ["sugar", "granulated sugar", "white sugar"],
@@ -870,6 +873,116 @@ enum PantryCatalog {
     static func item(id: String?) -> PantryCatalogItemDefinition? {
         guard let id else { return nil }
         return itemsByID[id]
+    }
+
+    /// Catalog ID for unspecified recipe oil ("oil", "neutral oil", "cooking oil").
+    static let genericCookingOilCatalogItemID = "oil"
+
+    /// Catalog ID for unspecified recipe nuts ("nuts", "nut", "ground nuts").
+    static let genericNutCatalogItemID = "nut"
+
+    // MARK: - Generic↔specific families (catalog_families.json)
+
+    private struct CatalogFamilyDefinition: Codable, Sendable {
+        let genericId: String?
+        let specificIds: [String]
+        let excludedFromGenericMatch: [String]?
+        let variantToSpecificId: [String: String]?
+        let genericOnlyAliases: [String]?
+        let allowGenericPantrySubstitution: Bool
+        let genericOnly: Bool?
+    }
+
+    private struct CatalogFamiliesFile: Codable, Sendable {
+        let version: Int
+        let families: [CatalogFamilyDefinition]
+    }
+
+    private static let catalogFamiliesFile: CatalogFamiliesFile = {
+        guard let url = AppBundleResourceLocator.url(forResource: "catalog_families", withExtension: "json") else {
+            AppLog.error("[PantryCatalog] catalog_families.json not found in app bundle")
+            return CatalogFamiliesFile(version: 1, families: [])
+        }
+        do {
+            let data = try Data(contentsOf: url)
+            return try JSONDecoder().decode(CatalogFamiliesFile.self, from: data)
+        } catch {
+            AppLog.error("[PantryCatalog] Failed to decode catalog_families.json: \(error.localizedDescription)")
+            return CatalogFamiliesFile(version: 1, families: [])
+        }
+    }()
+
+    private static let catalogFamilyByGenericID: [String: CatalogFamilyDefinition] = {
+        Dictionary(
+            uniqueKeysWithValues: catalogFamiliesFile.families.compactMap { family in
+                guard let genericId = family.genericId else { return nil }
+                return (genericId, family)
+            }
+        )
+    }()
+
+    /// Resolves a specific catalog ID from a generic parent's variant facet, if unambiguous.
+    static func specificCatalogItemID(forGeneric genericID: String, variant: String) -> String? {
+        guard let family = catalogFamilyByGenericID[genericID],
+              let variantMap = family.variantToSpecificId else {
+            return nil
+        }
+
+        let normalized = variant.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
+        if let specificID = variantMap[normalized], itemsByID[specificID] != nil {
+            return specificID
+        }
+
+        let slug = normalized.replacingOccurrences(of: " ", with: "-")
+        if itemsByID[slug] != nil {
+            return slug
+        }
+
+        let oilCandidate = slug.hasSuffix("-oil") ? slug : "\(slug)-oil"
+        if itemsByID[oilCandidate] != nil {
+            return oilCandidate
+        }
+
+        return nil
+    }
+
+    /// Pantry catalog IDs that can satisfy a generic ingredient requirement (e.g. oil, nut).
+    static func satisfyingFamilyCatalogItemIDs(for genericID: String, facets: [PantryFacetSelection]) -> Set<String> {
+        guard let family = catalogFamilyByGenericID[genericID] else {
+            return [genericID]
+        }
+
+        if let variant = facets.first(where: { $0.key == .variant })?.value,
+           let specificID = specificCatalogItemID(forGeneric: genericID, variant: variant) {
+            return [specificID]
+        }
+
+        let excluded = Set(family.excludedFromGenericMatch ?? [])
+        let specifics = Set(family.specificIds.filter { itemsByID[$0] != nil && !excluded.contains($0) })
+        if specifics.isEmpty {
+            return [genericID]
+        }
+        return specifics.union([genericID])
+    }
+
+    /// All standalone cooking-oil catalog entries (excludes the generic `oil` base).
+    static var specificCookingOilCatalogItemIDs: Set<String> {
+        satisfyingFamilyCatalogItemIDs(for: genericCookingOilCatalogItemID, facets: [])
+            .subtracting([genericCookingOilCatalogItemID])
+    }
+
+    /// Standalone edible nut catalog entries (excludes the generic `nut` base and seeds).
+    static var specificEdibleNutCatalogItemIDs: Set<String> {
+        satisfyingFamilyCatalogItemIDs(for: genericNutCatalogItemID, facets: [])
+            .subtracting([genericNutCatalogItemID])
+    }
+
+    /// Expands generic catalog IDs (oil, nut, …) to the specific entries that can satisfy them.
+    static func satisfyingCatalogItemIDs(for catalogItemID: String, facets: [PantryFacetSelection]) -> Set<String> {
+        if catalogFamilyByGenericID[catalogItemID] != nil {
+            return satisfyingFamilyCatalogItemIDs(for: catalogItemID, facets: facets)
+        }
+        return [catalogItemID]
     }
 
     static func resolveExact(name: String) -> PantryCatalogItemDefinition? {

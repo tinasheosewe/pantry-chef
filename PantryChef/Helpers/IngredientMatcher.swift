@@ -93,10 +93,16 @@ enum IngredientMatcher {
 
     static func pantryItemMatchesIngredient(_ pantryItem: PantryItem, ingredient: Ingredient) -> Bool {
         if let ingredientCatalogItemID = ingredient.catalogItemID,
-           let pantryCatalogItemID = pantryItem.catalogItemID,
-           ingredientCatalogItemID == pantryCatalogItemID {
+           let pantryCatalogItemID = pantryItem.catalogItemID {
             let requiredFacets = Set(ingredient.facets)
-            return pantryFacetsSatisfy(requiredFacets, pantryFacets: Set(pantryItem.facets))
+            let matchingCatalogIDs = PantryCatalog.satisfyingCatalogItemIDs(
+                for: ingredientCatalogItemID,
+                facets: ingredient.facets
+            )
+
+            if matchingCatalogIDs.contains(pantryCatalogItemID) {
+                return pantryFacetsSatisfy(requiredFacets, pantryFacets: Set(pantryItem.facets))
+            }
         }
 
         guard pantryItem.catalogItemID == nil, ingredient.catalogItemID == nil else {
@@ -123,16 +129,30 @@ enum IngredientMatcher {
     }
 
     private static func pantryContains(ingredient: Ingredient, pantry: [PantryItem], index: PantryIndex) -> Bool {
+        if ShoppingListPolicy.isImplicitlyAvailable(named: ingredient.rawName) {
+            return true
+        }
+
         if let catalogItemID = ingredient.catalogItemID {
-            guard let pantryCandidates = index.resolvedItemsByCatalogID[catalogItemID] else {
-                return false
-            }
+            let catalogIDs = PantryCatalog.satisfyingCatalogItemIDs(
+                for: catalogItemID,
+                facets: ingredient.facets
+            )
 
             let requiredFacets = Set(ingredient.facets)
-            return pantryCandidates.contains { pantryCandidate in
-                pantryFacetsSatisfy(requiredFacets, pantryFacets: pantryCandidate.facets)
-                    && hasEnoughQuantity(candidate: pantryCandidate, ingredient: ingredient)
+            for matchCatalogID in catalogIDs {
+                guard let pantryCandidates = index.resolvedItemsByCatalogID[matchCatalogID] else {
+                    continue
+                }
+
+                if pantryCandidates.contains(where: { pantryCandidate in
+                    pantryFacetsSatisfy(requiredFacets, pantryFacets: pantryCandidate.facets)
+                        && hasEnoughQuantity(candidate: pantryCandidate, ingredient: ingredient)
+                }) {
+                    return true
+                }
             }
+            return false
         }
 
         let unresolvedKey = unresolvedMatchKey(for: ingredient.rawName)
@@ -143,13 +163,19 @@ enum IngredientMatcher {
 
         if let resolvedIngredientItem = resolvedCatalogItem(for: ingredient.rawName) {
             let requiredFacets = inferredFacets(for: ingredient.rawName, item: resolvedIngredientItem)
+            let catalogIDs: Set<String> = PantryCatalog.satisfyingCatalogItemIDs(
+                for: resolvedIngredientItem.id,
+                facets: Array(requiredFacets)
+            )
 
-            if let pantryCandidates = index.resolvedItemsByCatalogID[resolvedIngredientItem.id],
-               pantryCandidates.contains(where: {
-                   pantryFacetsSatisfy(requiredFacets, pantryFacets: $0.facets)
-                       && hasEnoughQuantity(candidate: $0, ingredient: ingredient)
-               }) {
-                return true
+            for matchCatalogID in catalogIDs {
+                if let pantryCandidates = index.resolvedItemsByCatalogID[matchCatalogID],
+                   pantryCandidates.contains(where: {
+                       pantryFacetsSatisfy(requiredFacets, pantryFacets: $0.facets)
+                           && hasEnoughQuantity(candidate: $0, ingredient: ingredient)
+                   }) {
+                    return true
+                }
             }
 
             return pantry.contains { pantryItem in

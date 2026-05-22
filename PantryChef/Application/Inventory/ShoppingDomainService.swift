@@ -1,8 +1,13 @@
 import Foundation
 
 enum ShoppingListPolicy {
+    /// Ingredients assumed to be available in unlimited quantity; never shown in pantry or shopping UI.
+    static func isImplicitlyAvailable(named name: String) -> Bool {
+        isExcludedShoppingIngredient(named: name)
+    }
+
     static func shouldIncludeInShoppingList(_ ingredient: Ingredient, pantryItems: [PantryItem]) -> Bool {
-        guard !isExcludedShoppingIngredient(named: ingredient.name) else {
+        guard !isImplicitlyAvailable(named: ingredient.name) else {
             return false
         }
 

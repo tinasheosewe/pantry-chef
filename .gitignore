@@ -65,3 +65,4 @@ Scripts/recipe_ingredient_orchestrator/accepted_*/
 
 # Large dataset files
 dataset/
+RecipeNLG/
