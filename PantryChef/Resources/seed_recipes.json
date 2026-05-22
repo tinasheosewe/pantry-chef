@@ -277,7 +277,7 @@
         "quantity": 0.5,
         "unit": "whole",
         "category": "Produce",
-        "catalogEntryId": "red",
+        "catalogEntryId": "onion-red",
         "facetSelections": [],
         "isOptional": false
       },
@@ -739,7 +739,7 @@
         "quantity": 0.5,
         "unit": "whole",
         "category": "Produce",
-        "catalogEntryId": "red",
+        "catalogEntryId": "onion-red",
         "facetSelections": [],
         "isOptional": false
       },
@@ -883,7 +883,7 @@
         "quantity": 1.0,
         "unit": "lb",
         "category": "Protein",
-        "catalogEntryId": "ground",
+        "catalogEntryId": "beef-ground",
         "facetSelections": [],
         "isOptional": false
       },
@@ -892,7 +892,7 @@
         "quantity": 1.0,
         "unit": "whole",
         "category": "Produce",
-        "catalogEntryId": "yellow",
+        "catalogEntryId": "onion-yellow",
         "facetSelections": [],
         "isOptional": false
       },
@@ -1070,7 +1070,7 @@
         "quantity": 6.0,
         "unit": "piece",
         "category": "Produce",
-        "catalogEntryId": "yellow",
+        "catalogEntryId": "onion-yellow",
         "facetSelections": [],
         "isOptional": false
       },
@@ -1273,7 +1273,7 @@
         "quantity": 1.0,
         "unit": "whole",
         "category": "Produce",
-        "catalogEntryId": "yellow",
+        "catalogEntryId": "onion-yellow",
         "facetSelections": [],
         "isOptional": false
       },
@@ -2171,7 +2171,7 @@
         "quantity": 1.0,
         "unit": "whole",
         "category": "Produce",
-        "catalogEntryId": "yellow",
+        "catalogEntryId": "onion-yellow",
         "facetSelections": [],
         "isOptional": false
       },
@@ -2342,7 +2342,7 @@
         "quantity": 2.0,
         "unit": "whole",
         "category": "Produce",
-        "catalogEntryId": "sweet",
+        "catalogEntryId": "sweet-potato",
         "facetSelections": [],
         "isOptional": false
       },
@@ -2442,7 +2442,7 @@
         "quantity": 1.0,
         "unit": "whole",
         "category": "Produce",
-        "catalogEntryId": "yellow",
+        "catalogEntryId": "onion-yellow",
         "facetSelections": [],
         "isOptional": false
       },
@@ -2745,7 +2745,7 @@
         "quantity": 1.0,
         "unit": "whole",
         "category": "Produce",
-        "catalogEntryId": "yellow",
+        "catalogEntryId": "onion-yellow",
         "facetSelections": [],
         "isOptional": false
       },
@@ -3125,7 +3125,7 @@
         "quantity": 0.5,
         "unit": "whole",
         "category": "Produce",
-        "catalogEntryId": "yellow",
+        "catalogEntryId": "onion-yellow",
         "facetSelections": [],
         "isOptional": false
       },

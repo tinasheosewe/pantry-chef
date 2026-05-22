@@ -2,43 +2,94 @@
 
 ## Core rules
 
-- Catalog entries are classes in an inheritance DAG.
+- Catalog entries are **classes** in an inheritance graph (single-parent trees + rare multi-parent items).
 - Any class can be selected directly by the user (no abstract-only classes).
-- `parentIds: [String]` defines inheritance; multi-inheritance is allowed.
-- Kind information is modeled as subclasses.
-- State information is modeled as facets.
-- Facet inheritance is additive.
+- **Kind** information is modeled as subclasses (`children[]` in source, `parentIds` in compiled output).
+- **State** information is modeled as facets (`form`, `processing`, `preservation`, etc.).
+- Single-parent facet inheritance is **additive** (children may add facet options, not remove inherited ones).
+- Multi-parent items own a **complete leaf definition**; their `parentIds` are for matching only (facets are not inherited).
 
 Kind vs state rule:
 
-- Kind example: `walnut` is a kind of `nut` -> subclass.
-- State example: `chopped` is a state of `walnut` -> facet.
+- Kind example: `walnut` is a kind of `nut` → subclass.
+- State example: `chopped` is a state of `walnut` → facet.
 
-## Schema
+## Source vs runtime format
 
-Each item in [`catalog.json`](../PantryChef/Resources/catalog.json) may include:
+| File | Role |
+|------|------|
+| [`catalog.source.json`](../PantryChef/Resources/catalog.source.json) | Authoritative authoring format |
+| [`catalog.json`](../PantryChef/Resources/catalog.json) | Flat compiled output loaded by the app |
 
-- `parentIds: [String]`
-- `facetAliases: [{ text, facets }]`
+The app bundle loads **only** `catalog.json`. Edit `catalog.source.json`, then compile.
 
-Removed fields:
+### Source schema (`catalog.source.json`)
 
-- `isGenericBase`
-- `parentId`
-- `parentFacets`
-- `excludedFromGenericMatch`
+Two sections:
 
-Example:
+```json
+{
+  "trees": [
+    {
+      "id": "nut",
+      "name": "nut",
+      "category": "Nuts & Seeds",
+      "aliases": ["nuts"],
+      "facets": [{ "key": "form", "options": ["whole", "chopped"] }],
+      "children": [
+        {
+          "id": "walnut",
+          "name": "walnut",
+          "aliases": ["walnuts"]
+        }
+      ]
+    }
+  ],
+  "multiInheritance": [
+    {
+      "group": "Sauces & condiments",
+      "items": [
+        {
+          "id": "tomato-sauce",
+          "parentIds": ["sauce", "tomato"],
+          "name": "tomato sauce",
+          "category": "Condiments & Sauces",
+          "aliases": ["tomato sauces"],
+          "facets": [{ "key": "texture", "options": ["smooth", "chunky"] }],
+          "defaultSelections": [],
+          "defaultStorage": "Pantry",
+          "freshnessByStorage": { "Pantry": [180, 365] }
+        }
+      ]
+    }
+  ]
+}
+```
+
+**Single inheritance (`trees`)**
+
+- Parent owns `children[]`; each child has sparse overrides.
+- One parent per node. Compiled output uses `parentIds: ["parent-id"]`.
+
+**Multi inheritance (`multiInheritance`)**
+
+- Item owns `parentIds` with **≥ 2** parents plus a **full standalone definition** (all required fields + facets).
+- Used sparingly for true cross-taxonomy products (e.g. `tomato-sauce` → `sauce` + `tomato`).
+- **Not** multi-inheritance: homonyms (`almond` vs `almond-oil`), shared cut names scoped per animal (`chicken-breast`, `beef-shank`).
+
+### Compiled schema (`catalog.json`)
+
+Each item is flat — no `children` or `parents` keys:
 
 ```json
 {
   "id": "walnut",
   "name": "walnut",
   "parentIds": ["nut"],
-  "aliases": ["walnuts", "english walnut"],
+  "aliases": ["walnuts"],
   "facets": [
     { "key": "form", "options": ["whole", "halved", "chopped"] },
-    { "key": "processing", "options": ["raw", "roasted", "toasted"] }
+    { "key": "processing", "options": ["raw", "roasted"] }
   ],
   "facetAliases": [
     {
@@ -49,6 +100,8 @@ Example:
 }
 ```
 
+Removed legacy fields: `isGenericBase`, `parentId`, `parentFacets`, `excludedFromGenericMatch`.
+
 ## Runtime semantics
 
 `PantryCatalog` builds inheritance caches:
@@ -56,7 +109,7 @@ Example:
 - `ancestors(of:)`
 - `descendants(of:)`
 - `inheritanceDistance(from:to:)`
-- `effectiveFacets(for:)`
+- `effectiveFacets(for:)` — additive union for single-parent items; **leaf-only** for multi-parent items
 
 Matching core:
 
@@ -67,11 +120,19 @@ Strict vs loose:
 - Strict path uses structured class/facet matching only.
 - Loose path is strict + text fallback + quantity fallback + substitutions.
 
-## Search and UI behavior
+## Authoring workflow
 
-- Search should surface abstract class plus matching leaves.
-- State facets are progressive disclosure via Customize.
-- State facets appear in display names only when explicitly selected.
+```bash
+# Edit catalog.source.json, then compile
+python3 Scripts/compile_catalog.py
+
+# Or repair flat catalog + rebuild source + recompile
+python3 Scripts/rebuild_catalog_source.py --write-source --write-catalog
+
+# Validate compiled output (or source via compile)
+python3 Scripts/validate_catalog.py
+python3 Scripts/validate_catalog.py --source
+```
 
 ## Validation
 
@@ -81,12 +142,10 @@ Strict vs loose:
 - no deprecated legacy fields
 - parent references exist
 - no inheritance cycles
-- additive facet inheritance
+- additive facet inheritance (single-parent items only)
+- multi-inheritance completeness (full leaf definition)
 - facet alias key/value validity in effective hierarchy
 
-## Migration workflow
+## Migration notes
 
-- Use [`apply_inheritance_migration.py`](../Scripts/apply_inheritance_migration.py) with dry-run first.
-- Migrate family-by-family in this order:
-  - `nut`, `oil`, `cheese`, `beef`, `rice`, `flour`, `broth`, `pasta`, `bread`, `sugar`, `cream`, `yogurt`, `milk`, `pork`, `lamb`, `turkey`, `fish`, `shrimp`, `mushroom`, `potato`, `onion`, `pepper`, `tomato`, `beans`, `cured-meat`
-- After each family: run validation and spot-check matching paths.
+Legacy shared modifier nodes (`red`, `yellow`, `ground`, etc.) were split into scoped subclasses (`onion-red`, `beef-ground`, …). Kind facets (`variant`, `base`, …) were migrated to subclass rows where applicable. Seed recipes and tests use scoped catalog IDs (e.g. `chicken-breast`, `onion-yellow`).

@@ -1,0 +1,31 @@
+#!/usr/bin/env python3
+"""Compile catalog.source.json into flat catalog.json for the app bundle."""
+from __future__ import annotations
+
+import argparse
+import sys
+
+from catalog_lib import save_catalog
+from catalog_source_lib import CATALOG_SOURCE_PATH, apply_post_repair_fixes, compile_source, load_source
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description="Compile catalog.source.json to catalog.json")
+    parser.parse_args()
+
+    if not CATALOG_SOURCE_PATH.exists():
+        print(f"Missing source catalog: {CATALOG_SOURCE_PATH}")
+        return 1
+
+    source = load_source()
+    compiled = compile_source(source)
+    compiled, fix_count = apply_post_repair_fixes(compiled)
+    save_catalog(compiled)
+    print(f"Compiled {len(compiled)} items to catalog.json")
+    if fix_count:
+        print(f"  post_compile_fixes: {fix_count}")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

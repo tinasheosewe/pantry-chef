@@ -13,6 +13,7 @@ from catalog_lib import (
     normalize_lookup_key,
     parent_ids,
 )
+from catalog_source_lib import CATALOG_SOURCE_PATH, apply_post_repair_fixes, compile_source, load_source
 
 REQUIRED_FIELDS = {"id", "name", "category", "defaultStorage"}
 DEPRECATED_FIELDS = {"isGenericBase", "parentId", "parentFacets", "excludedFromGenericMatch"}
@@ -99,6 +100,9 @@ def facet_map(item: dict) -> dict[str, set[str]]:
 def effective_facet_options(item_id: str, by_id: dict[str, dict]) -> dict[str, set[str]]:
     if item_id not in by_id:
         return {}
+    item = by_id[item_id]
+    if len(parent_ids(item)) >= 2:
+        return facet_map(item)
     options: dict[str, set[str]] = {}
     visited: set[str] = set()
     stack = [item_id]
@@ -244,6 +248,9 @@ def check_cycles(items: list[dict], report: ValidationReport) -> None:
 def check_additive_facets(items: list[dict], report: ValidationReport) -> None:
     by_id = items_by_id(items)
     for item in items:
+        if len(parent_ids(item)) >= 2:
+            # Multi-inheritance entries own a complete definition; parentIds are matching-only.
+            continue
         child_facets = facet_map(item)
         for parent_id in parent_ids(item):
             parent = by_id.get(parent_id)
@@ -317,10 +324,34 @@ def check_facet_entry_collisions(items: list[dict], report: ValidationReport) ->
                 )
 
 
-def validate_catalog(*, strict: bool = False) -> ValidationReport:
-    report = ValidationReport()
-    items = load_catalog()
+def check_multi_inheritance_completeness(items: list[dict], report: ValidationReport) -> None:
+    required = REQUIRED_FIELDS | {"facets"}
+    for item in items:
+        if len(parent_ids(item)) < 2:
+            continue
+        missing = required - set(item.keys())
+        if missing:
+            report.add(
+                "error",
+                "multi_inheritance_incomplete",
+                f"Multi-inheritance item missing required fields {sorted(missing)}",
+                item["id"],
+            )
 
+
+def validate_source_catalog(source: dict) -> ValidationReport:
+    report = ValidationReport()
+    try:
+        compiled = compile_source(source)
+        compiled, _ = apply_post_repair_fixes(compiled)
+    except ValueError as exc:
+        report.add("error", "source_compile_error", str(exc))
+        return report
+    validate_catalog_items(compiled, report)
+    return report
+
+
+def validate_catalog_items(items: list[dict], report: ValidationReport) -> None:
     check_required_fields(items, report)
     check_supported_defaults(items, report)
     check_deprecated_fields(items, report)
@@ -328,12 +359,17 @@ def validate_catalog(*, strict: bool = False) -> ValidationReport:
     check_self_aliases(items, report)
     check_parent_links(items, report)
     check_non_shareable_multi_parent(items, report)
+    check_multi_inheritance_completeness(items, report)
     check_cycles(items, report)
     check_additive_facets(items, report)
     check_facet_aliases(items, report)
-    # Keep as warning-only informational signal while the variant->class migration
-    # is still in progress across the full catalog.
     check_facet_entry_collisions(items, report)
+
+
+def validate_catalog(*, strict: bool = False) -> ValidationReport:
+    report = ValidationReport()
+    items = load_catalog()
+    validate_catalog_items(items, report)
 
     if strict:
         for finding in report.warnings:
@@ -345,9 +381,16 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="Validate PantryChef catalog inheritance integrity.")
     parser.add_argument("--strict", action="store_true", help="Treat warnings as errors.")
     parser.add_argument("--json", action="store_true", help="Emit JSON report.")
+    parser.add_argument("--source", action="store_true", help="Validate catalog.source.json instead of catalog.json.")
     args = parser.parse_args()
 
-    report = validate_catalog(strict=args.strict)
+    if args.source:
+        if not CATALOG_SOURCE_PATH.exists():
+            print(f"Missing source catalog: {CATALOG_SOURCE_PATH}")
+            return 1
+        report = validate_source_catalog(load_source())
+    else:
+        report = validate_catalog(strict=args.strict)
     if args.json:
         payload = {
             "errors": [f.__dict__ for f in report.errors],

@@ -661,10 +661,7 @@ enum PantryCatalog {
 
         for item in allItems {
             descendantsByItemID[item.id] = computeDescendants(for: item.id, children: children)
-            effectiveFacetsByItemID[item.id] = computeEffectiveFacets(
-                for: item.id,
-                ancestorIDs: ancestorsByItemID[item.id] ?? [item.id]
-            )
+            effectiveFacetsByItemID[item.id] = computeEffectiveFacets(for: item.id)
         }
     }
 
@@ -720,10 +717,15 @@ enum PantryCatalog {
         return distances
     }
 
-    private static func computeEffectiveFacets(
-        for itemID: String,
-        ancestorIDs: Set<String>
-    ) -> [PantryFacetDefinition] {
+    private static func computeEffectiveFacets(for itemID: String) -> [PantryFacetDefinition] {
+        guard let item = itemsByID[itemID] else { return [] }
+
+        // Multi-inheritance entries own a complete facet definition; parentIds are matching-only.
+        if item.parentIds.count >= 2 {
+            return item.facets
+        }
+
+        let ancestorIDs = ancestorsByItemID[itemID] ?? [itemID]
         var optionsByKey: [PantryFacetKey: Set<String>] = [:]
         var keyOrder: [PantryFacetKey] = []
         let orderedAncestorIDs = ancestorIDs.sorted { lhs, rhs in
