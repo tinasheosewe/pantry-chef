@@ -25,12 +25,46 @@ enum IngredientCatalogSettingsSupport {
             .filter { !$0.isUserDefined }
             .filter { seenItemIDs.insert($0.id).inserted }
     }
+
+    static func rootCatalogItems(allItems: [PantryCatalogItemDefinition] = PantryCatalog.allItems) -> [PantryCatalogItemDefinition] {
+        allItems
+            .filter { $0.parentIds.isEmpty && !$0.isUserDefined }
+            .sorted { $0.name < $1.name }
+    }
+
+    static func childItems(
+        of parentID: String,
+        allItems: [PantryCatalogItemDefinition] = PantryCatalog.allItems
+    ) -> [PantryCatalogItemDefinition] {
+        allItems
+            .filter { $0.parentIds == [parentID] && !$0.isUserDefined }
+            .sorted { $0.name < $1.name }
+    }
+
+    static func disambiguationPath(for item: PantryCatalogItemDefinition) -> String? {
+        let key = PantryCatalog.normalizeLookupKey(item.name)
+        let sameNameItems = PantryCatalog.allItems.filter {
+            PantryCatalog.normalizeLookupKey($0.name) == key && $0.id != item.id
+        }
+        guard !sameNameItems.isEmpty else { return nil }
+
+        let ancestorIDs = PantryCatalog.ancestors(of: item.id).subtracting([item.id])
+        guard !ancestorIDs.isEmpty else { return nil }
+        let ordered = ancestorIDs.sorted {
+            (PantryCatalog.inheritanceDistance(from: item.id, to: $0) ?? .max)
+                > (PantryCatalog.inheritanceDistance(from: item.id, to: $1) ?? .max)
+        }
+        let names = ordered.compactMap { PantryCatalog.item(id: $0)?.titleCasedName }
+        guard !names.isEmpty else { return nil }
+        return names.joined(separator: " > ")
+    }
 }
 
 struct IngredientCatalogSettingsView: View {
     enum SettingsTab: String, CaseIterable {
         case custom = "Custom"
         case catalog = "Catalog"
+        case tree = "Tree"
     }
 
     @Environment(\.dismiss) private var dismiss
@@ -57,6 +91,11 @@ struct IngredientCatalogSettingsView: View {
             searchText: catalogSearchText,
             allItems: PantryCatalog.allItems
         )
+    }
+
+    private var treeRoots: [PantryCatalogItemDefinition] {
+        _ = refreshToken
+        return IngredientCatalogSettingsSupport.rootCatalogItems(allItems: PantryCatalog.allItems)
     }
 
     var body: some View {
@@ -103,6 +142,21 @@ struct IngredientCatalogSettingsView: View {
                     }
                     .opacity(selectedTab == .catalog ? 1 : 0)
                     .allowsHitTesting(selectedTab == .catalog)
+
+                    Group {
+                        List {
+                            ForEach(treeRoots) { root in
+                                CatalogTreeNodeRow(
+                                    item: root,
+                                    allItems: PantryCatalog.allItems
+                                ) { selectedID in
+                                    editingItemID = selectedID
+                                }
+                            }
+                        }
+                    }
+                    .opacity(selectedTab == .tree ? 1 : 0)
+                    .allowsHitTesting(selectedTab == .tree)
                 }
             }
             .navigationTitle("Ingredient Catalog")
@@ -195,6 +249,11 @@ struct IngredientCatalogSettingsView: View {
                     Text(item.category.rawValue)
                         .font(.caption)
                         .foregroundStyle(PCColors.textSecondary)
+                    if let path = IngredientCatalogSettingsSupport.disambiguationPath(for: item) {
+                        Text(path)
+                            .font(.caption2)
+                            .foregroundStyle(PCColors.textSecondary)
+                    }
                     if !item.facets.isEmpty {
                         Text(item.facets.map(\.key.title).joined(separator: ", "))
                             .font(.caption2)
@@ -215,4 +274,53 @@ struct IngredientCatalogSettingsView: View {
 
     // MARK: - Actions
 
+}
+
+private struct CatalogTreeNodeRow: View {
+    let item: PantryCatalogItemDefinition
+    let allItems: [PantryCatalogItemDefinition]
+    let onSelect: (String) -> Void
+
+    @State private var isExpanded = false
+
+    private var children: [PantryCatalogItemDefinition] {
+        IngredientCatalogSettingsSupport.childItems(of: item.id, allItems: allItems)
+    }
+
+    var body: some View {
+        if children.isEmpty {
+            Button {
+                onSelect(item.id)
+            } label: {
+                rowLabel
+            }
+            .buttonStyle(.plain)
+        } else {
+            DisclosureGroup(isExpanded: $isExpanded) {
+                ForEach(children) { child in
+                    CatalogTreeNodeRow(item: child, allItems: allItems, onSelect: onSelect)
+                        .padding(.leading, 10)
+                }
+            } label: {
+                rowLabel
+            }
+        }
+    }
+
+    private var rowLabel: some View {
+        HStack(spacing: 10) {
+            CategoryIcon(category: item.category, size: 24)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(item.titleCasedName)
+                    .font(.subheadline)
+                    .foregroundStyle(PCColors.textPrimary)
+                if let path = IngredientCatalogSettingsSupport.disambiguationPath(for: item) {
+                    Text(path)
+                        .font(.caption2)
+                        .foregroundStyle(PCColors.textSecondary)
+                }
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
 }

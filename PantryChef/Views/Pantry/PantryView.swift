@@ -453,6 +453,7 @@ struct BulkAddPantryView: View {
     @State private var facetExtensionTarget: FacetExtensionTarget?
     @State private var customItemName: String?
     @State private var showAllUnitsDrafts: Set<UUID> = []
+    @State private var customizedDraftIDs: Set<UUID> = []
     @FocusState private var isCatalogSearchFocused: Bool
 
     var body: some View {
@@ -572,7 +573,7 @@ struct BulkAddPantryView: View {
 
                         VStack(alignment: .leading, spacing: 10) {
                             SectionHeader(title: "Common Staples", subtitle: "Fast picks for pantry setup")
-                            VStack(spacing: 10) {
+                            LazyVStack(spacing: 10) {
                                 ForEach(viewModel.bulkAdd.commonItems) { item in
                                     catalogItemRow(item: item, viewModel: viewModel)
                                 }
@@ -615,7 +616,7 @@ struct BulkAddPantryView: View {
                                     .font(.caption)
                                     .foregroundStyle(PCColors.textSecondary)
                             }
-                            VStack(spacing: 10) {
+                            LazyVStack(spacing: 10) {
                                 ForEach(viewModel.bulkAdd.filteredCatalogItems) { item in
                                     catalogItemRow(item: item, viewModel: viewModel)
                                 }
@@ -794,20 +795,50 @@ struct BulkAddPantryView: View {
                 }
             }
 
-            ForEach(item.facets, id: \.key) { facetDef in
-                ChipPicker(
-                    label: facetDef.key.title,
-                    options: facetDef.options,
-                    selection: draft.selectedFacetValues[facetDef.key]
-                ) { value in
-                    viewModel.bulkAdd.updateStagedFacet(draftID: draft.id, key: facetDef.key, value: value)
-                } onAddCustom: {
-                    facetExtensionTarget = FacetExtensionTarget(
-                        draftID: draft.id,
-                        itemID: item.id,
-                        itemName: item.name,
-                        facetKey: facetDef.key
-                    )
+            if !item.facets.isEmpty {
+                Button {
+                    if customizedDraftIDs.contains(draft.id) {
+                        customizedDraftIDs.remove(draft.id)
+                    } else {
+                        customizedDraftIDs.insert(draft.id)
+                    }
+                } label: {
+                    HStack {
+                        Label("Customize", systemImage: "slider.horizontal.3")
+                            .font(.caption)
+                            .fontWeight(.medium)
+                            .foregroundStyle(PCColors.textPrimary)
+                        Spacer()
+                        Image(systemName: customizedDraftIDs.contains(draft.id) ? "chevron.up" : "chevron.down")
+                            .font(.caption2)
+                            .foregroundStyle(PCColors.textSecondary)
+                    }
+                }
+                .buttonStyle(.plain)
+
+                if let summary = selectedFacetSummary(for: draft) {
+                    Text(summary)
+                        .font(.caption2)
+                        .foregroundStyle(PCColors.textSecondary)
+                }
+
+                if customizedDraftIDs.contains(draft.id) {
+                    ForEach(item.facets, id: \.key) { facetDef in
+                        ChipPicker(
+                            label: facetDef.key.title,
+                            options: facetDef.options,
+                            selection: draft.selectedFacetValues[facetDef.key]
+                        ) { value in
+                            viewModel.bulkAdd.updateStagedFacet(draftID: draft.id, key: facetDef.key, value: value)
+                        } onAddCustom: {
+                            facetExtensionTarget = FacetExtensionTarget(
+                                draftID: draft.id,
+                                itemID: item.id,
+                                itemName: item.name,
+                                facetKey: facetDef.key
+                            )
+                        }
+                    }
                 }
             }
 
@@ -1124,6 +1155,14 @@ struct BulkAddPantryView: View {
             .map { $0.prefix(1).uppercased() + $0.dropFirst().lowercased() }
             .joined(separator: " ")
     }
+
+    private func selectedFacetSummary(for draft: PantryIntakeRowDraft) -> String? {
+        let values = draft.selectedFacets
+            .filter { $0.value.lowercased() != "none" }
+            .map { "\($0.key.title): \(humanizedFacetValue($0.value))" }
+        guard !values.isEmpty else { return "No specific state selected" }
+        return values.joined(separator: " • ")
+    }
 }
 
 struct PantryDraftStateBadge: View {
@@ -1274,6 +1313,7 @@ struct PantryDraftEditorView: View {
 
 struct PantryIntakeFormSections: View {
     @Binding var draft: PantryIntakeRowDraft
+    @State private var showFacetCustomization = false
     let accessibilityPrefix: String
     let allowsIdentityEditing: Bool
     let hasSavedDefault: Bool
@@ -1394,16 +1434,36 @@ struct PantryIntakeFormSections: View {
 
         if !draft.facetDefinitions.isEmpty {
             Section("Facets") {
-                ForEach(draft.facetDefinitions, id: \.key) { definition in
-                    Picker(definition.key.title, selection: Binding(
-                        get: { draft.selectedFacetValues[definition.key] ?? "" },
-                        set: { newValue in
-                            draft.setFacet(definition.key, value: newValue.isEmpty ? nil : newValue)
-                        }
-                    )) {
-                        Text("None").tag("")
-                        ForEach(definition.options, id: \.self) { option in
-                            Text(option.capitalized).tag(option)
+                Button {
+                    showFacetCustomization.toggle()
+                } label: {
+                    HStack {
+                        Label("Customize", systemImage: "slider.horizontal.3")
+                        Spacer()
+                        Image(systemName: showFacetCustomization ? "chevron.up" : "chevron.down")
+                    }
+                }
+                .buttonStyle(.plain)
+
+                let selectedValues = draft.selectedFacets
+                    .filter { $0.value.lowercased() != "none" }
+                    .map { "\($0.key.title): \($0.value.replacingOccurrences(of: "-", with: " ").capitalized)" }
+                Text(selectedValues.isEmpty ? "No specific state selected" : selectedValues.joined(separator: " • "))
+                    .font(.caption)
+                    .foregroundStyle(PCColors.textSecondary)
+
+                if showFacetCustomization {
+                    ForEach(draft.facetDefinitions, id: \.key) { definition in
+                        Picker(definition.key.title, selection: Binding(
+                            get: { draft.selectedFacetValues[definition.key] ?? "" },
+                            set: { newValue in
+                                draft.setFacet(definition.key, value: newValue.isEmpty ? nil : newValue)
+                            }
+                        )) {
+                            Text("None").tag("")
+                            ForEach(definition.options, id: \.self) { option in
+                                Text(option.capitalized).tag(option)
+                            }
                         }
                     }
                 }
@@ -1509,7 +1569,6 @@ struct PantryIntakeFormSections: View {
             }
         }
     }
-
     @ViewBuilder
     private func lockedCatalogItemRow(_ selectedItem: PantryCatalogItemDefinition) -> some View {
         HStack(spacing: 12) {

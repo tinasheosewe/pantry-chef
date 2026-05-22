@@ -174,6 +174,7 @@ struct ShoppingListView: View {
 private struct ShoppingAddItemView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var viewModel = ShoppingAddItemViewModel()
+    @State private var showFacetCustomization = false
 
     let onAdd: (ShoppingItem) -> Void
 
@@ -234,22 +235,43 @@ private struct ShoppingAddItemView: View {
                     }
 
                     Section("Details") {
-                        ForEach(selectedItem.facets, id: \.key) { definition in
-                            Picker(
-                                definition.key.title,
-                                selection: Binding(
-                                    get: {
-                                        viewModel.selectedFacets.first(where: { $0.key == definition.key })?.value
-                                            ?? definition.options.first
-                                            ?? ""
-                                    },
-                                    set: { newValue in
-                                        viewModel.setFacetValue(newValue, for: definition.key)
+                        if !selectedItem.facets.isEmpty {
+                            Button {
+                                showFacetCustomization.toggle()
+                            } label: {
+                                HStack {
+                                    Label("Customize", systemImage: "slider.horizontal.3")
+                                    Spacer()
+                                    Image(systemName: showFacetCustomization ? "chevron.up" : "chevron.down")
+                                }
+                            }
+                            .buttonStyle(.plain)
+
+                            if let facetSummary = viewModel.selectedFacetSummary {
+                                Text(facetSummary)
+                                    .font(.caption)
+                                    .foregroundStyle(PCColors.textSecondary)
+                            }
+
+                            if showFacetCustomization {
+                                ForEach(selectedItem.facets, id: \.key) { definition in
+                                    Picker(
+                                        definition.key.title,
+                                        selection: Binding(
+                                            get: {
+                                                viewModel.selectedFacets.first(where: { $0.key == definition.key })?.value
+                                                    ?? definition.options.first
+                                                    ?? ""
+                                            },
+                                            set: { newValue in
+                                                viewModel.setFacetValue(newValue, for: definition.key)
+                                            }
+                                        )
+                                    ) {
+                                        ForEach(definition.options, id: \.self) { option in
+                                            Text(option.replacingOccurrences(of: "-", with: " ").capitalized).tag(option)
+                                        }
                                     }
-                                )
-                            ) {
-                                ForEach(definition.options, id: \.self) { option in
-                                    Text(option.replacingOccurrences(of: "-", with: " ").capitalized).tag(option)
                                 }
                             }
                         }
@@ -303,6 +325,12 @@ private struct ShoppingAddItemView: View {
                                                 .foregroundStyle(PCColors.textSecondary)
                                                 .multilineTextAlignment(.leading)
                                         }
+                                        if let path = viewModel.suggestionDisambiguationPath(suggestion) {
+                                            Text(path)
+                                                .font(.caption2)
+                                                .foregroundStyle(PCColors.textSecondary)
+                                                .multilineTextAlignment(.leading)
+                                        }
                                     }
 
                                     Spacer()
@@ -351,6 +379,9 @@ private struct ShoppingAddItemView: View {
                     }
                 }
             }
+        }
+        .onChange(of: viewModel.selectedCatalogItemID) { _, _ in
+            showFacetCustomization = false
         }
         .navigationTitle("Add Shopping Item")
         .toolbar {

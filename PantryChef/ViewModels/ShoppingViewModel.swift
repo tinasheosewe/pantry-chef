@@ -134,10 +134,7 @@ final class ShoppingAddItemViewModel {
 
         let lookupKey = IngredientLexicon.lookupKey(query)
         let results = CatalogSearchEngine.search(query)
-        var seenCatalogItemIDs = Set<String>()
-        searchResults = results.compactMap { result in
-            guard seenCatalogItemIDs.insert(result.catalogItemID).inserted else { return nil }
-
+        searchResults = results.prefix(30).map { result in
             let hasExplicitFacetMatch = !IngredientLexicon.inferredFacets(forLookupKey: lookupKey, item: result.item).isEmpty
             if hasExplicitFacetMatch {
                 return ShoppingCatalogSuggestion(
@@ -265,6 +262,24 @@ final class ShoppingAddItemViewModel {
         }
 
         return availableFacetSummary(for: item)
+    }
+
+    func suggestionDisambiguationPath(_ suggestion: ShoppingCatalogSuggestion) -> String? {
+        guard let item = PantryCatalog.item(id: suggestion.catalogItemID) else { return nil }
+        let key = PantryCatalog.normalizeLookupKey(item.name)
+        let sameNameItems = PantryCatalog.allItems.filter {
+            PantryCatalog.normalizeLookupKey($0.name) == key && $0.id != item.id
+        }
+        guard !sameNameItems.isEmpty else { return nil }
+
+        let ancestorIDs = PantryCatalog.ancestors(of: item.id).subtracting([item.id])
+        let ordered = ancestorIDs.sorted {
+            (PantryCatalog.inheritanceDistance(from: item.id, to: $0) ?? .max)
+                > (PantryCatalog.inheritanceDistance(from: item.id, to: $1) ?? .max)
+        }
+        let names = ordered.compactMap { PantryCatalog.item(id: $0)?.titleCasedName }
+        guard !names.isEmpty else { return nil }
+        return names.joined(separator: " > ")
     }
 
     private func syncDefaultsFromSelection() {
