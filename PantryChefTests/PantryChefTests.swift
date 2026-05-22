@@ -1248,37 +1248,34 @@ final class IngredientMatcherTests: XCTestCase {
         XCTAssertTrue(match.substitutableIngredients.first?.substitutions.first?.inPantry == true)
     }
 
-    func testPantryContainsAllowsGenericVariantRecipeToMatchSpecificPantryCut() {
+    func testPantryContainsAllowsGenericRecipeToMatchSpecificPantryCut() {
         let ingredient = Ingredient(
             name: "beef cheeks",
             quantity: 500,
             unit: .gram,
             category: .protein,
-            catalogItemID: "beef",
-            facets: [.init(key: .variant, value: "none")]
+            catalogItemID: "beef"
         )
         let pantry = [
             PantryItem(
-                name: "Beef",
+                name: "Beef Shank",
                 category: .protein,
                 quantity: 500,
                 unit: .gram,
-                catalogItemID: "beef",
-                facets: [.init(key: .variant, value: "shank")]
+                catalogItemID: "beef-shank"
             )
         ]
 
         XCTAssertTrue(IngredientMatcher.pantryContains(ingredient: ingredient, pantry: pantry))
     }
 
-    func testPantryContainsDoesNotAllowGenericVariantToSatisfySpecificRecipeCut() {
+    func testPantryContainsDoesNotAllowGenericPantryToSatisfySpecificRecipeCut() {
         let ingredient = Ingredient(
             name: "beef shank",
             quantity: 500,
             unit: .gram,
             category: .protein,
-            catalogItemID: "beef",
-            facets: [.init(key: .variant, value: "shank")]
+            catalogItemID: "beef-shank"
         )
         let pantry = [
             PantryItem(
@@ -1286,8 +1283,7 @@ final class IngredientMatcherTests: XCTestCase {
                 category: .protein,
                 quantity: 500,
                 unit: .gram,
-                catalogItemID: "beef",
-                facets: [.init(key: .variant, value: "none")]
+                catalogItemID: "beef"
             )
         ]
 
@@ -1300,8 +1296,7 @@ final class IngredientMatcherTests: XCTestCase {
             quantity: 500,
             unit: .gram,
             category: .protein,
-            catalogItemID: "beef",
-            facets: [.init(key: .variant, value: "none")]
+            catalogItemID: "beef"
         )
 
         XCTAssertTrue(SubstitutionRepository.shared.substitutions(for: ingredient).isEmpty)

@@ -35,13 +35,8 @@
         "quantity": 150.0,
         "unit": "g",
         "category": "Dairy",
-        "catalogEntryId": "cheese",
-        "facetSelections": [
-          {
-            "key": "variant",
-            "value": "feta"
-          }
-        ],
+        "catalogEntryId": "feta",
+        "facetSelections": [],
         "isOptional": false
       },
       {
@@ -76,13 +71,8 @@
         "quantity": 150.0,
         "unit": "ml",
         "category": "Dairy",
-        "catalogEntryId": "cream",
-        "facetSelections": [
-          {
-            "key": "variant",
-            "value": "heavy"
-          }
-        ],
+        "catalogEntryId": "heavy",
+        "facetSelections": [],
         "isOptional": false
       },
       {
@@ -90,12 +80,8 @@
         "quantity": 0.5,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalogEntryId": "peppercorn",
+        "catalogEntryId": "black-cardamom",
         "facetSelections": [
-          {
-            "key": "variant",
-            "value": "black"
-          },
           {
             "key": "form",
             "value": "ground"
@@ -108,13 +94,8 @@
         "quantity": 1.0,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalogEntryId": "salt",
-        "facetSelections": [
-          {
-            "key": "variant",
-            "value": "table"
-          }
-        ],
+        "catalogEntryId": "table-salt",
+        "facetSelections": [],
         "isOptional": false
       },
       {
@@ -122,13 +103,8 @@
         "quantity": 50.0,
         "unit": "g",
         "category": "Dairy",
-        "catalogEntryId": "cheese",
-        "facetSelections": [
-          {
-            "key": "variant",
-            "value": "parmesan"
-          }
-        ],
+        "catalogEntryId": "parmesan",
+        "facetSelections": [],
         "isOptional": true
       },
       {
@@ -159,7 +135,7 @@
       },
       {
         "stepNumber": 2,
-        "instruction": "While the pasta is cooking, heat olive oil in a large skillet over medium heat. Add minced garlic and saut\u00e9 until fragrant, about 1 minute.",
+        "instruction": "While the pasta is cooking, heat olive oil in a large skillet over medium heat. Add minced garlic and sauté until fragrant, about 1 minute.",
         "estimatedDurationSeconds": 60
       },
       {
@@ -233,13 +209,8 @@
         "quantity": 4.0,
         "unit": "piece",
         "category": "Grains & Cereals",
-        "catalogEntryId": "tortilla",
-        "facetSelections": [
-          {
-            "key": "variant",
-            "value": "flour"
-          }
-        ],
+        "catalogEntryId": "flour-taco-shell",
+        "facetSelections": [],
         "isOptional": false
       },
       {
@@ -295,7 +266,7 @@
         "catalogEntryId": "cilantro",
         "facetSelections": [
           {
-            "key": "variant",
+            "key": "form",
             "value": "fresh"
           }
         ],
@@ -306,13 +277,8 @@
         "quantity": 0.5,
         "unit": "whole",
         "category": "Produce",
-        "catalogEntryId": "onion",
-        "facetSelections": [
-          {
-            "key": "variant",
-            "value": "red"
-          }
-        ],
+        "catalogEntryId": "red",
+        "facetSelections": [],
         "isOptional": false
       },
       {
@@ -320,13 +286,8 @@
         "quantity": 0.25,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalogEntryId": "salt",
-        "facetSelections": [
-          {
-            "key": "variant",
-            "value": "table"
-          }
-        ],
+        "catalogEntryId": "table-salt",
+        "facetSelections": [],
         "isOptional": false
       },
       {
@@ -334,12 +295,8 @@
         "quantity": 0.25,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalogEntryId": "peppercorn",
+        "catalogEntryId": "black-cardamom",
         "facetSelections": [
-          {
-            "key": "variant",
-            "value": "black"
-          },
           {
             "key": "form",
             "value": "ground"
@@ -356,7 +313,7 @@
       },
       {
         "stepNumber": 2,
-        "instruction": "Heat olive oil in a skillet over medium heat. Add the chickpeas, chili powder, cumin, salt, and pepper. Saut\u00e9 for 5 minutes until the chickpeas are heated through and coated with spices.",
+        "instruction": "Heat olive oil in a skillet over medium heat. Add the chickpeas, chili powder, cumin, salt, and pepper. Sauté for 5 minutes until the chickpeas are heated through and coated with spices.",
         "timerMinutes": 5,
         "estimatedDurationSeconds": 300
       },
@@ -367,7 +324,7 @@
       },
       {
         "stepNumber": 4,
-        "instruction": "Warm the taco shells in a preheated oven at 180\u00b0C (350\u00b0F) for 2-3 minutes or until crisp.",
+        "instruction": "Warm the taco shells in a preheated oven at 180°C (350°F) for 2-3 minutes or until crisp.",
         "timerMinutes": 3,
         "estimatedDurationSeconds": 180
       },
@@ -410,13 +367,8 @@
         "quantity": 1.0,
         "unit": "lb",
         "category": "Protein",
-        "catalogEntryId": "chicken",
-        "facetSelections": [
-          {
-            "key": "variant",
-            "value": "breast"
-          }
-        ],
+        "catalogEntryId": "chicken-breast",
+        "facetSelections": [],
         "isOptional": false
       },
       {
@@ -433,12 +385,8 @@
         "quantity": 1.0,
         "unit": "whole",
         "category": "Produce",
-        "catalogEntryId": "pepper",
+        "catalogEntryId": "bell",
         "facetSelections": [
-          {
-            "key": "variant",
-            "value": "bell"
-          },
           {
             "key": "color",
             "value": "red"
@@ -496,13 +444,8 @@
         "quantity": 1.0,
         "unit": "tbsp",
         "category": "Condiments & Sauces",
-        "catalogEntryId": "vinegar",
-        "facetSelections": [
-          {
-            "key": "variant",
-            "value": "rice"
-          }
-        ],
+        "catalogEntryId": "rice-vinegar",
+        "facetSelections": [],
         "isOptional": false
       },
       {
@@ -546,12 +489,8 @@
         "quantity": 0.5,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalogEntryId": "peppercorn",
+        "catalogEntryId": "black-cardamom",
         "facetSelections": [
-          {
-            "key": "variant",
-            "value": "black"
-          },
           {
             "key": "form",
             "value": "ground"
@@ -634,13 +573,8 @@
         "quantity": 1.0,
         "unit": "cup",
         "category": "Grains & Cereals",
-        "catalogEntryId": "rice",
-        "facetSelections": [
-          {
-            "key": "variant",
-            "value": "sushi"
-          }
-        ],
+        "catalogEntryId": "sushi",
+        "facetSelections": [],
         "isOptional": false
       },
       {
@@ -666,13 +600,8 @@
         "quantity": 0.25,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalogEntryId": "salt",
-        "facetSelections": [
-          {
-            "key": "variant",
-            "value": "table"
-          }
-        ],
+        "catalogEntryId": "table-salt",
+        "facetSelections": [],
         "isOptional": false
       },
       {
@@ -792,13 +721,8 @@
         "quantity": 1.0,
         "unit": "cup",
         "category": "Produce",
-        "catalogEntryId": "tomato",
-        "facetSelections": [
-          {
-            "key": "variant",
-            "value": "cherry"
-          }
-        ],
+        "catalogEntryId": "cherry",
+        "facetSelections": [],
         "isOptional": false
       },
       {
@@ -815,13 +739,8 @@
         "quantity": 0.5,
         "unit": "whole",
         "category": "Produce",
-        "catalogEntryId": "onion",
-        "facetSelections": [
-          {
-            "key": "variant",
-            "value": "red"
-          }
-        ],
+        "catalogEntryId": "red",
+        "facetSelections": [],
         "isOptional": false
       },
       {
@@ -829,13 +748,8 @@
         "quantity": 0.5,
         "unit": "cup",
         "category": "Dairy",
-        "catalogEntryId": "cheese",
-        "facetSelections": [
-          {
-            "key": "variant",
-            "value": "feta"
-          }
-        ],
+        "catalogEntryId": "feta",
+        "facetSelections": [],
         "isOptional": false
       },
       {
@@ -844,12 +758,7 @@
         "unit": "cup",
         "category": "Canned & Jarred",
         "catalogEntryId": "olive",
-        "facetSelections": [
-          {
-            "key": "variant",
-            "value": "kalamata"
-          }
-        ],
+        "facetSelections": [],
         "isOptional": false
       },
       {
@@ -884,13 +793,8 @@
         "quantity": 0.5,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalogEntryId": "salt",
-        "facetSelections": [
-          {
-            "key": "variant",
-            "value": "table"
-          }
-        ],
+        "catalogEntryId": "table-salt",
+        "facetSelections": [],
         "isOptional": false
       },
       {
@@ -898,12 +802,8 @@
         "quantity": 0.25,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalogEntryId": "peppercorn",
+        "catalogEntryId": "black-cardamom",
         "facetSelections": [
-          {
-            "key": "variant",
-            "value": "black"
-          },
           {
             "key": "form",
             "value": "ground"
@@ -983,13 +883,8 @@
         "quantity": 1.0,
         "unit": "lb",
         "category": "Protein",
-        "catalogEntryId": "beef",
-        "facetSelections": [
-          {
-            "key": "variant",
-            "value": "ground"
-          }
-        ],
+        "catalogEntryId": "ground",
+        "facetSelections": [],
         "isOptional": false
       },
       {
@@ -997,13 +892,8 @@
         "quantity": 1.0,
         "unit": "whole",
         "category": "Produce",
-        "catalogEntryId": "onion",
-        "facetSelections": [
-          {
-            "key": "variant",
-            "value": "yellow"
-          }
-        ],
+        "catalogEntryId": "yellow",
+        "facetSelections": [],
         "isOptional": false
       },
       {
@@ -1061,12 +951,8 @@
         "quantity": 0.25,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalogEntryId": "chili-powder",
+        "catalogEntryId": "cayenne-chili-powder",
         "facetSelections": [
-          {
-            "key": "variant",
-            "value": "cayenne"
-          },
           {
             "key": "form",
             "value": "powder"
@@ -1079,13 +965,8 @@
         "quantity": 1.0,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalogEntryId": "salt",
-        "facetSelections": [
-          {
-            "key": "variant",
-            "value": "table"
-          }
-        ],
+        "catalogEntryId": "table-salt",
+        "facetSelections": [],
         "isOptional": false
       },
       {
@@ -1093,12 +974,8 @@
         "quantity": 0.5,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalogEntryId": "peppercorn",
+        "catalogEntryId": "black-cardamom",
         "facetSelections": [
-          {
-            "key": "variant",
-            "value": "black"
-          },
           {
             "key": "form",
             "value": "ground"
@@ -1193,13 +1070,8 @@
         "quantity": 6.0,
         "unit": "piece",
         "category": "Produce",
-        "catalogEntryId": "onion",
-        "facetSelections": [
-          {
-            "key": "variant",
-            "value": "yellow"
-          }
-        ],
+        "catalogEntryId": "yellow",
+        "facetSelections": [],
         "isOptional": false
       },
       {
@@ -1216,13 +1088,8 @@
         "quantity": 4.0,
         "unit": "cup",
         "category": "Canned & Jarred",
-        "catalogEntryId": "broth",
-        "facetSelections": [
-          {
-            "key": "variant",
-            "value": "beef"
-          }
-        ],
+        "catalogEntryId": "beef-broth",
+        "facetSelections": [],
         "isOptional": false
       },
       {
@@ -1230,13 +1097,8 @@
         "quantity": 1.0,
         "unit": "tbsp",
         "category": "Condiments & Sauces",
-        "catalogEntryId": "vinegar",
-        "facetSelections": [
-          {
-            "key": "variant",
-            "value": "balsamic"
-          }
-        ],
+        "catalogEntryId": "balsamic-vinegar",
+        "facetSelections": [],
         "isOptional": false
       },
       {
@@ -1261,13 +1123,8 @@
         "quantity": 0.5,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalogEntryId": "salt",
-        "facetSelections": [
-          {
-            "key": "variant",
-            "value": "table"
-          }
-        ],
+        "catalogEntryId": "table-salt",
+        "facetSelections": [],
         "isOptional": false
       },
       {
@@ -1275,12 +1132,8 @@
         "quantity": 0.5,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalogEntryId": "peppercorn",
+        "catalogEntryId": "black-cardamom",
         "facetSelections": [
-          {
-            "key": "variant",
-            "value": "black"
-          },
           {
             "key": "form",
             "value": "ground"
@@ -1293,13 +1146,8 @@
         "quantity": 1.0,
         "unit": "loaf",
         "category": "Grains & Cereals",
-        "catalogEntryId": "bread",
-        "facetSelections": [
-          {
-            "key": "variant",
-            "value": "white"
-          }
-        ],
+        "catalogEntryId": "white-bread",
+        "facetSelections": [],
         "isOptional": false
       },
       {
@@ -1307,13 +1155,8 @@
         "quantity": 1.0,
         "unit": "cup",
         "category": "Dairy",
-        "catalogEntryId": "cheese",
-        "facetSelections": [
-          {
-            "key": "variant",
-            "value": "gruy\u00e8re"
-          }
-        ],
+        "catalogEntryId": "gruyere",
+        "facetSelections": [],
         "isOptional": false
       }
     ],
@@ -1352,7 +1195,7 @@
       },
       {
         "stepNumber": 7,
-        "instruction": "While the soup is simmering, preheat the oven to 400\u00b0F (200\u00b0C). Slice the baguette into 1-inch thick slices and toast them in the oven for about 5 minutes or until golden brown.",
+        "instruction": "While the soup is simmering, preheat the oven to 400°F (200°C). Slice the baguette into 1-inch thick slices and toast them in the oven for about 5 minutes or until golden brown.",
         "timerMinutes": 5,
         "estimatedDurationSeconds": 300
       },
@@ -1430,13 +1273,8 @@
         "quantity": 1.0,
         "unit": "whole",
         "category": "Produce",
-        "catalogEntryId": "onion",
-        "facetSelections": [
-          {
-            "key": "variant",
-            "value": "yellow"
-          }
-        ],
+        "catalogEntryId": "yellow",
+        "facetSelections": [],
         "isOptional": false
       },
       {
@@ -1503,13 +1341,8 @@
         "quantity": 4.0,
         "unit": "cup",
         "category": "Canned & Jarred",
-        "catalogEntryId": "broth",
-        "facetSelections": [
-          {
-            "key": "variant",
-            "value": "vegetable"
-          }
-        ],
+        "catalogEntryId": "vegetable",
+        "facetSelections": [],
         "isOptional": false
       },
       {
@@ -1526,13 +1359,8 @@
         "quantity": 1.0,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalogEntryId": "salt",
-        "facetSelections": [
-          {
-            "key": "variant",
-            "value": "table"
-          }
-        ],
+        "catalogEntryId": "table-salt",
+        "facetSelections": [],
         "isOptional": false
       },
       {
@@ -1540,12 +1368,8 @@
         "quantity": 0.5,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalogEntryId": "peppercorn",
+        "catalogEntryId": "black-cardamom",
         "facetSelections": [
-          {
-            "key": "variant",
-            "value": "black"
-          },
           {
             "key": "form",
             "value": "ground"
@@ -1585,13 +1409,13 @@
       },
       {
         "stepNumber": 3,
-        "instruction": "In a large pot, heat olive oil over medium heat. Add the chopped onion and saut\u00e9 until translucent, about 5 minutes.",
+        "instruction": "In a large pot, heat olive oil over medium heat. Add the chopped onion and sauté until translucent, about 5 minutes.",
         "timerMinutes": 5,
         "estimatedDurationSeconds": 300
       },
       {
         "stepNumber": 4,
-        "instruction": "Add the minced garlic and grated ginger to the pot. Saut\u00e9 for another 2 minutes until fragrant.",
+        "instruction": "Add the minced garlic and grated ginger to the pot. Sauté for another 2 minutes until fragrant.",
         "timerMinutes": 2,
         "estimatedDurationSeconds": 120
       },
@@ -1661,13 +1485,8 @@
         "quantity": 1.5,
         "unit": "cup",
         "category": "Grains & Cereals",
-        "catalogEntryId": "flour",
-        "facetSelections": [
-          {
-            "key": "variant",
-            "value": "all-purpose"
-          }
-        ],
+        "catalogEntryId": "all-purpose",
+        "facetSelections": [],
         "isOptional": false
       },
       {
@@ -1693,13 +1512,8 @@
         "quantity": 0.5,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalogEntryId": "salt",
-        "facetSelections": [
-          {
-            "key": "variant",
-            "value": "table"
-          }
-        ],
+        "catalogEntryId": "table-salt",
+        "facetSelections": [],
         "isOptional": false
       },
       {
@@ -1725,13 +1539,8 @@
         "quantity": 1.0,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalogEntryId": "extract",
-        "facetSelections": [
-          {
-            "key": "variant",
-            "value": "vanilla"
-          }
-        ],
+        "catalogEntryId": "vanilla",
+        "facetSelections": [],
         "isOptional": false
       },
       {
@@ -1752,7 +1561,7 @@
     "steps": [
       {
         "stepNumber": 1,
-        "instruction": "Preheat the oven to 350\u00b0F (175\u00b0C). Grease a 9x5-inch loaf pan.",
+        "instruction": "Preheat the oven to 350°F (175°C). Grease a 9x5-inch loaf pan.",
         "estimatedDurationSeconds": 180
       },
       {
@@ -1865,12 +1674,8 @@
         "quantity": 1.0,
         "unit": "whole",
         "category": "Produce",
-        "catalogEntryId": "pepper",
+        "catalogEntryId": "bell",
         "facetSelections": [
-          {
-            "key": "variant",
-            "value": "bell"
-          },
           {
             "key": "color",
             "value": "red"
@@ -1883,12 +1688,8 @@
         "quantity": 100.0,
         "unit": "g",
         "category": "Produce",
-        "catalogEntryId": "beans",
+        "catalogEntryId": "mung",
         "facetSelections": [
-          {
-            "key": "variant",
-            "value": "mung"
-          },
           {
             "key": "processing",
             "value": "sprouted"
@@ -1999,7 +1800,7 @@
       },
       {
         "stepNumber": 4,
-        "instruction": "Add the remaining oil to the pan. Saut\u00e9 the minced garlic and sliced red bell pepper for 2-3 minutes until fragrant and the pepper is tender.",
+        "instruction": "Add the remaining oil to the pan. Sauté the minced garlic and sliced red bell pepper for 2-3 minutes until fragrant and the pepper is tender.",
         "timerMinutes": 3,
         "estimatedDurationSeconds": 180
       },
@@ -2076,13 +1877,8 @@
         "quantity": 1.0,
         "unit": "tbsp",
         "category": "Condiments & Sauces",
-        "catalogEntryId": "vinegar",
-        "facetSelections": [
-          {
-            "key": "variant",
-            "value": "white"
-          }
-        ],
+        "catalogEntryId": "white-balsamic-vinegar",
+        "facetSelections": [],
         "isOptional": false
       },
       {
@@ -2099,13 +1895,8 @@
         "quantity": 1.0,
         "unit": "cup",
         "category": "Produce",
-        "catalogEntryId": "tomato",
-        "facetSelections": [
-          {
-            "key": "variant",
-            "value": "cherry"
-          }
-        ],
+        "catalogEntryId": "cherry",
+        "facetSelections": [],
         "isOptional": false
       },
       {
@@ -2122,13 +1913,8 @@
         "quantity": 0.25,
         "unit": "cup",
         "category": "Dairy",
-        "catalogEntryId": "cheese",
-        "facetSelections": [
-          {
-            "key": "variant",
-            "value": "feta"
-          }
-        ],
+        "catalogEntryId": "feta",
+        "facetSelections": [],
         "isOptional": true
       },
       {
@@ -2145,13 +1931,8 @@
         "quantity": 0.5,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalogEntryId": "salt",
-        "facetSelections": [
-          {
-            "key": "variant",
-            "value": "table"
-          }
-        ],
+        "catalogEntryId": "table-salt",
+        "facetSelections": [],
         "isOptional": false
       },
       {
@@ -2159,12 +1940,8 @@
         "quantity": 0.25,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalogEntryId": "peppercorn",
+        "catalogEntryId": "black-cardamom",
         "facetSelections": [
-          {
-            "key": "variant",
-            "value": "black"
-          },
           {
             "key": "form",
             "value": "ground"
@@ -2235,13 +2012,8 @@
         "quantity": 4.0,
         "unit": "piece",
         "category": "Protein",
-        "catalogEntryId": "chicken",
-        "facetSelections": [
-          {
-            "key": "variant",
-            "value": "breast"
-          }
-        ],
+        "catalogEntryId": "chicken-breast",
+        "facetSelections": [],
         "isOptional": false
       },
       {
@@ -2303,13 +2075,8 @@
         "quantity": 1.0,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalogEntryId": "salt",
-        "facetSelections": [
-          {
-            "key": "variant",
-            "value": "table"
-          }
-        ],
+        "catalogEntryId": "table-salt",
+        "facetSelections": [],
         "isOptional": false
       },
       {
@@ -2317,12 +2084,8 @@
         "quantity": 0.5,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalogEntryId": "peppercorn",
+        "catalogEntryId": "black-cardamom",
         "facetSelections": [
-          {
-            "key": "variant",
-            "value": "black"
-          },
           {
             "key": "form",
             "value": "ground"
@@ -2351,7 +2114,7 @@
       },
       {
         "stepNumber": 4,
-        "instruction": "Remove the chicken from the marinade and place on the grill. Cook each side for about 7-8 minutes, or until the internal temperature reaches 165\u00b0F (75\u00b0C).",
+        "instruction": "Remove the chicken from the marinade and place on the grill. Cook each side for about 7-8 minutes, or until the internal temperature reaches 165°F (75°C).",
         "timerMinutes": 16,
         "estimatedDurationSeconds": 180
       },
@@ -2390,13 +2153,8 @@
         "quantity": 1.5,
         "unit": "cup",
         "category": "Grains & Cereals",
-        "catalogEntryId": "rice",
-        "facetSelections": [
-          {
-            "key": "variant",
-            "value": "arborio"
-          }
-        ],
+        "catalogEntryId": "arborio",
+        "facetSelections": [],
         "isOptional": false
       },
       {
@@ -2413,13 +2171,8 @@
         "quantity": 1.0,
         "unit": "whole",
         "category": "Produce",
-        "catalogEntryId": "onion",
-        "facetSelections": [
-          {
-            "key": "variant",
-            "value": "yellow"
-          }
-        ],
+        "catalogEntryId": "yellow",
+        "facetSelections": [],
         "isOptional": false
       },
       {
@@ -2454,13 +2207,8 @@
         "quantity": 4.0,
         "unit": "cup",
         "category": "Canned & Jarred",
-        "catalogEntryId": "broth",
-        "facetSelections": [
-          {
-            "key": "variant",
-            "value": "vegetable"
-          }
-        ],
+        "catalogEntryId": "vegetable",
+        "facetSelections": [],
         "isOptional": false
       },
       {
@@ -2468,13 +2216,8 @@
         "quantity": 0.5,
         "unit": "cup",
         "category": "Dairy",
-        "catalogEntryId": "cheese",
-        "facetSelections": [
-          {
-            "key": "variant",
-            "value": "parmesan"
-          }
-        ],
+        "catalogEntryId": "parmesan",
+        "facetSelections": [],
         "isOptional": false
       },
       {
@@ -2500,13 +2243,8 @@
         "quantity": 0.5,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalogEntryId": "salt",
-        "facetSelections": [
-          {
-            "key": "variant",
-            "value": "table"
-          }
-        ],
+        "catalogEntryId": "table-salt",
+        "facetSelections": [],
         "isOptional": false
       },
       {
@@ -2514,12 +2252,8 @@
         "quantity": 0.25,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalogEntryId": "peppercorn",
+        "catalogEntryId": "black-cardamom",
         "facetSelections": [
-          {
-            "key": "variant",
-            "value": "black"
-          },
           {
             "key": "form",
             "value": "ground"
@@ -2542,7 +2276,7 @@
       },
       {
         "stepNumber": 3,
-        "instruction": "Add the minced garlic to the pan and saut\u00e9 for an additional 1 minute until fragrant.",
+        "instruction": "Add the minced garlic to the pan and sauté for an additional 1 minute until fragrant.",
         "timerMinutes": 1,
         "estimatedDurationSeconds": 60
       },
@@ -2608,13 +2342,8 @@
         "quantity": 2.0,
         "unit": "whole",
         "category": "Produce",
-        "catalogEntryId": "potato",
-        "facetSelections": [
-          {
-            "key": "variant",
-            "value": "sweet"
-          }
-        ],
+        "catalogEntryId": "sweet",
+        "facetSelections": [],
         "isOptional": false
       },
       {
@@ -2622,12 +2351,8 @@
         "quantity": 1.0,
         "unit": "can",
         "category": "Canned & Jarred",
-        "catalogEntryId": "beans",
+        "catalogEntryId": "black-beans",
         "facetSelections": [
-          {
-            "key": "variant",
-            "value": "black"
-          },
           {
             "key": "preservation",
             "value": "canned"
@@ -2640,13 +2365,8 @@
         "quantity": 8.0,
         "unit": "piece",
         "category": "Grains & Cereals",
-        "catalogEntryId": "tortilla",
-        "facetSelections": [
-          {
-            "key": "variant",
-            "value": "corn"
-          }
-        ],
+        "catalogEntryId": "corn-muffin",
+        "facetSelections": [],
         "isOptional": false
       },
       {
@@ -2654,13 +2374,8 @@
         "quantity": 1.0,
         "unit": "cup",
         "category": "Dairy",
-        "catalogEntryId": "cheese",
-        "facetSelections": [
-          {
-            "key": "variant",
-            "value": "cheddar"
-          }
-        ],
+        "catalogEntryId": "cheddar",
+        "facetSelections": [],
         "isOptional": false
       },
       {
@@ -2695,13 +2410,8 @@
         "quantity": 0.5,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalogEntryId": "salt",
-        "facetSelections": [
-          {
-            "key": "variant",
-            "value": "table"
-          }
-        ],
+        "catalogEntryId": "table-salt",
+        "facetSelections": [],
         "isOptional": false
       },
       {
@@ -2709,12 +2419,8 @@
         "quantity": 0.25,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalogEntryId": "peppercorn",
+        "catalogEntryId": "black-cardamom",
         "facetSelections": [
-          {
-            "key": "variant",
-            "value": "black"
-          },
           {
             "key": "form",
             "value": "ground"
@@ -2736,13 +2442,8 @@
         "quantity": 1.0,
         "unit": "whole",
         "category": "Produce",
-        "catalogEntryId": "onion",
-        "facetSelections": [
-          {
-            "key": "variant",
-            "value": "yellow"
-          }
-        ],
+        "catalogEntryId": "yellow",
+        "facetSelections": [],
         "isOptional": false
       },
       {
@@ -2767,7 +2468,7 @@
     "steps": [
       {
         "stepNumber": 1,
-        "instruction": "Preheat the oven to 375\u00b0F (190\u00b0C).",
+        "instruction": "Preheat the oven to 375°F (190°C).",
         "estimatedDurationSeconds": 60
       },
       {
@@ -2912,13 +2613,8 @@
         "quantity": 0.5,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalogEntryId": "salt",
-        "facetSelections": [
-          {
-            "key": "variant",
-            "value": "table"
-          }
-        ],
+        "catalogEntryId": "table-salt",
+        "facetSelections": [],
         "isOptional": false
       },
       {
@@ -2926,12 +2622,8 @@
         "quantity": 0.25,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalogEntryId": "peppercorn",
+        "catalogEntryId": "black-cardamom",
         "facetSelections": [
-          {
-            "key": "variant",
-            "value": "black"
-          },
           {
             "key": "form",
             "value": "ground"
@@ -2972,7 +2664,7 @@
       },
       {
         "stepNumber": 5,
-        "instruction": "Add the minced garlic and saut\u00e9 for about 1 minute until fragrant, but not browned.",
+        "instruction": "Add the minced garlic and sauté for about 1 minute until fragrant, but not browned.",
         "timerMinutes": 1,
         "estimatedDurationSeconds": 60
       },
@@ -3053,13 +2745,8 @@
         "quantity": 1.0,
         "unit": "whole",
         "category": "Produce",
-        "catalogEntryId": "onion",
-        "facetSelections": [
-          {
-            "key": "variant",
-            "value": "yellow"
-          }
-        ],
+        "catalogEntryId": "yellow",
+        "facetSelections": [],
         "isOptional": false
       },
       {
@@ -3130,13 +2817,8 @@
         "quantity": 1.0,
         "unit": "cup",
         "category": "Canned & Jarred",
-        "catalogEntryId": "broth",
-        "facetSelections": [
-          {
-            "key": "variant",
-            "value": "vegetable"
-          }
-        ],
+        "catalogEntryId": "vegetable",
+        "facetSelections": [],
         "isOptional": false
       },
       {
@@ -3162,13 +2844,8 @@
         "quantity": 1.0,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalogEntryId": "salt",
-        "facetSelections": [
-          {
-            "key": "variant",
-            "value": "table"
-          }
-        ],
+        "catalogEntryId": "table-salt",
+        "facetSelections": [],
         "isOptional": true
       },
       {
@@ -3176,12 +2853,8 @@
         "quantity": 0.5,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalogEntryId": "peppercorn",
+        "catalogEntryId": "black-cardamom",
         "facetSelections": [
-          {
-            "key": "variant",
-            "value": "black"
-          },
           {
             "key": "form",
             "value": "ground"
@@ -3212,7 +2885,7 @@
       },
       {
         "stepNumber": 3,
-        "instruction": "In a large pot, heat olive oil over medium heat. Add the chopped onion, garlic, and ginger. Saut\u00e9 until the onion becomes translucent, about 5 minutes.",
+        "instruction": "In a large pot, heat olive oil over medium heat. Add the chopped onion, garlic, and ginger. Sauté until the onion becomes translucent, about 5 minutes.",
         "timerMinutes": 5,
         "estimatedDurationSeconds": 300
       },
@@ -3307,13 +2980,8 @@
         "quantity": 1.0,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalogEntryId": "extract",
-        "facetSelections": [
-          {
-            "key": "variant",
-            "value": "vanilla"
-          }
-        ],
+        "catalogEntryId": "vanilla",
+        "facetSelections": [],
         "isOptional": false
       },
       {
@@ -3321,13 +2989,8 @@
         "quantity": 0.25,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalogEntryId": "salt",
-        "facetSelections": [
-          {
-            "key": "variant",
-            "value": "table"
-          }
-        ],
+        "catalogEntryId": "table-salt",
+        "facetSelections": [],
         "isOptional": true
       },
       {
@@ -3425,12 +3088,8 @@
         "quantity": 1.0,
         "unit": "whole",
         "category": "Produce",
-        "catalogEntryId": "pepper",
+        "catalogEntryId": "bell",
         "facetSelections": [
-          {
-            "key": "variant",
-            "value": "bell"
-          },
           {
             "key": "color",
             "value": "red"
@@ -3443,12 +3102,8 @@
         "quantity": 1.0,
         "unit": "whole",
         "category": "Produce",
-        "catalogEntryId": "pepper",
+        "catalogEntryId": "bell",
         "facetSelections": [
-          {
-            "key": "variant",
-            "value": "bell"
-          },
           {
             "key": "color",
             "value": "yellow"
@@ -3470,13 +3125,8 @@
         "quantity": 0.5,
         "unit": "whole",
         "category": "Produce",
-        "catalogEntryId": "onion",
-        "facetSelections": [
-          {
-            "key": "variant",
-            "value": "yellow"
-          }
-        ],
+        "catalogEntryId": "yellow",
+        "facetSelections": [],
         "isOptional": false
       },
       {
@@ -3493,13 +3143,8 @@
         "quantity": 0.5,
         "unit": "cup",
         "category": "Dairy",
-        "catalogEntryId": "cheese",
-        "facetSelections": [
-          {
-            "key": "variant",
-            "value": "parmesan"
-          }
-        ],
+        "catalogEntryId": "parmesan",
+        "facetSelections": [],
         "isOptional": false
       },
       {
@@ -3516,13 +3161,8 @@
         "quantity": 0.5,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalogEntryId": "salt",
-        "facetSelections": [
-          {
-            "key": "variant",
-            "value": "table"
-          }
-        ],
+        "catalogEntryId": "table-salt",
+        "facetSelections": [],
         "isOptional": false
       },
       {
@@ -3530,12 +3170,8 @@
         "quantity": 0.25,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalogEntryId": "peppercorn",
+        "catalogEntryId": "black-cardamom",
         "facetSelections": [
-          {
-            "key": "variant",
-            "value": "black"
-          },
           {
             "key": "form",
             "value": "ground"
@@ -3556,7 +3192,7 @@
     "steps": [
       {
         "stepNumber": 1,
-        "instruction": "Preheat your oven to 375\u00b0F (190\u00b0C).",
+        "instruction": "Preheat your oven to 375°F (190°C).",
         "estimatedDurationSeconds": 60
       },
       {
@@ -3566,7 +3202,7 @@
       },
       {
         "stepNumber": 3,
-        "instruction": "In a large oven-safe skillet, heat olive oil over medium heat. Add the onion and garlic, saut\u00e9 for 2 minutes until fragrant.",
+        "instruction": "In a large oven-safe skillet, heat olive oil over medium heat. Add the onion and garlic, sauté for 2 minutes until fragrant.",
         "timerMinutes": 2,
         "estimatedDurationSeconds": 120
       },
@@ -3625,12 +3261,8 @@
         "quantity": 2.0,
         "unit": "piece",
         "category": "Protein",
-        "catalogEntryId": "oily-fish",
+        "catalogEntryId": "salmon-oily-fish",
         "facetSelections": [
-          {
-            "key": "variant",
-            "value": "salmon"
-          },
           {
             "key": "form",
             "value": "fillet"
@@ -3653,12 +3285,7 @@
         "unit": "tbsp",
         "category": "Condiments & Sauces",
         "catalogEntryId": "mustard",
-        "facetSelections": [
-          {
-            "key": "variant",
-            "value": "dijon"
-          }
-        ],
+        "facetSelections": [],
         "isOptional": false
       },
       {
@@ -3693,13 +3320,8 @@
         "quantity": 0.5,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalogEntryId": "salt",
-        "facetSelections": [
-          {
-            "key": "variant",
-            "value": "table"
-          }
-        ],
+        "catalogEntryId": "table-salt",
+        "facetSelections": [],
         "isOptional": false
       },
       {
@@ -3707,12 +3329,8 @@
         "quantity": 0.25,
         "unit": "tsp",
         "category": "Spices & Herbs",
-        "catalogEntryId": "peppercorn",
+        "catalogEntryId": "black-cardamom",
         "facetSelections": [
-          {
-            "key": "variant",
-            "value": "black"
-          },
           {
             "key": "form",
             "value": "ground"
@@ -3733,7 +3351,7 @@
     "steps": [
       {
         "stepNumber": 1,
-        "instruction": "Preheat your oven to 400\u00b0F (200\u00b0C).",
+        "instruction": "Preheat your oven to 400°F (200°C).",
         "estimatedDurationSeconds": 60
       },
       {
@@ -3789,7 +3407,7 @@
         "catalogEntryId": "oats",
         "facetSelections": [
           {
-            "key": "variant",
+            "key": "form",
             "value": "rolled"
           }
         ],

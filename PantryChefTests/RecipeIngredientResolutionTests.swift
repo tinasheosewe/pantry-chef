@@ -259,6 +259,56 @@ final class RecipeIngredientResolutionTests: XCTestCase {
     }
 }
 
+final class PantryCatalogInheritanceTests: XCTestCase {
+    func testAncestorsIncludeSelfAndParents() {
+        let ancestors = PantryCatalog.ancestors(of: "beef-shank")
+        XCTAssertTrue(ancestors.contains("beef-shank"))
+        XCTAssertTrue(ancestors.contains("beef"))
+    }
+
+    func testDescendantsIncludeSelfAndChildren() {
+        let descendants = PantryCatalog.descendants(of: "beef")
+        XCTAssertTrue(descendants.contains("beef"))
+        XCTAssertTrue(descendants.contains("beef-shank"))
+    }
+
+    func testMatchingCatalogItemIDsWithoutFacetsReturnsDescendants() {
+        let matches = PantryCatalog.matchingCatalogItemIDs(for: "beef", facets: [])
+        XCTAssertTrue(matches.contains("beef"))
+        XCTAssertTrue(matches.contains("beef-shank"))
+    }
+
+    func testMatchingCatalogItemIDsNarrowToSubclass() {
+        let matches = PantryCatalog.matchingCatalogItemIDs(
+            for: "beef",
+            facets: [.init(key: .variant, value: "beef shank")]
+        )
+        XCTAssertTrue(matches.contains("beef-shank"))
+        XCTAssertFalse(matches.contains("beef"))
+    }
+
+    func testSubclassPantrySatisfiesGenericRecipeRequirement() {
+        let ingredient = Ingredient(
+            name: "beef",
+            quantity: 1,
+            unit: .pound,
+            category: .protein,
+            catalogItemID: "beef"
+        )
+        let pantry = [
+            PantryItem(
+                name: "Beef Shank",
+                category: .protein,
+                quantity: 1,
+                unit: .pound,
+                catalogItemID: "beef-shank"
+            )
+        ]
+
+        XCTAssertTrue(IngredientMatcher.pantryContains(ingredient: ingredient, pantry: pantry))
+    }
+}
+
 private final class StubIngredientCandidateParser: IngredientCandidateParserProtocol {
     var stubbedCandidates: [UUID: [IngredientResolutionCandidate]] = [:]
 

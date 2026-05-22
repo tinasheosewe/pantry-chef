@@ -1017,27 +1017,27 @@ enum PantryCatalog {
 
     static func parents(of id: String) -> [String] {
         ensureInheritanceCaches()
-        parentIDsByItemID[id] ?? []
+        return parentIDsByItemID[id] ?? []
     }
 
     static func ancestors(of id: String) -> Set<String> {
         ensureInheritanceCaches()
-        ancestorsByItemID[id] ?? [id]
+        return ancestorsByItemID[id] ?? [id]
     }
 
     static func descendants(of id: String) -> Set<String> {
         ensureInheritanceCaches()
-        descendantsByItemID[id] ?? [id]
+        return descendantsByItemID[id] ?? [id]
     }
 
     static func inheritanceDistance(from descendantID: String, to ancestorID: String) -> Int? {
         ensureInheritanceCaches()
-        distanceByItemID[descendantID]?[ancestorID]
+        return distanceByItemID[descendantID]?[ancestorID]
     }
 
     static func effectiveFacets(for id: String) -> [PantryFacetDefinition] {
         ensureInheritanceCaches()
-        effectiveFacetsByItemID[id] ?? []
+        return effectiveFacetsByItemID[id] ?? []
     }
 
     /// Returns catalog IDs that can satisfy a requirement for `catalogItemID`.

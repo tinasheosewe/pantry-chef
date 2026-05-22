@@ -16,6 +16,46 @@ from catalog_lib import (
 
 REQUIRED_FIELDS = {"id", "name", "category", "defaultStorage"}
 DEPRECATED_FIELDS = {"isGenericBase", "parentId", "parentFacets", "excludedFromGenericMatch"}
+VALID_DEFAULT_UNITS = {
+    "tsp",
+    "tbsp",
+    "cup",
+    "fl oz",
+    "ml",
+    "L",
+    "g",
+    "kg",
+    "oz",
+    "lb",
+    "piece",
+    "whole",
+    "loaf",
+    "slice",
+    "clove",
+    "bunch",
+    "can",
+    "pkg",
+    "pinch",
+    "splash",
+    "to taste",
+}
+VALID_STORAGES = {"Pantry", "Refrigerated", "Frozen"}
+NON_SHAREABLE_MULTI_PARENT_IDS = {
+    "breast",
+    "thigh",
+    "wing",
+    "drumstick",
+    "leg",
+    "loin",
+    "shoulder",
+    "shank",
+    "chop",
+    "rib",
+    "tenderloin",
+    "fillet",
+    "neck",
+    "belly",
+}
 
 
 @dataclass
@@ -89,6 +129,27 @@ def check_required_fields(items: list[dict], report: ValidationReport) -> None:
         seen_ids.add(item_id)
 
 
+def check_supported_defaults(items: list[dict], report: ValidationReport) -> None:
+    for item in items:
+        item_id = item.get("id", "<missing-id>")
+        unit = item.get("defaultUnit")
+        storage = item.get("defaultStorage")
+        if unit and unit not in VALID_DEFAULT_UNITS:
+            report.add(
+                "error",
+                "unsupported_default_unit",
+                f"defaultUnit {unit!r} is not supported by MeasurementUnit",
+                item_id,
+            )
+        if storage and storage not in VALID_STORAGES:
+            report.add(
+                "error",
+                "unsupported_default_storage",
+                f"defaultStorage {storage!r} is not supported by PantryStorage",
+                item_id,
+            )
+
+
 def check_deprecated_fields(items: list[dict], report: ValidationReport) -> None:
     for item in items:
         for field_name in DEPRECATED_FIELDS:
@@ -143,6 +204,18 @@ def check_parent_links(items: list[dict], report: ValidationReport) -> None:
                 report.add("error", "self_parent", "Item cannot parent itself", item_id)
             elif parent_id not in by_id:
                 report.add("error", "orphan_parent", f"Parent {parent_id!r} not found", item_id)
+
+
+def check_non_shareable_multi_parent(items: list[dict], report: ValidationReport) -> None:
+    for item in items:
+        item_id = item.get("id", "")
+        if item_id in NON_SHAREABLE_MULTI_PARENT_IDS and len(parent_ids(item)) > 1:
+            report.add(
+                "error",
+                "non_shareable_multi_parent",
+                f"{item_id!r} is a scoped cut/state name and must not be shared across multiple parents",
+                item_id,
+            )
 
 
 def check_cycles(items: list[dict], report: ValidationReport) -> None:
@@ -249,10 +322,12 @@ def validate_catalog(*, strict: bool = False) -> ValidationReport:
     items = load_catalog()
 
     check_required_fields(items, report)
+    check_supported_defaults(items, report)
     check_deprecated_fields(items, report)
     check_duplicate_aliases(items, report)
     check_self_aliases(items, report)
     check_parent_links(items, report)
+    check_non_shareable_multi_parent(items, report)
     check_cycles(items, report)
     check_additive_facets(items, report)
     check_facet_aliases(items, report)

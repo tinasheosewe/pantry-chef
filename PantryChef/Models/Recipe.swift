@@ -288,13 +288,13 @@ struct Recipe: Identifiable, Codable, Hashable {
         title: "Simple Chicken Stir Fry",
         description: "A quick and healthy chicken stir fry with vegetables.",
         ingredients: [
-            Ingredient(name: "Chicken Breast", quantity: 500, unit: .gram, category: .protein, catalogItemID: "chicken", facets: [.init(key: .variant, value: "breast")]),
+            Ingredient(name: "Chicken Breast", quantity: 500, unit: .gram, category: .protein, catalogItemID: "chicken-breast"),
             Ingredient(name: "Onion", quantity: 1, unit: .whole, category: .produce, catalogItemID: "onion"),
             Ingredient(name: "Garlic", quantity: 3, unit: .clove, category: .produce, catalogItemID: "garlic"),
             Ingredient(name: "Soy Sauce", quantity: 2, unit: .tablespoon, category: .condiments, catalogItemID: "soy-sauce"),
             Ingredient(name: "Olive Oil", quantity: 2, unit: .tablespoon, category: .oils, catalogItemID: "olive-oil"),
             Ingredient(name: "Rice", quantity: 2, unit: .cup, category: .grains, catalogItemID: "rice"),
-            Ingredient(name: "Bell Pepper", quantity: 1, unit: .whole, category: .produce, catalogItemID: "pepper", facets: [.init(key: .variant, value: "bell")]),
+            Ingredient(name: "Bell Pepper", quantity: 1, unit: .whole, category: .produce, catalogItemID: "bell"),
             Ingredient(name: "Salt", quantity: 1, unit: .pinch, category: .spices, isOptional: true, catalogItemID: "salt"),
         ],
         steps: [
