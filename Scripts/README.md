@@ -8,7 +8,7 @@ How to maintain and validate the PantryChef ingredient catalog.
 Scripts/
   apply_catalog_audit.py          ← bulk catalog fixes / migrations
   apply_coverage_phase12.py       ← phase 1+2 coverage + generic oil/nut
-  apply_generic_specific_model.py ← generic↔specific families, alias hygiene
+  apply_inheritance_migration.py  ← kind facet -> subclass migration
   validate_catalog.py             ← reusable catalog integrity checks
   catalog_lib.py                  ← shared helpers for catalog scripts
   analyze_corpus_ingredients.py   ← corpus coverage analysis (RecipeNLG)
@@ -16,9 +16,8 @@ Scripts/
 PantryChef/
   Resources/
     catalog.json                  ← production catalog loaded by the app
-    catalog_families.json         ← generic↔specific family definitions
   Models/
-    PantryCatalog.swift           ← loads catalog.json + catalog_families.json
+    PantryCatalog.swift           ← loads catalog.json + inheritance graph
     Enums.swift                ← FoodCategory, MeasurementUnit, etc.
 ```
 
@@ -49,7 +48,7 @@ Alcohol & Spirits, Baking & Sweeteners, Beverages, Breads & Bakery, Canned & Jar
 | Key | Use for | Example |
 |-----|---------|---------|
 | `color` | Color (produce) | pepper: green, red, yellow |
-| `variant` | Types/varieties/species/cuts | beef: ground, sirloin, ribeye |
+| `variant` | Transitional kind facet during migration | moved to subclasses |
 | `form` | Physical form | cheese: block, shredded, sliced |
 | `preservation` | Storage method | fresh, frozen, dried, canned |
 | `processing` | How it was processed | raw, roasted, smoked, cured |
@@ -65,41 +64,20 @@ Alcohol & Spirits, Baking & Sweeteners, Beverages, Breads & Bakery, Canned & Jar
 
 For bulk migrations (merges, renames, facet consolidation), add a script like `apply_catalog_audit.py` or `apply_coverage_phase12.py` rather than hand-editing hundreds of entries.
 
-## Generic cooking oil
+## Inheritance migration
 
-Recipes often list bare **"oil"**, **"neutral oil"**, or **"cooking oil"** without specifying a type. The catalog handles this with:
-
-1. **`oil` catalog entry** — catches bare oil in corpus matching; default variant is `vegetable`.
-2. **Specific `-oil` entries kept** — `olive-oil`, `vegetable-oil`, etc. for explicit mentions.
-3. **Pantry matching** — a recipe requiring generic `oil` matches any specific cooking oil in the pantry (`PantryCatalog.satisfyingCookingOilCatalogItemIDs`). A recipe requiring `oil` + variant `olive` only matches `olive-oil`.
-
-Do not treat oil like water (implicit/unlimited). Users track oil as a real pantry staple.
-
-## Generic nuts
-
-Same pattern as oil for bare **"nuts"**, **"nut"**, **"ground nuts"** in recipes:
-
-1. **`nut` catalog entry** — default variant `mixed`; aliases catch corpus NER labels.
-2. **Specific nut entries kept** — `walnut`, `peanut`, `almond`, etc.
-3. **Pantry matching** — generic `nut` matches any edible nut in the pantry (`PantryCatalog.satisfyingEdibleNutCatalogItemIDs`). Typed variant (e.g. `walnut`) matches only that nut.
-
-Seeds (`chia-seed`, `sesame-seed`, …) and products (`nut-butter`, `corn-nut`) are excluded from generic matching.
-
-## Generic↔specific families
-
-`catalog_families.json` defines substitution families (nut, oil) and generic-only facet bases (cheese, beef, …). Regenerate it with:
+Run migration in dry-run mode first:
 
 ```bash
-python3 PantryChef/Scripts/apply_generic_specific_model.py
+python3 PantryChef/Scripts/apply_inheritance_migration.py --families nut
+python3 PantryChef/Scripts/apply_inheritance_migration.py --families nut --write
 ```
 
-This script:
-- Syncs generic `variant` facets from specific members
-- Keeps bare aliases on generic entries only (`nuts`, `cooking oil`, …)
-- Enriches family-specific entries (nuts, `-oil` items) from `corpus_alias_candidates.json`
-- Strips generic-only aliases from specific entries (e.g. `cooking oil` off `vegetable-oil`)
+For full migration order:
 
-Use `--strip-only` to remove mistaken bulk corpus enrichment without re-enriching.
+```bash
+python3 PantryChef/Scripts/apply_inheritance_migration.py --all --write
+```
 
 ## Catalog validation
 
@@ -112,13 +90,10 @@ python3 PantryChef/Scripts/validate_catalog.py --json       # machine-readable
 ```
 
 Checks include:
-- Duplicate alias keys across entries
-- Generic aliases appearing on specific family members
-- Facet options that duplicate standalone catalog entry names
-- Orphan family IDs and unmapped generic variants
+- Parent links and inheritance cycles
+- Additive facet inheritance constraints
+- Facet-alias validity in effective hierarchy
 - Required fields and duplicate IDs
-
-Pre-existing duplicate-alias pairs (e.g. `broth`/`bouillon`) are reported but may be intentional cross-entry synonyms to fix separately.
 
 ## Corpus Coverage Analysis
 

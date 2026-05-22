@@ -360,21 +360,21 @@
     "defaultQuantity": 1.0,
     "defaultStorage": "Pantry",
     "aliases": [
+      "almond flake",
+      "almond flavor",
       "almond flour",
       "almond meal",
       "almond nut",
-      "almonds",
-      "sweet almond",
-      "slivered almond",
-      "almond sliver",
-      "unblanched almond",
-      "marcona almond",
       "almond powder",
-      "almond slivered",
       "almond slice",
-      "almond flavor",
+      "almond sliver",
+      "almond slivered",
+      "almonds",
       "drop almond",
-      "almond flake"
+      "marcona almond",
+      "slivered almond",
+      "sweet almond",
+      "unblanched almond"
     ],
     "facets": [
       {
@@ -386,7 +386,8 @@
           "chopped",
           "ground",
           "flour",
-          "butter"
+          "butter",
+          "halved"
         ]
       },
       {
@@ -427,7 +428,11 @@
         365,
         730
       ]
-    }
+    },
+    "parentIds": [
+      "nut",
+      "oil"
+    ]
   },
   {
     "id": "almond-oil",
@@ -567,6 +572,62 @@
         730
       ]
     }
+  },
+  {
+    "id": "american",
+    "name": "american",
+    "category": "Dairy & Eggs",
+    "defaultUnit": "oz",
+    "defaultQuantity": 8.0,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "american cheese",
+      "american cheese slice",
+      "sharp american cheese"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "block",
+          "shredded",
+          "sliced",
+          "crumbled",
+          "grated",
+          "cubed",
+          "spread",
+          "wedge"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "fresh",
+          "aged",
+          "smoked",
+          "processed"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "block"
+      }
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        14,
+        42
+      ],
+      "Frozen": [
+        120,
+        180
+      ]
+    },
+    "parentIds": [
+      "cheese"
+    ]
   },
   {
     "id": "anchovy-paste",
@@ -1243,6 +1304,60 @@
     }
   },
   {
+    "id": "asiago",
+    "name": "asiago",
+    "category": "Dairy & Eggs",
+    "defaultUnit": "oz",
+    "defaultQuantity": 8.0,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "asiago cheese"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "block",
+          "shredded",
+          "sliced",
+          "crumbled",
+          "grated",
+          "cubed",
+          "spread",
+          "wedge"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "fresh",
+          "aged",
+          "smoked",
+          "processed"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "block"
+      }
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        14,
+        42
+      ],
+      "Frozen": [
+        120,
+        180
+      ]
+    },
+    "parentIds": [
+      "cheese"
+    ]
+  },
+  {
     "id": "asparagus",
     "name": "asparagus",
     "category": "Produce",
@@ -1324,19 +1439,6 @@
     ],
     "facets": [
       {
-        "key": "variant",
-        "options": [
-          "hass",
-          "fuerte",
-          "bacon",
-          "reed",
-          "pinkerton",
-          "lamb hass",
-          "zutano",
-          "choquette"
-        ]
-      },
-      {
         "key": "form",
         "options": [
           "whole",
@@ -1363,10 +1465,6 @@
     ],
     "defaultSelections": [
       {
-        "key": "variant",
-        "value": "hass"
-      },
-      {
         "key": "form",
         "value": "whole"
       }
@@ -1384,7 +1482,10 @@
         90,
         180
       ]
-    }
+    },
+    "parentIds": [
+      "oil"
+    ]
   },
   {
     "id": "avocado-oil",
@@ -3277,7 +3378,8 @@
           "whole",
           "halved",
           "chopped",
-          "ground"
+          "ground",
+          "sliced"
         ]
       },
       {
@@ -3287,7 +3389,8 @@
           "roasted",
           "toasted",
           "salted",
-          "unsalted"
+          "unsalted",
+          "blanched"
         ]
       }
     ],
@@ -3314,7 +3417,10 @@
         365,
         730
       ]
-    }
+    },
+    "parentIds": [
+      "nut"
+    ]
   },
   {
     "id": "blackberry",
@@ -3377,6 +3483,80 @@
         365
       ]
     }
+  },
+  {
+    "id": "blended",
+    "name": "blended",
+    "category": "Oils & Fats",
+    "defaultUnit": "tbsp",
+    "defaultQuantity": 2.0,
+    "defaultStorage": "Pantry",
+    "aliases": [],
+    "facets": [],
+    "defaultSelections": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        365
+      ]
+    },
+    "parentIds": [
+      "oil"
+    ]
+  },
+  {
+    "id": "blue-cheese",
+    "name": "blue cheese",
+    "category": "Dairy & Eggs",
+    "defaultUnit": "oz",
+    "defaultQuantity": 8.0,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "blue cheese crumble"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "block",
+          "shredded",
+          "sliced",
+          "crumbled",
+          "grated",
+          "cubed",
+          "spread",
+          "wedge"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "fresh",
+          "aged",
+          "smoked",
+          "processed"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "block"
+      }
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        14,
+        42
+      ],
+      "Frozen": [
+        120,
+        180
+      ]
+    },
+    "parentIds": [
+      "cheese"
+    ]
   },
   {
     "id": "blueberry",
@@ -3848,6 +4028,7 @@
     "defaultStorage": "Pantry",
     "aliases": [
       "amazon nut",
+      "brazil",
       "brazil nuts",
       "castanha-do-pará",
       "para nut"
@@ -3859,7 +4040,8 @@
           "whole",
           "halved",
           "chopped",
-          "ground"
+          "ground",
+          "sliced"
         ]
       },
       {
@@ -3869,7 +4051,8 @@
           "roasted",
           "toasted",
           "salted",
-          "unsalted"
+          "unsalted",
+          "blanched"
         ]
       }
     ],
@@ -3896,7 +4079,10 @@
         365,
         730
       ]
-    }
+    },
+    "parentIds": [
+      "nut"
+    ]
   },
   {
     "id": "bread",
@@ -4038,6 +4224,60 @@
         365
       ]
     }
+  },
+  {
+    "id": "brie",
+    "name": "brie",
+    "category": "Dairy & Eggs",
+    "defaultUnit": "oz",
+    "defaultQuantity": 8.0,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "brie cheese"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "block",
+          "shredded",
+          "sliced",
+          "crumbled",
+          "grated",
+          "cubed",
+          "spread",
+          "wedge"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "fresh",
+          "aged",
+          "smoked",
+          "processed"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "block"
+      }
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        14,
+        42
+      ],
+      "Frozen": [
+        120,
+        180
+      ]
+    },
+    "parentIds": [
+      "cheese"
+    ]
   },
   {
     "id": "brioche",
@@ -5170,6 +5410,7 @@
     "defaultQuantity": 8.0,
     "defaultStorage": "Pantry",
     "aliases": [
+      "camelina",
       "camelina oils",
       "camelina sativa oil",
       "false flax oil",
@@ -5200,7 +5441,10 @@
         365,
         730
       ]
-    }
+    },
+    "parentIds": [
+      "oil"
+    ]
   },
   {
     "id": "candied-fruit",
@@ -5376,6 +5620,7 @@
     "defaultQuantity": 16.0,
     "defaultStorage": "Pantry",
     "aliases": [
+      "canola",
       "canola oils",
       "huile de colza",
       "rapeseed oil"
@@ -5405,7 +5650,10 @@
         365,
         730
       ]
-    }
+    },
+    "parentIds": [
+      "oil"
+    ]
   },
   {
     "id": "cantaloupe",
@@ -5836,11 +6084,11 @@
     "defaultQuantity": 1.0,
     "defaultStorage": "Pantry",
     "aliases": [
-      "cashew nut",
-      "cashews",
-      "kaju",
       "cashew half",
-      "cashew piece"
+      "cashew nut",
+      "cashew piece",
+      "cashews",
+      "kaju"
     ],
     "facets": [
       {
@@ -5852,7 +6100,9 @@
           "pieces",
           "butter",
           "half",
-          "piece"
+          "piece",
+          "ground",
+          "sliced"
         ]
       },
       {
@@ -5863,7 +6113,8 @@
           "toasted",
           "salted",
           "unsalted",
-          "honey-roasted"
+          "honey-roasted",
+          "blanched"
         ]
       }
     ],
@@ -5890,7 +6141,10 @@
         365,
         730
       ]
-    }
+    },
+    "parentIds": [
+      "nut"
+    ]
   },
   {
     "id": "cauliflower",
@@ -6627,194 +6881,21 @@
     }
   },
   {
-    "id": "cheese",
-    "name": "cheese",
+    "id": "cheddar",
+    "name": "cheddar",
     "category": "Dairy & Eggs",
     "defaultUnit": "oz",
     "defaultQuantity": 8.0,
     "defaultStorage": "Refrigerated",
     "aliases": [
-      "cheeses",
-      "fromage",
-      "velveeta cheese",
-      "velveeta",
-      "cheddar cheese",
-      "parmesan cheese",
-      "mozzarella cheese",
-      "swiss cheese",
-      "feta cheese",
-      "american cheese",
-      "goat cheese",
-      "blue cheese",
-      "romano cheese",
-      "monterey jack cheese",
-      "provolone cheese",
-      "sharp cheese",
-      "gruyere cheese",
-      "freshly parmesan cheese",
-      "gouda cheese",
-      "colby cheese",
-      "blend cheese",
-      "gorgonzola cheese",
-      "asiago cheese",
-      "jack cheese",
-      "fontina cheese",
-      "brie cheese",
-      "pepper cheese",
-      "muenster cheese",
-      "longhorn cheese",
-      "pecorino cheese",
-      "manchego cheese",
-      "cotija cheese",
-      "low-fat cottage cheese",
-      "sharp cheddar cheese",
-      "italian cheese",
-      "four cheese",
-      "english cheese",
-      "process cheese",
-      "pecorino romano cheese",
-      "mexican cheese",
-      "tasty cheese",
-      "processed cheese",
-      "gruy re cheese",
-      "white cheddar cheese",
-      "monterey jack pepper cheese",
-      "italian cheese blend",
-      "low-fat ricotta cheese",
-      "cream-style cottage cheese",
-      "mild cheese",
-      "white cheese",
-      "havarti cheese",
-      "taco cheese",
-      "halloumi cheese",
-      "cheese cracker",
-      "camembert cheese",
-      "yellow cheese",
-      "neufchatel cheese",
-      "pimento cheese",
-      "cheese soup",
-      "pizza cheese",
-      "garlic cheese",
-      "farmer cheese",
-      "roquefort cheese",
-      "chedder cheese",
-      "melting cheese",
-      "freshly pecorino romano cheese",
-      "pepperjack cheese",
-      "cheese slice",
-      "jalapeno cheese",
-      "three cheese",
-      "parmesean cheese",
-      "freshly parmigiano-reggiano cheese",
-      "blue cheese crumble",
-      "parmigiano-reggiano cheese",
-      "nacho cheese soup",
-      "nacho cheese",
-      "cheese blend",
-      "bleu cheese",
-      "favorite cheese",
       "campbell cheddar cheese soup",
-      "mozzerella cheese",
-      "hard cheese",
-      "jarlsberg cheese",
-      "stilton cheese",
+      "cheddar cheese",
       "cheddar cheese blend",
-      "low-fat cheese",
-      "emmenthaler cheese",
-      "chevre cheese",
-      "mozzarella string cheese",
-      "boursin cheese",
-      "mozarella cheese",
-      "extra sharp cheese",
-      "slice swiss cheese",
-      "nacho cheese dorito",
-      "monterey cheese",
-      "whiz cheese",
-      "whole-milk ricotta cheese",
-      "freshly romano cheese",
-      "barrel cheese",
-      "feta cheese crumble",
-      "taleggio cheese",
-      "freshly pecorino cheese",
-      "processed cheese food",
-      "yogurt cheese",
-      "locatelli cheese",
-      "light ricotta cheese",
-      "padano cheese",
-      "oaxaca cheese",
-      "soy cheese",
-      "edam cheese",
-      "burrata cheese",
-      "fresco cheese",
-      "velveeta reduced fat cheese",
-      "container ricotta cheese",
-      "low-fat mozzarella cheese",
-      "light cheese",
-      "refrigerated cheese tortellini",
-      "brick cheese",
-      "ricotta salata cheese",
-      "low-fat swiss cheese",
-      "cheese curd",
-      "pimiento cheese",
       "extra sharp cheddar cheese",
-      "colby-jack cheese",
-      "asadero cheese",
-      "cheese choice",
-      "vegan cheese",
-      "philadelphia neufchatel cheese",
-      "american cheese slice",
-      "panela cheese",
-      "parmesan cheese shaving",
-      "cow cheese",
-      "type cheese",
-      "nacho cheese flavor",
-      "paneer cheese",
-      "sharp american cheese",
-      "parmigiano cheese",
-      "block cheese",
-      "polly-o original ricotta cheese",
-      "parmesian cheese",
-      "emmentaler cheese",
-      "creamed cheese",
-      "haloumi cheese",
-      "raclette cheese",
-      "parmigiano reggiano cheese",
-      "goat cheese crumble"
+      "sharp cheddar cheese",
+      "white cheddar cheese"
     ],
     "facets": [
-      {
-        "key": "variant",
-        "options": [
-          "cheddar",
-          "mozzarella",
-          "parmesan",
-          "gruyère",
-          "brie",
-          "gouda",
-          "swiss",
-          "provolone",
-          "colby",
-          "monterey jack",
-          "feta",
-          "blue cheese",
-          "havarti",
-          "muenster",
-          "pepper jack",
-          "american",
-          "cotija",
-          "manchego",
-          "emmental",
-          "asiago",
-          "fontina",
-          "goat cheese",
-          "romano",
-          "sharp",
-          "extra sharp",
-          "mild",
-          "velveeta",
-          "gorgonzola"
-        ]
-      },
       {
         "key": "form",
         "options": [
@@ -6840,9 +6921,154 @@
     ],
     "defaultSelections": [
       {
-        "key": "variant",
-        "value": "cheddar"
+        "key": "form",
+        "value": "block"
+      }
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        14,
+        42
+      ],
+      "Frozen": [
+        120,
+        180
+      ]
+    },
+    "parentIds": [
+      "cheese"
+    ]
+  },
+  {
+    "id": "cheese",
+    "name": "cheese",
+    "category": "Dairy & Eggs",
+    "defaultUnit": "oz",
+    "defaultQuantity": 8.0,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "asadero cheese",
+      "barrel cheese",
+      "blend cheese",
+      "bleu cheese",
+      "block cheese",
+      "boursin cheese",
+      "brick cheese",
+      "burrata cheese",
+      "camembert cheese",
+      "chedder cheese",
+      "cheese blend",
+      "cheese choice",
+      "cheese cracker",
+      "cheese curd",
+      "cheese slice",
+      "cheese soup",
+      "cheeses",
+      "chevre cheese",
+      "container ricotta cheese",
+      "cow cheese",
+      "cream-style cottage cheese",
+      "creamed cheese",
+      "edam cheese",
+      "emmenthaler cheese",
+      "english cheese",
+      "farmer cheese",
+      "favorite cheese",
+      "four cheese",
+      "fresco cheese",
+      "freshly parmigiano-reggiano cheese",
+      "freshly pecorino cheese",
+      "fromage",
+      "garlic cheese",
+      "gruy re cheese",
+      "halloumi cheese",
+      "haloumi cheese",
+      "hard cheese",
+      "italian cheese",
+      "italian cheese blend",
+      "jack cheese",
+      "jalapeno cheese",
+      "jarlsberg cheese",
+      "light cheese",
+      "light ricotta cheese",
+      "locatelli cheese",
+      "longhorn cheese",
+      "low-fat cheese",
+      "low-fat cottage cheese",
+      "low-fat ricotta cheese",
+      "melting cheese",
+      "mexican cheese",
+      "monterey cheese",
+      "mozarella cheese",
+      "mozzerella cheese",
+      "nacho cheese",
+      "nacho cheese dorito",
+      "nacho cheese flavor",
+      "nacho cheese soup",
+      "neufchatel cheese",
+      "oaxaca cheese",
+      "padano cheese",
+      "paneer cheese",
+      "panela cheese",
+      "parmesean cheese",
+      "parmesian cheese",
+      "parmigiano cheese",
+      "parmigiano reggiano cheese",
+      "parmigiano-reggiano cheese",
+      "pecorino cheese",
+      "pepper cheese",
+      "pepperjack cheese",
+      "philadelphia neufchatel cheese",
+      "pimento cheese",
+      "pimiento cheese",
+      "pizza cheese",
+      "polly-o original ricotta cheese",
+      "process cheese",
+      "processed cheese",
+      "processed cheese food",
+      "raclette cheese",
+      "refrigerated cheese tortellini",
+      "ricotta salata cheese",
+      "roquefort cheese",
+      "soy cheese",
+      "stilton cheese",
+      "taco cheese",
+      "taleggio cheese",
+      "tasty cheese",
+      "three cheese",
+      "type cheese",
+      "vegan cheese",
+      "white cheese",
+      "whiz cheese",
+      "whole-milk ricotta cheese",
+      "yellow cheese",
+      "yogurt cheese"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "block",
+          "shredded",
+          "sliced",
+          "crumbled",
+          "grated",
+          "cubed",
+          "spread",
+          "wedge"
+        ]
       },
+      {
+        "key": "processing",
+        "options": [
+          "fresh",
+          "aged",
+          "smoked",
+          "processed"
+        ]
+      }
+    ],
+    "defaultSelections": [
       {
         "key": "form",
         "value": "block"
@@ -7129,10 +7355,10 @@
     "defaultStorage": "Pantry",
     "aliases": [
       "castanea",
+      "chestnut puree",
       "chestnuts",
       "marron",
-      "sweet chestnut",
-      "chestnut puree"
+      "sweet chestnut"
     ],
     "facets": [
       {
@@ -7141,7 +7367,11 @@
           "whole",
           "peeled",
           "puree",
-          "flour"
+          "flour",
+          "halved",
+          "chopped",
+          "ground",
+          "sliced"
         ]
       },
       {
@@ -7159,7 +7389,11 @@
           "raw",
           "roasted",
           "boiled",
-          "candied"
+          "candied",
+          "toasted",
+          "salted",
+          "unsalted",
+          "blanched"
         ]
       }
     ],
@@ -7186,7 +7420,10 @@
         180,
         365
       ]
-    }
+    },
+    "parentIds": [
+      "nut"
+    ]
   },
   {
     "id": "chia-seed",
@@ -7496,23 +7733,12 @@
     "defaultStorage": "Pantry",
     "aliases": [
       "chile oil",
+      "chili",
       "chili oils",
       "chilli oil",
       "la-yu"
     ],
     "facets": [
-      {
-        "key": "variant",
-        "options": [
-          "sichuan",
-          "garlic",
-          "crispy",
-          "spicy",
-          "smoky",
-          "thai",
-          "infused"
-        ]
-      },
       {
         "key": "texture",
         "options": [
@@ -7531,10 +7757,6 @@
     ],
     "defaultSelections": [
       {
-        "key": "variant",
-        "value": "sichuan"
-      },
-      {
         "key": "texture",
         "value": "smooth"
       }
@@ -7548,7 +7770,10 @@
         180,
         365
       ]
-    }
+    },
+    "parentIds": [
+      "oil"
+    ]
   },
   {
     "id": "chili-paste",
@@ -8699,15 +8924,6 @@
     ],
     "facets": [
       {
-        "key": "variant",
-        "options": [
-          "young",
-          "mature",
-          "brown",
-          "green"
-        ]
-      },
-      {
         "key": "form",
         "options": [
           "whole",
@@ -8737,10 +8953,6 @@
     ],
     "defaultSelections": [
       {
-        "key": "variant",
-        "value": "mature"
-      },
-      {
         "key": "form",
         "value": "whole"
       }
@@ -8758,7 +8970,10 @@
         180,
         365
       ]
-    }
+    },
+    "parentIds": [
+      "oil"
+    ]
   },
   {
     "id": "coconut-cream",
@@ -9095,6 +9310,61 @@
         180
       ]
     }
+  },
+  {
+    "id": "colby",
+    "name": "colby",
+    "category": "Dairy & Eggs",
+    "defaultUnit": "oz",
+    "defaultQuantity": 8.0,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "colby cheese",
+      "colby-jack cheese"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "block",
+          "shredded",
+          "sliced",
+          "crumbled",
+          "grated",
+          "cubed",
+          "spread",
+          "wedge"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "fresh",
+          "aged",
+          "smoked",
+          "processed"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "block"
+      }
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        14,
+        42
+      ],
+      "Frozen": [
+        120,
+        180
+      ]
+    },
+    "parentIds": [
+      "cheese"
+    ]
   },
   {
     "id": "coleslaw-mix",
@@ -9447,64 +9717,50 @@
     "defaultQuantity": 2.0,
     "defaultStorage": "Refrigerated",
     "aliases": [
+      "baby corn",
+      "cob corn",
+      "corn chex",
+      "corn cob",
+      "corn husk",
+      "corn kernal",
+      "corn kernel",
       "corn kernels",
+      "corn niblet",
       "corn on the cob",
+      "corn with",
       "corns",
+      "cream style corn",
+      "cream-style corn",
+      "creamed corn",
+      "ear corn",
       "ear of corn",
+      "ear sweet corn",
       "frozen corn",
       "frozen corn kernels",
       "frozen corns",
       "frozen sweet corn",
-      "maize",
-      "sweet corn",
-      "cream style corn",
-      "cream-style corn",
-      "creamed corn",
-      "kernel corn",
-      "corn kernel",
-      "white corn",
-      "baby corn",
-      "peg corn",
-      "white shoepeg corn",
-      "corn husk",
-      "corn niblet",
-      "niblet corn",
-      "white shoe peg corn",
-      "yellow corn",
-      "corn cob",
-      "shoe peg corn",
-      "sweet corn kernel",
-      "ear sweet corn",
-      "white corn tortilla",
-      "ear corn",
       "grain corn",
-      "corn with",
-      "sweet kernel corn",
-      "cob corn",
-      "white corn kernel",
-      "corn chex",
-      "whole-kernel corn",
-      "regular corn",
+      "kernel corn",
+      "kernel sweet corn",
+      "maize",
+      "niblet corn",
+      "peg corn",
       "peg white corn",
       "popping corn",
-      "corn kernal",
-      "kernel sweet corn"
+      "regular corn",
+      "shoe peg corn",
+      "sweet corn",
+      "sweet corn kernel",
+      "sweet kernel corn",
+      "white corn",
+      "white corn kernel",
+      "white corn tortilla",
+      "white shoe peg corn",
+      "white shoepeg corn",
+      "whole-kernel corn",
+      "yellow corn"
     ],
     "facets": [
-      {
-        "key": "variant",
-        "options": [
-          "sweet",
-          "yellow",
-          "white",
-          "bicolor",
-          "baby",
-          "blue",
-          "flint",
-          "popcorn",
-          "cream-style"
-        ]
-      },
       {
         "key": "form",
         "options": [
@@ -9536,10 +9792,6 @@
     ],
     "defaultSelections": [
       {
-        "key": "variant",
-        "value": "sweet"
-      },
-      {
         "key": "form",
         "value": "on the cob"
       }
@@ -9553,7 +9805,10 @@
         180,
         365
       ]
-    }
+    },
+    "parentIds": [
+      "oil"
+    ]
   },
   {
     "id": "corn-flakes",
@@ -9970,6 +10225,60 @@
     }
   },
   {
+    "id": "cotija",
+    "name": "cotija",
+    "category": "Dairy & Eggs",
+    "defaultUnit": "oz",
+    "defaultQuantity": 8.0,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "cotija cheese"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "block",
+          "shredded",
+          "sliced",
+          "crumbled",
+          "grated",
+          "cubed",
+          "spread",
+          "wedge"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "fresh",
+          "aged",
+          "smoked",
+          "processed"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "block"
+      }
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        14,
+        42
+      ],
+      "Frozen": [
+        120,
+        180
+      ]
+    },
+    "parentIds": [
+      "cheese"
+    ]
+  },
+  {
     "id": "cottage-cheese",
     "name": "cottage cheese",
     "category": "Dairy & Eggs",
@@ -10045,6 +10354,7 @@
     "defaultQuantity": 16.0,
     "defaultStorage": "Pantry",
     "aliases": [
+      "cottonseed",
       "cottonseed oils",
       "huile de coton"
     ],
@@ -10072,7 +10382,10 @@
         365,
         730
       ]
-    }
+    },
+    "parentIds": [
+      "oil"
+    ]
   },
   {
     "id": "couscous",
@@ -13297,6 +13610,60 @@
     }
   },
   {
+    "id": "emmental",
+    "name": "emmental",
+    "category": "Dairy & Eggs",
+    "defaultUnit": "oz",
+    "defaultQuantity": 8.0,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "emmentaler cheese"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "block",
+          "shredded",
+          "sliced",
+          "crumbled",
+          "grated",
+          "cubed",
+          "spread",
+          "wedge"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "fresh",
+          "aged",
+          "smoked",
+          "processed"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "block"
+      }
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        14,
+        42
+      ],
+      "Frozen": [
+        120,
+        180
+      ]
+    },
+    "parentIds": [
+      "cheese"
+    ]
+  },
+  {
     "id": "enchilada-sauce",
     "name": "enchilada sauce",
     "category": "Condiments & Sauces",
@@ -13634,6 +14001,78 @@
     }
   },
   {
+    "id": "extra-sharp",
+    "name": "extra sharp",
+    "category": "Dairy & Eggs",
+    "defaultUnit": "oz",
+    "defaultQuantity": 8.0,
+    "defaultStorage": "Refrigerated",
+    "aliases": [],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "block",
+          "shredded",
+          "sliced",
+          "crumbled",
+          "grated",
+          "cubed",
+          "spread",
+          "wedge"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "fresh",
+          "aged",
+          "smoked",
+          "processed"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "block"
+      }
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        14,
+        42
+      ],
+      "Frozen": [
+        120,
+        180
+      ]
+    },
+    "parentIds": [
+      "cheese"
+    ]
+  },
+  {
+    "id": "extra-virgin",
+    "name": "extra virgin",
+    "category": "Oils & Fats",
+    "defaultUnit": "tbsp",
+    "defaultQuantity": 2.0,
+    "defaultStorage": "Pantry",
+    "aliases": [],
+    "facets": [],
+    "defaultSelections": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        365
+      ]
+    },
+    "parentIds": [
+      "oil"
+    ]
+  },
+  {
     "id": "extract",
     "name": "extract",
     "category": "Baking & Sweeteners",
@@ -13878,6 +14317,61 @@
         730
       ]
     }
+  },
+  {
+    "id": "feta",
+    "name": "feta",
+    "category": "Dairy & Eggs",
+    "defaultUnit": "oz",
+    "defaultQuantity": 8.0,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "feta cheese",
+      "feta cheese crumble"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "block",
+          "shredded",
+          "sliced",
+          "crumbled",
+          "grated",
+          "cubed",
+          "spread",
+          "wedge"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "fresh",
+          "aged",
+          "smoked",
+          "processed"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "block"
+      }
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        14,
+        42
+      ],
+      "Frozen": [
+        120,
+        180
+      ]
+    },
+    "parentIds": [
+      "cheese"
+    ]
   },
   {
     "id": "fideo",
@@ -14370,6 +14864,7 @@
     "aliases": [
       "flax oil",
       "flax oils",
+      "flaxseed",
       "huile de lin",
       "linseed oil"
     ],
@@ -14398,7 +14893,10 @@
         90,
         180
       ]
-    }
+    },
+    "parentIds": [
+      "oil"
+    ]
   },
   {
     "id": "flour",
@@ -14585,6 +15083,60 @@
         730
       ]
     }
+  },
+  {
+    "id": "fontina",
+    "name": "fontina",
+    "category": "Dairy & Eggs",
+    "defaultUnit": "oz",
+    "defaultQuantity": 8.0,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "fontina cheese"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "block",
+          "shredded",
+          "sliced",
+          "crumbled",
+          "grated",
+          "cubed",
+          "spread",
+          "wedge"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "fresh",
+          "aged",
+          "smoked",
+          "processed"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "block"
+      }
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        14,
+        42
+      ],
+      "Frozen": [
+        120,
+        180
+      ]
+    },
+    "parentIds": [
+      "cheese"
+    ]
   },
   {
     "id": "food-coloring",
@@ -15618,6 +16170,7 @@
     "aliases": [
       "bai guo",
       "gin-nan",
+      "ginkgo",
       "ginkgo nuts",
       "ginkgo seed"
     ],
@@ -15627,7 +16180,11 @@
         "options": [
           "whole",
           "shelled",
-          "peeled"
+          "peeled",
+          "halved",
+          "chopped",
+          "ground",
+          "sliced"
         ]
       },
       {
@@ -15643,7 +16200,11 @@
         "options": [
           "raw",
           "boiled",
-          "roasted"
+          "roasted",
+          "toasted",
+          "salted",
+          "unsalted",
+          "blanched"
         ]
       }
     ],
@@ -15666,7 +16227,10 @@
         365,
         730
       ]
-    }
+    },
+    "parentIds": [
+      "nut"
+    ]
   },
   {
     "id": "glaze",
@@ -15913,6 +16477,60 @@
         365
       ]
     }
+  },
+  {
+    "id": "goat-cheese",
+    "name": "goat cheese",
+    "category": "Dairy & Eggs",
+    "defaultUnit": "oz",
+    "defaultQuantity": 8.0,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "goat cheese crumble"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "block",
+          "shredded",
+          "sliced",
+          "crumbled",
+          "grated",
+          "cubed",
+          "spread",
+          "wedge"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "fresh",
+          "aged",
+          "smoked",
+          "processed"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "block"
+      }
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        14,
+        42
+      ],
+      "Frozen": [
+        120,
+        180
+      ]
+    },
+    "parentIds": [
+      "cheese"
+    ]
   },
   {
     "id": "goat-milk",
@@ -16252,6 +16870,114 @@
     }
   },
   {
+    "id": "gorgonzola",
+    "name": "gorgonzola",
+    "category": "Dairy & Eggs",
+    "defaultUnit": "oz",
+    "defaultQuantity": 8.0,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "gorgonzola cheese"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "block",
+          "shredded",
+          "sliced",
+          "crumbled",
+          "grated",
+          "cubed",
+          "spread",
+          "wedge"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "fresh",
+          "aged",
+          "smoked",
+          "processed"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "block"
+      }
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        14,
+        42
+      ],
+      "Frozen": [
+        120,
+        180
+      ]
+    },
+    "parentIds": [
+      "cheese"
+    ]
+  },
+  {
+    "id": "gouda",
+    "name": "gouda",
+    "category": "Dairy & Eggs",
+    "defaultUnit": "oz",
+    "defaultQuantity": 8.0,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "gouda cheese"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "block",
+          "shredded",
+          "sliced",
+          "crumbled",
+          "grated",
+          "cubed",
+          "spread",
+          "wedge"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "fresh",
+          "aged",
+          "smoked",
+          "processed"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "block"
+      }
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        14,
+        42
+      ],
+      "Frozen": [
+        120,
+        180
+      ]
+    },
+    "parentIds": [
+      "cheese"
+    ]
+  },
+  {
     "defaultUnit": "oz",
     "defaultQuantity": 14.0,
     "defaultStorage": "Pantry",
@@ -16578,6 +17304,7 @@
     "defaultStorage": "Pantry",
     "aliases": [
       "grape seed oil",
+      "grapeseed",
       "grapeseed oils",
       "huile de pépins de raisin"
     ],
@@ -16606,7 +17333,10 @@
         365,
         730
       ]
-    }
+    },
+    "parentIds": [
+      "oil"
+    ]
   },
   {
     "id": "grappa",
@@ -17015,6 +17745,60 @@
     }
   },
   {
+    "id": "gruyere",
+    "name": "gruyère",
+    "category": "Dairy & Eggs",
+    "defaultUnit": "oz",
+    "defaultQuantity": 8.0,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "gruyere cheese"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "block",
+          "shredded",
+          "sliced",
+          "crumbled",
+          "grated",
+          "cubed",
+          "spread",
+          "wedge"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "fresh",
+          "aged",
+          "smoked",
+          "processed"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "block"
+      }
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        14,
+        42
+      ],
+      "Frozen": [
+        120,
+        180
+      ]
+    },
+    "parentIds": [
+      "cheese"
+    ]
+  },
+  {
     "id": "guacamole",
     "name": "guacamole",
     "category": "Condiments & Sauces",
@@ -17282,6 +18066,60 @@
     }
   },
   {
+    "id": "havarti",
+    "name": "havarti",
+    "category": "Dairy & Eggs",
+    "defaultUnit": "oz",
+    "defaultQuantity": 8.0,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "havarti cheese"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "block",
+          "shredded",
+          "sliced",
+          "crumbled",
+          "grated",
+          "cubed",
+          "spread",
+          "wedge"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "fresh",
+          "aged",
+          "smoked",
+          "processed"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "block"
+      }
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        14,
+        42
+      ],
+      "Frozen": [
+        120,
+        180
+      ]
+    },
+    "parentIds": [
+      "cheese"
+    ]
+  },
+  {
     "id": "hazelnut",
     "name": "hazelnut",
     "category": "Nuts & Seeds",
@@ -17289,11 +18127,11 @@
     "defaultQuantity": 1.0,
     "defaultStorage": "Pantry",
     "aliases": [
+      "chocolate hazelnut",
       "cobnut",
       "filbert",
       "filberts",
-      "hazelnuts",
-      "chocolate hazelnut"
+      "hazelnuts"
     ],
     "facets": [
       {
@@ -17303,7 +18141,8 @@
           "halved",
           "chopped",
           "ground",
-          "butter"
+          "butter",
+          "sliced"
         ]
       },
       {
@@ -17341,7 +18180,11 @@
         730,
         1460
       ]
-    }
+    },
+    "parentIds": [
+      "nut",
+      "oil"
+    ]
   },
   {
     "id": "hazelnut-oil",
@@ -17390,26 +18233,13 @@
     "defaultQuantity": 8.0,
     "defaultStorage": "Pantry",
     "aliases": [
+      "hemp",
       "hemp oils",
       "hemp seed oil",
       "hempseed oil"
     ],
-    "facets": [
-      {
-        "key": "variant",
-        "options": [
-          "unrefined",
-          "refined",
-          "cold-pressed"
-        ]
-      }
-    ],
-    "defaultSelections": [
-      {
-        "key": "variant",
-        "value": "unrefined"
-      }
-    ],
+    "facets": [],
+    "defaultSelections": [],
     "freshnessByStorage": {
       "Pantry": [
         180,
@@ -17419,7 +18249,10 @@
         365,
         730
       ]
-    }
+    },
+    "parentIds": [
+      "oil"
+    ]
   },
   {
     "id": "hemp-seed",
@@ -17580,6 +18413,7 @@
     "defaultStorage": "Pantry",
     "aliases": [
       "carya",
+      "hickory",
       "hickory nuts",
       "shagbark hickory nut"
     ],
@@ -17589,7 +18423,10 @@
         "options": [
           "whole",
           "shelled",
-          "chopped"
+          "chopped",
+          "halved",
+          "ground",
+          "sliced"
         ]
       },
       {
@@ -17597,7 +18434,10 @@
         "options": [
           "raw",
           "roasted",
-          "toasted"
+          "toasted",
+          "salted",
+          "unsalted",
+          "blanched"
         ]
       }
     ],
@@ -17624,7 +18464,10 @@
         365,
         730
       ]
-    }
+    },
+    "parentIds": [
+      "nut"
+    ]
   },
   {
     "id": "hoisin-sauce",
@@ -20197,6 +21040,26 @@
     }
   },
   {
+    "id": "light",
+    "name": "light",
+    "category": "Oils & Fats",
+    "defaultUnit": "tbsp",
+    "defaultQuantity": 2.0,
+    "defaultStorage": "Pantry",
+    "aliases": [],
+    "facets": [],
+    "defaultSelections": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        365
+      ]
+    },
+    "parentIds": [
+      "oil"
+    ]
+  },
+  {
     "id": "lime",
     "name": "lime",
     "category": "Produce",
@@ -20761,6 +21624,7 @@
     "defaultStorage": "Pantry",
     "aliases": [
       "bush nut",
+      "macadamia",
       "macadamia nuts",
       "macadamias",
       "queensland nut"
@@ -20772,7 +21636,9 @@
           "whole",
           "halved",
           "chopped",
-          "butter"
+          "butter",
+          "ground",
+          "sliced"
         ]
       },
       {
@@ -20782,7 +21648,8 @@
           "roasted",
           "toasted",
           "salted",
-          "unsalted"
+          "unsalted",
+          "blanched"
         ]
       }
     ],
@@ -20809,7 +21676,10 @@
         730,
         1460
       ]
-    }
+    },
+    "parentIds": [
+      "nut"
+    ]
   },
   {
     "id": "macadamia-oil",
@@ -20819,25 +21689,12 @@
     "defaultQuantity": 8.0,
     "defaultStorage": "Pantry",
     "aliases": [
+      "macadamia",
       "macadamia nut oil",
       "macadamia oils"
     ],
-    "facets": [
-      {
-        "key": "variant",
-        "options": [
-          "refined",
-          "cold-pressed",
-          "unrefined"
-        ]
-      }
-    ],
-    "defaultSelections": [
-      {
-        "key": "variant",
-        "value": "refined"
-      }
-    ],
+    "facets": [],
+    "defaultSelections": [],
     "freshnessByStorage": {
       "Pantry": [
         180,
@@ -20847,7 +21704,10 @@
         365,
         730
       ]
-    }
+    },
+    "parentIds": [
+      "oil"
+    ]
   },
   {
     "id": "mace",
@@ -20998,6 +21858,60 @@
         180
       ]
     }
+  },
+  {
+    "id": "manchego",
+    "name": "manchego",
+    "category": "Dairy & Eggs",
+    "defaultUnit": "oz",
+    "defaultQuantity": 8.0,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "manchego cheese"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "block",
+          "shredded",
+          "sliced",
+          "crumbled",
+          "grated",
+          "cubed",
+          "spread",
+          "wedge"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "fresh",
+          "aged",
+          "smoked",
+          "processed"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "block"
+      }
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        14,
+        42
+      ],
+      "Frozen": [
+        120,
+        180
+      ]
+    },
+    "parentIds": [
+      "cheese"
+    ]
   },
   {
     "id": "mango",
@@ -21698,18 +22612,11 @@
     "defaultQuantity": 8.0,
     "defaultStorage": "Pantry",
     "aliases": [
+      "mct",
       "mct oils",
       "medium chain triglyceride oil"
     ],
     "facets": [
-      {
-        "key": "variant",
-        "options": [
-          "c8 (caprylic acid)",
-          "c10 (capric acid)",
-          "c8+c10 blend"
-        ]
-      },
       {
         "key": "processing",
         "options": [
@@ -21717,18 +22624,16 @@
         ]
       }
     ],
-    "defaultSelections": [
-      {
-        "key": "variant",
-        "value": "c8+c10 blend"
-      }
-    ],
+    "defaultSelections": [],
     "freshnessByStorage": {
       "Pantry": [
         365,
         730
       ]
-    }
+    },
+    "parentIds": [
+      "oil"
+    ]
   },
   {
     "id": "meatball",
@@ -22018,6 +22923,60 @@
         3650
       ]
     }
+  },
+  {
+    "id": "mild",
+    "name": "mild",
+    "category": "Dairy & Eggs",
+    "defaultUnit": "oz",
+    "defaultQuantity": 8.0,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "mild cheese"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "block",
+          "shredded",
+          "sliced",
+          "crumbled",
+          "grated",
+          "cubed",
+          "spread",
+          "wedge"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "fresh",
+          "aged",
+          "smoked",
+          "processed"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "block"
+      }
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        14,
+        42
+      ],
+      "Frozen": [
+        120,
+        180
+      ]
+    },
+    "parentIds": [
+      "cheese"
+    ]
   },
   {
     "id": "milk",
@@ -22371,27 +23330,20 @@
     "defaultStorage": "Pantry",
     "aliases": [
       "assorted nuts",
+      "mixed",
       "mixed nut",
       "nut mix",
       "nuts mix"
     ],
     "facets": [
       {
-        "key": "variant",
-        "options": [
-          "classic",
-          "deluxe",
-          "with peanuts",
-          "without peanuts",
-          "holiday"
-        ]
-      },
-      {
         "key": "form",
         "options": [
           "whole",
           "halved",
-          "chopped"
+          "chopped",
+          "ground",
+          "sliced"
         ]
       },
       {
@@ -22402,15 +23354,13 @@
           "salted",
           "unsalted",
           "honey-roasted",
-          "spiced"
+          "spiced",
+          "toasted",
+          "blanched"
         ]
       }
     ],
     "defaultSelections": [
-      {
-        "key": "variant",
-        "value": "classic"
-      },
       {
         "key": "processing",
         "value": "roasted"
@@ -22429,7 +23379,10 @@
         365,
         730
       ]
-    }
+    },
+    "parentIds": [
+      "nut"
+    ]
   },
   {
     "id": "mizuna",
@@ -22570,6 +23523,61 @@
     }
   },
   {
+    "id": "monterey-jack",
+    "name": "monterey jack",
+    "category": "Dairy & Eggs",
+    "defaultUnit": "oz",
+    "defaultQuantity": 8.0,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "monterey jack cheese",
+      "monterey jack pepper cheese"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "block",
+          "shredded",
+          "sliced",
+          "crumbled",
+          "grated",
+          "cubed",
+          "spread",
+          "wedge"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "fresh",
+          "aged",
+          "smoked",
+          "processed"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "block"
+      }
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        14,
+        42
+      ],
+      "Frozen": [
+        120,
+        180
+      ]
+    },
+    "parentIds": [
+      "cheese"
+    ]
+  },
+  {
     "id": "moroccan-spice-blend",
     "name": "moroccan spice blend",
     "category": "Spices & Herbs",
@@ -22603,6 +23611,116 @@
         730
       ]
     }
+  },
+  {
+    "id": "mozzarella",
+    "name": "mozzarella",
+    "category": "Dairy & Eggs",
+    "defaultUnit": "oz",
+    "defaultQuantity": 8.0,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "low-fat mozzarella cheese",
+      "mozzarella cheese",
+      "mozzarella string cheese"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "block",
+          "shredded",
+          "sliced",
+          "crumbled",
+          "grated",
+          "cubed",
+          "spread",
+          "wedge"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "fresh",
+          "aged",
+          "smoked",
+          "processed"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "block"
+      }
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        14,
+        42
+      ],
+      "Frozen": [
+        120,
+        180
+      ]
+    },
+    "parentIds": [
+      "cheese"
+    ]
+  },
+  {
+    "id": "muenster",
+    "name": "muenster",
+    "category": "Dairy & Eggs",
+    "defaultUnit": "oz",
+    "defaultQuantity": 8.0,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "muenster cheese"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "block",
+          "shredded",
+          "sliced",
+          "crumbled",
+          "grated",
+          "cubed",
+          "spread",
+          "wedge"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "fresh",
+          "aged",
+          "smoked",
+          "processed"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "block"
+      }
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        14,
+        42
+      ],
+      "Frozen": [
+        120,
+        180
+      ]
+    },
+    "parentIds": [
+      "cheese"
+    ]
   },
   {
     "id": "muesli",
@@ -23004,53 +24122,41 @@
     "defaultQuantity": 1.0,
     "defaultStorage": "Refrigerated",
     "aliases": [
-      "mustards",
-      "prepared mustard",
-      "mustard powder",
-      "dry mustard powder",
-      "ground mustard powder",
-      "dijon mustard",
-      "yellow mustard",
-      "brown mustard",
-      "grain mustard",
       "black mustard seed",
-      "grainy mustard",
-      "creole mustard",
-      "whole-grain mustard",
-      "yellow mustard seed",
-      "coarse grain mustard",
-      "wholegrain mustard",
+      "brown mustard",
       "brown mustard seed",
-      "powdered mustard",
-      "spicy mustard",
-      "stone-ground mustard",
-      "english mustard",
-      "stone mustard",
-      "dijon style mustard",
-      "hot mustard",
-      "grain dijon mustard",
-      "white mustard seed",
-      "coarse-grained mustard",
-      "regular mustard",
-      "english mustard powder",
-      "salad mustard",
-      "japanese mustard",
+      "chinese mustard",
+      "coarse grain mustard",
       "coarse-grain mustard",
-      "chinese mustard"
+      "coarse-grained mustard",
+      "creole mustard",
+      "dijon mustard",
+      "dijon style mustard",
+      "dry mustard powder",
+      "english mustard",
+      "english mustard powder",
+      "grain dijon mustard",
+      "grain mustard",
+      "grainy mustard",
+      "ground mustard powder",
+      "hot mustard",
+      "japanese mustard",
+      "mustard powder",
+      "mustards",
+      "powdered mustard",
+      "prepared mustard",
+      "regular mustard",
+      "salad mustard",
+      "spicy mustard",
+      "stone mustard",
+      "stone-ground mustard",
+      "white mustard seed",
+      "whole-grain mustard",
+      "wholegrain mustard",
+      "yellow mustard",
+      "yellow mustard seed"
     ],
     "facets": [
-      {
-        "key": "variant",
-        "options": [
-          "yellow",
-          "dijon",
-          "whole grain",
-          "spicy brown",
-          "honey",
-          "english",
-          "chinese hot"
-        ]
-      },
       {
         "key": "texture",
         "options": [
@@ -23065,12 +24171,7 @@
         ]
       }
     ],
-    "defaultSelections": [
-      {
-        "key": "variant",
-        "value": "yellow"
-      }
-    ],
+    "defaultSelections": [],
     "freshnessByStorage": {
       "Pantry": [
         365,
@@ -23080,7 +24181,10 @@
         365,
         730
       ]
-    }
+    },
+    "parentIds": [
+      "oil"
+    ]
   },
   {
     "id": "mustard-green",
@@ -23399,6 +24503,28 @@
     }
   },
   {
+    "id": "neutral",
+    "name": "neutral",
+    "category": "Oils & Fats",
+    "defaultUnit": "tbsp",
+    "defaultQuantity": 2.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "neutral oil"
+    ],
+    "facets": [],
+    "defaultSelections": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        365
+      ]
+    },
+    "parentIds": [
+      "oil"
+    ]
+  },
+  {
     "id": "nigella-seed",
     "name": "nigella seed",
     "category": "Nuts & Seeds",
@@ -23694,26 +24820,6 @@
     ],
     "facets": [
       {
-        "key": "variant",
-        "options": [
-          "almond",
-          "black walnut",
-          "brazil",
-          "cashew",
-          "chestnut",
-          "ginkgo",
-          "hazelnut",
-          "hickory",
-          "macadamia",
-          "mixed",
-          "peanut",
-          "pecan",
-          "pine",
-          "pistachio",
-          "walnut"
-        ]
-      },
-      {
         "key": "form",
         "options": [
           "whole",
@@ -23736,10 +24842,6 @@
       }
     ],
     "defaultSelections": [
-      {
-        "key": "variant",
-        "value": "mixed"
-      },
       {
         "key": "form",
         "value": "whole"
@@ -24028,59 +25130,11 @@
       "cooking oil",
       "frying oil",
       "liquid oil",
-      "neutral oil",
       "oils",
       "salad oil"
     ],
-    "facets": [
-      {
-        "key": "variant",
-        "options": [
-          "almond",
-          "avocado",
-          "blended",
-          "camelina",
-          "canola",
-          "chili",
-          "coconut",
-          "corn",
-          "cottonseed",
-          "extra virgin",
-          "flaxseed",
-          "grapeseed",
-          "hazelnut",
-          "hemp",
-          "light",
-          "macadamia",
-          "mct",
-          "mustard",
-          "neutral",
-          "olive",
-          "palm",
-          "peanut",
-          "pecan",
-          "pistachio",
-          "pomace",
-          "pumpkin seed",
-          "pure",
-          "rice bran",
-          "safflower",
-          "sesame",
-          "soybean",
-          "sunflower",
-          "truffle",
-          "vegetable",
-          "virgin",
-          "walnut"
-        ]
-      }
-    ],
-    "defaultSelections": [
-      {
-        "key": "variant",
-        "value": "vegetable"
-      }
-    ],
+    "facets": [],
+    "defaultSelections": [],
     "freshnessByStorage": {
       "Pantry": [
         180,
@@ -24296,23 +25350,6 @@
     ],
     "facets": [
       {
-        "key": "variant",
-        "options": [
-          "green",
-          "black",
-          "kalamata",
-          "manzanilla",
-          "castelvetrano",
-          "niçoise",
-          "gaeta",
-          "ligurian",
-          "cerignola",
-          "arbequina",
-          "picholine",
-          "leccino"
-        ]
-      },
-      {
         "key": "form",
         "options": [
           "whole",
@@ -24342,10 +25379,6 @@
     ],
     "defaultSelections": [
       {
-        "key": "variant",
-        "value": "green"
-      },
-      {
         "key": "form",
         "value": "pitted"
       },
@@ -24363,7 +25396,10 @@
         30,
         90
       ]
-    }
+    },
+    "parentIds": [
+      "oil"
+    ]
   },
   {
     "id": "olive-oil",
@@ -25098,31 +26134,21 @@
     "defaultQuantity": 8.0,
     "defaultStorage": "Pantry",
     "aliases": [
+      "palm",
       "palm oils",
       "red palm oil"
     ],
-    "facets": [
-      {
-        "key": "variant",
-        "options": [
-          "red",
-          "refined",
-          "unrefined"
-        ]
-      }
-    ],
-    "defaultSelections": [
-      {
-        "key": "variant",
-        "value": "refined"
-      }
-    ],
+    "facets": [],
+    "defaultSelections": [],
     "freshnessByStorage": {
       "Pantry": [
         365,
         730
       ]
-    }
+    },
+    "parentIds": [
+      "oil"
+    ]
   },
   {
     "id": "pancake",
@@ -25417,6 +26443,62 @@
         730
       ]
     }
+  },
+  {
+    "id": "parmesan",
+    "name": "parmesan",
+    "category": "Dairy & Eggs",
+    "defaultUnit": "oz",
+    "defaultQuantity": 8.0,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "freshly parmesan cheese",
+      "parmesan cheese",
+      "parmesan cheese shaving"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "block",
+          "shredded",
+          "sliced",
+          "crumbled",
+          "grated",
+          "cubed",
+          "spread",
+          "wedge"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "fresh",
+          "aged",
+          "smoked",
+          "processed"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "block"
+      }
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        14,
+        42
+      ],
+      "Frozen": [
+        120,
+        180
+      ]
+    },
+    "parentIds": [
+      "cheese"
+    ]
   },
   {
     "id": "parsley",
@@ -25987,11 +27069,11 @@
     "defaultQuantity": 1.0,
     "defaultStorage": "Pantry",
     "aliases": [
+      "cocktail peanut",
       "groundnut",
       "monkey nut",
       "peanuts",
-      "spanish peanut",
-      "cocktail peanut"
+      "spanish peanut"
     ],
     "facets": [
       {
@@ -26001,7 +27083,8 @@
           "halved",
           "chopped",
           "ground",
-          "butter"
+          "butter",
+          "sliced"
         ]
       },
       {
@@ -26050,7 +27133,11 @@
         365,
         730
       ]
-    }
+    },
+    "parentIds": [
+      "nut",
+      "oil"
+    ]
   },
   {
     "id": "peanut-butter",
@@ -26308,12 +27395,12 @@
     "defaultQuantity": 1.0,
     "defaultStorage": "Pantry",
     "aliases": [
-      "pecan nut",
-      "pecans",
-      "pecan half",
-      "pecan piece",
       "candied pecan",
-      "pecan meat"
+      "pecan half",
+      "pecan meat",
+      "pecan nut",
+      "pecan piece",
+      "pecans"
     ],
     "facets": [
       {
@@ -26325,7 +27412,8 @@
           "ground",
           "butter",
           "half",
-          "piece"
+          "piece",
+          "sliced"
         ]
       },
       {
@@ -26336,7 +27424,8 @@
           "toasted",
           "salted",
           "unsalted",
-          "candied"
+          "candied",
+          "blanched"
         ]
       }
     ],
@@ -26363,7 +27452,11 @@
         365,
         730
       ]
-    }
+    },
+    "parentIds": [
+      "nut",
+      "oil"
+    ]
   },
   {
     "id": "pecan-oil",
@@ -26554,6 +27647,58 @@
         365
       ]
     }
+  },
+  {
+    "id": "pepper-jack",
+    "name": "pepper jack",
+    "category": "Dairy & Eggs",
+    "defaultUnit": "oz",
+    "defaultQuantity": 8.0,
+    "defaultStorage": "Refrigerated",
+    "aliases": [],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "block",
+          "shredded",
+          "sliced",
+          "crumbled",
+          "grated",
+          "cubed",
+          "spread",
+          "wedge"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "fresh",
+          "aged",
+          "smoked",
+          "processed"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "block"
+      }
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        14,
+        42
+      ],
+      "Frozen": [
+        120,
+        180
+      ]
+    },
+    "parentIds": [
+      "cheese"
+    ]
   },
   {
     "id": "peppercorn",
@@ -27413,25 +28558,18 @@
     "aliases": [
       "pignoli",
       "pignolia",
+      "pine",
       "pine nuts"
     ],
     "facets": [
-      {
-        "key": "variant",
-        "options": [
-          "european",
-          "asian",
-          "stone pine",
-          "korean pine",
-          "chilgoza"
-        ]
-      },
       {
         "key": "form",
         "options": [
           "whole",
           "chopped",
-          "ground"
+          "ground",
+          "halved",
+          "sliced"
         ]
       },
       {
@@ -27439,15 +28577,14 @@
         "options": [
           "raw",
           "toasted",
-          "roasted"
+          "roasted",
+          "salted",
+          "unsalted",
+          "blanched"
         ]
       }
     ],
     "defaultSelections": [
-      {
-        "key": "variant",
-        "value": "european"
-      },
       {
         "key": "form",
         "value": "whole"
@@ -27466,7 +28603,10 @@
         365,
         730
       ]
-    }
+    },
+    "parentIds": [
+      "nut"
+    ]
   },
   {
     "id": "pineapple",
@@ -27606,7 +28746,8 @@
           "whole",
           "halved",
           "chopped",
-          "ground"
+          "ground",
+          "sliced"
         ]
       },
       {
@@ -27617,7 +28758,9 @@
           "salted",
           "unsalted",
           "shelled",
-          "unshelled"
+          "unshelled",
+          "toasted",
+          "blanched"
         ]
       }
     ],
@@ -27644,7 +28787,11 @@
         365,
         730
       ]
-    }
+    },
+    "parentIds": [
+      "nut",
+      "oil"
+    ]
   },
   {
     "id": "pistachio-oil",
@@ -27975,6 +29122,26 @@
         365
       ]
     }
+  },
+  {
+    "id": "pomace",
+    "name": "pomace",
+    "category": "Oils & Fats",
+    "defaultUnit": "tbsp",
+    "defaultQuantity": 2.0,
+    "defaultStorage": "Pantry",
+    "aliases": [],
+    "facets": [],
+    "defaultSelections": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        365
+      ]
+    },
+    "parentIds": [
+      "oil"
+    ]
   },
   {
     "id": "pomegranate",
@@ -28876,6 +30043,60 @@
     }
   },
   {
+    "id": "provolone",
+    "name": "provolone",
+    "category": "Dairy & Eggs",
+    "defaultUnit": "oz",
+    "defaultQuantity": 8.0,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "provolone cheese"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "block",
+          "shredded",
+          "sliced",
+          "crumbled",
+          "grated",
+          "cubed",
+          "spread",
+          "wedge"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "fresh",
+          "aged",
+          "smoked",
+          "processed"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "block"
+      }
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        14,
+        42
+      ],
+      "Frozen": [
+        120,
+        180
+      ]
+    },
+    "parentIds": [
+      "cheese"
+    ]
+  },
+  {
     "defaultUnit": "cup",
     "defaultQuantity": 0.5,
     "defaultStorage": "Pantry",
@@ -29233,14 +30454,6 @@
     ],
     "facets": [
       {
-        "key": "variant",
-        "options": [
-          "hull-on",
-          "hulled",
-          "styrian"
-        ]
-      },
-      {
         "key": "form",
         "options": [
           "whole",
@@ -29261,10 +30474,6 @@
     ],
     "defaultSelections": [
       {
-        "key": "variant",
-        "value": "hulled"
-      },
-      {
         "key": "form",
         "value": "whole"
       }
@@ -29282,7 +30491,10 @@
         365,
         730
       ]
-    }
+    },
+    "parentIds": [
+      "oil"
+    ]
   },
   {
     "id": "pumpkin-seed-oil",
@@ -29322,6 +30534,26 @@
         730
       ]
     }
+  },
+  {
+    "id": "pure",
+    "name": "pure",
+    "category": "Oils & Fats",
+    "defaultUnit": "tbsp",
+    "defaultQuantity": 2.0,
+    "defaultStorage": "Pantry",
+    "aliases": [],
+    "facets": [],
+    "defaultSelections": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        365
+      ]
+    },
+    "parentIds": [
+      "oil"
+    ]
   },
   {
     "id": "quail",
@@ -30374,26 +31606,13 @@
     "defaultQuantity": 8.0,
     "defaultStorage": "Pantry",
     "aliases": [
+      "rice bran",
       "rice bran oils",
       "rice oil",
       "rice oils"
     ],
-    "facets": [
-      {
-        "key": "variant",
-        "options": [
-          "refined",
-          "cold-pressed",
-          "unrefined"
-        ]
-      }
-    ],
-    "defaultSelections": [
-      {
-        "key": "variant",
-        "value": "refined"
-      }
-    ],
+    "facets": [],
+    "defaultSelections": [],
     "freshnessByStorage": {
       "Pantry": [
         180,
@@ -30403,7 +31622,10 @@
         365,
         730
       ]
-    }
+    },
+    "parentIds": [
+      "oil"
+    ]
   },
   {
     "id": "rice-noodle",
@@ -30804,6 +32026,63 @@
     }
   },
   {
+    "id": "romano",
+    "name": "romano",
+    "category": "Dairy & Eggs",
+    "defaultUnit": "oz",
+    "defaultQuantity": 8.0,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "freshly pecorino romano cheese",
+      "freshly romano cheese",
+      "pecorino romano cheese",
+      "romano cheese"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "block",
+          "shredded",
+          "sliced",
+          "crumbled",
+          "grated",
+          "cubed",
+          "spread",
+          "wedge"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "fresh",
+          "aged",
+          "smoked",
+          "processed"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "block"
+      }
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        14,
+        42
+      ],
+      "Frozen": [
+        120,
+        180
+      ]
+    },
+    "parentIds": [
+      "cheese"
+    ]
+  },
+  {
     "id": "root-beer",
     "name": "root beer",
     "category": "Beverages",
@@ -31200,25 +32479,11 @@
     "defaultQuantity": 8.0,
     "defaultStorage": "Pantry",
     "aliases": [
+      "safflower",
       "safflower oils"
     ],
-    "facets": [
-      {
-        "key": "variant",
-        "options": [
-          "refined",
-          "cold-pressed",
-          "high oleic",
-          "high linoleic"
-        ]
-      }
-    ],
-    "defaultSelections": [
-      {
-        "key": "variant",
-        "value": "refined"
-      }
-    ],
+    "facets": [],
+    "defaultSelections": [],
     "freshnessByStorage": {
       "Pantry": [
         180,
@@ -31228,7 +32493,10 @@
         365,
         730
       ]
-    }
+    },
+    "parentIds": [
+      "oil"
+    ]
   },
   {
     "id": "saffron",
@@ -32402,20 +33670,12 @@
     "aliases": [
       "gingelly oil",
       "hu ma you",
+      "sesame",
       "sesame oils",
       "til oil",
       "toasted sesame oil"
     ],
     "facets": [
-      {
-        "key": "variant",
-        "options": [
-          "toasted",
-          "light",
-          "black",
-          "white"
-        ]
-      },
       {
         "key": "processing",
         "options": [
@@ -32426,12 +33686,7 @@
         ]
       }
     ],
-    "defaultSelections": [
-      {
-        "key": "variant",
-        "value": "toasted"
-      }
-    ],
+    "defaultSelections": [],
     "freshnessByStorage": {
       "Pantry": [
         180,
@@ -32441,7 +33696,10 @@
         365,
         730
       ]
-    }
+    },
+    "parentIds": [
+      "oil"
+    ]
   },
   {
     "id": "sesame-seed",
@@ -32502,6 +33760,61 @@
         730
       ]
     }
+  },
+  {
+    "id": "sharp",
+    "name": "sharp",
+    "category": "Dairy & Eggs",
+    "defaultUnit": "oz",
+    "defaultQuantity": 8.0,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "extra sharp cheese",
+      "sharp cheese"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "block",
+          "shredded",
+          "sliced",
+          "crumbled",
+          "grated",
+          "cubed",
+          "spread",
+          "wedge"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "fresh",
+          "aged",
+          "smoked",
+          "processed"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "block"
+      }
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        14,
+        42
+      ],
+      "Frozen": [
+        120,
+        180
+      ]
+    },
+    "parentIds": [
+      "cheese"
+    ]
   },
   {
     "id": "shiso-leaf",
@@ -33691,17 +35004,11 @@
     "aliases": [
       "soy oil",
       "soya oil",
+      "soybean",
       "soybean oils",
       "vegetable oil"
     ],
     "facets": [
-      {
-        "key": "variant",
-        "options": [
-          "refined",
-          "unrefined"
-        ]
-      },
       {
         "key": "processing",
         "options": [
@@ -33710,12 +35017,7 @@
         ]
       }
     ],
-    "defaultSelections": [
-      {
-        "key": "variant",
-        "value": "refined"
-      }
-    ],
+    "defaultSelections": [],
     "freshnessByStorage": {
       "Pantry": [
         180,
@@ -33725,7 +35027,10 @@
         365,
         730
       ]
-    }
+    },
+    "parentIds": [
+      "oil"
+    ]
   },
   {
     "id": "sparkling-water",
@@ -34685,19 +35990,10 @@
     "aliases": [
       "high oleic sunflower oil",
       "sun oil",
+      "sunflower",
       "sunflower oils"
     ],
     "facets": [
-      {
-        "key": "variant",
-        "options": [
-          "refined",
-          "unrefined",
-          "high oleic",
-          "mid oleic",
-          "linoleic"
-        ]
-      },
       {
         "key": "processing",
         "options": [
@@ -34706,12 +36002,7 @@
         ]
       }
     ],
-    "defaultSelections": [
-      {
-        "key": "variant",
-        "value": "refined"
-      }
-    ],
+    "defaultSelections": [],
     "freshnessByStorage": {
       "Pantry": [
         180,
@@ -34721,7 +36012,10 @@
         365,
         730
       ]
-    }
+    },
+    "parentIds": [
+      "oil"
+    ]
   },
   {
     "id": "sunflower-seed",
@@ -35086,6 +36380,62 @@
         180
       ]
     }
+  },
+  {
+    "id": "swiss",
+    "name": "swiss",
+    "category": "Dairy & Eggs",
+    "defaultUnit": "oz",
+    "defaultQuantity": 8.0,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "low-fat swiss cheese",
+      "slice swiss cheese",
+      "swiss cheese"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "block",
+          "shredded",
+          "sliced",
+          "crumbled",
+          "grated",
+          "cubed",
+          "spread",
+          "wedge"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "fresh",
+          "aged",
+          "smoked",
+          "processed"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "block"
+      }
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        14,
+        42
+      ],
+      "Frozen": [
+        120,
+        180
+      ]
+    },
+    "parentIds": [
+      "cheese"
+    ]
   },
   {
     "id": "swordfish",
@@ -37156,19 +38506,6 @@
     ],
     "facets": [
       {
-        "key": "variant",
-        "options": [
-          "black winter",
-          "black summer",
-          "white alba",
-          "white bianchetto",
-          "burgundy",
-          "oregon black",
-          "chinese black",
-          "pecan"
-        ]
-      },
-      {
         "key": "form",
         "options": [
           "whole",
@@ -37189,10 +38526,6 @@
     ],
     "defaultSelections": [
       {
-        "key": "variant",
-        "value": "black winter"
-      },
-      {
         "key": "preservation",
         "value": "fresh"
       }
@@ -37210,7 +38543,10 @@
         180,
         365
       ]
-    }
+    },
+    "parentIds": [
+      "oil"
+    ]
   },
   {
     "id": "truffle-oil",
@@ -38154,20 +39490,10 @@
     "defaultStorage": "Pantry",
     "aliases": [
       "blended vegetable oil",
+      "vegetable",
       "vegetable oils"
     ],
     "facets": [
-      {
-        "key": "variant",
-        "options": [
-          "soybean",
-          "canola",
-          "corn",
-          "sunflower",
-          "safflower",
-          "blended"
-        ]
-      },
       {
         "key": "processing",
         "options": [
@@ -38176,12 +39502,7 @@
         ]
       }
     ],
-    "defaultSelections": [
-      {
-        "key": "variant",
-        "value": "soybean"
-      }
-    ],
+    "defaultSelections": [],
     "freshnessByStorage": {
       "Pantry": [
         180,
@@ -38191,7 +39512,65 @@
         365,
         730
       ]
-    }
+    },
+    "parentIds": [
+      "oil"
+    ]
+  },
+  {
+    "id": "velveeta",
+    "name": "velveeta",
+    "category": "Dairy & Eggs",
+    "defaultUnit": "oz",
+    "defaultQuantity": 8.0,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "velveeta cheese",
+      "velveeta reduced fat cheese"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "block",
+          "shredded",
+          "sliced",
+          "crumbled",
+          "grated",
+          "cubed",
+          "spread",
+          "wedge"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "fresh",
+          "aged",
+          "smoked",
+          "processed"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "block"
+      }
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        14,
+        42
+      ],
+      "Frozen": [
+        120,
+        180
+      ]
+    },
+    "parentIds": [
+      "cheese"
+    ]
   },
   {
     "id": "venison",
@@ -38386,6 +39765,26 @@
     }
   },
   {
+    "id": "virgin",
+    "name": "virgin",
+    "category": "Oils & Fats",
+    "defaultUnit": "tbsp",
+    "defaultQuantity": 2.0,
+    "defaultStorage": "Pantry",
+    "aliases": [],
+    "facets": [],
+    "defaultSelections": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        365
+      ]
+    },
+    "parentIds": [
+      "oil"
+    ]
+  },
+  {
     "id": "vodka",
     "name": "vodka",
     "category": "Alcohol & Spirits",
@@ -38517,26 +39916,16 @@
     "defaultQuantity": 1.0,
     "defaultStorage": "Pantry",
     "aliases": [
+      "california walnut",
+      "candied walnut",
       "english walnut",
       "juglans",
-      "walnuts",
       "walnut half",
-      "walnut piece",
       "walnut meat",
-      "california walnut",
-      "candied walnut"
+      "walnut piece",
+      "walnuts"
     ],
     "facets": [
-      {
-        "key": "variant",
-        "options": [
-          "english",
-          "black",
-          "white",
-          "red",
-          "persian"
-        ]
-      },
       {
         "key": "form",
         "options": [
@@ -38547,7 +39936,8 @@
           "ground",
           "flour",
           "half",
-          "piece"
+          "piece",
+          "sliced"
         ]
       },
       {
@@ -38558,15 +39948,12 @@
           "toasted",
           "salted",
           "unsalted",
-          "candied"
+          "candied",
+          "blanched"
         ]
       }
     ],
     "defaultSelections": [
-      {
-        "key": "variant",
-        "value": "english"
-      },
       {
         "key": "form",
         "value": "halved"
@@ -38589,7 +39976,11 @@
         365,
         730
       ]
-    }
+    },
+    "parentIds": [
+      "nut",
+      "oil"
+    ]
   },
   {
     "id": "walnut-oil",

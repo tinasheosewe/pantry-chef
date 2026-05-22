@@ -48,7 +48,11 @@ struct Ingredient: Identifiable, Codable, Hashable, Sendable {
     }
 
     var displayName: String {
-        linkedItem?.displayName(for: facets) ?? rawName
+        guard let linkedItem else { return rawName }
+        let stateFacets = facets.filter {
+            Self.stateFacetKeys.contains($0.key) && $0.value.lowercased() != "none"
+        }
+        return linkedItem.displayName(for: stateFacets)
     }
 
     var resolvedCategory: FoodCategory {
@@ -79,6 +83,8 @@ struct Ingredient: Identifiable, Codable, Hashable, Sendable {
         }
         return String(format: "%.1f %@ %@", quantity, unitStr, displayName).trimmingCharacters(in: .whitespaces)
     }
+
+    private static let stateFacetKeys: Set<PantryFacetKey> = [.form, .processing, .preservation, .preparation]
 }
 
 // MARK: - Recipe Step

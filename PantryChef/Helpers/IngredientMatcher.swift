@@ -15,7 +15,7 @@ enum IngredientMatcher {
     }
 
     private struct PantryIndex {
-        let resolvedItemsByCatalogID: [String: [PantryCandidate]]
+        let resolvedItemsByRequirementCatalogID: [String: [PantryCandidate]]
         let unresolvedItemsByMatchKey: [String: [PantryCandidate]]
     }
 
@@ -95,7 +95,7 @@ enum IngredientMatcher {
         if let ingredientCatalogItemID = ingredient.catalogItemID,
            let pantryCatalogItemID = pantryItem.catalogItemID {
             let requiredFacets = Set(ingredient.facets)
-            let matchingCatalogIDs = PantryCatalog.satisfyingCatalogItemIDs(
+            let matchingCatalogIDs = PantryCatalog.matchingCatalogItemIDs(
                 for: ingredientCatalogItemID,
                 facets: ingredient.facets
             )
@@ -134,14 +134,14 @@ enum IngredientMatcher {
         }
 
         if let catalogItemID = ingredient.catalogItemID {
-            let catalogIDs = PantryCatalog.satisfyingCatalogItemIDs(
+            let catalogIDs = PantryCatalog.matchingCatalogItemIDs(
                 for: catalogItemID,
                 facets: ingredient.facets
             )
 
             let requiredFacets = Set(ingredient.facets)
             for matchCatalogID in catalogIDs {
-                guard let pantryCandidates = index.resolvedItemsByCatalogID[matchCatalogID] else {
+                guard let pantryCandidates = index.resolvedItemsByRequirementCatalogID[matchCatalogID] else {
                     continue
                 }
 
@@ -163,13 +163,13 @@ enum IngredientMatcher {
 
         if let resolvedIngredientItem = resolvedCatalogItem(for: ingredient.rawName) {
             let requiredFacets = inferredFacets(for: ingredient.rawName, item: resolvedIngredientItem)
-            let catalogIDs: Set<String> = PantryCatalog.satisfyingCatalogItemIDs(
+            let catalogIDs: Set<String> = PantryCatalog.matchingCatalogItemIDs(
                 for: resolvedIngredientItem.id,
                 facets: Array(requiredFacets)
             )
 
             for matchCatalogID in catalogIDs {
-                if let pantryCandidates = index.resolvedItemsByCatalogID[matchCatalogID],
+                if let pantryCandidates = index.resolvedItemsByRequirementCatalogID[matchCatalogID],
                    pantryCandidates.contains(where: {
                        pantryFacetsSatisfy(requiredFacets, pantryFacets: $0.facets)
                            && hasEnoughQuantity(candidate: $0, ingredient: ingredient)
@@ -214,8 +214,8 @@ enum IngredientMatcher {
         }
         pantryIndexCacheLock.unlock()
 
-        var resolvedItemsByCatalogID: [String: [PantryCandidate]] = [:]
-        resolvedItemsByCatalogID.reserveCapacity(pantry.count)
+        var resolvedItemsByRequirementCatalogID: [String: [PantryCandidate]] = [:]
+        resolvedItemsByRequirementCatalogID.reserveCapacity(pantry.count)
         var unresolvedItemsByMatchKey: [String: [PantryCandidate]] = [:]
         for pantryItem in pantry {
             let candidate = PantryCandidate(
@@ -226,14 +226,16 @@ enum IngredientMatcher {
             )
 
             if let catalogItemID = resolvedCatalogItemID(for: pantryItem.name, catalogItemID: pantryItem.catalogItemID) {
-                resolvedItemsByCatalogID[catalogItemID, default: []].append(candidate)
+                for ancestorID in PantryCatalog.ancestors(of: catalogItemID) {
+                    resolvedItemsByRequirementCatalogID[ancestorID, default: []].append(candidate)
+                }
             } else {
                 unresolvedItemsByMatchKey[unresolvedMatchKey(for: pantryItem.name), default: []].append(candidate)
             }
         }
 
         let index = PantryIndex(
-            resolvedItemsByCatalogID: resolvedItemsByCatalogID,
+            resolvedItemsByRequirementCatalogID: resolvedItemsByRequirementCatalogID,
             unresolvedItemsByMatchKey: unresolvedItemsByMatchKey
         )
 

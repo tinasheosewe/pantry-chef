@@ -137,6 +137,11 @@ struct PantryFacetDefinition: Codable, Hashable, Sendable {
     let options: [String]
 }
 
+struct PantryFacetAliasDefinition: Codable, Hashable, Sendable {
+    let text: String
+    let facets: [PantryFacetSelection]
+}
+
 struct PantrySubstitutionDefinition: Hashable, Sendable {
     let substituteItemID: String
     let substituteFacets: [PantryFacetSelection]
@@ -159,6 +164,8 @@ struct PantryCatalogItemDefinition: Identifiable, Hashable, Sendable, Codable {
     let aliases: [String]
     var facets: [PantryFacetDefinition]
     var defaultSelections: [PantryFacetSelection]
+    let parentIds: [String]
+    let facetAliases: [PantryFacetAliasDefinition]
     let substitutions: [PantrySubstitutionDefinition]
     let unitOverrides: [PantryFacetKey: [String: MeasurementUnit]]
     let freshnessByStorage: [PantryStorage: ClosedRange<Int>]
@@ -168,7 +175,7 @@ struct PantryCatalogItemDefinition: Identifiable, Hashable, Sendable, Codable {
 
     private enum CodingKeys: String, CodingKey {
         case id, name, category, defaultUnit, defaultQuantity, defaultStorage
-        case aliases, facets, defaultSelections, freshnessByStorage, isUserDefined
+        case aliases, facets, defaultSelections, parentIds, facetAliases, freshnessByStorage, isUserDefined
     }
 
     init(from decoder: Decoder) throws {
@@ -182,6 +189,8 @@ struct PantryCatalogItemDefinition: Identifiable, Hashable, Sendable, Codable {
         aliases = try c.decodeIfPresent([String].self, forKey: .aliases) ?? []
         facets = try c.decodeIfPresent([PantryFacetDefinition].self, forKey: .facets) ?? []
         defaultSelections = try c.decodeIfPresent([PantryFacetSelection].self, forKey: .defaultSelections) ?? []
+        parentIds = try c.decodeIfPresent([String].self, forKey: .parentIds) ?? []
+        facetAliases = try c.decodeIfPresent([PantryFacetAliasDefinition].self, forKey: .facetAliases) ?? []
         substitutions = []
         unitOverrides = [:]
         isUserDefined = try c.decodeIfPresent(Bool.self, forKey: .isUserDefined) ?? false
@@ -207,6 +216,8 @@ struct PantryCatalogItemDefinition: Identifiable, Hashable, Sendable, Codable {
         try c.encode(aliases, forKey: .aliases)
         try c.encode(facets, forKey: .facets)
         try c.encode(defaultSelections, forKey: .defaultSelections)
+        try c.encode(parentIds, forKey: .parentIds)
+        try c.encode(facetAliases, forKey: .facetAliases)
         try c.encode(isUserDefined, forKey: .isUserDefined)
         var rawFreshness: [String: [Int]] = [:]
         for (storage, range) in freshnessByStorage {
@@ -227,6 +238,8 @@ struct PantryCatalogItemDefinition: Identifiable, Hashable, Sendable, Codable {
         aliases: [String],
         facets: [PantryFacetDefinition],
         defaultSelections: [PantryFacetSelection],
+        parentIds: [String] = [],
+        facetAliases: [PantryFacetAliasDefinition] = [],
         substitutions: [PantrySubstitutionDefinition],
         unitOverrides: [PantryFacetKey: [String: MeasurementUnit]],
         freshnessByStorage: [PantryStorage: ClosedRange<Int>],
@@ -241,6 +254,8 @@ struct PantryCatalogItemDefinition: Identifiable, Hashable, Sendable, Codable {
         self.aliases = aliases
         self.facets = facets
         self.defaultSelections = defaultSelections
+        self.parentIds = parentIds
+        self.facetAliases = facetAliases
         self.substitutions = substitutions
         self.unitOverrides = unitOverrides
         self.freshnessByStorage = freshnessByStorage
@@ -488,6 +503,13 @@ enum PantryCatalog {
     static var tokenIndex: [String: Set<String>] = {
         buildTokenIndex(from: allItems)
     }()
+    private(set) static var parentIDsByItemID: [String: [String]] = [:]
+    private(set) static var childrenByParentID: [String: Set<String>] = [:]
+    private(set) static var ancestorsByItemID: [String: Set<String>] = [:]
+    private(set) static var descendantsByItemID: [String: Set<String>] = [:]
+    private(set) static var effectiveFacetsByItemID: [String: [PantryFacetDefinition]] = [:]
+    private(set) static var distanceByItemID: [String: [String: Int]] = [:]
+    private static var inheritanceCachesInitialized = false
 
     // MARK: - Index builders
 
@@ -602,8 +624,126 @@ enum PantryCatalog {
         nameKeySet = Set(merged.map { normalizeLookupKey($0.name) })
         facetTokenToItems = buildFacetTokenToItems(from: merged)
         tokenIndex = buildTokenIndex(from: merged)
+        rebuildInheritanceCaches()
+        inheritanceCachesInitialized = true
         CatalogSearchEngine.invalidateCache()
         NotificationCenter.default.post(name: .pantryCatalogDidChange, object: nil)
+    }
+
+    private static func ensureInheritanceCaches() {
+        if inheritanceCachesInitialized { return }
+        rebuildInheritanceCaches()
+        inheritanceCachesInitialized = true
+    }
+
+    private static func rebuildInheritanceCaches() {
+        var parents: [String: [String]] = [:]
+        var children: [String: Set<String>] = [:]
+        for item in allItems {
+            let validParents = item.parentIds.filter { itemsByID[$0] != nil && $0 != item.id }
+            parents[item.id] = Array(Set(validParents)).sorted()
+            for parentID in validParents {
+                children[parentID, default: []].insert(item.id)
+            }
+        }
+
+        parentIDsByItemID = parents
+        childrenByParentID = children
+        ancestorsByItemID = [:]
+        descendantsByItemID = [:]
+        effectiveFacetsByItemID = [:]
+        distanceByItemID = [:]
+
+        for item in allItems {
+            ancestorsByItemID[item.id] = computeAncestors(for: item.id, parents: parents)
+            distanceByItemID[item.id] = computeDistances(for: item.id, parents: parents)
+        }
+
+        for item in allItems {
+            descendantsByItemID[item.id] = computeDescendants(for: item.id, children: children)
+            effectiveFacetsByItemID[item.id] = computeEffectiveFacets(
+                for: item.id,
+                ancestorIDs: ancestorsByItemID[item.id] ?? [item.id]
+            )
+        }
+    }
+
+    private static func computeAncestors(
+        for itemID: String,
+        parents: [String: [String]]
+    ) -> Set<String> {
+        var visited: Set<String> = [itemID]
+        var stack = parents[itemID] ?? []
+
+        while let current = stack.popLast() {
+            guard visited.insert(current).inserted else { continue }
+            stack.append(contentsOf: parents[current] ?? [])
+        }
+        return visited
+    }
+
+    private static func computeDescendants(
+        for itemID: String,
+        children: [String: Set<String>]
+    ) -> Set<String> {
+        var visited: Set<String> = [itemID]
+        var stack = Array(children[itemID] ?? [])
+
+        while let current = stack.popLast() {
+            guard visited.insert(current).inserted else { continue }
+            stack.append(contentsOf: children[current] ?? [])
+        }
+        return visited
+    }
+
+    private static func computeDistances(
+        for itemID: String,
+        parents: [String: [String]]
+    ) -> [String: Int] {
+        var distances: [String: Int] = [itemID: 0]
+        var queue: [(String, Int)] = [(itemID, 0)]
+        var cursor = 0
+
+        while cursor < queue.count {
+            let (current, distance) = queue[cursor]
+            cursor += 1
+            for parentID in parents[current] ?? [] {
+                let nextDistance = distance + 1
+                if let existing = distances[parentID], existing <= nextDistance {
+                    continue
+                }
+                distances[parentID] = nextDistance
+                queue.append((parentID, nextDistance))
+            }
+        }
+
+        return distances
+    }
+
+    private static func computeEffectiveFacets(
+        for itemID: String,
+        ancestorIDs: Set<String>
+    ) -> [PantryFacetDefinition] {
+        var optionsByKey: [PantryFacetKey: Set<String>] = [:]
+        var keyOrder: [PantryFacetKey] = []
+        let orderedAncestorIDs = ancestorIDs.sorted { lhs, rhs in
+            (distanceByItemID[itemID]?[lhs] ?? .max) > (distanceByItemID[itemID]?[rhs] ?? .max)
+        }
+        for ancestorID in orderedAncestorIDs {
+            guard let ancestor = itemsByID[ancestorID] else { continue }
+            for facet in ancestor.facets {
+                if optionsByKey[facet.key] == nil {
+                    optionsByKey[facet.key] = []
+                    keyOrder.append(facet.key)
+                }
+                optionsByKey[facet.key, default: []].formUnion(facet.options)
+            }
+        }
+
+        return keyOrder.compactMap { key in
+            guard let values = optionsByKey[key], !values.isEmpty else { return nil }
+            return PantryFacetDefinition(key: key, options: Array(values).sorted())
+        }
     }
 
     // MARK: - Loading
@@ -875,114 +1015,55 @@ enum PantryCatalog {
         return itemsByID[id]
     }
 
-    /// Catalog ID for unspecified recipe oil ("oil", "neutral oil", "cooking oil").
-    static let genericCookingOilCatalogItemID = "oil"
-
-    /// Catalog ID for unspecified recipe nuts ("nuts", "nut", "ground nuts").
-    static let genericNutCatalogItemID = "nut"
-
-    // MARK: - Generic↔specific families (catalog_families.json)
-
-    private struct CatalogFamilyDefinition: Codable, Sendable {
-        let genericId: String?
-        let specificIds: [String]
-        let excludedFromGenericMatch: [String]?
-        let variantToSpecificId: [String: String]?
-        let genericOnlyAliases: [String]?
-        let allowGenericPantrySubstitution: Bool
-        let genericOnly: Bool?
+    static func parents(of id: String) -> [String] {
+        ensureInheritanceCaches()
+        parentIDsByItemID[id] ?? []
     }
 
-    private struct CatalogFamiliesFile: Codable, Sendable {
-        let version: Int
-        let families: [CatalogFamilyDefinition]
+    static func ancestors(of id: String) -> Set<String> {
+        ensureInheritanceCaches()
+        ancestorsByItemID[id] ?? [id]
     }
 
-    private static let catalogFamiliesFile: CatalogFamiliesFile = {
-        guard let url = AppBundleResourceLocator.url(forResource: "catalog_families", withExtension: "json") else {
-            AppLog.error("[PantryCatalog] catalog_families.json not found in app bundle")
-            return CatalogFamiliesFile(version: 1, families: [])
-        }
-        do {
-            let data = try Data(contentsOf: url)
-            return try JSONDecoder().decode(CatalogFamiliesFile.self, from: data)
-        } catch {
-            AppLog.error("[PantryCatalog] Failed to decode catalog_families.json: \(error.localizedDescription)")
-            return CatalogFamiliesFile(version: 1, families: [])
-        }
-    }()
-
-    private static let catalogFamilyByGenericID: [String: CatalogFamilyDefinition] = {
-        Dictionary(
-            uniqueKeysWithValues: catalogFamiliesFile.families.compactMap { family in
-                guard let genericId = family.genericId else { return nil }
-                return (genericId, family)
-            }
-        )
-    }()
-
-    /// Resolves a specific catalog ID from a generic parent's variant facet, if unambiguous.
-    static func specificCatalogItemID(forGeneric genericID: String, variant: String) -> String? {
-        guard let family = catalogFamilyByGenericID[genericID],
-              let variantMap = family.variantToSpecificId else {
-            return nil
-        }
-
-        let normalized = variant.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
-        if let specificID = variantMap[normalized], itemsByID[specificID] != nil {
-            return specificID
-        }
-
-        let slug = normalized.replacingOccurrences(of: " ", with: "-")
-        if itemsByID[slug] != nil {
-            return slug
-        }
-
-        let oilCandidate = slug.hasSuffix("-oil") ? slug : "\(slug)-oil"
-        if itemsByID[oilCandidate] != nil {
-            return oilCandidate
-        }
-
-        return nil
+    static func descendants(of id: String) -> Set<String> {
+        ensureInheritanceCaches()
+        descendantsByItemID[id] ?? [id]
     }
 
-    /// Pantry catalog IDs that can satisfy a generic ingredient requirement (e.g. oil, nut).
-    static func satisfyingFamilyCatalogItemIDs(for genericID: String, facets: [PantryFacetSelection]) -> Set<String> {
-        guard let family = catalogFamilyByGenericID[genericID] else {
-            return [genericID]
-        }
-
-        if let variant = facets.first(where: { $0.key == .variant })?.value,
-           let specificID = specificCatalogItemID(forGeneric: genericID, variant: variant) {
-            return [specificID]
-        }
-
-        let excluded = Set(family.excludedFromGenericMatch ?? [])
-        let specifics = Set(family.specificIds.filter { itemsByID[$0] != nil && !excluded.contains($0) })
-        if specifics.isEmpty {
-            return [genericID]
-        }
-        return specifics.union([genericID])
+    static func inheritanceDistance(from descendantID: String, to ancestorID: String) -> Int? {
+        ensureInheritanceCaches()
+        distanceByItemID[descendantID]?[ancestorID]
     }
 
-    /// All standalone cooking-oil catalog entries (excludes the generic `oil` base).
-    static var specificCookingOilCatalogItemIDs: Set<String> {
-        satisfyingFamilyCatalogItemIDs(for: genericCookingOilCatalogItemID, facets: [])
-            .subtracting([genericCookingOilCatalogItemID])
+    static func effectiveFacets(for id: String) -> [PantryFacetDefinition] {
+        ensureInheritanceCaches()
+        effectiveFacetsByItemID[id] ?? []
     }
 
-    /// Standalone edible nut catalog entries (excludes the generic `nut` base and seeds).
-    static var specificEdibleNutCatalogItemIDs: Set<String> {
-        satisfyingFamilyCatalogItemIDs(for: genericNutCatalogItemID, facets: [])
-            .subtracting([genericNutCatalogItemID])
-    }
+    /// Returns catalog IDs that can satisfy a requirement for `catalogItemID`.
+    /// Requirements with explicit class facets (kind facets) are narrowed to matching descendants.
+    static func matchingCatalogItemIDs(for catalogItemID: String, facets: [PantryFacetSelection]) -> Set<String> {
+        ensureInheritanceCaches()
+        guard itemsByID[catalogItemID] != nil else { return [catalogItemID] }
+        let descendants = descendants(of: catalogItemID)
+        guard !facets.isEmpty else { return descendants }
 
-    /// Expands generic catalog IDs (oil, nut, …) to the specific entries that can satisfy them.
-    static func satisfyingCatalogItemIDs(for catalogItemID: String, facets: [PantryFacetSelection]) -> Set<String> {
-        if catalogFamilyByGenericID[catalogItemID] != nil {
-            return satisfyingFamilyCatalogItemIDs(for: catalogItemID, facets: facets)
+        let kindKeys: Set<PantryFacetKey> = [.variant, .base, .concentration, .texture, .color]
+        let selectedKindValues = facets
+            .filter { kindKeys.contains($0.key) && $0.value.lowercased() != "none" }
+            .map { normalizeLookupKey($0.value) }
+        guard !selectedKindValues.isEmpty else { return descendants }
+
+        let narrowed = descendants.filter { candidateID in
+            guard let item = itemsByID[candidateID] else { return false }
+            let candidateKeys = Set(
+                [normalizeLookupKey(item.name)] +
+                item.aliases.map(normalizeLookupKey) +
+                item.facetAliases.map { normalizeLookupKey($0.text) }
+            )
+            return selectedKindValues.allSatisfy { candidateKeys.contains($0) }
         }
-        return [catalogItemID]
+        return narrowed.isEmpty ? descendants : narrowed
     }
 
     static func resolveExact(name: String) -> PantryCatalogItemDefinition? {

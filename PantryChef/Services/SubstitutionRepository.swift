@@ -99,9 +99,11 @@ final class SubstitutionRepository: SubstitutionProviding, @unchecked Sendable {
         substituteItemID: String,
         requiredFacets: [PantryFacetSelection]
     ) -> Bool {
-        guard pantryItem.catalogItemID == substituteItemID else {
+        guard let pantryCatalogItemID = pantryItem.catalogItemID else {
             return false
         }
+        let acceptableIDs = PantryCatalog.descendants(of: substituteItemID)
+        guard acceptableIDs.contains(pantryCatalogItemID) else { return false }
 
         let pantryFacets = Set(pantryItem.facets)
         return requiredFacets.allSatisfy { pantryFacets.contains($0) }

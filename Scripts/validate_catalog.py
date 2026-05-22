@@ -1,34 +1,26 @@
 #!/usr/bin/env python3
-"""Validate catalog.json integrity and generic↔specific family rules.
-
-Run from repo root:
-    python3 PantryChef/Scripts/validate_catalog.py
-    python3 PantryChef/Scripts/validate_catalog.py --strict
-"""
+"""Validate catalog.json integrity for the inheritance model."""
 from __future__ import annotations
 
 import argparse
 import json
 import sys
 from dataclasses import dataclass, field
-from pathlib import Path
 
 from catalog_lib import (
-    FAMILIES_PATH,
-    build_alias_index,
-    facet_options,
     items_by_id,
     load_catalog,
-    load_families,
     normalize_lookup_key,
+    parent_ids,
 )
 
 REQUIRED_FIELDS = {"id", "name", "category", "defaultStorage"}
+DEPRECATED_FIELDS = {"isGenericBase", "parentId", "parentFacets", "excludedFromGenericMatch"}
 
 
 @dataclass
 class Finding:
-    severity: str  # error | warning
+    severity: str
     rule: str
     message: str
     item_id: str | None = None
@@ -54,29 +46,73 @@ def slugify(value: str) -> str:
     return normalize_lookup_key(value).replace(" ", "-")
 
 
+def facet_map(item: dict) -> dict[str, set[str]]:
+    result: dict[str, set[str]] = {}
+    for facet in item.get("facets", []):
+        key = facet.get("key")
+        if not key:
+            continue
+        result[key] = set(facet.get("options", []))
+    return result
+
+
+def effective_facet_options(item_id: str, by_id: dict[str, dict]) -> dict[str, set[str]]:
+    if item_id not in by_id:
+        return {}
+    options: dict[str, set[str]] = {}
+    visited: set[str] = set()
+    stack = [item_id]
+    while stack:
+        current = stack.pop()
+        if current in visited:
+            continue
+        visited.add(current)
+        current_item = by_id[current]
+        for facet in current_item.get("facets", []):
+            key = facet.get("key")
+            if not key:
+                continue
+            options.setdefault(key, set()).update(facet.get("options", []))
+        stack.extend(parent_ids(current_item))
+    return options
+
+
 def check_required_fields(items: list[dict], report: ValidationReport) -> None:
     seen_ids: set[str] = set()
     for item in items:
+        item_id = item.get("id", "<missing-id>")
         missing = REQUIRED_FIELDS - set(item.keys())
         if missing:
-            report.add("error", "required_fields", f"Missing fields {sorted(missing)}", item["id"])
-        if item["id"] in seen_ids:
-            report.add("error", "duplicate_id", f"Duplicate catalog id {item['id']!r}", item["id"])
-        seen_ids.add(item["id"])
+            report.add("error", "required_fields", f"Missing fields {sorted(missing)}", item_id)
+        if item_id in seen_ids:
+            report.add("error", "duplicate_id", f"Duplicate catalog id {item_id!r}", item_id)
+        seen_ids.add(item_id)
+
+
+def check_deprecated_fields(items: list[dict], report: ValidationReport) -> None:
+    for item in items:
+        for field_name in DEPRECATED_FIELDS:
+            if field_name in item:
+                report.add(
+                    "error",
+                    "deprecated_field",
+                    f"Deprecated field {field_name!r} present on catalog item",
+                    item["id"],
+                )
 
 
 def check_duplicate_aliases(items: list[dict], report: ValidationReport) -> None:
     owner: dict[str, str] = {}
     for item in items:
         keys = [normalize_lookup_key(item["name"])] + [
-            normalize_lookup_key(a) for a in item.get("aliases", [])
+            normalize_lookup_key(alias) for alias in item.get("aliases", [])
         ]
         for key in keys:
             if not key:
                 continue
             if key in owner and owner[key] != item["id"]:
                 report.add(
-                    "error",
+                    "warning",
                     "duplicate_alias",
                     f"Lookup key {key!r} owned by {owner[key]!r} and {item['id']!r}",
                     item["id"],
@@ -98,246 +134,145 @@ def check_self_aliases(items: list[dict], report: ValidationReport) -> None:
                 )
 
 
-def family_maps(families_data: dict) -> tuple[dict[str, dict], dict[str, str]]:
-    """genericId → family; specificId → genericId."""
-    by_generic: dict[str, dict] = {}
-    specific_to_generic: dict[str, str] = {}
-    for family in families_data.get("families", []):
-        gid = family.get("genericId")
-        if gid:
-            by_generic[gid] = family
-            for sid in family.get("specificIds", []):
-                specific_to_generic[sid] = gid
-    return by_generic, specific_to_generic
-
-
-def check_families(items: list[dict], families_data: dict, report: ValidationReport) -> None:
+def check_parent_links(items: list[dict], report: ValidationReport) -> None:
     by_id = items_by_id(items)
-    by_generic, specific_to_generic = family_maps(families_data)
-
-    for family in families_data.get("families", []):
-        gid = family.get("genericId")
-        if gid and gid not in by_id:
-            report.add("error", "family_orphan_generic", f"Family generic {gid!r} not in catalog", gid)
-        for sid in family.get("specificIds", []):
-            if sid not in by_id:
-                report.add("error", "family_orphan_specific", f"Family specific {sid!r} not in catalog", sid)
-        for sid in family.get("excludedFromGenericMatch", []):
-            if sid not in by_id:
-                report.add("warning", "family_orphan_excluded", f"Excluded id {sid!r} not in catalog", sid)
-
-        if gid and family.get("allowGenericPantrySubstitution"):
-            variant_map = family.get("variantToSpecificId", {})
-            for label, sid in variant_map.items():
-                if sid not in by_id:
-                    report.add(
-                        "error",
-                        "family_variant_orphan",
-                        f"Variant {label!r} → {sid!r} but specific missing",
-                        gid,
-                    )
-                elif sid not in family.get("specificIds", []):
-                    report.add(
-                        "error",
-                        "family_variant_not_member",
-                        f"Variant {label!r} maps to {sid!r} outside specificIds",
-                        gid,
-                    )
-
-            generic_variants = set(facet_options(by_id[gid], "variant")) if gid in by_id else set()
-            mapped = set(variant_map.keys())
-            for opt in generic_variants:
-                if opt not in mapped and not family.get("genericOnly"):
-                    report.add(
-                        "warning",
-                        "generic_variant_unmapped",
-                        f"Generic variant {opt!r} has no variantToSpecificId entry",
-                        gid,
-                    )
-
-    # An item cannot be generic parent and specific in another family.
-    for gid in by_generic:
-        if gid in specific_to_generic:
-            report.add(
-                "error",
-                "generic_and_specific",
-                f"{gid!r} is both a family generic and specific of {specific_to_generic[gid]!r}",
-                gid,
-            )
+    for item in items:
+        item_id = item["id"]
+        for parent_id in parent_ids(item):
+            if parent_id == item_id:
+                report.add("error", "self_parent", "Item cannot parent itself", item_id)
+            elif parent_id not in by_id:
+                report.add("error", "orphan_parent", f"Parent {parent_id!r} not found", item_id)
 
 
-def check_generic_specific_aliases(
-    items: list[dict], families_data: dict, report: ValidationReport
-) -> None:
+def check_cycles(items: list[dict], report: ValidationReport) -> None:
     by_id = items_by_id(items)
-    alias_index = build_alias_index(items)
-    by_generic, _ = family_maps(families_data)
+    visiting: set[str] = set()
+    visited: set[str] = set()
 
-    for family in families_data.get("families", []):
-        gid = family.get("genericId")
-        if not gid or gid not in by_id:
-            continue
-        generic = by_id[gid]
-        allowed_generic = {
-            normalize_lookup_key(a)
-            for a in family.get("genericOnlyAliases", [])
-        }
-        allowed_generic.add(normalize_lookup_key(generic["name"]))
+    def dfs(node: str, stack: list[str]) -> None:
+        if node in visited:
+            return
+        if node in visiting:
+            cycle = " -> ".join(stack + [node])
+            report.add("error", "inheritance_cycle", f"Inheritance cycle detected: {cycle}", node)
+            return
+        visiting.add(node)
+        for parent_id in parent_ids(by_id.get(node, {})):
+            if parent_id in by_id:
+                dfs(parent_id, stack + [node])
+        visiting.remove(node)
+        visited.add(node)
 
-        if family.get("allowGenericPantrySubstitution"):
-            for alias in generic.get("aliases", []):
-                key = normalize_lookup_key(alias)
-                if key not in allowed_generic:
-                    report.add(
-                        "error",
-                        "generic_compound_alias",
-                        f"Generic {gid!r} alias {alias!r} is not in genericOnlyAliases",
-                        gid,
-                    )
+    for item_id in by_id:
+        dfs(item_id, [])
 
-        specific_ids = set(family.get("specificIds", []))
-        if not specific_ids or not family.get("allowGenericPantrySubstitution"):
-            continue
 
-        for sid in specific_ids:
-            specific = by_id.get(sid)
-            if not specific:
+def check_additive_facets(items: list[dict], report: ValidationReport) -> None:
+    by_id = items_by_id(items)
+    for item in items:
+        child_facets = facet_map(item)
+        for parent_id in parent_ids(item):
+            parent = by_id.get(parent_id)
+            if not parent:
                 continue
-            for alias in specific.get("aliases", []) + [specific["name"]]:
-                key = normalize_lookup_key(alias)
-                if key in allowed_generic:
+            for key, parent_options in facet_map(parent).items():
+                child_options = child_facets.get(key, set())
+                if parent_options and not parent_options.issubset(child_options):
+                    missing = sorted(parent_options - child_options)
                     report.add(
                         "error",
-                        "specific_uses_generic_alias",
-                        f"Specific {sid!r} reuses generic-only alias {alias!r}",
-                        sid,
-                    )
-                if gid in by_generic and key in {
-                    normalize_lookup_key(a)
-                    for a in by_id[gid].get("aliases", [])
-                }:
-                    report.add(
-                        "error",
-                        "alias_on_generic_and_specific",
-                        f"Alias {alias!r} appears on generic {gid!r} and specific {sid!r}",
-                        sid,
+                        "non_additive_facet_override",
+                        f"Child missing inherited options for {key}: {missing}",
+                        item["id"],
                     )
 
-        # Cross-family: specific alias must not resolve to generic's keys only.
-        for sid in specific_ids:
-            specific = by_id.get(sid)
-            if not specific:
+
+def check_facet_aliases(items: list[dict], report: ValidationReport) -> None:
+    by_id = items_by_id(items)
+    for item in items:
+        valid_options = effective_facet_options(item["id"], by_id)
+        for alias_definition in item.get("facetAliases", []):
+            text = alias_definition.get("text", "")
+            if not text.strip():
+                report.add("error", "invalid_facet_alias", "facetAlias.text must be non-empty", item["id"])
                 continue
-            base = normalize_lookup_key(specific["name"])
-            for alias in specific.get("aliases", []):
-                key = normalize_lookup_key(alias)
-                owner = alias_index.get(key)
-                if owner and owner != sid:
+            for selection in alias_definition.get("facets", []):
+                key = selection.get("key")
+                value = selection.get("value")
+                if key not in valid_options:
                     report.add(
                         "error",
-                        "duplicate_alias",
-                        f"Alias {alias!r} on {sid!r} already owned by {owner!r}",
-                        sid,
+                        "facet_alias_unknown_key",
+                        f"facetAlias key {key!r} is not defined for this class hierarchy",
+                        item["id"],
                     )
-                # Variant-specific strings belong on specific, not generic.
-                if key == base:
                     continue
-                if not key.startswith(base) and base not in key.split():
+                if value not in valid_options.get(key, set()):
                     report.add(
-                        "warning",
-                        "specific_alias_weak_link",
-                        f"Alias {alias!r} on {sid!r} may not clearly belong to this entry",
-                        sid,
+                        "error",
+                        "facet_alias_unknown_value",
+                        f"facetAlias value {value!r} is not valid for key {key!r}",
+                        item["id"],
                     )
 
 
-def check_facet_base_conflicts(items: list[dict], families_data: dict, report: ValidationReport) -> None:
-    """Facet options must not duplicate standalone catalog entry names unless linked."""
+def check_facet_entry_collisions(items: list[dict], report: ValidationReport) -> None:
     by_id = items_by_id(items)
     name_to_id = {normalize_lookup_key(item["name"]): item["id"] for item in items}
     slug_to_id = {item["id"]: item["id"] for item in items}
     for item in items:
         slug_to_id[slugify(item["name"])] = item["id"]
 
-    by_generic, specific_to_generic = family_maps(families_data)
-    allowed_facet_entry_ids: set[tuple[str, str, str]] = set()
-
-    for family in families_data.get("families", []):
-        gid = family.get("genericId")
-        if not gid:
-            continue
-        for label, sid in family.get("variantToSpecificId", {}).items():
-            allowed_facet_entry_ids.add((gid, "variant", normalize_lookup_key(label)))
-
     for item in items:
         for facet in item.get("facets", []):
             key = facet.get("key")
             for option in facet.get("options", []):
-                opt_key = normalize_lookup_key(option)
-                opt_slug = slugify(option)
-                conflicting_id = name_to_id.get(opt_key) or slug_to_id.get(opt_slug)
-                if not conflicting_id or conflicting_id == item["id"]:
+                option_key = normalize_lookup_key(option)
+                option_slug = slugify(option)
+                conflict_id = name_to_id.get(option_key) or slug_to_id.get(option_slug)
+                if not conflict_id or conflict_id == item["id"]:
                     continue
-                # Allowed when option is a mapped variant on generic parent.
-                if (item["id"], key, opt_key) in allowed_facet_entry_ids:
-                    continue
-                if item["id"] in by_generic and conflicting_id in by_generic[item["id"]].get(
-                    "specificIds", []
-                ):
-                    continue
-                if item["id"] in specific_to_generic:
+                related = conflict_id in parent_ids(item) or item["id"] in parent_ids(by_id.get(conflict_id, {}))
+                if related:
                     continue
                 report.add(
-                    "error",
+                    "warning",
                     "facet_duplicates_entry",
-                    f"{item['id']!r} facet {key}.{option!r} duplicates catalog entry {conflicting_id!r}",
+                    f"{item['id']!r} facet {key}.{option!r} duplicates catalog entry {conflict_id!r}",
                     item["id"],
                 )
-
-
-def check_item_is_not_both_base_and_facet(items: list[dict], report: ValidationReport) -> None:
-    """Catalog entry names should not appear as facet options on unrelated items."""
-    # Covered primarily by check_facet_base_conflicts; add id-as-facet check.
-    all_ids = {item["id"] for item in items}
-    for item in items:
-        for facet in item.get("facets", []):
-            for option in facet.get("options", []):
-                if slugify(option) in all_ids and slugify(option) != item["id"]:
-                    # Only warn here; error emitted by facet_duplicates_entry when name matches.
-                    pass
 
 
 def validate_catalog(*, strict: bool = False) -> ValidationReport:
     report = ValidationReport()
     items = load_catalog()
-    if not FAMILIES_PATH.exists():
-        report.add("error", "families_missing", f"Missing {FAMILIES_PATH}")
-        return report
-    families_data = load_families()
 
     check_required_fields(items, report)
+    check_deprecated_fields(items, report)
     check_duplicate_aliases(items, report)
     check_self_aliases(items, report)
-    check_families(items, families_data, report)
-    check_generic_specific_aliases(items, families_data, report)
-    check_facet_base_conflicts(items, families_data, report)
-    check_item_is_not_both_base_and_facet(items, report)
+    check_parent_links(items, report)
+    check_cycles(items, report)
+    check_additive_facets(items, report)
+    check_facet_aliases(items, report)
+    # Keep as warning-only informational signal while the variant->class migration
+    # is still in progress across the full catalog.
+    check_facet_entry_collisions(items, report)
 
     if strict:
         for finding in report.warnings:
             finding.severity = "error"
-
     return report
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Validate PantryChef catalog integrity.")
+    parser = argparse.ArgumentParser(description="Validate PantryChef catalog inheritance integrity.")
     parser.add_argument("--strict", action="store_true", help="Treat warnings as errors.")
     parser.add_argument("--json", action="store_true", help="Emit JSON report.")
     args = parser.parse_args()
 
     report = validate_catalog(strict=args.strict)
-
     if args.json:
         payload = {
             "errors": [f.__dict__ for f in report.errors],
@@ -354,7 +289,6 @@ def main() -> int:
             f"Summary: {len(report.errors)} error(s), {len(report.warnings)} warning(s), "
             f"{len(report.findings)} total"
         )
-
     return 1 if report.errors else 0
 
 

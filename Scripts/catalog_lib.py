@@ -4,35 +4,12 @@ from __future__ import annotations
 import json
 import re
 import unicodedata
+from collections import deque
 from pathlib import Path
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 CATALOG_PATH = SCRIPT_DIR.parent / "PantryChef" / "Resources" / "catalog.json"
-FAMILIES_PATH = SCRIPT_DIR.parent / "PantryChef" / "Resources" / "catalog_families.json"
 ALIAS_CANDIDATES_PATH = SCRIPT_DIR / "triage_output" / "corpus_alias_candidates.json"
-
-# Nuts & Seeds entries that are not edible nuts for generic `nut` matching.
-NUT_FAMILY_EXCLUDE = {
-    "chia-seed", "flax-seed", "hemp-seed", "sesame-seed", "sunflower-seed",
-    "pumpkin-seed", "poppy-seed", "melon-seed", "lotus-seed", "nigella-seed",
-    "egusi-seed", "watermelon-seed", "nut-butter", "corn-nut", "soy-nut", "nut",
-}
-
-# Maps specific catalog id → variant label on generic parent.
-NUT_VARIANT_OVERRIDES = {
-    "black-walnut": "black walnut",
-    "pine-nut": "pine",
-    "macadamia-nut": "macadamia",
-    "brazil-nut": "brazil",
-    "mixed-nuts": "mixed",
-    "ginkgo-nut": "ginkgo",
-    "hickory-nut": "hickory",
-}
-
-GENERIC_ONLY_BARE_ALIASES = {
-    "nut": {"nut", "nuts", "ground nuts", "ground nut", "chopped nuts", "unsalted nuts"},
-    "oil": {"oil", "oils", "neutral oil", "cooking oil", "salad oil", "liquid oil", "frying oil"},
-}
 
 
 def normalize_lookup_key(value: str) -> str:
@@ -53,17 +30,6 @@ def save_catalog(items: list[dict]) -> None:
     items.sort(key=lambda x: x["id"])
     with open(CATALOG_PATH, "w", encoding="utf-8") as f:
         json.dump(items, f, indent=2, ensure_ascii=False)
-        f.write("\n")
-
-
-def load_families() -> dict:
-    with open(FAMILIES_PATH, encoding="utf-8") as f:
-        return json.load(f)
-
-
-def save_families(data: dict) -> None:
-    with open(FAMILIES_PATH, "w", encoding="utf-8") as f:
-        json.dump(data, f, indent=2, ensure_ascii=False)
         f.write("\n")
 
 
@@ -116,80 +82,46 @@ def build_alias_index(items: list[dict]) -> dict[str, str]:
     return index
 
 
-def variant_label_for_specific(specific_id: str, item: dict) -> str:
-    if specific_id in NUT_VARIANT_OVERRIDES:
-        return NUT_VARIANT_OVERRIDES[specific_id]
-    name = item["name"].lower()
-    if specific_id.endswith("-nut") and specific_id != "pine-nut":
-        return name.replace(" nut", "")
-    return name
+def slugify(value: str) -> str:
+    return normalize_lookup_key(value).replace(" ", "-")
 
 
-def build_nut_family(items: list[dict]) -> dict:
-    by_id = items_by_id(items)
-    specific_ids = sorted(
-        i["id"] for i in items
-        if i.get("category") == "Nuts & Seeds"
-        and i["id"] not in NUT_FAMILY_EXCLUDE
-    )
-    variant_map = {
-        variant_label_for_specific(sid, by_id[sid]): sid
-        for sid in specific_ids
-        if sid in by_id
-    }
-    return {
-        "genericId": "nut",
-        "specificIds": specific_ids,
-        "excludedFromGenericMatch": sorted(NUT_FAMILY_EXCLUDE),
-        "variantToSpecificId": variant_map,
-        "genericOnlyAliases": sorted(GENERIC_ONLY_BARE_ALIASES["nut"]),
-        "allowGenericPantrySubstitution": True,
-    }
+def parent_ids(item: dict) -> list[str]:
+    return list(item.get("parentIds", []))
 
 
-def build_oil_family(items: list[dict]) -> dict:
-    specific_ids = sorted(i["id"] for i in items if i["id"].endswith("-oil"))
-    by_id = items_by_id(items)
-    variant_map = {}
-    for sid in specific_ids:
-        label = by_id[sid]["name"].lower().replace(" oil", "")
-        variant_map[label] = sid
-    return {
-        "genericId": "oil",
-        "specificIds": specific_ids,
-        "excludedFromGenericMatch": [],
-        "variantToSpecificId": variant_map,
-        "genericOnlyAliases": sorted(GENERIC_ONLY_BARE_ALIASES["oil"]),
-        "allowGenericPantrySubstitution": True,
-    }
+def children_by_parent(items: list[dict]) -> dict[str, set[str]]:
+    result: dict[str, set[str]] = {}
+    for item in items:
+        for parent_id in parent_ids(item):
+            result.setdefault(parent_id, set()).add(item["id"])
+    return result
 
 
-def build_generic_only_families(items: list[dict]) -> list[dict]:
-    """Catalog entries that use variant facets without separate specific entries."""
-    generic_only_ids = [
-        "cheese", "beef", "chicken", "beans", "broth", "tomato", "onion", "pepper",
-        "cream", "sugar", "flour", "egg", "milk", "yogurt", "pork", "lamb", "turkey",
-        "fish", "shrimp", "rice", "pasta", "bread", "potato", "mushroom", "cured-meat",
-    ]
-    by_id = items_by_id(items)
-    families = []
-    for gid in generic_only_ids:
-        item = by_id.get(gid)
-        if not item or not facet_options(item, "variant"):
+def ancestors_of(item_id: str, by_id: dict[str, dict]) -> set[str]:
+    if item_id not in by_id:
+        return set()
+    visited: set[str] = set()
+    stack = [item_id]
+    while stack:
+        current = stack.pop()
+        if current in visited:
             continue
-        families.append({
-            "genericId": gid,
-            "specificIds": [],
-            "allowGenericPantrySubstitution": False,
-            "genericOnly": True,
-        })
-    return families
+        visited.add(current)
+        stack.extend(parent_ids(by_id.get(current, {})))
+    return visited
 
 
-def regenerate_families(items: list[dict]) -> dict:
-    families = [
-        build_nut_family(items),
-        build_oil_family(items),
-        *build_generic_only_families(items),
-    ]
-    return {"families": families, "version": 1}
+def descendants_of(root_id: str, by_id: dict[str, dict]) -> set[str]:
+    if root_id not in by_id:
+        return set()
+    child_map = children_by_parent(list(by_id.values()))
+    visited: set[str] = set()
+    queue: deque[str] = deque([root_id])
+    while queue:
+        current = queue.popleft()
+        if current in visited:
+            continue
+        visited.add(current)
+        queue.extend(child_map.get(current, set()))
+    return visited
