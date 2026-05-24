@@ -1401,7 +1401,7 @@ struct PantryIntakeFormSections: View {
                             HStack(spacing: 10) {
                                 CategoryIcon(category: item.category, size: 28)
                                 VStack(alignment: .leading, spacing: 2) {
-                                    Text(item.titleCasedName)
+                                    Text(item.catalogDisplayName)
                                         .foregroundStyle(PCColors.textPrimary)
                                     Text(item.category.rawValue)
                                         .font(.caption)

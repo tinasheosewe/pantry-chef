@@ -227,9 +227,34 @@ POST_REPAIR_FIXES: dict[str, dict[str, Any]] = {
         "name": "stew meat",
         "aliases": ["beef stew meat", "stew meat", "stewing beef"],
     },
+    "baby": {
+        "name": "baby octopus",
+        "aliases": ["baby octopus", "baby octopuses"],
+    },
+    "large": {
+        "name": "large octopus",
+        "aliases": ["large octopus"],
+    },
+    "tentacle": {
+        "name": "octopus tentacle",
+        "aliases": ["octopus tentacle", "octopus tentacles"],
+    },
+    "garlic": {
+        "parentIds": [],
+    },
     "beef-shank": {
         "name": "beef shank",
         "aliases": ["beef shank", "beef shanks"],
+    },
+    "beef-brisket": {
+        "name": "beef brisket",
+        "aliases": ["beef brisket", "brisket"],
+    },
+    "beef-roast": {
+        "aliases": ["beef roast", "roast beef"],
+    },
+    "beef-tenderloin": {
+        "aliases": ["beef tenderloin", "tenderloin"],
     },
 }
 

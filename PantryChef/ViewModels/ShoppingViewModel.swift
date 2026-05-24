@@ -277,7 +277,7 @@ final class ShoppingAddItemViewModel {
             (PantryCatalog.inheritanceDistance(from: item.id, to: $0) ?? .max)
                 > (PantryCatalog.inheritanceDistance(from: item.id, to: $1) ?? .max)
         }
-        let names = ordered.compactMap { PantryCatalog.item(id: $0)?.titleCasedName }
+        let names = ordered.compactMap { PantryCatalog.item(id: $0)?.catalogDisplayName }
         guard !names.isEmpty else { return nil }
         return names.joined(separator: " > ")
     }
@@ -301,7 +301,7 @@ final class ShoppingAddItemViewModel {
             id: item.id,
             catalogItemID: item.id,
             facets: searchDefaultFacets(for: item),
-            displayName: item.titleCasedName,
+            displayName: item.catalogDisplayName,
             category: item.category
         )
     }

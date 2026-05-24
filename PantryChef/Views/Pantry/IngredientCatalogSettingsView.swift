@@ -54,7 +54,7 @@ enum IngredientCatalogSettingsSupport {
             (PantryCatalog.inheritanceDistance(from: item.id, to: $0) ?? .max)
                 > (PantryCatalog.inheritanceDistance(from: item.id, to: $1) ?? .max)
         }
-        let names = ordered.compactMap { PantryCatalog.item(id: $0)?.titleCasedName }
+        let names = ordered.compactMap { PantryCatalog.item(id: $0)?.catalogDisplayName }
         guard !names.isEmpty else { return nil }
         return names.joined(separator: " > ")
     }
@@ -231,7 +231,7 @@ struct IngredientCatalogSettingsView: View {
                 CategoryIcon(category: item.category, size: 36)
                 VStack(alignment: .leading, spacing: 3) {
                     HStack(spacing: 6) {
-                        Text(item.titleCasedName)
+                        Text(item.catalogDisplayName)
                             .font(.subheadline)
                             .fontWeight(.semibold)
                             .foregroundStyle(PCColors.textPrimary)
@@ -311,7 +311,7 @@ private struct CatalogTreeNodeRow: View {
         HStack(spacing: 10) {
             CategoryIcon(category: item.category, size: 24)
             VStack(alignment: .leading, spacing: 2) {
-                Text(item.titleCasedName)
+                Text(item.catalogDisplayName)
                     .font(.subheadline)
                     .foregroundStyle(PCColors.textPrimary)
                 if let path = IngredientCatalogSettingsSupport.disambiguationPath(for: item) {

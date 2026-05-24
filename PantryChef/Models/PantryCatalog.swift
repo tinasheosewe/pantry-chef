@@ -319,7 +319,7 @@ struct PantryCatalogItemDefinition: Identifiable, Hashable, Sendable, Codable {
         let orderedSelections = orderedKeys.compactMap { key in
             selections.first(where: { $0.key == key && $0.value.lowercased() != "none" })
         }
-        guard !orderedSelections.isEmpty else { return titleCasedName }
+        guard !orderedSelections.isEmpty else { return catalogDisplayName }
 
         var prefixWords: [String] = []
         var suffixWords: [String] = []
@@ -332,11 +332,47 @@ struct PantryCatalogItemDefinition: Identifiable, Hashable, Sendable, Codable {
             }
         }
 
-        return (prefixWords + [name] + suffixWords).map(Self.titleCase).joined(separator: " ")
+        return (prefixWords + [catalogBaseName] + suffixWords).map(Self.titleCase).joined(separator: " ")
+    }
+
+    /// User-facing ingredient name, including parent context for scoped subclasses (e.g. "Baby Octopus").
+    var catalogDisplayName: String {
+        Self.titleCase(catalogBaseName)
     }
 
     var titleCasedName: String {
         Self.titleCase(name)
+    }
+
+    private var catalogBaseName: String {
+        guard parentIds.count == 1,
+              let parent = PantryCatalog.item(id: parentIds[0]) else {
+            return name
+        }
+
+        if Self.nameContainsAllWords(from: parent.name, in: name) {
+            return name
+        }
+
+        let isSingleWordName = !name.contains(" ")
+        guard isSingleWordName,
+              name.caseInsensitiveCompare(parent.name) != .orderedSame else {
+            return name
+        }
+
+        return "\(name) \(parent.name)"
+    }
+
+    private static func nameContainsAllWords(from parentName: String, in itemName: String) -> Bool {
+        let parentWords = Set(
+            parentName.lowercased().split(whereSeparator: \.isWhitespace).map(String.init)
+        )
+        guard !parentWords.isEmpty else { return false }
+
+        let itemWords = Set(
+            itemName.lowercased().split(whereSeparator: \.isWhitespace).map(String.init)
+        )
+        return parentWords.isSubset(of: itemWords)
     }
 
     static func titleCase(_ value: String) -> String {
@@ -497,6 +533,9 @@ enum PantryCatalog {
     static var nameKeySet: Set<String> = {
         Set(allItems.map { normalizeLookupKey($0.name) })
     }()
+    static var duplicateNormalizedNameKeys: Set<String> = {
+        buildDuplicateNormalizedNameKeys(from: allItems)
+    }()
     static var facetTokenToItems: [String: [(itemID: String, key: PantryFacetKey, value: String)]] = {
         buildFacetTokenToItems(from: allItems)
     }()
@@ -511,7 +550,20 @@ enum PantryCatalog {
     private(set) static var distanceByItemID: [String: [String: Int]] = [:]
     private static var inheritanceCachesInitialized = false
 
+    static func hasDuplicateNormalizedName(_ name: String) -> Bool {
+        duplicateNormalizedNameKeys.contains(normalizeLookupKey(name))
+    }
+
     // MARK: - Index builders
+
+    private static func buildDuplicateNormalizedNameKeys(from items: [PantryCatalogItemDefinition]) -> Set<String> {
+        var counts: [String: Int] = [:]
+        for item in items {
+            let key = normalizeLookupKey(item.name)
+            counts[key, default: 0] += 1
+        }
+        return Set(counts.filter { $0.value > 1 }.map(\.key))
+    }
 
     private static func buildAliasIndex(from items: [PantryCatalogItemDefinition]) -> [String: String] {
         var result: [String: String] = [:]
@@ -622,6 +674,7 @@ enum PantryCatalog {
         }
         facetOptionIndex = buildFacetOptionIndex(from: merged)
         nameKeySet = Set(merged.map { normalizeLookupKey($0.name) })
+        duplicateNormalizedNameKeys = buildDuplicateNormalizedNameKeys(from: merged)
         facetTokenToItems = buildFacetTokenToItems(from: merged)
         tokenIndex = buildTokenIndex(from: merged)
         rebuildInheritanceCaches()

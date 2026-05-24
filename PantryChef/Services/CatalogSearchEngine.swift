@@ -484,7 +484,7 @@ enum CatalogSearchEngine {
             id: item.id,
             catalogItemID: item.id,
             facets: [],
-            displayName: item.titleCasedName,
+            displayName: item.catalogDisplayName,
             score: 0,
             item: item
         )

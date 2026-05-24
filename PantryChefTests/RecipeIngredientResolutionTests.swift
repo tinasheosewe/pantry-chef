@@ -36,6 +36,16 @@ final class RecipeIngredientResolutionTests: XCTestCase {
         XCTAssertEqual(candidates.first?.displayName, "Greek Yogurt")
     }
 
+    func testCatalogDisplayNameQualifiesScopedSubclassNames() {
+        guard let baby = PantryCatalog.item(id: "baby") else {
+            XCTFail("Expected baby octopus catalog item")
+            return
+        }
+
+        XCTAssertEqual(baby.catalogDisplayName, "Baby Octopus")
+        XCTAssertEqual(baby.displayName(for: []), "Baby Octopus")
+    }
+
     func testCandidateParserUsesSharedSynonymExpansion() {
         let parser = IngredientCandidateParser()
         let ingredient = Ingredient(name: "plain flour")

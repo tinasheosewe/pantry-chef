@@ -118,7 +118,7 @@ final class PantryBulkAddViewModel {
     }
 
     func catalogDisplayName(for item: PantryCatalogItemDefinition) -> String {
-        displayNameByCatalogItemID[item.id] ?? item.titleCasedName
+        displayNameByCatalogItemID[item.id] ?? item.catalogDisplayName
     }
 
     func catalogResolvedFacets(for item: PantryCatalogItemDefinition) -> [PantryFacetSelection] {
