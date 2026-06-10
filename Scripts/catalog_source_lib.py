@@ -147,17 +147,8 @@ TRUE_MULTI_INHERITANCE: dict[str, list[str]] = {
 
 # Correct metadata for items corrupted by shared-node splitting.
 POST_REPAIR_FIXES: dict[str, dict[str, Any]] = {
-    "sweet-potato": {
-        "parentIds": ["potato"],
-        "name": "sweet potato",
-        "category": "Produce",
-        "defaultUnit": "lb",
-        "defaultQuantity": 1.0,
-        "defaultStorage": "Pantry",
-        "aliases": ["sweet potatoes", "sweet potato", "yam", "yams"],
-        "defaultSelections": [],
-        "freshnessByStorage": {"Pantry": [7, 14], "Refrigerated": [14, 21]},
-    },
+    # NOTE: only patch leaf metadata here; do not change parentIds (it would break
+    # additive-facet materialization, which runs before this pass).
     "onion-red": {
         "name": "red onion",
         "aliases": ["red onion", "red onions", "onion red"],
@@ -176,7 +167,8 @@ POST_REPAIR_FIXES: dict[str, dict[str, Any]] = {
     },
     "all-purpose": {
         "name": "all-purpose flour",
-        "aliases": ["all purpose flour", "all-purpose flour", "ap flour", "plain flour"],
+        # NB: no bare 2-letter "ap" token alias — it hijacks 2-char prefix search.
+        "aliases": ["all purpose flour", "all-purpose flour", "plain flour"],
     },
     "whole-wheat": {
         "name": "whole wheat flour",
@@ -337,9 +329,10 @@ def merge_nodes(parent: dict[str, Any], child: dict[str, Any]) -> dict[str, Any]
         if key == "facets":
             merged["facets"] = _merge_facets(parent.get("facets"), child.get("facets"))
         elif key == "aliases":
-            merged["aliases"] = sorted(
-                set(parent.get("aliases", [])).union(child.get("aliases", []))
-            )
+            # Aliases are identity, not inherited state: a child keeps only its own
+            # aliases so a parent's generic term (e.g. "cheeses") doesn't resolve to
+            # every child and pollute the lookup index.
+            merged["aliases"] = sorted(set(child.get("aliases", [])))
         elif key in child:
             merged[key] = copy.deepcopy(child[key])
     merged["id"] = child["id"]

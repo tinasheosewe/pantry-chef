@@ -297,6 +297,12 @@ def check_facet_aliases(items: list[dict], report: ValidationReport) -> None:
                     )
 
 
+# State facets legitimately use generic words ("fresh", "paste") that also name
+# generic catalog roots; only narrowing facets are checked for entry collisions.
+NARROWING_KEYS = {"variant", "color", "grade", "fat"}
+STATE_KEYS = {"form", "preparation", "preservation", "processing", "texture", "medium"}
+
+
 def check_facet_entry_collisions(items: list[dict], report: ValidationReport) -> None:
     by_id = items_by_id(items)
     name_to_id = {normalize_lookup_key(item["name"]): item["id"] for item in items}
@@ -307,6 +313,8 @@ def check_facet_entry_collisions(items: list[dict], report: ValidationReport) ->
     for item in items:
         for facet in item.get("facets", []):
             key = facet.get("key")
+            if key in STATE_KEYS:
+                continue
             for option in facet.get("options", []):
                 option_key = normalize_lookup_key(option)
                 option_slug = slugify(option)
@@ -322,6 +330,48 @@ def check_facet_entry_collisions(items: list[dict], report: ValidationReport) ->
                     f"{item['id']!r} facet {key}.{option!r} duplicates catalog entry {conflict_id!r}",
                     item["id"],
                 )
+
+
+VALID_FACET_KEYS = {"color", "variant", "grade", "fat", "form", "preparation",
+                    "preservation", "processing", "texture", "medium"}
+# ids that must never be bare state/modifier words (misleading leftovers)
+BANNED_BARE_IDS = {
+    "fresh", "dried", "raw", "baby", "large", "jumbo", "mini", "small", "medium",
+    "blend", "coarse", "fine", "creamy", "whipped", "crunchy", "smooth", "chunky",
+    "thick", "thin", "soft", "firm", "sliced", "diced", "brown", "gold", "nonfat",
+    "giant", "whole", "half",
+}
+# values allowed to appear under more than one facet key (genuinely context-dependent)
+ORTHOGONALITY_EXCEPTIONS = {"whole"}
+
+
+def check_valid_facet_keys(items: list[dict], report: ValidationReport) -> None:
+    for item in items:
+        for facet in item.get("facets", []):
+            key = facet.get("key")
+            if key not in VALID_FACET_KEYS:
+                report.add("error", "invalid_facet_key",
+                           f"Unknown facet key {key!r}", item["id"])
+
+
+def check_facet_orthogonality(items: list[dict], report: ValidationReport) -> None:
+    value_keys: dict[str, set[str]] = {}
+    for item in items:
+        for facet in item.get("facets", []):
+            for option in facet.get("options", []):
+                value_keys.setdefault(option.lower(), set()).add(facet.get("key"))
+    for value, keys in sorted(value_keys.items()):
+        if len(keys) > 1 and value not in ORTHOGONALITY_EXCEPTIONS:
+            report.add("warning", "facet_key_not_orthogonal",
+                       f"Value {value!r} appears under multiple keys {sorted(keys)}")
+
+
+def check_bare_state_ids(items: list[dict], report: ValidationReport) -> None:
+    for item in items:
+        iid = item.get("id", "")
+        if "-" not in iid and iid in BANNED_BARE_IDS:
+            report.add("warning", "bare_state_id",
+                       f"Id {iid!r} is a bare state/modifier word; use a descriptive slug", iid)
 
 
 def check_multi_inheritance_completeness(items: list[dict], report: ValidationReport) -> None:
@@ -364,6 +414,9 @@ def validate_catalog_items(items: list[dict], report: ValidationReport) -> None:
     check_additive_facets(items, report)
     check_facet_aliases(items, report)
     check_facet_entry_collisions(items, report)
+    check_valid_facet_keys(items, report)
+    check_facet_orthogonality(items, report)
+    check_bare_state_ids(items, report)
 
 
 def validate_catalog(*, strict: bool = False) -> ValidationReport:

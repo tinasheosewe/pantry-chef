@@ -98,13 +98,14 @@ enum PantryQuantityMode: String, Codable, CaseIterable, Sendable {
 enum PantryFacetKey: String, Codable, CaseIterable, Identifiable, Sendable {
     case color
     case variant
+    case grade
+    case fat
     case form
+    case preparation
     case preservation
     case processing
-    case preparation
     case texture
-    case concentration
-    case base
+    case medium
 
     var id: String { rawValue }
 
@@ -112,13 +113,14 @@ enum PantryFacetKey: String, Codable, CaseIterable, Identifiable, Sendable {
         switch self {
         case .color: return "Color"
         case .variant: return "Variant"
+        case .grade: return "Grade"
+        case .fat: return "Fat"
         case .form: return "Form"
+        case .preparation: return "Preparation"
         case .preservation: return "Preservation"
         case .processing: return "Processing"
-        case .preparation: return "Preparation"
         case .texture: return "Texture"
-        case .concentration: return "Concentration"
-        case .base: return "Base"
+        case .medium: return "Packed In"
         }
     }
 }
@@ -154,6 +156,43 @@ struct PantrySubstitutionDefinition: Hashable, Sendable {
     let dietary: [DietaryTag]?
 }
 
+/// Major food allergens carried by a catalog ingredient (US "big 9" + sesame).
+enum Allergen: String, Codable, CaseIterable, Identifiable, Sendable {
+    case dairy
+    case egg
+    case gluten
+    case peanut
+    case treeNut = "tree-nut"
+    case soy
+    case shellfish
+    case fish
+    case sesame
+
+    var id: String { rawValue }
+
+    var title: String {
+        switch self {
+        case .dairy: return "Dairy"
+        case .egg: return "Egg"
+        case .gluten: return "Gluten"
+        case .peanut: return "Peanut"
+        case .treeNut: return "Tree Nut"
+        case .soy: return "Soy"
+        case .shellfish: return "Shellfish"
+        case .fish: return "Fish"
+        case .sesame: return "Sesame"
+        }
+    }
+}
+
+/// A simple catalog-level substitution: swap this ingredient for `substituteItemID`
+/// at the given ratio. Populated deterministically by the enrichment pipeline.
+struct CatalogSwap: Codable, Hashable, Sendable {
+    let substituteItemID: String
+    let ratio: String
+    let notes: String?
+}
+
 struct PantryCatalogItemDefinition: Identifiable, Hashable, Sendable, Codable {
     let id: String
     let name: String
@@ -171,11 +210,25 @@ struct PantryCatalogItemDefinition: Identifiable, Hashable, Sendable, Codable {
     let freshnessByStorage: [PantryStorage: ClosedRange<Int>]
     let isUserDefined: Bool
 
+    // MARK: - Enrichment (deterministically populated by the catalog pipeline)
+
+    /// Mass of one US cup of this ingredient, in grams — enables volume↔weight conversion.
+    let gramsPerCup: Double?
+    /// Average mass of one whole unit/piece, in grams — enables count↔weight conversion.
+    let gramsPerPiece: Double?
+    /// Major allergens this ingredient carries.
+    let allergens: [Allergen]
+    /// Dietary classifications this ingredient satisfies.
+    let dietaryTags: [DietaryTag]
+    /// Common substitutions for this ingredient.
+    let swaps: [CatalogSwap]
+
     // MARK: - Codable
 
     private enum CodingKeys: String, CodingKey {
         case id, name, category, defaultUnit, defaultQuantity, defaultStorage
         case aliases, facets, defaultSelections, parentIds, facetAliases, freshnessByStorage, isUserDefined
+        case gramsPerCup, gramsPerPiece, allergens, dietaryTags, swaps
     }
 
     init(from decoder: Decoder) throws {
@@ -194,6 +247,11 @@ struct PantryCatalogItemDefinition: Identifiable, Hashable, Sendable, Codable {
         substitutions = []
         unitOverrides = [:]
         isUserDefined = try c.decodeIfPresent(Bool.self, forKey: .isUserDefined) ?? false
+        gramsPerCup = try c.decodeIfPresent(Double.self, forKey: .gramsPerCup)
+        gramsPerPiece = try c.decodeIfPresent(Double.self, forKey: .gramsPerPiece)
+        allergens = try c.decodeIfPresent([Allergen].self, forKey: .allergens) ?? []
+        dietaryTags = try c.decodeIfPresent([DietaryTag].self, forKey: .dietaryTags) ?? []
+        swaps = try c.decodeIfPresent([CatalogSwap].self, forKey: .swaps) ?? []
 
         // Decode freshnessByStorage: { "Pantry": [180, 365], ... } → [PantryStorage: ClosedRange<Int>]
         let rawFreshness = try c.decodeIfPresent([String: [Int]].self, forKey: .freshnessByStorage) ?? [:]
@@ -224,6 +282,11 @@ struct PantryCatalogItemDefinition: Identifiable, Hashable, Sendable, Codable {
             rawFreshness[storage.rawValue] = [range.lowerBound, range.upperBound]
         }
         try c.encode(rawFreshness, forKey: .freshnessByStorage)
+        try c.encodeIfPresent(gramsPerCup, forKey: .gramsPerCup)
+        try c.encodeIfPresent(gramsPerPiece, forKey: .gramsPerPiece)
+        if !allergens.isEmpty { try c.encode(allergens, forKey: .allergens) }
+        if !dietaryTags.isEmpty { try c.encode(dietaryTags, forKey: .dietaryTags) }
+        if !swaps.isEmpty { try c.encode(swaps, forKey: .swaps) }
     }
 
     // MARK: - Memberwise init (for builder)
@@ -243,7 +306,12 @@ struct PantryCatalogItemDefinition: Identifiable, Hashable, Sendable, Codable {
         substitutions: [PantrySubstitutionDefinition],
         unitOverrides: [PantryFacetKey: [String: MeasurementUnit]],
         freshnessByStorage: [PantryStorage: ClosedRange<Int>],
-        isUserDefined: Bool = false
+        isUserDefined: Bool = false,
+        gramsPerCup: Double? = nil,
+        gramsPerPiece: Double? = nil,
+        allergens: [Allergen] = [],
+        dietaryTags: [DietaryTag] = [],
+        swaps: [CatalogSwap] = []
     ) {
         self.id = id
         self.name = name
@@ -260,6 +328,11 @@ struct PantryCatalogItemDefinition: Identifiable, Hashable, Sendable, Codable {
         self.unitOverrides = unitOverrides
         self.freshnessByStorage = freshnessByStorage
         self.isUserDefined = isUserDefined
+        self.gramsPerCup = gramsPerCup
+        self.gramsPerPiece = gramsPerPiece
+        self.allergens = allergens
+        self.dietaryTags = dietaryTags
+        self.swaps = swaps
     }
 
     func supports(_ key: PantryFacetKey) -> Bool {
@@ -315,7 +388,7 @@ struct PantryCatalogItemDefinition: Identifiable, Hashable, Sendable, Codable {
     }
 
     func displayName(for selections: [PantryFacetSelection]) -> String {
-        let orderedKeys: [PantryFacetKey] = [.color, .variant, .form, .preservation, .processing, .preparation, .texture, .concentration, .base]
+        let orderedKeys: [PantryFacetKey] = [.color, .variant, .grade, .fat, .form, .preparation, .preservation, .processing, .texture, .medium]
         let orderedSelections = orderedKeys.compactMap { key in
             selections.first(where: { $0.key == key && $0.value.lowercased() != "none" })
         }
@@ -1103,7 +1176,7 @@ enum PantryCatalog {
         let descendants = descendants(of: catalogItemID)
         guard !facets.isEmpty else { return descendants }
 
-        let kindKeys: Set<PantryFacetKey> = [.variant, .base, .concentration, .texture, .color]
+        let kindKeys: Set<PantryFacetKey> = [.variant, .grade, .fat, .color, .texture]
         let selectedKindValues = facets
             .filter { kindKeys.contains($0.key) && $0.value.lowercased() != "none" }
             .map { normalizeLookupKey($0.value) }

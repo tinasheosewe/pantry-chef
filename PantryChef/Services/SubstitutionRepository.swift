@@ -132,7 +132,7 @@ final class SubstitutionRepository: SubstitutionProviding, @unchecked Sendable {
                 builtInSubstitution(
                     originalItemID: "chicken",
                     substituteItemID: "tofu",
-                    substituteFacets: [.init(key: .variant, value: "extra firm")],
+                    substituteFacets: [.init(key: .texture, value: "extra firm")],
                     ratio: "1:1 by weight",
                     tasteImpact: .moderate,
                     textureImpact: .moderate,
@@ -165,7 +165,7 @@ final class SubstitutionRepository: SubstitutionProviding, @unchecked Sendable {
                 builtInSubstitution(
                     originalItemID: "chicken",
                     substituteItemID: "tofu",
-                    substituteFacets: [.init(key: .variant, value: "extra firm")],
+                    substituteFacets: [.init(key: .texture, value: "extra firm")],
                     ratio: "1:1 by weight",
                     tasteImpact: .moderate,
                     textureImpact: .moderate,

@@ -1,0 +1,9 @@
+# Generated / temp artifacts of the one-time remodel pipeline.
+# The pipeline CODE is tracked; its large inputs and generated outputs are not.
+baseline_catalog.json
+baseline_source.json
+decisions.json
+redirects.json
+_*.tsv
+_*.txt
+__pycache__/

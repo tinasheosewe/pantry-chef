@@ -467,7 +467,15 @@ enum CatalogSearchEngine {
             ))
         }
 
-        results.sort { $0.score > $1.score }
+        // Sort by score, then break ties in favor of an exact full-name match so an
+        // exact item (e.g. "butter") outranks longer prefix matches ("butter cultured").
+        results.sort { lhs, rhs in
+            if lhs.score != rhs.score { return lhs.score > rhs.score }
+            let lExact = IngredientLexicon.lookupKey(lhs.item.name) == lookupKey
+            let rExact = IngredientLexicon.lookupKey(rhs.item.name) == lookupKey
+            if lExact != rExact { return lExact }
+            return lhs.item.name < rhs.item.name
+        }
         return results
     }
 

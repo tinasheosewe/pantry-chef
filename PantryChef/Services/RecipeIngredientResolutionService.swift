@@ -429,8 +429,8 @@ final class IngredientCandidateParser: IngredientCandidateParserProtocol {
             let genericFacetKey: PantryFacetKey?
             if item.supports(.variant) {
                 genericFacetKey = .variant
-            } else if item.supports(.base) {
-                genericFacetKey = .base
+            } else if item.supports(.grade) {
+                genericFacetKey = .grade
             } else if item.supports(.form) {
                 genericFacetKey = .form
             } else {

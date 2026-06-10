@@ -91,7 +91,7 @@ struct PantryItem: Identifiable, Codable, Hashable {
         PantryItem(name: "Coconut Aminos", category: .condiments, quantity: 250, unit: .milliliter,
                    catalogItemID: "coconut-aminos", storage: .pantry),
         PantryItem(name: "Vegetable Broth", category: .canned, quantity: 1, unit: .liter,
-                   catalogItemID: "broth", facets: [.init(key: .base, value: "vegetable")], storage: .pantry),
+                   catalogItemID: "broth", facets: [.init(key: .variant, value: "vegetable")], storage: .pantry),
         PantryItem(name: "Salt", category: .spices, quantity: 1, unit: .package, catalogItemID: "salt", storage: .pantry),
         PantryItem(name: "Black Pepper", category: .spices, quantity: 1, unit: .package, catalogItemID: "peppercorn", storage: .pantry),
         PantryItem(name: "Rice", category: .grains, quantity: 2, unit: .kilogram, catalogItemID: "rice", storage: .pantry),

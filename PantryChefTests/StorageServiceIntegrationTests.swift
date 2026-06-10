@@ -193,7 +193,7 @@ final class StorageServiceIntegrationTests: XCTestCase {
             expiryDate: Date().addingTimeInterval(86_400),
             notes: "Keep sealed",
             catalogItemID: "flour",
-            facets: [PantryFacetSelection(key: .variant, value: "all-purpose")],
+            facets: [PantryFacetSelection(key: .form, value: "powder")],
             storage: .pantry,
             freshnessSource: .userProvided
         )
@@ -202,10 +202,10 @@ final class StorageServiceIntegrationTests: XCTestCase {
         let roundTripped = record.toDomain()
 
         XCTAssertEqual(record.facetRecords.count, 1)
-        XCTAssertEqual(record.facetRecords.first?.keyRawValue, PantryFacetKey.variant.rawValue)
-        XCTAssertEqual(record.facetRecords.first?.value, "all-purpose")
+        XCTAssertEqual(record.facetRecords.first?.keyRawValue, PantryFacetKey.form.rawValue)
+        XCTAssertEqual(record.facetRecords.first?.value, "powder")
         XCTAssertEqual(roundTripped.catalogItemID, "flour")
-        XCTAssertEqual(roundTripped.facets, [PantryFacetSelection(key: .variant, value: "all-purpose")])
+        XCTAssertEqual(roundTripped.facets, [PantryFacetSelection(key: .form, value: "powder")])
         XCTAssertEqual(roundTripped.storage, .pantry)
         XCTAssertEqual(roundTripped.freshnessSource, .userProvided)
         XCTAssertEqual(roundTripped.quantityMode, .exact)

@@ -251,10 +251,24 @@ final class RecipeRepository: RecipeCatalogProviding {
     }
 
     private func seedResourceFingerprint(for url: URL) -> String? {
+        // Cached resolutions depend on BOTH the seed recipes and the catalog they
+        // were resolved against, so the fingerprint must cover the catalog too —
+        // otherwise a catalog update silently keeps stale resolutions.
+        return "\(fileFingerprint(url))|catalog:\(catalogFingerprint())"
+    }
+
+    private func fileFingerprint(_ url: URL) -> String {
         let values = try? url.resourceValues(forKeys: [.contentModificationDateKey, .fileSizeKey])
         let modified = values?.contentModificationDate?.timeIntervalSince1970 ?? 0
         let size = values?.fileSize ?? 0
         return "\(modified)-\(size)"
+    }
+
+    private func catalogFingerprint() -> String {
+        guard let url = AppBundleResourceLocator.url(forResource: "catalog", withExtension: "json") else {
+            return "missing"
+        }
+        return fileFingerprint(url)
     }
 
 }

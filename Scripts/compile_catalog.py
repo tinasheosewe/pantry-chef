@@ -7,6 +7,7 @@ import sys
 
 from catalog_lib import save_catalog
 from catalog_source_lib import CATALOG_SOURCE_PATH, apply_post_repair_fixes, compile_source, load_source
+from remodel.enrich import enrich
 
 
 def main() -> int:
@@ -20,6 +21,8 @@ def main() -> int:
     source = load_source()
     compiled = compile_source(source)
     compiled, fix_count = apply_post_repair_fixes(compiled)
+    # Deterministic enrichment (density, allergens, dietary tags, substitutions).
+    compiled = enrich(compiled)
     save_catalog(compiled)
     print(f"Compiled {len(compiled)} items to catalog.json")
     if fix_count:

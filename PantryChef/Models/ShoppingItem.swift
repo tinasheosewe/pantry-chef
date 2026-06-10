@@ -2,14 +2,16 @@ import Foundation
 
 struct ShoppingItem: Identifiable, Codable, Hashable {
     private static let facetDisplayOrder: [PantryFacetKey] = [
+        .color,
         .variant,
+        .grade,
+        .fat,
         .form,
+        .preparation,
         .preservation,
         .processing,
-        .preparation,
         .texture,
-        .concentration,
-        .base,
+        .medium,
     ]
 
     var id: UUID

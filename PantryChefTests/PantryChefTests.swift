@@ -494,14 +494,14 @@ final class PantryItemModelTests: XCTestCase {
             category: .other,
             catalogItemID: "flour",
             facets: [
-                PantryFacetSelection(key: .variant, value: "all-purpose"),
-                PantryFacetSelection(key: .variant, value: "bread"),
-                PantryFacetSelection(key: .base, value: "wheat"),
+                PantryFacetSelection(key: .form, value: "powder"),
+                PantryFacetSelection(key: .form, value: "granulated"),
+                PantryFacetSelection(key: .grade, value: "wheat"),
             ]
         )
 
-        XCTAssertEqual(item.facets, [PantryFacetSelection(key: .variant, value: "all-purpose")])
-        XCTAssertEqual(item.name, "All-purpose Flour")
+        XCTAssertEqual(item.facets, [PantryFacetSelection(key: .form, value: "powder")])
+        XCTAssertEqual(item.name, "Powder Flour")
     }
 
     // MARK: - Expiry Status
@@ -650,7 +650,7 @@ final class PantryIntakeRowDraftTests: XCTestCase {
 
         XCTAssertEqual(draft.selectedItemID, "milk")
         XCTAssertEqual(draft.storage, milk.defaultStorage)
-        XCTAssertEqual(draft.selectedFacetValues[.variant], "whole")
+        XCTAssertEqual(draft.selectedFacetValues[.form], "liquid")
         XCTAssertEqual(draft.unit, milk.suggestedUnit(for: draft.selectedFacets))
         XCTAssertEqual(draft.quantityText, PantryIntakeRowDraft.quantityString(try XCTUnwrap(milk.suggestedQuantity())))
         XCTAssertEqual(draft.estimatedFreshnessWindow, milk.freshnessRange(for: milk.defaultStorage))
@@ -706,10 +706,10 @@ final class PantryIntakeRowDraftTests: XCTestCase {
         let bread = try XCTUnwrap(PantryCatalog.item(id: "bread"))
         draft.selectItem(bread)
 
-        XCTAssertEqual(draft.selectedFacetValues[.form], "sliced")
+        XCTAssertEqual(draft.selectedFacetValues[.preparation], "sliced")
         XCTAssertEqual(draft.unit, bread.suggestedUnit(for: draft.selectedFacets))
 
-        draft.setFacet(.form, value: "whole")
+        draft.setFacet(.form, value: "roll")
 
         XCTAssertEqual(draft.unit, bread.suggestedUnit(for: draft.selectedFacets))
     }
@@ -752,8 +752,7 @@ final class PantryIntakeRowDraftTests: XCTestCase {
         let beef = try XCTUnwrap(PantryCatalog.resolveExact(name: "ground beef"))
         draft.selectItem(beef)
 
-        XCTAssertEqual(draft.selectedItemID, "beef")
-        XCTAssertEqual(draft.selectedFacetValues[.variant], "ground")
+        XCTAssertEqual(draft.selectedItemID, "beef-ground")
         XCTAssertEqual(draft.unit, beef.suggestedUnit(for: draft.selectedFacets))
         XCTAssertEqual(draft.quantityText, PantryIntakeRowDraft.quantityString(try XCTUnwrap(beef.suggestedQuantity())))
     }
@@ -1148,7 +1147,7 @@ final class IngredientMatcherTests: XCTestCase {
                 quantity: 400,
                 unit: .gram,
                 catalogItemID: "tofu",
-                facets: [.init(key: .variant, value: "extra firm")]
+                facets: [.init(key: .texture, value: "extra firm")]
             )
         ]
 
@@ -1177,7 +1176,7 @@ final class IngredientMatcherTests: XCTestCase {
         let tofuSubstitution = substitutions.first { $0.substituteItemID == "tofu" }
 
         XCTAssertNotNil(tofuSubstitution)
-        XCTAssertEqual(tofuSubstitution?.substituteFacets, [.init(key: .variant, value: "extra firm")])
+        XCTAssertEqual(tofuSubstitution?.substituteFacets, [.init(key: .texture, value: "extra firm")])
         XCTAssertFalse(tofuSubstitution?.inPantry ?? true)
     }
 
@@ -1192,7 +1191,7 @@ final class IngredientMatcherTests: XCTestCase {
                 quantity: 400,
                 unit: .gram,
                 catalogItemID: "tofu",
-                facets: [.init(key: .variant, value: "extra firm")]
+                facets: [.init(key: .texture, value: "extra firm")]
             )
         ]
 
@@ -1214,7 +1213,7 @@ final class IngredientMatcherTests: XCTestCase {
                 quantity: 1,
                 unit: .liter,
                 catalogItemID: "broth",
-                facets: [.init(key: .base, value: "vegetable")]
+                facets: [.init(key: .variant, value: "vegetable")]
             )
         ]
 
@@ -1345,7 +1344,7 @@ final class ShoppingGenerationTests: XCTestCase {
         await appState.generateShoppingListFromMealPlan()
 
         XCTAssertEqual(appState.shoppingItems.count, 1)
-        XCTAssertEqual(appState.shoppingItems.first?.catalogItemID, "flour")
+        XCTAssertEqual(appState.shoppingItems.first?.catalogItemID, "all-purpose")
     }
 
     func testGenerateShoppingListFromMealPlanTreatsPresenceOnlyPantryItemAsAvailable() async {
@@ -1625,10 +1624,10 @@ final class ShoppingItemModelTests: XCTestCase {
             quantity: 1,
             unit: .cup,
             quantityMode: .exact,
-            facets: [.init(key: .variant, value: "skim")]
+            facets: [.init(key: .fat, value: "skim")]
         )
 
-        XCTAssertEqual(updated.facets, [.init(key: .variant, value: "skim")])
+        XCTAssertEqual(updated.facets, [.init(key: .fat, value: "skim")])
         XCTAssertEqual(updated.displayName, "Skim Milk")
         XCTAssertEqual(updated.facetSummary, "Skim")
     }
@@ -2165,7 +2164,7 @@ final class AIServiceSubstitutionTests: XCTestCase {
                 quantity: 400,
                 unit: .gram,
                 catalogItemID: "tofu",
-                facets: [.init(key: .variant, value: "extra firm")]
+                facets: [.init(key: .texture, value: "extra firm")]
             )
         ]
 
@@ -3977,8 +3976,8 @@ final class AppStateTests: XCTestCase {
 
         let result = await appState.getRecipeSuggestions()
 
-        XCTAssertEqual(result.first?.recipe.ingredients.first?.catalogItemID, "yogurt")
-        XCTAssertEqual(result.first?.recipe.ingredients.first?.facets, [.init(key: .variant, value: "greek")])
+        XCTAssertEqual(result.first?.recipe.ingredients.first?.catalogItemID, "greek-yogurt")
+        XCTAssertEqual(result.first?.recipe.ingredients.first?.facets, [])
         XCTAssertEqual(ai.suggestRecipesCallCount, 1)
     }
 
@@ -4001,8 +4000,8 @@ final class AppStateTests: XCTestCase {
         let result = await appState.generateRecipe(query: "parfait", preferences: preferences)
         let generatedRecipe = result?.recipe
 
-        XCTAssertEqual(generatedRecipe?.ingredients.first?.catalogItemID, "yogurt")
-        XCTAssertEqual(generatedRecipe?.ingredients.first?.facets, [.init(key: .variant, value: "greek")])
+        XCTAssertEqual(generatedRecipe?.ingredients.first?.catalogItemID, "greek-yogurt")
+        XCTAssertEqual(generatedRecipe?.ingredients.first?.facets, [])
         XCTAssertEqual(ai.generateRecipeCallCount, 1)
         XCTAssertEqual(ai.lastGenerateRecipeQuery, "parfait")
     }
@@ -4067,8 +4066,8 @@ final class AppStateTests: XCTestCase {
 
         let result = await appState.getLeftoverIdeas(ingredients: ["rice"])
 
-        XCTAssertEqual(result.first?.recipe.ingredients.first?.catalogItemID, "rice")
-        XCTAssertEqual(result.first?.recipe.ingredients.first?.facets, [.init(key: .variant, value: "jasmine")])
+        XCTAssertEqual(result.first?.recipe.ingredients.first?.catalogItemID, "jasmine")
+        XCTAssertEqual(result.first?.recipe.ingredients.first?.facets, [])
     }
 
     func testNormalizedAIRecipeAutoResolvesAmbiguousIngredients() async {
@@ -4205,8 +4204,8 @@ final class AppStateTests: XCTestCase {
         let result = await appState.modifyRecipe(makeRecipe(title: "Base", source: .aiGenerated), feedback: "make it lighter")
         let modifiedRecipe = result?.recipe
 
-        XCTAssertEqual(modifiedRecipe?.ingredients.first?.catalogItemID, "rice")
-        XCTAssertEqual(modifiedRecipe?.ingredients.first?.facets, [.init(key: .variant, value: "jasmine")])
+        XCTAssertEqual(modifiedRecipe?.ingredients.first?.catalogItemID, "jasmine")
+        XCTAssertEqual(modifiedRecipe?.ingredients.first?.facets, [])
         XCTAssertEqual(ai.modifyRecipeCallCount, 1)
         XCTAssertEqual(ai.lastModifyFeedback, "make it lighter")
         XCTAssertEqual(ai.lastModifyPantryIngredients, ["Spinach"])
@@ -4881,13 +4880,13 @@ final class PantryBulkAddViewModelTests: XCTestCase {
 
     func testStageSearchEntriesAddsRecognizedItemsAndTracksUnresolvedTerms() {
         let bulk = PantryBulkAddViewModel(preferenceStore: MockPantryItemPreferenceStore())
-        bulk.searchComposerText = "milk, dragonfruit\ncheese"
+        bulk.searchComposerText = "milk, blarghnonsense\ncheese"
 
         let addedCount = bulk.stageSearchEntries()
 
         XCTAssertEqual(addedCount, 2)
         XCTAssertEqual(bulk.stagedRows.count, 2)
-        XCTAssertEqual(bulk.unresolvedTokens, ["dragonfruit"])
+        XCTAssertEqual(bulk.unresolvedTokens, ["blarghnonsense"])
         XCTAssertEqual(bulk.selectedTab, .review)
         XCTAssertTrue(bulk.searchComposerText.isEmpty)
     }
@@ -4904,8 +4903,8 @@ final class PantryBulkAddViewModelTests: XCTestCase {
     func testStageCatalogItemUsesSavedDefaultsWhenPresent() throws {
         let preferenceStore = MockPantryItemPreferenceStore()
         var savedDraft = PantryIntakeRowDraft(itemDefinition: try XCTUnwrap(PantryCatalog.item(id: "bread")))
-        savedDraft.setFacet(.variant, value: "whole wheat")
-        savedDraft.setFacet(.form, value: "sliced")
+        savedDraft.setFacet(.variant, value: "rye")
+        savedDraft.setFacet(.preparation, value: "sliced")
         savedDraft.setQuantityText("3")
         savedDraft.setUnit(.slice)
         savedDraft.setStorage(.refrigerated)
@@ -4919,8 +4918,8 @@ final class PantryBulkAddViewModelTests: XCTestCase {
         bulk.stageCatalogItem(item)
 
         let staged = try XCTUnwrap(bulk.stagedRows.first)
-        XCTAssertEqual(staged.selectedFacetValues[.variant], "whole wheat")
-        XCTAssertEqual(staged.selectedFacetValues[.form], "sliced")
+        XCTAssertEqual(staged.selectedFacetValues[.variant], "rye")
+        XCTAssertEqual(staged.selectedFacetValues[.preparation], "sliced")
         XCTAssertEqual(staged.quantityText, "3")
         XCTAssertEqual(staged.unit, .slice)
         XCTAssertEqual(staged.storage, .refrigerated)
@@ -4935,28 +4934,28 @@ final class PantryBulkAddViewModelTests: XCTestCase {
     func testRemoveDefaultFallsBackToCatalogDefaults() throws {
         let preferenceStore = MockPantryItemPreferenceStore()
         var savedDraft = PantryIntakeRowDraft(itemDefinition: try XCTUnwrap(PantryCatalog.item(id: "bread")))
-        savedDraft.setFacet(.variant, value: "wholemeal")
+        savedDraft.setFacet(.variant, value: "rye")
         preferenceStore.savePreference(try XCTUnwrap(PantryItemDefaultPreference(draft: savedDraft)))
 
         let bulk = PantryBulkAddViewModel(preferenceStore: preferenceStore)
         bulk.removeDefault(for: "bread")
         let draft = bulk.draft(for: try XCTUnwrap(PantryCatalog.item(id: "bread")))
 
-        XCTAssertEqual(draft.selectedFacetValues[.variant], "white")
+        XCTAssertEqual(draft.selectedFacetValues[.preparation], "sliced")
     }
 
     func testMatchesDefaultPreferenceTracksWhenDraftMovesAwayAndBack() throws {
         var draft = PantryIntakeRowDraft(itemDefinition: try XCTUnwrap(PantryCatalog.item(id: "bread")))
-        draft.setFacet(.variant, value: "wholemeal")
-        draft.setFacet(.form, value: "sliced")
+        draft.setFacet(.variant, value: "rye")
+        draft.setFacet(.form, value: "roll")
 
         let savedDefault = try XCTUnwrap(PantryItemDefaultPreference(draft: draft))
         XCTAssertTrue(draft.matchesDefaultPreference(savedDefault))
 
-        draft.setFacet(.form, value: "loaf")
+        draft.setFacet(.form, value: "log")
         XCTAssertFalse(draft.matchesDefaultPreference(savedDefault))
 
-        draft.setFacet(.form, value: "sliced")
+        draft.setFacet(.form, value: "roll")
         XCTAssertTrue(draft.matchesDefaultPreference(savedDefault))
     }
 }
@@ -5310,7 +5309,7 @@ final class ShoppingViewModelTests: XCTestCase {
 
         XCTAssertEqual(appState.pantryItems.count, 1)
         XCTAssertEqual(appState.pantryItems[0].catalogItemID, "garlic")
-        XCTAssertEqual(appState.pantryItems[0].facets, [.init(key: .form, value: "minced")])
+        XCTAssertEqual(appState.pantryItems[0].facets, [.init(key: .preparation, value: "minced")])
     }
 
     func testAddCheckedToPantryMergesIntoExistingMatchingPantryRow() async {
@@ -5397,7 +5396,7 @@ final class ShoppingAddItemViewModelTests: XCTestCase {
         let results = viewModel.searchResults
 
         XCTAssertEqual(results.first?.catalogItemID, "garlic")
-        XCTAssertEqual(results.first?.facets, [.init(key: .form, value: "minced")])
+        XCTAssertEqual(results.first?.facets, [.init(key: .preparation, value: "minced")])
         XCTAssertEqual(results.first?.displayName, "Minced Garlic")
     }
 
@@ -5411,8 +5410,7 @@ final class ShoppingAddItemViewModelTests: XCTestCase {
         XCTAssertEqual(breadResults.count, 1)
         XCTAssertEqual(breadResults.first?.displayName, "Bread")
         XCTAssertEqual(breadResults.first?.facets, [
-            .init(key: .variant, value: "white"),
-            .init(key: .form, value: "sliced")
+            .init(key: .preparation, value: "sliced")
         ])
     }
 
@@ -5422,7 +5420,7 @@ final class ShoppingAddItemViewModelTests: XCTestCase {
             ShoppingCatalogSuggestion(
                 id: "garlic",
                 catalogItemID: "garlic",
-                facets: [.init(key: .form, value: "minced")],
+                facets: [.init(key: .preparation, value: "minced")],
                 displayName: "Garlic",
                 category: .produce
             )
@@ -5433,7 +5431,7 @@ final class ShoppingAddItemViewModelTests: XCTestCase {
         let item = viewModel.buildItem()
 
         XCTAssertEqual(item?.catalogItemID, "garlic")
-        XCTAssertEqual(item?.facets, [.init(key: .form, value: "minced")])
+        XCTAssertEqual(item?.facets, [.init(key: .preparation, value: "minced")])
         XCTAssertEqual(item?.name, "Minced Garlic")
     }
 

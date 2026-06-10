@@ -9,10 +9,50 @@
 - Single-parent facet inheritance is **additive** (children may add facet options, not remove inherited ones).
 - Multi-parent items own a **complete leaf definition**; their `parentIds` are for matching only (facets are not inherited).
 
-Kind vs state rule:
+Kind vs state rule (sharpened — see [catalog-remodel-spec.md](catalog-remodel-spec.md)):
 
-- Kind example: `walnut` is a kind of `nut` → subclass.
-- State example: `chopped` is a state of `walnut` → facet.
+- A variation keeps its own catalog row **only if it earns one**: it carries its own
+  facet palette, its own defaults/freshness, is further sub-varied, or is
+  non-substitutable for its siblings. `walnut` (a distinct kind) → subclass.
+- Otherwise it is a **facet value**. `carolina` barbecue sauce, `2%` milk, `sharp`
+  cheddar, `penne` pasta, `chopped` walnut → facets, not rows.
+
+## Facet taxonomy
+
+Ten governed facet keys (`PantryFacetKey`), split into *narrowing* facets (used to
+pick a descendant during matching) and *state* facets (the same item's condition):
+
+| Key | Kind | Meaning |
+|-----|------|---------|
+| `color` | narrowing | visible color |
+| `variant` | narrowing | named style / cultivar / flavor / region (penne, carolina, verte) |
+| `grade` | narrowing | intensity / strength / diet grade (mild, sharp, hot, reduced sodium) |
+| `fat` | narrowing | dairy fat level (skim, 1%, 2%, whole) |
+| `form` | state | physical / market form (ground, whole, powder, liquid, paste) |
+| `preparation` | state | knife / prep state (sliced, diced, peeled, deveined) |
+| `preservation` | state | how it is kept (fresh, frozen, dried, canned, pickled) |
+| `processing` | state | treatment / cooking (raw, roasted, smoked, marinated) |
+| `texture` | state | consistency (smooth, chunky, creamy, firm) |
+| `medium` | state | packing / cooking liquid (in water, in oil, in brine) |
+
+Rules enforced by `validate_catalog.py`: every value belongs to exactly one key
+(orthogonality), facet keys are from the set above, and no item id is a bare
+state/modifier word. The retired keys `concentration`/`base` were split into
+`grade`/`fat`/`variant` and `medium`/`variant`.
+
+## Enrichment
+
+Compiled items also carry deterministically-derived fields (computed in
+[`Scripts/remodel/enrich.py`](../Scripts/remodel/enrich.py), injected by
+`compile_catalog.py`):
+
+- `gramsPerCup`, `gramsPerPiece` — volume/count ↔ mass conversion.
+- `allergens` — `Allergen` big-9 + sesame, from name/category rules.
+- `dietaryTags` — `DietaryTag` (vegan/vegetarian/gluten-free/…), derived.
+- `swaps` — `CatalogSwap` substitutions (curated + same-family siblings).
+
+These are derived, not authored: they are NOT stored in `catalog.source.json` and
+are regenerated on every compile.
 
 ## Source vs runtime format
 

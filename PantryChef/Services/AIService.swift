@@ -1191,18 +1191,20 @@ final class AIService: AIServiceProtocol {
         - "defaultStorage": how this ingredient is typically stored ("Pantry", "Refrigerated", or "Frozen")
         - "defaultUnit": the most common measurement unit for purchasing this ingredient, or null if "piece" is most natural
         - "facets": an array of attribute dimensions. Each facet has:
-          - "key": one of "variant", "form", "preservation", "processing", "preparation", "texture", "concentration", "base"
+          - "key": one of "color", "variant", "grade", "fat", "form", "preparation", "preservation", "processing", "texture", "medium"
           - "options": an array of common values for that facet
 
         Facet key descriptions:
-        - "variant": sub-types or cultivars (e.g. for milk: whole, skim, 2%; for apple: granny smith, fuji, gala)
-        - "form": physical form (e.g. ground, sliced, diced, whole, fillet, steak)
-        - "preservation": how it's preserved (e.g. fresh, canned, dried, frozen, smoked)
-        - "processing": level of processing (e.g. raw, roasted, blanched, fermented)
-        - "preparation": prep state (e.g. peeled, deveined, deboned, marinated)
-        - "texture": texture characteristics (e.g. creamy, crunchy, smooth, chunky)
-        - "concentration": strength/concentration (e.g. light, regular, double, concentrated, extra virgin)
-        - "base": base ingredient for compound items (e.g. for broth: chicken, beef, vegetable)
+        - "color": visible color (e.g. red, green, white, black)
+        - "variant": named sub-type / cultivar / style / flavor / regional kind (e.g. for pasta: penne, fusilli; for barbecue sauce: carolina, memphis; for apple: fuji, gala)
+        - "grade": intensity / strength / diet grade (e.g. mild, sharp, extra sharp, hot, light, reduced sodium, extra virgin, concentrated)
+        - "fat": dairy fat level (e.g. skim, 1%, 2%, whole, low fat)
+        - "form": physical / market form (e.g. ground, whole, powder, liquid, fillet, steak, paste)
+        - "preparation": knife / prep state (e.g. sliced, diced, chopped, peeled, deveined, trimmed)
+        - "preservation": how it's kept (e.g. fresh, canned, dried, frozen, pickled, cured)
+        - "processing": treatment / cooking (e.g. raw, roasted, smoked, blanched, fermented, marinated)
+        - "texture": texture characteristics (e.g. creamy, crunchy, smooth, chunky, firm)
+        - "medium": packing / cooking liquid (e.g. in water, in oil, in brine, in syrup)
 
         Only include facets that genuinely apply to this ingredient. Most ingredients have 2-4 relevant facets.
         Each facet should have 2-8 common options. Be practical — include options a home cook would actually use.
