@@ -16,17 +16,40 @@ sys.path.insert(0, str(SCRIPT_DIR.parent))
 
 from catalog_lib import load_catalog, normalize_lookup_key, save_catalog, slugify  # noqa: E402
 from catalog_source_lib import flat_to_source, save_source  # noqa: E402
-import remodel.vocab as V  # noqa: E402
 
-# Single-token ids that are really state/modifier words (misleading leftovers).
-BAD_BARE_IDS = (V.COLOR | V.GRADE | V.FAT | V.TEXTURE | V.PREPARATION
-                | set(V.PROCESSING) | set(V.PRESERVATION) | V.FORM
-                | {"baby", "large", "jumbo", "mini", "blend", "small", "medium",
-                   "big", "giant", "whole", "half"})
+
+# Categories whose items are prepared products: a bare `variant` style name there
+# (e.g. "original" barbecue sauce) needs parent context, whereas a bare variant name
+# in a whole-food category (e.g. "almond" under nut) is a genuine kind to keep.
+PREPARED_CATEGORIES = {"Condiments & Sauces", "Beverages", "Alcohol & Spirits", "Snacks"}
+
+
+def _facet_values(cat: list[dict], *, exclude_variant: bool) -> set[str]:
+    values: set[str] = set()
+    for x in cat:
+        for facet in x.get("facets", []):
+            if exclude_variant and facet.get("key") == "variant":
+                continue
+            for option in facet.get("options", []):
+                values.add(normalize_lookup_key(option))
+    return values
+
+
+def _state_modifier_values(cat: list[dict]) -> set[str]:
+    """Modifier vocabulary derived from the catalog itself: every value used under
+    a STATE facet (any key except `variant`, which holds genuine kinds like
+    'ginger'). State words describe a condition and must never be a bare id."""
+    return _facet_values(cat, exclude_variant=True)
 
 
 def repair_ids(cat: list[dict]) -> int:
-    """Rename misleading single-token ids (e.g. 'fresh' -> 'fresh-goji-berry')."""
+    """Rename misleading single-token ids (e.g. 'fresh' -> 'fresh-goji-berry').
+
+    "Misleading" is determined data-driven: a single-token id that is a state
+    modifier word (per the catalog's own facet vocabulary) whose descriptive name
+    slugifies to something else. Ids that already match their name (flour, sauce,
+    clove) slugify back to themselves and are left alone."""
+    state_values = _state_modifier_values(cat)
     existing = {x["id"] for x in cat}
     renames: dict[str, str] = {}
     for x in cat:
@@ -34,7 +57,7 @@ def repair_ids(cat: list[dict]) -> int:
         # malformed ids (spaces, uppercase) are always repaired; bare single-token
         # state-word ids are repaired when they have a descriptive name.
         malformed = (" " in iid) or (iid != iid.lower())
-        bare_state = "-" not in iid and iid in BAD_BARE_IDS
+        bare_state = "-" not in iid and normalize_lookup_key(iid) in state_values
         if not (malformed or bare_state):
             continue
         new = slugify(x["name"])
@@ -80,14 +103,6 @@ def repair_name(name: str) -> str:
     return n
 
 
-# Bare modifier/quality words that must never stand alone as an item name.
-BARE_MODIFIER_NAMES = (V.COLOR | V.GRADE | V.FAT | V.TEXTURE | V.PREPARATION
-                       | set(V.PROCESSING) | set(V.PRESERVATION)
-                       | {"original", "classic", "premium", "deluxe", "signature",
-                          "authentic", "gourmet", "homestyle", "assorted", "mixed",
-                          "regular", "standard", "traditional"})
-
-
 def disambiguate_names(cat: list[dict]) -> int:
     """Rename items whose name collides with another item, using parent context
     (e.g. a tomato-sauce child named 'garlic' -> 'garlic tomato sauce'), so a bare
@@ -95,6 +110,11 @@ def disambiguate_names(cat: list[dict]) -> int:
     Also fixes single items named with a bare modifier word ('original' -> 'original
     barbecue sauce')."""
     by_id = {x["id"]: x for x in cat}
+    # Bare modifier vocabulary derived from the catalog's own facets: state values
+    # are always modifiers; variant values are modifiers only in prepared-product
+    # categories (a style like "original"), not whole-food kinds (almond, walnut).
+    state_vals = _state_modifier_values(cat)
+    variant_vals = _facet_values(cat, exclude_variant=False) - state_vals
     groups: dict[str, list[dict]] = collections.defaultdict(list)
     for x in cat:
         groups[normalize_lookup_key(x["name"])].append(x)
@@ -104,7 +124,10 @@ def disambiguate_names(cat: list[dict]) -> int:
     # bare-modifier single names -> prefix with parent context
     for x in cat:
         nm = normalize_lookup_key(x["name"])
-        if nm not in BARE_MODIFIER_NAMES:
+        if " " in nm:
+            continue
+        is_bare = nm in state_vals or (nm in variant_vals and x.get("category") in PREPARED_CATEGORIES)
+        if not is_bare:
             continue
         parents = x.get("parentIds", [])
         if not parents or parents[0] not in by_id:
@@ -156,10 +179,6 @@ def run(apply: bool) -> int:
 
     stats = collections.Counter()
 
-    # 0. repair misleading single-token ids
-    stats["ids_repaired"] = repair_ids(cat)
-    by_id = {x["id"]: x for x in cat}
-
     # 1. repair names
     for x in cat:
         new = repair_name(x["name"])
@@ -169,6 +188,12 @@ def run(apply: bool) -> int:
 
     # 1b. disambiguate duplicate names using parent context
     stats["names_disambiguated"] = disambiguate_names(cat)
+
+    # 1c. repair misleading single-token ids (after names are finalized, so a
+    #     fixed name like "sweetened applesauce" yields a proper slug)
+    stats["ids_repaired"] = repair_ids(cat)
+    by_id = {x["id"]: x for x in cat}
+    name_keys = {normalize_lookup_key(x["name"]): x["id"] for x in cat}
 
     # 2. per-item alias cleanup: drop self-alias, within-item dup, and alias equal to
     #    ANOTHER item's canonical name.

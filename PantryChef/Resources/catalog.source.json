@@ -3163,7 +3163,8 @@
       "defaultStorage": "Pantry",
       "aliases": [
         "baking powders",
-        "bp"
+        "bp",
+        "raising agent"
       ],
       "facets": [
         {
@@ -3204,7 +3205,8 @@
       "aliases": [
         "baking sodas",
         "bicarbonate of soda",
-        "sodium bicarbonate"
+        "sodium bicarbonate",
+        "bicarb"
       ],
       "facets": [
         {
@@ -4591,9 +4593,11 @@
         },
         {
           "id": "t-bone",
-          "name": "t bone beef",
+          "name": "t-bone steak",
           "aliases": [
-            "beef soup bone"
+            "beef soup bone",
+            "tbone steak",
+            "porterhouse"
           ]
         }
       ]
@@ -9287,9 +9291,6 @@
           "id": "chicken-stock",
           "name": "chicken stock",
           "defaultUnit": "cup",
-          "aliases": [
-            "chicken broth"
-          ],
           "facets": [],
           "defaultSelections": [],
           "freshnessByStorage": {
@@ -10350,7 +10351,7 @@
           "name": "pretzel bun"
         },
         {
-          "id": "slider",
+          "id": "slider-bun",
           "name": "slider bun"
         }
       ]
@@ -11441,7 +11442,7 @@
           ]
         },
         {
-          "id": "gold-cachaca",
+          "id": "gold",
           "name": "gold cachaça",
           "facets": [
             {
@@ -14411,7 +14412,7 @@
               }
             },
             {
-              "id": "giant-celeriac-celeriac-celery",
+              "id": "giant",
               "name": "giant celeriac celery"
             }
           ]
@@ -17090,7 +17091,8 @@
         "ceci",
         "chickpeas",
         "garbanzo bean",
-        "garbanzo beans"
+        "garbanzo beans",
+        "garbanzo"
       ],
       "facets": [
         {
@@ -19060,7 +19062,8 @@
         "chinese parsley",
         "cilantros",
         "coriander leaves",
-        "fresh coriander"
+        "fresh coriander",
+        "coriander leaf"
       ],
       "facets": [
         {
@@ -21319,7 +21322,8 @@
         "corn starch",
         "corn starches",
         "cornflour",
-        "cornflours"
+        "cornflours",
+        "corn flour"
       ],
       "facets": [
         {
@@ -22456,6 +22460,9 @@
         {
           "id": "heavy",
           "name": "heavy cream",
+          "aliases": [
+            "double cream"
+          ],
           "facets": [
             {
               "key": "grade",
@@ -22600,7 +22607,8 @@
         "creamcheese",
         "fromage à la crème",
         "queso crema",
-        "soft cheese"
+        "soft cheese",
+        "neufchatel"
       ],
       "facets": [
         {
@@ -30618,7 +30626,10 @@
         },
         {
           "id": "bread-flour",
-          "name": "bread flour"
+          "name": "bread flour",
+          "aliases": [
+            "strong flour"
+          ]
         },
         {
           "id": "cake-flour",
@@ -39532,8 +39543,7 @@
       "defaultStorage": "Refrigerated",
       "aliases": [
         "lactose free dairy milk",
-        "lactose-free milks",
-        "lactosefree milk"
+        "lactose-free milks"
       ],
       "facets": [
         {
@@ -39569,11 +39579,15 @@
       "children": [
         {
           "id": "1",
-          "name": "1%",
+          "name": "1% milk",
           "aliases": [
             "lactaid",
             "lactaid 1%",
-            "lactose-free 1% milk"
+            "lactose-free 1% milk",
+            "lactosefree milk",
+            "one percent milk",
+            "1 percent milk",
+            "lowfat milk"
           ],
           "facets": [
             {
@@ -42463,9 +42477,6 @@
         {
           "id": "mahi-mahi-steak",
           "name": "mahi steak",
-          "aliases": [
-            "mahi"
-          ],
           "facets": [
             {
               "key": "grade",
@@ -47015,7 +47026,7 @@
           "name": "hazelnut non dairy creamer"
         },
         {
-          "id": "mocha",
+          "id": "mocha-non-dairy-creamer",
           "name": "mocha non dairy creamer"
         }
       ]
@@ -52218,7 +52229,8 @@
       "defaultQuantity": 1.0,
       "defaultStorage": "Refrigerated",
       "aliases": [
-        "parsleys"
+        "parsleys",
+        "italian parsley"
       ],
       "facets": [
         {
@@ -53621,7 +53633,7 @@
           "name": "doughnut peach"
         },
         {
-          "id": "flat",
+          "id": "flat-peach",
           "name": "flat peach"
         },
         {
@@ -54097,7 +54109,8 @@
           "id": "bell",
           "name": "bell pepper",
           "aliases": [
-            "bell peppers"
+            "bell peppers",
+            "sweet pepper"
           ]
         },
         {
@@ -59079,7 +59092,7 @@
           ]
         },
         {
-          "id": "small-prawn",
+          "id": "small",
           "name": "small prawn"
         },
         {
@@ -66406,7 +66419,10 @@
       "defaultUnit": "bunch",
       "defaultQuantity": 1.0,
       "defaultStorage": "Refrigerated",
-      "aliases": [],
+      "aliases": [
+        "green onion",
+        "spring onion"
+      ],
       "facets": [
         {
           "key": "form",
@@ -70655,7 +70671,8 @@
           "name": "light brown sugar",
           "defaultQuantity": 1.0,
           "aliases": [
-            "brown sugar"
+            "brown sugar",
+            "dark brown sugar"
           ],
           "facets": [],
           "defaultSelections": [],
@@ -70675,7 +70692,8 @@
           "name": "powdered sugar",
           "defaultQuantity": 1.0,
           "aliases": [
-            "10x sugar"
+            "10x sugar",
+            "confectioner sugar"
           ],
           "facets": [],
           "defaultSelections": [],
@@ -70698,7 +70716,8 @@
           "id": "white-sugar",
           "name": "white sugar",
           "aliases": [
-            "white cake mix"
+            "white cake mix",
+            "granulated sugar"
           ],
           "facets": [
             {
@@ -79880,11 +79899,11 @@
           "name": "acid whey"
         },
         {
-          "id": "hydrolysate",
+          "id": "hydrolysate-whey",
           "name": "hydrolysate whey"
         },
         {
-          "id": "isolate",
+          "id": "isolate-whey",
           "name": "isolate whey"
         }
       ]
@@ -83096,7 +83115,7 @@
               "name": "cinnamon applesauce"
             },
             {
-              "id": "sweetened",
+              "id": "sweetened-applesauce",
               "name": "sweetened applesauce",
               "facets": [
                 {
@@ -84048,7 +84067,7 @@
             },
             {
               "id": "pineapple-duck-sauce",
-              "name": "pineapple",
+              "name": "pineapple duck sauce",
               "facets": [
                 {
                   "key": "grade",
@@ -84864,7 +84883,8 @@
           "aliases": [
             "soja sauce",
             "soy sauces",
-            "soya sauce"
+            "soya sauce",
+            "shoyu"
           ],
           "facets": [
             {

@@ -70,15 +70,19 @@
   },
   {
     "id": "1",
-    "name": "1%",
+    "name": "1% milk",
     "category": "Dairy & Eggs",
     "defaultUnit": "cup",
     "defaultQuantity": 4.0,
     "defaultStorage": "Refrigerated",
     "aliases": [
+      "1 percent milk",
       "lactaid",
       "lactaid 1%",
-      "lactose-free 1% milk"
+      "lactose-free 1% milk",
+      "lactosefree milk",
+      "lowfat milk",
+      "one percent milk"
     ],
     "facets": [
       {
@@ -125,7 +129,7 @@
     "parentIds": [
       "lactose-free-milk"
     ],
-    "gramsPerCup": 230,
+    "gramsPerCup": 240.0,
     "allergens": [
       "dairy"
     ],
@@ -550,12 +554,12 @@
     ],
     "swaps": [
       {
-        "substituteItemID": "hydrolysate",
+        "substituteItemID": "hydrolysate-whey",
         "ratio": "1:1",
         "notes": "Same family as whey."
       },
       {
-        "substituteItemID": "isolate",
+        "substituteItemID": "isolate-whey",
         "ratio": "1:1",
         "notes": "Same family as whey."
       }
@@ -1782,7 +1786,7 @@
     ],
     "swaps": [
       {
-        "substituteItemID": "gold-cachaca",
+        "substituteItemID": "gold",
         "ratio": "1:1",
         "notes": "Same family as cachaça."
       },
@@ -5904,7 +5908,7 @@
         "notes": "Same family as applesauce."
       },
       {
-        "substituteItemID": "sweetened",
+        "substituteItemID": "sweetened-applesauce",
         "ratio": "1:1",
         "notes": "Same family as applesauce."
       },
@@ -10927,7 +10931,8 @@
     "defaultStorage": "Pantry",
     "aliases": [
       "baking powders",
-      "bp"
+      "bp",
+      "raising agent"
     ],
     "facets": [
       {
@@ -10962,7 +10967,8 @@
     "aliases": [
       "baking sodas",
       "bicarbonate of soda",
-      "sodium bicarbonate"
+      "sodium bicarbonate",
+      "bicarb"
     ],
     "facets": [
       {
@@ -16462,7 +16468,8 @@
     "defaultQuantity": 2,
     "defaultStorage": "Refrigerated",
     "aliases": [
-      "bell peppers"
+      "bell peppers",
+      "sweet pepper"
     ],
     "facets": [
       {
@@ -23546,6 +23553,9 @@
     "defaultUnit": "cup",
     "defaultQuantity": 5.0,
     "defaultStorage": "Pantry",
+    "aliases": [
+      "strong flour"
+    ],
     "facets": [
       {
         "key": "form",
@@ -27877,7 +27887,7 @@
         "notes": "Same family as bun."
       },
       {
-        "substituteItemID": "slider",
+        "substituteItemID": "slider-bun",
         "ratio": "1:1",
         "notes": "Same family as bun."
       }
@@ -32820,7 +32830,7 @@
         "notes": "Same family as non-dairy creamer."
       },
       {
-        "substituteItemID": "mocha",
+        "substituteItemID": "mocha-non-dairy-creamer",
         "ratio": "1:1",
         "notes": "Same family as non-dairy creamer."
       }
@@ -35541,7 +35551,7 @@
     ],
     "swaps": [
       {
-        "substituteItemID": "giant-celeriac-celeriac-celery",
+        "substituteItemID": "giant",
         "ratio": "1:1",
         "notes": "Same family as celeriac celery."
       }
@@ -42055,7 +42065,8 @@
       "ceci",
       "chickpeas",
       "garbanzo bean",
-      "garbanzo beans"
+      "garbanzo beans",
+      "garbanzo"
     ],
     "facets": [
       {
@@ -46271,7 +46282,8 @@
       "chinese parsley",
       "cilantros",
       "coriander leaves",
-      "fresh coriander"
+      "fresh coriander",
+      "coriander leaf"
     ],
     "facets": [
       {
@@ -46508,7 +46520,7 @@
         "notes": "Same family as applesauce."
       },
       {
-        "substituteItemID": "sweetened",
+        "substituteItemID": "sweetened-applesauce",
         "ratio": "1:1",
         "notes": "Same family as applesauce."
       },
@@ -52479,7 +52491,8 @@
       "corn starch",
       "corn starches",
       "cornflour",
-      "cornflours"
+      "cornflours",
+      "corn flour"
     ],
     "facets": [
       {
@@ -54627,7 +54640,8 @@
       "creamcheese",
       "fromage à la crème",
       "queso crema",
-      "soft cheese"
+      "soft cheese",
+      "neufchatel"
     ],
     "facets": [
       {
@@ -62654,7 +62668,7 @@
     ],
     "swaps": [
       {
-        "substituteItemID": "flat",
+        "substituteItemID": "flat-peach",
         "ratio": "1:1",
         "notes": "Same family as peach."
       },
@@ -73361,86 +73375,6 @@
     ]
   },
   {
-    "id": "flat",
-    "name": "flat peach",
-    "category": "Produce",
-    "defaultUnit": "whole",
-    "defaultQuantity": 4,
-    "defaultStorage": "Refrigerated",
-    "facets": [
-      {
-        "key": "form",
-        "options": [
-          "puree",
-          "whole"
-        ]
-      },
-      {
-        "key": "preparation",
-        "options": [
-          "diced",
-          "halved",
-          "peeled",
-          "sliced",
-          "unpeeled"
-        ]
-      },
-      {
-        "key": "preservation",
-        "options": [
-          "canned",
-          "dried",
-          "fresh",
-          "frozen"
-        ]
-      }
-    ],
-    "defaultSelections": [
-      {
-        "key": "form",
-        "value": "whole"
-      }
-    ],
-    "freshnessByStorage": {
-      "Pantry": [
-        2,
-        4
-      ],
-      "Refrigerated": [
-        5,
-        10
-      ],
-      "Frozen": [
-        180,
-        365
-      ]
-    },
-    "parentIds": [
-      "peach"
-    ],
-    "gramsPerCup": 150,
-    "gramsPerPiece": 150.0,
-    "dietaryTags": [
-      "Vegetarian",
-      "Vegan",
-      "Gluten-Free",
-      "Dairy-Free",
-      "Nut-Free"
-    ],
-    "swaps": [
-      {
-        "substituteItemID": "doughnut",
-        "ratio": "1:1",
-        "notes": "Same family as peach."
-      },
-      {
-        "substituteItemID": "peach-yellow",
-        "ratio": "1:1",
-        "notes": "Same family as peach."
-      }
-    ]
-  },
-  {
     "id": "flat-leaf",
     "name": "flat leaf parsley",
     "category": "Spices & Herbs",
@@ -73568,6 +73502,86 @@
         "substituteItemID": "semi-savoy",
         "ratio": "1:1",
         "notes": "Same family as spinach."
+      }
+    ]
+  },
+  {
+    "id": "flat-peach",
+    "name": "flat peach",
+    "category": "Produce",
+    "defaultUnit": "whole",
+    "defaultQuantity": 4,
+    "defaultStorage": "Refrigerated",
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "puree",
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "diced",
+          "halved",
+          "peeled",
+          "sliced",
+          "unpeeled"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "canned",
+          "dried",
+          "fresh",
+          "frozen"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        2,
+        4
+      ],
+      "Refrigerated": [
+        5,
+        10
+      ],
+      "Frozen": [
+        180,
+        365
+      ]
+    },
+    "parentIds": [
+      "peach"
+    ],
+    "gramsPerCup": 150,
+    "gramsPerPiece": 150.0,
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "doughnut",
+        "ratio": "1:1",
+        "notes": "Same family as peach."
+      },
+      {
+        "substituteItemID": "peach-yellow",
+        "ratio": "1:1",
+        "notes": "Same family as peach."
       }
     ]
   },
@@ -76072,7 +76086,7 @@
         "notes": "Same family as non-dairy creamer."
       },
       {
-        "substituteItemID": "mocha",
+        "substituteItemID": "mocha-non-dairy-creamer",
         "ratio": "1:1",
         "notes": "Same family as non-dairy creamer."
       }
@@ -79583,7 +79597,7 @@
     ]
   },
   {
-    "id": "giant-celeriac-celeriac-celery",
+    "id": "giant",
     "name": "giant celeriac celery",
     "category": "Produce",
     "defaultUnit": "whole",
@@ -83644,7 +83658,7 @@
     ]
   },
   {
-    "id": "gold-cachaca",
+    "id": "gold",
     "name": "gold cachaça",
     "category": "Alcohol & Spirits",
     "defaultUnit": "fl oz",
@@ -91935,7 +91949,7 @@
         "notes": "Same family as non-dairy creamer."
       },
       {
-        "substituteItemID": "mocha",
+        "substituteItemID": "mocha-non-dairy-creamer",
         "ratio": "1:1",
         "notes": "Same family as non-dairy creamer."
       }
@@ -92035,6 +92049,9 @@
     "defaultUnit": "cup",
     "defaultQuantity": 1.0,
     "defaultStorage": "Refrigerated",
+    "aliases": [
+      "double cream"
+    ],
     "facets": [
       {
         "key": "fat",
@@ -95924,7 +95941,7 @@
         "notes": "Same family as bun."
       },
       {
-        "substituteItemID": "slider",
+        "substituteItemID": "slider-bun",
         "ratio": "1:1",
         "notes": "Same family as bun."
       }
@@ -96589,7 +96606,7 @@
     ]
   },
   {
-    "id": "hydrolysate",
+    "id": "hydrolysate-whey",
     "name": "hydrolysate whey",
     "category": "Dairy & Eggs",
     "defaultUnit": "oz",
@@ -96702,7 +96719,7 @@
         "notes": "Same family as whey."
       },
       {
-        "substituteItemID": "isolate",
+        "substituteItemID": "isolate-whey",
         "ratio": "1:1",
         "notes": "Same family as whey."
       }
@@ -97828,7 +97845,7 @@
     ]
   },
   {
-    "id": "isolate",
+    "id": "isolate-whey",
     "name": "isolate whey",
     "category": "Dairy & Eggs",
     "defaultUnit": "oz",
@@ -97941,7 +97958,7 @@
         "notes": "Same family as whey."
       },
       {
-        "substituteItemID": "hydrolysate",
+        "substituteItemID": "hydrolysate-whey",
         "ratio": "1:1",
         "notes": "Same family as whey."
       }
@@ -101467,7 +101484,7 @@
         "notes": "Same family as prawn."
       },
       {
-        "substituteItemID": "small-prawn",
+        "substituteItemID": "small",
         "ratio": "1:1",
         "notes": "Same family as prawn."
       }
@@ -104375,7 +104392,7 @@
         "notes": "Same family as prawn."
       },
       {
-        "substituteItemID": "small-prawn",
+        "substituteItemID": "small",
         "ratio": "1:1",
         "notes": "Same family as prawn."
       }
@@ -106323,8 +106340,7 @@
     "defaultStorage": "Refrigerated",
     "aliases": [
       "lactose free dairy milk",
-      "lactose-free milks",
-      "lactosefree milk"
+      "lactose-free milks"
     ],
     "facets": [
       {
@@ -111201,7 +111217,8 @@
     "defaultQuantity": 1.0,
     "defaultStorage": "Pantry",
     "aliases": [
-      "brown sugar"
+      "brown sugar",
+      "dark brown sugar"
     ],
     "facets": [
       {
@@ -119543,7 +119560,7 @@
         "notes": "Same family as prawn."
       },
       {
-        "substituteItemID": "small-prawn",
+        "substituteItemID": "small",
         "ratio": "1:1",
         "notes": "Same family as prawn."
       }
@@ -122214,7 +122231,7 @@
     ]
   },
   {
-    "id": "mocha",
+    "id": "mocha-non-dairy-creamer",
     "name": "mocha non dairy creamer",
     "category": "Dairy & Eggs",
     "defaultUnit": "tbsp",
@@ -138816,7 +138833,8 @@
     "defaultQuantity": 1.0,
     "defaultStorage": "Refrigerated",
     "aliases": [
-      "parsleys"
+      "parsleys",
+      "italian parsley"
     ],
     "facets": [
       {
@@ -141891,7 +141909,7 @@
         "notes": "Same family as peach."
       },
       {
-        "substituteItemID": "flat",
+        "substituteItemID": "flat-peach",
         "ratio": "1:1",
         "notes": "Same family as peach."
       }
@@ -148015,7 +148033,7 @@
   },
   {
     "id": "pineapple-duck-sauce",
-    "name": "pineapple",
+    "name": "pineapple duck sauce",
     "category": "Condiments & Sauces",
     "defaultUnit": "tbsp",
     "defaultQuantity": 2.0,
@@ -148068,8 +148086,6 @@
     ],
     "gramsPerCup": 245,
     "dietaryTags": [
-      "Vegetarian",
-      "Vegan",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -155004,7 +155020,8 @@
     "defaultQuantity": 1.0,
     "defaultStorage": "Pantry",
     "aliases": [
-      "10x sugar"
+      "10x sugar",
+      "confectioner sugar"
     ],
     "facets": [
       {
@@ -155335,7 +155352,7 @@
         "notes": "Same family as bun."
       },
       {
-        "substituteItemID": "slider",
+        "substituteItemID": "slider-bun",
         "ratio": "1:1",
         "notes": "Same family as bun."
       }
@@ -173524,6 +173541,10 @@
     "defaultUnit": "bunch",
     "defaultQuantity": 1.0,
     "defaultStorage": "Refrigerated",
+    "aliases": [
+      "green onion",
+      "spring onion"
+    ],
     "facets": [
       {
         "key": "form",
@@ -179538,7 +179559,7 @@
     ]
   },
   {
-    "id": "slider",
+    "id": "slider-bun",
     "name": "slider bun",
     "category": "Breads & Bakery",
     "defaultUnit": "piece",
@@ -179675,71 +179696,7 @@
     ]
   },
   {
-    "id": "small-curd",
-    "name": "small curd cottage cheese",
-    "category": "Dairy & Eggs",
-    "defaultUnit": "oz",
-    "defaultQuantity": 16.0,
-    "defaultStorage": "Refrigerated",
-    "facets": [
-      {
-        "key": "form",
-        "options": [
-          "whipped"
-        ]
-      },
-      {
-        "key": "processing",
-        "options": [
-          "pasteurized",
-          "raw"
-        ]
-      },
-      {
-        "key": "texture",
-        "options": [
-          "chunky",
-          "creamy"
-        ]
-      }
-    ],
-    "freshnessByStorage": {
-      "Refrigerated": [
-        7,
-        14
-      ],
-      "Frozen": [
-        60,
-        90
-      ]
-    },
-    "parentIds": [
-      "cottage-cheese"
-    ],
-    "gramsPerCup": 230,
-    "allergens": [
-      "dairy"
-    ],
-    "dietaryTags": [
-      "Vegetarian",
-      "Gluten-Free",
-      "Nut-Free"
-    ],
-    "swaps": [
-      {
-        "substituteItemID": "large-curd",
-        "ratio": "1:1",
-        "notes": "Same family as cottage cheese."
-      },
-      {
-        "substituteItemID": "nonfat-cottage-cheese",
-        "ratio": "1:1",
-        "notes": "Same family as cottage cheese."
-      }
-    ]
-  },
-  {
-    "id": "small-prawn",
+    "id": "small",
     "name": "small prawn",
     "category": "Protein",
     "defaultUnit": "lb",
@@ -179831,6 +179788,70 @@
         "substituteItemID": "medium-prawn",
         "ratio": "1:1",
         "notes": "Same family as prawn."
+      }
+    ]
+  },
+  {
+    "id": "small-curd",
+    "name": "small curd cottage cheese",
+    "category": "Dairy & Eggs",
+    "defaultUnit": "oz",
+    "defaultQuantity": 16.0,
+    "defaultStorage": "Refrigerated",
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "whipped"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "pasteurized",
+          "raw"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "chunky",
+          "creamy"
+        ]
+      }
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        7,
+        14
+      ],
+      "Frozen": [
+        60,
+        90
+      ]
+    },
+    "parentIds": [
+      "cottage-cheese"
+    ],
+    "gramsPerCup": 230,
+    "allergens": [
+      "dairy"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Gluten-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "large-curd",
+        "ratio": "1:1",
+        "notes": "Same family as cottage cheese."
+      },
+      {
+        "substituteItemID": "nonfat-cottage-cheese",
+        "ratio": "1:1",
+        "notes": "Same family as cottage cheese."
       }
     ]
   },
@@ -182597,7 +182618,8 @@
     "aliases": [
       "soja sauce",
       "soy sauces",
-      "soya sauce"
+      "soya sauce",
+      "shoyu"
     ],
     "facets": [
       {
@@ -190581,7 +190603,7 @@
     ]
   },
   {
-    "id": "sweetened",
+    "id": "sweetened-applesauce",
     "name": "sweetened applesauce",
     "category": "Canned & Jarred",
     "defaultUnit": "cup",
@@ -191865,13 +191887,14 @@
   },
   {
     "id": "t-bone",
-    "name": "t bone beef",
+    "name": "t-bone steak",
     "category": "Protein",
     "defaultUnit": "lb",
     "defaultQuantity": 1.0,
     "defaultStorage": "Refrigerated",
     "aliases": [
-      "beef soup bone"
+      "beef soup bone",
+      "tbone steak"
     ],
     "facets": [
       {
@@ -201948,7 +201971,7 @@
         "notes": "Same family as applesauce."
       },
       {
-        "substituteItemID": "sweetened",
+        "substituteItemID": "sweetened-applesauce",
         "ratio": "1:1",
         "notes": "Same family as applesauce."
       }
@@ -209831,7 +209854,7 @@
         "notes": "Same family as cachaça."
       },
       {
-        "substituteItemID": "gold-cachaca",
+        "substituteItemID": "gold",
         "ratio": "1:1",
         "notes": "Same family as cachaça."
       }
@@ -210639,6 +210662,7 @@
     "defaultQuantity": 4.0,
     "defaultStorage": "Pantry",
     "aliases": [
+      "granulated sugar",
       "white cake mix"
     ],
     "facets": [

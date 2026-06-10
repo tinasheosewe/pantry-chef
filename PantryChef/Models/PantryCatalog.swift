@@ -499,68 +499,20 @@ enum UserCatalogError: LocalizedError, Equatable {
 }
 
 enum PantryCatalog {
-    /// Universal ingredient modifiers that should be stripped during normalization.
-    /// These are common qualifiers that apply across many ingredient types.
+    /// Cross-cutting qualifiers that should be stripped during normalization but are
+    /// *not* modeled as catalog facets (size, certification, flour grades). The bulk
+    /// of the strip vocabulary is derived from the catalog's own facet options at
+    /// runtime — see `IngredientLexicon.allStripKeys` — so this is only the small,
+    /// bounded seed of modifiers that have no facet representation.
     static let universalModifiers: Set<String> = [
-        // Size
-        "large", "small", "medium",
-        // Preservation
-        "fresh", "dried", "frozen", "canned", "packed",
-        // Preparation
-        "whole", "chopped", "diced", "minced", "sliced", "ground",
-        // State
-        "raw", "cooked", "boneless", "skinless",
-        // Quality
-        "organic", "ripe", "baby",
-        // Fat content
-        "extra", "virgin", "light", "heavy",
-        "low fat", "low-fat", "fat free", "fat-free",
-        "unsalted", "salted",
-        // Flour types
-        "plain", "all purpose", "all-purpose", "self rising", "self-rising", "unbleached",
-        // Texture
-        "fine", "coarse", "firm", "soft", "thin", "thick"
+        "small", "packed", "organic", "heavy",
+        "fat free", "fat-free",
+        "all purpose", "all-purpose", "self rising", "self-rising", "unbleached",
     ]
 
-    /// Universal synonym groups for cross-regional ingredient naming.
-    /// These connect equivalent ingredients that may have different names across regions.
-    static let universalSynonyms: [[String]] = [
-        ["green onion", "scallion", "spring onion"],
-        ["shallot", "french shallot"],
-        ["bell pepper", "capsicum", "sweet pepper"],
-        ["chili pepper", "chilli", "chile", "hot pepper"],
-        ["jalapeno", "jalapeño"],
-        ["cilantro", "coriander", "coriander leaf"],
-        ["parsley", "flat leaf parsley", "italian parsley"],
-        ["cornstarch", "corn starch", "corn flour"],
-        ["potato starch", "potato flour"],
-        ["shrimp", "prawn"],
-        ["heavy cream", "whipping cream", "double cream"],
-        ["sour cream", "crème fraîche"],
-        ["greek yogurt", "greek yoghurt", "strained yogurt"],
-        ["all purpose flour", "plain flour", "ap flour"],
-        ["bread flour", "strong flour"],
-        ["olive oil", "extra virgin olive oil", "evoo"],
-        ["oil", "cooking oil", "neutral oil", "vegetable oil", "canola oil"],
-        ["nut", "nuts", "mixed nuts", "chopped nuts"],
-        ["soy sauce", "shoyu", "tamari"],
-        ["fish sauce", "nam pla"],
-        ["sugar", "granulated sugar", "white sugar"],
-        ["brown sugar", "dark brown sugar", "light brown sugar"],
-        ["powdered sugar", "confectioner sugar", "icing sugar"],
-        ["garbanzo", "chickpea"],
-        ["eggplant", "aubergine"],
-        ["zucchini", "courgette"],
-        ["arugula", "rocket"],
-        ["beet", "beetroot"],
-        ["stock", "broth"],
-        ["chicken stock", "chicken broth"],
-        ["beef stock", "beef broth"],
-        ["vegetable stock", "vegetable broth"],
-        ["baking soda", "bicarbonate of soda", "bicarb"],
-        ["baking powder", "raising agent"],
-        ["cream cheese", "neufchatel"]
-    ]
+    // Cross-regional synonyms (scallion/green onion, zucchini/courgette, …) now live
+    // in the catalog as item aliases — see Scripts/remodel/coverage.py SYNONYM_GROUPS —
+    // so the lexicon derives synonym groups from data instead of a hardcoded list.
 
     // MARK: - Bundle items (immutable)
 

@@ -34,30 +34,52 @@ enum IngredientLexicon {
     }
 
     static func normalizeIngredient(_ name: String) -> String {
-        var normalized = lookupKey(name)
+        let base = lookupKey(name)
+        var stripped = base
 
         // Remove multi-word strip phrases first (few entries)
         for phrase in stripMultiWordPhrases {
-            normalized = normalized.replacingOccurrences(of: phrase, with: " ")
+            stripped = stripped.replacingOccurrences(of: phrase, with: " ")
         }
 
-        // Token-based single-word removal (replaces 2220 regex operations)
-        normalized = normalized
+        // Singularize each token *before* stripping so plural and singular modifier
+        // forms are removed consistently ("flours" and "flour" both → "flour").
+        let kept = stripped
             .split(separator: " ")
-            .filter { !stripWordSet.contains(String($0)) }
-            .joined(separator: " ")
-
-        if normalized.hasSuffix("ies") {
-            normalized = String(normalized.dropLast(3)) + "y"
-        } else if normalized.hasSuffix("oes") {
-            normalized = String(normalized.dropLast(2))
-        } else if normalized.hasSuffix("es") && !normalized.hasSuffix("ses") {
-            normalized = String(normalized.dropLast(2))
-        } else if normalized.hasSuffix("s") && !normalized.hasSuffix("ss") {
-            normalized = String(normalized.dropLast())
+            .map { depluralize(String($0)) }
+            .filter { !stripWordSet.contains($0) }
+        if !kept.isEmpty {
+            return kept.joined(separator: " ")
         }
 
-        return normalized
+        // Everything was a modifier/facet word (e.g. the ingredient is literally
+        // "flour" or "olive oil"). Never collapse a real ingredient to empty — fall
+        // back to its singularized full name.
+        return base.split(separator: " ").map { depluralize(String($0)) }.joined(separator: " ")
+    }
+
+    /// Best-effort English singular form. Guards the endings that are *not* plural
+    /// markers — Latin `-us`/`-is` (couscous, hummus, octopus, asparagus) and `-ss`
+    /// mass nouns (molasses, watercress) — so they are never truncated, and drops
+    /// only a trailing `s` for regular plurals so `apples`→`apple`, `olives`→`olive`
+    /// rather than `appl`/`oliv`.
+    static func depluralize(_ word: String) -> String {
+        guard word.count > 2 else { return word }
+        if word.hasSuffix("us") || word.hasSuffix("is")
+            || word.hasSuffix("ss") || word.hasSuffix("sses") {
+            return word
+        }
+        if word.hasSuffix("ies"), word.count > 4 {
+            return String(word.dropLast(3)) + "y"          // berries -> berry
+        }
+        if word.hasSuffix("ches") || word.hasSuffix("shes")
+            || word.hasSuffix("xes") || word.hasSuffix("zes") || word.hasSuffix("oes") {
+            return String(word.dropLast(2))                // peaches->peach, boxes->box, tomatoes->tomato
+        }
+        if word.hasSuffix("s") {
+            return String(word.dropLast())                 // apples->apple, beans->bean
+        }
+        return word
     }
 
     static func tokenize(_ value: String) -> [String] {
@@ -177,16 +199,13 @@ enum IngredientLexicon {
         allStripKeys.filter { $0.contains(" ") }.sorted { $0.count > $1.count }
     }()
 
-    /// Synonym groups combining universal synonyms with catalog item aliases.
-    /// Universal synonyms are defined in PantryCatalog.universalSynonyms.
-    /// Item aliases create additional synonym groups per catalog item.
+    /// Synonym groups, derived entirely from catalog data: each item's name plus its
+    /// aliases form one group. Cross-regional synonyms are migrated into those aliases
+    /// by the catalog pipeline, so there is no hardcoded synonym list to drift.
     private static let rawSynonymGroups: [[String]] = {
-        var groups = PantryCatalog.universalSynonyms
-        for item in PantryCatalog.allItems {
-            guard !item.aliases.isEmpty else { continue }
-            groups.append([item.name] + item.aliases)
-        }
-        return groups
+        PantryCatalog.allItems
+            .filter { !$0.aliases.isEmpty }
+            .map { [$0.name] + $0.aliases }
     }()
 
     private static let lookupSynonymIndex: [String: Set<String>] = {

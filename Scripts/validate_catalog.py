@@ -334,15 +334,22 @@ def check_facet_entry_collisions(items: list[dict], report: ValidationReport) ->
 
 VALID_FACET_KEYS = {"color", "variant", "grade", "fat", "form", "preparation",
                     "preservation", "processing", "texture", "medium"}
-# ids that must never be bare state/modifier words (misleading leftovers)
-BANNED_BARE_IDS = {
-    "fresh", "dried", "raw", "baby", "large", "jumbo", "mini", "small", "medium",
-    "blend", "coarse", "fine", "creamy", "whipped", "crunchy", "smooth", "chunky",
-    "thick", "thin", "soft", "firm", "sliced", "diced", "brown", "gold", "nonfat",
-    "giant", "whole", "half",
-}
 # values allowed to appear under more than one facet key (genuinely context-dependent)
 ORTHOGONALITY_EXCEPTIONS = {"whole"}
+
+
+def state_modifier_values(items: list[dict]) -> set:
+    """Modifier vocabulary derived from the catalog itself: every value used under
+    a STATE facet (any key except `variant`, which holds genuine kinds). Used to
+    detect bare-state ids/names without a hardcoded word list."""
+    values = set()
+    for item in items:
+        for facet in item.get("facets", []):
+            if facet.get("key") == "variant":
+                continue
+            for option in facet.get("options", []):
+                values.add(normalize_lookup_key(option))
+    return values
 
 
 def check_valid_facet_keys(items: list[dict], report: ValidationReport) -> None:
@@ -367,11 +374,16 @@ def check_facet_orthogonality(items: list[dict], report: ValidationReport) -> No
 
 
 def check_bare_state_ids(items: list[dict], report: ValidationReport) -> None:
+    state_values = state_modifier_values(items)
     for item in items:
         iid = item.get("id", "")
-        if "-" not in iid and iid in BANNED_BARE_IDS:
+        if "-" in iid or normalize_lookup_key(iid) not in state_values:
+            continue
+        # only flag a misleading id — one that disagrees with its own name's slug
+        # (so a real ingredient whose id equals its name is never flagged).
+        if iid != slugify(item.get("name", "")):
             report.add("warning", "bare_state_id",
-                       f"Id {iid!r} is a bare state/modifier word; use a descriptive slug", iid)
+                       f"Id {iid!r} is a bare state word but names {item.get('name')!r}", iid)
 
 
 def check_multi_inheritance_completeness(items: list[dict], report: ValidationReport) -> None:

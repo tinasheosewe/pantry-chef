@@ -18,7 +18,7 @@ from pathlib import Path
 SCRIPT_DIR = Path(__file__).resolve().parent
 sys.path.insert(0, str(SCRIPT_DIR.parent))
 
-from catalog_lib import load_catalog, save_catalog  # noqa: E402
+from catalog_lib import load_catalog, normalize_lookup_key, save_catalog  # noqa: E402
 from catalog_source_lib import flat_to_source, save_source  # noqa: E402
 
 # id -> patch. "name"/"category"/"parentIds" overwrite; "aliases" are added (union).
@@ -59,7 +59,45 @@ CANONICAL_FIXES: dict[str, dict] = {
                "aliases": ["bananas", "ripe banana", "cavendish banana"]},
     "salmon-oily-fish": {"name": "salmon", "category": "Protein", "parentIds": ["oily-fish"],
                          "aliases": ["salmon fillet", "atlantic salmon", "fresh salmon", "salmon fillets"]},
+    "1": {"name": "1% milk", "aliases": ["one percent milk", "1 percent milk", "lowfat milk"]},
+    "t-bone": {"name": "t-bone steak", "aliases": ["t bone steak", "tbone steak", "porterhouse"]},
 }
+
+# Cross-regional synonym groups, migrated out of app code (was
+# PantryCatalog.universalSynonyms) into catalog aliases. Each non-canonical term is
+# added as an alias of the group's canonical item; hygiene later strips any term
+# that collides with a different item's name, so equivalences between distinct
+# items (shrimp/prawn) are handled by substitutions rather than aliasing.
+SYNONYM_GROUPS: list[list[str]] = [
+    ["green onion", "scallion", "spring onion"],
+    ["shallot", "french shallot"],
+    ["bell pepper", "capsicum", "sweet pepper"],
+    ["chili pepper", "chilli", "chile", "hot pepper"],
+    ["jalapeno", "jalapeño"],
+    ["cilantro", "coriander", "coriander leaf"],
+    ["parsley", "flat leaf parsley", "italian parsley"],
+    ["cornstarch", "corn starch", "corn flour"],
+    ["potato starch", "potato flour"],
+    ["heavy cream", "whipping cream", "double cream"],
+    ["sour cream", "crème fraîche"],
+    ["greek yogurt", "greek yoghurt", "strained yogurt"],
+    ["all purpose flour", "plain flour", "ap flour"],
+    ["bread flour", "strong flour"],
+    ["olive oil", "extra virgin olive oil", "evoo"],
+    ["soy sauce", "shoyu"],
+    ["fish sauce", "nam pla"],
+    ["granulated sugar", "white sugar"],
+    ["brown sugar", "dark brown sugar", "light brown sugar"],
+    ["powdered sugar", "confectioner sugar", "icing sugar"],
+    ["eggplant", "aubergine"],
+    ["zucchini", "courgette"],
+    ["arugula", "rocket"],
+    ["beet", "beetroot"],
+    ["baking soda", "bicarbonate of soda", "bicarb"],
+    ["baking powder", "raising agent"],
+    ["cream cheese", "neufchatel"],
+    ["chickpea", "garbanzo"],
+]
 
 # Reparent items (id -> new single parent id). Used to fix mis-parented cuts, e.g.
 # chicken cuts hung under the "chicken meatball" item instead of chicken-the-meat.
@@ -261,6 +299,30 @@ def run(apply: bool) -> int:
         if item and new_parent in by_id:
             item["parentIds"] = [new_parent]
             stats["reparented"] = stats.get("reparented", 0) + 1
+
+    # Migrate cross-regional synonyms into catalog aliases.
+    alias_index: dict[str, str] = {}
+    for x in cat:
+        alias_index.setdefault(normalize_lookup_key(x["name"]), x["id"])
+        for a in (x.get("aliases") or []):
+            alias_index.setdefault(normalize_lookup_key(a), x["id"])
+    for group in SYNONYM_GROUPS:
+        target = next((alias_index[normalize_lookup_key(t)] for t in group
+                       if normalize_lookup_key(t) in alias_index), None)
+        if not target:
+            continue
+        item = by_id[target]
+        existing = {normalize_lookup_key(a) for a in (item.get("aliases") or [])}
+        existing.add(normalize_lookup_key(item["name"]))
+        for term in group:
+            tk = normalize_lookup_key(term)
+            # skip terms that already resolve elsewhere (distinct items handle their
+            # own equivalence via substitutions); only fill genuine name gaps.
+            if tk in existing or alias_index.get(tk) not in (None, target):
+                continue
+            item.setdefault("aliases", []).append(term)
+            existing.add(tk)
+            stats["synonym_aliases_added"] = stats.get("synonym_aliases_added", 0) + 1
 
     print("=== COVERAGE SUMMARY ===")
     for k, v in stats.items():
