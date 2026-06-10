@@ -499,16 +499,10 @@ enum UserCatalogError: LocalizedError, Equatable {
 }
 
 enum PantryCatalog {
-    /// Cross-cutting qualifiers that should be stripped during normalization but are
-    /// *not* modeled as catalog facets (size, certification, flour grades). The bulk
-    /// of the strip vocabulary is derived from the catalog's own facet options at
-    /// runtime — see `IngredientLexicon.allStripKeys` — so this is only the small,
-    /// bounded seed of modifiers that have no facet representation.
-    static let universalModifiers: Set<String> = [
-        "small", "packed", "organic", "heavy",
-        "fat free", "fat-free",
-        "all purpose", "all-purpose", "self rising", "self-rising", "unbleached",
-    ]
+    // The normalization "strip vocabulary" is derived entirely from the catalog's
+    // own facet option values at runtime — see `IngredientLexicon.allStripKeys`.
+    // There is no hardcoded modifier list: a word is a modifier iff the catalog uses
+    // it as a facet value.
 
     // Cross-regional synonyms (scallion/green onion, zucchini/courgette, …) now live
     // in the catalog as item aliases — see Scripts/remodel/coverage.py SYNONYM_GROUPS —

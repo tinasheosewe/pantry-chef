@@ -174,11 +174,11 @@ enum IngredientLexicon {
 
     // MARK: - Catalog-Derived Data
 
-    /// Strip words combining universal modifiers with catalog facet options.
-    /// Universal modifiers are defined in PantryCatalog.universalModifiers.
-    /// Facet options are derived from all catalog items.
+    /// Strip vocabulary derived entirely from the catalog's facet option values: a
+    /// word is a "modifier" to be removed during normalization iff the catalog uses
+    /// it as a facet value somewhere. No hardcoded list — it grows with the data.
     private static let allStripKeys: [String] = {
-        var words = PantryCatalog.universalModifiers
+        var words: Set<String> = []
         for item in PantryCatalog.allItems {
             for facet in item.facets {
                 for option in facet.options {
@@ -186,8 +186,7 @@ enum IngredientLexicon {
                 }
             }
         }
-        let keys = words.map(lookupKey)
-        return keys
+        return words.map(lookupKey)
     }()
 
     private static let stripWordSet: Set<String> = {
