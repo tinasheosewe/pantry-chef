@@ -68,12 +68,9 @@ private struct StockRow: View {
                 .font(Theme.Typography.fact(11)).foregroundStyle(Theme.Palette.warmGraySoft)
         case .perishable(let d, _):
             Text(d).font(Theme.Typography.fact(11)).foregroundStyle(Theme.Palette.warmGraySoft)
-        case .gauge(let level, let label):
-            VStack(alignment: .leading, spacing: 5) {
-                Text(label).font(Theme.Typography.fact(11))
-                    .foregroundStyle(level < 0.25 ? Theme.Palette.ochre : Theme.Palette.warmGraySoft)
-                GaugeBar(level: level).frame(width: 120)
-            }
+        case .staple(let level):
+            Text(level.label).font(Theme.Typography.fact(11))
+                .foregroundStyle(level == .inStock ? Theme.Palette.warmGraySoft : Theme.Palette.ochre)
         }
     }
 
@@ -85,17 +82,3 @@ private struct StockRow: View {
     }
 }
 
-private struct GaugeBar: View {
-    let level: Double
-    var body: some View {
-        GeometryReader { geo in
-            ZStack(alignment: .leading) {
-                Capsule().fill(Theme.Palette.hairline)
-                Capsule()
-                    .fill(level < 0.25 ? Theme.Palette.ochre : Theme.Palette.warmGray)
-                    .frame(width: geo.size.width * min(max(level, 0.04), 1))
-            }
-        }
-        .frame(height: 4)
-    }
-}

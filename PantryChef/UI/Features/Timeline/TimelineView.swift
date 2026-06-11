@@ -10,18 +10,31 @@ struct TimelineView: View {
     /// is shown — keeps previews and standalone use simple.
     var nowContent: (() -> AnyView)?
 
+    @State private var didInitialScroll = false
+
     var body: some View {
-        ScrollView {
-            LazyVStack(alignment: .leading, spacing: 0) {
-                header
-                ForEach(entries) { entry in
-                    row(for: entry)
+        ScrollViewReader { proxy in
+            ScrollView {
+                LazyVStack(alignment: .leading, spacing: 0) {
+                    header
+                    ForEach(entries) { entry in
+                        row(for: entry).id(entry.id)
+                    }
+                }
+                .padding(.top, 8)
+                .padding(.bottom, 90) // room for the floating dock
+            }
+            .background(background)
+            .onAppear {
+                guard !didInitialScroll else { return }
+                didInitialScroll = true
+                // Open anchored at "now": the journal sits above (scroll up), the
+                // future below (scroll down).
+                DispatchQueue.main.async {
+                    proxy.scrollTo(TimelineEntry.now.id, anchor: UnitPoint(x: 0.5, y: 0.12))
                 }
             }
-            .padding(.top, 8)
-            .padding(.bottom, 90) // room for the floating dock
         }
-        .background(background)
     }
 
     @ViewBuilder private func row(for entry: TimelineEntry) -> some View {

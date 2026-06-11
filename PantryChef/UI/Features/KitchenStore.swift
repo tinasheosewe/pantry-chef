@@ -9,8 +9,21 @@ struct StockItem: Identifiable, Equatable {
     enum Section: String { case made = "Made by you", useSoon = "Use soon", have = "In stock", staples = "Staples" }
     enum Measure: Equatable {
         case perishable(detail: String, daysLeft: Int?)   // "300 g", 2
-        case gauge(level: Double, label: String)          // 0.18, "low — on your list"
+        case staple(StapleLevel)                          // presence, not a fake fullness
         case made(detail: String)                         // "3 frozen portions"
+    }
+
+    /// Staples aren't measured by amount (we never know the bottle is "72% full") —
+    /// only by presence, with a low/out flag the user sets at a natural moment.
+    enum StapleLevel: Equatable {
+        case inStock, runningLow, out
+        var label: String {
+            switch self {
+            case .inStock: return "In stock"
+            case .runningLow: return "Running low — on your list"
+            case .out: return "Out"
+            }
+        }
     }
     let id: UUID
     let key: String
@@ -122,11 +135,11 @@ final class KitchenStore {
             StockItem(key: "feta", name: "Feta", plate: plate([.dairy], 7),
                       section: .have, measure: .perishable(detail: "200 g", daysLeft: 18)),
             StockItem(key: "orzo", name: "Orzo", plate: plate([.pasta], 6),
-                      section: .staples, measure: .gauge(level: 0.95, label: "full")),
+                      section: .staples, measure: .staple(.inStock)),
             StockItem(key: "flour", name: "Flour", plate: plate([.bakingSupplies], 11),
-                      section: .staples, measure: .gauge(level: 0.72, label: "plenty")),
+                      section: .staples, measure: .staple(.inStock)),
             StockItem(key: "olive oil", name: "Olive oil", plate: plate([.oils], 8),
-                      section: .staples, measure: .gauge(level: 0.18, label: "low — on your list"))
+                      section: .staples, measure: .staple(.runningLow))
         ]
 
         func req(_ key: String, _ name: String, staple: Bool = false) -> IngredientRequirement {
