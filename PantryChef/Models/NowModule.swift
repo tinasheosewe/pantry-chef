@@ -32,6 +32,8 @@ struct CommittedMeal: Equatable, Sendable {
     let level: MealPrepLevel
     /// "Start by 6:50 to eat at 7:15." — or a reheat note for served meals.
     let logistics: String
+    /// The cookable recipe behind the commitment, when there is one.
+    var dish: Dish?
 }
 
 /// A live cook in progress — the now-module as the cook bar.
@@ -41,6 +43,8 @@ struct CookingProgress: Equatable, Sendable {
     let stepIndex: Int
     let totalSteps: Int
     let timerText: String?
+    /// The dish being cooked, so Resume can reopen the instrument.
+    var dish: Dish?
     var fraction: Double {
         totalSteps > 0 ? Double(stepIndex) / Double(totalSteps) : 0
     }

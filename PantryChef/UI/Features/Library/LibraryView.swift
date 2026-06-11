@@ -8,29 +8,38 @@ struct LibraryView: View {
     var onCook: (Dish) -> Void = { _ in }
     var onCookTogether: ([Dish]) -> Void = { _ in }
 
-    @State private var filter: LibraryFilter = .all
     @State private var showProfile = false
     @State private var selecting = false
     @State private var selectedIDs: Set<UUID> = []
+    @State private var query = ""
 
     private let columns = [GridItem(.flexible(), spacing: 14), GridItem(.flexible(), spacing: 14)]
 
+    private var filter: LibraryFilter { store.libraryFilter }
+
     private var dishes: [Dish] {
         store.library.filter { dish in
+            let passesFilter: Bool
             switch filter {
-            case .all: return true
-            case .ready: return store.readiness(for: dish).isMakeableNow
-            case .under30: return (dish.minutes ?? .max) <= 30
-            case .favorites: return dish.isFavorite
+            case .all: passesFilter = true
+            case .ready: passesFilter = store.readiness(for: dish).isMakeableNow
+            case .under30: passesFilter = (dish.minutes ?? .max) <= 30
+            case .favorites: passesFilter = dish.isFavorite
             }
+            let q = query.trimmingCharacters(in: .whitespaces).lowercased()
+            return passesFilter && (q.isEmpty || dish.name.lowercased().contains(q))
         }
     }
 
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 14) {
+        VStack(spacing: 0) {
+            VStack(alignment: .leading, spacing: 10) {
                 header
+                searchField
                 filterBar
+            }
+            .padding(.horizontal, 20).padding(.top, 6).padding(.bottom, 10)
+            ScrollView {
                 LazyVGrid(columns: columns, spacing: 14) {
                     ForEach(dishes) { dish in
                         LibraryCell(dish: dish,
@@ -38,12 +47,13 @@ struct LibraryView: View {
                                     conflicts: DishInsights.conflicts(dish, with: store.profile),
                                     allergens: DishInsights.allergens(for: dish),
                                     selecting: selecting,
-                                    isSelected: selectedIDs.contains(dish.id))
+                                    isSelected: selectedIDs.contains(dish.id),
+                                    onToggleFavorite: { store.toggleFavorite(dish.id) })
                             .onTapGesture { tap(dish) }
                     }
                 }
+                .padding(.horizontal, 20).padding(.top, 4).padding(.bottom, 96)
             }
-            .padding(.horizontal, 20).padding(.top, 24).padding(.bottom, 96)
         }
         .background(KitchenBackground())
         .safeAreaInset(edge: .bottom) {
@@ -96,12 +106,31 @@ struct LibraryView: View {
         .padding(.horizontal, 20).padding(.vertical, 14).background(.ultraThinMaterial)
     }
 
+    private var searchField: some View {
+        HStack(spacing: 8) {
+            Image(systemName: "magnifyingglass").font(.system(size: 13))
+                .foregroundStyle(Theme.Palette.warmGraySoft)
+            TextField("Search recipes", text: $query)
+                .font(Theme.Typography.fact(14))
+            if !query.isEmpty {
+                Button { query = "" } label: {
+                    Image(systemName: "xmark.circle.fill").font(.system(size: 14))
+                        .foregroundStyle(Theme.Palette.warmGraySoft.opacity(0.6))
+                }
+                .buttonStyle(.plain)
+            }
+        }
+        .padding(.horizontal, 12).padding(.vertical, 9)
+        .background(Capsule().fill(Theme.Palette.creamRaised))
+        .overlay(Capsule().strokeBorder(Theme.Palette.hairline))
+    }
+
     private var filterBar: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 8) {
                 ForEach(LibraryFilter.allCases) { f in
                     let selected = filter == f
-                    Button { withAnimation(.easeOut(duration: 0.2)) { filter = f } } label: {
+                    Button { withAnimation(.easeOut(duration: 0.2)) { store.libraryFilter = f } } label: {
                         Text(label(f)).font(Theme.Typography.fact(12, weight: selected ? .medium : .regular))
                             .foregroundStyle(selected ? Theme.Palette.cream : Theme.Palette.warmGray)
                             .padding(.horizontal, 13).padding(.vertical, 6)
@@ -136,14 +165,22 @@ private struct LibraryCell: View {
     let allergens: [Allergen]
     var selecting = false
     var isSelected = false
+    var onToggleFavorite: () -> Void = {}
 
     var body: some View {
         VStack(spacing: 10) {
             PlateView(composition: dish.plate, size: 70)
                 .overlay(alignment: .topTrailing) {
-                    if dish.isFavorite {
-                        Image(systemName: "heart.fill").font(.system(size: 11)).foregroundStyle(Theme.Palette.paprika)
-                            .padding(5).background(Circle().fill(Theme.Palette.cream)).offset(x: 6, y: -4)
+                    if !selecting {
+                        Button(action: onToggleFavorite) {
+                            Image(systemName: dish.isFavorite ? "heart.fill" : "heart")
+                                .font(.system(size: 12))
+                                .foregroundStyle(dish.isFavorite ? Theme.Palette.paprika : Theme.Palette.warmGraySoft.opacity(0.7))
+                                .padding(5).background(Circle().fill(Theme.Palette.cream))
+                        }
+                        .buttonStyle(.plain)
+                        .offset(x: 8, y: -6)
+                        .accessibilityLabel(dish.isFavorite ? "Unfavorite" : "Favorite")
                     }
                 }
             VStack(spacing: 3) {

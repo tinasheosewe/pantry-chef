@@ -24,10 +24,10 @@ struct StockItem: Identifiable, Equatable {
     }
     let id: UUID
     let key: String
-    let name: String
+    var name: String
     let plate: PlateComposition
-    let section: Section
-    let measure: Measure
+    var section: Section
+    var measure: Measure
 
     init(id: UUID = UUID(), key: String, name: String, plate: PlateComposition,
          section: Section, measure: Measure) {
@@ -53,18 +53,116 @@ final class KitchenStore {
     var stock: [StockItem]
     var library: [Dish]
     var profile = DietaryProfile()
+    var libraryFilter: LibraryFilter = .all
+    var shoppingList: [String] = ["Olive oil", "Salmon", "Miso", "Milk", "Eggs"]
+    /// The fan's current options — the now-module's Open state rebuilds from these.
+    var fanOptions: [FanOption] = []
 
     private let composer = TimelineComposer()
     private let parser = IntakeParser()
+    private let cal = Calendar.current
 
-    /// Generous window so the timeline scrolls deep in both directions rather than
-    /// bouncing at one screen of content.
-    let horizonDays = 45
-    let pastDays = 30
+    /// The timeline window. Starts generous and grows without bound as the user
+    /// scrolls toward either edge — effectively infinite, composed lazily.
+    var horizonDays = 60
+    var pastDays = 45
 
     var timelineEntries: [TimelineEntry] {
         composer.compose(KitchenSnapshot(today: today, horizonDays: horizonDays, pastDays: pastDays,
                                          journal: journal, events: events, whispers: whispers))
+    }
+
+    func extendFuture() { horizonDays += 60 }
+    func extendPast() { pastDays += 60 }
+
+    // MARK: - Actions
+
+    /// Forgiving dish lookup for timeline nodes (exact, then contains either way).
+    func dish(named name: String) -> Dish? {
+        let q = name.lowercased()
+        return library.first { $0.name.lowercased() == q }
+            ?? library.first { $0.name.lowercased().contains(q) || q.contains($0.name.lowercased()) }
+    }
+
+    func toggleFavorite(_ id: UUID) {
+        if let i = library.firstIndex(where: { $0.id == id }) { library[i].isFavorite.toggle() }
+    }
+
+    func planMeal(_ dish: Dish, on date: Date) {
+        let noon = cal.date(bySettingHour: 12, minute: 0, second: 0, of: date) ?? date
+        events.append(DatedEvent(kind: .meal(PlannedMeal(
+            date: noon, name: dish.name, plate: dish.plate, level: .cooked,
+            missingCount: readiness(for: dish).missingCount))))
+    }
+
+    func dismissProposal(_ id: UUID) {
+        events.removeAll { if case .proposal(let p) = $0.kind { return p.id == id } else { return false } }
+    }
+
+    func resetNow() {
+        nowState = .open(options: fanOptions, selected: min(1, max(0, fanOptions.count - 1)))
+    }
+
+    func beginCooking(_ dishes: [Dish], stepIndex: Int, totalSteps: Int) {
+        guard let first = dishes.first else { return }
+        let name = dishes.count > 1 ? "\(dishes.count) dishes together" : first.name
+        nowState = .cooking(CookingProgress(name: name, plate: first.plate,
+                                            stepIndex: stepIndex, totalSteps: totalSteps,
+                                            timerText: nil, dish: first))
+    }
+
+    func finishCooking(_ dishes: [Dish]) {
+        guard let first = dishes.first else { return }
+        let name = dishes.count > 1 ? "Tonight's dishes" : first.name
+        nowState = .cooked(CookedSummary(name: name, plate: first.plate,
+                                         summary: "Cooked — into the fridge. Good for a few days."))
+    }
+
+    // MARK: - Stock & list mutations
+
+    func updateStock(_ item: StockItem) {
+        if let i = stock.firstIndex(where: { $0.id == item.id }) { stock[i] = item }
+    }
+
+    func removeStock(_ id: UUID) { stock.removeAll { $0.id == id } }
+
+    func removeFromList(_ entry: String) { shoppingList.removeAll { $0 == entry } }
+
+    /// Commit a parsed composer phrase into the pantry.
+    func addToStock(_ intake: ParsedIntake) {
+        let name = intake.suggestedName ?? intake.name
+        guard !name.isEmpty else { return }
+        let catalogItem = intake.resolvedItemID.flatMap { PantryCatalog.itemsByID[$0] }
+        let category = catalogItem?.category ?? .other
+        let isStaple = catalogItem.map { $0.resolutionClass == .staple } ?? false
+        let detail = [intake.quantity.map { $0 == $0.rounded() ? String(Int($0)) : String(format: "%.2g", $0) },
+                      intake.unit?.rawValue ?? intake.unrecognizedUnit]
+            .compactMap { $0 }.joined(separator: " ")
+        let seed = UInt64(name.lowercased().utf8.reduce(0) { $0 &+ UInt64($1) } &+ 17)
+        stock.append(StockItem(
+            key: name.lowercased(), name: name,
+            plate: PlateComposition(categories: [category], seed: seed),
+            section: isStaple ? .staples : .have,
+            measure: isStaple ? .staple(.inStock)
+                              : .perishable(detail: detail.isEmpty ? "—" : detail, daysLeft: nil)))
+    }
+
+    func addToList(_ intake: ParsedIntake) {
+        let name = intake.suggestedName ?? intake.name
+        guard !name.isEmpty else { return }
+        shoppingList.append(name.prefix(1).capitalized + name.dropFirst())
+    }
+
+    /// Log a recipe-less meal from composer items (the "just ate" path).
+    func logMeal(_ intakes: [ParsedIntake]) {
+        let names = intakes.map { $0.suggestedName ?? $0.name }.filter { !$0.isEmpty }
+        guard !names.isEmpty else { return }
+        let categories = intakes.compactMap { $0.resolvedItemID.flatMap { PantryCatalog.itemsByID[$0] }?.category }
+        let plate = PlateComposition(categories: categories.isEmpty ? [.other] : categories,
+                                     seed: UInt64(names.joined().utf8.reduce(0) { $0 &+ UInt64($1) } &+ 5))
+        nowState = .cooked(CookedSummary(
+            name: "Tonight: \(names.prefix(3).joined(separator: ", "))",
+            plate: plate, summary: "Logged — \(names.count) item\(names.count == 1 ? "" : "s") from your kitchen."))
     }
 
     /// Live readiness for a dish — the single ReadinessService over current stock.
@@ -143,7 +241,7 @@ final class KitchenStore {
 
         library = [orzo, shakshuka, stirfry, salmon, ragu, greens]
 
-        nowState = .open(options: [
+        let options = [
             FanOption(name: frittata.name, plate: frittata.plate, subtitle: "15 min · 5 of 5 on hand",
                       reason: "The fast pick — fifteen minutes, start to plate.", dish: frittata),
             FanOption(name: orzo.name, plate: orzo.plate, subtitle: "25 min · 6 of 6 on hand",
@@ -151,7 +249,9 @@ final class KitchenStore {
             FanOption(name: ragu.name, plate: ragu.plate, subtitle: "2 h 10 · 7 of 9 on hand",
                       reason: "The ambitious pick — and it freezes beautifully.",
                       readiness: .needs(items: ["wine", "celery"]), dish: ragu)
-        ], selected: 1)
+        ]
+        fanOptions = options
+        nowState = .open(options: options, selected: 1)
 
         journal = [
             JournalItem(date: day(-2), name: "Lamb ragù", plate: plate([.protein, .pasta], 3),
@@ -161,8 +261,8 @@ final class KitchenStore {
         ]
         events = [
             DatedEvent(kind: .expiry(ExpiryMilestone(date: day(3), itemName: "spinach"))),
-            DatedEvent(kind: .meal(PlannedMeal(date: day(8), name: "Miso salmon",
-                                               plate: plate([.protein, .oils], 5), level: .cooked, missingCount: 2))),
+            DatedEvent(kind: .meal(PlannedMeal(date: day(8), name: salmon.name,
+                                               plate: salmon.plate, level: .cooked, missingCount: 2))),
             DatedEvent(kind: .proposal(Proposal(date: day(12), text: "Your list hit 5 items — milk runs out around Monday.")))
         ]
         whispers = [DatedWhisper(date: day(1), text: "ragù waiting · 3 portions")]

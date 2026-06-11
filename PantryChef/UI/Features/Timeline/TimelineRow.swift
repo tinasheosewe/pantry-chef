@@ -6,6 +6,8 @@ struct TimelineRow: View {
     let entry: TimelineEntry
     var onTapDay: (Date) -> Void = { _ in }
     var onOpenMeal: (String) -> Void = { _ in }
+    var onDismissProposal: (UUID) -> Void = { _ in }
+    var onOpenStock: () -> Void = {}
 
     var body: some View {
         HStack(alignment: .top, spacing: 0) {
@@ -32,10 +34,11 @@ struct TimelineRow: View {
     @ViewBuilder private var content: some View {
         switch entry {
         case .now: nowSlot
-        case .journal(let j): journalRow(j).onTapGesture { onOpenMeal(j.name) }
+        case .journal(let j): journalRow(j).contentShape(Rectangle()).onTapGesture { onOpenMeal(j.name) }
         case .meal(let m): mealCard(m).onTapGesture { onOpenMeal(m.name) }
-        case .expiry(let e): expiryRow(e)
-        case .proposal(let p): proposalCard(p)
+        case .expiry(let e): expiryRow(e).contentShape(Rectangle()).onTapGesture { onOpenStock() }
+        case .proposal(let p):
+            proposalCard(p).onTapGesture { onDismissProposal(p.id) }
         case .day(let date, let whisper): dayRow(date, whisper)
         case .fold(_, _, let count): foldRow(count)
         case .week(let start, let count): weekRow(start, count)
@@ -101,15 +104,22 @@ struct TimelineRow: View {
     }
 
     private func proposalCard(_ p: Proposal) -> some View {
-        Text(p.text)
-            .font(Theme.Typography.fact(13)).foregroundStyle(Theme.Palette.ink.opacity(0.85))
-            .padding(.horizontal, 13).padding(.vertical, 11)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .background(
-                RoundedRectangle(cornerRadius: 18, style: .continuous)
-                    .strokeBorder(Theme.Palette.paprika.opacity(0.35),
-                                  style: StrokeStyle(lineWidth: 1.5, dash: [5, 3]))
-            )
+        HStack(alignment: .top, spacing: 8) {
+            Text(p.text)
+                .font(Theme.Typography.fact(13)).foregroundStyle(Theme.Palette.ink.opacity(0.85))
+            Spacer(minLength: 0)
+            Image(systemName: "xmark").font(.system(size: 10, weight: .medium))
+                .foregroundStyle(Theme.Palette.warmGraySoft.opacity(0.7))
+                .padding(.top, 3)
+        }
+        .padding(.horizontal, 13).padding(.vertical, 11)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(
+            RoundedRectangle(cornerRadius: 18, style: .continuous)
+                .strokeBorder(Theme.Palette.paprika.opacity(0.35),
+                              style: StrokeStyle(lineWidth: 1.5, dash: [5, 3]))
+        )
+        .contentShape(Rectangle())
     }
 
     private func dayRow(_ date: Date, _ whisper: String?) -> some View {

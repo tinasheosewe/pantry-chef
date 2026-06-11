@@ -7,8 +7,20 @@ struct RecipeDetailView: View {
     let dish: Dish
     let readiness: Readiness
     var isOnHand: (String) -> Bool = { _ in true }
-    var onCook: () -> Void
+    /// Receives the dish to cook — with any applied swaps baked in.
+    var onCook: (Dish) -> Void
     var onClose: () -> Void
+
+    /// Swaps the user has applied: line id → (key, name) of the substitute.
+    @State private var appliedSwaps: [UUID: SwapChoice] = [:]
+    struct SwapChoice: Equatable { let key: String; let name: String }
+
+    /// The dish as it will actually be cooked, swaps applied.
+    private var effectiveDish: Dish {
+        appliedSwaps.reduce(dish) { partial, entry in
+            partial.applyingSwap(to: entry.key, key: entry.value.key, name: entry.value.name)
+        }
+    }
 
     var body: some View {
         ScrollView {
@@ -79,23 +91,39 @@ struct RecipeDetailView: View {
     }
 
     private func ingredientRow(_ line: RecipeLine) -> some View {
-        let onHand = isOnHand(line.key) || line.isStaple
-        let swaps = onHand ? [] : DishInsights.swaps(forKey: line.key)
+        let applied = appliedSwaps[line.id]
+        let onHand = applied != nil || isOnHand(line.key) || line.isStaple
+        let swaps = (onHand || applied != nil) ? [] : DishInsights.swaps(forKey: line.key)
         return VStack(alignment: .leading, spacing: 4) {
             HStack(spacing: 10) {
                 Image(systemName: onHand ? "checkmark.circle.fill" : "circle")
                     .font(.system(size: 15))
                     .foregroundStyle(onHand ? Theme.Palette.sage : Theme.Palette.warmGraySoft.opacity(0.5))
                 Text(line.display).font(Theme.Typography.fact(14)).foregroundStyle(Theme.Palette.ink)
+                    .strikethrough(applied != nil, color: Theme.Palette.warmGraySoft)
                 if let grams = UnitConversion.gramHint(for: line) {
                     Text(grams).font(Theme.Typography.fact(11)).foregroundStyle(Theme.Palette.warmGraySoft)
                 }
                 Spacer()
                 if !onHand && !line.isStaple { Text("need").font(Theme.Typography.fact(11)).foregroundStyle(Theme.Palette.ochre) }
             }
-            if let swap = swaps.first {
-                Text("swap: \(swap.name)\(swap.notes.map { " — \($0)" } ?? "")")
-                    .font(Theme.Typography.fact(11)).foregroundStyle(Theme.Palette.sage).padding(.leading, 25)
+            if let applied {
+                Button {
+                    withAnimation { appliedSwaps[line.id] = nil }
+                } label: {
+                    Label("using \(applied.name) — tap to undo", systemImage: "arrow.uturn.backward")
+                        .font(Theme.Typography.fact(11)).foregroundStyle(Theme.Palette.sage).padding(.leading, 25)
+                }
+                .buttonStyle(.plain)
+            } else if let swap = swaps.first {
+                Button {
+                    withAnimation { appliedSwaps[line.id] = SwapChoice(key: swap.key, name: swap.name) }
+                } label: {
+                    Label("swap: \(swap.name)\(swap.notes.map { " — \($0)" } ?? "")", systemImage: "arrow.2.squarepath")
+                        .font(Theme.Typography.fact(11)).foregroundStyle(Theme.Palette.sage)
+                        .multilineTextAlignment(.leading).padding(.leading, 25)
+                }
+                .buttonStyle(.plain)
             }
         }
         .padding(.vertical, 9)
@@ -123,7 +151,7 @@ struct RecipeDetailView: View {
     }
 
     private var cookBar: some View {
-        PaprikaButton(title: "Cook", action: onCook)
+        PaprikaButton(title: "Cook") { onCook(effectiveDish) }
             .frame(maxWidth: .infinity)
             .padding(.horizontal, 20).padding(.vertical, 14)
             .background(.ultraThinMaterial)

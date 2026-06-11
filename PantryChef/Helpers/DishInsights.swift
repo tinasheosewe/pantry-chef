@@ -21,12 +21,13 @@ enum DishInsights {
         allergens(for: dish).filter { profile.avoided.contains($0) }
     }
 
-    /// Substitutions for an ingredient, resolved to readable names + notes.
-    static func swaps(forKey key: String) -> [(name: String, notes: String?)] {
+    /// Substitutions for an ingredient, resolved to a pantry key + readable name +
+    /// notes — the key is what readiness/gathering match against.
+    static func swaps(forKey key: String) -> [(key: String, name: String, notes: String?)] {
         guard let item = PantryCatalog.resolveExact(name: key) else { return [] }
         return item.swaps.compactMap { swap in
             guard let target = PantryCatalog.itemsByID[swap.substituteItemID] else { return nil }
-            return (target.name, swap.notes)
+            return (IngredientLexicon.lookupKey(target.name), target.name, swap.notes)
         }
     }
 }

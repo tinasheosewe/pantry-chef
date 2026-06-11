@@ -56,8 +56,12 @@ struct NowModuleView: View {
         }
         .padding(16).frame(maxWidth: .infinity).glassCard()
         .overlay(alignment: .bottomTrailing) {
-            actionRow(secondary: "Change", primary: meal.level.verb,
-                      secondaryAction: onChange, primaryAction: { if case .committed(let m) = state { onCook(.init(name: m.name, plate: m.plate, subtitle: "", reason: "", level: m.level)) } })
+            actionRow(secondary: "Change", primary: "View",
+                      secondaryAction: onChange,
+                      primaryAction: {
+                          onCook(FanOption(name: meal.name, plate: meal.plate, subtitle: "",
+                                           reason: "", level: meal.level, dish: meal.dish))
+                      })
                 .padding(14)
         }
     }

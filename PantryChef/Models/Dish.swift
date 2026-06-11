@@ -42,7 +42,7 @@ struct Dish: Identifiable, Equatable, Sendable {
     let plate: PlateComposition
     let time: String
     let isYours: Bool
-    let isFavorite: Bool
+    var isFavorite: Bool
     let ingredients: [RecipeLine]
     let steps: [CookStep]
 
@@ -55,6 +55,19 @@ struct Dish: Identifiable, Equatable, Sendable {
     }
 
     var requirements: [IngredientRequirement] { ingredients.map(\.requirement) }
+
+    /// This dish with one ingredient line swapped for a substitute (the cook flow
+    /// then gathers the substitute instead).
+    func applyingSwap(to lineID: UUID, key: String, name newName: String) -> Dish {
+        var lines = ingredients
+        if let i = lines.firstIndex(where: { $0.id == lineID }) {
+            let old = lines[i]
+            lines[i] = RecipeLine(id: old.id, key: key, amount: old.amount,
+                                  name: newName, isStaple: old.isStaple)
+        }
+        return Dish(id: id, name: name, plate: plate, time: time, isYours: isYours,
+                    isFavorite: isFavorite, ingredients: lines, steps: steps)
+    }
 
     /// Total time in minutes, parsed from the display string ("25 min", "2 h 10").
     var minutes: Int? {

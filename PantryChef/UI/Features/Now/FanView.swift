@@ -96,7 +96,7 @@ struct FanView: View {
             }
             .buttonStyle(.plain)
             Spacer()
-            PaprikaButton(title: option.level.verb) { onCook(option) }
+            PaprikaButton(title: "View") { onCook(option) }
         }
         .overlay(Divider().background(Theme.Palette.hairline), alignment: .top)
         .padding(.top, 11)

@@ -1,16 +1,23 @@
 import SwiftUI
+import UIKit
 
 /// The composer (spec §13): one bar, living cards. Typed phrases parse live and
 /// crystallize into cards above the bar; the parser never rejects input. Staged
-/// cards are editable (amount/unit/storage/name) and removable, and unresolved
-/// names are kept as custom items.
+/// cards are editable and removable; the batch goes to Stock, the list, or
+/// tonight's meal log.
 struct ComposerView: View {
     var store: KitchenStore
     var onDismiss: () -> Void = {}
 
+    /// Where the staged batch lands on commit.
+    enum Destination: String, CaseIterable {
+        case stock = "Stock", list = "List", meal = "Tonight's meal"
+    }
+
     @State private var text = ""
     @State private var staged: [ParsedIntake] = []
     @State private var editing: EditTarget?
+    @State private var destination: Destination = .stock
     @FocusState private var focused: Bool
 
     private struct EditTarget: Identifiable { let id: Int }
@@ -22,10 +29,14 @@ struct ComposerView: View {
     var body: some View {
         VStack(spacing: 0) {
             grabber
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Add anything").font(Theme.Typography.dish(22)).foregroundStyle(Theme.Palette.ink)
+                destinationChips
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.horizontal, 20).padding(.top, 12).padding(.bottom, 6)
             ScrollView {
                 VStack(alignment: .leading, spacing: 10) {
-                    Text("Add anything").font(Theme.Typography.dish(22)).foregroundStyle(Theme.Palette.ink)
-                        .padding(.bottom, 2)
                     ForEach(Array(staged.enumerated()), id: \.offset) { index, item in
                         IntakeCard(item: item,
                                    onRemove: { remove(index) },
@@ -35,7 +46,7 @@ struct ComposerView: View {
                     if let preview { IntakeCard(item: preview, isPreview: true) }
                     if staged.isEmpty && preview == nil { doorways }
                 }
-                .padding(20)
+                .padding(.horizontal, 20).padding(.top, 8).padding(.bottom, 20)
             }
             if !staged.isEmpty { commitBar }
         }
@@ -45,6 +56,22 @@ struct ComposerView: View {
             if staged.indices.contains(target.id) {
                 ComposerItemEditor(item: bindingFor(target.id), onDone: { editing = nil })
                     .presentationDetents([.medium])
+            }
+        }
+    }
+
+    private var destinationChips: some View {
+        HStack(spacing: 8) {
+            ForEach(Destination.allCases, id: \.rawValue) { dest in
+                let selected = destination == dest
+                Button { withAnimation(.easeOut(duration: 0.15)) { destination = dest } } label: {
+                    Text(dest.rawValue).font(Theme.Typography.fact(12))
+                        .foregroundStyle(selected ? Theme.Palette.cream : Theme.Palette.warmGray)
+                        .padding(.horizontal, 12).padding(.vertical, 6)
+                        .background(Capsule().fill(selected ? Theme.Palette.ink : Color.clear))
+                        .overlay(Capsule().strokeBorder(Theme.Palette.hairline, lineWidth: selected ? 0 : 1))
+                }
+                .buttonStyle(.plain)
             }
         }
     }
@@ -76,32 +103,69 @@ struct ComposerView: View {
 
     private var doorways: some View {
         VStack(spacing: 0) {
-            doorway("Log tonight's meal", "fork.knife")
+            doorway("Log tonight's meal", "fork.knife") {
+                withAnimation { destination = .meal }
+            }
             Divider().background(Theme.Palette.hairline)
-            doorway("Add to the list", "cart")
+            doorway("Add to the list", "cart") {
+                withAnimation { destination = .list }
+            }
             Divider().background(Theme.Palette.hairline)
-            doorway("Paste a recipe link or text", "link")
+            doorway("Paste from the clipboard", "doc.on.clipboard") {
+                if let pasted = UIPasteboard.general.string {
+                    text = pasted
+                }
+            }
         }
         .padding(.horizontal, 4)
     }
 
-    private func doorway(_ title: String, _ icon: String) -> some View {
-        HStack(spacing: 10) {
-            Image(systemName: icon).font(.system(size: 15)).foregroundStyle(Theme.Palette.warmGray).frame(width: 22)
-            Text(title).font(Theme.Typography.fact(13)).foregroundStyle(Theme.Palette.ink)
-            Spacer()
+    private func doorway(_ title: String, _ icon: String, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            HStack(spacing: 10) {
+                Image(systemName: icon).font(.system(size: 15)).foregroundStyle(Theme.Palette.warmGray).frame(width: 22)
+                Text(title).font(Theme.Typography.fact(13)).foregroundStyle(Theme.Palette.ink)
+                Spacer()
+            }
+            .padding(.vertical, 11)
+            .contentShape(Rectangle())
         }
-        .padding(.vertical, 11)
+        .buttonStyle(.plain)
     }
 
     private var commitBar: some View {
         HStack {
-            Text("Everything goes to Stock").font(Theme.Typography.fact(11)).foregroundStyle(Theme.Palette.warmGraySoft)
+            Text(destinationHint).font(Theme.Typography.fact(11)).foregroundStyle(Theme.Palette.warmGraySoft)
             Spacer()
-            PaprikaButton(title: "Add \(staged.count) to Stock") { onDismiss() }
+            PaprikaButton(title: commitTitle, action: commit)
         }
         .padding(.horizontal, 20).padding(.vertical, 14)
         .background(.ultraThinMaterial)
+    }
+
+    private var destinationHint: String {
+        switch destination {
+        case .stock: return "Everything goes to Stock"
+        case .list: return "Everything joins your list"
+        case .meal: return "Logged as what you ate tonight"
+        }
+    }
+
+    private var commitTitle: String {
+        switch destination {
+        case .stock: return "Add \(staged.count) to Stock"
+        case .list: return "Add \(staged.count) to the list"
+        case .meal: return "Log tonight's meal"
+        }
+    }
+
+    private func commit() {
+        switch destination {
+        case .stock: staged.forEach { store.addToStock($0) }
+        case .list: staged.forEach { store.addToList($0) }
+        case .meal: store.logMeal(staged)
+        }
+        onDismiss()
     }
 
     private func commitCurrent() {

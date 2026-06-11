@@ -8,6 +8,8 @@ import SwiftUI
 struct CookFlowView: View {
     let dishes: [Dish]
     var isOnHand: (String) -> Bool = { _ in true }
+    /// Reports live progress (step index, total) so the now-module can mirror it.
+    var onStep: (Int, Int) -> Void = { _, _ in }
     var onDone: () -> Void
     var onClose: () -> Void
 
@@ -15,6 +17,9 @@ struct CookFlowView: View {
     @State private var phase: Phase = .gathering
     @State private var gathered: Set<UUID> = []
     @State private var step = 0
+    @State private var timerRemaining: Int?
+    @State private var timerRunning = false
+    private let tick = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
 
     private var isMulti: Bool { dishes.count > 1 }
     private var allLines: [RecipeLine] { dishes.flatMap(\.ingredients) }
@@ -35,6 +40,16 @@ struct CookFlowView: View {
         .padding(22)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .background(KitchenBackground())
+        .onChange(of: step) {
+            timerRemaining = nil
+            timerRunning = false
+            onStep(step, schedule.count)
+        }
+        .onChange(of: phase) { if phase == .cooking { onStep(step, schedule.count) } }
+        .onReceive(tick) { _ in
+            guard timerRunning, let r = timerRemaining else { return }
+            if r > 1 { timerRemaining = r - 1 } else { timerRemaining = 0; timerRunning = false }
+        }
     }
 
     private var header: some View {
@@ -151,11 +166,27 @@ struct CookFlowView: View {
     }
 
     private func timer(_ seconds: Int) -> some View {
-        HStack(spacing: 14) {
-            Text(format(seconds)).font(Theme.Typography.numeral(46)).foregroundStyle(Theme.Palette.ink)
-            Text("Start").font(Theme.Typography.fact(12)).foregroundStyle(Theme.Palette.paprika)
-                .padding(.horizontal, 16).padding(.vertical, 7)
-                .overlay(Capsule().strokeBorder(Theme.Palette.paprika, lineWidth: 1.5))
+        let shown = timerRemaining ?? seconds
+        let finished = timerRemaining == 0
+        return HStack(spacing: 14) {
+            Text(format(shown)).font(Theme.Typography.numeral(46))
+                .foregroundStyle(finished ? Theme.Palette.sage : Theme.Palette.ink)
+                .contentTransition(.numericText(countsDown: true))
+                .animation(.default, value: shown)
+            Button {
+                if finished { timerRemaining = seconds; timerRunning = true; return }
+                if timerRemaining == nil { timerRemaining = seconds }
+                timerRunning.toggle()
+            } label: {
+                Text(finished ? "Again" : (timerRunning ? "Pause" : (timerRemaining == nil ? "Start" : "Resume")))
+                    .font(Theme.Typography.fact(12)).foregroundStyle(Theme.Palette.paprika)
+                    .padding(.horizontal, 16).padding(.vertical, 7)
+                    .overlay(Capsule().strokeBorder(Theme.Palette.paprika, lineWidth: 1.5))
+            }
+            .buttonStyle(.plain)
+            if finished {
+                Text("done!").font(Theme.Typography.fact(12)).foregroundStyle(Theme.Palette.sage)
+            }
         }
     }
 
