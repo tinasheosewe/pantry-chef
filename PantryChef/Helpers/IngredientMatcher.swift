@@ -129,10 +129,6 @@ enum IngredientMatcher {
     }
 
     private static func pantryContains(ingredient: Ingredient, pantry: [PantryItem], index: PantryIndex) -> Bool {
-        if ShoppingListPolicy.isImplicitlyAvailable(named: ingredient.rawName) {
-            return true
-        }
-
         if let catalogItemID = ingredient.catalogItemID {
             let catalogIDs = PantryCatalog.matchingCatalogItemIDs(
                 for: catalogItemID,
