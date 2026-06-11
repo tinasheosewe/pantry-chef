@@ -52,6 +52,7 @@ final class KitchenStore {
     var whispers: [DatedWhisper]
     var stock: [StockItem]
     var library: [Dish]
+    var profile = DietaryProfile()
 
     private let composer = TimelineComposer()
     private let parser = IntakeParser()
@@ -87,6 +88,7 @@ final class KitchenStore {
         // Cookable dishes — ingredients + steps so Cook never sends you to the pantry.
         let orzo = Dish(
             name: "Spinach & feta orzo", plate: plate([.produce, .dairy, .pasta], 1), time: "25 min",
+            isFavorite: true,
             ingredients: [
                 line("baby spinach", "300 g", "Baby spinach"),
                 line("feta", "200 g", "Feta"),
@@ -108,6 +110,7 @@ final class KitchenStore {
                     CookStep("Make wells, crack in the eggs, cover and cook until just set.", timerSeconds: 480)])
         let stirfry = Dish(
             name: "Tuesday stir-fry", plate: plate([.produce, .protein], 14), time: "20 min", isYours: true,
+            isFavorite: true,
             ingredients: [line("baby spinach", "200 g", "Spinach"), line("feta", "100 g", "Feta")],
             steps: [CookStep("Get the pan smoking hot, then go fast.")])
         let salmon = Dish(

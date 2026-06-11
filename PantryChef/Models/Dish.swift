@@ -42,14 +42,27 @@ struct Dish: Identifiable, Equatable, Sendable {
     let plate: PlateComposition
     let time: String
     let isYours: Bool
+    let isFavorite: Bool
     let ingredients: [RecipeLine]
     let steps: [CookStep]
 
     init(id: UUID = UUID(), name: String, plate: PlateComposition, time: String,
-         isYours: Bool = false, ingredients: [RecipeLine], steps: [CookStep] = []) {
+         isYours: Bool = false, isFavorite: Bool = false,
+         ingredients: [RecipeLine], steps: [CookStep] = []) {
         self.id = id; self.name = name; self.plate = plate; self.time = time
-        self.isYours = isYours; self.ingredients = ingredients; self.steps = steps
+        self.isYours = isYours; self.isFavorite = isFavorite
+        self.ingredients = ingredients; self.steps = steps
     }
 
     var requirements: [IngredientRequirement] { ingredients.map(\.requirement) }
+
+    /// Total time in minutes, parsed from the display string ("25 min", "2 h 10").
+    var minutes: Int? {
+        let numbers = time.lowercased().split(whereSeparator: { !$0.isNumber }).compactMap { Int($0) }
+        if time.lowercased().contains("h") {
+            guard let hours = numbers.first else { return nil }
+            return hours * 60 + (numbers.count > 1 ? numbers[1] : 0)
+        }
+        return numbers.first
+    }
 }
