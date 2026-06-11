@@ -21,7 +21,10 @@ struct RedesignRootView: View {
     @State private var store = KitchenStore()
     @State private var showComposer = false
     @State private var detailDish: Dish?
-    @State private var cookingDish: Dish?
+    @State private var cookSession: CookSession?
+
+    /// One run of the cook instrument — a single dish, or several cooked together.
+    struct CookSession: Identifiable { let id = UUID(); let dishes: [Dish] }
 
     var body: some View {
         ZStack(alignment: .bottom) {
@@ -42,22 +45,25 @@ struct RedesignRootView: View {
                 dish: dish,
                 readiness: store.readiness(for: dish),
                 isOnHand: { store.onHand($0) },
-                onCook: { cookingDish = dish },
+                onCook: { cookSession = CookSession(dishes: [dish]) },
                 onClose: { detailDish = nil }
             )
         }
-        .fullScreenCover(item: $cookingDish) { dish in
+        .fullScreenCover(item: $cookSession) { session in
             CookFlowView(
-                dish: dish,
+                dishes: session.dishes,
                 isOnHand: { store.onHand($0) },
                 onDone: {
-                    store.nowState = .cooked(CookedSummary(
-                        name: dish.name, plate: dish.plate,
-                        summary: "Cooked — 2 servings into the fridge. Good for 3 days."))
-                    cookingDish = nil
+                    if let dish = session.dishes.first {
+                        store.nowState = .cooked(CookedSummary(
+                            name: session.dishes.count > 1 ? "Tonight's dishes" : dish.name,
+                            plate: dish.plate,
+                            summary: "Cooked — into the fridge. Good for a few days."))
+                    }
+                    cookSession = nil
                     detailDish = nil
                 },
-                onClose: { cookingDish = nil }
+                onClose: { cookSession = nil }
             )
         }
     }
@@ -71,7 +77,11 @@ struct RedesignRootView: View {
                 nowContent: { AnyView(NowModuleView(state: nowBinding, onCook: { detailDish = $0.dish })) }
             )
         case .library:
-            LibraryView(store: store, onCook: { dish in detailDish = dish })
+            LibraryView(
+                store: store,
+                onCook: { dish in detailDish = dish },
+                onCookTogether: { dishes in cookSession = CookSession(dishes: dishes) }
+            )
         case .stock:
             StockView(store: store)
         }

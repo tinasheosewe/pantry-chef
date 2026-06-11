@@ -1,11 +1,12 @@
 import SwiftUI
 
-/// Cook mode (spec §2, §5). Opens on **mise en place** — gather every ingredient,
-/// checking each off (which doubles as pantry reconciliation) — then runs the
-/// recipe's real steps. No more running to the pantry mid-step. Stays in the
-/// app's warm light; the plate anchors, the timer is the hero numeral.
+/// Cook mode (spec §2, §5) — one surface that scales from a single recipe to
+/// several cooked together. Opens on **mise en place** (gather everything, tapping
+/// each off = reconciliation), then runs the steps; for multiple dishes the
+/// MultiCookScheduler interleaves them so all the pots get going. Warm light, the
+/// plate anchors, the timer is the hero.
 struct CookFlowView: View {
-    let dish: Dish
+    let dishes: [Dish]
     var isOnHand: (String) -> Bool = { _ in true }
     var onDone: () -> Void
     var onClose: () -> Void
@@ -14,6 +15,14 @@ struct CookFlowView: View {
     @State private var phase: Phase = .gathering
     @State private var gathered: Set<UUID> = []
     @State private var step = 0
+
+    private var isMulti: Bool { dishes.count > 1 }
+    private var allLines: [RecipeLine] { dishes.flatMap(\.ingredients) }
+    private var schedule: [ScheduledStep] {
+        isMulti
+            ? MultiCookScheduler.schedule(dishes)
+            : (dishes.first.map { d in d.steps.map { ScheduledStep(dishName: d.name, plate: d.plate, step: $0) } } ?? [])
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -30,12 +39,12 @@ struct CookFlowView: View {
 
     private var header: some View {
         HStack(spacing: 10) {
-            PlateView(composition: dish.plate, size: 30)
-            Text(dish.name).font(Theme.Typography.dish(14)).foregroundStyle(Theme.Palette.warmGray)
+            if let plate = dishes.first?.plate { PlateView(composition: plate, size: 30) }
+            Text(isMulti ? "\(dishes.count) dishes together" : (dishes.first?.name ?? ""))
+                .font(Theme.Typography.dish(14)).foregroundStyle(Theme.Palette.warmGray)
             Spacer()
             Button(action: onClose) {
-                Image(systemName: "xmark").font(.system(size: 15, weight: .medium))
-                    .foregroundStyle(Theme.Palette.warmGray)
+                Image(systemName: "xmark").font(.system(size: 15, weight: .medium)).foregroundStyle(Theme.Palette.warmGray)
             }
         }
     }
@@ -50,10 +59,17 @@ struct CookFlowView: View {
                 .foregroundStyle(Theme.Palette.warmGraySoft).padding(.top, 3)
 
             ScrollView {
-                VStack(spacing: 0) {
-                    ForEach(dish.ingredients) { line in
-                        gatherRow(line)
-                        if line.id != dish.ingredients.last?.id { Divider().background(Theme.Palette.hairline) }
+                VStack(alignment: .leading, spacing: 0) {
+                    ForEach(dishes) { dish in
+                        if isMulti {
+                            Text(dish.name.uppercased()).font(Theme.Typography.eyebrow)
+                                .tracking(Theme.Metric.eyebrowTracking).foregroundStyle(Theme.Palette.warmGraySoft)
+                                .padding(.top, 14).padding(.bottom, 2)
+                        }
+                        ForEach(dish.ingredients) { line in
+                            gatherRow(line)
+                            if line.id != dish.ingredients.last?.id { Divider().background(Theme.Palette.hairline) }
+                        }
                     }
                 }
                 .padding(.vertical, 4)
@@ -61,7 +77,7 @@ struct CookFlowView: View {
             .padding(.top, 14)
 
             HStack {
-                Text("\(gathered.count) of \(dish.ingredients.count) ready")
+                Text("\(gathered.count) of \(allLines.count) ready")
                     .font(Theme.Typography.fact(12)).foregroundStyle(Theme.Palette.warmGraySoft)
                 Spacer()
                 PaprikaButton(title: "Start cooking") {
@@ -84,12 +100,10 @@ struct CookFlowView: View {
                                           lineWidth: 1.5).frame(width: 22, height: 22)
                     if isGathered {
                         Circle().fill(Theme.Palette.sage).frame(width: 22, height: 22)
-                        Image(systemName: "checkmark").font(.system(size: 11, weight: .bold))
-                            .foregroundStyle(Theme.Palette.cream)
+                        Image(systemName: "checkmark").font(.system(size: 11, weight: .bold)).foregroundStyle(Theme.Palette.cream)
                     }
                 }
-                Text(line.display).font(Theme.Typography.fact(14))
-                    .foregroundStyle(Theme.Palette.ink)
+                Text(line.display).font(Theme.Typography.fact(14)).foregroundStyle(Theme.Palette.ink)
                     .strikethrough(isGathered, color: Theme.Palette.warmGraySoft)
                 Spacer()
                 if !onHand && !line.isStaple {
@@ -106,22 +120,31 @@ struct CookFlowView: View {
     private var cooking: some View {
         VStack(alignment: .leading, spacing: 0) {
             progress.padding(.top, 16)
-            Text(currentStep.instruction)
+            if isMulti, let current = currentStep {
+                HStack(spacing: 8) {
+                    PlateView(composition: current.plate, size: 22)
+                    Text(current.dishName).font(Theme.Typography.fact(12, weight: .medium)).foregroundStyle(Theme.Palette.paprika)
+                }
+                .padding(.top, 18)
+            }
+            Text(currentStep?.step.instruction ?? "")
                 .font(Theme.Typography.fact(22)).foregroundStyle(Theme.Palette.ink)
-                .lineSpacing(5).padding(.top, 26)
-            if let seconds = currentStep.timerSeconds {
-                timer(seconds).padding(.top, 28)
+                .lineSpacing(5).padding(.top, isMulti ? 12 : 26)
+            if let seconds = currentStep?.step.timerSeconds {
+                timer(seconds).padding(.top, 26)
             }
             Spacer()
             controls
         }
     }
 
-    private var currentStep: CookStep { dish.steps[min(step, max(dish.steps.count - 1, 0))] }
+    private var currentStep: ScheduledStep? {
+        schedule.indices.contains(step) ? schedule[step] : schedule.last
+    }
 
     private var progress: some View {
         HStack(spacing: 4) {
-            ForEach(dish.steps.indices, id: \.self) { i in
+            ForEach(schedule.indices, id: \.self) { i in
                 Capsule().fill(i <= step ? Theme.Palette.paprika : Theme.Palette.hairline).frame(height: 4)
             }
         }
@@ -148,14 +171,12 @@ struct CookFlowView: View {
                 .overlay(Circle().strokeBorder(Theme.Palette.paprika.opacity(0.4)))
                 .frame(width: 44, height: 44)
             Spacer()
-            PaprikaButton(title: step < dish.steps.count - 1 ? "Next" : "Done") {
-                if step < dish.steps.count - 1 { step += 1 } else { onDone() }
+            PaprikaButton(title: step < schedule.count - 1 ? "Next" : "Done") {
+                if step < schedule.count - 1 { step += 1 } else { onDone() }
             }
         }
         .buttonStyle(.plain)
     }
 
-    private func format(_ seconds: Int) -> String {
-        String(format: "%02d:%02d", seconds / 60, seconds % 60)
-    }
+    private func format(_ seconds: Int) -> String { String(format: "%02d:%02d", seconds / 60, seconds % 60) }
 }

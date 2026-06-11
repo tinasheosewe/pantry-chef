@@ -17,6 +17,7 @@
 		1848D7221ABD09AC3AA2A45A /* LibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 353D73D6645D3DD2DDEC4808 /* LibraryView.swift */; };
 		1A02128F14E66EA369360FDF /* GlassCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1676611A3A7F82D7BAC3B20E /* GlassCard.swift */; };
 		1AA2B9C2A703EC39FFBB5F2D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1EF496256762582121574373 /* Assets.xcassets */; };
+		1C7BCAA9BE6690F58BB991BE /* MultiCookSchedulerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 553DC74533E9AC0CDF04F69A /* MultiCookSchedulerTests.swift */; };
 		1CE718C0191821123FF258A3 /* StorageServiceIntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E2364793F34BF75678EDA72 /* StorageServiceIntegrationTests.swift */; };
 		1DEE6BC61EB7DFAD55FD8C7B /* RecipeDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3510AFA34EEE626883353C8 /* RecipeDetailView.swift */; };
 		1F5082E6B4C28A73EE0ED54C /* ResolutionClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = E22F264FE9DA944655852EB8 /* ResolutionClass.swift */; };
@@ -44,6 +45,7 @@
 		4CA332DA2C92C1ED2A30D846 /* StepTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA7710DAEA864CA8E70D8332 /* StepTask.swift */; };
 		4EE220109F2FDCAA2FFB63E6 /* StockView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45E7B9238FFCA86D187E2420 /* StockView.swift */; };
 		59E7344CE47BB5BDC9272C27 /* StorageService.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3D174F06F17C2D1BFB041DA /* StorageService.swift */; };
+		5A71CB0FBFDF5EDA80BD964A /* MultiCookScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8241073BA3C1CE75DE6558C5 /* MultiCookScheduler.swift */; };
 		5BF2AF91CDFFE66AD222B691 /* ItemCertainty.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34FBDF3045F807228F2ED54C /* ItemCertainty.swift */; };
 		62E0F6FCD8C0B8E58B18A185 /* CookFlowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52C9664BC03D8B5DE7127A5D /* CookFlowView.swift */; };
 		64F2B5992FF1EB74F106E85D /* TelemetryReporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A16DF6ABA8E8C73E7BB93F32 /* TelemetryReporter.swift */; };
@@ -167,6 +169,7 @@
 		4847B23D0DA66AC6F8967869 /* MultiRecipeScheduler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiRecipeScheduler.swift; sourceTree = "<group>"; };
 		4CA6FC524D07D4BD4347B74B /* SearchEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchEngineTests.swift; sourceTree = "<group>"; };
 		52C9664BC03D8B5DE7127A5D /* CookFlowView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CookFlowView.swift; sourceTree = "<group>"; };
+		553DC74533E9AC0CDF04F69A /* MultiCookSchedulerTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MultiCookSchedulerTests.swift; sourceTree = "<group>"; };
 		59485E1388AA5B4BFC221609 /* output_audio_buffer_cleared.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = output_audio_buffer_cleared.json; sourceTree = "<group>"; };
 		5FF94D344E15CC2935F5283B /* RealtimeService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealtimeService.swift; sourceTree = "<group>"; };
 		62F4E42A0869501AB92F81F2 /* input_audio_transcription_completed_sparse_usage.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_audio_transcription_completed_sparse_usage.json; sourceTree = "<group>"; };
@@ -180,6 +183,7 @@
 		7B787E014C9195434E932C7E /* TimelineComposer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TimelineComposer.swift; sourceTree = "<group>"; };
 		7DA1BF81A96A4A7C8DEDFB4E /* ComposerView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ComposerView.swift; sourceTree = "<group>"; };
 		7F29F5EA69B2D7B7044AB0B9 /* TimelineRow.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TimelineRow.swift; sourceTree = "<group>"; };
+		8241073BA3C1CE75DE6558C5 /* MultiCookScheduler.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MultiCookScheduler.swift; sourceTree = "<group>"; };
 		877E52465510E708BA84311A /* input_audio_transcription_completed_multilingual.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_audio_transcription_completed_multilingual.json; sourceTree = "<group>"; };
 		896275EB19EF8D062E8C4CF2 /* RecipeIngredientResolutionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeIngredientResolutionTests.swift; sourceTree = "<group>"; };
 		8B4D57647D30ABDB98AC89E0 /* SentryCrashReporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SentryCrashReporter.swift; sourceTree = "<group>"; };
@@ -344,6 +348,7 @@
 				97F769A09EF6DC426A57DC8B /* IntakeParserTests.swift */,
 				3FBEE574ACB02A73EEEDC07D /* TestSupport.swift */,
 				C93C8FDEB9C5D988F3270738 /* UnitConversionTests.swift */,
+				553DC74533E9AC0CDF04F69A /* MultiCookSchedulerTests.swift */,
 			);
 			path = PantryChefTests;
 			sourceTree = "<group>";
@@ -557,6 +562,7 @@
 				7B787E014C9195434E932C7E /* TimelineComposer.swift */,
 				A2182BF9EFCF19CC499891FD /* ReadinessService.swift */,
 				C66E3CD688A4E06B59D5056F /* IntakeParser.swift */,
+				8241073BA3C1CE75DE6558C5 /* MultiCookScheduler.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -811,6 +817,7 @@
 				44F4D56B2FC32BBD2D8208BB /* DishInsights.swift in Sources */,
 				1DEE6BC61EB7DFAD55FD8C7B /* RecipeDetailView.swift in Sources */,
 				B7BB7022389EF56649883E6E /* UnitConversion.swift in Sources */,
+				5A71CB0FBFDF5EDA80BD964A /* MultiCookScheduler.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -843,6 +850,7 @@
 				C51CF5B24EFE5ADF522D187E /* IntakeParserTests.swift in Sources */,
 				C4BBB3F729DB218D2B5A8A36 /* TestSupport.swift in Sources */,
 				104B58671438C133ED21624A /* UnitConversionTests.swift in Sources */,
+				1C7BCAA9BE6690F58BB991BE /* MultiCookSchedulerTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -6,9 +6,12 @@ import SwiftUI
 struct LibraryView: View {
     var store: KitchenStore
     var onCook: (Dish) -> Void = { _ in }
+    var onCookTogether: ([Dish]) -> Void = { _ in }
 
     @State private var filter: LibraryFilter = .all
     @State private var showProfile = false
+    @State private var selecting = false
+    @State private var selectedIDs: Set<UUID> = []
 
     private let columns = [GridItem(.flexible(), spacing: 14), GridItem(.flexible(), spacing: 14)]
 
@@ -33,14 +36,19 @@ struct LibraryView: View {
                         LibraryCell(dish: dish,
                                     readiness: store.readiness(for: dish),
                                     conflicts: DishInsights.conflicts(dish, with: store.profile),
-                                    allergens: DishInsights.allergens(for: dish))
-                            .onTapGesture { onCook(dish) }
+                                    allergens: DishInsights.allergens(for: dish),
+                                    selecting: selecting,
+                                    isSelected: selectedIDs.contains(dish.id))
+                            .onTapGesture { tap(dish) }
                     }
                 }
             }
             .padding(.horizontal, 20).padding(.top, 24).padding(.bottom, 96)
         }
         .background(KitchenBackground())
+        .safeAreaInset(edge: .bottom) {
+            if selecting && !selectedIDs.isEmpty { cookTogetherBar }
+        }
         .sheet(isPresented: $showProfile) {
             ProfileEditorView(profile: Binding(get: { store.profile }, set: { store.profile = $0 }))
                 .presentationDetents([.medium])
@@ -51,12 +59,41 @@ struct LibraryView: View {
         HStack(alignment: .firstTextBaseline) {
             Text("Library").font(Theme.Typography.dish(26)).foregroundStyle(Theme.Palette.ink)
             Spacer()
+            Button {
+                withAnimation { selecting.toggle(); selectedIDs = [] }
+            } label: {
+                Text(selecting ? "Cancel" : "Cook together").font(Theme.Typography.fact(12, weight: .medium))
+                    .foregroundStyle(selecting ? Theme.Palette.ochre : Theme.Palette.paprika)
+            }
+            .buttonStyle(.plain)
             Button { showProfile = true } label: {
                 Image(systemName: store.profile.isEmpty ? "person.crop.circle" : "person.crop.circle.badge.checkmark")
                     .font(.system(size: 20)).foregroundStyle(store.profile.isEmpty ? Theme.Palette.warmGraySoft : Theme.Palette.sage)
             }
+            .buttonStyle(.plain).padding(.leading, 12)
             .accessibilityLabel("Dietary profile")
         }
+    }
+
+    private func tap(_ dish: Dish) {
+        if selecting {
+            if selectedIDs.contains(dish.id) { selectedIDs.remove(dish.id) } else { selectedIDs.insert(dish.id) }
+        } else {
+            onCook(dish)
+        }
+    }
+
+    private var cookTogetherBar: some View {
+        HStack {
+            Text("\(selectedIDs.count) selected").font(Theme.Typography.fact(12)).foregroundStyle(Theme.Palette.warmGraySoft)
+            Spacer()
+            PaprikaButton(title: "Cook \(selectedIDs.count) together") {
+                let chosen = store.library.filter { selectedIDs.contains($0.id) }
+                selecting = false; selectedIDs = []
+                onCookTogether(chosen)
+            }
+        }
+        .padding(.horizontal, 20).padding(.vertical, 14).background(.ultraThinMaterial)
     }
 
     private var filterBar: some View {
@@ -97,6 +134,8 @@ private struct LibraryCell: View {
     let readiness: Readiness
     let conflicts: [Allergen]
     let allergens: [Allergen]
+    var selecting = false
+    var isSelected = false
 
     var body: some View {
         VStack(spacing: 10) {
@@ -117,6 +156,22 @@ private struct LibraryCell: View {
         .frame(maxWidth: .infinity)
         .padding(.vertical, 14).padding(.horizontal, 8)
         .glassCard(cornerRadius: 20)
+        .overlay {
+            if selecting {
+                RoundedRectangle(cornerRadius: 20, style: .continuous)
+                    .strokeBorder(isSelected ? Theme.Palette.paprika : Theme.Palette.hairline,
+                                  lineWidth: isSelected ? 2 : 1)
+            }
+        }
+        .overlay(alignment: .topLeading) {
+            if selecting {
+                Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
+                    .font(.system(size: 18))
+                    .foregroundStyle(isSelected ? Theme.Palette.paprika : Theme.Palette.warmGraySoft.opacity(0.6))
+                    .padding(8)
+            }
+        }
+        .opacity(selecting && !isSelected ? 0.7 : 1)
     }
 
     @ViewBuilder private var statusLine: some View {
