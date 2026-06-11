@@ -474,6 +474,23 @@ Resolution pipeline — fully on-device; AI is an enhancer, never a dependency:
 8. **Migration** — Home/MealPlan VMs → Timeline; Pantry/Shopping/PreparedDish VMs → Stock;
    route old deep links; remove the Kitchen segmented control.
 
+### Build status — 2026-06-10 (branch `redesign-kitchen-timeline`)
+
+**The redesign runs on the simulator** as the app root (behind `RedesignFlags`,
+default on; legacy `ContentView` one flag away), on a seeded `KitchenStore` driving
+every surface through the pure engines. Builds clean; 55 redesign tests green.
+
+- ✅ Confidence model — `ResolutionClass`/classifier, `ConfidenceEngine`, `ItemCertainty`, `KitchenConfig`.
+- ✅ Visual foundation — `Theme`, procedural `PlateView`+renderer, `GlassCard`, `Dock`.
+- ✅ Timeline — pure `TimelineComposer` (fold/whisper/week policy), spine ruler, rows.
+- ✅ Now-module — `ReadinessService`, 4-state machine, `FanView`.
+- ✅ Parser — no-regex `IntakeParser` (anchored slots over the catalog engine).
+- ✅ Runnable wiring — `KitchenStore`, `RedesignRootView`, Library/Stock/Composer/Cook screens.
+- ⏳ Remaining (see task "Production wiring"): real SwiftData persistence in place of
+  sample data; `MealEventService` + `ReservationLedger` + decrement-by-class; deferred
+  UI (Explore sheet, rescue/sparks variants, day-unfurl planning, assemblages);
+  `VoiceCopy` templates; motion/gesture polish.
+
 ## 15. Implementation architecture (SOLID, data-driven, no regex, no hardcodes)
 
 **Governing rule: code contains mechanism only.** Domain knowledge (words, units, shelf
