@@ -118,6 +118,21 @@ final class TimelineComposerTests: XCTestCase {
         XCTAssertEqual(tokens(entries), ["J(Ragù)", "J(Shakshuka)", "NOW"])
     }
 
+    func testPastRulerFoldsQuietDaysAndPlacesJournal() {
+        let j3 = JournalItem(date: day(-3), name: "Ragù", plate: .init(categories: [.protein], seed: 1), level: .cooked)
+        let j1 = JournalItem(date: day(-1), name: "Shakshuka", plate: .init(categories: [.protein], seed: 2), level: .cooked)
+        let snap = KitchenSnapshot(today: today, horizonDays: 0, pastDays: 4, journal: [j1, j3])
+        // -4 silent (bare), -3 journal, -2 silent (bare), -1 journal, then now.
+        XCTAssertEqual(tokens(composer.compose(snap)),
+                       ["DAY(-4)", "J(Ragù)", "DAY(-2)", "J(Shakshuka)", "NOW"])
+    }
+
+    func testPastRulerFoldsLongQuietRun() {
+        let snap = KitchenSnapshot(today: today, horizonDays: 0, pastDays: 5, journal: [])
+        // 5 silent past days collapse into one fold, oldest first.
+        XCTAssertEqual(tokens(composer.compose(snap)), ["FOLD(5@-5)", "NOW"])
+    }
+
     // MARK: - Week markers
 
     func testWeekMarkerAtBoundaryCarriesPlannedCount() {

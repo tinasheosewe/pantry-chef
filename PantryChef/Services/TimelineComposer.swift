@@ -18,17 +18,54 @@ struct TimelineComposer {
         let todayStart = calendar.startOfDay(for: snapshot.today)
         var out: [TimelineEntry] = []
 
-        // Past — only what actually happened, oldest first.
-        out += snapshot.journal
-            .filter { calendar.startOfDay(for: $0.date) < todayStart }
-            .sorted { $0.date < $1.date }
-            .map(TimelineEntry.journal)
+        // Past — a backward ruler when a window is set, else just the journal record.
+        if snapshot.pastDays > 0 {
+            out += composePast(snapshot, todayStart: todayStart)
+        } else {
+            out += snapshot.journal
+                .filter { calendar.startOfDay(for: $0.date) < todayStart }
+                .sorted { $0.date < $1.date }
+                .map(TimelineEntry.journal)
+        }
 
         // Now — the anchor; its content is the now-module's job.
         out.append(.now)
 
         // Future — the woven ruler.
         out += composeFuture(snapshot, todayStart: todayStart)
+        return out
+    }
+
+    /// The backward ruler: journal entries on their days, quiet runs folded, oldest
+    /// first. No week markers (a "nothing planned" marker reads wrong in the past).
+    private func composePast(_ snapshot: KitchenSnapshot, todayStart: Date) -> [TimelineEntry] {
+        let journalByDay = Dictionary(grouping: snapshot.journal.filter {
+            calendar.startOfDay(for: $0.date) < todayStart
+        }) { calendar.startOfDay(for: $0.date) }
+
+        var out: [TimelineEntry] = []
+        var silentRun: [Date] = []
+        func flush() {
+            switch silentRun.count {
+            case 0: break
+            case 1: out.append(.day(date: silentRun[0], whisper: nil))
+            default: out.append(.fold(start: silentRun.first!, end: silentRun.last!, dayCount: silentRun.count))
+            }
+            silentRun.removeAll(keepingCapacity: true)
+        }
+
+        for offset in stride(from: -snapshot.pastDays, through: -1, by: 1) {
+            guard let day = calendar.date(byAdding: .day, value: offset, to: todayStart) else { continue }
+            let dayStart = calendar.startOfDay(for: day)
+            let items = (journalByDay[dayStart] ?? []).sorted { $0.date < $1.date }
+            if !items.isEmpty {
+                flush()
+                out += items.map(TimelineEntry.journal)
+            } else {
+                silentRun.append(dayStart)
+            }
+        }
+        flush()
         return out
     }
 

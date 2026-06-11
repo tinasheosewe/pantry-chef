@@ -97,6 +97,9 @@ struct DatedEvent: Identifiable, Equatable, Sendable {
 struct KitchenSnapshot: Equatable, Sendable {
     let today: Date
     var horizonDays: Int = 21
+    /// How many days of past ruler to render. 0 = journal entries only (record),
+    /// > 0 = a backward ruler so the timeline scrolls into the past too.
+    var pastDays: Int = 0
     var journal: [JournalItem] = []
     var events: [DatedEvent] = []
     var whispers: [DatedWhisper] = []

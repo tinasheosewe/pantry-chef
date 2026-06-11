@@ -57,8 +57,13 @@ final class KitchenStore {
     private let composer = TimelineComposer()
     private let parser = IntakeParser()
 
+    /// Generous window so the timeline scrolls deep in both directions rather than
+    /// bouncing at one screen of content.
+    let horizonDays = 45
+    let pastDays = 30
+
     var timelineEntries: [TimelineEntry] {
-        composer.compose(KitchenSnapshot(today: today, horizonDays: 21,
+        composer.compose(KitchenSnapshot(today: today, horizonDays: horizonDays, pastDays: pastDays,
                                          journal: journal, events: events, whispers: whispers))
     }
 
