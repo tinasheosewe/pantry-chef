@@ -20,6 +20,7 @@ struct KitchenBackground: View {
 struct RedesignRootView: View {
     @State private var store = KitchenStore()
     @State private var showComposer = false
+    @State private var detailDish: Dish?
     @State private var cookingDish: Dish?
 
     var body: some View {
@@ -36,6 +37,15 @@ struct RedesignRootView: View {
             ComposerView(store: store, onDismiss: { showComposer = false })
                 .presentationDetents([.medium, .large])
         }
+        .fullScreenCover(item: $detailDish) { dish in
+            RecipeDetailView(
+                dish: dish,
+                readiness: store.readiness(for: dish),
+                isOnHand: { store.onHand($0) },
+                onCook: { cookingDish = dish },
+                onClose: { detailDish = nil }
+            )
+        }
         .fullScreenCover(item: $cookingDish) { dish in
             CookFlowView(
                 dish: dish,
@@ -45,6 +55,7 @@ struct RedesignRootView: View {
                         name: dish.name, plate: dish.plate,
                         summary: "Cooked — 2 servings into the fridge. Good for 3 days."))
                     cookingDish = nil
+                    detailDish = nil
                 },
                 onClose: { cookingDish = nil }
             )
@@ -56,10 +67,11 @@ struct RedesignRootView: View {
         case .timeline:
             TimelineView(
                 entries: store.timelineEntries, today: store.today,
-                nowContent: { AnyView(NowModuleView(state: nowBinding, onCook: { cookingDish = $0.dish })) }
+                onOpenMeal: { name in detailDish = store.library.first { $0.name == name } },
+                nowContent: { AnyView(NowModuleView(state: nowBinding, onCook: { detailDish = $0.dish })) }
             )
         case .library:
-            LibraryView(store: store, onCook: { dish in cookingDish = dish })
+            LibraryView(store: store, onCook: { dish in detailDish = dish })
         case .stock:
             StockView(store: store)
         }

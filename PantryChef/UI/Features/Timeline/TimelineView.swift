@@ -6,6 +6,8 @@ struct TimelineView: View {
     let entries: [TimelineEntry]
     var today: Date = Date()
     var onTapDay: (Date) -> Void = { _ in }
+    /// Opens the recipe behind a tapped meal/journal node (by dish name).
+    var onOpenMeal: (String) -> Void = { _ in }
     /// Live content for the `.now` row (the now-module). When nil, a placeholder
     /// is shown — keeps previews and standalone use simple.
     var nowContent: (() -> AnyView)?
@@ -46,7 +48,7 @@ struct TimelineView: View {
             }
             .padding(.trailing, Theme.Metric.lg)
         } else {
-            TimelineRow(entry: entry, onTapDay: onTapDay)
+            TimelineRow(entry: entry, onTapDay: onTapDay, onOpenMeal: onOpenMeal)
         }
     }
 

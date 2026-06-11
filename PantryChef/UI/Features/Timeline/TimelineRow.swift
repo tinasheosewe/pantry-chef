@@ -5,6 +5,7 @@ import SwiftUI
 struct TimelineRow: View {
     let entry: TimelineEntry
     var onTapDay: (Date) -> Void = { _ in }
+    var onOpenMeal: (String) -> Void = { _ in }
 
     var body: some View {
         HStack(alignment: .top, spacing: 0) {
@@ -31,8 +32,8 @@ struct TimelineRow: View {
     @ViewBuilder private var content: some View {
         switch entry {
         case .now: nowSlot
-        case .journal(let j): journalRow(j)
-        case .meal(let m): mealCard(m)
+        case .journal(let j): journalRow(j).onTapGesture { onOpenMeal(j.name) }
+        case .meal(let m): mealCard(m).onTapGesture { onOpenMeal(m.name) }
         case .expiry(let e): expiryRow(e)
         case .proposal(let p): proposalCard(p)
         case .day(let date, let whisper): dayRow(date, whisper)
