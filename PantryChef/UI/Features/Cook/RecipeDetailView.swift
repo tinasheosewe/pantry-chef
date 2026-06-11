@@ -87,6 +87,9 @@ struct RecipeDetailView: View {
                     .font(.system(size: 15))
                     .foregroundStyle(onHand ? Theme.Palette.sage : Theme.Palette.warmGraySoft.opacity(0.5))
                 Text(line.display).font(Theme.Typography.fact(14)).foregroundStyle(Theme.Palette.ink)
+                if let grams = UnitConversion.gramHint(for: line) {
+                    Text(grams).font(Theme.Typography.fact(11)).foregroundStyle(Theme.Palette.warmGraySoft)
+                }
                 Spacer()
                 if !onHand && !line.isStaple { Text("need").font(Theme.Typography.fact(11)).foregroundStyle(Theme.Palette.ochre) }
             }

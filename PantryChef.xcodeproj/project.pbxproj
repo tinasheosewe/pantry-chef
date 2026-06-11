@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		0248FD5136004BE914474B21 /* ResolutionClassTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4EC84421D4A2864AE180C6D /* ResolutionClassTests.swift */; };
 		0F0DFA82B7C463DDB2BE8294 /* RealtimeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FF94D344E15CC2935F5283B /* RealtimeService.swift */; };
+		104B58671438C133ED21624A /* UnitConversionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C93C8FDEB9C5D988F3270738 /* UnitConversionTests.swift */; };
 		107341C52627FC95717EF80E /* PantryAddFrequencyTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F857530EA4DFD2289D8D6E0 /* PantryAddFrequencyTracker.swift */; };
 		115A9D1415F89576DA8BC766 /* MultiRecipeSchedulerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DFAE1BDCC29122EE14D76CD /* MultiRecipeSchedulerTests.swift */; };
 		125C82426544C3A6FA821E3C /* DietaryProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCEDED2CE5A479FB65BC6F69 /* DietaryProfile.swift */; };
@@ -77,6 +78,7 @@
 		AF6A41AADEA8600D801CC70E /* PantryCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9B0EE388F85446F2B6D4442 /* PantryCatalog.swift */; };
 		B24112BA95D8DCD56F830ABD /* Protocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = C03CAD07000A5F75BB029B1C /* Protocols.swift */; };
 		B43DD17764354F6D314C7C00 /* PantryChefUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD6E44F08B08E0C299DB08E1 /* PantryChefUITests.swift */; };
+		B7BB7022389EF56649883E6E /* UnitConversion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46C98542EA16A5B83748C0D7 /* UnitConversion.swift */; };
 		BCB39B304C3B8E1F67FC0F28 /* SubstitutionRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECB3F6705AF4F41CD3F95E39 /* SubstitutionRepository.swift */; };
 		C30BF3D9F7998F0623A3A444 /* MultiRecipeScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4847B23D0DA66AC6F8967869 /* MultiRecipeScheduler.swift */; };
 		C4BBB3F729DB218D2B5A8A36 /* TestSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FBEE574ACB02A73EEEDC07D /* TestSupport.swift */; };
@@ -161,6 +163,7 @@
 		44FECA685551A0C757FC6819 /* PantryCookReview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PantryCookReview.swift; sourceTree = "<group>"; };
 		4535B6D4E920E2F41ECD6F29 /* TimelineModels.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TimelineModels.swift; sourceTree = "<group>"; };
 		45E7B9238FFCA86D187E2420 /* StockView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StockView.swift; sourceTree = "<group>"; };
+		46C98542EA16A5B83748C0D7 /* UnitConversion.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = UnitConversion.swift; sourceTree = "<group>"; };
 		4847B23D0DA66AC6F8967869 /* MultiRecipeScheduler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiRecipeScheduler.swift; sourceTree = "<group>"; };
 		4CA6FC524D07D4BD4347B74B /* SearchEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchEngineTests.swift; sourceTree = "<group>"; };
 		52C9664BC03D8B5DE7127A5D /* CookFlowView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CookFlowView.swift; sourceTree = "<group>"; };
@@ -209,6 +212,7 @@
 		C66E3CD688A4E06B59D5056F /* IntakeParser.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = IntakeParser.swift; sourceTree = "<group>"; };
 		C72DB3A2FD92EEFEF85F27C4 /* TelemetryReporterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TelemetryReporterTests.swift; sourceTree = "<group>"; };
 		C76C028AE39F0001065ABA30 /* catalog.source.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = catalog.source.json; sourceTree = "<group>"; };
+		C93C8FDEB9C5D988F3270738 /* UnitConversionTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = UnitConversionTests.swift; sourceTree = "<group>"; };
 		C9B0EE388F85446F2B6D4442 /* PantryCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PantryCatalog.swift; sourceTree = "<group>"; };
 		CA3FEFC1D069640D0CCBC291 /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
 		CA7710DAEA864CA8E70D8332 /* StepTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StepTask.swift; sourceTree = "<group>"; };
@@ -288,6 +292,7 @@
 				A583969D363695B85BA85C0A /* AudioPipelineHelper.swift */,
 				441EAFD71E8F3A9148E9E00F /* IngredientMatcher.swift */,
 				7A2E455A1F865ADE8DDEF145 /* DishInsights.swift */,
+				46C98542EA16A5B83748C0D7 /* UnitConversion.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -338,6 +343,7 @@
 				0124F380C6BD9B6E97C4A3E5 /* ReadinessServiceTests.swift */,
 				97F769A09EF6DC426A57DC8B /* IntakeParserTests.swift */,
 				3FBEE574ACB02A73EEEDC07D /* TestSupport.swift */,
+				C93C8FDEB9C5D988F3270738 /* UnitConversionTests.swift */,
 			);
 			path = PantryChefTests;
 			sourceTree = "<group>";
@@ -804,6 +810,7 @@
 				125C82426544C3A6FA821E3C /* DietaryProfile.swift in Sources */,
 				44F4D56B2FC32BBD2D8208BB /* DishInsights.swift in Sources */,
 				1DEE6BC61EB7DFAD55FD8C7B /* RecipeDetailView.swift in Sources */,
+				B7BB7022389EF56649883E6E /* UnitConversion.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -835,6 +842,7 @@
 				AC3F3FE37252F45CF2339622 /* ReadinessServiceTests.swift in Sources */,
 				C51CF5B24EFE5ADF522D187E /* IntakeParserTests.swift in Sources */,
 				C4BBB3F729DB218D2B5A8A36 /* TestSupport.swift in Sources */,
+				104B58671438C133ED21624A /* UnitConversionTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
