@@ -124,6 +124,7 @@
 		C28D694AB5C384FA11EDFC88 /* NavigationCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3246A6F6E9D886C1C08E731 /* NavigationCoordinator.swift */; };
 		C30BF3D9F7998F0623A3A444 /* MultiRecipeScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4847B23D0DA66AC6F8967869 /* MultiRecipeScheduler.swift */; };
 		C3C577D08879D20CAB6AFBC8 /* AddCustomFacetValueSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9E7065495C2D7D72B8357E2 /* AddCustomFacetValueSheet.swift */; };
+		C51CF5B24EFE5ADF522D187E /* IntakeParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97F769A09EF6DC426A57DC8B /* IntakeParserTests.swift */; };
 		C652D63FF853AC0B3617B793 /* Enums.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A3FFC7DAF8A7D9B0FE8D2E4 /* Enums.swift */; };
 		CA94F1A8E6D699739D9711F5 /* PCStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B2DF5BBC6A74E57EAB2A74B /* PCStatus.swift */; };
 		CEB6C5BAC6DF90ED425F2AF0 /* output_audio_buffer_cleared.json in Resources */ = {isa = PBXBuildFile; fileRef = 59485E1388AA5B4BFC221609 /* output_audio_buffer_cleared.json */; };
@@ -134,6 +135,7 @@
 		D3EA8175F625D41869BD0FE6 /* AIOutputValidatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECFC30FF0F042389EE28B279 /* AIOutputValidatorTests.swift */; };
 		D4BA98D0B99FF6C34D32168B /* RuntimeStores.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF043648CCB725C24B0A51F2 /* RuntimeStores.swift */; };
 		D5316F377083EA6C299007C4 /* PantryItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1D59BC258942DB87FCB1ABA /* PantryItem.swift */; };
+		D9C5FEB0C9081A69D915BE27 /* IntakeParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = C66E3CD688A4E06B59D5056F /* IntakeParser.swift */; };
 		DAE7AC11853DB1499F672B24 /* catalog.source.json in Resources */ = {isa = PBXBuildFile; fileRef = C76C028AE39F0001065ABA30 /* catalog.source.json */; };
 		DD9DA71A8A0D1E8A532CA2F7 /* Components.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1BCAFB2A3481F128E68F9AB /* Components.swift */; };
 		DF8741FF3971AC8DA9A07FCE /* TimelineModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4535B6D4E920E2F41ECD6F29 /* TimelineModels.swift */; };
@@ -280,6 +282,7 @@
 		9248E7BEB3D29B01EB156F0D /* PCNavigation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PCNavigation.swift; sourceTree = "<group>"; };
 		9384A7388FF577DFA386BB2E /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		9697622A6D46C228E5379556 /* NowModule.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NowModule.swift; sourceTree = "<group>"; };
+		97F769A09EF6DC426A57DC8B /* IntakeParserTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = IntakeParserTests.swift; sourceTree = "<group>"; };
 		9ABE171B605DA9AF7311D6DC /* BatchScheduleLoadingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatchScheduleLoadingView.swift; sourceTree = "<group>"; };
 		9C5202EF7A18BFA20CA4E37A /* ShoppingItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShoppingItem.swift; sourceTree = "<group>"; };
 		9C94A57E1096BD67BA6E03A0 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
@@ -312,6 +315,7 @@
 		C47829257708E02A5B21FA6D /* TimelineComposerTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TimelineComposerTests.swift; sourceTree = "<group>"; };
 		C49A5AA5B578182816050816 /* RecipeDomainService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeDomainService.swift; sourceTree = "<group>"; };
 		C531F7524B3712D8330EE2CF /* BitapSearcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitapSearcher.swift; sourceTree = "<group>"; };
+		C66E3CD688A4E06B59D5056F /* IntakeParser.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = IntakeParser.swift; sourceTree = "<group>"; };
 		C72DB3A2FD92EEFEF85F27C4 /* TelemetryReporterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TelemetryReporterTests.swift; sourceTree = "<group>"; };
 		C76C028AE39F0001065ABA30 /* catalog.source.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = catalog.source.json; sourceTree = "<group>"; };
 		C9B0EE388F85446F2B6D4442 /* PantryCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PantryCatalog.swift; sourceTree = "<group>"; };
@@ -486,6 +490,7 @@
 				3EACACE94B8FC584AAF186F3 /* ProceduralPlateRendererTests.swift */,
 				C47829257708E02A5B21FA6D /* TimelineComposerTests.swift */,
 				0124F380C6BD9B6E97C4A3E5 /* ReadinessServiceTests.swift */,
+				97F769A09EF6DC426A57DC8B /* IntakeParserTests.swift */,
 			);
 			path = PantryChefTests;
 			sourceTree = "<group>";
@@ -817,6 +822,7 @@
 				B34E27A7BCEE70004A4BDFF3 /* ConfidenceEngine.swift */,
 				7B787E014C9195434E932C7E /* TimelineComposer.swift */,
 				A2182BF9EFCF19CC499891FD /* ReadinessService.swift */,
+				C66E3CD688A4E06B59D5056F /* IntakeParser.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -1148,6 +1154,7 @@
 				40B4302ABEBDCF927D16D2B3 /* NowModule.swift in Sources */,
 				985C92B3D17DA6D0C3EE23F0 /* NowModuleView.swift in Sources */,
 				7FBE65DAD5654BF06FD33353 /* FanView.swift in Sources */,
+				D9C5FEB0C9081A69D915BE27 /* IntakeParser.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1183,6 +1190,7 @@
 				804C9698C3C616B567D9AD39 /* ProceduralPlateRendererTests.swift in Sources */,
 				414F51CECCAB337BD90276A4 /* TimelineComposerTests.swift in Sources */,
 				AC3F3FE37252F45CF2339622 /* ReadinessServiceTests.swift in Sources */,
+				C51CF5B24EFE5ADF522D187E /* IntakeParserTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
