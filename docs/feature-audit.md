@@ -92,9 +92,20 @@ not lost work. But several are genuine regressions to restore, flagged ⚠️.
 | Sentry / telemetry | ✅ | still initialised in PantryChefApp |
 | Tests | ✅ | 55 redesign engine tests (legacy 875 until legacy removed) |
 
-## Restore priority (the ⚠️ regressions)
-1. **Recipe detail + ingredient gathering** in Cook (issue #2) — stop sending the cook to the pantry mid-step.
-2. **Composer editing** — edit/remove staged items, change unit/storage, custom ingredient (issue #3).
-3. **Library filtering** + surface allergens/substitutions/dietary (issue #4).
-4. **Multi-cook** folded into one Cook surface (issue #5).
-5. **Shopping/List** surface + **persistence** (production wiring).
+## Restore priority (the ⚠️ regressions) — status after the interaction pass
+1. ✅ **Recipe detail + ingredient gathering** — detail view (hero/readiness/allergens/
+   swaps/method) → mise en place → steps with real timers.
+2. ✅ **Composer editing** — staged cards editable (amount/unit/storage/name) and
+   removable; custom ingredients and unrecognized units handled; destinations
+   (Stock/List/Tonight's meal) commit for real.
+3. ✅ **Library filtering + enrichment** — filter bar, search, favorites toggle,
+   allergens shown, dietary-profile conflicts flagged, interactive swaps, density
+   gram-hints.
+4. ✅ **Multi-cook** — "Cook together" select → merged gather → interleaved steps.
+5. ✅ **Shopping list (minimal)** — lives in Stock ("On the list"), fed by the
+   composer and removable; stock rows editable.
+6. ⏳ **Persistence** — still sample data (the KitchenStore seam).
+7. ⏳ **AI flows** (generate/import/suggest), **voice**, **notifications** — engines
+   survive in Services/, none wired to the new UI.
+8. Minor known dead affordances: composer/cook mic icons (decorative until voice
+   wires in), Library sort, cooked-card rating, week-marker rows.
