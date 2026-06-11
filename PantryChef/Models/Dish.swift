@@ -38,35 +38,65 @@ struct CookStep: Identifiable, Equatable, Sendable {
 /// pantry mid-step (spec §2 gathering).
 struct Dish: Identifiable, Equatable, Sendable {
     let id: UUID
-    let name: String
+    var name: String
     let plate: PlateComposition
-    let time: String
+    var time: String
     let isYours: Bool
     var isFavorite: Bool
-    let ingredients: [RecipeLine]
-    let steps: [CookStep]
+    var servings: Int
+    var ingredients: [RecipeLine]
+    var steps: [CookStep]
 
     init(id: UUID = UUID(), name: String, plate: PlateComposition, time: String,
-         isYours: Bool = false, isFavorite: Bool = false,
+         isYours: Bool = false, isFavorite: Bool = false, servings: Int = 2,
          ingredients: [RecipeLine], steps: [CookStep] = []) {
         self.id = id; self.name = name; self.plate = plate; self.time = time
-        self.isYours = isYours; self.isFavorite = isFavorite
+        self.isYours = isYours; self.isFavorite = isFavorite; self.servings = servings
         self.ingredients = ingredients; self.steps = steps
     }
 
     var requirements: [IngredientRequirement] { ingredients.map(\.requirement) }
 
+    /// This dish scaled to a different serving count: every ingredient amount with
+    /// a leading number is multiplied; unitless lines ("to taste") pass through.
+    func scaled(to newServings: Int) -> Dish {
+        guard newServings > 0, newServings != servings, servings > 0 else { return self }
+        let factor = Double(newServings) / Double(servings)
+        var copy = self
+        copy.servings = newServings
+        copy.ingredients = ingredients.map { line in
+            guard let amount = line.amount,
+                  let scaled = Self.scaledAmount(amount, by: factor) else { return line }
+            return RecipeLine(id: line.id, key: line.key, amount: scaled,
+                              name: line.name, isStaple: line.isStaple)
+        }
+        return copy
+    }
+
+    /// "300 g" ×1.5 → "450 g"; "1 cup" ×2 → "2 cups"… leaves non-numeric text alone.
+    static func scaledAmount(_ amount: String, by factor: Double) -> String? {
+        let parts = amount.split(separator: " ", maxSplits: 1).map(String.init)
+        guard let first = parts.first, let qty = IntakeParser.quantity(first.lowercased()) else { return nil }
+        let scaled = qty * factor
+        let qtyText: String
+        if scaled == scaled.rounded() {
+            qtyText = String(Int(scaled))
+        } else {
+            qtyText = String(format: "%.2g", scaled)
+        }
+        return parts.count > 1 ? "\(qtyText) \(parts[1])" : qtyText
+    }
+
     /// This dish with one ingredient line swapped for a substitute (the cook flow
     /// then gathers the substitute instead).
     func applyingSwap(to lineID: UUID, key: String, name newName: String) -> Dish {
-        var lines = ingredients
-        if let i = lines.firstIndex(where: { $0.id == lineID }) {
-            let old = lines[i]
-            lines[i] = RecipeLine(id: old.id, key: key, amount: old.amount,
-                                  name: newName, isStaple: old.isStaple)
+        var copy = self
+        if let i = copy.ingredients.firstIndex(where: { $0.id == lineID }) {
+            let old = copy.ingredients[i]
+            copy.ingredients[i] = RecipeLine(id: old.id, key: key, amount: old.amount,
+                                             name: newName, isStaple: old.isStaple)
         }
-        return Dish(id: id, name: name, plate: plate, time: time, isYours: isYours,
-                    isFavorite: isFavorite, ingredients: lines, steps: steps)
+        return copy
     }
 
     /// Total time in minutes, parsed from the display string ("25 min", "2 h 10").

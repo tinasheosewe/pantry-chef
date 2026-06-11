@@ -61,6 +61,10 @@ final class KitchenStore {
     private let composer = TimelineComposer()
     private let parser = IntakeParser()
     private let cal = Calendar.current
+    /// The surviving AI engine — used only for explicit, user-triggered actions
+    /// (make healthier, tweak); never in the ambient loop. No-ops gracefully when
+    /// no API key is configured.
+    let ai = AIService()
 
     /// The timeline window. Starts generous and grows without bound as the user
     /// scrolls toward either edge — effectively infinite, composed lazily.
@@ -86,6 +90,20 @@ final class KitchenStore {
 
     func toggleFavorite(_ id: UUID) {
         if let i = library.firstIndex(where: { $0.id == id }) { library[i].isFavorite.toggle() }
+    }
+
+    /// Replace a dish (edits, AI tweaks) wherever it lives — library and the fan.
+    func updateDish(_ dish: Dish) {
+        if let i = library.firstIndex(where: { $0.id == dish.id }) { library[i] = dish }
+        fanOptions = fanOptions.map { option in
+            guard option.dish?.id == dish.id else { return option }
+            return FanOption(id: option.id, name: dish.name, plate: option.plate,
+                             subtitle: option.subtitle, reason: option.reason,
+                             readiness: option.readiness, level: option.level, dish: dish)
+        }
+        if case .open(_, let selected) = nowState {
+            nowState = .open(options: fanOptions, selected: selected)
+        }
     }
 
     func planMeal(_ dish: Dish, on date: Date) {
@@ -148,9 +166,14 @@ final class KitchenStore {
     }
 
     func addToList(_ intake: ParsedIntake) {
-        let name = intake.suggestedName ?? intake.name
+        addToList(name: intake.suggestedName ?? intake.name)
+    }
+
+    func addToList(name: String) {
         guard !name.isEmpty else { return }
-        shoppingList.append(name.prefix(1).capitalized + name.dropFirst())
+        let entry = name.prefix(1).capitalized + name.dropFirst()
+        guard !shoppingList.contains(entry) else { return }
+        shoppingList.append(entry)
     }
 
     /// Log a recipe-less meal from composer items (the "just ate" path).
