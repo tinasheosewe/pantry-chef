@@ -476,9 +476,17 @@ Resolution pipeline — fully on-device; AI is an enhancer, never a dependency:
 
 ### Build status — 2026-06-10 (branch `redesign-kitchen-timeline`)
 
-**The redesign runs on the simulator** as the app root (behind `RedesignFlags`,
-default on; legacy `ContentView` one flag away), on a seeded `KitchenStore` driving
-every surface through the pure engines. Builds clean; 55 redesign tests green.
+**The redesign runs on the simulator** as the sole app root, on a seeded
+`KitchenStore` driving every surface through the pure engines. The legacy UX
+(Views/ViewModels/AppState/Application — ~72 files) has been **removed**; the old
+flow lives in git history. Builds clean; 159 tests pass (engine + service tests
+kept; legacy view-model tests gone with their code).
+
+Post-runnable refinements: honest staple presence (no fake fullness), infinite fan
+carousel (swipe + tap), scroll-anchored timeline. See `docs/feature-audit.md` for
+the old-vs-new feature accounting and the regressions still to restore (ingredient
+gathering, composer editing, library filtering/enrichment, multi-cook, shopping,
+persistence).
 
 - ✅ Confidence model — `ResolutionClass`/classifier, `ConfidenceEngine`, `ItemCertainty`, `KitchenConfig`.
 - ✅ Visual foundation — `Theme`, procedural `PlateView`+renderer, `GlassCard`, `Dock`.
