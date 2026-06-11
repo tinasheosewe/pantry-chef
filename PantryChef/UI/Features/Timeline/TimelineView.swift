@@ -6,19 +6,35 @@ struct TimelineView: View {
     let entries: [TimelineEntry]
     var today: Date = Date()
     var onTapDay: (Date) -> Void = { _ in }
+    /// Live content for the `.now` row (the now-module). When nil, a placeholder
+    /// is shown — keeps previews and standalone use simple.
+    var nowContent: (() -> AnyView)?
 
     var body: some View {
         ScrollView {
             LazyVStack(alignment: .leading, spacing: 0) {
                 header
                 ForEach(entries) { entry in
-                    TimelineRow(entry: entry, onTapDay: onTapDay)
+                    row(for: entry)
                 }
             }
             .padding(.top, 8)
             .padding(.bottom, 90) // room for the floating dock
         }
         .background(background)
+    }
+
+    @ViewBuilder private func row(for entry: TimelineEntry) -> some View {
+        if case .now = entry, let nowContent {
+            HStack(alignment: .top, spacing: 0) {
+                SpineGutter(node: .now)
+                nowContent().padding(.bottom, Theme.Metric.md)
+                Spacer(minLength: 0)
+            }
+            .padding(.trailing, Theme.Metric.lg)
+        } else {
+            TimelineRow(entry: entry, onTapDay: onTapDay)
+        }
     }
 
     private var header: some View {

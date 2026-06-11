@@ -12,22 +12,28 @@ struct PantryChefApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
-                .environment(appState)
-                .preferredColorScheme(.light)
-                .onReceive(
-                    NotificationCenter.default.publisher(
-                        for: NotificationService.didReceiveActionNotification
-                    )
-                ) { notification in
-                    handleNotificationAction(notification.userInfo)
-                }
-                .onAppear {
-                    if let delegate = appState.notificationService as? UNUserNotificationCenterDelegate {
-                        UNUserNotificationCenter.current().delegate = delegate
+            if RedesignFlags.useRedesign {
+                // Kitchen Timeline redesign (see docs/redesign-spec.md). Self-contained
+                // via KitchenStore; legacy ContentView stays one flag away.
+                RedesignRootView()
+            } else {
+                ContentView()
+                    .environment(appState)
+                    .preferredColorScheme(.light)
+                    .onReceive(
+                        NotificationCenter.default.publisher(
+                            for: NotificationService.didReceiveActionNotification
+                        )
+                    ) { notification in
+                        handleNotificationAction(notification.userInfo)
                     }
-                    cleanUpExpiredSessions()
-                }
+                    .onAppear {
+                        if let delegate = appState.notificationService as? UNUserNotificationCenterDelegate {
+                            UNUserNotificationCenter.current().delegate = delegate
+                        }
+                        cleanUpExpiredSessions()
+                    }
+            }
         }
     }
 
