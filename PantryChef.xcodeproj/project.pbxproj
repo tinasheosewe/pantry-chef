@@ -41,6 +41,7 @@
 		4EE220109F2FDCAA2FFB63E6 /* StockView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45E7B9238FFCA86D187E2420 /* StockView.swift */; };
 		59E7344CE47BB5BDC9272C27 /* StorageService.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3D174F06F17C2D1BFB041DA /* StorageService.swift */; };
 		5BF2AF91CDFFE66AD222B691 /* ItemCertainty.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34FBDF3045F807228F2ED54C /* ItemCertainty.swift */; };
+		62E0F6FCD8C0B8E58B18A185 /* CookFlowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52C9664BC03D8B5DE7127A5D /* CookFlowView.swift */; };
 		64F2B5992FF1EB74F106E85D /* TelemetryReporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A16DF6ABA8E8C73E7BB93F32 /* TelemetryReporter.swift */; };
 		6780E90D6ED7D86FFBC77E0B /* ProceduralPlateRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3753FE9CFF9D10350B9D22D9 /* ProceduralPlateRenderer.swift */; };
 		680C4DEF01146537AFA0035E /* SpeechService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 187A2FC90EF58530B2FF9242 /* SpeechService.swift */; };
@@ -52,7 +53,6 @@
 		7FBE65DAD5654BF06FD33353 /* FanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 429A404308616F18132F9767 /* FanView.swift */; };
 		804C9698C3C616B567D9AD39 /* ProceduralPlateRendererTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3EACACE94B8FC584AAF186F3 /* ProceduralPlateRendererTests.swift */; };
 		8305E12ADD7F026A2AD68195 /* SpineGutter.swift in Sources */ = {isa = PBXBuildFile; fileRef = C37F9246B13C7CD8DB8F157E /* SpineGutter.swift */; };
-		856A1EC73BDB3E8CB1789BD5 /* CookInstrumentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C43EA5FFD097A572157645C9 /* CookInstrumentView.swift */; };
 		8701F19CA8F33EBF5341CF13 /* RecipeIngredientResolution.swift in Sources */ = {isa = PBXBuildFile; fileRef = D163F4169A50AA35EA50126A /* RecipeIngredientResolution.swift */; };
 		8940817B4ECB43E57B1E9436 /* AudioPipelineHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = A583969D363695B85BA85C0A /* AudioPipelineHelper.swift */; };
 		8A83DC607C8342D82632581C /* AIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9D6320911E5D93399FD4833 /* AIService.swift */; };
@@ -94,6 +94,7 @@
 		E4A47532EC51423D4671C67E /* RedesignRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3D02E10BC15ED0ADCDC7D1B /* RedesignRootView.swift */; };
 		E6D1C6F2E112C1FFAA70FC2F /* LLMBatchSchedule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FA305DB5D5B9FBE02C276BD /* LLMBatchSchedule.swift */; };
 		E7F294344D02F2889C525C87 /* KitchenConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1C329655335AFFA3C9D8582 /* KitchenConfig.swift */; };
+		E8B0B35D245ECCEFF9939A78 /* Dish.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7FDE2746EBCA7890C1F77F8 /* Dish.swift */; };
 		EB4FCD26C1EC14D68C7899D9 /* PreparedDish.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EE236D6E9401B5D227E4B4D /* PreparedDish.swift */; };
 		EF677C4E3DFC7815C380CEC3 /* PantryChefApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CF034777B5CF54E8747C51B /* PantryChefApp.swift */; };
 		EFEB0C08C15F9D81C152BC1F /* AIModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4311CDDF67AA34C2F223237 /* AIModels.swift */; };
@@ -159,6 +160,7 @@
 		45E7B9238FFCA86D187E2420 /* StockView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StockView.swift; sourceTree = "<group>"; };
 		4847B23D0DA66AC6F8967869 /* MultiRecipeScheduler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiRecipeScheduler.swift; sourceTree = "<group>"; };
 		4CA6FC524D07D4BD4347B74B /* SearchEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchEngineTests.swift; sourceTree = "<group>"; };
+		52C9664BC03D8B5DE7127A5D /* CookFlowView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CookFlowView.swift; sourceTree = "<group>"; };
 		59485E1388AA5B4BFC221609 /* output_audio_buffer_cleared.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = output_audio_buffer_cleared.json; sourceTree = "<group>"; };
 		5FF94D344E15CC2935F5283B /* RealtimeService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealtimeService.swift; sourceTree = "<group>"; };
 		62F4E42A0869501AB92F81F2 /* input_audio_transcription_completed_sparse_usage.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_audio_transcription_completed_sparse_usage.json; sourceTree = "<group>"; };
@@ -198,7 +200,6 @@
 		C0C49A659EE21F5019A9DF94 /* AppLaunchOptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLaunchOptions.swift; sourceTree = "<group>"; };
 		C37F9246B13C7CD8DB8F157E /* SpineGutter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SpineGutter.swift; sourceTree = "<group>"; };
 		C4072447FA67C19158B37322 /* Dock.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Dock.swift; sourceTree = "<group>"; };
-		C43EA5FFD097A572157645C9 /* CookInstrumentView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CookInstrumentView.swift; sourceTree = "<group>"; };
 		C47829257708E02A5B21FA6D /* TimelineComposerTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TimelineComposerTests.swift; sourceTree = "<group>"; };
 		C531F7524B3712D8330EE2CF /* BitapSearcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitapSearcher.swift; sourceTree = "<group>"; };
 		C66E3CD688A4E06B59D5056F /* IntakeParser.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = IntakeParser.swift; sourceTree = "<group>"; };
@@ -222,6 +223,7 @@
 		EEDA55B940AC70BF502704BE /* IngredientLexicon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IngredientLexicon.swift; sourceTree = "<group>"; };
 		F1D59BC258942DB87FCB1ABA /* PantryItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PantryItem.swift; sourceTree = "<group>"; };
 		F4EC84421D4A2864AE180C6D /* ResolutionClassTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ResolutionClassTests.swift; sourceTree = "<group>"; };
+		F7FDE2746EBCA7890C1F77F8 /* Dish.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Dish.swift; sourceTree = "<group>"; };
 		F8101D29E78E38A0C3D0477A /* RankedTextSearchEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RankedTextSearchEngine.swift; sourceTree = "<group>"; };
 		F9D6320911E5D93399FD4833 /* AIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIService.swift; sourceTree = "<group>"; };
 		FCBA40607E7081618BC69A02 /* swift-realtime-openai */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "swift-realtime-openai"; path = "Vendor/swift-realtime-openai"; sourceTree = SOURCE_ROOT; };
@@ -259,7 +261,7 @@
 		14DACC4E2A5CF6464B4285AE /* Cook */ = {
 			isa = PBXGroup;
 			children = (
-				C43EA5FFD097A572157645C9 /* CookInstrumentView.swift */,
+				52C9664BC03D8B5DE7127A5D /* CookFlowView.swift */,
 			);
 			name = Cook;
 			path = Cook;
@@ -454,6 +456,7 @@
 				0B05969CE27E52A93C925402 /* MealPrepLevel.swift */,
 				F382A09D8810CE8B6F786814 /* Timeline */,
 				9697622A6D46C228E5379556 /* NowModule.swift */,
+				F7FDE2746EBCA7890C1F77F8 /* Dish.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -787,7 +790,8 @@
 				9A7B80CB49163E59D70F1219 /* ComposerView.swift in Sources */,
 				4EE220109F2FDCAA2FFB63E6 /* StockView.swift in Sources */,
 				1848D7221ABD09AC3AA2A45A /* LibraryView.swift in Sources */,
-				856A1EC73BDB3E8CB1789BD5 /* CookInstrumentView.swift in Sources */,
+				E8B0B35D245ECCEFF9939A78 /* Dish.swift in Sources */,
+				62E0F6FCD8C0B8E58B18A185 /* CookFlowView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

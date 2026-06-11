@@ -4,7 +4,7 @@ import SwiftUI
 /// every cell, computed live by the one ReadinessService from current stock.
 struct LibraryView: View {
     var store: KitchenStore
-    var onCook: (LibraryDish) -> Void = { _ in }
+    var onCook: (Dish) -> Void = { _ in }
 
     private let columns = [GridItem(.flexible(), spacing: 14), GridItem(.flexible(), spacing: 14)]
 
@@ -31,7 +31,7 @@ struct LibraryView: View {
 }
 
 private struct LibraryCell: View {
-    let dish: LibraryDish
+    let dish: Dish
     let readiness: Readiness
 
     var body: some View {

@@ -12,12 +12,16 @@ struct FanOption: Identifiable, Equatable, Sendable {
     let reason: String
     let readiness: Readiness
     let level: MealPrepLevel
+    /// The cookable recipe behind this option, when there is one (so Cook can run
+    /// real ingredients + steps).
+    let dish: Dish?
 
     init(id: UUID = UUID(), name: String, plate: PlateComposition, subtitle: String,
-         reason: String, readiness: Readiness = .ready, level: MealPrepLevel = .cooked) {
+         reason: String, readiness: Readiness = .ready, level: MealPrepLevel = .cooked,
+         dish: Dish? = nil) {
         self.id = id; self.name = name; self.plate = plate
         self.subtitle = subtitle; self.reason = reason
-        self.readiness = readiness; self.level = level
+        self.readiness = readiness; self.level = level; self.dish = dish
     }
 }
 

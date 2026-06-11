@@ -20,7 +20,7 @@ struct KitchenBackground: View {
 struct RedesignRootView: View {
     @State private var store = KitchenStore()
     @State private var showComposer = false
-    @State private var cooking: FanOption?
+    @State private var cookingDish: Dish?
 
     var body: some View {
         ZStack(alignment: .bottom) {
@@ -36,16 +36,17 @@ struct RedesignRootView: View {
             ComposerView(store: store, onDismiss: { showComposer = false })
                 .presentationDetents([.medium, .large])
         }
-        .fullScreenCover(item: $cooking) { option in
-            CookInstrumentView(
-                option: option,
+        .fullScreenCover(item: $cookingDish) { dish in
+            CookFlowView(
+                dish: dish,
+                isOnHand: { store.onHand($0) },
                 onDone: {
                     store.nowState = .cooked(CookedSummary(
-                        name: option.name, plate: option.plate,
+                        name: dish.name, plate: dish.plate,
                         summary: "Cooked — 2 servings into the fridge. Good for 3 days."))
-                    cooking = nil
+                    cookingDish = nil
                 },
-                onClose: { cooking = nil }
+                onClose: { cookingDish = nil }
             )
         }
     }
@@ -55,12 +56,10 @@ struct RedesignRootView: View {
         case .timeline:
             TimelineView(
                 entries: store.timelineEntries, today: store.today,
-                nowContent: { AnyView(NowModuleView(state: nowBinding, onCook: { cooking = $0 })) }
+                nowContent: { AnyView(NowModuleView(state: nowBinding, onCook: { cookingDish = $0.dish })) }
             )
         case .library:
-            LibraryView(store: store, onCook: { dish in
-                cooking = FanOption(name: dish.name, plate: dish.plate, subtitle: dish.time, reason: "")
-            })
+            LibraryView(store: store, onCook: { dish in cookingDish = dish })
         case .stock:
             StockView(store: store)
         }
