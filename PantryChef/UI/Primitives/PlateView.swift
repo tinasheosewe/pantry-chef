@@ -28,7 +28,7 @@ struct PlateView: View {
         }
         .frame(width: size, height: size)
         .accessibilityHidden(true)
-        .task(id: name) { await PlateRenderLibrary.shared.request(name) }
+        .task(id: name) { PlateRenderLibrary.shared.request(name) }
     }
 
     private var ceramicWithEmoji: some View {

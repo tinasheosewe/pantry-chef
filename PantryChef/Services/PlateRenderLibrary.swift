@@ -1,5 +1,6 @@
 import SwiftUI
 import Observation
+import os
 
 /// Tier-1 plate art (spec §10): each dish gets one AI-painted plate in the app's
 /// single art direction, rendered once and cached on disk forever. The emoji plate
@@ -13,8 +14,11 @@ final class PlateRenderLibrary {
     static let shared = PlateRenderLibrary()
 
     /// Policy seam: dishes render, raw stock items don't. Defaults to nobody so an
-    /// unwired library can never spend.
-    @ObservationIgnored var eligibility: (String) -> Bool = { _ in false }
+    /// unwired library can never spend. Plates can be requested before the store
+    /// wires this (first launch races the view tree), so arrival re-sweeps.
+    @ObservationIgnored var eligibility: (String) -> Bool = { _ in false } {
+        didSet { sweep() }
+    }
 
     /// Finished renders by dish slug — views read through `render(for:)` and
     /// re-render when a plate lands.
@@ -22,36 +26,69 @@ final class PlateRenderLibrary {
 
     @ObservationIgnored private var inFlight: Set<String> = []
     @ObservationIgnored private var failed: Set<String> = []
+    @ObservationIgnored private var seen: [String: String] = [:]   // slug → display name
     @ObservationIgnored private var startedThisLaunch = 0
+
+    private static let log = Logger(subsystem: "PantryChef", category: "PlateRender")
 
     /// The cached render if one is in memory. Pure read — safe in a view body.
     func render(for name: String) -> UIImage? { renders[Self.slug(name)] }
 
+    /// Re-attempt every requested-but-unpainted plate. Called when the policy
+    /// arrives and when the app foregrounds (the network may be back); failures
+    /// are forgiven so nothing stays stuck until relaunch.
+    func sweep() {
+        failed.removeAll()
+        for (key, name) in seen where renders[key] == nil && !inFlight.contains(key) {
+            request(name)
+        }
+    }
+
     /// Ensure a render exists or is on its way: memory → disk → (one) paint call.
-    func request(_ name: String) async {
+    /// The paint runs in the library's own unstructured task: a plate request must
+    /// outlive the view that made it, or scrolling cancels paints mid-flight.
+    func request(_ name: String) {
         let key = Self.slug(name)
         guard !key.isEmpty, renders[key] == nil,
               !inFlight.contains(key), !failed.contains(key) else { return }
+        seen[key] = name
         inFlight.insert(key)
+        Task { await self.fulfil(key: key, name: name) }
+    }
+
+    private func fulfil(key: String, name: String) async {
         defer { inFlight.remove(key) }
 
         if let cached = Self.loadCached(key) {
             renders[key] = cached
             return
         }
-        guard eligibility(name),
-              !AppConfig.isMissing(AppConfig.openAIAPIKey),
-              startedThisLaunch < KitchenConfig.Render.maxNewPerLaunch else { return }
+        guard eligibility(name) else {
+            Self.log.debug("\(key): not eligible (policy not wired yet, or not a dish)")
+            return
+        }
+        guard !AppConfig.isMissing(AppConfig.openAIAPIKey) else {
+            Self.log.info("\(key): no OpenAI key in this build — emoji it is")
+            return
+        }
+        guard startedThisLaunch < KitchenConfig.Render.maxNewPerLaunch else {
+            Self.log.info("\(key): per-launch render cap reached")
+            return
+        }
         startedThisLaunch += 1
+        Self.log.info("\(key): painting…")
         do {
             let png = try await Self.paint(name)
             guard let image = Self.downscaled(png, to: KitchenConfig.Render.cachedPixelSize) else {
+                Self.log.error("\(key): paint returned undecodable image data")
                 failed.insert(key)
                 return
             }
             Self.store(image, key: key)
+            Self.log.info("\(key): painted and cached")
             withAnimation(.easeInOut(duration: 0.5)) { renders[key] = image }
         } catch {
+            Self.log.error("\(key): paint failed — \(error.localizedDescription)")
             failed.insert(key)
         }
     }
@@ -93,8 +130,10 @@ final class PlateRenderLibrary {
             "output_format": "png"
         ])
         let (data, response) = try await URLSession.shared.data(for: request)
-        guard let http = response as? HTTPURLResponse, http.statusCode == 200 else {
-            throw URLError(.badServerResponse)
+        if let http = response as? HTTPURLResponse, http.statusCode != 200 {
+            let body = String(data: data.prefix(200), encoding: .utf8) ?? ""
+            throw NSError(domain: "PlateRender", code: http.statusCode,
+                          userInfo: [NSLocalizedDescriptionKey: "HTTP \(http.statusCode): \(body)"])
         }
         guard let b64 = try JSONDecoder().decode(ImageResponse.self, from: data).data.first?.b64_json,
               let png = Data(base64Encoded: b64) else {

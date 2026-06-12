@@ -35,6 +35,7 @@ struct RedesignRootView: View {
     @State private var detailDish: Dish?
     @State private var multiSession: CookSession?
     @State private var planTarget: PlanTarget?
+    @Environment(\.scenePhase) private var scenePhase
 
     var body: some View {
         ZStack(alignment: .bottom) {
@@ -49,6 +50,11 @@ struct RedesignRootView: View {
         }
         .animation(.spring(response: 0.34, dampingFraction: 0.85), value: store.space)
         .preferredColorScheme(.light)
+        // Coming back to the foreground forgives failed plate renders — the
+        // network that broke them may be back.
+        .onChange(of: scenePhase) { _, phase in
+            if phase == .active { PlateRenderLibrary.shared.sweep() }
+        }
         .sheet(isPresented: $showComposer) {
             ComposerView(store: store, onDismiss: { showComposer = false })
                 .presentationDetents([.medium, .large])
