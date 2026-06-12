@@ -118,8 +118,8 @@ struct RecipeDetailView: View {
 
     private var hero: some View {
         VStack(spacing: 12) {
-            PlateView(composition: currentDish.plate, size: 140)
-            Text(currentDish.name).font(Theme.Typography.dish(26)).foregroundStyle(Theme.Palette.ink)
+            PlateView(name: currentDish.name, composition: currentDish.plate, size: 150)
+            Text(currentDish.name).font(Theme.Typography.dish(30)).foregroundStyle(Theme.Palette.ink)
                 .multilineTextAlignment(.center)
             HStack(spacing: 6) {
                 Text(currentDish.time).font(Theme.Typography.fact(13)).foregroundStyle(Theme.Palette.warmGray)

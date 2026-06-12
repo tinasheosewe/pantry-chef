@@ -21,21 +21,27 @@ enum Theme {
         static let hairline = Color(red: 0.471, green: 0.353, blue: 0.196).opacity(0.12)
 
         // Glass surfaces.
-        static let glassFill = creamRaised.opacity(0.62)
+        static let glassFill = creamRaised.opacity(0.70)
         static let glassBorder = Color.white.opacity(0.85)
     }
 
     // MARK: Typography
-    /// Appetite and information never share a font (spec §10): a serif carries dish
-    /// names, greetings, and the sommelier note; a quiet sans carries every fact.
+    /// Appetite and information never share a font (spec §10): Fraunces — a warm,
+    /// high-contrast display serif — carries dish names, greetings, and the
+    /// sommelier note; a quiet sans carries every fact. Falls back to the system
+    /// serif if the bundled font ever fails to register.
     enum Typography {
-        /// Serif — for dish names and editorial moments.
+        /// Display serif — for dish names and editorial moments.
         static func dish(_ size: CGFloat, weight: Font.Weight = .medium) -> Font {
-            .system(size: size, weight: weight, design: .serif)
+            FontLoader.frauncesAvailable
+                ? .custom("Fraunces", size: size).weight(weight)
+                : .system(size: size, weight: weight, design: .serif)
         }
-        /// Serif italic — the sommelier reasoning line.
+        /// Display serif italic — the sommelier reasoning line.
         static func note(_ size: CGFloat = 13) -> Font {
-            .system(size: size, weight: .regular, design: .serif).italic()
+            FontLoader.frauncesAvailable
+                ? .custom("Fraunces-Italic", size: size)
+                : .system(size: size, weight: .regular, design: .serif).italic()
         }
         /// Sans — all functional text, metadata, labels.
         static func fact(_ size: CGFloat, weight: Font.Weight = .regular) -> Font {

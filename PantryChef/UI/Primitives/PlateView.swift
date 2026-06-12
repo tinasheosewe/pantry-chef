@@ -1,59 +1,46 @@
 import SwiftUI
 
-extension RGBA {
-    /// Bridge to SwiftUI at draw time (the pure logic never imports SwiftUI).
-    var color: Color { Color(red: r, green: g, blue: b, opacity: a) }
-}
-
-/// Renders a dish's procedural plate (tier-0 imagery, spec §10) at any size.
-/// Deterministic from its composition — no photo, no network, instant and offline,
-/// and identical every time the same dish appears. Decorative: the dish name
-/// carries the meaning, so the plate is hidden from assistive tech.
+/// A dish's face: its emoji seated on the app's ceramic plate — instant, free,
+/// offline, recognizable at any size (spec §10 tier 0; the AI render replaces the
+/// emoji per-dish when tier 1 is wired). Decorative: the dish name carries the
+/// meaning, so the plate is hidden from assistive tech.
 struct PlateView: View {
-    let composition: PlateComposition
+    let name: String
+    var composition: PlateComposition = PlateComposition(categories: [], seed: 0)
     var size: CGFloat = Theme.Metric.plateRow
 
-    private enum Layout {
-        static let foodFraction: CGFloat = 0.82   // food mound as a share of the plate
-        static let rimStrokeFraction: CGFloat = 0.012
-        static let highlightInset: CGFloat = 0.42
+    private var emoji: String {
+        EmojiPlate.face(for: name, categories: composition.weights.map(\.category))
     }
 
     var body: some View {
-        let spec = ProceduralPlateRenderer.render(composition)
-        Canvas { context, canvasSize in
-            let s = min(canvasSize.width, canvasSize.height)
-            let center = CGPoint(x: canvasSize.width / 2, y: canvasSize.height / 2)
-            let plateR = s / 2
-            let foodR = plateR * Layout.foodFraction
-
-            let rim = Path(ellipseIn: CGRect(x: center.x - plateR, y: center.y - plateR,
-                                             width: plateR * 2, height: plateR * 2))
-            context.fill(rim, with: .color(spec.ceramic.color))
-            context.stroke(rim, with: .color(spec.ceramic.darkened(0.12).color),
-                           lineWidth: max(0.5, s * Layout.rimStrokeFraction))
-
-            let foodRect = CGRect(x: center.x - foodR, y: center.y - foodR,
-                                  width: foodR * 2, height: foodR * 2)
-            let foodPath = Path(ellipseIn: foodRect)
-            context.fill(foodPath, with: .color(spec.food.color))
-
-            context.drawLayer { layer in
-                layer.clip(to: foodPath)
-                for fleck in spec.flecks {
-                    let fx = center.x + CGFloat(fleck.x) * foodR
-                    let fy = center.y + CGFloat(fleck.y) * foodR
-                    let fr = max(0.5, CGFloat(fleck.radius) * foodR)
-                    let rect = CGRect(x: fx - fr, y: fy - fr, width: fr * 2, height: fr * 2)
-                    layer.fill(Path(ellipseIn: rect), with: .color(fleck.color.color))
-                }
-            }
-
-            // Soft top-left sheen for a touch of ceramic depth.
-            let hi = foodR * Layout.highlightInset
-            let hiRect = CGRect(x: center.x - foodR * 0.5 - hi, y: center.y - foodR * 0.5 - hi,
-                                width: hi * 2, height: hi * 2)
-            context.fill(Path(ellipseIn: hiRect), with: .color(.white.opacity(0.10)))
+        ZStack {
+            // Ceramic: warm gradient with light from the top-left, a fine rim, and
+            // a soft seat shadow under the food.
+            Circle()
+                .fill(RadialGradient(
+                    colors: [Color(red: 1.0, green: 0.99, blue: 0.97),
+                             Color(red: 0.94, green: 0.91, blue: 0.85),
+                             Color(red: 0.86, green: 0.82, blue: 0.73)],
+                    center: .init(x: 0.35, y: 0.28), startRadius: 0, endRadius: size * 0.85))
+                .overlay(Circle().strokeBorder(Color(red: 0.75, green: 0.67, blue: 0.55).opacity(0.5),
+                                               lineWidth: max(0.5, size * 0.012)))
+                .shadow(color: Color(red: 0.43, green: 0.27, blue: 0.12).opacity(0.20),
+                        radius: size * 0.12, x: 0, y: size * 0.08)
+            // The plate's inner well ring.
+            Circle()
+                .strokeBorder(Color(red: 0.70, green: 0.62, blue: 0.50).opacity(0.25),
+                              lineWidth: max(0.5, size * 0.01))
+                .padding(size * 0.14)
+            // Soft seat shadow so the food sits *in* the plate, not on a sticker.
+            Ellipse()
+                .fill(Color(red: 0.35, green: 0.25, blue: 0.12).opacity(0.14))
+                .frame(width: size * 0.52, height: size * 0.18)
+                .offset(y: size * 0.20)
+                .blur(radius: size * 0.04)
+            Text(emoji)
+                .font(.system(size: size * 0.5))
+                .offset(y: -size * 0.01)
         }
         .frame(width: size, height: size)
         .accessibilityHidden(true)
@@ -64,16 +51,20 @@ struct PlateView: View {
     let demos: [(String, [FoodCategory])] = [
         ("Spinach & feta orzo", [.produce, .dairy, .pasta]),
         ("Shakshuka", [.protein, .produce, .spices]),
-        ("Lamb ragù", [.protein, .produce, .pasta, .oils]),
-        ("Lemon greens", [.produce, .dairy]),
-        ("Plain", [])
+        ("Lamb ragù", [.protein, .pasta]),
+        ("Miso butter salmon", [.protein, .oils]),
+        ("Girl dinner", [.dairy, .snacks]),
+        ("Mystery leftovers", [])
     ]
     return ScrollView {
         VStack(spacing: 20) {
             ForEach(Array(demos.enumerated()), id: \.offset) { i, demo in
                 HStack(spacing: 16) {
-                    PlateView(composition: .init(categories: demo.1, seed: UInt64(i + 1)),
+                    PlateView(name: demo.0,
+                              composition: .init(categories: demo.1, seed: UInt64(i + 1)),
                               size: Theme.Metric.plateHero)
+                    PlateView(name: demo.0, composition: .init(categories: demo.1, seed: 1),
+                              size: Theme.Metric.plateMini)
                     Text(demo.0).font(Theme.Typography.dish(18))
                     Spacer()
                 }

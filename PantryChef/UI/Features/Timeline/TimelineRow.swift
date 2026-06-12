@@ -60,7 +60,7 @@ struct TimelineRow: View {
 
     private func journalRow(_ j: JournalItem) -> some View {
         HStack(spacing: 10) {
-            PlateView(composition: j.plate, size: Theme.Metric.plateMini)
+            PlateView(name: j.name, composition: j.plate, size: Theme.Metric.plateMini)
             VStack(alignment: .leading, spacing: 1) {
                 Text(j.name).font(Theme.Typography.fact(13)).foregroundStyle(Theme.Palette.ink)
                 if let note = j.note {
@@ -73,7 +73,7 @@ struct TimelineRow: View {
 
     private func mealCard(_ m: PlannedMeal) -> some View {
         HStack(spacing: 11) {
-            PlateView(composition: m.plate, size: Theme.Metric.plateRow)
+            PlateView(name: m.name, composition: m.plate, size: Theme.Metric.plateRow)
             VStack(alignment: .leading, spacing: 2) {
                 Text(DayLabel.eyebrow(for: m.date)).font(Theme.Typography.fact(11))
                     .foregroundStyle(Theme.Palette.warmGraySoft)

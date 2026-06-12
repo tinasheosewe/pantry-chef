@@ -50,11 +50,14 @@ struct CookFlowView: View {
             guard timerRunning, let r = timerRemaining else { return }
             if r > 1 { timerRemaining = r - 1 } else { timerRemaining = 0; timerRunning = false }
         }
+        .sensoryFeedback(.impact(weight: .light), trigger: gathered)
+        .sensoryFeedback(.impact(weight: .medium), trigger: step)
+        .sensoryFeedback(.success, trigger: timerRemaining == 0)
     }
 
     private var header: some View {
         HStack(spacing: 10) {
-            if let plate = dishes.first?.plate { PlateView(composition: plate, size: 30) }
+            if let first = dishes.first { PlateView(name: first.name, composition: first.plate, size: 30) }
             Text(isMulti ? "\(dishes.count) dishes together" : (dishes.first?.name ?? ""))
                 .font(Theme.Typography.dish(14)).foregroundStyle(Theme.Palette.warmGray)
             Spacer()
@@ -137,7 +140,7 @@ struct CookFlowView: View {
             progress.padding(.top, 16)
             if isMulti, let current = currentStep {
                 HStack(spacing: 8) {
-                    PlateView(composition: current.plate, size: 22)
+                    PlateView(name: current.dishName, composition: current.plate, size: 22)
                     Text(current.dishName).font(Theme.Typography.fact(12, weight: .medium)).foregroundStyle(Theme.Palette.paprika)
                 }
                 .padding(.top, 18)

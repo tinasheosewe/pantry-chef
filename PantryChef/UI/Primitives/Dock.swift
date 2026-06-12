@@ -30,6 +30,7 @@ struct Dock: View {
     @Binding var selection: RootSpace
     var onAdd: () -> Void
 
+
     var body: some View {
         HStack(spacing: Theme.Metric.sm) {
             HStack(spacing: Theme.Metric.xs) {
@@ -47,10 +48,11 @@ struct Dock: View {
                     .foregroundStyle(Theme.Palette.paprika)
                     .frame(width: 45, height: 45)
             }
-            .buttonStyle(.plain)
+            .buttonStyle(.pressable)
             .glassCard(cornerRadius: Theme.Metric.chipCornerRadius)
             .accessibilityLabel("Add")
         }
+        .sensoryFeedback(.selection, trigger: selection)
     }
 
     private func spaceButton(_ space: RootSpace) -> some View {
@@ -68,7 +70,7 @@ struct Dock: View {
                     }
                 }
         }
-        .buttonStyle(.plain)
+        .buttonStyle(.pressable)
         .accessibilityLabel(space.title)
         .accessibilityAddTraits(isActive ? [.isSelected] : [])
     }

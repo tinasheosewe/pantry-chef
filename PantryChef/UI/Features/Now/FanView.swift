@@ -18,30 +18,37 @@ struct FanView: View {
     private var rightIndex: Int? { count > 1 ? (selected + 1) % count : nil }
 
     var body: some View {
-        VStack(spacing: 0) {
-            plates
-            dots.padding(.top, 10)
-            if let option = current {
-                Text(option.name).font(Theme.Typography.dish(19)).foregroundStyle(Theme.Palette.ink)
-                    .padding(.top, 10)
-                Text(option.subtitle).font(Theme.Typography.fact(11)).foregroundStyle(Theme.Palette.warmGraySoft)
-                    .padding(.top, 3)
-                Text("\u{201C}\(option.reason)\u{201D}")
-                    .font(Theme.Typography.note(13)).foregroundStyle(Theme.Palette.warmGray)
-                    .multilineTextAlignment(.center).padding(.top, 11).padding(.horizontal, 6)
-                    .id(option.id) // re-animate when the centre changes
-                    .transition(.opacity)
-                footer(option).padding(.top, 13)
+        // The plates break the card's top edge (the card starts partway up the
+        // hero plate) — the compositional signature from the approved design.
+        ZStack(alignment: .top) {
+            VStack(spacing: 0) {
+                Color.clear.frame(height: Theme.Metric.plateHero * 0.72)
+                dots
+                if let option = current {
+                    Text(option.name).font(Theme.Typography.dish(21)).foregroundStyle(Theme.Palette.ink)
+                        .padding(.top, 10)
+                    Text(option.subtitle).font(Theme.Typography.fact(11)).foregroundStyle(Theme.Palette.warmGraySoft)
+                        .padding(.top, 3)
+                    Text("\u{201C}\(option.reason)\u{201D}")
+                        .font(Theme.Typography.note(13)).foregroundStyle(Theme.Palette.warmGray)
+                        .multilineTextAlignment(.center).padding(.top, 11).padding(.horizontal, 6)
+                        .id(option.id) // re-animate when the centre changes
+                        .transition(.opacity)
+                    footer(option).padding(.top, 13)
+                }
             }
+            .padding(16).frame(maxWidth: .infinity).glassCard()
+            .padding(.top, Theme.Metric.plateHero * 0.34)
+            plates
         }
-        .padding(16).frame(maxWidth: .infinity).glassCard()
+        .sensoryFeedback(.impact(weight: .light), trigger: selected)
     }
 
     private var plates: some View {
         ZStack {
             if let l = leftIndex { sidePlate(options[l], baseOffset: -78, angle: -9) { advance(-1) } }
             if let r = rightIndex { sidePlate(options[r], baseOffset: 78, angle: 9) { advance(1) } }
-            PlateView(composition: options[selected].plate, size: Theme.Metric.plateHero)
+            PlateView(name: options[selected].name, composition: options[selected].plate, size: Theme.Metric.plateHero)
                 .offset(x: dragX * 0.45)
                 .zIndex(2)
         }
@@ -62,7 +69,7 @@ struct FanView: View {
 
     private func sidePlate(_ option: FanOption, baseOffset: CGFloat, angle: Double,
                            tap: @escaping () -> Void) -> some View {
-        PlateView(composition: option.plate, size: Theme.Metric.plateHero * 0.6)
+        PlateView(name: option.name, composition: option.plate, size: Theme.Metric.plateHero * 0.6)
             .rotationEffect(.degrees(angle))
             .offset(x: baseOffset + dragX * 0.45, y: 8)
             .opacity(0.85)

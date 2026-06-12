@@ -47,7 +47,7 @@ struct NowModuleView: View {
 
     private func committedCard(_ meal: CommittedMeal) -> some View {
         HStack(spacing: 11) {
-            PlateView(composition: meal.plate, size: Theme.Metric.plateRow)
+            PlateView(name: meal.name, composition: meal.plate, size: Theme.Metric.plateRow)
             VStack(alignment: .leading, spacing: 3) {
                 Text(meal.name).font(Theme.Typography.dish(16)).foregroundStyle(Theme.Palette.ink)
                 Text(meal.logistics).font(Theme.Typography.fact(12)).foregroundStyle(Theme.Palette.warmGray)
@@ -69,7 +69,7 @@ struct NowModuleView: View {
     private func cookingCard(_ p: CookingProgress) -> some View {
         Button(action: onResume) {
             HStack(spacing: 11) {
-                PlateView(composition: p.plate, size: Theme.Metric.plateRow)
+                PlateView(name: p.name, composition: p.plate, size: Theme.Metric.plateRow)
                 VStack(alignment: .leading, spacing: 4) {
                     Text(p.name).font(Theme.Typography.dish(15)).foregroundStyle(Theme.Palette.ink)
                     HStack(spacing: 6) {
@@ -94,7 +94,7 @@ struct NowModuleView: View {
 
     private func cookedCard(_ s: CookedSummary) -> some View {
         HStack(spacing: 11) {
-            PlateView(composition: s.plate, size: Theme.Metric.plateRow)
+            PlateView(name: s.name, composition: s.plate, size: Theme.Metric.plateRow)
                 .overlay(alignment: .bottomTrailing) {
                     Image(systemName: "checkmark.circle.fill")
                         .font(.system(size: 15)).foregroundStyle(Theme.Palette.sage)

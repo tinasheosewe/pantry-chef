@@ -38,13 +38,16 @@ struct RedesignRootView: View {
 
     var body: some View {
         ZStack(alignment: .bottom) {
-            space
+            ZStack { space }
+                .id(store.space)
+                .transition(.opacity.combined(with: .scale(scale: 0.985)))
             Dock(
                 selection: Binding(get: { store.space }, set: { store.space = $0 }),
                 onAdd: { showComposer = true }
             )
             .padding(.bottom, 16)
         }
+        .animation(.spring(response: 0.34, dampingFraction: 0.85), value: store.space)
         .preferredColorScheme(.light)
         .sheet(isPresented: $showComposer) {
             ComposerView(store: store, onDismiss: { showComposer = false })
@@ -187,7 +190,7 @@ private struct PlanDaySheet: View {
                     ForEach(store.library) { dish in
                         Button { onPlan(dish) } label: {
                             HStack(spacing: 11) {
-                                PlateView(composition: dish.plate, size: Theme.Metric.plateMini)
+                                PlateView(name: dish.name, composition: dish.plate, size: Theme.Metric.plateMini)
                                 Text(dish.name).font(Theme.Typography.fact(14)).foregroundStyle(Theme.Palette.ink)
                                 Spacer()
                                 readinessLabel(for: dish)

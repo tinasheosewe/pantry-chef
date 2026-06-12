@@ -42,14 +42,16 @@ struct LibraryView: View {
             ScrollView {
                 LazyVGrid(columns: columns, spacing: 14) {
                     ForEach(dishes) { dish in
-                        LibraryCell(dish: dish,
-                                    readiness: store.readiness(for: dish),
-                                    conflicts: DishInsights.conflicts(dish, with: store.profile),
-                                    allergens: DishInsights.allergens(for: dish),
-                                    selecting: selecting,
-                                    isSelected: selectedIDs.contains(dish.id),
-                                    onToggleFavorite: { store.toggleFavorite(dish.id) })
-                            .onTapGesture { tap(dish) }
+                        Button { tap(dish) } label: {
+                            LibraryCell(dish: dish,
+                                        readiness: store.readiness(for: dish),
+                                        conflicts: DishInsights.conflicts(dish, with: store.profile),
+                                        allergens: DishInsights.allergens(for: dish),
+                                        selecting: selecting,
+                                        isSelected: selectedIDs.contains(dish.id),
+                                        onToggleFavorite: { store.toggleFavorite(dish.id) })
+                        }
+                        .buttonStyle(.pressable)
                     }
                 }
                 .padding(.horizontal, 20).padding(.top, 4).padding(.bottom, 96)
@@ -169,7 +171,7 @@ private struct LibraryCell: View {
 
     var body: some View {
         VStack(spacing: 10) {
-            PlateView(composition: dish.plate, size: 70)
+            PlateView(name: dish.name, composition: dish.plate, size: 72)
                 .overlay(alignment: .topTrailing) {
                     if !selecting {
                         Button(action: onToggleFavorite) {

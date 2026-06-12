@@ -56,7 +56,7 @@ struct StockView: View {
                     Button { editing = item } label: {
                         StockRow(item: item).contentShape(Rectangle())
                     }
-                    .buttonStyle(.plain)
+                    .buttonStyle(.pressable)
                     if item.id != items.last?.id {
                         Divider().background(Theme.Palette.hairline)
                     }
@@ -100,7 +100,7 @@ private struct StockRow: View {
 
     var body: some View {
         HStack(spacing: 11) {
-            PlateView(composition: item.plate, size: Theme.Metric.plateMini)
+            PlateView(name: item.name, composition: item.plate, size: Theme.Metric.plateMini)
             VStack(alignment: .leading, spacing: 3) {
                 Text(item.name).font(Theme.Typography.fact(14)).foregroundStyle(Theme.Palette.ink)
                 detail
@@ -145,7 +145,7 @@ private struct StockItemEditor: View {
             Capsule().fill(Theme.Palette.hairline).frame(width: 36, height: 4)
                 .frame(maxWidth: .infinity).padding(.top, 10)
             HStack(spacing: 11) {
-                PlateView(composition: item.plate, size: 38)
+                PlateView(name: item.name, composition: item.plate, size: 38)
                 Text(item.name).font(Theme.Typography.dish(20)).foregroundStyle(Theme.Palette.ink)
             }
             measureEditor

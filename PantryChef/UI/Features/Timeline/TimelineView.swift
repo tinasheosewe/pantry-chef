@@ -50,7 +50,7 @@ struct TimelineView: View {
 
     private var header: some View {
         HStack(alignment: .firstTextBaseline) {
-            Text(headerMonth).font(Theme.Typography.dish(21)).foregroundStyle(Theme.Palette.ink)
+            Text(headerMonth).font(Theme.Typography.dish(24)).foregroundStyle(Theme.Palette.ink)
                 .animation(nil, value: headerMonth)
             Spacer()
             if isAwayFromNow {
