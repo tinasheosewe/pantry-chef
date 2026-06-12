@@ -30,6 +30,7 @@ struct Dock: View {
     @Binding var selection: RootSpace
     var onAdd: () -> Void
 
+    @State private var themeFlips = 0
 
     var body: some View {
         HStack(spacing: Theme.Metric.sm) {
@@ -51,8 +52,19 @@ struct Dock: View {
             .buttonStyle(.pressable)
             .glassCard(cornerRadius: Theme.Metric.chipCornerRadius)
             .accessibilityLabel("Add")
+            // Long-press flips the visual world (cream/glass ↔ green ink) for the
+            // in-hand A/B trial; tap still opens the composer.
+            .simultaneousGesture(
+                LongPressGesture(minimumDuration: 0.6).onEnded { _ in
+                    withAnimation(.easeInOut(duration: 0.45)) {
+                        ThemeManager.shared.cycle()
+                    }
+                    themeFlips += 1
+                }
+            )
         }
         .sensoryFeedback(.selection, trigger: selection)
+        .sensoryFeedback(.success, trigger: themeFlips)
     }
 
     private func spaceButton(_ space: RootSpace) -> some View {
