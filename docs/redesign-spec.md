@@ -299,20 +299,22 @@ Color appears only as meaning. No decorative tiles, no colored blocks, no hue-ch
 unification comes from art direction, not from sameness of hue.
 
 ### Type
-- **Serif** (display; Fraunces or New York class): dish names, greetings, the sommelier
-  note (italic), big counters. Appetite and character.
+- **Fraunces** (OFL variable font, bundled + runtime-registered; system-serif
+  fallback): dish names, greetings, the sommelier note (italic), big counters.
+  Appetite and character — shipped, not aspirational.
 - **Sans** (SF Pro): all facts, metadata, UI. Quiet.
 - Rule: *appetite and information never share a font.* Numerals tabular.
 
 ### The plate system (imagery)
 - Every dish renders top-down on the same ceramic, same light, same soft shadow:
   "one ceramic, one light — every dish in the same studio."
-- Sources, three tiers with resolution order **photo > render > procedural**:
-  1. **Procedural plate** (tier 0, always available): deterministic SwiftUI renderer
-     composing a stylized top-down plate from catalog data — dominant ingredient
-     category → base tone, secondary ingredients → flecks/garnish, ingredient count →
-     texture density, recipe ID → seed. Instant, free, offline, covers every recipe
-     including ghost recipes. Openly stylized; never imitates a photo.
+- Sources, three tiers with resolution order **photo > render > emoji**:
+  1. **Emoji on ceramic** (tier 0, always available): the dish's emoji — keyword
+     match on the name, else dominant catalog category — seated on the app's
+     gradient ceramic with rim, well ring, and seat shadow. Instant, free, offline,
+     recognizable at any size, covers every recipe including ghost recipes.
+     (Replaced the procedural fleck renderer, which read as petri dishes — abstract
+     circles can be elegant but never appetizing; recognizability wins.)
   2. **AI render** (tier 1, async upgrade): generated once per kept recipe via locked
      prompt template; only the *food* is generated, then masked and composited onto the
      app's own ceramic ring asset with app-owned shadow and color grade (kills variance).
