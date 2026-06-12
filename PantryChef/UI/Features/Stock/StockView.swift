@@ -14,13 +14,16 @@ struct StockView: View {
         VStack(spacing: 0) {
             header
             ScrollView {
-                VStack(alignment: .leading, spacing: Theme.Metric.lg) {
+                // One continuous card: section labels inline, compact rows.
+                VStack(alignment: .leading, spacing: 0) {
                     ForEach(order, id: \.rawValue) { section in
                         let items = store.stock.filter { $0.section == section }
                         if !items.isEmpty { sectionView(section, items) }
                     }
                     if !store.shoppingList.isEmpty { listSection }
                 }
+                .padding(.horizontal, 14).padding(.top, 2).padding(.bottom, 10)
+                .glassCard(cornerRadius: 22)
                 .padding(.horizontal, 20).padding(.top, 6).padding(.bottom, 96)
             }
         }
@@ -50,67 +53,62 @@ struct StockView: View {
             Text(section.rawValue.uppercased()).font(Theme.Typography.eyebrow)
                 .tracking(Theme.Metric.eyebrowTracking)
                 .foregroundStyle(section == .useSoon ? Theme.Palette.ochre : Theme.Palette.warmGraySoft)
-                .padding(.bottom, 8)
-            VStack(spacing: 0) {
-                ForEach(items) { item in
-                    Button { editing = item } label: {
-                        StockRow(item: item).contentShape(Rectangle())
-                    }
-                    .buttonStyle(.pressable)
-                    if item.id != items.last?.id {
-                        Divider().background(Theme.Palette.hairline)
-                    }
+                .padding(.top, 11).padding(.bottom, 2)
+            ForEach(items) { item in
+                Button { editing = item } label: {
+                    StockRow(item: item).contentShape(Rectangle())
+                }
+                .buttonStyle(.pressable)
+                if item.id != items.last?.id {
+                    Divider().background(Theme.Palette.hairline)
                 }
             }
-            .padding(14).glassCard(cornerRadius: 22)
         }
     }
 
     private var listSection: some View {
         VStack(alignment: .leading, spacing: 0) {
             Text("ON THE LIST").font(Theme.Typography.eyebrow).tracking(Theme.Metric.eyebrowTracking)
-                .foregroundStyle(Theme.Palette.paprika).padding(.bottom, 8)
-            VStack(spacing: 0) {
-                ForEach(store.shoppingList, id: \.self) { entry in
-                    HStack(spacing: 11) {
-                        Image(systemName: "cart").font(.system(size: 13)).foregroundStyle(Theme.Palette.warmGraySoft)
-                        Text(entry).font(Theme.Typography.fact(14)).foregroundStyle(Theme.Palette.ink)
-                        Spacer()
-                        Button {
-                            withAnimation { store.removeFromList(entry) }
-                        } label: {
-                            Image(systemName: "xmark.circle.fill").font(.system(size: 15))
-                                .foregroundStyle(Theme.Palette.warmGraySoft.opacity(0.6))
-                        }
-                        .buttonStyle(.plain)
+                .foregroundStyle(Theme.Palette.paprika)
+                .padding(.top, 11).padding(.bottom, 2)
+            ForEach(store.shoppingList, id: \.self) { entry in
+                HStack(spacing: 9) {
+                    Image(systemName: "cart").font(.system(size: 12)).foregroundStyle(Theme.Palette.warmGraySoft)
+                    Text(entry).font(Theme.Typography.fact(13)).foregroundStyle(Theme.Palette.ink)
+                    Spacer()
+                    Button {
+                        withAnimation { store.removeFromList(entry) }
+                    } label: {
+                        Image(systemName: "xmark.circle.fill").font(.system(size: 14))
+                            .foregroundStyle(Theme.Palette.warmGraySoft.opacity(0.6))
+                            .frame(width: 32, height: 30)
                     }
-                    .padding(.vertical, 8)
-                    if entry != store.shoppingList.last {
-                        Divider().background(Theme.Palette.hairline)
-                    }
+                    .buttonStyle(.plain)
+                }
+                if entry != store.shoppingList.last {
+                    Divider().background(Theme.Palette.hairline)
                 }
             }
-            .padding(14).glassCard(cornerRadius: 22)
         }
     }
 }
 
+/// One compact line per item: plate · name · detail (truncating) · day count.
 private struct StockRow: View {
     let item: StockItem
 
     var body: some View {
-        HStack(spacing: 11) {
-            PlateView(name: item.name, composition: item.plate, size: Theme.Metric.plateMini)
-            VStack(alignment: .leading, spacing: 3) {
-                Text(item.name).font(Theme.Typography.fact(14)).foregroundStyle(Theme.Palette.ink)
-                detail
-            }
-            Spacer(minLength: 0)
+        HStack(spacing: 9) {
+            PlateView(name: item.name, composition: item.plate, size: 27)
+            Text(item.name).font(Theme.Typography.fact(13.5)).foregroundStyle(Theme.Palette.ink)
+                .lineLimit(1).layoutPriority(1)
+            Spacer(minLength: 8)
+            detail
             trailing
-            Image(systemName: "chevron.right").font(.system(size: 11))
+            Image(systemName: "chevron.right").font(.system(size: 10))
                 .foregroundStyle(Theme.Palette.warmGraySoft.opacity(0.5))
         }
-        .padding(.vertical, 7)
+        .padding(.vertical, 6)
     }
 
     @ViewBuilder private var detail: some View {
@@ -118,11 +116,14 @@ private struct StockRow: View {
         case .made(let d):
             Label(d, systemImage: "snowflake").labelStyle(.titleAndIcon)
                 .font(Theme.Typography.fact(11)).foregroundStyle(Theme.Palette.warmGraySoft)
+                .lineLimit(1)
         case .perishable(let d, _):
             Text(d).font(Theme.Typography.fact(11)).foregroundStyle(Theme.Palette.warmGraySoft)
+                .lineLimit(1)
         case .staple(let level):
-            Text(level.label).font(Theme.Typography.fact(11))
+            Text(level.shortLabel).font(Theme.Typography.fact(11))
                 .foregroundStyle(level == .inStock ? Theme.Palette.warmGraySoft : Theme.Palette.ochre)
+                .lineLimit(1)
         }
     }
 

@@ -21,6 +21,14 @@ struct StockItem: Identifiable, Equatable {
             case .out: return "Out"
             }
         }
+        /// Compact form for single-line rows.
+        var shortLabel: String {
+            switch self {
+            case .inStock: return "in stock"
+            case .runningLow: return "low · listed"
+            case .out: return "out"
+            }
+        }
     }
     let id: UUID
     let key: String

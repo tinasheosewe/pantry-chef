@@ -13,7 +13,8 @@ struct LibraryView: View {
     @State private var selectedIDs: Set<UUID> = []
     @State private var query = ""
 
-    private let columns = [GridItem(.flexible(), spacing: 14), GridItem(.flexible(), spacing: 14)]
+    private let columns = [GridItem(.flexible(), spacing: 10), GridItem(.flexible(), spacing: 10),
+                           GridItem(.flexible(), spacing: 10)]
 
     private var filter: LibraryFilter { store.libraryFilter }
 
@@ -40,7 +41,7 @@ struct LibraryView: View {
             }
             .padding(.horizontal, 20).padding(.top, 6).padding(.bottom, 10)
             ScrollView {
-                LazyVGrid(columns: columns, spacing: 14) {
+                LazyVGrid(columns: columns, spacing: 10) {
                     ForEach(dishes) { dish in
                         Button { tap(dish) } label: {
                             LibraryCell(dish: dish,
@@ -170,34 +171,40 @@ private struct LibraryCell: View {
     var onToggleFavorite: () -> Void = {}
 
     var body: some View {
-        VStack(spacing: 10) {
-            PlateView(name: dish.name, composition: dish.plate, size: 72)
+        VStack(spacing: 7) {
+            PlateView(name: dish.name, composition: dish.plate, size: 54)
                 .overlay(alignment: .topTrailing) {
                     if !selecting {
                         Button(action: onToggleFavorite) {
                             Image(systemName: dish.isFavorite ? "heart.fill" : "heart")
-                                .font(.system(size: 12))
+                                .font(.system(size: 10))
                                 .foregroundStyle(dish.isFavorite ? Theme.Palette.paprika : Theme.Palette.warmGraySoft.opacity(0.7))
-                                .padding(5).background(Circle().fill(Theme.Palette.cream))
+                                .padding(4).background(Circle().fill(Theme.Palette.cream))
                         }
                         .buttonStyle(.plain)
-                        .offset(x: 8, y: -6)
+                        .offset(x: 8, y: -5)
                         .accessibilityLabel(dish.isFavorite ? "Unfavorite" : "Favorite")
                     }
                 }
-            VStack(spacing: 3) {
-                Text(dish.name).font(Theme.Typography.dish(14)).foregroundStyle(Theme.Palette.ink)
+            VStack(spacing: 2) {
+                Text(dish.name).font(Theme.Typography.dish(13)).foregroundStyle(Theme.Palette.ink)
                     .multilineTextAlignment(.center).lineLimit(2)
+                    .frame(minHeight: 32, alignment: .top)
                 statusLine
-                allergenLine
+                if !conflicts.isEmpty {
+                    Label(conflicts.map(\.title).joined(separator: ", ").lowercased(),
+                          systemImage: "exclamationmark.triangle.fill")
+                        .labelStyle(.titleAndIcon).font(Theme.Typography.fact(10))
+                        .foregroundStyle(Theme.Palette.ochre).lineLimit(1)
+                }
             }
         }
         .frame(maxWidth: .infinity)
-        .padding(.vertical, 14).padding(.horizontal, 8)
-        .glassCard(cornerRadius: 20)
+        .padding(.vertical, 11).padding(.horizontal, 5)
+        .glassCard(cornerRadius: 18)
         .overlay {
             if selecting {
-                RoundedRectangle(cornerRadius: 20, style: .continuous)
+                RoundedRectangle(cornerRadius: 18, style: .continuous)
                     .strokeBorder(isSelected ? Theme.Palette.paprika : Theme.Palette.hairline,
                                   lineWidth: isSelected ? 2 : 1)
             }
@@ -205,9 +212,9 @@ private struct LibraryCell: View {
         .overlay(alignment: .topLeading) {
             if selecting {
                 Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
-                    .font(.system(size: 18))
+                    .font(.system(size: 16))
                     .foregroundStyle(isSelected ? Theme.Palette.paprika : Theme.Palette.warmGraySoft.opacity(0.6))
-                    .padding(8)
+                    .padding(6)
             }
         }
         .opacity(selecting && !isSelected ? 0.7 : 1)
@@ -217,24 +224,15 @@ private struct LibraryCell: View {
         switch readiness {
         case .ready:
             Text("\(dish.time) · ready").font(Theme.Typography.fact(11)).foregroundStyle(Theme.Palette.sage)
+                .lineLimit(1)
         case .readyWithSwaps:
-            Text("\(dish.time) · ready with a swap")
+            Text("\(dish.time) · swap-ready")
                 .font(Theme.Typography.fact(11)).foregroundStyle(Theme.Palette.sage).lineLimit(1)
         case .needs(let items):
-            Text(dish.isYours ? "your dish · \(dish.time)" : "\(dish.time) · needs \(items.count)")
+            Text(dish.isYours ? "yours · \(dish.time)" : "\(dish.time) · needs \(items.count)")
                 .font(Theme.Typography.fact(11))
                 .foregroundStyle(dish.isYours ? Theme.Palette.paprika : Theme.Palette.ochre)
-        }
-    }
-
-    @ViewBuilder private var allergenLine: some View {
-        if !conflicts.isEmpty {
-            Label("contains \(conflicts.map(\.title).joined(separator: ", ").lowercased())", systemImage: "exclamationmark.triangle.fill")
-                .labelStyle(.titleAndIcon).font(Theme.Typography.fact(10))
-                .foregroundStyle(Theme.Palette.ochre).lineLimit(1)
-        } else if !allergens.isEmpty {
-            Text(allergens.map(\.title).joined(separator: " · ").lowercased())
-                .font(Theme.Typography.fact(10)).foregroundStyle(Theme.Palette.warmGraySoft.opacity(0.8)).lineLimit(1)
+                .lineLimit(1)
         }
     }
 }
