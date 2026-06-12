@@ -1,9 +1,9 @@
 import SwiftUI
 
-/// A dish's face: its emoji seated on the app's ceramic plate — instant, free,
-/// offline, recognizable at any size (spec §10 tier 0; the AI render replaces the
-/// emoji per-dish when tier 1 is wired). Decorative: the dish name carries the
-/// meaning, so the plate is hidden from assistive tech.
+/// A dish's face: the AI-painted plate when one exists (spec §10 tier 1, cached by
+/// PlateRenderLibrary), else its emoji seated on the app's ceramic plate — instant,
+/// free, offline, recognizable at any size (tier 0). Decorative: the dish name
+/// carries the meaning, so the plate is hidden from assistive tech.
 struct PlateView: View {
     let name: String
     var composition: PlateComposition = PlateComposition(categories: [], seed: 0)
@@ -14,6 +14,24 @@ struct PlateView: View {
     }
 
     var body: some View {
+        ZStack {
+            if let painted = PlateRenderLibrary.shared.render(for: name) {
+                Image(uiImage: painted)
+                    .resizable()
+                    .scaledToFit()
+                    .shadow(color: Color(red: 0.43, green: 0.27, blue: 0.12).opacity(0.20),
+                            radius: size * 0.12, x: 0, y: size * 0.08)
+                    .transition(.opacity)
+            } else {
+                ceramicWithEmoji
+            }
+        }
+        .frame(width: size, height: size)
+        .accessibilityHidden(true)
+        .task(id: name) { await PlateRenderLibrary.shared.request(name) }
+    }
+
+    private var ceramicWithEmoji: some View {
         ZStack {
             // Ceramic: warm gradient with light from the top-left, a fine rim, and
             // a soft seat shadow under the food.
@@ -42,8 +60,6 @@ struct PlateView: View {
                 .font(.system(size: size * 0.5))
                 .offset(y: -size * 0.01)
         }
-        .frame(width: size, height: size)
-        .accessibilityHidden(true)
     }
 }
 

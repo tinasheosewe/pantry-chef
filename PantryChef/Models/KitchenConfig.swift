@@ -38,4 +38,19 @@ enum KitchenConfig {
         static let probableAbove = 0.50
         static let uncertainAbove = 0.20
     }
+
+    /// Tier-1 plate rendering (spec §10): spend and size knobs for the one-time
+    /// AI plate renders. Art direction lives with `PlateRenderLibrary`.
+    enum Render {
+        /// Image model + quality per render call (the cost lever).
+        static let model = "gpt-image-1"
+        static let quality = "medium"
+        /// Hard cap on *new* renders started per app launch, bounding worst-case
+        /// spend even if the library suddenly grows. Cached plates are free.
+        static let maxNewPerLaunch = 12
+        /// Seconds before an image render attempt is abandoned.
+        static let timeoutSeconds: TimeInterval = 120
+        /// Longest side (px) a render is downscaled to before caching.
+        static let cachedPixelSize: CGFloat = 640
+    }
 }

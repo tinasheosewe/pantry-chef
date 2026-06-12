@@ -314,6 +314,19 @@ final class KitchenStore {
             StockItem(key: "olive oil", name: "Olive oil", plate: plate([.oils], 8),
                       section: .staples, measure: .staple(.runningLow))
         ]
+
+        // Render policy: anything that is a *dish* somewhere (library, fan,
+        // journal) earns a painted plate; raw stock items stay emoji.
+        Task { @MainActor [weak self] in
+            guard let self else { return }
+            PlateRenderLibrary.shared.eligibility = { [weak self] name in
+                guard let self else { return false }
+                let key = PlateRenderLibrary.slug(name)
+                return self.library.contains { PlateRenderLibrary.slug($0.name) == key }
+                    || self.fanOptions.contains { PlateRenderLibrary.slug($0.name) == key }
+                    || self.journal.contains { PlateRenderLibrary.slug($0.name) == key }
+            }
+        }
     }
 }
 

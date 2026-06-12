@@ -97,6 +97,7 @@
 		D5316F377083EA6C299007C4 /* PantryItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1D59BC258942DB87FCB1ABA /* PantryItem.swift */; };
 		D9C5FEB0C9081A69D915BE27 /* IntakeParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = C66E3CD688A4E06B59D5056F /* IntakeParser.swift */; };
 		DAE7AC11853DB1499F672B24 /* catalog.source.json in Resources */ = {isa = PBXBuildFile; fileRef = C76C028AE39F0001065ABA30 /* catalog.source.json */; };
+		DCDC61BAB6E9A4507EAD3C0B /* PlateRenderLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 420C676E86193CE0F9F81388 /* PlateRenderLibrary.swift */; };
 		DF8741FF3971AC8DA9A07FCE /* TimelineModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4535B6D4E920E2F41ECD6F29 /* TimelineModels.swift */; };
 		E170BE5955170F8412479C16 /* catalog.json in Resources */ = {isa = PBXBuildFile; fileRef = 67106B750F48353E27DE5B0D /* catalog.json */; };
 		E2969078C5F1A750D6A88589 /* AppLaunchOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0C49A659EE21F5019A9DF94 /* AppLaunchOptions.swift */; };
@@ -162,6 +163,7 @@
 		353D73D6645D3DD2DDEC4808 /* LibraryView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LibraryView.swift; sourceTree = "<group>"; };
 		3E8B2D4D276D1DB31BFD0269 /* UserCatalogStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserCatalogStore.swift; sourceTree = "<group>"; };
 		3FBEE574ACB02A73EEEDC07D /* TestSupport.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TestSupport.swift; sourceTree = "<group>"; };
+		420C676E86193CE0F9F81388 /* PlateRenderLibrary.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PlateRenderLibrary.swift; sourceTree = "<group>"; };
 		429A404308616F18132F9767 /* FanView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FanView.swift; sourceTree = "<group>"; };
 		441EAFD71E8F3A9148E9E00F /* IngredientMatcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IngredientMatcher.swift; sourceTree = "<group>"; };
 		44FECA685551A0C757FC6819 /* PantryCookReview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PantryCookReview.swift; sourceTree = "<group>"; };
@@ -584,6 +586,7 @@
 				A2182BF9EFCF19CC499891FD /* ReadinessService.swift */,
 				C66E3CD688A4E06B59D5056F /* IntakeParser.swift */,
 				8241073BA3C1CE75DE6558C5 /* MultiCookScheduler.swift */,
+				420C676E86193CE0F9F81388 /* PlateRenderLibrary.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -843,6 +846,7 @@
 				C0B7BD86B91332DB8490DF6E /* RecipeEditorView.swift in Sources */,
 				E3AFF6C877BB2E079E5B8E1C /* EmojiPlate.swift in Sources */,
 				1CA4005B8A5EF15EDCD61EDE /* FontLoader.swift in Sources */,
+				DCDC61BAB6E9A4507EAD3C0B /* PlateRenderLibrary.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
