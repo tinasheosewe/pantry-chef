@@ -33,20 +33,20 @@ struct Dock: View {
 
     var body: some View {
         HStack(spacing: Theme.Metric.sm) {
-            HStack(spacing: Theme.Metric.xs) {
+            HStack(spacing: 6) {
                 ForEach(RootSpace.allCases) { space in
                     spaceButton(space)
                 }
             }
-            .padding(.horizontal, Theme.Metric.sm)
-            .padding(.vertical, 6)
+            .padding(.horizontal, 10)
+            .padding(.vertical, 7)
             .glassCard(cornerRadius: Theme.Metric.chipCornerRadius)
 
             Button(action: onAdd) {
                 Image(systemName: "plus")
-                    .font(.system(size: 18, weight: .medium))
+                    .font(.system(size: 21, weight: .medium))
                     .foregroundStyle(Theme.Palette.paprika)
-                    .frame(width: 45, height: 45)
+                    .frame(width: 56, height: 56)
             }
             .buttonStyle(.pressable)
             .glassCard(cornerRadius: Theme.Metric.chipCornerRadius)
@@ -61,9 +61,9 @@ struct Dock: View {
             withAnimation(.spring(response: 0.32, dampingFraction: 0.82)) { selection = space }
         } label: {
             Image(systemName: space.icon)
-                .font(.system(size: 16, weight: .medium))
+                .font(.system(size: 19, weight: .medium))
                 .foregroundStyle(isActive ? Theme.Palette.cream : Theme.Palette.warmGraySoft)
-                .frame(width: 33, height: 33)
+                .frame(width: 46, height: 46)
                 .background {
                     if isActive {
                         Circle().fill(Theme.Palette.ink)

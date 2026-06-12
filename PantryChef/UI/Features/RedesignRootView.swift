@@ -83,20 +83,28 @@ struct RedesignRootView: View {
                 onReachStart: { store.extendPast() },
                 onReachEnd: { store.extendFuture() },
                 nowContent: {
-                    AnyView(NowModuleView(
-                        state: Binding(get: { store.nowState }, set: { store.nowState = $0 }),
-                        onCook: { option in detailDish = option.dish },
-                        onSeeAll: {
-                            store.libraryFilter = .ready
-                            withAnimation { store.space = .library }
-                        },
-                        onChange: { store.resetNow() },
-                        onResume: {
-                            if case .cooking(let p) = store.nowState, let dish = p.dish {
-                                multiSession = CookSession(dishes: [dish])
+                    AnyView(VStack(alignment: .leading, spacing: 10) {
+                        NowModuleView(
+                            state: Binding(get: { store.nowState }, set: { store.nowState = $0 }),
+                            onCook: { option in detailDish = option.dish },
+                            onSeeAll: {
+                                store.libraryFilter = .ready
+                                withAnimation { store.space = .library }
+                            },
+                            onChange: { store.resetNow() },
+                            onResume: {
+                                if case .cooking(let p) = store.nowState, let dish = p.dish {
+                                    multiSession = CookSession(dishes: [dish])
+                                }
                             }
-                        }
-                    ))
+                        )
+                        UseSoonStrip(store: store) { withAnimation { store.space = .stock } }
+                        KitchenStatsStrip(
+                            store: store,
+                            onReady: { store.libraryFilter = .ready; withAnimation { store.space = .library } },
+                            onStock: { withAnimation { store.space = .stock } }
+                        )
+                    })
                 }
             )
         case .library:
@@ -168,6 +176,91 @@ private struct CookFlowScreen: View {
                 onClose()
             }
         )
+    }
+}
+
+/// The expiring-items strip under the now-module (from the approved design):
+/// what needs using, with day counts, one tap from Stock.
+private struct UseSoonStrip: View {
+    var store: KitchenStore
+    var onOpen: () -> Void
+
+    private var items: [(name: String, days: Int)] {
+        store.stock.compactMap { item in
+            if case .perishable(_, let days?) = item.measure, days <= 5 {
+                return (item.name, days)
+            }
+            return nil
+        }
+        .sorted { $0.days < $1.days }
+    }
+
+    var body: some View {
+        if !items.isEmpty {
+            Button(action: onOpen) {
+                HStack(spacing: 8) {
+                    Text("USE SOON").font(Theme.Typography.eyebrow)
+                        .tracking(Theme.Metric.eyebrowTracking)
+                        .foregroundStyle(Theme.Palette.ochre)
+                    ForEach(Array(items.prefix(3).enumerated()), id: \.offset) { index, item in
+                        if index > 0 {
+                            Text("·").foregroundStyle(Theme.Palette.warmGraySoft.opacity(0.6))
+                        }
+                        HStack(spacing: 3) {
+                            Text(item.name).font(Theme.Typography.fact(12)).foregroundStyle(Theme.Palette.ink)
+                                .lineLimit(1)
+                            Text("\(item.days)d").font(Theme.Typography.numeral(11))
+                                .foregroundStyle(Theme.Palette.ochre)
+                        }
+                    }
+                    Spacer(minLength: 0)
+                    Image(systemName: "chevron.right").font(.system(size: 11))
+                        .foregroundStyle(Theme.Palette.warmGraySoft.opacity(0.6))
+                }
+                .padding(.horizontal, 14).padding(.vertical, 11)
+                .frame(maxWidth: .infinity)
+                .glassCard(cornerRadius: 16)
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.pressable)
+        }
+    }
+}
+
+/// The kitchen at a glance — ready dishes, stocked items, list length — each a
+/// door to its space (from the approved design's stat strip).
+private struct KitchenStatsStrip: View {
+    var store: KitchenStore
+    var onReady: () -> Void
+    var onStock: () -> Void
+
+    var body: some View {
+        let ready = store.library.filter { store.readiness(for: $0).isMakeableNow }.count
+        HStack(spacing: 0) {
+            stat("\(ready)", "ready tonight", action: onReady)
+            divider
+            stat("\(store.stock.count)", "in stock", action: onStock)
+            divider
+            stat("\(store.shoppingList.count)", "on the list", action: onStock)
+        }
+        .glassCard(cornerRadius: 16)
+    }
+
+    private func stat(_ value: String, _ label: String, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            VStack(spacing: 2) {
+                Text(value).font(Theme.Typography.dish(20)).foregroundStyle(Theme.Palette.ink)
+                Text(label).font(Theme.Typography.fact(11)).foregroundStyle(Theme.Palette.warmGraySoft)
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 10)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.pressable)
+    }
+
+    private var divider: some View {
+        Rectangle().fill(Theme.Palette.hairline).frame(width: 1, height: 30)
     }
 }
 

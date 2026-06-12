@@ -217,11 +217,11 @@ private struct LibraryCell: View {
         switch readiness {
         case .ready:
             Text("\(dish.time) · ready").font(Theme.Typography.fact(11)).foregroundStyle(Theme.Palette.sage)
-        case .readyWithSwaps(let swaps):
-            Text("ready · \(swaps.first.map { "\($0.fromName) → \($0.toName)" } ?? "with a swap")")
+        case .readyWithSwaps:
+            Text("\(dish.time) · ready with a swap")
                 .font(Theme.Typography.fact(11)).foregroundStyle(Theme.Palette.sage).lineLimit(1)
         case .needs(let items):
-            Text(dish.isYours ? "your dish · \(dish.time)" : "needs \(items.count)")
+            Text(dish.isYours ? "your dish · \(dish.time)" : "\(dish.time) · needs \(items.count)")
                 .font(Theme.Typography.fact(11))
                 .foregroundStyle(dish.isYours ? Theme.Palette.paprika : Theme.Palette.ochre)
         }
