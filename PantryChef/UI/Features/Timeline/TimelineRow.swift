@@ -53,9 +53,8 @@ struct TimelineRow: View {
             Text("What you could make appears here.")
                 .font(Theme.Typography.fact(13)).foregroundStyle(Theme.Palette.warmGray)
         }
-        .padding(16)
+        .padding(.vertical, 10)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .glassCard()
     }
 
     private func journalRow(_ j: JournalItem) -> some View {
@@ -75,19 +74,20 @@ struct TimelineRow: View {
         HStack(spacing: 11) {
             PlateView(name: m.name, composition: m.plate, size: Theme.Metric.plateRow)
             VStack(alignment: .leading, spacing: 2) {
-                Text(DayLabel.eyebrow(for: m.date)).font(Theme.Typography.fact(11))
-                    .foregroundStyle(Theme.Palette.warmGraySoft)
-                Text(m.name).font(Theme.Typography.dish(15)).foregroundStyle(Theme.Palette.ink)
+                Text(DayLabel.eyebrow(for: m.date).uppercased())
+                    .font(.system(size: 9)).tracking(Theme.Metric.eyebrowTracking)
+                    .foregroundStyle(Theme.Palette.ink.opacity(0.55))
+                Text(m.name).font(Theme.Typography.dish(16)).foregroundStyle(Theme.Palette.ink)
                 if m.missingCount > 0 {
-                    Text("needs \(m.missingCount) → list").font(Theme.Typography.fact(11))
-                        .foregroundStyle(Theme.Palette.ochre)
+                    Text("NEEDS \(m.missingCount) → LIST")
+                        .font(.system(size: 9)).tracking(1.6)
+                        .foregroundStyle(Theme.Palette.paprika)
                 }
             }
             Spacer(minLength: 0)
         }
-        .padding(12)
+        .padding(.vertical, 6)
         .frame(maxWidth: .infinity)
-        .glassCard(cornerRadius: 18)
     }
 
     private func expiryRow(_ e: ExpiryMilestone) -> some View {
@@ -115,9 +115,9 @@ struct TimelineRow: View {
         .padding(.horizontal, 13).padding(.vertical, 11)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
-            RoundedRectangle(cornerRadius: 18, style: .continuous)
-                .strokeBorder(Theme.Palette.paprika.opacity(0.35),
-                              style: StrokeStyle(lineWidth: 1.5, dash: [5, 3]))
+            Rectangle()
+                .strokeBorder(Theme.Palette.ink.opacity(0.4),
+                              style: StrokeStyle(lineWidth: 1, dash: [4, 3]))
         )
         .contentShape(Rectangle())
     }

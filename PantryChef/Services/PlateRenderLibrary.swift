@@ -63,6 +63,12 @@ final class PlateRenderLibrary {
             renders[key] = cached
             return
         }
+        // Seed dishes ship with their art in the bundle — instant and offline,
+        // like a cookbook's printed plates. Only new dishes go to the painter.
+        if let bundled = Self.loadBundled(key) {
+            renders[key] = bundled
+            return
+        }
         guard eligibility(name) else {
             Self.log.debug("\(key): not eligible (policy not wired yet, or not a dish)")
             return
@@ -146,8 +152,16 @@ final class PlateRenderLibrary {
 
     nonisolated static func slug(_ name: String) -> String {
         name.lowercased()
+            .folding(options: .diacriticInsensitive, locale: Locale(identifier: "en_US_POSIX"))
             .split(whereSeparator: { !($0.isLetter || $0.isNumber) })
             .joined(separator: "-")
+    }
+
+    private nonisolated static func loadBundled(_ key: String) -> UIImage? {
+        let url = Bundle.main.url(forResource: key, withExtension: "png")
+            ?? Bundle.main.url(forResource: key, withExtension: "png", subdirectory: "PlateArt")
+        guard let url, let data = try? Data(contentsOf: url) else { return nil }
+        return UIImage(data: data)
     }
 
     private nonisolated static var cacheDirectory: URL {

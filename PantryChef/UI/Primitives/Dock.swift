@@ -10,61 +10,44 @@ enum RootSpace: String, CaseIterable, Identifiable, Sendable {
     var title: String {
         switch self {
         case .timeline: return "Today"
-        case .library: return "Library"
-        case .stock: return "Stock"
-        }
-    }
-
-    var icon: String {
-        switch self {
-        case .timeline: return "calendar.day.timeline.left"
-        case .library: return "book"
-        case .stock: return "archivebox"
+        case .library: return "Dishes"
+        case .stock: return "Stores"
         }
     }
 }
 
-/// The floating glass dock: a glass pill of root spaces plus a separate add button
-/// (the composer). Active space reads as an ink circle; the rest are quiet.
+/// The page floor (Field Notes): a solid rule, the inked nav band — TODAY ·
+/// DISHES · STORES · ＋ — and the ❧ tailpiece carrying one true line. Printed
+/// furniture, not a floating pill.
 struct Dock: View {
     @Binding var selection: RootSpace
     var onAdd: () -> Void
-
-    @State private var themeFlips = 0
+    /// The page's one true closing line; varies by space.
+    var tailpiece: String = ""
 
     var body: some View {
-        HStack(spacing: Theme.Metric.sm) {
-            HStack(spacing: 6) {
+        VStack(spacing: 0) {
+            SolidRule()
+            HStack(spacing: 0) {
                 ForEach(RootSpace.allCases) { space in
                     spaceButton(space)
                 }
-            }
-            .padding(.horizontal, 10)
-            .padding(.vertical, 7)
-            .glassCard(cornerRadius: Theme.Metric.chipCornerRadius)
-
-            Button(action: onAdd) {
-                Image(systemName: "plus")
-                    .font(.system(size: 21, weight: .medium))
-                    .foregroundStyle(Theme.Palette.paprika)
-                    .frame(width: 56, height: 56)
-            }
-            .buttonStyle(.pressable)
-            .glassCard(cornerRadius: Theme.Metric.chipCornerRadius)
-            .accessibilityLabel("Add")
-            // Long-press flips the visual world (cream/glass ↔ green ink) for the
-            // in-hand A/B trial; tap still opens the composer.
-            .simultaneousGesture(
-                LongPressGesture(minimumDuration: 0.6).onEnded { _ in
-                    withAnimation(.easeInOut(duration: 0.45)) {
-                        ThemeManager.shared.cycle()
-                    }
-                    themeFlips += 1
+                Button(action: onAdd) {
+                    Text("＋")
+                        .font(.system(size: 17, weight: .medium))
+                        .foregroundStyle(Theme.Palette.paprika)
+                        .frame(maxWidth: .infinity).frame(height: 44)
+                        .contentShape(Rectangle())
                 }
-            )
+                .buttonStyle(.pressable)
+                .accessibilityLabel("Add")
+            }
+            if !tailpiece.isEmpty {
+                Tailpiece(text: tailpiece).padding(.bottom, 6)
+            }
         }
+        .background(Theme.Palette.cream)
         .sensoryFeedback(.selection, trigger: selection)
-        .sensoryFeedback(.success, trigger: themeFlips)
     }
 
     private func spaceButton(_ space: RootSpace) -> some View {
@@ -72,15 +55,17 @@ struct Dock: View {
         return Button {
             withAnimation(.spring(response: 0.32, dampingFraction: 0.82)) { selection = space }
         } label: {
-            Image(systemName: space.icon)
-                .font(.system(size: 19, weight: .medium))
-                .foregroundStyle(isActive ? Theme.Palette.cream : Theme.Palette.warmGraySoft)
-                .frame(width: 46, height: 46)
-                .background {
-                    if isActive {
-                        Circle().fill(Theme.Palette.ink)
-                    }
-                }
+            VStack(spacing: 3) {
+                Text(space.title.uppercased())
+                    .font(.system(size: 11, weight: isActive ? .semibold : .regular))
+                    .tracking(Theme.Metric.eyebrowTracking)
+                    .foregroundStyle(isActive ? Theme.Palette.ink : Theme.Palette.ink.opacity(0.5))
+                Rectangle()
+                    .fill(isActive ? Theme.Palette.paprika : .clear)
+                    .frame(width: 22, height: 2)
+            }
+            .frame(maxWidth: .infinity).frame(height: 44)
+            .contentShape(Rectangle())
         }
         .buttonStyle(.pressable)
         .accessibilityLabel(space.title)
@@ -94,8 +79,7 @@ struct Dock: View {
         var body: some View {
             ZStack(alignment: .bottom) {
                 Theme.Palette.cream.ignoresSafeArea()
-                Dock(selection: $selection, onAdd: {})
-                    .padding(.bottom, 20)
+                Dock(selection: $selection, onAdd: {}, tailpiece: "№ 163 · 3 ready tonight")
             }
         }
     }

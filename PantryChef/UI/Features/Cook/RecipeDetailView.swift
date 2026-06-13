@@ -72,11 +72,10 @@ struct RecipeDetailView: View {
             VStack(alignment: .leading, spacing: 22) {
                 hero
                 actionRow
-                if !DishInsights.allergens(for: currentDish).isEmpty { allergenChips }
                 ingredients
                 if !effectiveDish.steps.isEmpty { method }
             }
-            .padding(20).padding(.bottom, 90)
+            .padding(20).padding(.bottom, 24)
         }
         .background(KitchenBackground())
         .overlay(alignment: .topTrailing) {
@@ -117,70 +116,89 @@ struct RecipeDetailView: View {
     // MARK: - Hero & actions
 
     private var hero: some View {
-        VStack(spacing: 12) {
-            PlateView(name: currentDish.name, composition: currentDish.plate, size: 150)
-            Text(currentDish.name).font(Theme.Typography.dish(30)).foregroundStyle(Theme.Palette.ink)
-                .multilineTextAlignment(.center)
-            HStack(spacing: 6) {
-                Text(currentDish.time).font(Theme.Typography.fact(13)).foregroundStyle(Theme.Palette.warmGray)
-                Text("·").foregroundStyle(Theme.Palette.warmGraySoft)
+        VStack(alignment: .leading, spacing: 0) {
+            Eyebrow(text: kicker, tone: .urgent)
+            HStack(alignment: .top, spacing: 14) {
+                VStack(alignment: .leading, spacing: 6) {
+                    Text(currentDish.name).font(Theme.Typography.dish(27)).foregroundStyle(Theme.Palette.ink)
+                        .fixedSize(horizontal: false, vertical: true)
+                    if let blurb = currentDish.blurb {
+                        Text(blurb).font(Theme.Typography.note(13)).foregroundStyle(Theme.Palette.warmGray)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                }
+                Spacer(minLength: 0)
+                PlateView(name: currentDish.name, composition: currentDish.plate, size: 84)
+            }
+            .padding(.top, 6)
+            factsBand.padding(.top, 14)
+        }
+        .padding(.top, 14)
+    }
+
+    /// "WEEKNIGHT · DAIRY" — pace plus what it contains.
+    private var kicker: String {
+        let pace = (currentDish.minutes ?? 999) <= 30 ? "WEEKNIGHT" : "A PROJECT"
+        let contains = DishInsights.allergens(for: currentDish).prefix(2).map { $0.title.uppercased() }
+        return ([pace] + contains).joined(separator: " · ")
+    }
+
+    /// The fact line between solid rules: time · serves −/+ · readiness.
+    private var factsBand: some View {
+        VStack(spacing: 0) {
+            SolidRule()
+            HStack {
+                bandText(currentDish.time.uppercased())
+                Spacer()
+                HStack(spacing: 10) {
+                    bandStepper("−") { if servings > 1 { servings -= 1 } }
+                    bandText("SERVES \(servings)")
+                    bandStepper("＋") { if servings < 24 { servings += 1 } }
+                }
+                Spacer()
                 readinessLabel
             }
-            servingsStepper
+            .padding(.vertical, 8)
+            SolidRule()
         }
-        .frame(maxWidth: .infinity)
-        .padding(.top, 24)
     }
 
-    private var servingsStepper: some View {
-        HStack(spacing: 14) {
-            stepperButton("minus") { if servings > 1 { servings -= 1 } }
-            Text("serves \(servings)").font(Theme.Typography.numeral(13))
-                .foregroundStyle(servings == currentDish.servings ? Theme.Palette.warmGray : Theme.Palette.paprika)
-            stepperButton("plus") { if servings < 24 { servings += 1 } }
-        }
-        .padding(.top, 2)
+    private func bandText(_ text: String) -> some View {
+        Text(text).font(.system(size: 10)).tracking(1.6)
+            .foregroundStyle(Theme.Palette.ink.opacity(0.75))
     }
 
-    private func stepperButton(_ icon: String, action: @escaping () -> Void) -> some View {
+    private func bandStepper(_ glyph: String, action: @escaping () -> Void) -> some View {
         Button(action: action) {
-            Image(systemName: icon).font(.system(size: 12, weight: .medium))
-                .foregroundStyle(Theme.Palette.ink)
-                .frame(width: 28, height: 28)
-                .background(Circle().fill(Theme.Palette.creamRaised))
-                .overlay(Circle().strokeBorder(Theme.Palette.hairline))
+            Text(glyph).font(.system(size: 13, weight: .medium))
+                .foregroundStyle(Theme.Palette.paprika)
+                .frame(width: 26, height: 26)
+                .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
     }
 
     private var actionRow: some View {
-        HStack(spacing: 10) {
-            actionChip(currentDish.isFavorite ? "heart.fill" : "heart",
-                       currentDish.isFavorite ? "Saved" : "Save",
-                       tint: currentDish.isFavorite ? Theme.Palette.paprika : Theme.Palette.warmGray) {
+        HStack(spacing: 18) {
+            actionWord(currentDish.isFavorite ? "♥ SAVED" : "♡ SAVE",
+                       tint: currentDish.isFavorite ? Theme.Palette.paprika : nil) {
                 currentDish.isFavorite.toggle()
                 onToggleFavorite()
             }
-            actionChip("pencil", "Edit", tint: Theme.Palette.warmGray) { showEditor = true }
-            actionChip("leaf", "Healthier", tint: Theme.Palette.sage) { runHealthier() }
-            actionChip("wand.and.stars", "Tweak", tint: Theme.Palette.warmGray) { showTweakPrompt = true }
+            actionWord("EDIT") { showEditor = true }
+            actionWord("HEALTHIER", tint: Theme.Palette.sage) { runHealthier() }
+            actionWord("TWEAK") { showTweakPrompt = true }
             if aiBusy { ProgressView().controlSize(.small) }
+            Spacer(minLength: 0)
         }
-        .frame(maxWidth: .infinity)
     }
 
-    private func actionChip(_ icon: String, _ title: String, tint: Color,
+    private func actionWord(_ title: String, tint: Color? = nil,
                             action: @escaping () -> Void) -> some View {
         Button(action: action) {
-            VStack(spacing: 4) {
-                Image(systemName: icon).font(.system(size: 16))
-                Text(title).font(Theme.Typography.fact(11))
-            }
-            .foregroundStyle(tint)
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 10)
-            .background(RoundedRectangle(cornerRadius: 14, style: .continuous).fill(Theme.Palette.creamRaised))
-            .overlay(RoundedRectangle(cornerRadius: 14, style: .continuous).strokeBorder(Theme.Palette.hairline))
+            Text(title).font(.system(size: 9.5)).tracking(1.8)
+                .foregroundStyle(tint ?? Theme.Palette.ink.opacity(0.6))
+                .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
         .disabled(aiBusy)
@@ -189,11 +207,11 @@ struct RecipeDetailView: View {
     @ViewBuilder private var readinessLabel: some View {
         switch readiness {
         case .ready:
-            Text("everything on hand").font(Theme.Typography.fact(13)).foregroundStyle(Theme.Palette.sage)
+            Text("READY").font(.system(size: 10)).tracking(1.6).foregroundStyle(Theme.Palette.sage)
         case .readyWithSwaps:
-            Text("ready with a swap").font(Theme.Typography.fact(13)).foregroundStyle(Theme.Palette.sage)
+            Text("SWAP-READY").font(.system(size: 10)).tracking(1.6).foregroundStyle(Theme.Palette.sage)
         case .needs(let items):
-            Text("needs \(items.count)").font(Theme.Typography.fact(13)).foregroundStyle(Theme.Palette.ochre)
+            Text("NEEDS \(items.count)").font(.system(size: 10)).tracking(1.6).foregroundStyle(Theme.Palette.paprika)
         }
     }
 
@@ -233,15 +251,6 @@ struct RecipeDetailView: View {
 
     // MARK: - Sections
 
-    private var allergenChips: some View {
-        FlowRow(DishInsights.allergens(for: currentDish).map(\.title)) { title in
-            Text(title).font(Theme.Typography.fact(11)).foregroundStyle(Theme.Palette.warmGray)
-                .padding(.horizontal, 10).padding(.vertical, 5)
-                .background(Capsule().fill(Theme.Palette.creamRaised))
-                .overlay(Capsule().strokeBorder(Theme.Palette.hairline))
-        }
-    }
-
     private var ingredients: some View {
         VStack(alignment: .leading, spacing: 0) {
             HStack {
@@ -259,10 +268,9 @@ struct RecipeDetailView: View {
             }
             ForEach(effectiveDish.ingredients) { line in
                 ingredientRow(line)
-                if line.id != effectiveDish.ingredients.last?.id { Divider().background(Theme.Palette.hairline) }
+                if line.id != effectiveDish.ingredients.last?.id { DashedRule(opacity: 0.45) }
             }
         }
-        .padding(14).glassCard(cornerRadius: 22)
     }
 
     private func ingredientRow(_ line: RecipeLine) -> some View {
@@ -271,31 +279,34 @@ struct RecipeDetailView: View {
         let swaps = onHand ? [] : DishInsights.swaps(forKey: line.key)
         return VStack(alignment: .leading, spacing: 4) {
             HStack(spacing: 10) {
-                Image(systemName: onHand ? "checkmark.circle.fill" : "circle")
-                    .font(.system(size: 15))
-                    .foregroundStyle(onHand ? Theme.Palette.sage : Theme.Palette.warmGraySoft.opacity(0.5))
-                Text(line.display).font(Theme.Typography.fact(14)).foregroundStyle(Theme.Palette.ink)
+                Text(onHand ? "✓" : "○")
+                    .font(Theme.Typography.fact(13, weight: .medium))
+                    .foregroundStyle(onHand ? Theme.Palette.sage : Theme.Palette.paprika)
+                    .frame(width: 16)
+                Text(line.display).font(Theme.Typography.fact(13.5)).foregroundStyle(Theme.Palette.ink)
                 if let grams = UnitConversion.gramHint(for: line) {
-                    Text(grams).font(Theme.Typography.fact(11)).foregroundStyle(Theme.Palette.warmGraySoft)
+                    Text("≈\(grams)").font(Theme.Typography.fact(10.5)).foregroundStyle(Theme.Palette.ink.opacity(0.45))
                 }
                 Spacer()
-                if !onHand && !line.isStaple { Text("need").font(Theme.Typography.fact(11)).foregroundStyle(Theme.Palette.ochre) }
+                if !onHand && !line.isStaple {
+                    Text("NEED").font(.system(size: 9)).tracking(1.6).foregroundStyle(Theme.Palette.paprika)
+                }
             }
             if let applied {
                 Button {
                     withAnimation { appliedSwaps[line.id] = nil }
                 } label: {
-                    Label("using \(applied.name) — tap to undo", systemImage: "arrow.uturn.backward")
-                        .font(Theme.Typography.fact(11)).foregroundStyle(Theme.Palette.sage).padding(.leading, 25)
+                    Text("↻ using \(applied.name) — tap to undo")
+                        .font(Theme.Typography.fact(10.5)).foregroundStyle(Theme.Palette.sage).padding(.leading, 26)
                 }
                 .buttonStyle(.plain)
             } else if let swap = swaps.first {
                 Button {
                     withAnimation { appliedSwaps[line.id] = SwapChoice(key: swap.key, name: swap.name) }
                 } label: {
-                    Label("swap: \(swap.name)\(swap.notes.map { " — \($0)" } ?? "")", systemImage: "arrow.2.squarepath")
-                        .font(Theme.Typography.fact(11)).foregroundStyle(Theme.Palette.sage)
-                        .multilineTextAlignment(.leading).padding(.leading, 25)
+                    Text("↻ swap: \(swap.name)\(swap.notes.map { " — \($0)" } ?? "")")
+                        .font(Theme.Typography.fact(10.5)).foregroundStyle(Theme.Palette.sage)
+                        .multilineTextAlignment(.leading).padding(.leading, 26)
                 }
                 .buttonStyle(.plain)
             }
@@ -304,31 +315,36 @@ struct RecipeDetailView: View {
     }
 
     private var method: some View {
-        VStack(alignment: .leading, spacing: 14) {
+        VStack(alignment: .leading, spacing: 13) {
             sectionTitle("Method")
             ForEach(Array(effectiveDish.steps.enumerated()), id: \.element.id) { index, step in
-                HStack(alignment: .top, spacing: 12) {
-                    Text("\(index + 1)").font(Theme.Typography.numeral(13)).foregroundStyle(Theme.Palette.paprika)
-                        .frame(width: 22, height: 22)
-                        .background(Circle().fill(Theme.Palette.paprika.opacity(0.12)))
-                    Text(step.instruction).font(Theme.Typography.fact(14)).foregroundStyle(Theme.Palette.ink)
+                HStack(alignment: .firstTextBaseline, spacing: 11) {
+                    Text("\(index + 1)")
+                        .font(Theme.Typography.dish(15, weight: .semibold))
+                        .foregroundStyle(Theme.Palette.paprika)
+                        .frame(width: 14, alignment: .trailing)
+                    (Text(step.instruction)
+                        + Text(step.timerSeconds.map { "  — \($0 / 60)'" } ?? "")
+                            .foregroundColor(Theme.Palette.ink.opacity(0.45)))
+                        .font(Theme.Typography.fact(13.5)).foregroundStyle(Theme.Palette.ink)
                         .lineSpacing(3)
                 }
             }
         }
-        .padding(14).frame(maxWidth: .infinity, alignment: .leading).glassCard(cornerRadius: 22)
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     private func sectionTitle(_ text: String) -> some View {
-        Text(text.uppercased()).font(Theme.Typography.eyebrow).tracking(Theme.Metric.eyebrowTracking)
-            .foregroundStyle(Theme.Palette.warmGraySoft).padding(.bottom, 6)
+        Eyebrow(text: text).padding(.bottom, 4)
     }
 
     private var cookBar: some View {
-        PaprikaButton(title: "Cook") { onCook(effectiveDish) }
-            .frame(maxWidth: .infinity)
-            .padding(.horizontal, 20).padding(.vertical, 14)
-            .background(.ultraThinMaterial)
+        VStack(spacing: 0) {
+            SolidRule()
+            BlockButton(title: "Cook", fullWidth: true) { onCook(effectiveDish) }
+                .padding(.horizontal, 20).padding(.vertical, 12)
+        }
+        .background(Theme.Palette.cream)
     }
 }
 

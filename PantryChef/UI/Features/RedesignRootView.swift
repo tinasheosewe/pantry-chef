@@ -1,16 +1,9 @@
 import SwiftUI
 
-/// The warm-light backdrop shared by every redesign surface.
+/// The page itself: flat paper, no glow — Field Notes is printed, not lit.
 struct KitchenBackground: View {
     var body: some View {
-        ZStack {
-            Theme.Palette.cream
-            RadialGradient(
-                colors: [Theme.Palette.creamRaised.opacity(0.9), Theme.Palette.creamRaised.opacity(0)],
-                center: .init(x: 0.5, y: 0.18), startRadius: 0, endRadius: 360
-            )
-        }
-        .ignoresSafeArea()
+        Theme.Palette.cream.ignoresSafeArea()
     }
 }
 
@@ -26,9 +19,9 @@ private struct PlanTarget: Identifiable {
     let date: Date
 }
 
-/// The redesign's root: the three spaces under a floating glass dock, with the
-/// composer as a sheet and the cook instrument as a full-screen cover. Driven by a
-/// single `KitchenStore`.
+/// The redesign's root: the three spaces over the printed page floor (rule + nav
+/// band + tailpiece), with the composer as a sheet and the cook instrument as a
+/// full-screen cover. Driven by a single `KitchenStore`.
 struct RedesignRootView: View {
     @State private var store = KitchenStore()
     @State private var showComposer = false
@@ -38,41 +31,59 @@ struct RedesignRootView: View {
     @Environment(\.scenePhase) private var scenePhase
 
     var body: some View {
-        ZStack(alignment: .bottom) {
-            ZStack { space }
-                .id(store.space)
-                .transition(.opacity.combined(with: .scale(scale: 0.985)))
-            Dock(
-                selection: Binding(get: { store.space }, set: { store.space = $0 }),
-                onAdd: { showComposer = true }
-            )
-            .padding(.bottom, 16)
-        }
-        .animation(.spring(response: 0.34, dampingFraction: 0.85), value: store.space)
-        .preferredColorScheme(.light)
-        // Coming back to the foreground forgives failed plate renders — the
-        // network that broke them may be back.
-        .onChange(of: scenePhase) { _, phase in
-            if phase == .active { PlateRenderLibrary.shared.sweep() }
-        }
-        .sheet(isPresented: $showComposer) {
-            ComposerView(store: store, onDismiss: { showComposer = false })
-                .presentationDetents([.medium, .large])
-        }
-        .sheet(item: $planTarget) { target in
-            PlanDaySheet(store: store, date: target.date) { dish in
-                store.planMeal(dish, on: target.date)
-                planTarget = nil
+        ZStack { space }
+            .id(store.space)
+            .transition(.opacity.combined(with: .scale(scale: 0.985)))
+            .animation(.spring(response: 0.34, dampingFraction: 0.85), value: store.space)
+            .safeAreaInset(edge: .bottom, spacing: 0) {
+                Dock(
+                    selection: Binding(get: { store.space }, set: { store.space = $0 }),
+                    onAdd: { showComposer = true },
+                    tailpiece: tailpiece
+                )
             }
-            .presentationDetents([.medium, .large])
-        }
-        .fullScreenCover(item: $detailDish) { dish in
-            // Cook is presented from *inside* this cover (a second cover on the
-            // same presenter never appears until the first dismisses).
-            RecipeDetailScreen(store: store, dish: dish, onClose: { detailDish = nil })
-        }
-        .fullScreenCover(item: $multiSession) { session in
-            CookFlowScreen(store: store, session: session, onClose: { multiSession = nil })
+            .background(KitchenBackground())
+            .preferredColorScheme(ThemeManager.shared.spec.isDark ? .dark : .light)
+            // Foregrounding re-checks the clock (the page may invert for evening)
+            // and forgives failed plate renders — the network may be back.
+            .onChange(of: scenePhase) { _, phase in
+                if phase == .active {
+                    ThemeManager.shared.refresh()
+                    PlateRenderLibrary.shared.sweep()
+                }
+            }
+            .sheet(isPresented: $showComposer) {
+                ComposerView(store: store, onDismiss: { showComposer = false })
+                    .presentationDetents([.medium, .large])
+            }
+            .sheet(item: $planTarget) { target in
+                PlanDaySheet(store: store, date: target.date) { dish in
+                    store.planMeal(dish, on: target.date)
+                    planTarget = nil
+                }
+                .presentationDetents([.medium, .large])
+            }
+            .fullScreenCover(item: $detailDish) { dish in
+                // Cook is presented from *inside* this cover (a second cover on the
+                // same presenter never appears until the first dismisses).
+                RecipeDetailScreen(store: store, dish: dish, onClose: { detailDish = nil })
+            }
+            .fullScreenCover(item: $multiSession) { session in
+                CookFlowScreen(store: store, session: session, onClose: { multiSession = nil })
+            }
+    }
+
+    /// One true line per page (the mock's "№ 163 · sunset 21:43").
+    private var tailpiece: String {
+        let ready = store.library.filter { store.readiness(for: $0).isMakeableNow }.count
+        switch store.space {
+        case .timeline:
+            let dayNumber = Calendar.current.ordinality(of: .day, in: .year, for: store.today) ?? 0
+            return "№ \(dayNumber) · \(ready) ready tonight"
+        case .library:
+            return "\(store.library.count) dishes · \(ready) ready"
+        case .stock:
+            return "\(store.stock.count) items · \(store.shoppingList.count) on the list"
         }
     }
 
@@ -89,7 +100,7 @@ struct RedesignRootView: View {
                 onReachStart: { store.extendPast() },
                 onReachEnd: { store.extendFuture() },
                 nowContent: {
-                    AnyView(VStack(alignment: .leading, spacing: 10) {
+                    AnyView(VStack(alignment: .leading, spacing: 0) {
                         NowModuleView(
                             state: Binding(get: { store.nowState }, set: { store.nowState = $0 }),
                             onCook: { option in detailDish = option.dish },
@@ -104,8 +115,8 @@ struct RedesignRootView: View {
                                 }
                             }
                         )
-                        UseSoonStrip(store: store) { withAnimation { store.space = .stock } }
-                        KitchenStatsStrip(
+                        OnTheClockSection(store: store) { withAnimation { store.space = .stock } }
+                        KitchenLedger(
                             store: store,
                             onReady: { store.libraryFilter = .ready; withAnimation { store.space = .library } },
                             onStock: { withAnimation { store.space = .stock } }
@@ -185,88 +196,115 @@ private struct CookFlowScreen: View {
     }
 }
 
-/// The expiring-items strip under the now-module (from the approved design):
-/// what needs using, with day counts, one tap from Stock.
-private struct UseSoonStrip: View {
+/// ON THE CLOCK — the expiring ledger under the now-module: each perishable on a
+/// dotted leader with its days, tomato when it's urgent. One tap from Stores.
+private struct OnTheClockSection: View {
     var store: KitchenStore
     var onOpen: () -> Void
 
-    private var items: [(name: String, days: Int)] {
-        store.stock.compactMap { item in
-            if case .perishable(_, let days?) = item.measure, days <= 5 {
-                return (item.name, days)
+    private var items: [StockItem] {
+        store.stock
+            .compactMap { item -> (StockItem, Int)? in
+                if case .perishable(_, let days?) = item.measure, days <= 5 { return (item, days) }
+                return nil
             }
-            return nil
-        }
-        .sorted { $0.days < $1.days }
+            .sorted { $0.1 < $1.1 }
+            .map(\.0)
     }
 
     var body: some View {
         if !items.isEmpty {
             Button(action: onOpen) {
-                HStack(spacing: 8) {
-                    Text("USE SOON").font(Theme.Typography.eyebrow)
-                        .tracking(Theme.Metric.eyebrowTracking)
-                        .foregroundStyle(Theme.Palette.ochre)
-                    ForEach(Array(items.prefix(3).enumerated()), id: \.offset) { index, item in
-                        if index > 0 {
-                            Text("·").foregroundStyle(Theme.Palette.warmGraySoft.opacity(0.6))
-                        }
-                        HStack(spacing: 3) {
-                            Text(item.name).font(Theme.Typography.fact(12)).foregroundStyle(Theme.Palette.ink)
-                                .lineLimit(1)
-                            Text("\(item.days)d").font(Theme.Typography.numeral(11))
-                                .foregroundStyle(Theme.Palette.ochre)
+                VStack(alignment: .leading, spacing: 7) {
+                    DashedRule()
+                    Eyebrow(text: "On the clock", tone: .urgent).padding(.top, 4)
+                    ForEach(items.prefix(3)) { item in
+                        if case .perishable(let detail, let days?) = item.measure {
+                            LeaderRow {
+                                Text("\(EmojiPlate.face(for: item.name, categories: item.plate.weights.map(\.category)))\u{2002}\(item.name) — \(detail)")
+                                    .font(Theme.Typography.fact(12.5))
+                                    .foregroundStyle(Theme.Palette.ink)
+                                    .lineLimit(1)
+                            } trailing: {
+                                Text(days == 1 ? "1 day" : "\(days) days")
+                                    .font(Theme.Typography.fact(12))
+                                    .foregroundStyle(days <= 3 ? Theme.Palette.paprika : Theme.Palette.warmGray)
+                            }
                         }
                     }
-                    Spacer(minLength: 0)
-                    Image(systemName: "chevron.right").font(.system(size: 11))
-                        .foregroundStyle(Theme.Palette.warmGraySoft.opacity(0.6))
                 }
-                .padding(.horizontal, 14).padding(.vertical, 11)
-                .frame(maxWidth: .infinity)
-                .glassCard(cornerRadius: 16)
+                .padding(.top, 12)
                 .contentShape(Rectangle())
             }
-            .buttonStyle(.pressable)
+            .buttonStyle(.plain)
         }
     }
 }
 
-/// The kitchen at a glance — ready dishes, stocked items, list length — each a
-/// door to its space (from the approved design's stat strip).
-private struct KitchenStatsStrip: View {
+/// The kitchen at a glance, set as a two-column note above the page floor — each
+/// column a door to its space.
+private struct KitchenLedger: View {
     var store: KitchenStore
     var onReady: () -> Void
     var onStock: () -> Void
 
     var body: some View {
         let ready = store.library.filter { store.readiness(for: $0).isMakeableNow }.count
-        HStack(spacing: 0) {
-            stat("\(ready)", "ready tonight", action: onReady)
-            divider
-            stat("\(store.stock.count)", "in stock", action: onStock)
-            divider
-            stat("\(store.shoppingList.count)", "on the list", action: onStock)
-        }
-        .glassCard(cornerRadius: 16)
-    }
-
-    private func stat(_ value: String, _ label: String, action: @escaping () -> Void) -> some View {
-        Button(action: action) {
-            VStack(spacing: 2) {
-                Text(value).font(Theme.Typography.dish(20)).foregroundStyle(Theme.Palette.ink)
-                Text(label).font(Theme.Typography.fact(11)).foregroundStyle(Theme.Palette.warmGraySoft)
+        VStack(alignment: .leading, spacing: 0) {
+            DashedRule().padding(.top, 12)
+            HStack(alignment: .top, spacing: 12) {
+                Button(action: onReady) {
+                    VStack(alignment: .leading, spacing: 3) {
+                        Eyebrow(text: "Ready tonight")
+                        Text("\(ready) \(ready == 1 ? "dish" : "dishes") — no shopping")
+                            .font(Theme.Typography.fact(11.5))
+                            .foregroundStyle(Theme.Palette.ink)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                Button(action: onStock) {
+                    VStack(alignment: .leading, spacing: 3) {
+                        Eyebrow(text: "The stores")
+                        Text("\(store.stock.count) in · \(store.shoppingList.count) on the list")
+                            .font(Theme.Typography.fact(11.5))
+                            .foregroundStyle(Theme.Palette.ink)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                    .padding(.leading, 12)
+                    .overlay(alignment: .leading) {
+                        Rectangle()
+                            .fill(.clear)
+                            .frame(width: 1)
+                            .overlay(VerticalDashedRule())
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
             }
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 10)
-            .contentShape(Rectangle())
+            .padding(.top, 9)
         }
-        .buttonStyle(.pressable)
+    }
+}
+
+/// A vertical dashed hand-rule (column dividers).
+struct VerticalDashedRule: View {
+    var body: some View {
+        VLine()
+            .stroke(Theme.Palette.ink.opacity(0.35), style: StrokeStyle(lineWidth: 1, dash: [4, 3]))
+            .frame(width: 1)
     }
 
-    private var divider: some View {
-        Rectangle().fill(Theme.Palette.hairline).frame(width: 1, height: 30)
+    private struct VLine: Shape {
+        func path(in rect: CGRect) -> Path {
+            var p = Path()
+            p.move(to: CGPoint(x: rect.midX, y: 0))
+            p.addLine(to: CGPoint(x: rect.midX, y: rect.height))
+            return p
+        }
     }
 }
 
@@ -278,29 +316,30 @@ private struct PlanDaySheet: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            Capsule().fill(Theme.Palette.hairline).frame(width: 36, height: 4)
-                .frame(maxWidth: .infinity).padding(.top, 10)
             Text("Plan \(DayLabel.full(for: date))").font(Theme.Typography.dish(20))
-                .foregroundStyle(Theme.Palette.ink).padding(.top, 14)
+                .foregroundStyle(Theme.Palette.ink).padding(.top, 22)
             Text("Pick something — missing items go to your list.")
-                .font(Theme.Typography.fact(12)).foregroundStyle(Theme.Palette.warmGraySoft).padding(.top, 2)
+                .font(Theme.Typography.note(12)).foregroundStyle(Theme.Palette.warmGray).padding(.top, 3)
+            DashedRule().padding(.top, 10)
             ScrollView {
                 VStack(spacing: 0) {
                     ForEach(store.library) { dish in
                         Button { onPlan(dish) } label: {
-                            HStack(spacing: 11) {
-                                PlateView(name: dish.name, composition: dish.plate, size: Theme.Metric.plateMini)
-                                Text(dish.name).font(Theme.Typography.fact(14)).foregroundStyle(Theme.Palette.ink)
-                                Spacer()
+                            LeaderRow {
+                                HStack(spacing: 9) {
+                                    PlateView(name: dish.name, composition: dish.plate, size: 26)
+                                    Text(dish.name).font(Theme.Typography.dish(14)).foregroundStyle(Theme.Palette.ink)
+                                }
+                            } trailing: {
                                 readinessLabel(for: dish)
                             }
-                            .padding(.vertical, 10).contentShape(Rectangle())
+                            .padding(.vertical, 9).contentShape(Rectangle())
                         }
                         .buttonStyle(.plain)
-                        if dish.id != store.library.last?.id { Divider().background(Theme.Palette.hairline) }
+                        if dish.id != store.library.last?.id { DashedRule(opacity: 0.5) }
                     }
                 }
-                .padding(.top, 10)
+                .padding(.top, 8)
             }
         }
         .padding(.horizontal, 20)
@@ -309,9 +348,9 @@ private struct PlanDaySheet: View {
 
     @ViewBuilder private func readinessLabel(for dish: Dish) -> some View {
         switch store.readiness(for: dish) {
-        case .ready: Text("ready").font(Theme.Typography.fact(11)).foregroundStyle(Theme.Palette.sage)
-        case .readyWithSwaps: Text("with a swap").font(Theme.Typography.fact(11)).foregroundStyle(Theme.Palette.sage)
-        case .needs(let items): Text("needs \(items.count)").font(Theme.Typography.fact(11)).foregroundStyle(Theme.Palette.ochre)
+        case .ready: Text("READY").font(.system(size: 9)).tracking(1.6).foregroundStyle(Theme.Palette.sage)
+        case .readyWithSwaps: Text("WITH A SWAP").font(.system(size: 9)).tracking(1.6).foregroundStyle(Theme.Palette.sage)
+        case .needs(let items): Text("NEEDS \(items.count)").font(.system(size: 9)).tracking(1.6).foregroundStyle(Theme.Palette.paprika)
         }
     }
 }

@@ -54,8 +54,15 @@ ARGV.each do |rel|
   existing = group.files.find { |f| f.real_path.to_s == abs }
 
   ref = existing || group.new_reference(abs)
-  in_phase = target.source_build_phase.files_references.include?(ref)
-  target.add_file_references([ref]) unless in_phase
+  # Compilable files go to the sources phase; everything else (png, ttf, json…)
+  # is a bundle resource.
+  if %w[.swift .m .mm .c .cpp].include?(File.extname(abs))
+    in_phase = target.source_build_phase.files_references.include?(ref)
+    target.add_file_references([ref]) unless in_phase
+  else
+    in_phase = target.resources_build_phase.files_references.include?(ref)
+    target.add_resources([ref]) unless in_phase
+  end
 
   if existing && in_phase
     present << rel

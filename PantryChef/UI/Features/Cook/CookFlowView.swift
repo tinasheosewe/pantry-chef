@@ -19,6 +19,7 @@ struct CookFlowView: View {
     @State private var step = 0
     @State private var timerRemaining: Int?
     @State private var timerRunning = false
+    @State private var startedAt: Date?
     private let tick = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
 
     private var isMulti: Bool { dishes.count > 1 }
@@ -45,7 +46,12 @@ struct CookFlowView: View {
             timerRunning = false
             onStep(step, schedule.count)
         }
-        .onChange(of: phase) { if phase == .cooking { onStep(step, schedule.count) } }
+        .onChange(of: phase) {
+            if phase == .cooking {
+                if startedAt == nil { startedAt = Date() }
+                onStep(step, schedule.count)
+            }
+        }
         .onReceive(tick) { _ in
             guard timerRunning, let r = timerRemaining else { return }
             if r > 1 { timerRemaining = r - 1 } else { timerRemaining = 0; timerRunning = false }
@@ -56,14 +62,23 @@ struct CookFlowView: View {
     }
 
     private var header: some View {
-        HStack(spacing: 10) {
-            if let first = dishes.first { PlateView(name: first.name, composition: first.plate, size: 30) }
-            Text(isMulti ? "\(dishes.count) dishes together" : (dishes.first?.name ?? ""))
-                .font(Theme.Typography.dish(14)).foregroundStyle(Theme.Palette.warmGray)
+        HStack(alignment: .firstTextBaseline, spacing: 10) {
+            Text("\(phase == .cooking ? "COOKING" : "GATHERING") — \(isMulti ? "\(dishes.count) DISHES" : (dishes.first?.name ?? ""))")
+                .font(.system(size: 10)).tracking(1.8)
+                .foregroundStyle(Theme.Palette.ink.opacity(0.6))
+                .lineLimit(1)
             Spacer()
-            Button(action: onClose) {
-                Image(systemName: "xmark").font(.system(size: 15, weight: .medium)).foregroundStyle(Theme.Palette.warmGray)
+            if phase == .cooking {
+                Text("STEP \(step + 1) OF \(schedule.count)")
+                    .font(.system(size: 10)).tracking(1.8)
+                    .foregroundStyle(Theme.Palette.paprika)
             }
+            Button(action: onClose) {
+                Image(systemName: "xmark").font(.system(size: 14, weight: .medium))
+                    .foregroundStyle(Theme.Palette.ink.opacity(0.6))
+                    .frame(width: 28, height: 28).contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
         }
     }
 
@@ -73,8 +88,8 @@ struct CookFlowView: View {
         VStack(alignment: .leading, spacing: 0) {
             Text("Gather your ingredients").font(Theme.Typography.dish(22))
                 .foregroundStyle(Theme.Palette.ink).padding(.top, 22)
-            Text("Tap each as you set it out.").font(Theme.Typography.fact(12))
-                .foregroundStyle(Theme.Palette.warmGraySoft).padding(.top, 3)
+            Text("Tap each as you set it out.").font(Theme.Typography.note(12))
+                .foregroundStyle(Theme.Palette.warmGray).padding(.top, 3)
 
             ScrollView {
                 VStack(alignment: .leading, spacing: 0) {
@@ -95,8 +110,8 @@ struct CookFlowView: View {
             .padding(.top, 14)
 
             HStack {
-                Text("\(gathered.count) of \(allLines.count) ready")
-                    .font(Theme.Typography.fact(12)).foregroundStyle(Theme.Palette.warmGraySoft)
+                Text("\(gathered.count) OF \(allLines.count) READY")
+                    .font(.system(size: 9)).tracking(1.8).foregroundStyle(Theme.Palette.ink.opacity(0.55))
                 Spacer()
                 PaprikaButton(title: "Start cooking") {
                     withAnimation(.spring(response: 0.4, dampingFraction: 0.85)) { phase = .cooking }
@@ -114,18 +129,18 @@ struct CookFlowView: View {
         } label: {
             HStack(spacing: 12) {
                 ZStack {
-                    Circle().strokeBorder(isGathered ? Theme.Palette.sage : Theme.Palette.warmGraySoft.opacity(0.5),
-                                          lineWidth: 1.5).frame(width: 22, height: 22)
+                    Rectangle().strokeBorder(isGathered ? Theme.Palette.sage : Theme.Palette.ink.opacity(0.4),
+                                             lineWidth: 1).frame(width: 18, height: 18)
                     if isGathered {
-                        Circle().fill(Theme.Palette.sage).frame(width: 22, height: 22)
-                        Image(systemName: "checkmark").font(.system(size: 11, weight: .bold)).foregroundStyle(Theme.Palette.cream)
+                        Rectangle().fill(Theme.Palette.sage).frame(width: 18, height: 18)
+                        Image(systemName: "checkmark").font(.system(size: 10, weight: .bold)).foregroundStyle(Theme.Palette.cream)
                     }
                 }
                 Text(line.display).font(Theme.Typography.fact(14)).foregroundStyle(Theme.Palette.ink)
                     .strikethrough(isGathered, color: Theme.Palette.warmGraySoft)
                 Spacer()
                 if !onHand && !line.isStaple {
-                    Text("not in stock").font(Theme.Typography.fact(11)).foregroundStyle(Theme.Palette.ochre)
+                    Text("NOT IN STOCK").font(.system(size: 9)).tracking(1.4).foregroundStyle(Theme.Palette.paprika)
                 }
             }
             .padding(.vertical, 11).contentShape(Rectangle())
@@ -137,23 +152,76 @@ struct CookFlowView: View {
 
     private var cooking: some View {
         VStack(alignment: .leading, spacing: 0) {
-            progress.padding(.top, 16)
-            if isMulti, let current = currentStep {
-                HStack(spacing: 8) {
-                    PlateView(name: current.dishName, composition: current.plate, size: 22)
-                    Text(current.dishName).font(Theme.Typography.fact(12, weight: .medium)).foregroundStyle(Theme.Palette.paprika)
-                }
-                .padding(.top, 18)
-            }
-            Text(currentStep?.step.instruction ?? "")
-                .font(Theme.Typography.fact(22)).foregroundStyle(Theme.Palette.ink)
-                .lineSpacing(5).padding(.top, isMulti ? 12 : 26)
-            if let seconds = currentStep?.step.timerSeconds {
-                timer(seconds).padding(.top, 26)
+            progress.padding(.top, 14)
+            ticket.padding(.top, 14)
+            if let next = nextStep {
+                nextTicket(next).padding(.top, 8)
             }
             Spacer()
             controls
+            if let line = logistics {
+                Tailpiece(text: line).padding(.top, 10)
+            }
         }
+    }
+
+    /// The live step, torn open: bordered sheet with a dashed top edge.
+    private var ticket: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            if isMulti, let current = currentStep {
+                Text(current.dishName.uppercased())
+                    .font(.system(size: 9)).tracking(1.8)
+                    .foregroundStyle(Theme.Palette.paprika)
+                    .padding(.bottom, 8)
+            }
+            Text(currentStep?.step.instruction ?? "")
+                .font(Theme.Typography.fact(17)).foregroundStyle(Theme.Palette.ink)
+                .lineSpacing(4)
+                .fixedSize(horizontal: false, vertical: true)
+            if let seconds = currentStep?.step.timerSeconds {
+                timer(seconds).padding(.top, 14)
+            }
+        }
+        .padding(14)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Rectangle().fill(Theme.Palette.creamRaised))
+        .overlay(Rectangle().strokeBorder(Theme.Palette.ink.opacity(0.3), lineWidth: 1))
+        .overlay(alignment: .top) {
+            Rectangle()
+                .fill(.clear)
+                .frame(height: 2)
+                .overlay(
+                    Rectangle().stroke(Theme.Palette.ink.opacity(0.45),
+                                       style: StrokeStyle(lineWidth: 2, dash: [5, 4]))
+                )
+                .clipped()
+        }
+    }
+
+    private var nextStep: ScheduledStep? {
+        schedule.indices.contains(step + 1) ? schedule[step + 1] : nil
+    }
+
+    private func nextTicket(_ next: ScheduledStep) -> some View {
+        Text("NEXT — \(next.step.instruction)")
+            .font(.system(size: 10)).tracking(1.2)
+            .foregroundStyle(Theme.Palette.ink)
+            .lineLimit(2)
+            .padding(.horizontal, 14).padding(.vertical, 9)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(Rectangle().fill(Theme.Palette.creamRaised))
+            .overlay(Rectangle().strokeBorder(Theme.Palette.ink.opacity(0.18), lineWidth: 1))
+            .opacity(0.6)
+    }
+
+    /// "started 19:04 · eating by 19:30" — honest cook logistics.
+    private var logistics: String? {
+        guard let startedAt else { return nil }
+        let remaining = schedule[min(step, max(schedule.count - 1, 0))...].reduce(0) {
+            $0 + ($1.step.timerSeconds ?? AppConfig.defaultStepDurationSeconds)
+        }
+        let f = DateFormatter(); f.dateFormat = "HH:mm"
+        return "started \(f.string(from: startedAt)) · eating by \(f.string(from: Date().addingTimeInterval(TimeInterval(remaining))))"
     }
 
     private var currentStep: ScheduledStep? {
@@ -163,7 +231,11 @@ struct CookFlowView: View {
     private var progress: some View {
         HStack(spacing: 4) {
             ForEach(schedule.indices, id: \.self) { i in
-                Capsule().fill(i <= step ? Theme.Palette.paprika : Theme.Palette.hairline).frame(height: 4)
+                Rectangle()
+                    .fill(i < step ? Theme.Palette.ink.opacity(0.9)
+                          : i == step ? Theme.Palette.paprika
+                          : Theme.Palette.ink.opacity(0.15))
+                    .frame(height: 3)
             }
         }
     }
@@ -171,8 +243,8 @@ struct CookFlowView: View {
     private func timer(_ seconds: Int) -> some View {
         let shown = timerRemaining ?? seconds
         let finished = timerRemaining == 0
-        return HStack(spacing: 14) {
-            Text(format(shown)).font(Theme.Typography.numeral(46))
+        return HStack(alignment: .firstTextBaseline, spacing: 14) {
+            Text(format(shown)).font(Theme.Typography.dish(38))
                 .foregroundStyle(finished ? Theme.Palette.sage : Theme.Palette.ink)
                 .contentTransition(.numericText(countsDown: true))
                 .animation(.default, value: shown)
@@ -181,35 +253,40 @@ struct CookFlowView: View {
                 if timerRemaining == nil { timerRemaining = seconds }
                 timerRunning.toggle()
             } label: {
-                Text(finished ? "Again" : (timerRunning ? "Pause" : (timerRemaining == nil ? "Start" : "Resume")))
-                    .font(Theme.Typography.fact(12)).foregroundStyle(Theme.Palette.paprika)
-                    .padding(.horizontal, 16).padding(.vertical, 7)
-                    .overlay(Capsule().strokeBorder(Theme.Palette.paprika, lineWidth: 1.5))
+                Text(finished ? "AGAIN" : (timerRunning ? "PAUSE" : (timerRemaining == nil ? "START" : "RESUME")))
+                    .font(.system(size: 10, weight: .medium)).tracking(2)
+                    .foregroundStyle(Theme.Palette.paprika)
+                    .padding(.horizontal, 14).padding(.vertical, 7)
+                    .overlay(Rectangle().strokeBorder(Theme.Palette.paprika, lineWidth: 1.5))
             }
             .buttonStyle(.plain)
             if finished {
-                Text("done!").font(Theme.Typography.fact(12)).foregroundStyle(Theme.Palette.sage)
+                Text("DONE").font(.system(size: 10)).tracking(2).foregroundStyle(Theme.Palette.sage)
             }
         }
     }
 
     private var controls: some View {
         HStack(spacing: 16) {
-            Button(step > 0 ? "Back" : "Ingredients") {
+            Button {
                 if step > 0 { step -= 1 } else { withAnimation { phase = .gathering } }
+            } label: {
+                Text(step > 0 ? "← BACK" : "← GATHER")
+                    .font(.system(size: 10)).tracking(1.8)
+                    .foregroundStyle(Theme.Palette.ink.opacity(0.6))
+                    .contentShape(Rectangle())
             }
-            .font(Theme.Typography.fact(13)).foregroundStyle(Theme.Palette.warmGray)
+            .buttonStyle(.plain)
             Spacer()
             Circle().fill(Theme.Palette.creamRaised)
-                .overlay(Image(systemName: "microphone").foregroundStyle(Theme.Palette.paprika))
-                .overlay(Circle().strokeBorder(Theme.Palette.paprika.opacity(0.4)))
-                .frame(width: 44, height: 44)
+                .overlay(Image(systemName: "microphone").font(.system(size: 15)).foregroundStyle(Theme.Palette.paprika))
+                .overlay(Circle().strokeBorder(Theme.Palette.paprika.opacity(0.5)))
+                .frame(width: 42, height: 42)
             Spacer()
-            PaprikaButton(title: step < schedule.count - 1 ? "Next" : "Done") {
+            BlockButton(title: step < schedule.count - 1 ? "Next →" : "Done") {
                 if step < schedule.count - 1 { step += 1 } else { onDone() }
             }
         }
-        .buttonStyle(.plain)
     }
 
     private func format(_ seconds: Int) -> String { String(format: "%02d:%02d", seconds / 60, seconds % 60) }

@@ -44,14 +44,19 @@ struct Dish: Identifiable, Equatable, Sendable {
     let isYours: Bool
     var isFavorite: Bool
     var servings: Int
+    /// The dish's one sentence — the editorial line under its name (Field Notes:
+    /// every dish gets its sentence). Optional; user dishes may not have one yet.
+    var blurb: String?
     var ingredients: [RecipeLine]
     var steps: [CookStep]
 
     init(id: UUID = UUID(), name: String, plate: PlateComposition, time: String,
          isYours: Bool = false, isFavorite: Bool = false, servings: Int = 2,
+         blurb: String? = nil,
          ingredients: [RecipeLine], steps: [CookStep] = []) {
         self.id = id; self.name = name; self.plate = plate; self.time = time
         self.isYours = isYours; self.isFavorite = isFavorite; self.servings = servings
+        self.blurb = blurb
         self.ingredients = ingredients; self.steps = steps
     }
 

@@ -34,7 +34,7 @@ struct TimelineView: View {
                 }
                 .scrollTargetLayout()
                 .padding(.top, 8)
-                .padding(.bottom, 90) // room for the floating dock
+                .padding(.bottom, 24)
             }
             .scrollPosition(id: $visibleID, anchor: .top)
         }
@@ -49,37 +49,53 @@ struct TimelineView: View {
     // MARK: - Pinned header
 
     private var header: some View {
-        HStack(alignment: .firstTextBaseline) {
-            Text(headerMonth).font(Theme.Typography.dish(24)).foregroundStyle(Theme.Palette.ink)
-                .animation(nil, value: headerMonth)
-            Spacer()
-            if isAwayFromNow {
-                Button {
-                    withAnimation(.spring(response: 0.45, dampingFraction: 0.85)) {
-                        visibleID = TimelineEntry.now.id
+        VStack(spacing: 0) {
+            HStack(alignment: .firstTextBaseline) {
+                Text(headerTitle).font(Theme.Typography.dish(22)).foregroundStyle(Theme.Palette.ink)
+                    .animation(nil, value: headerTitle)
+                Spacer()
+                if isAwayFromNow {
+                    Button {
+                        withAnimation(.spring(response: 0.45, dampingFraction: 0.85)) {
+                            visibleID = TimelineEntry.now.id
+                        }
+                    } label: {
+                        Text("TODAY ↩")
+                            .font(.system(size: 10, weight: .medium))
+                            .tracking(Theme.Metric.eyebrowTracking)
+                            .foregroundStyle(Theme.Palette.paprika)
+                            .contentShape(Rectangle())
                     }
-                } label: {
-                    Label("Today", systemImage: "smallcircle.filled.circle")
-                        .font(Theme.Typography.fact(12, weight: .medium))
-                        .foregroundStyle(Theme.Palette.paprika)
-                        .padding(.horizontal, 12).padding(.vertical, 5)
-                        .background(Capsule().fill(Theme.Palette.paprika.opacity(0.12)))
+                    .buttonStyle(.plain)
+                    .transition(.opacity)
+                } else {
+                    Text(headerMeta)
+                        .font(.system(size: 10))
+                        .tracking(Theme.Metric.eyebrowTracking)
+                        .foregroundStyle(Theme.Palette.ink.opacity(0.55))
                 }
-                .buttonStyle(.plain)
-                .transition(.opacity)
-            } else {
-                Text(DayLabel.full(for: today)).font(Theme.Typography.fact(12))
-                    .foregroundStyle(Theme.Palette.warmGraySoft)
             }
+            .padding(.leading, Theme.Metric.spineWidth)
+            .padding(.trailing, Theme.Metric.lg)
+            .padding(.top, 6)
+            DashedRule()
+                .padding(.leading, Theme.Metric.spineWidth)
+                .padding(.trailing, Theme.Metric.lg)
+                .padding(.top, 9)
+                .padding(.bottom, 2)
         }
-        .padding(.leading, Theme.Metric.spineWidth)
-        .padding(.trailing, Theme.Metric.lg)
-        .padding(.top, 6)
-        .padding(.bottom, 10)
     }
 
-    private var headerMonth: String {
-        DayLabel.month(for: visibleID.flatMap(date(forEntryID:)) ?? today)
+    /// "June 12" while at now; the visible month while travelling.
+    private var headerTitle: String {
+        let visible = visibleID.flatMap(date(forEntryID:)) ?? today
+        return isAwayFromNow ? DayLabel.month(for: visible) : DayLabel.monthDayLong(for: today)
+    }
+
+    /// "FRIDAY — DAY 163"
+    private var headerMeta: String {
+        let dayNumber = Calendar.current.ordinality(of: .day, in: .year, for: today) ?? 0
+        return "\(DayLabel.eyebrow(for: today).uppercased()) — DAY \(dayNumber)"
     }
 
     private var isAwayFromNow: Bool {
@@ -161,20 +177,17 @@ struct TimelineView: View {
     }
 
     private var background: some View {
-        ZStack {
-            Theme.Palette.cream
-            RadialGradient(
-                colors: [Theme.Palette.creamRaised.opacity(0.9), Theme.Palette.creamRaised.opacity(0)],
-                center: .init(x: 0.5, y: 0.18), startRadius: 0, endRadius: 360
-            )
-        }
-        .ignoresSafeArea()
+        Theme.Palette.cream.ignoresSafeArea()
     }
 }
 
 extension DayLabel {
     static func month(for date: Date) -> String {
         let f = DateFormatter(); f.dateFormat = "MMMM"; return f.string(from: date)
+    }
+    /// "June 12"
+    static func monthDayLong(for date: Date) -> String {
+        let f = DateFormatter(); f.dateFormat = "MMMM d"; return f.string(from: date)
     }
 }
 

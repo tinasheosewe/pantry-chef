@@ -17,9 +17,7 @@ struct NowModuleView: View {
     }
 
     private var eyebrow: some View {
-        Text(state.eyebrow.uppercased())
-            .font(Theme.Typography.eyebrow).tracking(Theme.Metric.eyebrowTracking)
-            .foregroundStyle(isCooked ? Theme.Palette.sage : Theme.Palette.paprika)
+        Eyebrow(text: state.eyebrow, tone: isCooked ? .win : .urgent)
     }
     private var isCooked: Bool { if case .cooked = state { return true } else { return false } }
 
@@ -54,7 +52,7 @@ struct NowModuleView: View {
             }
             Spacer(minLength: 0)
         }
-        .padding(16).frame(maxWidth: .infinity).glassCard()
+        .padding(.vertical, 8).frame(maxWidth: .infinity)
         .overlay(alignment: .bottomTrailing) {
             actionRow(secondary: "Change", primary: "View",
                       secondaryAction: onChange,
@@ -87,7 +85,7 @@ struct NowModuleView: View {
                     .padding(.horizontal, 14).padding(.vertical, 7)
                     .background(Capsule().fill(Theme.Palette.ink))
             }
-            .padding(14).frame(maxWidth: .infinity).glassCard()
+            .padding(.vertical, 8).frame(maxWidth: .infinity)
         }
         .buttonStyle(.plain)
     }
@@ -107,7 +105,7 @@ struct NowModuleView: View {
             }
             Spacer(minLength: 0)
         }
-        .padding(14).frame(maxWidth: .infinity).glassCard()
+        .padding(.vertical, 8).frame(maxWidth: .infinity)
     }
 
     private func actionRow(secondary: String, primary: String,
@@ -136,18 +134,13 @@ private struct ProgressBar: View {
     }
 }
 
-/// The one filled paprika action button used across the redesign.
+/// The one filled action button used across the redesign — the squared tomato
+/// block of the printed page.
 struct PaprikaButton: View {
     let title: String
     var action: () -> Void
     var body: some View {
-        Button(action: action) {
-            Text(title).font(Theme.Typography.fact(13, weight: .medium))
-                .foregroundStyle(Theme.Palette.cream)
-                .padding(.horizontal, 22).padding(.vertical, 9)
-                .background(Capsule().fill(Theme.Palette.paprika))
-        }
-        .buttonStyle(.plain)
+        BlockButton(title: title, action: action)
     }
 }
 

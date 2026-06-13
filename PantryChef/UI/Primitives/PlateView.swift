@@ -19,8 +19,6 @@ struct PlateView: View {
                 Image(uiImage: painted)
                     .resizable()
                     .scaledToFit()
-                    .shadow(color: Color(red: 0.43, green: 0.27, blue: 0.12).opacity(0.20),
-                            radius: size * 0.12, x: 0, y: size * 0.08)
                     .transition(.opacity)
             } else {
                 ceramicWithEmoji
@@ -33,32 +31,20 @@ struct PlateView: View {
 
     private var ceramicWithEmoji: some View {
         ZStack {
-            // Ceramic: warm gradient with light from the top-left, a fine rim, and
-            // a soft seat shadow under the food.
+            // The Field Notes plate: white china with a fine green ring — like the
+            // plates drawn into the printed pages.
             Circle()
-                .fill(RadialGradient(
-                    colors: [Color(red: 1.0, green: 0.99, blue: 0.97),
-                             Color(red: 0.94, green: 0.91, blue: 0.85),
-                             Color(red: 0.86, green: 0.82, blue: 0.73)],
-                    center: .init(x: 0.35, y: 0.28), startRadius: 0, endRadius: size * 0.85))
-                .overlay(Circle().strokeBorder(Color(red: 0.75, green: 0.67, blue: 0.55).opacity(0.5),
-                                               lineWidth: max(0.5, size * 0.012)))
-                .shadow(color: Color(red: 0.43, green: 0.27, blue: 0.12).opacity(0.20),
-                        radius: size * 0.12, x: 0, y: size * 0.08)
-            // The plate's inner well ring.
+                .fill(Theme.Palette.creamRaised)
+                .overlay(Circle().strokeBorder(Theme.Palette.ink.opacity(0.45),
+                                               lineWidth: max(0.75, size * 0.014)))
+            // The rim's inner ring.
             Circle()
-                .strokeBorder(Color(red: 0.70, green: 0.62, blue: 0.50).opacity(0.25),
+                .strokeBorder(Theme.Palette.ink.opacity(0.22),
                               lineWidth: max(0.5, size * 0.01))
-                .padding(size * 0.14)
-            // Soft seat shadow so the food sits *in* the plate, not on a sticker.
-            Ellipse()
-                .fill(Color(red: 0.35, green: 0.25, blue: 0.12).opacity(0.14))
-                .frame(width: size * 0.52, height: size * 0.18)
-                .offset(y: size * 0.20)
-                .blur(radius: size * 0.04)
+                .padding(size * 0.12)
             Text(emoji)
-                .font(.system(size: size * 0.5))
-                .offset(y: -size * 0.01)
+                .font(.system(size: size * 0.48))
+                .offset(y: -size * 0.005)
         }
     }
 }

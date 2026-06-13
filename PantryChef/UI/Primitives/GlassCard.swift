@@ -1,35 +1,22 @@
 import SwiftUI
 
-/// The redesign's signature surface: warm glass over light (spec §10). A cream-
-/// tinted translucent material with a specular border — bright where light catches
-/// the top edge, fading down — and a soft warm shadow.
-struct GlassCardModifier: ViewModifier {
-    var cornerRadius: CGFloat = Theme.Glass.cornerRadius
-
+/// A raised printed sheet (spec §10, Field Notes): near-white paper with a fine
+/// ink border, squared like something set in a press. The world's only raised
+/// surface — most content sits flat on the page, organized by rules.
+struct SheetModifier: ViewModifier {
     func body(content: Content) -> some View {
-        let shape = RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+        let shape = RoundedRectangle(cornerRadius: Theme.Metric.cardCornerRadius, style: .continuous)
         return content
-            .background {
-                shape
-                    .fill(.ultraThinMaterial)
-                    .overlay(shape.fill(Theme.Palette.glassFill))
-            }
-            .overlay(
-                shape.strokeBorder(
-                    LinearGradient(colors: [.white.opacity(0.95), .white.opacity(0.30)],
-                                   startPoint: .top, endPoint: .bottom),
-                    lineWidth: Theme.Glass.borderWidth)
-            )
-            .clipShape(shape)
-            .shadow(color: Theme.Glass.shadowColor,
-                    radius: Theme.Glass.shadowRadius, x: 0, y: Theme.Glass.shadowY)
+            .background(shape.fill(Theme.Palette.creamRaised))
+            .overlay(shape.strokeBorder(Theme.Palette.glassBorder, lineWidth: 1))
     }
 }
 
 extension View {
-    /// Wraps the view in the redesign's warm-glass surface.
+    /// Wraps the view in the printed-sheet surface. (Keeps the legacy call-site
+    /// name; the radius parameter is ignored — sheets are squared in this world.)
     func glassCard(cornerRadius: CGFloat = Theme.Glass.cornerRadius) -> some View {
-        modifier(GlassCardModifier(cornerRadius: cornerRadius))
+        modifier(SheetModifier())
     }
 }
 

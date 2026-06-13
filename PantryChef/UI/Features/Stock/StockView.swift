@@ -1,30 +1,57 @@
 import SwiftUI
 
-/// Stock — have / need / made in one inventory (spec §3). Perishables show day
-/// counts; staples show honest presence, never a fake fullness (spec §7). Rows are
-/// tappable → editor; the shopping list lives here too.
+/// Stores — the inventory as a printed ledger (spec §3, Field Notes). The kitchen
+/// speaks first in a sentence; then PERISHING FIRST with day counts on dotted
+/// leaders, STAPLES with honest presence tags (never a fake gauge, spec §7),
+/// MADE BY YOU, and THE LIST. Rows are tappable → editor.
 struct StockView: View {
     var store: KitchenStore
 
     @State private var editing: StockItem?
 
-    private let order: [StockItem.Section] = [.made, .useSoon, .have, .staples]
+    private var perishables: [StockItem] {
+        store.stock
+            .filter { if case .perishable = $0.measure { return true } else { return false } }
+            .sorted { days($0) ?? .max < days($1) ?? .max }
+    }
+    private var staples: [StockItem] { store.stock.filter { $0.section == .staples } }
+    private var made: [StockItem] { store.stock.filter { $0.section == .made } }
+
+    private func days(_ item: StockItem) -> Int? {
+        if case .perishable(_, let d) = item.measure { return d }
+        return nil
+    }
 
     var body: some View {
         VStack(spacing: 0) {
-            header
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Stores").font(Theme.Typography.dish(22)).foregroundStyle(Theme.Palette.ink)
+                Text(summary)
+                    .font(Theme.Typography.note(11.5)).foregroundStyle(Theme.Palette.warmGray)
+                    .fixedSize(horizontal: false, vertical: true)
+                DashedRule().padding(.top, 6)
+            }
+            .padding(.horizontal, 20).padding(.top, 6)
             ScrollView {
-                // One continuous card: section labels inline, compact rows.
                 VStack(alignment: .leading, spacing: 0) {
-                    ForEach(order, id: \.rawValue) { section in
-                        let items = store.stock.filter { $0.section == section }
-                        if !items.isEmpty { sectionView(section, items) }
+                    if !perishables.isEmpty {
+                        Eyebrow(text: "Perishing first", tone: .urgent).padding(.top, 12)
+                        ForEach(perishables) { item in row(item) }
+                        DashedRule().padding(.top, 10)
+                    }
+                    if !staples.isEmpty {
+                        Eyebrow(text: "Staples").padding(.top, 12)
+                        ForEach(staples) { item in row(item) }
+                        DashedRule().padding(.top, 10)
+                    }
+                    if !made.isEmpty {
+                        Eyebrow(text: "Made by you").padding(.top, 12)
+                        ForEach(made) { item in row(item) }
+                        DashedRule().padding(.top, 10)
                     }
                     if !store.shoppingList.isEmpty { listSection }
                 }
-                .padding(.horizontal, 14).padding(.top, 2).padding(.bottom, 10)
-                .glassCard(cornerRadius: 22)
-                .padding(.horizontal, 20).padding(.top, 6).padding(.bottom, 96)
+                .padding(.horizontal, 20).padding(.bottom, 24)
             }
         }
         .background(KitchenBackground())
@@ -38,99 +65,95 @@ struct StockView: View {
         }
     }
 
-    private var header: some View {
-        HStack(alignment: .firstTextBaseline) {
-            Text("Stock").font(Theme.Typography.dish(26)).foregroundStyle(Theme.Palette.ink)
-            Spacer()
-            Text("\(store.stock.count) items").font(Theme.Typography.fact(12))
-                .foregroundStyle(Theme.Palette.warmGraySoft)
+    /// "7 things in. The spinach wants using; staples are solid; 5 wait on the list."
+    private var summary: String {
+        var parts: [String] = ["\(store.stock.count) things in."]
+        if let urgent = perishables.first, let d = days(urgent), d <= 3 {
+            parts.append("The \(urgent.name.lowercased()) wants using;")
         }
-        .padding(.horizontal, 20).padding(.top, 6).padding(.bottom, 10)
+        let anyLow = staples.contains { if case .staple(let l) = $0.measure { return l != .inStock } else { return false } }
+        parts.append(anyLow ? "staples need a top-up;" : "staples are solid;")
+        parts.append("\(store.shoppingList.count) wait on the list.")
+        return parts.joined(separator: " ")
     }
 
-    private func sectionView(_ section: StockItem.Section, _ items: [StockItem]) -> some View {
-        VStack(alignment: .leading, spacing: 0) {
-            Text(section.rawValue.uppercased()).font(Theme.Typography.eyebrow)
-                .tracking(Theme.Metric.eyebrowTracking)
-                .foregroundStyle(section == .useSoon ? Theme.Palette.ochre : Theme.Palette.warmGraySoft)
-                .padding(.top, 11).padding(.bottom, 2)
-            ForEach(items) { item in
-                Button { editing = item } label: {
-                    StockRow(item: item).contentShape(Rectangle())
-                }
-                .buttonStyle(.pressable)
-                if item.id != items.last?.id {
-                    Divider().background(Theme.Palette.hairline)
+    // MARK: - Ledger rows
+
+    private func row(_ item: StockItem) -> some View {
+        Button { editing = item } label: {
+            LeaderRow {
+                Text("\(emoji(item))\u{2002}\(item.name)")
+                    .font(Theme.Typography.fact(13)).foregroundStyle(Theme.Palette.ink)
+                    .lineLimit(1)
+            } trailing: {
+                trailing(item)
+            }
+            .padding(.vertical, 5)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+    }
+
+    private func emoji(_ item: StockItem) -> String {
+        EmojiPlate.face(for: item.name, categories: item.plate.weights.map(\.category))
+    }
+
+    @ViewBuilder private func trailing(_ item: StockItem) -> some View {
+        switch item.measure {
+        case .perishable(let detail, let d):
+            HStack(spacing: 8) {
+                Text(detail.uppercased())
+                    .font(.system(size: 9)).tracking(1.2)
+                    .foregroundStyle(Theme.Palette.ink.opacity(0.5))
+                if let d {
+                    Text(d == 1 ? "1 DAY" : "\(d) DAYS")
+                        .font(Theme.Typography.dish(11, weight: .semibold))
+                        .foregroundStyle(d <= 3 ? Theme.Palette.paprika : Theme.Palette.ink.opacity(0.7))
                 }
             }
+        case .staple(let level):
+            switch level {
+            case .inStock: OutlineTag(text: "In")
+            case .runningLow: OutlineTag(text: "Low — listed", tone: .urgent)
+            case .out: OutlineTag(text: "Out", tone: .urgent)
+            }
+        case .made(let detail):
+            Text(detail.uppercased())
+                .font(.system(size: 9)).tracking(1.2)
+                .foregroundStyle(Theme.Palette.ink.opacity(0.6))
+                .lineLimit(1)
         }
     }
 
     private var listSection: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            Text("ON THE LIST").font(Theme.Typography.eyebrow).tracking(Theme.Metric.eyebrowTracking)
-                .foregroundStyle(Theme.Palette.paprika)
-                .padding(.top, 11).padding(.bottom, 2)
-            ForEach(store.shoppingList, id: \.self) { entry in
-                HStack(spacing: 9) {
-                    Image(systemName: "cart").font(.system(size: 12)).foregroundStyle(Theme.Palette.warmGraySoft)
-                    Text(entry).font(Theme.Typography.fact(13)).foregroundStyle(Theme.Palette.ink)
-                    Spacer()
-                    Button {
-                        withAnimation { store.removeFromList(entry) }
-                    } label: {
-                        Image(systemName: "xmark.circle.fill").font(.system(size: 14))
-                            .foregroundStyle(Theme.Palette.warmGraySoft.opacity(0.6))
-                            .frame(width: 32, height: 30)
+        VStack(alignment: .leading, spacing: 8) {
+            Eyebrow(text: "The list — \(store.shoppingList.count)", tone: .urgent).padding(.top, 12)
+            FlowLayoutRow(items: store.shoppingList) { entry in
+                Button {
+                    withAnimation { store.removeFromList(entry) }
+                } label: {
+                    HStack(spacing: 4) {
+                        Text(entry).font(Theme.Typography.fact(12.5)).foregroundStyle(Theme.Palette.ink)
+                        Image(systemName: "xmark").font(.system(size: 7))
+                            .foregroundStyle(Theme.Palette.ink.opacity(0.4))
                     }
-                    .buttonStyle(.plain)
+                    .contentShape(Rectangle())
                 }
-                if entry != store.shoppingList.last {
-                    Divider().background(Theme.Palette.hairline)
-                }
+                .buttonStyle(.plain)
             }
         }
     }
 }
 
-/// One compact line per item: plate · name · detail (truncating) · day count.
-private struct StockRow: View {
-    let item: StockItem
+/// A wrapping run of items separated like a printed line.
+private struct FlowLayoutRow<Content: View>: View {
+    let items: [String]
+    @ViewBuilder let content: (String) -> Content
 
     var body: some View {
-        HStack(spacing: 9) {
-            PlateView(name: item.name, composition: item.plate, size: 27)
-            Text(item.name).font(Theme.Typography.fact(13.5)).foregroundStyle(Theme.Palette.ink)
-                .lineLimit(1).layoutPriority(1)
-            Spacer(minLength: 8)
-            detail
-            trailing
-            Image(systemName: "chevron.right").font(.system(size: 10))
-                .foregroundStyle(Theme.Palette.warmGraySoft.opacity(0.5))
-        }
-        .padding(.vertical, 6)
-    }
-
-    @ViewBuilder private var detail: some View {
-        switch item.measure {
-        case .made(let d):
-            Label(d, systemImage: "snowflake").labelStyle(.titleAndIcon)
-                .font(Theme.Typography.fact(11)).foregroundStyle(Theme.Palette.warmGraySoft)
-                .lineLimit(1)
-        case .perishable(let d, _):
-            Text(d).font(Theme.Typography.fact(11)).foregroundStyle(Theme.Palette.warmGraySoft)
-                .lineLimit(1)
-        case .staple(let level):
-            Text(level.shortLabel).font(Theme.Typography.fact(11))
-                .foregroundStyle(level == .inStock ? Theme.Palette.warmGraySoft : Theme.Palette.ochre)
-                .lineLimit(1)
-        }
-    }
-
-    @ViewBuilder private var trailing: some View {
-        if case .perishable(_, let days?) = item.measure {
-            Text("\(days)d").font(Theme.Typography.numeral(12))
-                .foregroundStyle(days <= 3 ? Theme.Palette.ochre : Theme.Palette.warmGraySoft)
+        let columns = [GridItem(.adaptive(minimum: 84), spacing: 10)]
+        LazyVGrid(columns: columns, alignment: .leading, spacing: 7) {
+            ForEach(items, id: \.self) { content($0) }
         }
     }
 }
@@ -143,12 +166,11 @@ private struct StockItemEditor: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 18) {
-            Capsule().fill(Theme.Palette.hairline).frame(width: 36, height: 4)
-                .frame(maxWidth: .infinity).padding(.top, 10)
             HStack(spacing: 11) {
                 PlateView(name: item.name, composition: item.plate, size: 38)
                 Text(item.name).font(Theme.Typography.dish(20)).foregroundStyle(Theme.Palette.ink)
             }
+            .padding(.top, 24)
             measureEditor
             sectionPicker
             Spacer()
@@ -156,8 +178,8 @@ private struct StockItemEditor: View {
                 Button {
                     onRemove(item.id)
                 } label: {
-                    Label("Remove", systemImage: "trash")
-                        .font(Theme.Typography.fact(13)).foregroundStyle(Theme.Palette.ochre)
+                    Text("REMOVE").font(.system(size: 10)).tracking(1.8)
+                        .foregroundStyle(Theme.Palette.paprika)
                 }
                 .buttonStyle(.plain)
                 Spacer()
@@ -204,11 +226,11 @@ private struct StockItemEditor: View {
                             _ current: StockItem.StapleLevel) -> some View {
         let selected = value == current
         return Button { item.measure = .staple(value) } label: {
-            Text(title).font(Theme.Typography.fact(12))
-                .foregroundStyle(selected ? Theme.Palette.cream : Theme.Palette.warmGray)
-                .padding(.horizontal, 12).padding(.vertical, 6)
-                .background(Capsule().fill(selected ? Theme.Palette.ink : Color.clear))
-                .overlay(Capsule().strokeBorder(Theme.Palette.hairline, lineWidth: selected ? 0 : 1))
+            Text(title.uppercased()).font(.system(size: 9)).tracking(1.4)
+                .foregroundStyle(selected ? Theme.Palette.cream : Theme.Palette.ink.opacity(0.7))
+                .padding(.horizontal, 10).padding(.vertical, 6)
+                .background(Rectangle().fill(selected ? Theme.Palette.ink : .clear))
+                .overlay(Rectangle().strokeBorder(Theme.Palette.ink.opacity(selected ? 0 : 0.4), lineWidth: 1))
         }
         .buttonStyle(.plain)
     }
@@ -219,11 +241,11 @@ private struct StockItemEditor: View {
                 ForEach([StockItem.Section.useSoon, .have, .staples, .made], id: \.rawValue) { section in
                     let selected = item.section == section
                     Button { item.section = section } label: {
-                        Text(section.rawValue).font(Theme.Typography.fact(11))
-                            .foregroundStyle(selected ? Theme.Palette.cream : Theme.Palette.warmGray)
-                            .padding(.horizontal, 10).padding(.vertical, 6)
-                            .background(Capsule().fill(selected ? Theme.Palette.ink : Color.clear))
-                            .overlay(Capsule().strokeBorder(Theme.Palette.hairline, lineWidth: selected ? 0 : 1))
+                        Text(section.rawValue.uppercased()).font(.system(size: 8.5)).tracking(1.2)
+                            .foregroundStyle(selected ? Theme.Palette.cream : Theme.Palette.ink.opacity(0.7))
+                            .padding(.horizontal, 8).padding(.vertical, 6)
+                            .background(Rectangle().fill(selected ? Theme.Palette.ink : .clear))
+                            .overlay(Rectangle().strokeBorder(Theme.Palette.ink.opacity(selected ? 0 : 0.4), lineWidth: 1))
                     }
                     .buttonStyle(.plain)
                 }
@@ -233,14 +255,13 @@ private struct StockItemEditor: View {
 
     private func field<C: View>(_ label: String, @ViewBuilder _ content: () -> C) -> some View {
         VStack(alignment: .leading, spacing: 6) {
-            Text(label.uppercased()).font(Theme.Typography.eyebrow).tracking(Theme.Metric.eyebrowTracking)
-                .foregroundStyle(Theme.Palette.warmGraySoft)
+            Eyebrow(text: label)
             content()
                 .font(Theme.Typography.fact(15)).foregroundStyle(Theme.Palette.ink)
                 .padding(.horizontal, 12).padding(.vertical, 10)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .background(RoundedRectangle(cornerRadius: 12).fill(Theme.Palette.creamRaised))
-                .overlay(RoundedRectangle(cornerRadius: 12).strokeBorder(Theme.Palette.hairline))
+                .background(Rectangle().fill(Theme.Palette.creamRaised))
+                .overlay(Rectangle().strokeBorder(Theme.Palette.ink.opacity(0.25), lineWidth: 1))
         }
     }
 }

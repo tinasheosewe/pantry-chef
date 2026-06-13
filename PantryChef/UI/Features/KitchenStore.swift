@@ -223,6 +223,7 @@ final class KitchenStore {
         let orzo = Dish(
             name: "Spinach & feta orzo", plate: plate([.produce, .dairy, .pasta], 1), time: "25 min",
             isFavorite: true,
+            blurb: "Sweet greens through hot orzo — briny feta to finish.",
             ingredients: [
                 line("baby spinach", "300 g", "Baby spinach"),
                 line("feta", "200 g", "Feta"),
@@ -238,6 +239,7 @@ final class KitchenStore {
             ])
         let shakshuka = Dish(
             name: "Shakshuka", plate: plate([.protein, .produce, .spices], 2), time: "30 min",
+            blurb: "Eggs poached in a paprika tomato sauce.",
             ingredients: [line("eggs", "4", "Eggs"), line("tomato", "400 g", "Tomatoes"),
                           line("onion", "1", "Onion"), line("paprika", nil, "Paprika", staple: true)],
             steps: [CookStep("Soften the onion, add tomatoes and paprika, simmer to a sauce.", timerSeconds: 600),
@@ -245,27 +247,32 @@ final class KitchenStore {
         let stirfry = Dish(
             name: "Tuesday stir-fry", plate: plate([.produce, .protein], 14), time: "20 min", isYours: true,
             isFavorite: true,
+            blurb: "Hot pan, whatever's crisp, twenty minutes.",
             ingredients: [line("baby spinach", "200 g", "Spinach"), line("feta", "100 g", "Feta")],
             steps: [CookStep("Get the pan smoking hot, then go fast.")])
         let salmon = Dish(
             name: "Miso butter salmon", plate: plate([.protein, .oils], 5), time: "18 min",
+            blurb: "Miso butter does the work; the oven the rest.",
             ingredients: [line("salmon", "2", "Salmon fillets"), line("miso", "2 tbsp", "Miso"),
                           line("butter", "20 g", "Butter")],
             steps: [CookStep("Whisk miso into soft butter; coat the salmon."),
                     CookStep("Roast until the centre just flakes.", timerSeconds: 600)])
         let ragu = Dish(
             name: "Lamb ragù", plate: plate([.protein, .pasta, .produce], 3), time: "2 h 10",
+            blurb: "Brown hard, braise low — and it freezes beautifully.",
             ingredients: [line("lamb", "500 g", "Lamb mince"), line("orzo", "2 cups", "Orzo"),
                           line("onion", "1", "Onion"), line("tomato", "400 g", "Tomatoes")],
             steps: [CookStep("Brown the lamb hard, then build the sofrito.", timerSeconds: 600),
                     CookStep("Add tomatoes and braise low and slow.", timerSeconds: 5400)])
         let greens = Dish(
             name: "Lemon greens", plate: plate([.produce, .dairy], 7), time: "20 min",
+            blurb: "Blistered greens, cold cheese, sharp lemon.",
             ingredients: [line("baby spinach", "200 g", "Spinach"), line("feta", "100 g", "Feta"),
                           line("lemon", "1", "Lemon")],
             steps: [CookStep("Blister the greens, dress with lemon, crumble over feta.")])
         let frittata = Dish(
             name: "Herb frittata", plate: plate([.dairy, .produce], 9), time: "15 min",
+            blurb: "Beaten eggs, folded greens, five minutes under the grill.",
             ingredients: [line("eggs", "6", "Eggs"), line("feta", "100 g", "Feta"),
                           line("baby spinach", "100 g", "Spinach")],
             steps: [CookStep("Beat the eggs, fold in greens and feta, set under the grill.", timerSeconds: 480)])
@@ -314,6 +321,12 @@ final class KitchenStore {
             StockItem(key: "olive oil", name: "Olive oil", plate: plate([.oils], 8),
                       section: .staples, measure: .staple(.runningLow))
         ]
+
+        // Screenshot/CI hook: open straight to a given space.
+        if let forced = ProcessInfo.processInfo.environment["PC_SPACE"],
+           let initial = RootSpace(rawValue: forced) {
+            space = initial
+        }
 
         // Render policy: anything that is a *dish* somewhere (library, fan,
         // journal) earns a painted plate; raw stock items stay emoji.
