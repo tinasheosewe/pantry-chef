@@ -119,23 +119,11 @@ final class MockAIService: AIServiceProtocol {
     }
 
     var generateIngredientDefinitionToReturn: AIIngredientDefinition? = nil
-    var verifyAndMergeIngredientToReturn: AIService.IngredientMergeResult? = nil
     var generateIngredientDefinitionCallCount = 0
-    var verifyAndMergeIngredientCallCount = 0
 
     func generateIngredientDefinition(name: String) async -> AIIngredientDefinition? {
         generateIngredientDefinitionCallCount += 1
         return generateIngredientDefinitionToReturn
-    }
-
-    func verifyAndMergeIngredient(
-        name: String,
-        baseItem: PantryCatalogItemDefinition,
-        generatedCategory: FoodCategory?,
-        generatedFacets: [PantryFacetKey: [String]]
-    ) async -> AIService.IngredientMergeResult? {
-        verifyAndMergeIngredientCallCount += 1
-        return verifyAndMergeIngredientToReturn
     }
 }
 
