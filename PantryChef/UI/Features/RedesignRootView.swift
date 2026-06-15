@@ -166,6 +166,7 @@ private struct RecipeDetailScreen: View {
                 await store.ai.modifyRecipe(d, feedback: feedback,
                                             pantryIngredients: store.stock.map(\.name))
             },
+            autofill: { await store.ai.generateIngredientDefinition(name: $0) },
             onCook: { effective in session = CookSession(dishes: [effective]) },
             onClose: onClose
         )

@@ -22,6 +22,8 @@ struct RecipeDetailView: View {
     /// Explicit AI actions; nil result = unavailable or failed (handled softly).
     var makeHealthier: ((Dish) async -> HealthierSuggestion?)?
     var tweak: ((Dish, String) async -> Dish?)?
+    /// AI fill for the custom-ingredient form reached from the editor.
+    var autofill: (String) async -> AIIngredientDefinition? = { _ in nil }
     /// Receives the dish to cook — scaling and applied swaps baked in.
     var onCook: (Dish) -> Void
     var onClose: () -> Void
@@ -51,6 +53,7 @@ struct RecipeDetailView: View {
          onAddMissingToList: @escaping ([RecipeLine]) -> Void = { _ in },
          makeHealthier: ((Dish) async -> HealthierSuggestion?)? = nil,
          tweak: ((Dish, String) async -> Dish?)? = nil,
+         autofill: @escaping (String) async -> AIIngredientDefinition? = { _ in nil },
          onCook: @escaping (Dish) -> Void,
          onClose: @escaping () -> Void) {
         self.dish = dish
@@ -63,6 +66,7 @@ struct RecipeDetailView: View {
         self.onAddMissingToList = onAddMissingToList
         self.makeHealthier = makeHealthier
         self.tweak = tweak
+        self.autofill = autofill
         self.onCook = onCook
         self.onClose = onClose
         _currentDish = State(initialValue: dish)
@@ -104,7 +108,7 @@ struct RecipeDetailView: View {
         }
         .safeAreaInset(edge: .bottom) { pendingChanges ? AnyView(pendingBar) : AnyView(cookBar) }
         .sheet(isPresented: $showEditor) {
-            RecipeEditorView(dish: currentDish) { edited in
+            RecipeEditorView(dish: currentDish, autofill: autofill) { edited in
                 currentDish = edited
                 servings = edited.servings
                 showEditor = false

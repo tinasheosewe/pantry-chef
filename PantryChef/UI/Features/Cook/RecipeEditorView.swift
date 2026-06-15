@@ -1,14 +1,36 @@
 import SwiftUI
 
 /// Edit a recipe: name, time, servings, ingredient lines, and steps. Works on a
-/// local copy; Save hands the edited dish back.
+/// local copy; Save hands the edited dish back. Amounts use a fixed unit picker
+/// (never freeform), and ingredients resolve through the one intake pipeline —
+/// catalog match or a validated custom item — so a recipe can't hold a freeform
+/// ingredient that maps to nothing.
 struct RecipeEditorView: View {
     @State private var dish: Dish
+    var autofill: (String) async -> AIIngredientDefinition? = { _ in nil }
     var onSave: (Dish) -> Void
 
-    init(dish: Dish, onSave: @escaping (Dish) -> Void) {
+    @State private var newIngredient = ""
+    @State private var resolving: Resolving?
+
+    init(dish: Dish,
+         autofill: @escaping (String) async -> AIIngredientDefinition? = { _ in nil },
+         onSave: @escaping (Dish) -> Void) {
         _dish = State(initialValue: dish)
+        self.autofill = autofill
         self.onSave = onSave
+    }
+
+    /// An ingredient phrase being resolved — for adding, or re-mapping a line.
+    private enum Resolving: Identifiable {
+        case pick(phrase: String, lineID: UUID?, candidates: [IntakeCandidate])
+        case custom(phrase: String, lineID: UUID?)
+        var id: String {
+            switch self {
+            case .pick(let p, let l, _): return "pick:\(p):\(l?.uuidString ?? "new")"
+            case .custom(let p, let l): return "custom:\(p):\(l?.uuidString ?? "new")"
+            }
+        }
     }
 
     var body: some View {
@@ -26,9 +48,7 @@ struct RecipeEditorView: View {
                     field("Name") { TextField("Name", text: $dish.name) }
                     HStack(spacing: 12) {
                         field("Time") { TextField("25 min", text: $dish.time) }
-                        field("Serves") {
-                            Stepper("\(dish.servings)", value: $dish.servings, in: 1...24)
-                        }
+                        field("Serves") { Stepper("\(dish.servings)", value: $dish.servings, in: 1...24) }
                     }
                     ingredientsSection
                     stepsSection
@@ -37,6 +57,21 @@ struct RecipeEditorView: View {
             }
         }
         .background(KitchenBackground())
+        .sheet(item: $resolving) { r in
+            switch r {
+            case .pick(let phrase, let lineID, let candidates):
+                IngredientPicker(
+                    phrase: phrase, candidates: candidates,
+                    onPick: { applyResolved(name: $0.name, key: $0.id, lineID: lineID); resolving = nil },
+                    onCustom: { resolving = .custom(phrase: phrase, lineID: lineID) },
+                    onCancel: { resolving = nil })
+            case .custom(let phrase, let lineID):
+                CustomIngredientForm(
+                    name: phrase, autofill: autofill,
+                    onSave: { def in applyResolved(name: def.name, key: def.id, lineID: lineID); resolving = nil },
+                    onCancel: { resolving = nil })
+            }
+        }
     }
 
     // MARK: - Ingredients
@@ -46,19 +81,21 @@ struct RecipeEditorView: View {
             sectionTitle("Ingredients")
             ForEach($dish.ingredients) { $line in
                 HStack(spacing: 8) {
-                    TextField("amount", text: Binding(
-                        get: { line.amount ?? "" },
-                        set: { line = RecipeLine(id: line.id, key: line.key,
-                                                 amount: $0.isEmpty ? nil : $0,
-                                                 name: line.name, isStaple: line.isStaple) }))
-                        .frame(width: 84)
-                    TextField("ingredient", text: Binding(
-                        get: { line.name },
-                        set: { line = RecipeLine(id: line.id, key: $0.lowercased(),
-                                                 amount: line.amount, name: $0, isStaple: line.isStaple) }))
+                    TextField("qty", text: Binding(
+                        get: { Self.qtyText(line.amount) },
+                        set: { line = line.withAmount(qty: $0, unit: Self.unit(line.amount)) }))
+                        .keyboardType(.decimalPad)
+                        .frame(width: 48)
+                    unitMenu($line)
                     Button {
-                        dish.ingredients.removeAll { $0.id == line.id }
+                        beginResolve(phrase: line.name, lineID: line.id)
                     } label: {
+                        Text(line.name.isEmpty ? "choose…" : line.name)
+                            .foregroundStyle(line.name.isEmpty ? Theme.Palette.warmGraySoft : Theme.Palette.ink)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                    .buttonStyle(.plain)
+                    Button { dish.ingredients.removeAll { $0.id == line.id } } label: {
                         Image(systemName: "minus.circle.fill").font(.system(size: 16))
                             .foregroundStyle(Theme.Palette.warmGraySoft.opacity(0.7))
                     }
@@ -69,10 +106,79 @@ struct RecipeEditorView: View {
                 .background(RoundedRectangle(cornerRadius: 12).fill(Theme.Palette.creamRaised))
                 .overlay(RoundedRectangle(cornerRadius: 12).strokeBorder(Theme.Palette.hairline))
             }
-            addButton("Add ingredient") {
-                dish.ingredients.append(RecipeLine(key: "", amount: nil, name: ""))
+            // Add ingredient — resolved through the pipeline, never freeform.
+            HStack(spacing: 8) {
+                Image(systemName: "plus").font(.system(size: 13, weight: .medium)).foregroundStyle(Theme.Palette.paprika)
+                TextField("Add an ingredient", text: $newIngredient)
+                    .font(Theme.Typography.fact(14)).onSubmit(commitNewIngredient)
+                if !newIngredient.trimmed.isEmpty {
+                    Button("Add", action: commitNewIngredient)
+                        .font(Theme.Typography.fact(12, weight: .medium)).foregroundStyle(Theme.Palette.paprika)
+                        .buttonStyle(.plain)
+                }
             }
+            .padding(.top, 2)
         }
+    }
+
+    private func unitMenu(_ line: Binding<RecipeLine>) -> some View {
+        Menu {
+            Button("—") { line.wrappedValue = line.wrappedValue.withAmount(qty: Self.qtyText(line.wrappedValue.amount), unit: nil) }
+            ForEach(MeasurementUnit.allCases) { u in
+                Button(u.rawValue) { line.wrappedValue = line.wrappedValue.withAmount(qty: Self.qtyText(line.wrappedValue.amount), unit: u) }
+            }
+        } label: {
+            HStack(spacing: 2) {
+                Text(Self.unit(line.wrappedValue.amount)?.rawValue ?? "unit")
+                    .foregroundStyle(Self.unit(line.wrappedValue.amount) != nil ? Theme.Palette.ink : Theme.Palette.warmGraySoft)
+                Image(systemName: "chevron.down").font(.system(size: 9)).foregroundStyle(Theme.Palette.warmGraySoft)
+            }
+            .frame(width: 56)
+        }
+    }
+
+    private func commitNewIngredient() {
+        let phrase = newIngredient.trimmed
+        guard !phrase.isEmpty else { return }
+        newIngredient = ""
+        beginResolve(phrase: phrase, lineID: nil)
+    }
+
+    private func beginResolve(phrase: String, lineID: UUID?) {
+        guard !phrase.isEmpty else { return }
+        let (intake, decision) = IntakePipeline.resolve(phrase, using: { IntakeParser().parse($0) })
+        switch decision {
+        case .confident:
+            applyResolved(name: intake.suggestedName ?? intake.name,
+                          key: intake.resolvedItemID ?? IngredientLexicon.lookupKey(intake.name), lineID: lineID)
+        case .ambiguous(let candidates):
+            resolving = .pick(phrase: phrase, lineID: lineID, candidates: candidates)
+        case .custom:
+            resolving = .custom(phrase: phrase, lineID: lineID)
+        }
+    }
+
+    /// Apply a resolved ingredient — update the line, or add a new one.
+    private func applyResolved(name: String, key: String, lineID: UUID?) {
+        let display = name.prefix(1).capitalized + name.dropFirst()
+        if let lineID, let i = dish.ingredients.firstIndex(where: { $0.id == lineID }) {
+            let old = dish.ingredients[i]
+            dish.ingredients[i] = RecipeLine(id: old.id, key: key, amount: old.amount, name: display, isStaple: old.isStaple)
+        } else {
+            dish.ingredients.append(RecipeLine(key: key, amount: nil, name: display))
+        }
+    }
+
+    // MARK: - Amount parsing helpers
+
+    private static func qtyText(_ amount: String?) -> String {
+        guard let amount, !amount.isEmpty else { return "" }
+        return amount.split(separator: " ", maxSplits: 1).map(String.init).first ?? ""
+    }
+    private static func unit(_ amount: String?) -> MeasurementUnit? {
+        guard let amount else { return nil }
+        let parts = amount.split(separator: " ", maxSplits: 1).map(String.init)
+        return parts.count > 1 ? MeasurementUnit(rawValue: parts[1]) : nil
     }
 
     // MARK: - Steps
@@ -105,9 +211,7 @@ struct RecipeEditorView: View {
                 .background(RoundedRectangle(cornerRadius: 12).fill(Theme.Palette.creamRaised))
                 .overlay(RoundedRectangle(cornerRadius: 12).strokeBorder(Theme.Palette.hairline))
             }
-            addButton("Add step") {
-                dish.steps.append(CookStep(""))
-            }
+            addButton("Add step") { dish.steps.append(CookStep("")) }
         }
     }
 

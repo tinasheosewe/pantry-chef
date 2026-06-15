@@ -20,6 +20,14 @@ struct RecipeLine: Identifiable, Equatable, Sendable {
 
     /// "300 g · Baby spinach"
     var display: String { amount.map { "\($0) · \(name)" } ?? name }
+
+    /// A copy with the amount recomposed from a structured quantity + unit (the
+    /// recipe editor uses a fixed unit picker, never freeform unit text).
+    func withAmount(qty: String, unit: MeasurementUnit?) -> RecipeLine {
+        let q = qty.trimmingCharacters(in: .whitespaces)
+        let amount: String? = q.isEmpty ? nil : (unit.map { "\(q) \($0.rawValue)" } ?? q)
+        return RecipeLine(id: id, key: key, amount: amount, name: name, isStaple: isStaple)
+    }
 }
 
 /// One cooking step, optionally timed.

@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		0248FD5136004BE914474B21 /* ResolutionClassTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4EC84421D4A2864AE180C6D /* ResolutionClassTests.swift */; };
 		04B3B6AA63619905246D9295 /* IntakePipeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = C277A622D0C630B07548A487 /* IntakePipeline.swift */; };
+		0D574F78BDC28376F33CEA94 /* SeedDishCatalogTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56846FEA588376592A76B680 /* SeedDishCatalogTests.swift */; };
 		0E00CB9878D75F91F1802324 /* Fraunces.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B373F4229381257EA66CDE3C /* Fraunces.ttf */; };
 		0F0DFA82B7C463DDB2BE8294 /* RealtimeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FF94D344E15CC2935F5283B /* RealtimeService.swift */; };
 		104B58671438C133ED21624A /* UnitConversionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C93C8FDEB9C5D988F3270738 /* UnitConversionTests.swift */; };
@@ -162,6 +163,7 @@
 		51353A5BB5F36DCA4DAA0FFC /* RecipeEditorView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RecipeEditorView.swift; sourceTree = "<group>"; };
 		52C9664BC03D8B5DE7127A5D /* CookFlowView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CookFlowView.swift; sourceTree = "<group>"; };
 		553DC74533E9AC0CDF04F69A /* MultiCookSchedulerTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MultiCookSchedulerTests.swift; sourceTree = "<group>"; };
+		56846FEA588376592A76B680 /* SeedDishCatalogTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SeedDishCatalogTests.swift; sourceTree = "<group>"; };
 		59485E1388AA5B4BFC221609 /* output_audio_buffer_cleared.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = output_audio_buffer_cleared.json; sourceTree = "<group>"; };
 		5FF94D344E15CC2935F5283B /* RealtimeService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealtimeService.swift; sourceTree = "<group>"; };
 		62F4E42A0869501AB92F81F2 /* input_audio_transcription_completed_sparse_usage.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_audio_transcription_completed_sparse_usage.json; sourceTree = "<group>"; };
@@ -376,6 +378,7 @@
 				F934FEC93B55B49EFD729047 /* IngredientMatchingTests.swift */,
 				99EDB3A919F342036B1A4A1A /* AIDishMappingTests.swift */,
 				E3403E0E0CEC4D7B9F57BC6A /* IntakePipelineTests.swift */,
+				56846FEA588376592A76B680 /* SeedDishCatalogTests.swift */,
 			);
 			path = PantryChefTests;
 			sourceTree = "<group>";
@@ -865,6 +868,7 @@
 				E1A038734763DF08DEB18204 /* IngredientMatchingTests.swift in Sources */,
 				60D0EE313FC98666DD3F7BA5 /* AIDishMappingTests.swift in Sources */,
 				87F526236C65466C6A727AE1 /* IntakePipelineTests.swift in Sources */,
+				0D574F78BDC28376F33CEA94 /* SeedDishCatalogTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
