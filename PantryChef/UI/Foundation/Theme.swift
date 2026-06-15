@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 import Observation
 
 /// Field Notes: one visual world (spec §10). Green ink on paper — the ink IS the
@@ -111,29 +112,58 @@ enum Theme {
     /// high-contrast display serif — carries dish names, greetings, and the
     /// sommelier note; a quiet sans carries every fact. Falls back to the system
     /// serif if the bundled font ever fails to register.
+    /// Every face scales with the user's Dynamic Type setting (accessibility gap
+    /// flagged by the UI research): Fraunces via `relativeTo:`, the sans via
+    /// UIFontMetrics. These are functions/computed vars so they re-read the live
+    /// content-size category on each body pass. The root clamps the maximum so
+    /// the editorial layout still holds at large sizes.
     enum Typography {
         /// Display serif — for dish names and editorial moments.
         static func dish(_ size: CGFloat, weight: Font.Weight = .medium) -> Font {
             FontLoader.frauncesAvailable
-                ? .custom("Fraunces", size: size).weight(weight)
+                ? .custom("Fraunces", size: size, relativeTo: .body).weight(weight)
                 : .system(size: size, weight: weight, design: .serif)
         }
         /// Display serif italic — the sommelier reasoning line.
         static func note(_ size: CGFloat = 13) -> Font {
             FontLoader.frauncesAvailable
-                ? .custom("Fraunces-Italic", size: size)
+                ? .custom("Fraunces-Italic", size: size, relativeTo: .body)
                 : .system(size: size, weight: .regular, design: .serif).italic()
         }
-        /// Sans — all functional text, metadata, labels.
+        /// Sans — all functional text, metadata, labels. Scaled for Dynamic Type.
         static func fact(_ size: CGFloat, weight: Font.Weight = .regular) -> Font {
-            .system(size: size, weight: weight, design: .default)
+            scaledSystem(size: size, weight: weight)
         }
         /// Sans with tabular figures — counts, quantities, timers, countdowns.
         static func numeral(_ size: CGFloat, weight: Font.Weight = .medium) -> Font {
-            .system(size: size, weight: weight, design: .default).monospacedDigit()
+            scaledSystem(size: size, weight: weight, monospacedDigit: true)
         }
         /// Uppercase eyebrow label ("TONIGHT", "ON THE CLOCK").
-        static let eyebrow = Font.system(size: 11, weight: .regular, design: .default)
+        static var eyebrow: Font { scaledSystem(size: 11, weight: .regular) }
+
+        /// A system font that tracks Dynamic Type, built through UIFontMetrics so
+        /// our fixed point sizes still grow with the user's setting.
+        private static func scaledSystem(size: CGFloat, weight: Font.Weight,
+                                         monospacedDigit: Bool = false) -> Font {
+            let base = monospacedDigit
+                ? UIFont.monospacedDigitSystemFont(ofSize: size, weight: uiWeight(weight))
+                : UIFont.systemFont(ofSize: size, weight: uiWeight(weight))
+            return Font(UIFontMetrics(forTextStyle: .body).scaledFont(for: base))
+        }
+
+        private static func uiWeight(_ w: Font.Weight) -> UIFont.Weight {
+            switch w {
+            case .ultraLight: return .ultraLight
+            case .thin: return .thin
+            case .light: return .light
+            case .medium: return .medium
+            case .semibold: return .semibold
+            case .bold: return .bold
+            case .heavy: return .heavy
+            case .black: return .black
+            default: return .regular
+            }
+        }
     }
 
     // MARK: Metrics

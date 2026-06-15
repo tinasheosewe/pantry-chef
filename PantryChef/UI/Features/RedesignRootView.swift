@@ -44,6 +44,9 @@ struct RedesignRootView: View {
                 )
             }
             .background(KitchenBackground())
+            // Support Dynamic Type, but bound the extreme sizes so the editorial
+            // page composition still holds (accessibility pass).
+            .dynamicTypeSize(.xSmall ... .accessibility2)
             .preferredColorScheme(ThemeManager.shared.spec.isDark ? .dark : .light)
             // Foregrounding re-checks the clock (the page may invert for evening)
             // and forgives failed plate renders — the network may be back.

@@ -15,6 +15,7 @@ struct DashedRule: View {
             .stroke(Theme.Palette.ink.opacity(0.35 * opacity),
                     style: StrokeStyle(lineWidth: 1, dash: [4, 3]))
             .frame(height: 1)
+            .accessibilityHidden(true)
     }
 }
 
@@ -22,6 +23,7 @@ struct DashedRule: View {
 struct SolidRule: View {
     var body: some View {
         Rectangle().fill(Theme.Palette.ink.opacity(0.3)).frame(height: 1)
+            .accessibilityHidden(true)
     }
 }
 
@@ -81,6 +83,7 @@ struct Leader: View {
             .frame(height: 1)
             .frame(maxWidth: .infinity)
             .alignmentGuide(.firstTextBaseline) { d in d[VerticalAlignment.center] - 3 }
+            .accessibilityHidden(true)
     }
 }
 
