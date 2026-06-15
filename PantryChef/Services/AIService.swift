@@ -366,9 +366,20 @@ final class AIService {
         If the modification request is NOT about food or cooking (e.g., asking you to write code, do homework, etc.), reject it with "rejected": true.
 
         Otherwise, modify this recipe according to the user's request. Keep the recipe's identity \
-        and character intact — only change what the user asked for. If the user references \
-        their pantry or available ingredients, use those. If they ask to make it spicier, \
+        and character intact — only change what the user asked for. If they ask to make it spicier, \
         healthier, faster, etc., adjust accordingly.
+
+        SELF-CONTAINED RECIPE RULES (critical):
+        - The recipe must cook everything from raw, purchasable ingredients. Never add a \
+        pre-cooked, pre-prepared, or leftover item as an ingredient — no "cooked rice", \
+        "cooked orzo", "boiled pasta", "grilled chicken", "leftover X", and never another \
+        finished dish (e.g. "lamb ragù") as if it were a single ingredient.
+        - When a change needs a component that must be cooked (a meat, a grain, a sauce), add \
+        its RAW ingredients (e.g. "lamb mince", "orzo") AND the steps to cook it as part of \
+        this recipe's method. The user starts from raw ingredients, not a prepared component.
+        - Do NOT assume the user already has anything cooked or prepared on hand. The pantry \
+        list, even if it names a prepared dish, is not a shortcut — treat it only as a hint to \
+        which raw ingredients are available, never as ready-to-add components.
 
         IMPORTANT: Use standard title capitalization for the recipe title. \
         Use sentence case for ingredient names (lowercase unless a proper noun). \

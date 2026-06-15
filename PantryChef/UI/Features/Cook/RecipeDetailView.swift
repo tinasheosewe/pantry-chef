@@ -362,8 +362,11 @@ struct RecipeDetailView: View {
                 HStack(alignment: .firstTextBaseline, spacing: 11) {
                     Text("\(index + 1)")
                         .font(Theme.Typography.dish(15, weight: .semibold))
+                        .monospacedDigit()
                         .foregroundStyle(Theme.Palette.paprika)
-                        .frame(width: 14, alignment: .trailing)
+                        .lineLimit(1)
+                        .fixedSize(horizontal: true, vertical: false)
+                        .frame(width: 24, alignment: .trailing)
                     (Text(step.instruction)
                         + Text(step.timerSeconds.map { "  — \($0 / 60)'" } ?? "")
                             .foregroundColor(Theme.Palette.ink.opacity(0.45)))

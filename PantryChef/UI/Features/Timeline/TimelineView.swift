@@ -22,6 +22,9 @@ struct TimelineView: View {
     @State private var visibleID: String?
     @State private var unfolded: Set<String> = []
     @State private var extending = false
+    /// Flipped on for a single runloop tick to kill in-flight scroll momentum so
+    /// "return to today" lands even when tapped mid-deceleration.
+    @State private var scrollLocked = false
 
     var body: some View {
         ScrollViewReader { proxy in
@@ -40,6 +43,7 @@ struct TimelineView: View {
                     .padding(.bottom, 24)
                 }
                 .scrollPosition(id: $visibleID, anchor: .top)
+                .scrollDisabled(scrollLocked)
             }
             .background(background)
             .onAppear {
@@ -52,12 +56,18 @@ struct TimelineView: View {
 
     // MARK: - Pinned header
 
-    /// Always-available "return to today" — uses ScrollViewReader so it works even
-    /// while the timeline is mid-scroll (scrollPosition alone is ignored in motion).
+    /// Always-available "return to today". A tap landed mid-deceleration is
+    /// otherwise swallowed — SwiftUI ignores both `scrollTo` and `scrollPosition`
+    /// while the scroll view still carries momentum. Disabling scrolling for one
+    /// runloop tick halts that momentum; the next tick then jumps us home.
     private func returnToToday(_ proxy: ScrollViewProxy) {
-        withAnimation(.spring(response: 0.45, dampingFraction: 0.85)) {
-            proxy.scrollTo(TimelineEntry.now.id, anchor: .top)
-            visibleID = TimelineEntry.now.id
+        scrollLocked = true
+        DispatchQueue.main.async {
+            scrollLocked = false
+            withAnimation(.spring(response: 0.45, dampingFraction: 0.85)) {
+                proxy.scrollTo(TimelineEntry.now.id, anchor: .top)
+                visibleID = TimelineEntry.now.id
+            }
         }
     }
 
