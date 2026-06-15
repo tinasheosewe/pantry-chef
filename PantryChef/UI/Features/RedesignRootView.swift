@@ -52,6 +52,7 @@ struct RedesignRootView: View {
             // and forgives failed plate renders — the network may be back.
             .onChange(of: scenePhase) { _, phase in
                 if phase == .active {
+                    store.today = Date()          // un-freeze the knowledge clock
                     ThemeManager.shared.refresh()
                     PlateRenderLibrary.shared.sweep()
                 }

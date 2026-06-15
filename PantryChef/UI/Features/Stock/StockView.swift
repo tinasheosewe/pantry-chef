@@ -23,8 +23,15 @@ struct StockView: View {
     private var inStock: [StockItem] {
         allPerishable.filter { (days($0) ?? .max) > KitchenConfig.Stores.perishingSoonDays }
     }
-    private var staples: [StockItem] { store.stock.filter { $0.section == .staples } }
-    private var made: [StockItem] { store.stock.filter { $0.section == .made } }
+    // Group by the item's *measure*, the single source of truth, so an item can
+    // never disagree with itself and vanish (reactivity audit P1/P2). Perishables
+    // split by urgency (days), staples and leftovers by kind.
+    private var staples: [StockItem] {
+        store.stock.filter { if case .staple = $0.measure { return true } else { return false } }
+    }
+    private var made: [StockItem] {
+        store.stock.filter { if case .made = $0.measure { return true } else { return false } }
+    }
 
     private func days(_ item: StockItem) -> Int? {
         if case .perishable(_, let d) = item.measure { return d }
@@ -229,7 +236,6 @@ private struct StockItemEditor: View {
             }
             .padding(.top, 24)
             measureEditor
-            sectionPicker
             Spacer()
             HStack {
                 Button {
@@ -290,24 +296,6 @@ private struct StockItemEditor: View {
                 .overlay(Rectangle().strokeBorder(Theme.Palette.ink.opacity(selected ? 0 : 0.4), lineWidth: 1))
         }
         .buttonStyle(.plain)
-    }
-
-    private var sectionPicker: some View {
-        field("Where it lives") {
-            HStack(spacing: 8) {
-                ForEach([StockItem.Section.useSoon, .have, .staples, .made], id: \.rawValue) { section in
-                    let selected = item.section == section
-                    Button { item.section = section } label: {
-                        Text(section.rawValue.uppercased()).font(.system(size: 8.5)).tracking(1.2)
-                            .foregroundStyle(selected ? Theme.Palette.cream : Theme.Palette.ink.opacity(0.7))
-                            .padding(.horizontal, 8).padding(.vertical, 6)
-                            .background(Rectangle().fill(selected ? Theme.Palette.ink : .clear))
-                            .overlay(Rectangle().strokeBorder(Theme.Palette.ink.opacity(selected ? 0 : 0.4), lineWidth: 1))
-                    }
-                    .buttonStyle(.plain)
-                }
-            }
-        }
     }
 
     private func field<C: View>(_ label: String, @ViewBuilder _ content: () -> C) -> some View {

@@ -35,7 +35,15 @@ struct ShoppingChecklistView: View {
                         .listRowInsets(EdgeInsets(top: 5, leading: 20, bottom: 5, trailing: 20))
                         .listRowBackground(Color.clear)
                         .listRowSeparatorTint(Theme.Palette.ink.opacity(0.18))
-                        .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                        // Swipe right to mark bought (into the cart), left to remove —
+                        // neither needs a full-screen swipe.
+                        .swipeActions(edge: .leading, allowsFullSwipe: false) {
+                            Button { markBought(entry.name) } label: {
+                                Label("Bought", systemImage: "checkmark")
+                            }
+                            .tint(Theme.Palette.sage)
+                        }
+                        .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                             Button(role: .destructive) { remove(entry) } label: {
                                 Label("Remove", systemImage: "trash")
                             }
@@ -164,6 +172,15 @@ struct ShoppingChecklistView: View {
 
     private func toggle(_ name: String) {
         if checked.contains(name) { checked.remove(name) } else { checked.insert(name) }
+    }
+
+    /// Swipe-right action: put it in the cart (idempotent), seeding the bought
+    /// count from the desired amount if we haven't already.
+    private func markBought(_ name: String) {
+        if amounts[name] == nil {
+            amounts[name] = entries.first { $0.name == name }?.amount ?? ""
+        }
+        withAnimation { _ = checked.insert(name) }
     }
 
     private func commitNewItem() {
