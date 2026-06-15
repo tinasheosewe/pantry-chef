@@ -226,15 +226,17 @@ struct CookFlowView: View {
     }
 
     private func nextTicket(_ next: ScheduledStep) -> some View {
-        Text("NEXT — \(next.step.instruction)")
-            .font(.system(size: 10)).tracking(1.2)
-            .foregroundStyle(Theme.Palette.ink)
-            .lineLimit(2)
-            .padding(.horizontal, 14).padding(.vertical, 9)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .background(Rectangle().fill(Theme.Palette.creamRaised))
-            .overlay(Rectangle().strokeBorder(Theme.Palette.ink.opacity(0.18), lineWidth: 1))
-            .opacity(0.6)
+        HStack(alignment: .firstTextBaseline, spacing: 8) {
+            Text("NEXT").font(.system(size: 9.5, weight: .medium)).tracking(1.6)
+                .foregroundStyle(Theme.Palette.paprika)
+            Text(next.step.instruction)
+                .font(Theme.Typography.fact(12.5)).foregroundStyle(Theme.Palette.warmGray)
+                .lineLimit(2)
+        }
+        .padding(.horizontal, 14).padding(.vertical, 10)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Rectangle().fill(Theme.Palette.creamRaised))
+        .overlay(Rectangle().strokeBorder(Theme.Palette.ink.opacity(0.18), lineWidth: 1))
     }
 
     /// "started 19:04 · eating by 19:30" — honest cook logistics.

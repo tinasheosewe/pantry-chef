@@ -175,37 +175,45 @@ struct RecipeDetailView: View {
 
     private func bandStepper(_ glyph: String, action: @escaping () -> Void) -> some View {
         Button(action: action) {
-            Text(glyph).font(.system(size: 13, weight: .medium))
+            Text(glyph).font(.system(size: 16, weight: .medium))
                 .foregroundStyle(Theme.Palette.paprika)
-                .frame(width: 26, height: 26)
+                .frame(width: 44, height: 44)
                 .contentShape(Rectangle())
         }
-        .buttonStyle(.plain)
+        .buttonStyle(.pressable)
     }
 
+    /// Bordered icon chips — real, legible, ≥44pt targets (was a row of 9.5pt
+    /// tracked-caps text-buttons, the worst tap cluster per the UI research).
     private var actionRow: some View {
-        HStack(spacing: 18) {
-            actionWord(currentDish.isFavorite ? "♥ SAVED" : "♡ SAVE",
-                       tint: currentDish.isFavorite ? Theme.Palette.paprika : nil) {
+        HStack(spacing: 9) {
+            actionChip(currentDish.isFavorite ? "heart.fill" : "heart",
+                       currentDish.isFavorite ? "Saved" : "Save",
+                       tint: currentDish.isFavorite ? Theme.Palette.paprika : Theme.Palette.ink) {
                 currentDish.isFavorite.toggle()
                 onToggleFavorite()
             }
-            actionWord("EDIT") { showEditor = true }
-            actionWord("HEALTHIER", tint: Theme.Palette.sage) { runHealthier() }
-            actionWord("TWEAK") { showTweakPrompt = true }
-            if aiBusy { ProgressView().controlSize(.small) }
-            Spacer(minLength: 0)
+            actionChip("pencil", "Edit", tint: Theme.Palette.ink) { showEditor = true }
+            actionChip("leaf", "Healthier", tint: Theme.Palette.sage) { runHealthier() }
+            actionChip("wand.and.stars", "Tweak", tint: Theme.Palette.ink) { showTweakPrompt = true }
         }
+        .overlay(alignment: .center) { if aiBusy { ProgressView().controlSize(.small) } }
     }
 
-    private func actionWord(_ title: String, tint: Color? = nil,
+    private func actionChip(_ icon: String, _ title: String, tint: Color,
                             action: @escaping () -> Void) -> some View {
         Button(action: action) {
-            Text(title).font(.system(size: 9.5)).tracking(1.8)
-                .foregroundStyle(tint ?? Theme.Palette.ink.opacity(0.6))
-                .contentShape(Rectangle())
+            VStack(spacing: 4) {
+                Image(systemName: icon).font(.system(size: 16))
+                Text(title).font(.system(size: 10.5, weight: .medium))
+            }
+            .foregroundStyle(tint)
+            .frame(maxWidth: .infinity).frame(height: 52)
+            .overlay(Rectangle().strokeBorder(Theme.Palette.ink.opacity(0.28), lineWidth: 1))
+            .contentShape(Rectangle())
+            .opacity(aiBusy ? 0.4 : 1)
         }
-        .buttonStyle(.plain)
+        .buttonStyle(.pressable)
         .disabled(aiBusy)
     }
 
@@ -295,7 +303,7 @@ struct RecipeDetailView: View {
                     .frame(width: 16)
                 Text(line.display).font(Theme.Typography.fact(13.5)).foregroundStyle(Theme.Palette.ink)
                 if let grams = UnitConversion.gramHint(for: line) {
-                    Text("≈\(grams)").font(Theme.Typography.fact(10.5)).foregroundStyle(Theme.Palette.ink.opacity(0.45))
+                    Text("≈\(grams)").font(Theme.Typography.fact(11)).foregroundStyle(Theme.Palette.warmGraySoft)
                 }
                 Spacer()
                 if !onHand && !line.isStaple {
