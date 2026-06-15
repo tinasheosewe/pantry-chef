@@ -20,6 +20,7 @@ struct CookFlowView: View {
     @State private var timerRemaining: Int?
     @State private var timerRunning = false
     @State private var startedAt: Date?
+    @State private var doneSignal = 0
     private let tick = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
 
     private var isMulti: Bool { dishes.count > 1 }
@@ -61,7 +62,16 @@ struct CookFlowView: View {
         }
         .sensoryFeedback(.impact(weight: .light), trigger: gathered)
         .sensoryFeedback(.impact(weight: .medium), trigger: step)
-        .sensoryFeedback(.success, trigger: timerRemaining == 0)
+        // The timer escalates in the last ten seconds, then lands a warm heartbeat
+        // at zero — demanding but kind, not a jarring alarm.
+        .sensoryFeedback(trigger: timerRemaining) { _, new in
+            guard let new else { return nil }
+            if new == 0 { return .impact(weight: .heavy) }
+            if new <= 10 { return .selection }
+            return nil
+        }
+        // The success buzz is reserved for finishing the cook — a real completion.
+        .sensoryFeedback(.success, trigger: doneSignal)
     }
 
     private var header: some View {
@@ -131,14 +141,7 @@ struct CookFlowView: View {
             if isGathered { gathered.remove(line.id) } else { gathered.insert(line.id) }
         } label: {
             HStack(spacing: 12) {
-                ZStack {
-                    Rectangle().strokeBorder(isGathered ? Theme.Palette.sage : Theme.Palette.ink.opacity(0.4),
-                                             lineWidth: 1).frame(width: 18, height: 18)
-                    if isGathered {
-                        Rectangle().fill(Theme.Palette.sage).frame(width: 18, height: 18)
-                        Image(systemName: "checkmark").font(.system(size: 10, weight: .bold)).foregroundStyle(Theme.Palette.cream)
-                    }
-                }
+                InkCheck(on: isGathered, size: 22)
                 Text(line.display).font(Theme.Typography.fact(14)).foregroundStyle(Theme.Palette.ink)
                     .strikethrough(isGathered, color: Theme.Palette.warmGraySoft)
                 Spacer()
@@ -180,9 +183,9 @@ struct CookFlowView: View {
 
     private func advance(_ direction: Int) {
         let target = step + direction
-        if target < 0 { withAnimation { phase = .gathering } }
-        else if target < schedule.count { withAnimation(.spring(response: 0.34, dampingFraction: 1)) { step = target } }
-        else { onDone() }
+        if target < 0 { withAnimation(.paper) { phase = .gathering } }
+        else if target < schedule.count { withAnimation(.paperQuick) { step = target } }
+        else { doneSignal += 1; onDone() }
     }
 
     /// The live step, torn open: bordered sheet with a dashed top edge.
@@ -268,6 +271,7 @@ struct CookFlowView: View {
                 .foregroundStyle(finished ? Theme.Palette.sage : Theme.Palette.ink)
                 .contentTransition(.numericText(countsDown: true))
                 .animation(.default, value: shown)
+                .overlay { if finished { Bloom(color: Theme.Palette.sage).id(timerRemaining) } }
             Button {
                 if finished { timerRemaining = seconds; timerRunning = true; return }
                 if timerRemaining == nil { timerRemaining = seconds }

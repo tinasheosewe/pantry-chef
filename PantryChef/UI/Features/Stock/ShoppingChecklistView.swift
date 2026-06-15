@@ -60,16 +60,8 @@ struct ShoppingChecklistView: View {
         let isChecked = checked.contains(name)
         return HStack(spacing: 11) {
             Button { toggle(name) } label: {
-                ZStack {
-                    Rectangle().strokeBorder(isChecked ? Theme.Palette.sage : Theme.Palette.ink.opacity(0.45),
-                                             lineWidth: 1.5).frame(width: 22, height: 22)
-                    if isChecked {
-                        Rectangle().fill(Theme.Palette.sage).frame(width: 22, height: 22)
-                        Image(systemName: "checkmark").font(.system(size: 12, weight: .bold))
-                            .foregroundStyle(Theme.Palette.cream)
-                    }
-                }
-                .frame(width: 44, height: 44).contentShape(Rectangle())
+                InkCheck(on: isChecked, size: 22)
+                    .frame(width: 44, height: 44).contentShape(Rectangle())
             }
             .buttonStyle(.plain)
             PlateView(name: name, composition: store.plate(forName: name), size: 28)

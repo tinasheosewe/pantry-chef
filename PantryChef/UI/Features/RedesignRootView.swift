@@ -29,12 +29,13 @@ struct RedesignRootView: View {
     @State private var multiSession: CookSession?
     @State private var planTarget: PlanTarget?
     @Environment(\.scenePhase) private var scenePhase
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
         ZStack { space }
             .id(store.space)
-            .transition(.opacity.combined(with: .scale(scale: 0.985)))
-            .animation(.spring(response: 0.34, dampingFraction: 0.85), value: store.space)
+            .transition(reduceMotion ? .opacity : .pageTurn)
+            .animation(.paper, value: store.space)
             .safeAreaInset(edge: .bottom, spacing: 0) {
                 Dock(
                     selection: Binding(get: { store.space }, set: { store.space = $0 }),
