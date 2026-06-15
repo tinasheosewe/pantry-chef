@@ -481,6 +481,9 @@ enum UserCatalogError: LocalizedError, Equatable {
     case duplicateUserItem(existingItemID: String)
     case duplicateFacetValue(itemName: String, facetKey: String, value: String)
     case itemNotFound(itemID: String)
+    /// A user item must declare a freshness range for its default storage, so it
+    /// has a real countdown like every catalog item (no incomplete ingredients).
+    case missingFreshnessForDefaultStorage
 
     var errorDescription: String? {
         switch self {
@@ -494,6 +497,8 @@ enum UserCatalogError: LocalizedError, Equatable {
             return "\"\(value)\" already exists for \(facetKey) on \(itemName)."
         case .itemNotFound(let itemID):
             return "Item \"\(itemID)\" not found in catalog."
+        case .missingFreshnessForDefaultStorage:
+            return "A custom item needs a shelf life for where it's kept."
         }
     }
 }
@@ -847,6 +852,13 @@ enum PantryCatalog {
         let itemID = item.id
         guard itemID.hasPrefix("user-") else {
             return .failure(.idCollision(existingItemID: itemID))
+        }
+
+        // Completeness: every catalog item — bundle or custom — must have a freshness
+        // range for its default storage, so readiness/expiry always have a real
+        // number to work with (the same invariant the build validator enforces).
+        guard item.freshnessByStorage[item.defaultStorage] != nil else {
+            return .failure(.missingFreshnessForDefaultStorage)
         }
 
         // Check bundle ID collision

@@ -14,8 +14,29 @@ struct CustomIngredientDraft {
     var category: FoodCategory = .other
     var defaultStorage: PantryStorage = .pantry
     var defaultUnit: MeasurementUnit? = nil
+    /// Shelf life (days) in the default storage — required so a custom item is a
+    /// complete, first-class ingredient with a real countdown (no incomplete items).
+    var shelfLifeDays: Int? = nil
     var facets: [PantryFacetKey: [String]] = [:]
     var defaultSelections: [PantryFacetKey: String] = [:]
+
+    /// A sensible default shelf life per storage, so the field is pre-filled and a
+    /// custom item is never saved without freshness.
+    static func defaultShelfLife(_ storage: PantryStorage) -> Int {
+        switch storage {
+        case .refrigerated: return 7
+        case .frozen: return 120
+        case .pantry: return 180
+        }
+    }
+
+    /// Effective shelf life — the user's value, else the storage default.
+    var effectiveShelfLifeDays: Int { shelfLifeDays ?? Self.defaultShelfLife(defaultStorage) }
+
+    /// Why the draft can't be saved yet (nil = ok). Enforced before registration.
+    var validationError: String? {
+        name.trimmed.isEmpty ? "Give it a name." : nil
+    }
 
     var nameCollisionWarning: String? {
         let trimmed = name.trimmed
@@ -103,7 +124,7 @@ struct CustomIngredientDraft {
             defaultSelections: facetDefaults,
             substitutions: [],
             unitOverrides: [:],
-            freshnessByStorage: [:],
+            freshnessByStorage: [defaultStorage: effectiveShelfLifeDays...effectiveShelfLifeDays],
             isUserDefined: true
         )
     }

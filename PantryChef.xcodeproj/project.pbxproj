@@ -43,6 +43,7 @@
 		500CF21AC8F3E7493C6F0DA1 /* ShoppingChecklistView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7091D990752C6197CCF02458 /* ShoppingChecklistView.swift */; };
 		5A71CB0FBFDF5EDA80BD964A /* MultiCookScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8241073BA3C1CE75DE6558C5 /* MultiCookScheduler.swift */; };
 		5BF2AF91CDFFE66AD222B691 /* ItemCertainty.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34FBDF3045F807228F2ED54C /* ItemCertainty.swift */; };
+		5FD555B05267C452E7F433A8 /* CustomIngredientForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0BD5F8F5E89DEF2F5F52E23 /* CustomIngredientForm.swift */; };
 		60C79905591F4E0C201A9A62 /* Fraunces-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C2CAE194CB15CCC78F5F22C6 /* Fraunces-Italic.ttf */; };
 		60D0EE313FC98666DD3F7BA5 /* AIDishMappingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99EDB3A919F342036B1A4A1A /* AIDishMappingTests.swift */; };
 		62E0F6FCD8C0B8E58B18A185 /* CookFlowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52C9664BC03D8B5DE7127A5D /* CookFlowView.swift */; };
@@ -86,6 +87,7 @@
 		CF53CA2884D03557C946CC52 /* herb-frittata.png in Resources */ = {isa = PBXBuildFile; fileRef = D0CB7639C4987CCE9021E15B /* herb-frittata.png */; };
 		D195E317C250808E4C5C4BD2 /* ReadinessService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2182BF9EFCF19CC499891FD /* ReadinessService.swift */; };
 		D19B371756FC7C577D7F7F27 /* MealPrepLevel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B05969CE27E52A93C925402 /* MealPrepLevel.swift */; };
+		D4F415C066A8B8BCA54D49F9 /* IngredientPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDBDB5E663ABC72EBDE1FAE6 /* IngredientPicker.swift */; };
 		D930D3DAFDEE0478D843F263 /* AIDishMapping.swift in Sources */ = {isa = PBXBuildFile; fileRef = C353618F4B7100DD25102763 /* AIDishMapping.swift */; };
 		D9C5FEB0C9081A69D915BE27 /* IntakeParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = C66E3CD688A4E06B59D5056F /* IntakeParser.swift */; };
 		DAE7AC11853DB1499F672B24 /* catalog.source.json in Resources */ = {isa = PBXBuildFile; fileRef = C76C028AE39F0001065ABA30 /* catalog.source.json */; };
@@ -196,6 +198,7 @@
 		B3D02E10BC15ED0ADCDC7D1B /* RedesignRootView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RedesignRootView.swift; sourceTree = "<group>"; };
 		B4311CDDF67AA34C2F223237 /* AIModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIModels.swift; sourceTree = "<group>"; };
 		BAB9028C434D2045ADDB09A5 /* KitchenStore.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = KitchenStore.swift; sourceTree = "<group>"; };
+		BDBDB5E663ABC72EBDE1FAE6 /* IngredientPicker.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = IngredientPicker.swift; sourceTree = "<group>"; };
 		BF4ACDEB952F0E92FF5A2FF7 /* RealtimeServiceProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealtimeServiceProtocol.swift; sourceTree = "<group>"; };
 		C0C49A659EE21F5019A9DF94 /* AppLaunchOptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLaunchOptions.swift; sourceTree = "<group>"; };
 		C277A622D0C630B07548A487 /* IntakePipeline.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = IntakePipeline.swift; sourceTree = "<group>"; };
@@ -217,6 +220,7 @@
 		CC7D29C483E721AD3542AB81 /* PantryChef.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = PantryChef.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CCEDED2CE5A479FB65BC6F69 /* DietaryProfile.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DietaryProfile.swift; sourceTree = "<group>"; };
 		CEB4028F2212A34CB27DE289 /* RealtimeConversationFunctionCallEventTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealtimeConversationFunctionCallEventTests.swift; sourceTree = "<group>"; };
+		D0BD5F8F5E89DEF2F5F52E23 /* CustomIngredientForm.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CustomIngredientForm.swift; sourceTree = "<group>"; };
 		D0CB7639C4987CCE9021E15B /* herb-frittata.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "herb-frittata.png"; sourceTree = "<group>"; };
 		D33DD04E5E06C3BFAD057736 /* FieldNotes.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FieldNotes.swift; sourceTree = "<group>"; };
 		DD7711492A1BF81C0A45710C /* ConfidenceEngineTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ConfidenceEngineTests.swift; sourceTree = "<group>"; };
@@ -598,6 +602,8 @@
 			isa = PBXGroup;
 			children = (
 				7DA1BF81A96A4A7C8DEDFB4E /* ComposerView.swift */,
+				D0BD5F8F5E89DEF2F5F52E23 /* CustomIngredientForm.swift */,
+				BDBDB5E663ABC72EBDE1FAE6 /* IngredientPicker.swift */,
 			);
 			name = Composer;
 			path = Composer;
@@ -823,6 +829,8 @@
 				8872C4EFF24154417172E066 /* IngredientMatching.swift in Sources */,
 				D930D3DAFDEE0478D843F263 /* AIDishMapping.swift in Sources */,
 				04B3B6AA63619905246D9295 /* IntakePipeline.swift in Sources */,
+				5FD555B05267C452E7F433A8 /* CustomIngredientForm.swift in Sources */,
+				D4F415C066A8B8BCA54D49F9 /* IngredientPicker.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

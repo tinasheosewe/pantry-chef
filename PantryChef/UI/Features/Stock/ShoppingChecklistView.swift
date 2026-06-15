@@ -17,7 +17,20 @@ struct ShoppingChecklistView: View {
     @State private var extras: [ShoppingEntry] = []
     @State private var newItem = ""
     @State private var seeded = false
+    @State private var resolving: Resolving?
     @FocusState private var addingFocused: Bool
+
+    /// A typed item that needs disambiguation before it joins the cart.
+    private enum Resolving: Identifiable {
+        case pick(phrase: String, amount: String?, candidates: [IntakeCandidate])
+        case custom(phrase: String, amount: String?)
+        var id: String {
+            switch self {
+            case .pick(let p, _, _): return "pick:\(p)"
+            case .custom(let p, _): return "custom:\(p)"
+            }
+        }
+    }
 
     private var entries: [ShoppingEntry] { store.shoppingList + extras }
     private var boughtCount: Int { checked.count }
@@ -65,6 +78,22 @@ struct ShoppingChecklistView: View {
                 amounts[entry.name] = entry.amount ?? ""   // pre-fill bought amount with desired
             }
             seeded = true
+        }
+        .sheet(item: $resolving) { r in
+            switch r {
+            case .pick(let phrase, let amount, let candidates):
+                IngredientPicker(
+                    phrase: phrase, candidates: candidates,
+                    onPick: { addGrabbed(name: $0.name, amount: amount); resolving = nil },
+                    onCustom: { resolving = .custom(phrase: phrase, amount: amount) },
+                    onCancel: { resolving = nil })
+            case .custom(let phrase, let amount):
+                CustomIngredientForm(
+                    name: phrase,
+                    autofill: { await store.ai.generateIngredientDefinition(name: $0) },
+                    onSave: { def in addGrabbed(name: def.name, amount: amount); resolving = nil },
+                    onCancel: { resolving = nil })
+            }
         }
     }
 
@@ -184,22 +213,33 @@ struct ShoppingChecklistView: View {
     }
 
     private func commitNewItem() {
-        let trimmed = newItem.trimmingCharacters(in: .whitespaces)
-        guard !trimmed.isEmpty else { return }
-        // Same resolver as every other ingredient input (the composer's IntakeParser):
-        // catalog lookup + synonym/alias disambiguation + amount extraction, so
-        // "2 roma tomatoes" lands as Tomato · 2, not a raw string.
-        let parsed = store.parse(trimmed)
-        let resolved = parsed.suggestedName ?? parsed.name
-        let base = resolved.isEmpty ? trimmed : resolved
-        let name = base.prefix(1).capitalized + base.dropFirst()
-        let amount = KitchenStore.amountText(parsed)
-        if !entries.contains(where: { $0.name.lowercased() == name.lowercased() }) {
-            extras.append(ShoppingEntry(name: name, amount: amount))
-        }
-        amounts[name] = amount ?? ""
-        checked.insert(name)   // you grabbed it, so it's already in the cart
+        let phrase = newItem.trimmingCharacters(in: .whitespaces)
+        guard !phrase.isEmpty else { return }
         newItem = ""
+        // The one intake pipeline: confident matches join silently; uncertain ones
+        // open the picker (+ Custom); genuine unknowns go straight to Custom. Never
+        // a silent wrong guess.
+        let (intake, decision) = IntakePipeline.resolve(phrase, using: store.parse)
+        let amount = KitchenStore.amountText(intake)
+        switch decision {
+        case .confident:
+            addGrabbed(name: intake.suggestedName ?? intake.name, amount: amount)
+        case .ambiguous(let candidates):
+            resolving = .pick(phrase: phrase, amount: amount, candidates: candidates)
+        case .custom:
+            resolving = .custom(phrase: phrase, amount: amount)
+        }
+    }
+
+    /// Add a resolved ingredient to the cart (checked), seeding its bought amount.
+    private func addGrabbed(name: String, amount: String?) {
+        guard !name.isEmpty else { return }
+        let display = name.prefix(1).capitalized + name.dropFirst()
+        if !entries.contains(where: { $0.name.lowercased() == display.lowercased() }) {
+            extras.append(ShoppingEntry(name: display, amount: amount))
+        }
+        amounts[display] = amount ?? ""
+        checked.insert(display)
         addingFocused = true
     }
 }
