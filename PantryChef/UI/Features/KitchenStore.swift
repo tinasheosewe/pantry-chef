@@ -42,10 +42,51 @@ struct StockItem: Identifiable, Equatable {
     /// honestly instead of asserting a confident lie.
     var lastConfirmed: Date
 
+    // First-class ingredient identity (data is the differentiator — every item
+    // carries its catalog link, category, and physical storage; no path may
+    // create one without them).
+    var catalogItemID: String?
+    var category: FoodCategory
+    /// Where it physically lives — drives the freshness clock and is editable anytime.
+    var storage: PantryStorage
+    /// When it entered its *current* storage (anchor for blended expiry).
+    var storageSince: Date
+    /// Fraction of total shelf life used up in *earlier* storage locations, before
+    /// the current stint (blended fraction-of-life model — see ExpiryEngine).
+    var consumedFraction: Double
+
     init(id: UUID = UUID(), key: String, name: String, plate: PlateComposition,
-         section: Section, measure: Measure, lastConfirmed: Date = Date()) {
+         section: Section, measure: Measure, lastConfirmed: Date = Date(),
+         catalogItemID: String? = nil, category: FoodCategory = .other,
+         storage: PantryStorage = .pantry, storageSince: Date = Date(),
+         consumedFraction: Double = 0) {
         self.id = id; self.key = key; self.name = name; self.plate = plate
         self.section = section; self.measure = measure; self.lastConfirmed = lastConfirmed
+        self.catalogItemID = catalogItemID; self.category = category
+        self.storage = storage; self.storageSince = storageSince
+        self.consumedFraction = consumedFraction
+    }
+
+    /// Move to a new storage location, blending the freshness clock: the time spent
+    /// in the current location is folded into `consumedFraction`, then the days-left
+    /// is re-projected from the new location's shelf life (spec §7). Pure.
+    func moved(to newStorage: PantryStorage, now: Date) -> StockItem {
+        guard newStorage != storage else { return self }
+        var copy = self
+        let stint = ExpiryEngine.daysBetween(storageSince, now)
+        copy.consumedFraction = ExpiryEngine.consumedAfterStint(
+            priorFraction: consumedFraction, daysInStint: stint,
+            storage: storage, catalogItemID: catalogItemID)
+        copy.storage = newStorage
+        copy.storageSince = now
+        if case .perishable(let detail, _) = measure {
+            copy.measure = .perishable(
+                detail: detail,
+                daysLeft: ExpiryEngine.freshDaysLeft(catalogItemID: catalogItemID,
+                                                     storage: newStorage,
+                                                     consumedFraction: copy.consumedFraction))
+        }
+        return copy
     }
 
     /// Tracking class for the knowledge clock. Staples almost never need
@@ -214,16 +255,15 @@ final class KitchenStore {
         shoppingList.removeAll { $0.name.lowercased() == key }
     }
 
-    /// Commit a parsed composer phrase into the pantry — days left auto-populates
-    /// from catalog shelf life via `stockFields`.
+    /// Commit a parsed composer phrase into the pantry — keeps the storage the user
+    /// chose (no longer dropped) and seeds days-left from it via `makeStockItem`.
     func addToStock(_ intake: ParsedIntake) {
         let name = intake.suggestedName ?? intake.name
         guard !name.isEmpty else { return }
         let catalogItem = intake.resolvedItemID.flatMap { PantryCatalog.itemsByID[$0] }
-        let f = stockFields(name: name, amount: Self.amountText(intake), catalogItem: catalogItem)
-        stock.append(StockItem(
-            key: name.lowercased(), name: name,
-            plate: f.plate, section: f.section, measure: f.measure))
+        stock.append(makeStockItem(name: name, amount: Self.amountText(intake),
+                                   storage: intake.storage, catalogItem: catalogItem,
+                                   lastConfirmed: today))
     }
 
     func addToList(_ intake: ParsedIntake) {
@@ -263,28 +303,38 @@ final class KitchenStore {
         return PlateComposition(categories: [category], seed: seed)
     }
 
-    /// Section + measure + plate for a freshly-stocked item, pulling shelf life and
-    /// tracking class from the catalog so **days left auto-populates** (a bought
-    /// perishable gets a real countdown); unknown items fall back to a tracked
-    /// perishable with no count.
-    private func stockFields(name: String, amount: String?, catalogItem: PantryCatalogItemDefinition?)
-        -> (section: StockItem.Section, measure: StockItem.Measure, plate: PlateComposition) {
+    /// The single factory for a stocked item — the one place completeness is
+    /// guaranteed: it resolves catalog identity, category, and storage (chosen ??
+    /// catalog default ?? pantry), and seeds days-left from the chosen storage's
+    /// shelf life via ExpiryEngine. Every intake path goes through here so no path
+    /// can mint an incomplete ingredient.
+    func makeStockItem(name: String, amount: String?, storage: PantryStorage?,
+                       catalogItem: PantryCatalogItemDefinition?, lastConfirmed: Date) -> StockItem {
         let item = catalogItem ?? PantryCatalog.resolveExact(name: name)
         let category = item?.category ?? .other
+        let store = storage ?? item?.defaultStorage ?? .pantry
         let seed = UInt64(name.lowercased().utf8.reduce(0) { $0 &+ UInt64($1) } &+ 23)
         let plate = PlateComposition(categories: [category], seed: seed)
         let cleaned = amount?.trimmingCharacters(in: .whitespaces)
         let detail = (cleaned?.isEmpty == false) ? cleaned! : "—"
+        let display = name.isEmpty ? name : name.prefix(1).capitalized + name.dropFirst()
+        let measure: StockItem.Measure
+        let section: StockItem.Section
         if let item, item.resolutionClass == .staple {
-            return (.staples, .staple(.inStock), plate)
+            measure = .staple(.inStock); section = .staples
+        } else {
+            let days = ExpiryEngine.freshDaysLeft(catalogItemID: item?.id, storage: store, consumedFraction: 0)
+            measure = .perishable(detail: detail, daysLeft: days); section = .have
         }
-        let days = item.flatMap { ResolutionClassifier.representativeShelfLifeDays($0) }
-        return (.have, .perishable(detail: detail, daysLeft: days), plate)
+        return StockItem(key: name.lowercased(), name: display, plate: plate, section: section,
+                         measure: measure, lastConfirmed: lastConfirmed,
+                         catalogItemID: item?.id, category: category,
+                         storage: store, storageSince: lastConfirmed, consumedFraction: 0)
     }
 
     /// Bought it: the item leaves the list and enters stock, freshly confirmed,
-    /// with its days-left seeded from catalog shelf life. Re-confirms instead of
-    /// duplicating if it's already on hand (spec §3).
+    /// with days-left seeded from its catalog default storage. Re-confirms instead
+    /// of duplicating if it's already on hand (spec §3).
     func purchase(name: String, amount: String? = nil) {
         let trimmed = name.trimmingCharacters(in: .whitespaces)
         guard !trimmed.isEmpty else { return }
@@ -298,10 +348,8 @@ final class KitchenStore {
             }
             return
         }
-        let f = stockFields(name: trimmed, amount: amount, catalogItem: nil)
-        stock.append(StockItem(
-            key: key, name: trimmed.prefix(1).capitalized + trimmed.dropFirst(),
-            plate: f.plate, section: f.section, measure: f.measure, lastConfirmed: today))
+        stock.append(makeStockItem(name: trimmed, amount: amount, storage: nil,
+                                   catalogItem: nil, lastConfirmed: today))
     }
 
     /// Log a recipe-less meal from composer items (the "just ate" path).
@@ -467,25 +515,35 @@ final class KitchenStore {
         ]
         whispers = [DatedWhisper(date: day(1), text: "ragù waiting · 3 portions")]
 
+        func catalogID(_ name: String) -> String? { PantryCatalog.resolveExact(name: name)?.id }
         stock = [
             StockItem(key: "lamb ragu", name: "Lamb ragù", plate: plate([.protein, .pasta], 3),
                       section: .made, measure: .made(detail: "3 frozen portions · good through July"),
-                      lastConfirmed: day(-3)),
+                      lastConfirmed: day(-3), category: .protein, storage: .frozen, storageSince: day(-3)),
             StockItem(key: "baby spinach", name: "Baby spinach", plate: plate([.produce], 1),
                       section: .useSoon, measure: .perishable(detail: "300 g", daysLeft: 2),
-                      lastConfirmed: day(0)),       // just bought — certain
+                      lastConfirmed: day(0),        // just bought — certain
+                      catalogItemID: catalogID("spinach"), category: .produce,
+                      storage: .refrigerated, storageSince: day(0)),
             StockItem(key: "greek yogurt", name: "Greek yogurt", plate: plate([.dairy], 4),
                       section: .useSoon, measure: .perishable(detail: "500 g", daysLeft: 3),
-                      lastConfirmed: day(-2)),       // probable — trust it silently
+                      lastConfirmed: day(-2),       // probable — trust it silently
+                      catalogItemID: catalogID("Greek yogurt"), category: .dairy,
+                      storage: .refrigerated, storageSince: day(-2)),
             StockItem(key: "feta", name: "Feta", plate: plate([.dairy], 7),
                       section: .have, measure: .perishable(detail: "200 g", daysLeft: 18),
-                      lastConfirmed: day(-22)),      // uncertain — worth a one-tap check
+                      lastConfirmed: day(-22),      // uncertain — worth a one-tap check
+                      catalogItemID: catalogID("Feta"), category: .dairy,
+                      storage: .refrigerated, storageSince: day(-22)),
             StockItem(key: "orzo", name: "Orzo", plate: plate([.pasta], 6),
-                      section: .staples, measure: .staple(.inStock)),
+                      section: .staples, measure: .staple(.inStock),
+                      catalogItemID: catalogID("Orzo"), category: .pasta, storage: .pantry),
             StockItem(key: "flour", name: "Flour", plate: plate([.bakingSupplies], 11),
-                      section: .staples, measure: .staple(.inStock)),
+                      section: .staples, measure: .staple(.inStock),
+                      catalogItemID: catalogID("Flour"), category: .bakingSupplies, storage: .pantry),
             StockItem(key: "olive oil", name: "Olive oil", plate: plate([.oils], 8),
-                      section: .staples, measure: .staple(.runningLow))
+                      section: .staples, measure: .staple(.runningLow),
+                      catalogItemID: catalogID("Olive oil"), category: .oils, storage: .pantry)
         ]
 
         // Screenshot/CI hook: open straight to a given space.

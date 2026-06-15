@@ -236,6 +236,7 @@ private struct StockItemEditor: View {
             }
             .padding(.top, 24)
             measureEditor
+            storagePicker
             Spacer()
             HStack {
                 Button {
@@ -296,6 +297,30 @@ private struct StockItemEditor: View {
                 .overlay(Rectangle().strokeBorder(Theme.Palette.ink.opacity(selected ? 0 : 0.4), lineWidth: 1))
         }
         .buttonStyle(.plain)
+    }
+
+    /// Storage is first-class and editable anytime; changing it blends the
+    /// freshness clock (proportional fraction-of-life) and re-projects days left.
+    private var storagePicker: some View {
+        field("Where it's kept") {
+            HStack(spacing: 8) {
+                ForEach([PantryStorage.pantry, .refrigerated, .frozen], id: \.self) { storage in
+                    let selected = item.storage == storage
+                    Button { item = item.moved(to: storage, now: Date()) } label: {
+                        Text(storageLabel(storage)).font(.system(size: 9.5, weight: .medium)).tracking(1.2)
+                            .foregroundStyle(selected ? Theme.Palette.cream : Theme.Palette.ink.opacity(0.7))
+                            .padding(.horizontal, 11).padding(.vertical, 7)
+                            .background(Rectangle().fill(selected ? Theme.Palette.ink : .clear))
+                            .overlay(Rectangle().strokeBorder(Theme.Palette.ink.opacity(selected ? 0 : 0.4), lineWidth: 1))
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+        }
+    }
+
+    private func storageLabel(_ s: PantryStorage) -> String {
+        switch s { case .refrigerated: return "Fridge"; case .frozen: return "Freezer"; case .pantry: return "Pantry" }
     }
 
     private func field<C: View>(_ label: String, @ViewBuilder _ content: () -> C) -> some View {
