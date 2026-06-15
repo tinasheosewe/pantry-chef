@@ -18,9 +18,22 @@ struct ComposerView: View {
     @State private var staged: [ParsedIntake] = []
     @State private var editing: EditTarget?
     @State private var destination: Destination = .stock
+    @State private var resolving: Resolving?
     @FocusState private var focused: Bool
 
     private struct EditTarget: Identifiable { let id: Int }
+
+    /// A typed phrase that needs disambiguation before it's staged.
+    private enum Resolving: Identifiable {
+        case pick(phrase: String, intake: ParsedIntake, candidates: [IntakeCandidate])
+        case custom(phrase: String, intake: ParsedIntake)
+        var id: String {
+            switch self {
+            case .pick(let p, _, _): return "pick:\(p)"
+            case .custom(let p, _): return "custom:\(p)"
+            }
+        }
+    }
 
     private var preview: ParsedIntake? {
         text.trimmingCharacters(in: .whitespaces).isEmpty ? nil : store.parse(text)
@@ -56,6 +69,22 @@ struct ComposerView: View {
             if staged.indices.contains(target.id) {
                 ComposerItemEditor(item: bindingFor(target.id), onDone: { editing = nil })
                     .presentationDetents([.medium])
+            }
+        }
+        .sheet(item: $resolving) { r in
+            switch r {
+            case .pick(let phrase, let intake, let candidates):
+                IngredientPicker(
+                    phrase: phrase, candidates: candidates,
+                    onPick: { stageResolved(intake, itemID: $0.id, name: $0.name); resolving = nil },
+                    onCustom: { resolving = .custom(phrase: phrase, intake: intake) },
+                    onCancel: { resolving = nil })
+            case .custom(let phrase, let intake):
+                CustomIngredientForm(
+                    name: phrase,
+                    autofill: { await store.ai.generateIngredientDefinition(name: $0) },
+                    onSave: { def in stageResolved(intake, itemID: def.id, name: def.name); resolving = nil },
+                    onCancel: { resolving = nil })
             }
         }
     }
@@ -169,11 +198,33 @@ struct ComposerView: View {
     }
 
     private func commitCurrent() {
-        guard let item = preview else { return }
-        withAnimation(.spring(response: 0.4, dampingFraction: 0.78)) {
-            staged.append(item)
-            text = ""
+        let phrase = text.trimmingCharacters(in: .whitespaces)
+        guard !phrase.isEmpty else { return }
+        text = ""
+        // Same intake pipeline as shop-add: confident phrases stage immediately;
+        // uncertain ones open the picker; unknowns open the custom form. No bare,
+        // unresolved item is ever staged.
+        let (intake, decision) = IntakePipeline.resolve(phrase, using: store.parse)
+        switch decision {
+        case .confident: stage(intake)
+        case .ambiguous(let candidates): resolving = .pick(phrase: phrase, intake: intake, candidates: candidates)
+        case .custom: resolving = .custom(phrase: phrase, intake: intake)
         }
+    }
+
+    private func stage(_ intake: ParsedIntake) {
+        withAnimation(.spring(response: 0.4, dampingFraction: 0.78)) { staged.append(intake) }
+    }
+
+    /// Stage an intake resolved to a specific catalog item (a picked candidate or a
+    /// freshly-created custom item).
+    private func stageResolved(_ intake: ParsedIntake, itemID: String, name: String) {
+        var resolved = intake
+        resolved.resolvedItemID = itemID
+        resolved.suggestedName = name
+        resolved.name = name
+        resolved.confidence = .resolved
+        stage(resolved)
     }
 }
 
