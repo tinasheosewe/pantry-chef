@@ -116,11 +116,11 @@ struct StockView: View {
 
     private func checkTag(_ title: String, urgent: Bool = false, action: @escaping () -> Void) -> some View {
         Button(action: action) {
-            Text(title.uppercased()).font(.system(size: 8.5)).tracking(1.2)
-                .foregroundStyle(urgent ? Theme.Palette.paprika : Theme.Palette.ink.opacity(0.75))
-                .padding(.horizontal, 8).padding(.vertical, 4)
+            Text(title.uppercased()).font(.system(size: 10.5, weight: .medium)).tracking(1.0)
+                .foregroundStyle(urgent ? Theme.Palette.paprika : Theme.Palette.ink)
+                .padding(.horizontal, 11).frame(minHeight: 34)
                 .overlay(Rectangle().strokeBorder(
-                    (urgent ? Theme.Palette.paprika : Theme.Palette.ink).opacity(urgent ? 1 : 0.4), lineWidth: 1))
+                    (urgent ? Theme.Palette.paprika : Theme.Palette.ink).opacity(urgent ? 1 : 0.55), lineWidth: 1))
                 .contentShape(Rectangle())
         }
         .buttonStyle(.pressable)
@@ -144,12 +144,12 @@ struct StockView: View {
         case .perishable(let detail, let d):
             HStack(spacing: 8) {
                 Text(detail.uppercased())
-                    .font(.system(size: 9)).tracking(1.2)
-                    .foregroundStyle(Theme.Palette.ink.opacity(0.5))
+                    .font(.system(size: 10)).tracking(0.8)
+                    .foregroundStyle(Theme.Palette.warmGraySoft)
                 if let d {
                     Text(d == 1 ? "1 DAY" : "\(d) DAYS")
                         .font(Theme.Typography.dish(11, weight: .semibold))
-                        .foregroundStyle(d <= 3 ? Theme.Palette.paprika : Theme.Palette.ink.opacity(0.7))
+                        .foregroundStyle(d <= 3 ? Theme.Palette.paprika : Theme.Palette.warmGray)
                 }
             }
         case .staple(let level):
@@ -160,8 +160,8 @@ struct StockView: View {
             }
         case .made(let detail):
             Text(detail.uppercased())
-                .font(.system(size: 9)).tracking(1.2)
-                .foregroundStyle(Theme.Palette.ink.opacity(0.6))
+                .font(.system(size: 10)).tracking(0.8)
+                .foregroundStyle(Theme.Palette.warmGray)
                 .lineLimit(1)
         }
     }

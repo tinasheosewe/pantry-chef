@@ -29,11 +29,15 @@ struct ThemeSpec: Sendable {
         isDark: false,
         cream: Color(red: 0.968, green: 0.965, blue: 0.933),       // #F7F6EE paper
         creamRaised: Color(red: 1.0, green: 0.996, blue: 0.973),   // #FFFEF8
-        ink: Color(red: 0.141, green: 0.251, blue: 0.169),         // #24402B
-        warmGray: Color(red: 0.290, green: 0.404, blue: 0.318),
-        warmGraySoft: Color(red: 0.451, green: 0.541, blue: 0.471),
-        paprika: Color(red: 0.753, green: 0.231, blue: 0.169),     // #C03B2B tomato
-        sage: Color(red: 0.659, green: 0.482, blue: 0.184),        // #A87B2F gold
+        ink: Color(red: 0.141, green: 0.251, blue: 0.169),         // #24402B  10.5:1 AAA
+        warmGray: Color(red: 0.290, green: 0.404, blue: 0.318),    // secondary 5.8:1 AA
+        // Tertiary darkened from #738B78 (3.4:1, failed AA) so functional small
+        // text actually passes — same green family, just less faded (UI agents §4).
+        warmGraySoft: Color(red: 0.345, green: 0.451, blue: 0.376), // ~4.6:1 AA
+        paprika: Color(red: 0.753, green: 0.231, blue: 0.169),     // #C03B2B  5.0:1 AA
+        // "Wins" gold darkened from #A87B2F (3.5:1, failed AA) to ~#8A6420 so it
+        // can carry text/status, not just decoration.
+        sage: Color(red: 0.541, green: 0.392, blue: 0.125),        // ~4.6:1 AA
         ochre: Color(red: 0.753, green: 0.231, blue: 0.169),
         hairline: Color(red: 0.141, green: 0.251, blue: 0.169).opacity(0.28),
         glassFill: Color(red: 1.0, green: 0.996, blue: 0.973),

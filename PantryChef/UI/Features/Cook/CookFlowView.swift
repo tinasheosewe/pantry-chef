@@ -41,6 +41,9 @@ struct CookFlowView: View {
         .padding(22)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .background(KitchenBackground())
+        // Greasy hands, no taps for minutes — the screen must not sleep mid-cook.
+        .onAppear { UIApplication.shared.isIdleTimerDisabled = true }
+        .onDisappear { UIApplication.shared.isIdleTimerDisabled = false }
         .onChange(of: step) {
             timerRemaining = nil
             timerRunning = false
@@ -163,6 +166,23 @@ struct CookFlowView: View {
                 Tailpiece(text: line).padding(.top, 10)
             }
         }
+        // Lowest-precision gesture for messy hands: swipe to move between steps
+        // (the BACK/NEXT buttons stay as the visible fallback).
+        .contentShape(Rectangle())
+        .gesture(
+            DragGesture(minimumDistance: 40)
+                .onEnded { value in
+                    guard abs(value.translation.width) > abs(value.translation.height) else { return }
+                    if value.translation.width < 0 { advance(1) } else { advance(-1) }
+                }
+        )
+    }
+
+    private func advance(_ direction: Int) {
+        let target = step + direction
+        if target < 0 { withAnimation { phase = .gathering } }
+        else if target < schedule.count { withAnimation(.spring(response: 0.34, dampingFraction: 1)) { step = target } }
+        else { onDone() }
     }
 
     /// The live step, torn open: bordered sheet with a dashed top edge.
@@ -175,8 +195,8 @@ struct CookFlowView: View {
                     .padding(.bottom, 8)
             }
             Text(currentStep?.step.instruction ?? "")
-                .font(Theme.Typography.fact(17)).foregroundStyle(Theme.Palette.ink)
-                .lineSpacing(4)
+                .font(Theme.Typography.fact(23)).foregroundStyle(Theme.Palette.ink)
+                .lineSpacing(5)
                 .fixedSize(horizontal: false, vertical: true)
             if let seconds = currentStep?.step.timerSeconds {
                 timer(seconds).padding(.top, 14)
@@ -254,38 +274,36 @@ struct CookFlowView: View {
                 timerRunning.toggle()
             } label: {
                 Text(finished ? "AGAIN" : (timerRunning ? "PAUSE" : (timerRemaining == nil ? "START" : "RESUME")))
-                    .font(.system(size: 10, weight: .medium)).tracking(2)
+                    .font(.system(size: 13, weight: .medium)).tracking(2)
                     .foregroundStyle(Theme.Palette.paprika)
-                    .padding(.horizontal, 14).padding(.vertical, 7)
+                    .padding(.horizontal, 20).frame(minHeight: 44)
                     .overlay(Rectangle().strokeBorder(Theme.Palette.paprika, lineWidth: 1.5))
+                    .contentShape(Rectangle())
             }
-            .buttonStyle(.plain)
+            .buttonStyle(.pressable)
             if finished {
-                Text("DONE").font(.system(size: 10)).tracking(2).foregroundStyle(Theme.Palette.sage)
+                Text("DONE").font(.system(size: 11, weight: .medium)).tracking(2).foregroundStyle(Theme.Palette.sage)
             }
         }
     }
 
     private var controls: some View {
         HStack(spacing: 16) {
-            Button {
-                if step > 0 { step -= 1 } else { withAnimation { phase = .gathering } }
-            } label: {
+            Button { advance(-1) } label: {
                 Text(step > 0 ? "← BACK" : "← GATHER")
-                    .font(.system(size: 10)).tracking(1.8)
-                    .foregroundStyle(Theme.Palette.ink.opacity(0.6))
+                    .font(.system(size: 11, weight: .medium)).tracking(1.8)
+                    .foregroundStyle(Theme.Palette.warmGray)
+                    .padding(.vertical, 12).padding(.trailing, 8)
                     .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
             Spacer()
             Circle().fill(Theme.Palette.creamRaised)
-                .overlay(Image(systemName: "microphone").font(.system(size: 15)).foregroundStyle(Theme.Palette.paprika))
+                .overlay(Image(systemName: "microphone").font(.system(size: 16)).foregroundStyle(Theme.Palette.paprika))
                 .overlay(Circle().strokeBorder(Theme.Palette.paprika.opacity(0.5)))
-                .frame(width: 42, height: 42)
+                .frame(width: 46, height: 46)
             Spacer()
-            BlockButton(title: step < schedule.count - 1 ? "Next →" : "Done") {
-                if step < schedule.count - 1 { step += 1 } else { onDone() }
-            }
+            BlockButton(title: step < schedule.count - 1 ? "Next →" : "Done") { advance(1) }
         }
     }
 

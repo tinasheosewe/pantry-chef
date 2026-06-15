@@ -43,7 +43,7 @@ struct Eyebrow: View {
 
     var body: some View {
         Text(text.uppercased())
-            .font(Theme.Typography.eyebrow)
+            .font(.system(size: 11, weight: .medium))
             .tracking(Theme.Metric.eyebrowTracking)
             .foregroundStyle(color)
     }
@@ -92,13 +92,13 @@ struct OutlineTag: View {
 
     var body: some View {
         Text(text.uppercased())
-            .font(.system(size: 9))
-            .tracking(1.6)
+            .font(.system(size: 11, weight: .medium))
+            .tracking(1.0)
             .foregroundStyle(color)
-            .padding(.horizontal, 7).padding(.vertical, 2)
+            .padding(.horizontal, 8).padding(.vertical, 3)
             .overlay(
                 Rectangle().strokeBorder(
-                    color.opacity(tone == .quiet ? 0.6 : 1),
+                    color.opacity(tone == .quiet ? 0.85 : 1),
                     style: StrokeStyle(lineWidth: 1, dash: dashed ? [3, 2] : []))
             )
     }
@@ -158,8 +158,8 @@ struct Tailpiece: View {
 
     var body: some View {
         Text("❧\u{2002}\(text)\u{2002}❧")
-            .font(Theme.Typography.fact(10))
-            .foregroundStyle(Theme.Palette.ink.opacity(0.45))
+            .font(Theme.Typography.fact(11))
+            .foregroundStyle(Theme.Palette.warmGraySoft)
             .frame(maxWidth: .infinity)
             .multilineTextAlignment(.center)
     }

@@ -271,16 +271,18 @@ private struct DishLine: View {
     @ViewBuilder private var factLine: some View {
         switch readiness {
         case .ready:
-            line("\(dish.time) — all on hand", Theme.Palette.ink.opacity(0.55))
+            line("\(dish.time) · all on hand", Theme.Palette.warmGray)
         case .readyWithSwaps:
-            line("\(dish.time) — with a swap", Theme.Palette.sage)
+            line("\(dish.time) · ready with a swap", Theme.Palette.sage)
         case .needs(let items):
-            line("needs \(items.count) — \(items.prefix(2).joined(separator: ", "))", Theme.Palette.paprika)
+            line("needs \(items.count) · \(items.prefix(2).joined(separator: ", "))", Theme.Palette.paprika)
         }
     }
 
+    // Facts read sentence-case at a real size, not tiny tracked caps — the most
+    // important line on the row should be the most legible (UI agents §4).
     private func line(_ text: String, _ color: Color) -> some View {
-        Text(text.uppercased()).font(.system(size: 8.5)).tracking(1.6).foregroundStyle(color)
+        Text(text).font(Theme.Typography.fact(11.5)).foregroundStyle(color)
             .padding(.top, 1)
     }
 }
