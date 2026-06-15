@@ -15,7 +15,8 @@ struct RecipeDetailView: View {
     var certaintyForKey: (String) -> ItemCertainty? = { _ in nil }
     var onToggleFavorite: () -> Void = {}
     var onUpdateDish: (Dish) -> Void = { _ in }
-    var onAddMissingToList: ([String]) -> Void = { _ in }
+    /// Receives the missing ingredient lines so the list can keep their amounts.
+    var onAddMissingToList: ([RecipeLine]) -> Void = { _ in }
     /// Explicit AI actions; nil result = unavailable or failed (handled softly).
     var makeHealthier: ((Dish) async -> HealthierSuggestion?)?
     var tweak: ((Dish, String) async -> Dish?)?
@@ -39,7 +40,7 @@ struct RecipeDetailView: View {
          certaintyForKey: @escaping (String) -> ItemCertainty? = { _ in nil },
          onToggleFavorite: @escaping () -> Void = {},
          onUpdateDish: @escaping (Dish) -> Void = { _ in },
-         onAddMissingToList: @escaping ([String]) -> Void = { _ in },
+         onAddMissingToList: @escaping ([RecipeLine]) -> Void = { _ in },
          makeHealthier: ((Dish) async -> HealthierSuggestion?)? = nil,
          tweak: ((Dish, String) async -> Dish?)? = nil,
          onCook: @escaping (Dish) -> Void,
@@ -66,11 +67,11 @@ struct RecipeDetailView: View {
         }
     }
 
-    private var missingNames: [String] {
+    private var missingLines: [RecipeLine] {
         effectiveDish.ingredients
             .filter { !isOnHand($0.key) && !$0.isStaple && appliedSwaps[$0.id] == nil }
-            .map(\.name)
     }
+    private var missingNames: [String] { missingLines.map(\.name) }
 
     var body: some View {
         ScrollView {
@@ -271,7 +272,7 @@ struct RecipeDetailView: View {
                 Spacer()
                 if !missingNames.isEmpty {
                     Button {
-                        onAddMissingToList(missingNames)
+                        onAddMissingToList(missingLines)
                     } label: {
                         Label("list the \(missingNames.count) missing", systemImage: "cart.badge.plus")
                             .font(Theme.Typography.fact(11)).foregroundStyle(Theme.Palette.paprika)

@@ -196,14 +196,17 @@ struct StockView: View {
                 .buttonStyle(.plain)
             }
             .padding(.top, 14)
-            // Rich rows like the rest of Stores — plate, name, and a one-tap
-            // "bought it" that moves the item straight into stock.
-            ForEach(store.shoppingList, id: \.self) { entry in
+            // Rich rows like the rest of Stores — plate, name, the desired amount,
+            // and a one-tap "bought it" that books that amount into stock.
+            ForEach(store.shoppingList) { entry in
                 HStack(spacing: 9) {
-                    PlateView(name: entry, composition: store.plate(forName: entry), size: 26)
-                    Text(entry).font(Theme.Typography.fact(13.5)).foregroundStyle(Theme.Palette.ink)
+                    PlateView(name: entry.name, composition: store.plate(forName: entry.name), size: 26)
+                    Text(entry.name).font(Theme.Typography.fact(13.5)).foregroundStyle(Theme.Palette.ink)
+                    if let amount = entry.amount {
+                        Text(amount).font(Theme.Typography.fact(11.5)).foregroundStyle(Theme.Palette.warmGraySoft)
+                    }
                     Spacer(minLength: 4)
-                    Button { withAnimation { store.purchase(name: entry) } } label: {
+                    Button { withAnimation { store.purchase(name: entry.name, amount: entry.amount) } } label: {
                         Text("BOUGHT").font(.system(size: 10, weight: .medium)).tracking(1.0)
                             .foregroundStyle(Theme.Palette.sage)
                             .padding(.horizontal, 9).frame(minHeight: 32)
@@ -211,7 +214,7 @@ struct StockView: View {
                             .contentShape(Rectangle())
                     }
                     .buttonStyle(.pressable)
-                    Button { withAnimation { store.removeFromList(entry) } } label: {
+                    Button { withAnimation { store.removeFromList(entry.name) } } label: {
                         Image(systemName: "xmark").font(.system(size: 11))
                             .foregroundStyle(Theme.Palette.warmGraySoft)
                             .frame(width: 32, height: 32).contentShape(Rectangle())
@@ -219,7 +222,7 @@ struct StockView: View {
                     .buttonStyle(.plain)
                 }
                 .padding(.vertical, 4)
-                if entry != store.shoppingList.last { DashedRule(opacity: 0.5) }
+                if entry.id != store.shoppingList.last?.id { DashedRule(opacity: 0.5) }
             }
         }
     }

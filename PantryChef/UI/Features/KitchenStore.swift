@@ -83,6 +83,18 @@ struct StockItem: Identifiable, Equatable {
     }
 }
 
+/// One line on the shopping list — a name and the *desired* amount to buy. The
+/// amount you actually purchase is recorded when you mark it bought (it may differ).
+struct ShoppingEntry: Identifiable, Equatable {
+    let id: UUID
+    var name: String
+    var amount: String?
+
+    init(id: UUID = UUID(), name: String, amount: String? = nil) {
+        self.id = id; self.name = name; self.amount = amount
+    }
+}
+
 // MARK: - Store
 
 /// The redesign's app state: holds the kitchen and derives every surface through
@@ -101,7 +113,13 @@ final class KitchenStore {
     var library: [Dish]
     var profile = DietaryProfile()
     var libraryFilter: LibraryFilter = .all
-    var shoppingList: [String] = ["Olive oil", "Salmon", "Miso", "Milk", "Eggs"]
+    var shoppingList: [ShoppingEntry] = [
+        ShoppingEntry(name: "Olive oil"),
+        ShoppingEntry(name: "Salmon", amount: "2 fillets"),
+        ShoppingEntry(name: "Miso", amount: "1 tub"),
+        ShoppingEntry(name: "Milk", amount: "2 L"),
+        ShoppingEntry(name: "Eggs", amount: "12")
+    ]
     /// The fan's current options — the now-module's Open state rebuilds from these.
     var fanOptions: [FanOption] = []
 
@@ -191,7 +209,10 @@ final class KitchenStore {
 
     func removeStock(_ id: UUID) { stock.removeAll { $0.id == id } }
 
-    func removeFromList(_ entry: String) { shoppingList.removeAll { $0 == entry } }
+    func removeFromList(_ name: String) {
+        let key = name.lowercased()
+        shoppingList.removeAll { $0.name.lowercased() == key }
+    }
 
     /// Commit a parsed composer phrase into the pantry.
     func addToStock(_ intake: ParsedIntake) {
@@ -213,14 +234,31 @@ final class KitchenStore {
     }
 
     func addToList(_ intake: ParsedIntake) {
-        addToList(name: intake.suggestedName ?? intake.name)
+        addToList(name: intake.suggestedName ?? intake.name, amount: Self.amountText(intake))
     }
 
-    func addToList(name: String) {
-        guard !name.isEmpty else { return }
-        let entry = name.prefix(1).capitalized + name.dropFirst()
-        guard !shoppingList.contains(entry) else { return }
-        shoppingList.append(entry)
+    /// Add to the list, carrying a *desired* amount ("2 L", "12") when we know it.
+    /// Adding something already listed updates its desired amount rather than
+    /// duplicating.
+    func addToList(name: String, amount: String? = nil) {
+        let trimmed = name.trimmingCharacters(in: .whitespaces)
+        guard !trimmed.isEmpty else { return }
+        let display = trimmed.prefix(1).capitalized + trimmed.dropFirst()
+        let cleanAmount = amount?.trimmingCharacters(in: .whitespaces)
+        if let i = shoppingList.firstIndex(where: { $0.name.lowercased() == display.lowercased() }) {
+            if let cleanAmount, !cleanAmount.isEmpty { shoppingList[i].amount = cleanAmount }
+            return
+        }
+        shoppingList.append(ShoppingEntry(name: display,
+                                          amount: (cleanAmount?.isEmpty == false) ? cleanAmount : nil))
+    }
+
+    /// Free-text amount from a parsed phrase ("500 g", "2"), or nil.
+    static func amountText(_ intake: ParsedIntake) -> String? {
+        let text = [intake.quantity.map { $0 == $0.rounded() ? String(Int($0)) : String(format: "%.2g", $0) },
+                    intake.unit?.rawValue ?? intake.unrecognizedUnit]
+            .compactMap { $0 }.joined(separator: " ").trimmingCharacters(in: .whitespaces)
+        return text.isEmpty ? nil : text
     }
 
     /// A plate face for a bare name (shopping-list rows, ad-hoc purchases) — resolve

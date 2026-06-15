@@ -10,13 +10,16 @@ struct ShoppingChecklistView: View {
     var onClose: () -> Void
 
     /// Local cart state — committed only on Done, so a mistaken tap costs nothing.
+    /// `amounts` starts from each item's *desired* amount and is edited to what was
+    /// actually bought.
     @State private var checked: Set<String> = []
     @State private var amounts: [String: String] = [:]
-    @State private var extras: [String] = []
+    @State private var extras: [ShoppingEntry] = []
     @State private var newItem = ""
+    @State private var seeded = false
     @FocusState private var addingFocused: Bool
 
-    private var allNames: [String] { store.shoppingList + extras }
+    private var entries: [ShoppingEntry] { store.shoppingList + extras }
     private var boughtCount: Int { checked.count }
 
     var body: some View {
@@ -25,9 +28,9 @@ struct ShoppingChecklistView: View {
             DashedRule().padding(.horizontal, 20).padding(.top, 10)
             ScrollView {
                 VStack(alignment: .leading, spacing: 0) {
-                    ForEach(allNames, id: \.self) { name in
-                        row(name)
-                        if name != allNames.last { DashedRule(opacity: 0.5) }
+                    ForEach(entries) { entry in
+                        row(entry)
+                        if entry.id != entries.last?.id { DashedRule(opacity: 0.5) }
                     }
                     addRow.padding(.top, 14)
                 }
@@ -36,6 +39,13 @@ struct ShoppingChecklistView: View {
             footer
         }
         .background(KitchenBackground())
+        .onAppear {
+            guard !seeded else { return }
+            for entry in store.shoppingList where amounts[entry.name] == nil {
+                amounts[entry.name] = entry.amount ?? ""   // pre-fill bought amount with desired
+            }
+            seeded = true
+        }
     }
 
     private var header: some View {
@@ -56,7 +66,8 @@ struct ShoppingChecklistView: View {
         .padding(.horizontal, 20).padding(.top, 18)
     }
 
-    private func row(_ name: String) -> some View {
+    private func row(_ entry: ShoppingEntry) -> some View {
+        let name = entry.name
         let isChecked = checked.contains(name)
         return HStack(spacing: 11) {
             Button { toggle(name) } label: {
@@ -65,18 +76,26 @@ struct ShoppingChecklistView: View {
             }
             .buttonStyle(.plain)
             PlateView(name: name, composition: store.plate(forName: name), size: 28)
-            Text(name).font(Theme.Typography.fact(14.5)).foregroundStyle(Theme.Palette.ink)
-                .strikethrough(isChecked, color: Theme.Palette.warmGraySoft)
+            VStack(alignment: .leading, spacing: 1) {
+                Text(name).font(Theme.Typography.fact(14.5)).foregroundStyle(Theme.Palette.ink)
+                    .strikethrough(isChecked, color: Theme.Palette.warmGraySoft)
+                // The desired amount, shown until it's in the cart (then you edit
+                // it to what you actually bought, on the right).
+                if let want = entry.amount, !isChecked {
+                    Text("want \(want)").font(Theme.Typography.fact(11))
+                        .foregroundStyle(Theme.Palette.warmGraySoft)
+                }
+            }
             Spacer(minLength: 6)
-            // Amount you actually bought — only worth asking once it's in the cart.
+            // Amount actually bought — pre-filled with the desired amount, editable.
             if isChecked {
-                TextField("amt", text: Binding(
+                TextField("amount", text: Binding(
                     get: { amounts[name] ?? "" }, set: { amounts[name] = $0 }))
                     .font(Theme.Typography.fact(13)).foregroundStyle(Theme.Palette.ink)
                     .multilineTextAlignment(.trailing)
-                    .frame(width: 72)
+                    .frame(width: 84)
                     .padding(.horizontal, 8).frame(minHeight: 34)
-                    .overlay(Rectangle().strokeBorder(Theme.Palette.ink.opacity(0.3), lineWidth: 1))
+                    .overlay(Rectangle().strokeBorder(Theme.Palette.sage.opacity(0.7), lineWidth: 1))
             }
         }
         .padding(.vertical, 4)
@@ -125,9 +144,11 @@ struct ShoppingChecklistView: View {
     private func commitNewItem() {
         let trimmed = newItem.trimmingCharacters(in: .whitespaces)
         guard !trimmed.isEmpty else { return }
-        let entry = trimmed.prefix(1).capitalized + trimmed.dropFirst()
-        if !allNames.contains(entry) { extras.append(entry) }
-        checked.insert(entry)   // you grabbed it, so it's already in the cart
+        let name = trimmed.prefix(1).capitalized + trimmed.dropFirst()
+        if !entries.contains(where: { $0.name.lowercased() == name.lowercased() }) {
+            extras.append(ShoppingEntry(name: name))
+        }
+        checked.insert(name)   // you grabbed it, so it's already in the cart
         newItem = ""
         addingFocused = true
     }
