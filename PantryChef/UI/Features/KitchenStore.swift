@@ -223,6 +223,41 @@ final class KitchenStore {
         shoppingList.append(entry)
     }
 
+    /// A plate face for a bare name (shopping-list rows, ad-hoc purchases) — resolve
+    /// the catalog category if we know the item, else a neutral plate; EmojiPlate
+    /// still picks a sensible face from the name.
+    func plate(forName name: String) -> PlateComposition {
+        let key = name.lowercased()
+        let category = PantryCatalog.itemsByID.values
+            .first { $0.name.lowercased() == key }?.category ?? .other
+        let seed = UInt64(key.utf8.reduce(0) { $0 &+ UInt64($1) } &+ 23)
+        return PlateComposition(categories: [category], seed: seed)
+    }
+
+    /// Bought it: the item leaves the list and enters stock, freshly confirmed.
+    /// `amount` is free text ("500 g"); re-confirms instead of duplicating if it's
+    /// already on hand. Used by the shopping checklist (spec §3).
+    func purchase(name: String, amount: String? = nil) {
+        let trimmed = name.trimmingCharacters(in: .whitespaces)
+        guard !trimmed.isEmpty else { return }
+        removeFromList(trimmed)
+        removeFromList(trimmed.prefix(1).capitalized + trimmed.dropFirst())
+        let key = trimmed.lowercased()
+        let detail = amount?.trimmingCharacters(in: .whitespaces)
+        if let i = stock.firstIndex(where: { $0.key == key }) {
+            stock[i].lastConfirmed = today
+            if let detail, !detail.isEmpty, case .perishable(_, let d) = stock[i].measure {
+                stock[i].measure = .perishable(detail: detail, daysLeft: d)
+            }
+            return
+        }
+        stock.append(StockItem(
+            key: key, name: trimmed.prefix(1).capitalized + trimmed.dropFirst(),
+            plate: plate(forName: trimmed), section: .have,
+            measure: .perishable(detail: (detail?.isEmpty == false ? detail! : "—"), daysLeft: nil),
+            lastConfirmed: today))
+    }
+
     /// Log a recipe-less meal from composer items (the "just ate" path).
     func logMeal(_ intakes: [ParsedIntake]) {
         let names = intakes.map { $0.suggestedName ?? $0.name }.filter { !$0.isEmpty }

@@ -8,11 +8,20 @@ struct StockView: View {
     var store: KitchenStore
 
     @State private var editing: StockItem?
+    @State private var shopping = false
 
-    private var perishables: [StockItem] {
+    private var allPerishable: [StockItem] {
         store.stock
             .filter { if case .perishable = $0.measure { return true } else { return false } }
-            .sorted { days($0) ?? .max < days($1) ?? .max }
+            .sorted { (days($0) ?? .max) < (days($1) ?? .max) }
+    }
+    /// Distinct sections, not one long sorted list: things to use NOW vs. the
+    /// rest of the fridge.
+    private var perishingFirst: [StockItem] {
+        allPerishable.filter { (days($0) ?? .max) <= KitchenConfig.Stores.perishingSoonDays }
+    }
+    private var inStock: [StockItem] {
+        allPerishable.filter { (days($0) ?? .max) > KitchenConfig.Stores.perishingSoonDays }
     }
     private var staples: [StockItem] { store.stock.filter { $0.section == .staples } }
     private var made: [StockItem] { store.stock.filter { $0.section == .made } }
@@ -34,20 +43,17 @@ struct StockView: View {
             .padding(.horizontal, 20).padding(.top, 6)
             ScrollView {
                 VStack(alignment: .leading, spacing: 0) {
-                    if !perishables.isEmpty {
-                        Eyebrow(text: "Perishing first", tone: .urgent).padding(.top, 12)
-                        ForEach(perishables) { item in row(item) }
-                        DashedRule().padding(.top, 10)
+                    if !perishingFirst.isEmpty {
+                        section("Perishing first", perishingFirst, tone: .urgent)
+                    }
+                    if !inStock.isEmpty {
+                        section("In stock", inStock)
                     }
                     if !staples.isEmpty {
-                        Eyebrow(text: "Staples").padding(.top, 12)
-                        ForEach(staples) { item in row(item) }
-                        DashedRule().padding(.top, 10)
+                        section("Staples", staples)
                     }
                     if !made.isEmpty {
-                        Eyebrow(text: "Made by you").padding(.top, 12)
-                        ForEach(made) { item in row(item) }
-                        DashedRule().padding(.top, 10)
+                        section("Made by you", made)
                     }
                     if !store.shoppingList.isEmpty { listSection }
                 }
@@ -63,12 +69,23 @@ struct StockView: View {
             )
             .presentationDetents([.medium])
         }
+        .sheet(isPresented: $shopping) {
+            ShoppingChecklistView(store: store) { shopping = false }
+        }
+    }
+
+    /// One labelled ledger block, divided from the next by a rule.
+    @ViewBuilder private func section(_ title: String, _ items: [StockItem],
+                                     tone: Eyebrow.Tone = .quiet) -> some View {
+        Eyebrow(text: title, tone: tone).padding(.top, 14)
+        ForEach(items) { item in row(item) }
+        DashedRule().padding(.top, 11)
     }
 
     /// "7 things in. The spinach wants using; staples are solid; 5 wait on the list."
     private var summary: String {
         var parts: [String] = ["\(store.stock.count) things in."]
-        if let urgent = perishables.first, let d = days(urgent), d <= 3 {
+        if let urgent = allPerishable.first, let d = days(urgent), d <= 3 {
             parts.append("The \(urgent.name.lowercased()) wants using;")
         }
         let anyLow = staples.contains { if case .staple(let l) = $0.measure { return l != .inStock } else { return false } }
@@ -167,34 +184,43 @@ struct StockView: View {
     }
 
     private var listSection: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Eyebrow(text: "The list — \(store.shoppingList.count)", tone: .urgent).padding(.top, 12)
-            FlowLayoutRow(items: store.shoppingList) { entry in
-                Button {
-                    withAnimation { store.removeFromList(entry) }
-                } label: {
-                    HStack(spacing: 4) {
-                        Text(entry).font(Theme.Typography.fact(12.5)).foregroundStyle(Theme.Palette.ink)
-                        Image(systemName: "xmark").font(.system(size: 7))
-                            .foregroundStyle(Theme.Palette.ink.opacity(0.4))
-                    }
-                    .contentShape(Rectangle())
+        VStack(alignment: .leading, spacing: 0) {
+            HStack(alignment: .firstTextBaseline) {
+                Eyebrow(text: "The list — \(store.shoppingList.count)", tone: .urgent)
+                Spacer()
+                Button { shopping = true } label: {
+                    Text("SHOP →").font(.system(size: 11, weight: .medium)).tracking(1.4)
+                        .foregroundStyle(Theme.Palette.paprika)
+                        .padding(.vertical, 6).contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
             }
-        }
-    }
-}
-
-/// A wrapping run of items separated like a printed line.
-private struct FlowLayoutRow<Content: View>: View {
-    let items: [String]
-    @ViewBuilder let content: (String) -> Content
-
-    var body: some View {
-        let columns = [GridItem(.adaptive(minimum: 84), spacing: 10)]
-        LazyVGrid(columns: columns, alignment: .leading, spacing: 7) {
-            ForEach(items, id: \.self) { content($0) }
+            .padding(.top, 14)
+            // Rich rows like the rest of Stores — plate, name, and a one-tap
+            // "bought it" that moves the item straight into stock.
+            ForEach(store.shoppingList, id: \.self) { entry in
+                HStack(spacing: 9) {
+                    PlateView(name: entry, composition: store.plate(forName: entry), size: 26)
+                    Text(entry).font(Theme.Typography.fact(13.5)).foregroundStyle(Theme.Palette.ink)
+                    Spacer(minLength: 4)
+                    Button { withAnimation { store.purchase(name: entry) } } label: {
+                        Text("BOUGHT").font(.system(size: 10, weight: .medium)).tracking(1.0)
+                            .foregroundStyle(Theme.Palette.sage)
+                            .padding(.horizontal, 9).frame(minHeight: 32)
+                            .overlay(Rectangle().strokeBorder(Theme.Palette.sage.opacity(0.7), lineWidth: 1))
+                            .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.pressable)
+                    Button { withAnimation { store.removeFromList(entry) } } label: {
+                        Image(systemName: "xmark").font(.system(size: 11))
+                            .foregroundStyle(Theme.Palette.warmGraySoft)
+                            .frame(width: 32, height: 32).contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
+                }
+                .padding(.vertical, 4)
+                if entry != store.shoppingList.last { DashedRule(opacity: 0.5) }
+            }
         }
     }
 }

@@ -17,6 +17,14 @@ enum KitchenConfig {
         static let stapleMinShelfLifeDays = 120
     }
 
+    /// Tuning for the Stores ledger.
+    enum Stores {
+        /// A perishable with this many days left or fewer is "perishing first";
+        /// longer-dated perishables sit under "in stock" (a clearer divide than one
+        /// long sorted list).
+        static let perishingSoonDays = 5
+    }
+
     /// Knowledge-certainty decay (spec §7 trust layer): how fast the app stops
     /// trusting its own inventory record as time passes since the last evidence.
     enum Confidence {

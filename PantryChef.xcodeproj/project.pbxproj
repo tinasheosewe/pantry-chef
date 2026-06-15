@@ -46,6 +46,7 @@
 		4C623925344BDA250E878887 /* PantryCookReview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44FECA685551A0C757FC6819 /* PantryCookReview.swift */; };
 		4CA332DA2C92C1ED2A30D846 /* StepTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA7710DAEA864CA8E70D8332 /* StepTask.swift */; };
 		4EE220109F2FDCAA2FFB63E6 /* StockView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45E7B9238FFCA86D187E2420 /* StockView.swift */; };
+		500CF21AC8F3E7493C6F0DA1 /* ShoppingChecklistView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7091D990752C6197CCF02458 /* ShoppingChecklistView.swift */; };
 		59E7344CE47BB5BDC9272C27 /* StorageService.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3D174F06F17C2D1BFB041DA /* StorageService.swift */; };
 		5A71CB0FBFDF5EDA80BD964A /* MultiCookScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8241073BA3C1CE75DE6558C5 /* MultiCookScheduler.swift */; };
 		5BF2AF91CDFFE66AD222B691 /* ItemCertainty.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34FBDF3045F807228F2ED54C /* ItemCertainty.swift */; };
@@ -190,6 +191,7 @@
 		67106B750F48353E27DE5B0D /* catalog.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = catalog.json; sourceTree = "<group>"; };
 		6871CCC4A1E586AE0BDC6A91 /* MealPlan.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MealPlan.swift; sourceTree = "<group>"; };
 		6FA305DB5D5B9FBE02C276BD /* LLMBatchSchedule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMBatchSchedule.swift; sourceTree = "<group>"; };
+		7091D990752C6197CCF02458 /* ShoppingChecklistView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ShoppingChecklistView.swift; sourceTree = "<group>"; };
 		732C449BE670E2788C0421ED /* Recipe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Recipe.swift; sourceTree = "<group>"; };
 		76DFA2EE9B6B77FB3CEAD7C7 /* RecipeIngredientResolutionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeIngredientResolutionService.swift; sourceTree = "<group>"; };
 		7A2E455A1F865ADE8DDEF145 /* DishInsights.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DishInsights.swift; sourceTree = "<group>"; };
@@ -449,6 +451,7 @@
 			isa = PBXGroup;
 			children = (
 				45E7B9238FFCA86D187E2420 /* StockView.swift */,
+				7091D990752C6197CCF02458 /* ShoppingChecklistView.swift */,
 			);
 			name = Stock;
 			path = Stock;
@@ -883,6 +886,7 @@
 				1CA4005B8A5EF15EDCD61EDE /* FontLoader.swift in Sources */,
 				DCDC61BAB6E9A4507EAD3C0B /* PlateRenderLibrary.swift in Sources */,
 				8AFDCDEBEAD82A3660770516 /* FieldNotes.swift in Sources */,
+				500CF21AC8F3E7493C6F0DA1 /* ShoppingChecklistView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
