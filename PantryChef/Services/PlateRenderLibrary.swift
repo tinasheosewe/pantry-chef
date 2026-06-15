@@ -107,10 +107,12 @@ final class PlateRenderLibrary {
     private nonisolated static func prompt(for name: String) -> String {
         """
         A single round white ceramic plate of \(name), hand-painted gouache \
-        cookbook illustration: muted natural colours, fine deep-green ink \
-        outlines, and a thin green double ring on the plate rim. Viewed from \
-        directly above, perfectly centred, isolated on a fully transparent \
-        background — nothing outside the circular plate, no text.
+        cookbook illustration. Make it appetising: a generous, abundant portion \
+        that fills the plate, fresh natural colours with soft raking light, gentle \
+        glossy highlights on sauces and oils, and a little fresh garnish. Fine \
+        deep-green ink outlines and a thin green double ring on the plate rim. \
+        Viewed from directly above, perfectly centred, isolated on a fully \
+        transparent background — nothing outside the circular plate, no text.
         """
     }
 
