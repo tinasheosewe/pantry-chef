@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		0248FD5136004BE914474B21 /* ResolutionClassTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4EC84421D4A2864AE180C6D /* ResolutionClassTests.swift */; };
+		04B3B6AA63619905246D9295 /* IntakePipeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = C277A622D0C630B07548A487 /* IntakePipeline.swift */; };
 		0E00CB9878D75F91F1802324 /* Fraunces.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B373F4229381257EA66CDE3C /* Fraunces.ttf */; };
 		0F0DFA82B7C463DDB2BE8294 /* RealtimeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FF94D344E15CC2935F5283B /* RealtimeService.swift */; };
 		104B58671438C133ED21624A /* UnitConversionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C93C8FDEB9C5D988F3270738 /* UnitConversionTests.swift */; };
@@ -54,6 +55,7 @@
 		7FBE65DAD5654BF06FD33353 /* FanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 429A404308616F18132F9767 /* FanView.swift */; };
 		8305E12ADD7F026A2AD68195 /* SpineGutter.swift in Sources */ = {isa = PBXBuildFile; fileRef = C37F9246B13C7CD8DB8F157E /* SpineGutter.swift */; };
 		87019D52E2D0DC17CCF1E0C4 /* ExpiryEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFBF0909FB0DCCC8F82C8915 /* ExpiryEngineTests.swift */; };
+		87F526236C65466C6A727AE1 /* IntakePipelineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3403E0E0CEC4D7B9F57BC6A /* IntakePipelineTests.swift */; };
 		8872C4EFF24154417172E066 /* IngredientMatching.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F4550D5ECA525ED872882D3 /* IngredientMatching.swift */; };
 		8940817B4ECB43E57B1E9436 /* AudioPipelineHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = A583969D363695B85BA85C0A /* AudioPipelineHelper.swift */; };
 		8A83DC607C8342D82632581C /* AIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9D6320911E5D93399FD4833 /* AIService.swift */; };
@@ -196,6 +198,7 @@
 		BAB9028C434D2045ADDB09A5 /* KitchenStore.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = KitchenStore.swift; sourceTree = "<group>"; };
 		BF4ACDEB952F0E92FF5A2FF7 /* RealtimeServiceProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealtimeServiceProtocol.swift; sourceTree = "<group>"; };
 		C0C49A659EE21F5019A9DF94 /* AppLaunchOptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLaunchOptions.swift; sourceTree = "<group>"; };
+		C277A622D0C630B07548A487 /* IntakePipeline.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = IntakePipeline.swift; sourceTree = "<group>"; };
 		C2CAE194CB15CCC78F5F22C6 /* Fraunces-Italic.ttf */ = {isa = PBXFileReference; includeInIndex = 1; path = "Fraunces-Italic.ttf"; sourceTree = "<group>"; };
 		C353618F4B7100DD25102763 /* AIDishMapping.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AIDishMapping.swift; sourceTree = "<group>"; };
 		C37F9246B13C7CD8DB8F157E /* SpineGutter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SpineGutter.swift; sourceTree = "<group>"; };
@@ -219,6 +222,7 @@
 		DD7711492A1BF81C0A45710C /* ConfidenceEngineTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ConfidenceEngineTests.swift; sourceTree = "<group>"; };
 		DF1F65D77EABC51B56B50C75 /* PantryChefUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = PantryChefUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		E22F264FE9DA944655852EB8 /* ResolutionClass.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ResolutionClass.swift; sourceTree = "<group>"; };
+		E3403E0E0CEC4D7B9F57BC6A /* IntakePipelineTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = IntakePipelineTests.swift; sourceTree = "<group>"; };
 		E3510AFA34EEE626883353C8 /* RecipeDetailView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RecipeDetailView.swift; sourceTree = "<group>"; };
 		EC346DA4AE07E775F03E0537 /* shakshuka.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = shakshuka.png; sourceTree = "<group>"; };
 		ECEFEB3FB5265EBF48F4495C /* seed_recipes.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = seed_recipes.json; sourceTree = "<group>"; };
@@ -367,6 +371,7 @@
 				7AD5C2A696139DA1CB982D72 /* FuzzyMatchFloorTests.swift */,
 				F934FEC93B55B49EFD729047 /* IngredientMatchingTests.swift */,
 				99EDB3A919F342036B1A4A1A /* AIDishMappingTests.swift */,
+				E3403E0E0CEC4D7B9F57BC6A /* IntakePipelineTests.swift */,
 			);
 			path = PantryChefTests;
 			sourceTree = "<group>";
@@ -566,6 +571,7 @@
 				8241073BA3C1CE75DE6558C5 /* MultiCookScheduler.swift */,
 				420C676E86193CE0F9F81388 /* PlateRenderLibrary.swift */,
 				822D5F908F780A317F9B37C1 /* ExpiryEngine.swift */,
+				C277A622D0C630B07548A487 /* IntakePipeline.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -816,6 +822,7 @@
 				BDBA1948B2D3D3CF2E1FD874 /* QuantityFormat.swift in Sources */,
 				8872C4EFF24154417172E066 /* IngredientMatching.swift in Sources */,
 				D930D3DAFDEE0478D843F263 /* AIDishMapping.swift in Sources */,
+				04B3B6AA63619905246D9295 /* IntakePipeline.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -849,6 +856,7 @@
 				EE5B1986AA5D383E04D6A526 /* FuzzyMatchFloorTests.swift in Sources */,
 				E1A038734763DF08DEB18204 /* IngredientMatchingTests.swift in Sources */,
 				60D0EE313FC98666DD3F7BA5 /* AIDishMappingTests.swift in Sources */,
+				87F526236C65466C6A727AE1 /* IntakePipelineTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
