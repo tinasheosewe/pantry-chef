@@ -214,23 +214,16 @@ final class KitchenStore {
         shoppingList.removeAll { $0.name.lowercased() == key }
     }
 
-    /// Commit a parsed composer phrase into the pantry.
+    /// Commit a parsed composer phrase into the pantry — days left auto-populates
+    /// from catalog shelf life via `stockFields`.
     func addToStock(_ intake: ParsedIntake) {
         let name = intake.suggestedName ?? intake.name
         guard !name.isEmpty else { return }
         let catalogItem = intake.resolvedItemID.flatMap { PantryCatalog.itemsByID[$0] }
-        let category = catalogItem?.category ?? .other
-        let isStaple = catalogItem.map { $0.resolutionClass == .staple } ?? false
-        let detail = [intake.quantity.map { $0 == $0.rounded() ? String(Int($0)) : String(format: "%.2g", $0) },
-                      intake.unit?.rawValue ?? intake.unrecognizedUnit]
-            .compactMap { $0 }.joined(separator: " ")
-        let seed = UInt64(name.lowercased().utf8.reduce(0) { $0 &+ UInt64($1) } &+ 17)
+        let f = stockFields(name: name, amount: Self.amountText(intake), catalogItem: catalogItem)
         stock.append(StockItem(
             key: name.lowercased(), name: name,
-            plate: PlateComposition(categories: [category], seed: seed),
-            section: isStaple ? .staples : .have,
-            measure: isStaple ? .staple(.inStock)
-                              : .perishable(detail: detail.isEmpty ? "—" : detail, daysLeft: nil)))
+            plate: f.plate, section: f.section, measure: f.measure))
     }
 
     func addToList(_ intake: ParsedIntake) {
@@ -262,24 +255,40 @@ final class KitchenStore {
     }
 
     /// A plate face for a bare name (shopping-list rows, ad-hoc purchases) — resolve
-    /// the catalog category if we know the item, else a neutral plate; EmojiPlate
-    /// still picks a sensible face from the name.
+    /// the catalog category (through aliases) if we know the item, else a neutral
+    /// plate; EmojiPlate still picks a sensible face from the name.
     func plate(forName name: String) -> PlateComposition {
-        let key = name.lowercased()
-        let category = PantryCatalog.itemsByID.values
-            .first { $0.name.lowercased() == key }?.category ?? .other
-        let seed = UInt64(key.utf8.reduce(0) { $0 &+ UInt64($1) } &+ 23)
+        let category = PantryCatalog.resolveExact(name: name)?.category ?? .other
+        let seed = UInt64(name.lowercased().utf8.reduce(0) { $0 &+ UInt64($1) } &+ 23)
         return PlateComposition(categories: [category], seed: seed)
     }
 
-    /// Bought it: the item leaves the list and enters stock, freshly confirmed.
-    /// `amount` is free text ("500 g"); re-confirms instead of duplicating if it's
-    /// already on hand. Used by the shopping checklist (spec §3).
+    /// Section + measure + plate for a freshly-stocked item, pulling shelf life and
+    /// tracking class from the catalog so **days left auto-populates** (a bought
+    /// perishable gets a real countdown); unknown items fall back to a tracked
+    /// perishable with no count.
+    private func stockFields(name: String, amount: String?, catalogItem: PantryCatalogItemDefinition?)
+        -> (section: StockItem.Section, measure: StockItem.Measure, plate: PlateComposition) {
+        let item = catalogItem ?? PantryCatalog.resolveExact(name: name)
+        let category = item?.category ?? .other
+        let seed = UInt64(name.lowercased().utf8.reduce(0) { $0 &+ UInt64($1) } &+ 23)
+        let plate = PlateComposition(categories: [category], seed: seed)
+        let cleaned = amount?.trimmingCharacters(in: .whitespaces)
+        let detail = (cleaned?.isEmpty == false) ? cleaned! : "—"
+        if let item, item.resolutionClass == .staple {
+            return (.staples, .staple(.inStock), plate)
+        }
+        let days = item.flatMap { ResolutionClassifier.representativeShelfLifeDays($0) }
+        return (.have, .perishable(detail: detail, daysLeft: days), plate)
+    }
+
+    /// Bought it: the item leaves the list and enters stock, freshly confirmed,
+    /// with its days-left seeded from catalog shelf life. Re-confirms instead of
+    /// duplicating if it's already on hand (spec §3).
     func purchase(name: String, amount: String? = nil) {
         let trimmed = name.trimmingCharacters(in: .whitespaces)
         guard !trimmed.isEmpty else { return }
         removeFromList(trimmed)
-        removeFromList(trimmed.prefix(1).capitalized + trimmed.dropFirst())
         let key = trimmed.lowercased()
         let detail = amount?.trimmingCharacters(in: .whitespaces)
         if let i = stock.firstIndex(where: { $0.key == key }) {
@@ -289,11 +298,10 @@ final class KitchenStore {
             }
             return
         }
+        let f = stockFields(name: trimmed, amount: amount, catalogItem: nil)
         stock.append(StockItem(
             key: key, name: trimmed.prefix(1).capitalized + trimmed.dropFirst(),
-            plate: plate(forName: trimmed), section: .have,
-            measure: .perishable(detail: (detail?.isEmpty == false ? detail! : "—"), daysLeft: nil),
-            lastConfirmed: today))
+            plate: f.plate, section: f.section, measure: f.measure, lastConfirmed: today))
     }
 
     /// Log a recipe-less meal from composer items (the "just ate" path).

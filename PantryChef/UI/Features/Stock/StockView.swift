@@ -183,48 +183,35 @@ struct StockView: View {
         }
     }
 
+    /// A read-only preview — managing the list (amounts, bought, removal) happens in
+    /// the Shop run, so there's one place to keep it in sync. The whole section taps
+    /// through to Shop.
     private var listSection: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            HStack(alignment: .firstTextBaseline) {
-                Eyebrow(text: "The list — \(store.shoppingList.count)", tone: .urgent)
-                Spacer()
-                Button { shopping = true } label: {
+        Button { shopping = true } label: {
+            VStack(alignment: .leading, spacing: 0) {
+                HStack(alignment: .firstTextBaseline) {
+                    Eyebrow(text: "The list — \(store.shoppingList.count)", tone: .urgent)
+                    Spacer()
                     Text("SHOP →").font(.system(size: 11, weight: .medium)).tracking(1.4)
                         .foregroundStyle(Theme.Palette.paprika)
-                        .padding(.vertical, 6).contentShape(Rectangle())
                 }
-                .buttonStyle(.plain)
-            }
-            .padding(.top, 14)
-            // Rich rows like the rest of Stores — plate, name, the desired amount,
-            // and a one-tap "bought it" that books that amount into stock.
-            ForEach(store.shoppingList) { entry in
-                HStack(spacing: 9) {
-                    PlateView(name: entry.name, composition: store.plate(forName: entry.name), size: 26)
-                    Text(entry.name).font(Theme.Typography.fact(13.5)).foregroundStyle(Theme.Palette.ink)
-                    if let amount = entry.amount {
-                        Text(amount).font(Theme.Typography.fact(11.5)).foregroundStyle(Theme.Palette.warmGraySoft)
+                .padding(.top, 14)
+                ForEach(store.shoppingList) { entry in
+                    HStack(spacing: 9) {
+                        PlateView(name: entry.name, composition: store.plate(forName: entry.name), size: 26)
+                        Text(entry.name).font(Theme.Typography.fact(13.5)).foregroundStyle(Theme.Palette.ink)
+                        if let amount = entry.amount {
+                            Text(amount).font(Theme.Typography.fact(11.5)).foregroundStyle(Theme.Palette.warmGraySoft)
+                        }
+                        Spacer(minLength: 4)
                     }
-                    Spacer(minLength: 4)
-                    Button { withAnimation { store.purchase(name: entry.name, amount: entry.amount) } } label: {
-                        Text("BOUGHT").font(.system(size: 10, weight: .medium)).tracking(1.0)
-                            .foregroundStyle(Theme.Palette.sage)
-                            .padding(.horizontal, 9).frame(minHeight: 32)
-                            .overlay(Rectangle().strokeBorder(Theme.Palette.sage.opacity(0.7), lineWidth: 1))
-                            .contentShape(Rectangle())
-                    }
-                    .buttonStyle(.pressable)
-                    Button { withAnimation { store.removeFromList(entry.name) } } label: {
-                        Image(systemName: "xmark").font(.system(size: 11))
-                            .foregroundStyle(Theme.Palette.warmGraySoft)
-                            .frame(width: 32, height: 32).contentShape(Rectangle())
-                    }
-                    .buttonStyle(.plain)
+                    .padding(.vertical, 5)
+                    if entry.id != store.shoppingList.last?.id { DashedRule(opacity: 0.5) }
                 }
-                .padding(.vertical, 4)
-                if entry.id != store.shoppingList.last?.id { DashedRule(opacity: 0.5) }
             }
+            .contentShape(Rectangle())
         }
+        .buttonStyle(.plain)
     }
 }
 

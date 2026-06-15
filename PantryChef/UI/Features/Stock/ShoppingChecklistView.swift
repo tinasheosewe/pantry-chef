@@ -26,16 +26,28 @@ struct ShoppingChecklistView: View {
         VStack(alignment: .leading, spacing: 0) {
             header
             DashedRule().padding(.horizontal, 20).padding(.top, 10)
-            ScrollView {
-                VStack(alignment: .leading, spacing: 0) {
-                    ForEach(entries) { entry in
-                        row(entry)
-                        if entry.id != entries.last?.id { DashedRule(opacity: 0.5) }
-                    }
-                    addRow.padding(.top, 14)
+            // A List so removal is the native swipe gesture (no ✕): swipe a row to
+            // remove it. Marking bought is a tap on the check — distinct gesture, no
+            // conflict. Separators tinted to ink to fit the printed look.
+            List {
+                ForEach(entries) { entry in
+                    row(entry)
+                        .listRowInsets(EdgeInsets(top: 5, leading: 20, bottom: 5, trailing: 20))
+                        .listRowBackground(Color.clear)
+                        .listRowSeparatorTint(Theme.Palette.ink.opacity(0.18))
+                        .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                            Button(role: .destructive) { remove(entry) } label: {
+                                Label("Remove", systemImage: "trash")
+                            }
+                        }
                 }
-                .padding(.horizontal, 20).padding(.top, 8).padding(.bottom, 24)
+                addRow
+                    .listRowInsets(EdgeInsets(top: 12, leading: 20, bottom: 5, trailing: 20))
+                    .listRowBackground(Color.clear)
+                    .listRowSeparator(.hidden)
             }
+            .listStyle(.plain)
+            .scrollContentBackground(.hidden)
             footer
         }
         .background(KitchenBackground())
@@ -45,6 +57,19 @@ struct ShoppingChecklistView: View {
                 amounts[entry.name] = entry.amount ?? ""   // pre-fill bought amount with desired
             }
             seeded = true
+        }
+    }
+
+    /// Remove a line: list items leave the store list, ad-hoc extras just drop.
+    private func remove(_ entry: ShoppingEntry) {
+        withAnimation {
+            if extras.contains(where: { $0.id == entry.id }) {
+                extras.removeAll { $0.id == entry.id }
+            } else {
+                store.removeFromList(entry.name)
+            }
+            checked.remove(entry.name)
+            amounts[entry.name] = nil
         }
     }
 
@@ -87,9 +112,9 @@ struct ShoppingChecklistView: View {
                 }
             }
             Spacer(minLength: 6)
-            // Amount actually bought — pre-filled with the desired amount, editable.
+            // Count actually bought — pre-filled with the desired amount, editable.
             if isChecked {
-                TextField("amount", text: Binding(
+                TextField("count", text: Binding(
                     get: { amounts[name] ?? "" }, set: { amounts[name] = $0 }))
                     .font(Theme.Typography.fact(13)).foregroundStyle(Theme.Palette.ink)
                     .multilineTextAlignment(.trailing)
@@ -144,10 +169,18 @@ struct ShoppingChecklistView: View {
     private func commitNewItem() {
         let trimmed = newItem.trimmingCharacters(in: .whitespaces)
         guard !trimmed.isEmpty else { return }
-        let name = trimmed.prefix(1).capitalized + trimmed.dropFirst()
+        // Same resolver as every other ingredient input (the composer's IntakeParser):
+        // catalog lookup + synonym/alias disambiguation + amount extraction, so
+        // "2 roma tomatoes" lands as Tomato · 2, not a raw string.
+        let parsed = store.parse(trimmed)
+        let resolved = parsed.suggestedName ?? parsed.name
+        let base = resolved.isEmpty ? trimmed : resolved
+        let name = base.prefix(1).capitalized + base.dropFirst()
+        let amount = KitchenStore.amountText(parsed)
         if !entries.contains(where: { $0.name.lowercased() == name.lowercased() }) {
-            extras.append(ShoppingEntry(name: name))
+            extras.append(ShoppingEntry(name: name, amount: amount))
         }
+        amounts[name] = amount ?? ""
         checked.insert(name)   // you grabbed it, so it's already in the cart
         newItem = ""
         addingFocused = true
