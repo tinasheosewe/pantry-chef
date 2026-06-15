@@ -62,6 +62,13 @@ struct Dish: Identifiable, Equatable, Sendable {
 
     var requirements: [IngredientRequirement] { ingredients.map(\.requirement) }
 
+    /// A copy with a fresh identity — for "save as new" after a tweak/edit, so the
+    /// original recipe is left untouched. Marked as the user's own, not favorited.
+    func copyAsNew() -> Dish {
+        Dish(name: name, plate: plate, time: time, isYours: true, isFavorite: false,
+             servings: servings, blurb: blurb, ingredients: ingredients, steps: steps)
+    }
+
     /// This dish scaled to a different serving count: every ingredient amount with
     /// a leading number is multiplied; unitless lines ("to taste") pass through.
     func scaled(to newServings: Int) -> Dish {

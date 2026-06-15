@@ -157,6 +157,7 @@ private struct RecipeDetailScreen: View {
             certaintyForKey: { store.certainty(forKey: $0) },
             onToggleFavorite: { store.toggleFavorite(dish.id) },
             onUpdateDish: { store.updateDish($0) },
+            onSaveAsNew: { store.addDish($0) },
             onAddMissingToList: { lines in lines.forEach { store.addToList(name: $0.name, amount: $0.amount) } },
             makeHealthier: { d in
                 await store.ai.makeItHealthier(dish: d)

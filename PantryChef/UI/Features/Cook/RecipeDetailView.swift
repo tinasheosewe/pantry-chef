@@ -15,6 +15,8 @@ struct RecipeDetailView: View {
     var certaintyForKey: (String) -> ItemCertainty? = { _ in nil }
     var onToggleFavorite: () -> Void = {}
     var onUpdateDish: (Dish) -> Void = { _ in }
+    /// Save the tweaked/edited recipe as a brand-new dish (leaving this one intact).
+    var onSaveAsNew: (Dish) -> Void = { _ in }
     /// Receives the missing ingredient lines so the list can keep their amounts.
     var onAddMissingToList: ([RecipeLine]) -> Void = { _ in }
     /// Explicit AI actions; nil result = unavailable or failed (handled softly).
@@ -32,6 +34,11 @@ struct RecipeDetailView: View {
     @State private var showTweakPrompt = false
     @State private var aiBusy = false
     @State private var aiNote: String?
+    @State private var listedConfirm = false
+    /// The last committed version; "discard" reverts to it. Pending = there's an
+    /// unsaved tweak/edit awaiting discard / save / save-as-new.
+    @State private var baseline: Dish
+    @State private var pendingChanges = false
 
     struct SwapChoice: Equatable { let key: String; let name: String }
 
@@ -40,6 +47,7 @@ struct RecipeDetailView: View {
          certaintyForKey: @escaping (String) -> ItemCertainty? = { _ in nil },
          onToggleFavorite: @escaping () -> Void = {},
          onUpdateDish: @escaping (Dish) -> Void = { _ in },
+         onSaveAsNew: @escaping (Dish) -> Void = { _ in },
          onAddMissingToList: @escaping ([RecipeLine]) -> Void = { _ in },
          makeHealthier: ((Dish) async -> HealthierSuggestion?)? = nil,
          tweak: ((Dish, String) async -> Dish?)? = nil,
@@ -51,12 +59,14 @@ struct RecipeDetailView: View {
         self.certaintyForKey = certaintyForKey
         self.onToggleFavorite = onToggleFavorite
         self.onUpdateDish = onUpdateDish
+        self.onSaveAsNew = onSaveAsNew
         self.onAddMissingToList = onAddMissingToList
         self.makeHealthier = makeHealthier
         self.tweak = tweak
         self.onCook = onCook
         self.onClose = onClose
         _currentDish = State(initialValue: dish)
+        _baseline = State(initialValue: dish)
         _servings = State(initialValue: dish.servings)
     }
 
@@ -92,13 +102,13 @@ struct RecipeDetailView: View {
             }
             .padding(16)
         }
-        .safeAreaInset(edge: .bottom) { cookBar }
+        .safeAreaInset(edge: .bottom) { pendingChanges ? AnyView(pendingBar) : AnyView(cookBar) }
         .sheet(isPresented: $showEditor) {
             RecipeEditorView(dish: currentDish) { edited in
                 currentDish = edited
                 servings = edited.servings
-                onUpdateDish(edited)
                 showEditor = false
+                withAnimation { pendingChanges = true }   // editing stages a change, doesn't commit
             }
         }
         .sheet(item: $healthierResult) { suggestion in
@@ -256,7 +266,7 @@ struct RecipeDetailView: View {
                 currentDish = result
                 servings = result.servings
                 appliedSwaps = [:]
-                onUpdateDish(result)
+                withAnimation { pendingChanges = true }   // a tweak is a proposal, not a commit
             } else {
                 aiNote = "Couldn't tweak it — add an OpenAI key in Config.plist, or try again."
             }
@@ -273,11 +283,17 @@ struct RecipeDetailView: View {
                 if !missingNames.isEmpty {
                     Button {
                         onAddMissingToList(missingLines)
+                        withAnimation { listedConfirm = true }
+                        Task { try? await Task.sleep(for: .seconds(2.5)); withAnimation { listedConfirm = false } }
                     } label: {
-                        Label("list the \(missingNames.count) missing", systemImage: "cart.badge.plus")
-                            .font(Theme.Typography.fact(11)).foregroundStyle(Theme.Palette.paprika)
+                        Label(listedConfirm ? "added to your list"
+                                            : "list the \(missingNames.count) missing",
+                              systemImage: listedConfirm ? "checkmark.circle.fill" : "cart.badge.plus")
+                            .font(Theme.Typography.fact(11))
+                            .foregroundStyle(listedConfirm ? Theme.Palette.sage : Theme.Palette.paprika)
                     }
                     .buttonStyle(.plain)
+                    .disabled(listedConfirm)
                 }
             }
             ForEach(effectiveDish.ingredients) { line in
@@ -366,6 +382,52 @@ struct RecipeDetailView: View {
                 .padding(.horizontal, 20).padding(.vertical, 12)
         }
         .background(Theme.Palette.cream)
+    }
+
+    /// Shown while a tweak/edit is unsaved: keep the change on this recipe, fork it
+    /// into a new one, or throw it away.
+    private var pendingBar: some View {
+        VStack(spacing: 6) {
+            SolidRule()
+            Text("UNSAVED CHANGES").font(.system(size: 9, weight: .medium)).tracking(1.8)
+                .foregroundStyle(Theme.Palette.paprika)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.horizontal, 20).padding(.top, 8)
+            HStack(spacing: 10) {
+                Button { discardChanges() } label: {
+                    Text("DISCARD").font(.system(size: 11, weight: .medium)).tracking(1.6)
+                        .foregroundStyle(Theme.Palette.warmGray)
+                        .padding(.vertical, 10).contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                Spacer()
+                OutlineButton(title: "Save as new") { saveAsNew() }
+                BlockButton(title: "Save") { saveChanges() }
+            }
+            .padding(.horizontal, 20).padding(.bottom, 12)
+        }
+        .background(Theme.Palette.cream)
+    }
+
+    private func discardChanges() {
+        withAnimation {
+            currentDish = baseline
+            servings = baseline.servings
+            appliedSwaps = [:]
+            pendingChanges = false
+        }
+    }
+
+    private func saveChanges() {
+        onUpdateDish(currentDish)
+        baseline = currentDish
+        withAnimation { pendingChanges = false }
+    }
+
+    private func saveAsNew() {
+        onSaveAsNew(currentDish.copyAsNew())
+        // Leave this recipe as it was before the edit.
+        discardChanges()
     }
 }
 

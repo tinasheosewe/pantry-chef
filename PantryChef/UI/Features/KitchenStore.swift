@@ -198,6 +198,11 @@ final class KitchenStore {
         if let i = library.firstIndex(where: { $0.id == id }) { library[i].isFavorite.toggle() }
     }
 
+    /// Add a brand-new dish to the library (e.g. "save as new" from a tweak/edit).
+    func addDish(_ dish: Dish) {
+        library.insert(dish, at: 0)
+    }
+
     /// Replace a dish (edits, AI tweaks) wherever it lives — library and the fan.
     func updateDish(_ dish: Dish) {
         if let i = library.firstIndex(where: { $0.id == dish.id }) { library[i] = dish }
