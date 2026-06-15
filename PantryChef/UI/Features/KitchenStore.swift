@@ -364,24 +364,29 @@ final class KitchenStore {
             plate: plate, summary: "Logged — \(names.count) item\(names.count == 1 ? "" : "s") from your kitchen."))
     }
 
-    /// Live readiness for a dish — the single ReadinessService over current stock.
+    /// Live readiness for a dish — the single ReadinessService over current stock,
+    /// matched through the one catalog-aware IngredientMatching path.
     func readiness(for dish: Dish) -> Readiness {
-        ReadinessService(presence: StockPresence(keys: stockKeys), swaps: NoSwaps())
+        ReadinessService(presence: StockPresence(index: presenceIndex), swaps: NoSwaps())
             .evaluate(dish.requirements)
     }
 
-    /// Which ingredient keys are on hand right now (for the gathering checklist).
-    func onHand(_ key: String) -> Bool { stockKeys.contains(key) }
+    /// Which ingredients are on hand right now (for the gathering checklist) — same
+    /// matcher as readiness, so the two can never disagree.
+    func onHand(_ key: String) -> Bool { presenceIndex.contains(requirement: key) }
 
-    /// The keys we'll trust for readiness: everything except items the knowledge
+    /// The names we'll trust for readiness: everything except items the knowledge
     /// clock says are *probably gone*. This is the honesty rule — we stop asserting
     /// "on hand" for things we've almost certainly used up, so the fan and recipe
     /// readiness can't quietly lie. Uncertain items still count (we don't punish a
     /// casual logger) but get surfaced for a one-tap check in Stores.
-    private var stockKeys: Set<String> {
+    private var presentStockNames: [String] {
         let now = today
-        return Set(stock.filter { $0.certainty(now: now) > .likelyGone }.map(\.key))
+        return stock.filter { $0.certainty(now: now) > .likelyGone }.map(\.name)
     }
+
+    /// The single on-hand index, catalog/synonym-aware (see IngredientMatching).
+    private var presenceIndex: IngredientMatching.Index { .init(names: presentStockNames) }
 
     /// The certainty of a stocked key, for surfaces that want to hedge their wording.
     func certainty(forKey key: String) -> ItemCertainty? {
@@ -567,10 +572,10 @@ final class KitchenStore {
     }
 }
 
-/// PantryPresence backed by the store's current stock keys.
+/// PantryPresence backed by the one catalog-aware matcher.
 private struct StockPresence: PantryPresence {
-    let keys: Set<String>
-    func hasOnHand(_ key: String) -> Bool { keys.contains(key) }
+    let index: IngredientMatching.Index
+    func hasOnHand(_ key: String) -> Bool { index.contains(requirement: key) }
     func isKnownOut(_ key: String) -> Bool { false }
 }
 

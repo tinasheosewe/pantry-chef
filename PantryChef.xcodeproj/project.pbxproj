@@ -65,6 +65,7 @@
 		8305E12ADD7F026A2AD68195 /* SpineGutter.swift in Sources */ = {isa = PBXBuildFile; fileRef = C37F9246B13C7CD8DB8F157E /* SpineGutter.swift */; };
 		87019D52E2D0DC17CCF1E0C4 /* ExpiryEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFBF0909FB0DCCC8F82C8915 /* ExpiryEngineTests.swift */; };
 		8701F19CA8F33EBF5341CF13 /* RecipeIngredientResolution.swift in Sources */ = {isa = PBXBuildFile; fileRef = D163F4169A50AA35EA50126A /* RecipeIngredientResolution.swift */; };
+		8872C4EFF24154417172E066 /* IngredientMatching.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F4550D5ECA525ED872882D3 /* IngredientMatching.swift */; };
 		8940817B4ECB43E57B1E9436 /* AudioPipelineHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = A583969D363695B85BA85C0A /* AudioPipelineHelper.swift */; };
 		8A83DC607C8342D82632581C /* AIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9D6320911E5D93399FD4833 /* AIService.swift */; };
 		8AFDCDEBEAD82A3660770516 /* FieldNotes.swift in Sources */ = {isa = PBXBuildFile; fileRef = D33DD04E5E06C3BFAD057736 /* FieldNotes.swift */; };
@@ -111,6 +112,7 @@
 		DCDC61BAB6E9A4507EAD3C0B /* PlateRenderLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 420C676E86193CE0F9F81388 /* PlateRenderLibrary.swift */; };
 		DF8741FF3971AC8DA9A07FCE /* TimelineModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4535B6D4E920E2F41ECD6F29 /* TimelineModels.swift */; };
 		E170BE5955170F8412479C16 /* catalog.json in Resources */ = {isa = PBXBuildFile; fileRef = 67106B750F48353E27DE5B0D /* catalog.json */; };
+		E1A038734763DF08DEB18204 /* IngredientMatchingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F934FEC93B55B49EFD729047 /* IngredientMatchingTests.swift */; };
 		E2969078C5F1A750D6A88589 /* AppLaunchOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0C49A659EE21F5019A9DF94 /* AppLaunchOptions.swift */; };
 		E3AFF6C877BB2E079E5B8E1C /* EmojiPlate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA385527E6C8A3110BCDB2AE /* EmojiPlate.swift */; };
 		E4A47532EC51423D4671C67E /* RedesignRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3D02E10BC15ED0ADCDC7D1B /* RedesignRootView.swift */; };
@@ -159,6 +161,7 @@
 		0B05969CE27E52A93C925402 /* MealPrepLevel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MealPrepLevel.swift; sourceTree = "<group>"; };
 		0EB9699BE6FCAA589DEAB869 /* PantryIntake.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PantryIntake.swift; sourceTree = "<group>"; };
 		0EE236D6E9401B5D227E4B4D /* PreparedDish.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreparedDish.swift; sourceTree = "<group>"; };
+		0F4550D5ECA525ED872882D3 /* IngredientMatching.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = IngredientMatching.swift; sourceTree = "<group>"; };
 		1676611A3A7F82D7BAC3B20E /* GlassCard.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GlassCard.swift; sourceTree = "<group>"; };
 		17625D9532976239EB8932D8 /* PlateView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PlateView.swift; sourceTree = "<group>"; };
 		177EB0A8E95D3FAE1B5CF7E4 /* CatalogSearchEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CatalogSearchEngine.swift; sourceTree = "<group>"; };
@@ -274,6 +277,7 @@
 		F4EC84421D4A2864AE180C6D /* ResolutionClassTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ResolutionClassTests.swift; sourceTree = "<group>"; };
 		F7FDE2746EBCA7890C1F77F8 /* Dish.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Dish.swift; sourceTree = "<group>"; };
 		F8101D29E78E38A0C3D0477A /* RankedTextSearchEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RankedTextSearchEngine.swift; sourceTree = "<group>"; };
+		F934FEC93B55B49EFD729047 /* IngredientMatchingTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = IngredientMatchingTests.swift; sourceTree = "<group>"; };
 		F9D6320911E5D93399FD4833 /* AIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIService.swift; sourceTree = "<group>"; };
 		FCBA40607E7081618BC69A02 /* swift-realtime-openai */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "swift-realtime-openai"; path = "Vendor/swift-realtime-openai"; sourceTree = SOURCE_ROOT; };
 		FCEFE7A32E20977BC8B61F99 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
@@ -346,6 +350,7 @@
 				46C98542EA16A5B83748C0D7 /* UnitConversion.swift */,
 				DDC9A03A1D95AF7F8C059254 /* DishBridge.swift */,
 				A610EE799CFFD2C16B573063 /* QuantityFormat.swift */,
+				0F4550D5ECA525ED872882D3 /* IngredientMatching.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -416,6 +421,7 @@
 				04185334BFA1AB8D3A984C73 /* StockItemCertaintyTests.swift */,
 				FFBF0909FB0DCCC8F82C8915 /* ExpiryEngineTests.swift */,
 				7AD5C2A696139DA1CB982D72 /* FuzzyMatchFloorTests.swift */,
+				F934FEC93B55B49EFD729047 /* IngredientMatchingTests.swift */,
 			);
 			path = PantryChefTests;
 			sourceTree = "<group>";
@@ -905,6 +911,7 @@
 				23B34ADC20C74E827D92EE06 /* Motion.swift in Sources */,
 				33450CC448B136BE9029DD6B /* ExpiryEngine.swift in Sources */,
 				BDBA1948B2D3D3CF2E1FD874 /* QuantityFormat.swift in Sources */,
+				8872C4EFF24154417172E066 /* IngredientMatching.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -941,6 +948,7 @@
 				B828C43E58C1179E91238DBE /* StockItemCertaintyTests.swift in Sources */,
 				87019D52E2D0DC17CCF1E0C4 /* ExpiryEngineTests.swift in Sources */,
 				EE5B1986AA5D383E04D6A526 /* FuzzyMatchFloorTests.swift in Sources */,
+				E1A038734763DF08DEB18204 /* IngredientMatchingTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
