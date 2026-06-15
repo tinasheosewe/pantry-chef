@@ -85804,6 +85804,10 @@
       "Frozen": [
         90,
         180
+      ],
+      "Pantry": [
+        60,
+        180
       ]
     },
     "id": "graham",
@@ -146195,7 +146199,7 @@
   {
     "defaultUnit": "piece",
     "defaultQuantity": 1.0,
-    "defaultStorage": "Pantry",
+    "defaultStorage": "Frozen",
     "facets": [
       {
         "key": "preservation",
@@ -147513,7 +147517,7 @@
   {
     "defaultUnit": "piece",
     "defaultQuantity": 1.0,
-    "defaultStorage": "Pantry",
+    "defaultStorage": "Frozen",
     "aliases": [
       "pie crust shell",
       "pie shells",

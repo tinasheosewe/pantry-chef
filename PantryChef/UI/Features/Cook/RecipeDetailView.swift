@@ -189,7 +189,7 @@ struct RecipeDetailView: View {
     private var actionRow: some View {
         HStack(spacing: 9) {
             actionChip(currentDish.isFavorite ? "heart.fill" : "heart",
-                       currentDish.isFavorite ? "Saved" : "Save",
+                       currentDish.isFavorite ? "Favorited" : "Favorite",
                        tint: currentDish.isFavorite ? Theme.Palette.paprika : Theme.Palette.ink) {
                 currentDish.isFavorite.toggle()
                 onToggleFavorite()

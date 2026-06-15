@@ -22,48 +22,56 @@ struct TimelineView: View {
     @State private var extending = false
 
     var body: some View {
-        VStack(spacing: 0) {
-            header
-            ScrollView {
-                LazyVStack(alignment: .leading, spacing: 0) {
-                    ForEach(entries) { entry in
-                        rows(for: entry)
-                            .id(entry.id)
-                            .onAppear { edgeCheck(entry) }
+        ScrollViewReader { proxy in
+            VStack(spacing: 0) {
+                header(proxy)
+                ScrollView {
+                    LazyVStack(alignment: .leading, spacing: 0) {
+                        ForEach(entries) { entry in
+                            rows(for: entry)
+                                .id(entry.id)
+                                .onAppear { edgeCheck(entry) }
+                        }
                     }
+                    .scrollTargetLayout()
+                    .padding(.top, 8)
+                    .padding(.bottom, 24)
                 }
-                .scrollTargetLayout()
-                .padding(.top, 8)
-                .padding(.bottom, 24)
+                .scrollPosition(id: $visibleID, anchor: .top)
             }
-            .scrollPosition(id: $visibleID, anchor: .top)
-        }
-        .background(background)
-        .onAppear {
-            if visibleID == nil {
-                DispatchQueue.main.async { visibleID = TimelineEntry.now.id }
+            .background(background)
+            .onAppear {
+                if visibleID == nil {
+                    DispatchQueue.main.async { visibleID = TimelineEntry.now.id }
+                }
             }
         }
     }
 
     // MARK: - Pinned header
 
-    private var header: some View {
+    /// Always-available "return to today" — uses ScrollViewReader so it works even
+    /// while the timeline is mid-scroll (scrollPosition alone is ignored in motion).
+    private func returnToToday(_ proxy: ScrollViewProxy) {
+        withAnimation(.spring(response: 0.45, dampingFraction: 0.85)) {
+            proxy.scrollTo(TimelineEntry.now.id, anchor: .top)
+            visibleID = TimelineEntry.now.id
+        }
+    }
+
+    private func header(_ proxy: ScrollViewProxy) -> some View {
         VStack(spacing: 0) {
             HStack(alignment: .firstTextBaseline) {
                 Text(headerTitle).font(Theme.Typography.dish(22)).foregroundStyle(Theme.Palette.ink)
                     .animation(nil, value: headerTitle)
                 Spacer()
                 if isAwayFromNow {
-                    Button {
-                        withAnimation(.spring(response: 0.45, dampingFraction: 0.85)) {
-                            visibleID = TimelineEntry.now.id
-                        }
-                    } label: {
-                        Text("TODAY ↩")
+                    Button { returnToToday(proxy) } label: {
+                        Text("TODAY")
                             .font(.system(size: 10, weight: .medium))
                             .tracking(Theme.Metric.eyebrowTracking)
                             .foregroundStyle(Theme.Palette.paprika)
+                            .padding(.vertical, 4).padding(.leading, 8)
                             .contentShape(Rectangle())
                     }
                     .buttonStyle(.plain)

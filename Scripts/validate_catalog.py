@@ -154,6 +154,23 @@ def check_supported_defaults(items: list[dict], report: ValidationReport) -> Non
             )
 
 
+def check_freshness_for_default_storage(items: list[dict], report: ValidationReport) -> None:
+    """Every item must declare a freshness range for its default storage, so
+    readiness/expiry always have a real number to work with (the same invariant
+    enforced at runtime by PantryCatalog.registerUserItem for custom items)."""
+    for item in items:
+        item_id = item.get("id", "<missing-id>")
+        storage = item.get("defaultStorage")
+        freshness = item.get("freshnessByStorage") or {}
+        if storage and storage not in freshness:
+            report.add(
+                "error",
+                "missing_freshness_for_default_storage",
+                f"No freshnessByStorage entry for defaultStorage {storage!r}",
+                item_id,
+            )
+
+
 def check_deprecated_fields(items: list[dict], report: ValidationReport) -> None:
     for item in items:
         for field_name in DEPRECATED_FIELDS:
@@ -416,6 +433,7 @@ def validate_source_catalog(source: dict) -> ValidationReport:
 def validate_catalog_items(items: list[dict], report: ValidationReport) -> None:
     check_required_fields(items, report)
     check_supported_defaults(items, report)
+    check_freshness_for_default_storage(items, report)
     check_deprecated_fields(items, report)
     check_duplicate_aliases(items, report)
     check_self_aliases(items, report)

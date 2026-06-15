@@ -139,7 +139,7 @@ struct LibraryView: View {
         HStack(spacing: 7) {
             Image(systemName: "magnifyingglass").font(.system(size: 11))
                 .foregroundStyle(Theme.Palette.ink.opacity(0.45))
-            TextField("Search the index", text: $query)
+            TextField("Search the catalog", text: $query)
                 .font(Theme.Typography.fact(13))
                 .foregroundStyle(Theme.Palette.ink)
             if !query.isEmpty {
