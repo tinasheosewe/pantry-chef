@@ -155,12 +155,16 @@ func matchToken(
     guard !keys.isEmpty else { return [] }
 
     if token.count >= 3 {
-        // Levenshtein — tolerates typos like "chiken" → "chicken"
+        // Levenshtein — tolerates typos like "chiken" → "chicken", but the allowed
+        // distance scales with the *shorter* word so short catalog words (egg, oil,
+        // ham) can't swallow gibberish two edits away. Without this floor, any
+        // 3–5 char nonsense lands on a short real item (the "nonsense → egg" bug).
         var bestDist = maxEditDistance + 1
         var bestKey: String?
         for key in keys {
+            let allowed = min(maxEditDistance, max(1, min(token.count, key.count) / 4))
             let d = IngredientLexicon.levenshteinDistance(token, key)
-            if d < bestDist { bestDist = d; bestKey = key }
+            if d <= allowed && d < bestDist { bestDist = d; bestKey = key }
         }
         if let key = bestKey { return [(key, 0.5)] }
 

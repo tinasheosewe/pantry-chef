@@ -82,13 +82,7 @@ struct Dish: Identifiable, Equatable, Sendable {
     static func scaledAmount(_ amount: String, by factor: Double) -> String? {
         let parts = amount.split(separator: " ", maxSplits: 1).map(String.init)
         guard let first = parts.first, let qty = IntakeParser.quantity(first.lowercased()) else { return nil }
-        let scaled = qty * factor
-        let qtyText: String
-        if scaled == scaled.rounded() {
-            qtyText = String(Int(scaled))
-        } else {
-            qtyText = String(format: "%.2g", scaled)
-        }
+        let qtyText = QuantityFormat.short(qty * factor)
         return parts.count > 1 ? "\(qtyText) \(parts[1])" : qtyText
     }
 

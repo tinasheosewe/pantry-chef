@@ -19,10 +19,7 @@ enum ExpiryEngine {
     /// nil when we have no catalog identity (can't project).
     static func safeDays(catalogItemID: String?, storage: PantryStorage) -> Int? {
         guard let id = catalogItemID, let item = PantryCatalog.item(id: id) else { return nil }
-        if let range = item.freshnessByStorage[storage] {
-            return (range.lowerBound + range.upperBound) / 2
-        }
-        return ResolutionClassifier.representativeShelfLifeDays(item)
+        return ResolutionClassifier.safeDays(item, in: storage)
     }
 
     // MARK: Pure math (catalog-free, fully unit-testable)

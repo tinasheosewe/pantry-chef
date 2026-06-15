@@ -255,7 +255,7 @@ private struct IntakeCard: View {
         }
     }
 
-    private func formatQty(_ q: Double) -> String { q == q.rounded() ? String(Int(q)) : String(format: "%.2g", q) }
+    private func formatQty(_ q: Double) -> String { QuantityFormat.short(q) }
     private func storageLabel(_ s: PantryStorage) -> String {
         switch s { case .refrigerated: return "fridge"; case .frozen: return "freezer"; case .pantry: return "pantry" }
     }

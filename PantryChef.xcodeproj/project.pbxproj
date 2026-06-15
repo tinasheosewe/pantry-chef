@@ -92,6 +92,7 @@
 		B828C43E58C1179E91238DBE /* StockItemCertaintyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04185334BFA1AB8D3A984C73 /* StockItemCertaintyTests.swift */; };
 		BB3222AB0F9E2AD2C8B79CA4 /* shakshuka.png in Resources */ = {isa = PBXBuildFile; fileRef = EC346DA4AE07E775F03E0537 /* shakshuka.png */; };
 		BCB39B304C3B8E1F67FC0F28 /* SubstitutionRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECB3F6705AF4F41CD3F95E39 /* SubstitutionRepository.swift */; };
+		BDBA1948B2D3D3CF2E1FD874 /* QuantityFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = A610EE799CFFD2C16B573063 /* QuantityFormat.swift */; };
 		C0B7BD86B91332DB8490DF6E /* RecipeEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51353A5BB5F36DCA4DAA0FFC /* RecipeEditorView.swift */; };
 		C30BF3D9F7998F0623A3A444 /* MultiRecipeScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4847B23D0DA66AC6F8967869 /* MultiRecipeScheduler.swift */; };
 		C4BBB3F729DB218D2B5A8A36 /* TestSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FBEE574ACB02A73EEEDC07D /* TestSupport.swift */; };
@@ -118,6 +119,7 @@
 		E7F294344D02F2889C525C87 /* KitchenConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1C329655335AFFA3C9D8582 /* KitchenConfig.swift */; };
 		E8B0B35D245ECCEFF9939A78 /* Dish.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7FDE2746EBCA7890C1F77F8 /* Dish.swift */; };
 		EB4FCD26C1EC14D68C7899D9 /* PreparedDish.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EE236D6E9401B5D227E4B4D /* PreparedDish.swift */; };
+		EE5B1986AA5D383E04D6A526 /* FuzzyMatchFloorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AD5C2A696139DA1CB982D72 /* FuzzyMatchFloorTests.swift */; };
 		EF677C4E3DFC7815C380CEC3 /* PantryChefApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CF034777B5CF54E8747C51B /* PantryChefApp.swift */; };
 		EFEB0C08C15F9D81C152BC1F /* AIModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4311CDDF67AA34C2F223237 /* AIModels.swift */; };
 		F2C76FAA903C936049E45B29 /* RecipeRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0836E92C4D025C2D0E81F199 /* RecipeRepository.swift */; };
@@ -198,6 +200,7 @@
 		732C449BE670E2788C0421ED /* Recipe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Recipe.swift; sourceTree = "<group>"; };
 		76DFA2EE9B6B77FB3CEAD7C7 /* RecipeIngredientResolutionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeIngredientResolutionService.swift; sourceTree = "<group>"; };
 		7A2E455A1F865ADE8DDEF145 /* DishInsights.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DishInsights.swift; sourceTree = "<group>"; };
+		7AD5C2A696139DA1CB982D72 /* FuzzyMatchFloorTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FuzzyMatchFloorTests.swift; sourceTree = "<group>"; };
 		7AE84D32C57047603E654F4E /* Secrets.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Secrets.xcconfig; sourceTree = "<group>"; };
 		7B787E014C9195434E932C7E /* TimelineComposer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TimelineComposer.swift; sourceTree = "<group>"; };
 		7DA1BF81A96A4A7C8DEDFB4E /* ComposerView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ComposerView.swift; sourceTree = "<group>"; };
@@ -221,6 +224,7 @@
 		A1C329655335AFFA3C9D8582 /* KitchenConfig.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = KitchenConfig.swift; sourceTree = "<group>"; };
 		A2182BF9EFCF19CC499891FD /* ReadinessService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ReadinessService.swift; sourceTree = "<group>"; };
 		A583969D363695B85BA85C0A /* AudioPipelineHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPipelineHelper.swift; sourceTree = "<group>"; };
+		A610EE799CFFD2C16B573063 /* QuantityFormat.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = QuantityFormat.swift; sourceTree = "<group>"; };
 		AD162BD9EE2D642AD62136A7 /* FontLoader.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FontLoader.swift; sourceTree = "<group>"; };
 		AD6E44F08B08E0C299DB08E1 /* PantryChefUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PantryChefUITests.swift; sourceTree = "<group>"; };
 		B34E27A7BCEE70004A4BDFF3 /* ConfidenceEngine.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ConfidenceEngine.swift; sourceTree = "<group>"; };
@@ -341,6 +345,7 @@
 				7A2E455A1F865ADE8DDEF145 /* DishInsights.swift */,
 				46C98542EA16A5B83748C0D7 /* UnitConversion.swift */,
 				DDC9A03A1D95AF7F8C059254 /* DishBridge.swift */,
+				A610EE799CFFD2C16B573063 /* QuantityFormat.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -410,6 +415,7 @@
 				49A307088691737D623FD503 /* DishScalingTests.swift */,
 				04185334BFA1AB8D3A984C73 /* StockItemCertaintyTests.swift */,
 				FFBF0909FB0DCCC8F82C8915 /* ExpiryEngineTests.swift */,
+				7AD5C2A696139DA1CB982D72 /* FuzzyMatchFloorTests.swift */,
 			);
 			path = PantryChefTests;
 			sourceTree = "<group>";
@@ -898,6 +904,7 @@
 				500CF21AC8F3E7493C6F0DA1 /* ShoppingChecklistView.swift in Sources */,
 				23B34ADC20C74E827D92EE06 /* Motion.swift in Sources */,
 				33450CC448B136BE9029DD6B /* ExpiryEngine.swift in Sources */,
+				BDBA1948B2D3D3CF2E1FD874 /* QuantityFormat.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -933,6 +940,7 @@
 				E52507A4D72052AD926758D7 /* DishScalingTests.swift in Sources */,
 				B828C43E58C1179E91238DBE /* StockItemCertaintyTests.swift in Sources */,
 				87019D52E2D0DC17CCF1E0C4 /* ExpiryEngineTests.swift in Sources */,
+				EE5B1986AA5D383E04D6A526 /* FuzzyMatchFloorTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

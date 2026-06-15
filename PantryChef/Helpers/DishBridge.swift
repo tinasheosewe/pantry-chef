@@ -44,7 +44,7 @@ enum DishBridge {
 
     private static func formatAmount(_ qty: Double, _ unit: MeasurementUnit?) -> String? {
         guard qty > 0 else { return nil }
-        let qtyText = qty == qty.rounded() ? String(Int(qty)) : String(format: "%.2g", qty)
+        let qtyText = QuantityFormat.short(qty)
         return unit.map { "\(qtyText) \($0.rawValue)" } ?? qtyText
     }
 }

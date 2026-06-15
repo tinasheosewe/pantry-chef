@@ -43,6 +43,15 @@ enum ResolutionClassifier {
         return item.freshnessByStorage.values.map(midpoint).max()
     }
 
+    /// Safe days for an item kept in a *specific* storage — the midpoint of that
+    /// storage's freshness range, falling back to the representative shelf life.
+    /// The single source of this lookup; ExpiryEngine and ConfidenceEngine both
+    /// call here rather than re-deriving it (DRY — consolidation audit §3).
+    static func safeDays(_ item: PantryCatalogItemDefinition, in storage: PantryStorage) -> Int? {
+        if let range = item.freshnessByStorage[storage] { return midpoint(range) }
+        return representativeShelfLifeDays(item)
+    }
+
     private static func midpoint(_ range: ClosedRange<Int>) -> Int {
         (range.lowerBound + range.upperBound) / 2
     }

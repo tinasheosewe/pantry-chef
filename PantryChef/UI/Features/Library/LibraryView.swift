@@ -275,8 +275,23 @@ private struct DishLine: View {
         case .readyWithSwaps:
             line("\(dish.time) · ready with a swap", Theme.Palette.sage)
         case .needs(let items):
-            line("needs \(items.count) · \(items.prefix(2).joined(separator: ", "))", Theme.Palette.paprika)
+            line("needs \(items.count) · \(Self.summarize(items))", Theme.Palette.paprika)
         }
+    }
+
+    /// Up to 3 names or ~24 chars, whichever comes first, then an ellipsis if there
+    /// is more — so the fact line never overflows and truncation is always marked.
+    static func summarize(_ items: [String], maxCount: Int = 3, maxChars: Int = 24) -> String {
+        var shown: [String] = []
+        var chars = 0
+        for item in items {
+            if shown.count >= maxCount { break }
+            if !shown.isEmpty && chars + item.count > maxChars { break }
+            shown.append(item)
+            chars += item.count + 2
+        }
+        let joined = shown.joined(separator: ", ")
+        return shown.count < items.count ? "\(joined)…" : joined
     }
 
     // Facts read sentence-case at a real size, not tiny tracked caps — the most

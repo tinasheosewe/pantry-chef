@@ -288,7 +288,7 @@ final class KitchenStore {
 
     /// Free-text amount from a parsed phrase ("500 g", "2"), or nil.
     static func amountText(_ intake: ParsedIntake) -> String? {
-        let text = [intake.quantity.map { $0 == $0.rounded() ? String(Int($0)) : String(format: "%.2g", $0) },
+        let text = [intake.quantity.map { QuantityFormat.short($0) },
                     intake.unit?.rawValue ?? intake.unrecognizedUnit]
             .compactMap { $0 }.joined(separator: " ").trimmingCharacters(in: .whitespaces)
         return text.isEmpty ? nil : text

@@ -78,9 +78,6 @@ enum ConfidenceEngine {
     }
 
     private static func shelfLife(of item: PantryCatalogItemDefinition, in storage: PantryStorage) -> Int? {
-        if let range = item.freshnessByStorage[storage] {
-            return (range.lowerBound + range.upperBound) / 2
-        }
-        return ResolutionClassifier.representativeShelfLifeDays(item)
+        ResolutionClassifier.safeDays(item, in: storage)   // one shared lookup (audit §3)
     }
 }
