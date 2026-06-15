@@ -32,6 +32,13 @@ enum AppConfig {
     static let effortBudget = 3
     /// Default step duration when no timer or estimate is available (seconds).
     static let defaultStepDurationSeconds = 90
+    /// At/above this timer length a step is treated as *passive* — you set it going
+    /// and walk away — so the multi-cook scheduler can overlap it with hands-on work
+    /// on other dishes (5 minutes).
+    static let passiveStepThresholdSeconds = 300
+    /// Hands-on setup a passive step still costs before you can leave it (1 minute):
+    /// long enough to nudge the schedule clock, short enough to keep the pots filling.
+    static let passiveStepSetupSeconds = 60
     /// Threshold (seconds) at which a running timer is shown in "expiring" style.
     static let timerExpiryThresholdSeconds = 10
 
