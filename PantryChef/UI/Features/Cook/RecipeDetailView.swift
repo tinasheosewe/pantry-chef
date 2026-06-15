@@ -10,6 +10,9 @@ struct RecipeDetailView: View {
     let dish: Dish
     let readiness: Readiness
     var isOnHand: (String) -> Bool = { _ in true }
+    /// Certainty for an on-hand ingredient, so the spread can hedge ("check?")
+    /// instead of asserting a confident ✓ on a stale item (spec §7).
+    var certaintyForKey: (String) -> ItemCertainty? = { _ in nil }
     var onToggleFavorite: () -> Void = {}
     var onUpdateDish: (Dish) -> Void = { _ in }
     var onAddMissingToList: ([String]) -> Void = { _ in }
@@ -33,6 +36,7 @@ struct RecipeDetailView: View {
 
     init(dish: Dish, readiness: Readiness,
          isOnHand: @escaping (String) -> Bool = { _ in true },
+         certaintyForKey: @escaping (String) -> ItemCertainty? = { _ in nil },
          onToggleFavorite: @escaping () -> Void = {},
          onUpdateDish: @escaping (Dish) -> Void = { _ in },
          onAddMissingToList: @escaping ([String]) -> Void = { _ in },
@@ -43,6 +47,7 @@ struct RecipeDetailView: View {
         self.dish = dish
         self.readiness = readiness
         self.isOnHand = isOnHand
+        self.certaintyForKey = certaintyForKey
         self.onToggleFavorite = onToggleFavorite
         self.onUpdateDish = onUpdateDish
         self.onAddMissingToList = onAddMissingToList
@@ -277,11 +282,16 @@ struct RecipeDetailView: View {
         let applied = appliedSwaps[line.id]
         let onHand = applied != nil || isOnHand(line.key) || line.isStaple
         let swaps = onHand ? [] : DishInsights.swaps(forKey: line.key)
+        // On hand, but the knowledge clock has gone stale — don't assert a
+        // confident check; ask the cook to verify (spec §7).
+        let uncertain = onHand && applied == nil && !line.isStaple
+            && (certaintyForKey(line.key) ?? .confirmed) <= .uncertain
         return VStack(alignment: .leading, spacing: 4) {
             HStack(spacing: 10) {
-                Text(onHand ? "✓" : "○")
+                Text(onHand ? (uncertain ? "?" : "✓") : "○")
                     .font(Theme.Typography.fact(13, weight: .medium))
-                    .foregroundStyle(onHand ? Theme.Palette.sage : Theme.Palette.paprika)
+                    .foregroundStyle(uncertain ? Theme.Palette.paprika
+                                     : onHand ? Theme.Palette.sage : Theme.Palette.paprika)
                     .frame(width: 16)
                 Text(line.display).font(Theme.Typography.fact(13.5)).foregroundStyle(Theme.Palette.ink)
                 if let grams = UnitConversion.gramHint(for: line) {
@@ -290,6 +300,8 @@ struct RecipeDetailView: View {
                 Spacer()
                 if !onHand && !line.isStaple {
                     Text("NEED").font(.system(size: 9)).tracking(1.6).foregroundStyle(Theme.Palette.paprika)
+                } else if uncertain {
+                    Text("CHECK?").font(.system(size: 9)).tracking(1.6).foregroundStyle(Theme.Palette.paprika)
                 }
             }
             if let applied {

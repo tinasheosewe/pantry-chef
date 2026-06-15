@@ -149,6 +149,7 @@ private struct RecipeDetailScreen: View {
             dish: dish,
             readiness: store.readiness(for: dish),
             isOnHand: { store.onHand($0) },
+            certaintyForKey: { store.certainty(forKey: $0) },
             onToggleFavorite: { store.toggleFavorite(dish.id) },
             onUpdateDish: { store.updateDish($0) },
             onAddMissingToList: { names in names.forEach { store.addToList(name: $0) } },

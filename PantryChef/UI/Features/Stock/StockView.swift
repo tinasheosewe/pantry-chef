@@ -79,19 +79,60 @@ struct StockView: View {
 
     // MARK: - Ledger rows
 
-    private func row(_ item: StockItem) -> some View {
-        Button { editing = item } label: {
-            LeaderRow {
-                Text("\(emoji(item))\u{2002}\(item.name)")
-                    .font(Theme.Typography.fact(13)).foregroundStyle(Theme.Palette.ink)
-                    .lineLimit(1)
-            } trailing: {
-                trailing(item)
+    @ViewBuilder private func row(_ item: StockItem) -> some View {
+        VStack(alignment: .leading, spacing: 5) {
+            Button { editing = item } label: {
+                LeaderRow {
+                    Text("\(emoji(item))\u{2002}\(item.name)")
+                        .font(Theme.Typography.fact(13)).foregroundStyle(Theme.Palette.ink)
+                        .lineLimit(1)
+                } trailing: {
+                    trailing(item)
+                }
+                .padding(.vertical, 5)
+                .contentShape(Rectangle())
             }
-            .padding(.vertical, 5)
-            .contentShape(Rectangle())
+            .buttonStyle(.plain)
+            // The trust loop: when the knowledge clock has gone stale, ask one
+            // question — no typing, three taps. (Spec §7.)
+            if item.needsCheck(now: store.today) {
+                checkStrip(item)
+            }
         }
-        .buttonStyle(.plain)
+    }
+
+    /// "Haven't seen this lately — still around?" with one-tap answers.
+    private func checkStrip(_ item: StockItem) -> some View {
+        HStack(spacing: 7) {
+            Text(hedge(item.certainty(now: store.today)))
+                .font(Theme.Typography.note(10.5)).foregroundStyle(Theme.Palette.paprika)
+            Spacer(minLength: 4)
+            checkTag("Still here") { withAnimation { store.reconfirm(item.id) } }
+            checkTag("Low") { withAnimation { store.markLow(item.id) } }
+            checkTag("Gone", urgent: true) { withAnimation { store.markGone(item.id) } }
+        }
+        .padding(.leading, 18).padding(.bottom, 4)
+    }
+
+    private func checkTag(_ title: String, urgent: Bool = false, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Text(title.uppercased()).font(.system(size: 8.5)).tracking(1.2)
+                .foregroundStyle(urgent ? Theme.Palette.paprika : Theme.Palette.ink.opacity(0.75))
+                .padding(.horizontal, 8).padding(.vertical, 4)
+                .overlay(Rectangle().strokeBorder(
+                    (urgent ? Theme.Palette.paprika : Theme.Palette.ink).opacity(urgent ? 1 : 0.4), lineWidth: 1))
+                .contentShape(Rectangle())
+        }
+        .buttonStyle(.pressable)
+    }
+
+    /// User-facing wording for low certainty — never the raw label (spec §7).
+    private func hedge(_ certainty: ItemCertainty) -> String {
+        switch certainty {
+        case .likelyGone: return "probably used up —"
+        case .uncertain: return "haven't seen this lately —"
+        case .probable, .confirmed: return ""
+        }
     }
 
     private func emoji(_ item: StockItem) -> String {

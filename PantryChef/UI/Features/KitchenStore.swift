@@ -36,11 +36,50 @@ struct StockItem: Identifiable, Equatable {
     let plate: PlateComposition
     var section: Section
     var measure: Measure
+    /// When we last had evidence this item is in the kitchen — the anchor for the
+    /// knowledge clock (spec §7). The whole "you don't have to log perfectly" bet
+    /// lives here: certainty decays from this date, so a stale record degrades
+    /// honestly instead of asserting a confident lie.
+    var lastConfirmed: Date
 
     init(id: UUID = UUID(), key: String, name: String, plate: PlateComposition,
-         section: Section, measure: Measure) {
+         section: Section, measure: Measure, lastConfirmed: Date = Date()) {
         self.id = id; self.key = key; self.name = name; self.plate = plate
-        self.section = section; self.measure = measure
+        self.section = section; self.measure = measure; self.lastConfirmed = lastConfirmed
+    }
+
+    /// Tracking class for the knowledge clock. Staples almost never need
+    /// re-confirming; leftovers sit between perishables and staples.
+    var resolutionClass: ResolutionClass {
+        switch measure {
+        case .perishable: return .perishable
+        case .made: return .semiCountable
+        case .staple: return .staple
+        }
+    }
+
+    /// Shelf life feeding the knowledge half-life (NOT the food clock). Perishables
+    /// reuse their day-count; leftovers get a freezer-ish span; staples get a long
+    /// life so the class factor keeps them effectively always-confirmed.
+    private var knowledgeShelfLifeDays: Int? {
+        switch measure {
+        case .perishable(_, let days): return days
+        case .made: return 30
+        case .staple: return KitchenConfig.Resolution.stapleMinShelfLifeDays
+        }
+    }
+
+    /// How sure we are this is still here, right now.
+    func certainty(now: Date = Date()) -> ItemCertainty {
+        ConfidenceEngine.certainty(lastConfirmed: lastConfirmed, now: now,
+                                   shelfLifeDays: knowledgeShelfLifeDays,
+                                   resolutionClass: resolutionClass)
+    }
+
+    /// True once stale enough to be worth a one-tap question (and not a staple,
+    /// which we assume present).
+    func needsCheck(now: Date = Date()) -> Bool {
+        resolutionClass != .staple && certainty(now: now) <= .uncertain
     }
 }
 
@@ -205,7 +244,49 @@ final class KitchenStore {
     /// Which ingredient keys are on hand right now (for the gathering checklist).
     func onHand(_ key: String) -> Bool { stockKeys.contains(key) }
 
-    private var stockKeys: Set<String> { Set(stock.map(\.key)) }
+    /// The keys we'll trust for readiness: everything except items the knowledge
+    /// clock says are *probably gone*. This is the honesty rule — we stop asserting
+    /// "on hand" for things we've almost certainly used up, so the fan and recipe
+    /// readiness can't quietly lie. Uncertain items still count (we don't punish a
+    /// casual logger) but get surfaced for a one-tap check in Stores.
+    private var stockKeys: Set<String> {
+        let now = today
+        return Set(stock.filter { $0.certainty(now: now) > .likelyGone }.map(\.key))
+    }
+
+    /// The certainty of a stocked key, for surfaces that want to hedge their wording.
+    func certainty(forKey key: String) -> ItemCertainty? {
+        stock.first { $0.key == key }?.certainty(now: today)
+    }
+
+    /// Items stale enough to be worth a one-tap "still here?" — drives the Stores
+    /// re-confirmation nudge.
+    var itemsNeedingCheck: [StockItem] {
+        stock.filter { $0.needsCheck(now: today) }
+    }
+
+    // MARK: - Re-confirmation (the trust loop)
+
+    /// "Still here." Reset the knowledge clock — confidence jumps back to certain.
+    func reconfirm(_ id: UUID) {
+        if let i = stock.firstIndex(where: { $0.id == id }) { stock[i].lastConfirmed = today }
+    }
+
+    /// "Running low." Re-confirm presence and put it on the list; staples flip to low.
+    func markLow(_ id: UUID) {
+        guard let i = stock.firstIndex(where: { $0.id == id }) else { return }
+        stock[i].lastConfirmed = today
+        if case .staple = stock[i].measure { stock[i].measure = .staple(.runningLow) }
+        addToList(name: stock[i].name)
+    }
+
+    /// "Gone." Drop it from stock and offer it back on the list.
+    func markGone(_ id: UUID) {
+        guard let i = stock.firstIndex(where: { $0.id == id }) else { return }
+        let name = stock[i].name
+        stock.remove(at: i)
+        addToList(name: name)
+    }
 
     func parse(_ phrase: String) -> ParsedIntake { parser.parse(phrase) }
 
@@ -307,13 +388,17 @@ final class KitchenStore {
 
         stock = [
             StockItem(key: "lamb ragu", name: "Lamb ragù", plate: plate([.protein, .pasta], 3),
-                      section: .made, measure: .made(detail: "3 frozen portions · good through July")),
+                      section: .made, measure: .made(detail: "3 frozen portions · good through July"),
+                      lastConfirmed: day(-3)),
             StockItem(key: "baby spinach", name: "Baby spinach", plate: plate([.produce], 1),
-                      section: .useSoon, measure: .perishable(detail: "300 g", daysLeft: 2)),
+                      section: .useSoon, measure: .perishable(detail: "300 g", daysLeft: 2),
+                      lastConfirmed: day(0)),       // just bought — certain
             StockItem(key: "greek yogurt", name: "Greek yogurt", plate: plate([.dairy], 4),
-                      section: .useSoon, measure: .perishable(detail: "500 g", daysLeft: 3)),
+                      section: .useSoon, measure: .perishable(detail: "500 g", daysLeft: 3),
+                      lastConfirmed: day(-2)),       // probable — trust it silently
             StockItem(key: "feta", name: "Feta", plate: plate([.dairy], 7),
-                      section: .have, measure: .perishable(detail: "200 g", daysLeft: 18)),
+                      section: .have, measure: .perishable(detail: "200 g", daysLeft: 18),
+                      lastConfirmed: day(-22)),      // uncertain — worth a one-tap check
             StockItem(key: "orzo", name: "Orzo", plate: plate([.pasta], 6),
                       section: .staples, measure: .staple(.inStock)),
             StockItem(key: "flour", name: "Flour", plate: plate([.bakingSupplies], 11),
