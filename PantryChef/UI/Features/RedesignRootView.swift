@@ -25,6 +25,7 @@ private struct PlanTarget: Identifiable {
 struct RedesignRootView: View {
     @State private var store = KitchenStore()
     @State private var showComposer = false
+    @State private var showSettings = false
     @State private var detailDish: Dish?
     @State private var multiSession: CookSession?
     @State private var planTarget: PlanTarget?
@@ -59,6 +60,10 @@ struct RedesignRootView: View {
             }
             .sheet(isPresented: $showComposer) {
                 ComposerView(store: store, onDismiss: { showComposer = false })
+                    .presentationDetents([.medium, .large])
+            }
+            .sheet(isPresented: $showSettings) {
+                SettingsView(store: store, onClose: { showSettings = false })
                     .presentationDetents([.medium, .large])
             }
             .sheet(item: $planTarget) { target in
@@ -104,6 +109,7 @@ struct RedesignRootView: View {
                 onOpenStock: { store.space = .stock },
                 onReachStart: { store.extendPast() },
                 onReachEnd: { store.extendFuture() },
+                onSettings: { showSettings = true },
                 nowContent: {
                     AnyView(VStack(alignment: .leading, spacing: 0) {
                         NowModuleView(

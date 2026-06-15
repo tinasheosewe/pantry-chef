@@ -9,7 +9,6 @@ struct LibraryView: View {
     var onCook: (Dish) -> Void = { _ in }
     var onCookTogether: ([Dish]) -> Void = { _ in }
 
-    @State private var showProfile = false
     @State private var selecting = false
     @State private var selectedIDs: Set<UUID> = []
     @State private var query = ""
@@ -65,10 +64,6 @@ struct LibraryView: View {
         .safeAreaInset(edge: .bottom) {
             if selecting && !selectedIDs.isEmpty { cookTogetherBar }
         }
-        .sheet(isPresented: $showProfile) {
-            ProfileEditorView(profile: Binding(get: { store.profile }, set: { store.profile = $0 }))
-                .presentationDetents([.medium])
-        }
     }
 
     // MARK: - Header & filters
@@ -86,13 +81,6 @@ struct LibraryView: View {
                     .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
-            Button { showProfile = true } label: {
-                Image(systemName: store.profile.isEmpty ? "person.crop.circle" : "person.crop.circle.badge.checkmark")
-                    .font(.system(size: 17))
-                    .foregroundStyle(store.profile.isEmpty ? Theme.Palette.ink.opacity(0.5) : Theme.Palette.sage)
-            }
-            .buttonStyle(.plain).padding(.leading, 12)
-            .accessibilityLabel("Dietary profile")
         }
     }
 
@@ -302,48 +290,3 @@ private struct DishLine: View {
     }
 }
 
-/// Edit the household's avoided allergens — filters and flags across the app.
-private struct ProfileEditorView: View {
-    @Binding var profile: DietaryProfile
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            Text("What do you avoid?").font(Theme.Typography.dish(20)).foregroundStyle(Theme.Palette.ink)
-                .padding(.top, 24)
-            Text("Dishes containing these get flagged across the index.")
-                .font(Theme.Typography.note(12)).foregroundStyle(Theme.Palette.warmGray)
-            DashedRule()
-            FlowChips(items: Allergen.allCases) { allergen in
-                let on = profile.avoided.contains(allergen)
-                Button {
-                    if on { profile.avoided.remove(allergen) } else { profile.avoided.insert(allergen) }
-                } label: {
-                    Text(allergen.title.uppercased()).font(.system(size: 10)).tracking(1.4)
-                        .foregroundStyle(on ? Theme.Palette.cream : Theme.Palette.ink.opacity(0.7))
-                        .padding(.horizontal, 12).padding(.vertical, 7)
-                        .background(Rectangle().fill(on ? Theme.Palette.paprika : .clear))
-                        .overlay(Rectangle().strokeBorder(
-                            on ? Theme.Palette.paprika : Theme.Palette.ink.opacity(0.4), lineWidth: 1))
-                }
-                .buttonStyle(.plain)
-            }
-            Spacer()
-        }
-        .padding(20)
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-        .background(KitchenBackground())
-    }
-}
-
-/// A simple wrapping row of chips.
-private struct FlowChips<Item: Identifiable, Content: View>: View {
-    let items: [Item]
-    @ViewBuilder let content: (Item) -> Content
-
-    var body: some View {
-        let columns = [GridItem(.adaptive(minimum: 90), spacing: 8)]
-        LazyVGrid(columns: columns, alignment: .leading, spacing: 8) {
-            ForEach(items) { content($0) }
-        }
-    }
-}

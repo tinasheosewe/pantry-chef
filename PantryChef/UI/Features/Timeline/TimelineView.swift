@@ -13,6 +13,8 @@ struct TimelineView: View {
     var onOpenStock: () -> Void = {}
     var onReachStart: () -> Void = {}
     var onReachEnd: () -> Void = {}
+    /// Opens the app's Settings surface (preferences + dietary profile).
+    var onSettings: () -> Void = {}
     /// Live content for the `.now` row (the now-module). When nil, a placeholder
     /// is shown — keeps previews and standalone use simple.
     var nowContent: (() -> AnyView)?
@@ -82,6 +84,15 @@ struct TimelineView: View {
                         .tracking(Theme.Metric.eyebrowTracking)
                         .foregroundStyle(Theme.Palette.ink.opacity(0.55))
                 }
+                Button(action: onSettings) {
+                    Image(systemName: "gearshape")
+                        .font(.system(size: 15))
+                        .foregroundStyle(Theme.Palette.ink.opacity(0.5))
+                        .padding(.vertical, 4).padding(.leading, 12)
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Settings")
             }
             .padding(.leading, Theme.Metric.spineWidth)
             .padding(.trailing, Theme.Metric.lg)

@@ -71,6 +71,7 @@ struct StockView: View {
         .sheet(item: $editing) { item in
             StockItemEditor(
                 item: item,
+                adjustDaysOnStorageChange: store.autoAdjustDaysOnStorageChange,
                 onSave: { store.updateStock($0); editing = nil },
                 onRemove: { store.removeStock($0); editing = nil }
             )
@@ -225,6 +226,9 @@ struct StockView: View {
 /// Edit one stock item: amount/detail, days left or staple level, section, remove.
 private struct StockItemEditor: View {
     @State var item: StockItem
+    /// Mirror of the Settings preference — gates whether changing storage re-projects
+    /// the days-left or only relabels where the item is kept.
+    var adjustDaysOnStorageChange = true
     var onSave: (StockItem) -> Void
     var onRemove: (UUID) -> Void
 
@@ -306,7 +310,7 @@ private struct StockItemEditor: View {
             HStack(spacing: 8) {
                 ForEach([PantryStorage.pantry, .refrigerated, .frozen], id: \.self) { storage in
                     let selected = item.storage == storage
-                    Button { item = item.moved(to: storage, now: Date()) } label: {
+                    Button { item = item.moved(to: storage, now: Date(), adjustDaysLeft: adjustDaysOnStorageChange) } label: {
                         Text(storageLabel(storage)).font(.system(size: 9.5, weight: .medium)).tracking(1.2)
                             .foregroundStyle(selected ? Theme.Palette.cream : Theme.Palette.ink.opacity(0.7))
                             .padding(.horizontal, 11).padding(.vertical, 7)

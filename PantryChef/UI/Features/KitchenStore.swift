@@ -70,8 +70,17 @@ struct StockItem: Identifiable, Equatable {
     /// Move to a new storage location, blending the freshness clock: the time spent
     /// in the current location is folded into `consumedFraction`, then the days-left
     /// is re-projected from the new location's shelf life (spec §7). Pure.
-    func moved(to newStorage: PantryStorage, now: Date) -> StockItem {
+    ///
+    /// `adjustDaysLeft` is the user's Settings preference: when off, only the storage
+    /// label changes — the freshness clock and the displayed days-left are left
+    /// exactly as they were (you moved it, but you're keeping your own estimate).
+    func moved(to newStorage: PantryStorage, now: Date, adjustDaysLeft: Bool = true) -> StockItem {
         guard newStorage != storage else { return self }
+        guard adjustDaysLeft else {
+            var copy = self
+            copy.storage = newStorage
+            return copy
+        }
         var copy = self
         let stint = ExpiryEngine.daysBetween(storageSince, now)
         copy.consumedFraction = ExpiryEngine.consumedAfterStint(
@@ -153,6 +162,10 @@ final class KitchenStore {
     var stock: [StockItem]
     var library: [Dish]
     var profile = DietaryProfile()
+    /// Settings: when on, moving an item between pantry/fridge/freezer re-projects
+    /// its days-left from the new location's shelf life; when off, only the label
+    /// changes and your own estimate stands. See `StockItem.moved(to:now:adjustDaysLeft:)`.
+    var autoAdjustDaysOnStorageChange = true
     var libraryFilter: LibraryFilter = .all
     var shoppingList: [ShoppingEntry] = [
         ShoppingEntry(name: "Olive oil"),
