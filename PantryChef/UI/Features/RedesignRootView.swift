@@ -159,13 +159,11 @@ private struct RecipeDetailScreen: View {
             onUpdateDish: { store.updateDish($0) },
             onAddMissingToList: { lines in lines.forEach { store.addToList(name: $0.name, amount: $0.amount) } },
             makeHealthier: { d in
-                await store.ai.makeItHealthier(recipe: DishBridge.recipe(from: d))
+                await store.ai.makeItHealthier(dish: d)
             },
             tweak: { d, feedback in
-                let result = await store.ai.modifyRecipe(
-                    DishBridge.recipe(from: d), feedback: feedback,
-                    pantryIngredients: store.stock.map(\.name))
-                return result?.recipe.map { DishBridge.dish(from: $0, replacing: d) }
+                await store.ai.modifyRecipe(d, feedback: feedback,
+                                            pantryIngredients: store.stock.map(\.name))
             },
             onCook: { effective in session = CookSession(dishes: [effective]) },
             onClose: onClose

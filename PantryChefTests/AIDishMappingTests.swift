@@ -1,0 +1,52 @@
+import XCTest
+@testable import PantryChef
+
+/// The AI boundary maps a parsed recipe straight to a Dish (no legacy Recipe
+/// detour), preserving the original's identity. The JSON→RawFullRecipe decode is
+/// unchanged; this verifies the new post-decode mapping.
+final class AIDishMappingTests: XCTestCase {
+
+    private func decode(_ json: String) throws -> RawFullRecipe {
+        try JSONDecoder().decode(RawFullRecipe.self, from: Data(json.utf8))
+    }
+
+    func testMapsRawRecipeToDishPreservingIdentity() throws {
+        let raw = try decode("""
+        {"title":"Lighter orzo","description":"sweeter, lighter",
+         "ingredients":[{"name":"Baby spinach","quantity":300,"unit":"g","category":"Produce"},
+                        {"name":"Lemon","quantity":1,"unit":"whole","category":"Produce"}],
+         "steps":[{"stepNumber":1,"instruction":"Cook the orzo","timerMinutes":9,"estimatedDurationSeconds":540,"tasks":[]}],
+         "servings":2,"prepTimeMinutes":5,"cookTimeMinutes":20}
+        """)
+        let original = Dish(name: "Spinach & feta orzo",
+                            plate: .init(categories: [.pasta], seed: 1),
+                            time: "25 min", isFavorite: true, servings: 2,
+                            ingredients: [], steps: [])
+        let dish = raw.toDish(preserving: original)
+
+        XCTAssertEqual(dish.id, original.id)            // identity preserved
+        XCTAssertEqual(dish.plate, original.plate)      // plate preserved
+        XCTAssertTrue(dish.isFavorite)                  // favorite preserved
+        XCTAssertEqual(dish.name, "Lighter orzo")
+        XCTAssertEqual(dish.servings, 2)
+        XCTAssertEqual(dish.time, "25 min")             // 5 + 20
+        XCTAssertEqual(dish.blurb, "sweeter, lighter")
+        XCTAssertEqual(dish.ingredients.first?.name, "Baby spinach")
+        XCTAssertEqual(dish.ingredients.first?.amount, "300 g")
+        XCTAssertEqual(dish.steps.first?.timerSeconds, 540)   // 9 min × 60
+    }
+
+    func testFallsBackToOriginalTimeWhenNoDurations() throws {
+        let raw = try decode("""
+        {"title":"X","description":null,
+         "ingredients":[{"name":"Egg","quantity":2,"unit":"whole","category":"Protein"}],
+         "steps":[{"stepNumber":1,"instruction":"Beat","timerMinutes":null,"estimatedDurationSeconds":null,"tasks":[]}],
+         "servings":1,"prepTimeMinutes":null,"cookTimeMinutes":null}
+        """)
+        let original = Dish(name: "Eggs", plate: .init(categories: [.protein], seed: 2),
+                            time: "10 min", servings: 1, ingredients: [], steps: [])
+        let dish = raw.toDish(preserving: original)
+        XCTAssertEqual(dish.time, "10 min")             // kept original when AI gave none
+        XCTAssertNil(dish.steps.first?.timerSeconds)
+    }
+}

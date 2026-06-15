@@ -1,6 +1,6 @@
 import Foundation
 
-final class AIService: AIServiceProtocol {
+final class AIService {
     private let apiKey: String
     private let substitutionRepository: any SubstitutionProviding
     private let urlSession: URLSession
@@ -182,13 +182,13 @@ final class AIService: AIServiceProtocol {
 
     // MARK: - Make It Healthier
 
-    func makeItHealthier(recipe: Recipe) async -> HealthierSuggestion? {
-        let ingredientList = recipe.ingredients.map { $0.displayText }.joined(separator: "\n")
+    func makeItHealthier(dish: Dish) async -> HealthierSuggestion? {
+        let ingredientList = dish.ingredients.map(\.display).joined(separator: "\n")
 
         let prompt = """
         Suggest ways to make this recipe healthier:
 
-        Recipe: \(recipe.title)
+        Recipe: \(dish.name)
         Ingredients:
         \(ingredientList)
 
@@ -206,7 +206,7 @@ final class AIService: AIServiceProtocol {
         guard let data = response.data(using: .utf8) else { return nil }
         do {
             let raw = try JSONDecoder().decode(RawHealthierResult.self, from: data)
-            return raw.toHealthierSuggestion(recipeTitle: recipe.title)
+            return raw.toHealthierSuggestion(recipeTitle: dish.name)
         } catch {
             AppLog.warn("[AIService] Failed to decode healthier suggestion: \(error)")
             return nil
@@ -1792,19 +1792,17 @@ final class AIService: AIServiceProtocol {
 
     // MARK: - Recipe Modification
 
-    func modifyRecipe(_ recipe: Recipe, feedback: String, pantryIngredients: [String]) async -> RecipeGenerationResult? {
-        let ingredientList = recipe.ingredients.map { ing in
-            "\(ing.quantity) \(ing.unit?.rawValue ?? "") \(ing.name)"
-        }.joined(separator: "\n")
+    func modifyRecipe(_ dish: Dish, feedback: String, pantryIngredients: [String]) async -> Dish? {
+        let ingredientList = dish.ingredients.map(\.display).joined(separator: "\n")
 
-        let stepList = recipe.steps.map { step in
-            "Step \(step.stepNumber): \(step.instruction)"
+        let stepList = dish.steps.enumerated().map { index, step in
+            "Step \(index + 1): \(step.instruction)"
         }.joined(separator: "\n")
 
         var contextLines: [String] = []
-        contextLines.append("Current recipe: \(recipe.title)")
-        if let desc = recipe.description { contextLines.append("Description: \(desc)") }
-        contextLines.append("Servings: \(recipe.servings)")
+        contextLines.append("Current recipe: \(dish.name)")
+        if let blurb = dish.blurb { contextLines.append("Description: \(blurb)") }
+        contextLines.append("Servings: \(dish.servings)")
         contextLines.append("\nIngredients:\n\(ingredientList)")
         contextLines.append("\nSteps:\n\(stepList)")
         if !pantryIngredients.isEmpty {
@@ -1878,28 +1876,19 @@ final class AIService: AIServiceProtocol {
         guard let data = response.data(using: .utf8) else { return nil }
         do {
             let raw = try JSONDecoder().decode(RawRecipeOrRejection.self, from: data)
-            guard let result = raw.toModificationResult(preserving: recipe) else {
-                AppLog.warn("[AIService] Failed to convert raw modification response to result")
-                return nil
-            }
-
-            if case .rejected(let rejection) = result {
+            if raw.rejected {
                 telemetryReporter.record(TelemetryEvent(
                     name: "ai.modification.rejected.offtopic",
                     severity: .info,
-                    metadata: ["reason": rejection.reason]
+                    metadata: ["reason": raw.rejectionReason ?? "unknown"]
                 ))
-                return result
-            }
-
-            if case .recipe(let modifiedRecipe) = result {
-                if let validated = validatedRecipe(modifiedRecipe, source: "modifyRecipe") {
-                    return .recipe(validated)
-                }
                 return nil
             }
-
-            return result
+            guard let rawRecipe = raw.recipe, !rawRecipe.ingredients.isEmpty, !rawRecipe.steps.isEmpty else {
+                AppLog.warn("[AIService] Modified recipe missing ingredients/steps")
+                return nil
+            }
+            return rawRecipe.toDish(preserving: dish)
         } catch {
             AppLog.warn("[AIService] Failed to parse modified recipe: \(error)")
             return nil
