@@ -13,6 +13,29 @@ now-module state all reset to the seeded sample on relaunch. Consequence: e.g. a
 cooked but not yet logged, or any logged change, is lost on a cold start. Wire real
 persistence at that seam (Codable + disk, or SwiftData/CoreData).
 
+### Decrement raw ingredients when cooking
+Cooking *banks* the result (leftovers) but doesn't *consume* the raw ingredients it
+used (e.g. cook a frittata → eggs/spinach aren't drawn down). Deferred as the hard
+half of the decrement discussion: raw amounts are free-text (`.perishable` detail like
+"300 g") with no structured quantity, so gram-level subtraction is unreliable. Needs a
+structured quantity model first; until then cooking leaves readiness to the certainty
+clock. (Eat-time draw-down of leftover *portions* is already done.)
+
+### Family-tier swaps count toward readiness (currently chooser-only)
+`CatalogSwaps` family tier (same trailing base word, e.g. almond milk ↔ milk) shows in
+the recipe chooser but is **not** counted in the "ready · N swaps" readiness (only
+curated + sibling are, to keep that badge trustworthy). Decide whether to widen the
+auto-count to include family. Deferred when the substitution tiers landed.
+
+### A "whole week at a glance" plan view
+Busy weeks now read as day-grouped blocks in the timeline (good), but there's still no
+single surface to see the whole week's plan at once. Deferred in favour of the grouping
+fix; revisit if scanning the feed still feels like work.
+
+### Reassign a planned meal to a different day
+The meal sheet supports change-part (morning/midday/evening within the same day) and
+remove, but not moving a plan to a *different day*. Deferred when remove/reassign landed.
+
 ## Done
 
 ### Auto-log cooked food + log-from-recipe (done — `logCooked`)

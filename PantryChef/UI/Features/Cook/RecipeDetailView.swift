@@ -428,14 +428,9 @@ struct RecipeDetailView: View {
         VStack(spacing: 0) {
             SolidRule()
             HStack(spacing: 12) {
-                // "I made this" without the step-by-step — logs it straight away.
-                Button { onLogCooked(effectiveDish) } label: {
-                    Text("COOKED IT").font(.system(size: 11, weight: .medium)).tracking(1.6)
-                        .foregroundStyle(Theme.Palette.ink)
-                        .padding(.vertical, 14).padding(.horizontal, 4)
-                        .contentShape(Rectangle())
-                }
-                .buttonStyle(.plain)
+                // "I made this" without the step-by-step — bordered companion (clearly a
+                // button) next to the filled primary Cook.
+                OutlineButton(title: "Cooked it") { onLogCooked(effectiveDish) }
                 BlockButton(title: "Cook", fullWidth: true) { onCook(effectiveDish) }
             }
             .padding(.horizontal, 20).padding(.vertical, 12)
