@@ -1116,6 +1116,12 @@ enum PantryCatalog {
         return descendantsByItemID[id] ?? [id]
     }
 
+    /// Immediate children of an item (one level down) — the basis for sibling swaps.
+    static func children(of id: String) -> Set<String> {
+        ensureInheritanceCaches()
+        return childrenByParentID[id] ?? []
+    }
+
     static func inheritanceDistance(from descendantID: String, to ancestorID: String) -> Int? {
         ensureInheritanceCaches()
         return distanceByItemID[descendantID]?[ancestorID]

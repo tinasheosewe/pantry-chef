@@ -665,16 +665,15 @@ private struct StockPresence: PantryPresence {
     func isKnownOut(key: String, catalogItemID: String?) -> Bool { false }
 }
 
-/// The live swap resolver — reads the catalog's substitution enrichment by id, so a
-/// missing ingredient offers exactly the substitutes the catalog records for it.
+/// The live swap resolver for *readiness* — the confident tiers only (curated swaps +
+/// tight sibling varieties), so "ready · N swaps" never leans on a loose family guess.
+/// The recipe chooser asks `DishInsights.swaps(for:)` for the broader family tier too.
 struct CatalogSwapResolver: SwapResolver {
     func swapTargets(for requirement: IngredientRequirement) -> [SwapTarget] {
         let item = requirement.catalogItemID.flatMap { PantryCatalog.itemsByID[$0] }
             ?? PantryCatalog.resolveExact(name: requirement.key)
         guard let item else { return [] }
-        return item.swaps.compactMap { swap in
-            guard let sub = PantryCatalog.itemsByID[swap.substituteItemID] else { return nil }
-            return SwapTarget(key: IngredientLexicon.lookupKey(sub.name), name: sub.name, catalogItemID: sub.id)
-        }
+        return CatalogSwaps.candidates(forItemID: item.id, includeFamily: false)
+            .map { SwapTarget(key: $0.key, name: $0.name, catalogItemID: $0.id) }
     }
 }

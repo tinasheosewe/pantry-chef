@@ -29,6 +29,7 @@
 		21E4C0F31FBACAB46C8694D8 /* ConfidenceEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD7711492A1BF81C0A45710C /* ConfidenceEngineTests.swift */; };
 		23B34ADC20C74E827D92EE06 /* Motion.swift in Sources */ = {isa = PBXBuildFile; fileRef = C591E29EB0703DFFDC5DE962 /* Motion.swift */; };
 		2523FCED3370ADF37878A022 /* Dock.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4072447FA67C19158B37322 /* Dock.swift */; };
+		26C1EAB9DEDD1361250914B3 /* CatalogSwapsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53ADC570802BEDF30A7FEAE1 /* CatalogSwapsTests.swift */; };
 		30536BC0C62621CE2CB4B15C /* input_audio_transcription_completed_sparse_usage.json in Resources */ = {isa = PBXBuildFile; fileRef = 62F4E42A0869501AB92F81F2 /* input_audio_transcription_completed_sparse_usage.json */; };
 		3332458EBD6A9C0A2D19A38B /* KitchenStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAB9028C434D2045ADDB09A5 /* KitchenStore.swift */; };
 		33450CC448B136BE9029DD6B /* ExpiryEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 822D5F908F780A317F9B37C1 /* ExpiryEngine.swift */; };
@@ -55,6 +56,7 @@
 		698DDDF144F1C71CCD08E448 /* TimelineRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F29F5EA69B2D7B7044AB0B9 /* TimelineRow.swift */; };
 		69F60B663B95A83DCECBB89D /* AppConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFBB7D0A309C7FD4311B669D /* AppConfig.swift */; };
 		6C6D1EB4465F98F5AC4C06CB /* IngredientLexicon.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEDA55B940AC70BF502704BE /* IngredientLexicon.swift */; };
+		71D7C5ADA6DF7F74486CDE1B /* CatalogSwaps.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65E7AA5F88E00CB3D846329B /* CatalogSwaps.swift */; };
 		7A6DC2A6BFD6CD5A6C24A629 /* input_audio_transcription_completed_multilingual.json in Resources */ = {isa = PBXBuildFile; fileRef = 877E52465510E708BA84311A /* input_audio_transcription_completed_multilingual.json */; };
 		7D544902270DFDB5E477AACC /* CatalogSearchEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 177EB0A8E95D3FAE1B5CF7E4 /* CatalogSearchEngine.swift */; };
 		7FBE65DAD5654BF06FD33353 /* FanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 429A404308616F18132F9767 /* FanView.swift */; };
@@ -168,11 +170,13 @@
 		501A15BF9D50C2FA21FDC847 /* SettingsView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		51353A5BB5F36DCA4DAA0FFC /* RecipeEditorView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RecipeEditorView.swift; sourceTree = "<group>"; };
 		52C9664BC03D8B5DE7127A5D /* CookFlowView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CookFlowView.swift; sourceTree = "<group>"; };
+		53ADC570802BEDF30A7FEAE1 /* CatalogSwapsTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CatalogSwapsTests.swift; sourceTree = "<group>"; };
 		553DC74533E9AC0CDF04F69A /* MultiCookSchedulerTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MultiCookSchedulerTests.swift; sourceTree = "<group>"; };
 		56846FEA588376592A76B680 /* SeedDishCatalogTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SeedDishCatalogTests.swift; sourceTree = "<group>"; };
 		59485E1388AA5B4BFC221609 /* output_audio_buffer_cleared.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = output_audio_buffer_cleared.json; sourceTree = "<group>"; };
 		5FF94D344E15CC2935F5283B /* RealtimeService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealtimeService.swift; sourceTree = "<group>"; };
 		62F4E42A0869501AB92F81F2 /* input_audio_transcription_completed_sparse_usage.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_audio_transcription_completed_sparse_usage.json; sourceTree = "<group>"; };
+		65E7AA5F88E00CB3D846329B /* CatalogSwaps.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CatalogSwaps.swift; sourceTree = "<group>"; };
 		67106B750F48353E27DE5B0D /* catalog.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = catalog.json; sourceTree = "<group>"; };
 		6FA305DB5D5B9FBE02C276BD /* LLMBatchSchedule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMBatchSchedule.swift; sourceTree = "<group>"; };
 		7091D990752C6197CCF02458 /* ShoppingChecklistView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ShoppingChecklistView.swift; sourceTree = "<group>"; };
@@ -318,6 +322,7 @@
 				A610EE799CFFD2C16B573063 /* QuantityFormat.swift */,
 				0F4550D5ECA525ED872882D3 /* IngredientMatching.swift */,
 				C353618F4B7100DD25102763 /* AIDishMapping.swift */,
+				65E7AA5F88E00CB3D846329B /* CatalogSwaps.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -389,6 +394,7 @@
 				56846FEA588376592A76B680 /* SeedDishCatalogTests.swift */,
 				A4EF7D7D249A9E3B0A95E9C2 /* StockItemStorageMoveTests.swift */,
 				A1164E8B1FE358D08AE6BFF7 /* IngredientMatchingLineageTests.swift */,
+				53ADC570802BEDF30A7FEAE1 /* CatalogSwapsTests.swift */,
 			);
 			path = PantryChefTests;
 			sourceTree = "<group>";
@@ -857,6 +863,7 @@
 				D4F415C066A8B8BCA54D49F9 /* IngredientPicker.swift in Sources */,
 				19A89EA4EF7BDE233C514C52 /* SettingsView.swift in Sources */,
 				4C4264D61939374CCF134900 /* AmountField.swift in Sources */,
+				71D7C5ADA6DF7F74486CDE1B /* CatalogSwaps.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -894,6 +901,7 @@
 				0D574F78BDC28376F33CEA94 /* SeedDishCatalogTests.swift in Sources */,
 				13056D1F7FA9F38FF08A1B85 /* StockItemStorageMoveTests.swift in Sources */,
 				9AD09898E5C888D5DD3CB7BD /* IngredientMatchingLineageTests.swift in Sources */,
+				26C1EAB9DEDD1361250914B3 /* CatalogSwapsTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

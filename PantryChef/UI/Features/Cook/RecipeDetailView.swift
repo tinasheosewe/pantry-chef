@@ -317,13 +317,15 @@ struct RecipeDetailView: View {
         var id: String { suggestion.id }
     }
 
-    /// Every recorded substitute for a missing line, the ones you have first.
+    /// Every recorded substitute for a missing line, the ones you have first —
+    /// preserving the catalog's confidence order (curated → sibling → family) within
+    /// each group.
     private func rankedSwaps(for line: RecipeLine) -> [RankedSwap] {
-        DishInsights.swaps(for: line).map { s in
+        let ranked = DishInsights.swaps(for: line).map { s in
             RankedSwap(suggestion: s,
                        onHand: isOnHand(RecipeLine(key: s.key, name: s.name, catalogItemID: s.catalogItemID)))
         }
-        .sorted { $0.onHand && !$1.onHand }
+        return ranked.filter(\.onHand) + ranked.filter { !$0.onHand }
     }
 
     private func ingredientRow(_ line: RecipeLine) -> some View {

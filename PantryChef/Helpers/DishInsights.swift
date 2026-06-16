@@ -31,17 +31,14 @@ enum DishInsights {
         var id: String { catalogItemID ?? key }
     }
 
-    /// Substitutions for a recipe line, resolved through its catalog identity (id
-    /// first, name only as a fallback) — every candidate the catalog records, so the
-    /// cook can choose, not just take the first.
+    /// Substitutions for a recipe line, resolved through its catalog identity — all
+    /// three tiers (curated, sibling varieties, and the broad same-base family), in
+    /// confidence order, so the cook can choose rather than take the first.
     static func swaps(for line: RecipeLine) -> [SwapSuggestion] {
         let item = line.catalogItemID.flatMap { PantryCatalog.itemsByID[$0] }
             ?? PantryCatalog.resolveExact(name: line.key)
         guard let item else { return [] }
-        return item.swaps.compactMap { swap in
-            guard let sub = PantryCatalog.itemsByID[swap.substituteItemID] else { return nil }
-            return SwapSuggestion(key: IngredientLexicon.lookupKey(sub.name), name: sub.name,
-                                  catalogItemID: sub.id, notes: swap.notes)
-        }
+        return CatalogSwaps.candidates(forItemID: item.id, includeFamily: true)
+            .map { SwapSuggestion(key: $0.key, name: $0.name, catalogItemID: $0.id, notes: $0.notes) }
     }
 }
