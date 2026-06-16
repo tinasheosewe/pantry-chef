@@ -59,12 +59,14 @@ surfaced in the cook flow, so mid-cook users lose track of what they substituted
 why. Carry the applied swaps + notes into the cook instrument (gathering + steps).
 (From testing.)
 
-### Structured, numeric swap quantities (translatable units) in the gathering screen
-Substitutes can change the amount, but the swap `ratio` is a free-form string ("1:1").
-Make quantity changes **numeric in real, convertible units** (not free text) so a swap
-can adjust the gathered amount, and show the adjusted quantity on the ingredient-
-gathering (mise en place) screen. Pairs with the structured-quantity model the
-"decrement raw ingredients" item also needs. (From testing.)
+### Structured, numeric swap quantities (translatable units)
+*Partly addressed:* the substitute's quantity guidance now rides through to the cook —
+the swap note (e.g. "¼ cup applesauce per egg") shows on the gathering screen and on
+the recipe's applied line (`RecipeLine.swapNote`). **Remaining:** that guidance is still
+free-form prose; the catalog `ratio` is mostly "1:1" and the real quantities live in
+notes. Make swap quantities **numeric in real, convertible units** so a swap can
+actually adjust the gathered amount (not just annotate it). Needs the structured-
+quantity model — shared with "decrement raw ingredients when cooking". (From testing.)
 
 ## Done
 

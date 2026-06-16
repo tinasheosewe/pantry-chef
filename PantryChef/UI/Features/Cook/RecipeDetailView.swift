@@ -45,7 +45,7 @@ struct RecipeDetailView: View {
     @State private var baseline: Dish
     @State private var pendingChanges = false
 
-    struct SwapChoice: Equatable { let key: String; let name: String; let catalogItemID: String? }
+    struct SwapChoice: Equatable { let key: String; let name: String; let catalogItemID: String?; let note: String? }
 
     init(dish: Dish, readiness: Readiness,
          isOnHand: @escaping (RecipeLine) -> Bool = { _ in true },
@@ -83,7 +83,7 @@ struct RecipeDetailView: View {
     private var effectiveDish: Dish {
         appliedSwaps.reduce(currentDish.scaled(to: servings)) { partial, entry in
             partial.applyingSwap(to: entry.key, key: entry.value.key, name: entry.value.name,
-                                 catalogItemID: entry.value.catalogItemID)
+                                 catalogItemID: entry.value.catalogItemID, note: entry.value.note)
         }
     }
 
@@ -360,8 +360,9 @@ struct RecipeDetailView: View {
             }
             if let applied {
                 Button { withAnimation { appliedSwaps[line.id] = nil } } label: {
-                    Text("↻ using \(applied.name) — tap to undo")
+                    Text("↻ using \(applied.name)\(applied.note.map { " — \($0)" } ?? "") · tap to undo")
                         .font(Theme.Typography.fact(10.5)).foregroundStyle(Theme.Palette.sage).padding(.leading, 26)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
                 .buttonStyle(.plain)
             } else if !onHand && !line.isStaple {
@@ -380,7 +381,7 @@ struct RecipeDetailView: View {
     private func swapCandidate(line: RecipeLine, entry: RankedSwap) -> some View {
         let s = entry.suggestion
         return Button {
-            withAnimation { appliedSwaps[line.id] = SwapChoice(key: s.key, name: s.name, catalogItemID: s.catalogItemID) }
+            withAnimation { appliedSwaps[line.id] = SwapChoice(key: s.key, name: s.name, catalogItemID: s.catalogItemID, note: s.notes) }
         } label: {
             HStack(spacing: 6) {
                 Text("↻ \(s.name)\(s.notes.map { " — \($0)" } ?? "")")

@@ -13,11 +13,15 @@ struct RecipeLine: Identifiable, Equatable, Sendable {
     /// Readiness/swaps match on this directly — no fuzzy name mapping. Nil only for
     /// genuinely freeform lines, which fall back to name matching.
     let catalogItemID: String?
+    /// When this line is being made via a substitution, the swap's note (ratio /
+    /// quantity guidance, e.g. "¼ cup applesauce per egg") — carried through to the
+    /// cook so the gathering screen shows what to use instead.
+    let swapNote: String?
 
     init(id: UUID = UUID(), key: String, amount: String? = nil, name: String,
-         isStaple: Bool = false, catalogItemID: String? = nil) {
+         isStaple: Bool = false, catalogItemID: String? = nil, swapNote: String? = nil) {
         self.id = id; self.key = key; self.amount = amount; self.name = name
-        self.isStaple = isStaple; self.catalogItemID = catalogItemID
+        self.isStaple = isStaple; self.catalogItemID = catalogItemID; self.swapNote = swapNote
     }
 
     var requirement: IngredientRequirement {
@@ -33,7 +37,7 @@ struct RecipeLine: Identifiable, Equatable, Sendable {
         let q = qty.trimmingCharacters(in: .whitespaces)
         let amount: String? = q.isEmpty ? nil : (unit.map { "\(q) \($0.rawValue)" } ?? q)
         return RecipeLine(id: id, key: key, amount: amount, name: name,
-                          isStaple: isStaple, catalogItemID: catalogItemID)
+                          isStaple: isStaple, catalogItemID: catalogItemID, swapNote: swapNote)
     }
 }
 
@@ -154,7 +158,7 @@ struct Dish: Identifiable, Equatable, Sendable {
                   let scaled = Self.scaledAmount(amount, by: factor) else { return line }
             return RecipeLine(id: line.id, key: line.key, amount: scaled,
                               name: line.name, isStaple: line.isStaple,
-                              catalogItemID: line.catalogItemID)
+                              catalogItemID: line.catalogItemID, swapNote: line.swapNote)
         }
         return copy
     }
@@ -170,16 +174,17 @@ struct Dish: Identifiable, Equatable, Sendable {
     /// This dish with one ingredient line swapped for a substitute (the cook flow
     /// then gathers the substitute instead).
     func applyingSwap(to lineID: UUID, key: String, name newName: String,
-                      catalogItemID: String? = nil) -> Dish {
+                      catalogItemID: String? = nil, note: String? = nil) -> Dish {
         var copy = self
         if let i = copy.ingredients.firstIndex(where: { $0.id == lineID }) {
             let old = copy.ingredients[i]
             // The swapped line takes on the substitute's catalog identity, so the
-            // gathering checklist and readiness see what you're actually using.
+            // gathering checklist and readiness see what you're actually using; the
+            // note (ratio / quantity guidance) rides along to the cook.
             let resolved = catalogItemID ?? PantryCatalog.resolveExact(name: newName)?.id
             copy.ingredients[i] = RecipeLine(id: old.id, key: key, amount: old.amount,
                                              name: newName, isStaple: old.isStaple,
-                                             catalogItemID: resolved)
+                                             catalogItemID: resolved, swapNote: note)
         }
         return copy
     }

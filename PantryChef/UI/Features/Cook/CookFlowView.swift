@@ -140,13 +140,23 @@ struct CookFlowView: View {
         return Button {
             if isGathered { gathered.remove(line.id) } else { gathered.insert(line.id) }
         } label: {
-            HStack(spacing: 12) {
-                InkCheck(on: isGathered, size: 22)
-                Text(line.display).font(Theme.Typography.fact(14)).foregroundStyle(Theme.Palette.ink)
-                    .strikethrough(isGathered, color: Theme.Palette.warmGraySoft)
-                Spacer()
-                if !onHand && !line.isStaple {
-                    Text("NOT IN STOCK").font(.system(size: 9)).tracking(1.4).foregroundStyle(Theme.Palette.paprika)
+            VStack(alignment: .leading, spacing: 3) {
+                HStack(spacing: 12) {
+                    InkCheck(on: isGathered, size: 22)
+                    Text(line.display).font(Theme.Typography.fact(14)).foregroundStyle(Theme.Palette.ink)
+                        .strikethrough(isGathered, color: Theme.Palette.warmGraySoft)
+                    Spacer()
+                    if !onHand && !line.isStaple {
+                        Text("NOT IN STOCK").font(.system(size: 9)).tracking(1.4).foregroundStyle(Theme.Palette.paprika)
+                    }
+                }
+                // The substitution and its note (ratio / quantity guidance) ride through
+                // from the recipe, so mid-cook you remember what to use and how much.
+                if let note = line.swapNote {
+                    Text("↻ \(note)")
+                        .font(Theme.Typography.fact(11)).foregroundStyle(Theme.Palette.sage)
+                        .padding(.leading, 34)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
             }
             .padding(.vertical, 11).contentShape(Rectangle())
