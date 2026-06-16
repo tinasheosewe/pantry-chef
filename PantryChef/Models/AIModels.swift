@@ -118,6 +118,9 @@ struct RawTask: Decodable {
     let ingredient: String?
     let durationSeconds: Int
     let type: String
+    /// "prep" | "cook" | "finish" — the model now tags this; optional so older or
+    /// off-path responses still decode (the mapper falls back to text inference).
+    let phase: String?
     let effort: String
     let requiresEquipment: String?
     let dependsOn: [Int]

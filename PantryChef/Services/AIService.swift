@@ -95,11 +95,12 @@ final class AIService {
             "ingredient": ["type": ["string", "null"]],
             "durationSeconds": ["type": "integer"],
             "type": ["type": "string", "enum": ["active", "passive"]],
+            "phase": ["type": "string", "enum": ["prep", "cook", "finish"]],
             "effort": ["type": "string", "enum": ["easy", "medium", "hard"]],
             "requiresEquipment": ["type": ["string", "null"]],
             "dependsOn": ["type": "array", "items": ["type": "integer"]]
         ] as [String: Any],
-        "required": ["taskIndex", "action", "ingredient", "durationSeconds", "type", "effort", "requiresEquipment", "dependsOn"],
+        "required": ["taskIndex", "action", "ingredient", "durationSeconds", "type", "phase", "effort", "requiresEquipment", "dependsOn"],
         "additionalProperties": false
     ]
 
@@ -422,7 +423,8 @@ final class AIService {
 
         For unit, use: tsp, tbsp, cup, ml, L, g, kg, oz, lb, piece, whole, loaf, slice, clove, bunch, can, pinch, to taste.
         For category, use: Dairy, Produce, Protein, Grains & Cereals, Spices & Herbs, Condiments & Sauces, Baking Supplies, Oils & Fats, Other.
-        Each task object: {"taskIndex": number, "action": string, "ingredient": string or null, "durationSeconds": number, "type": "active" or "passive", "effort": "easy" or "medium" or "hard", "requiresEquipment": string or null, "dependsOn": [number]}
+        Each task object: {"taskIndex": number, "action": string, "ingredient": string or null, "durationSeconds": number, "type": "active" or "passive", "phase": "prep" or "cook" or "finish", "effort": "easy" or "medium" or "hard", "requiresEquipment": string or null, "dependsOn": [number]}
+        For "phase": use "prep" for knife work / measuring / mixing done before heat, "cook" for anything on heat, and "finish" for plating, garnishing, or serving.
 
         Return ONLY the JSON object, no other text.
         """

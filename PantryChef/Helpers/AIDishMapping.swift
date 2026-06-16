@@ -23,12 +23,17 @@ extension RawFullRecipe {
         }
         let cookSteps = steps.map { raw -> CookStep in
             let timer = raw.timerMinutes.map { max(1, $0) * 60 }
-            // The AI tags each sub-task active/passive; let the dominant (longest)
-            // task decide the step's attention, and take its ingredient for grouping.
+            // The AI tags each sub-task active/passive and prep/cook/finish. The
+            // dominant (longest) task sets the step's attention; the step's phase is
+            // the most-advanced phase present, so a step that also cooks isn't mistaken
+            // for pure prep. Either falls back to text inference when the tags are absent.
             let lead = raw.tasks.max { $0.durationSeconds < $1.durationSeconds }
             let attention: StepAttention? = lead.map { $0.type == "passive" ? .passive : .active }
+            let phase = raw.tasks.compactMap { $0.phase.flatMap(StepPhase.init(rawValue:)) }
+                .max { $0.order < $1.order }
             let ingredient = raw.tasks.compactMap(\.ingredient).first
-            return CookStep(raw.instruction, timerSeconds: timer, attention: attention, ingredient: ingredient)
+            return CookStep(raw.instruction, timerSeconds: timer, phase: phase,
+                            attention: attention, ingredient: ingredient)
         }
         let totalMinutes = [prepTimeMinutes, cookTimeMinutes].compactMap { $0 }.reduce(0, +)
         return Dish(

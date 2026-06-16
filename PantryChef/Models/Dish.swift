@@ -39,7 +39,14 @@ struct RecipeLine: Identifiable, Equatable, Sendable {
 
 /// Where a step sits in the arc of cooking — prep is the knife work you can do up
 /// front (mise en place), cook is the heat, finish is plating.
-enum StepPhase: String, Equatable, Sendable { case prep, cook, finish }
+enum StepPhase: String, Equatable, Sendable {
+    case prep, cook, finish
+    /// Sequence rank — a step spanning several phases takes the most-advanced one,
+    /// so a step that also cooks is never mistaken for pure prep.
+    var order: Int { switch self { case .prep: 0; case .cook: 1; case .finish: 2 } }
+    /// The next phase in the cycle, for a one-tap editor toggle.
+    var next: StepPhase { switch self { case .prep: .cook; case .cook: .finish; case .finish: .prep } }
+}
 
 /// Whether a step holds the cook's hands (active) or runs on a timer they walk away
 /// from (passive) — the axis that decides what can overlap.

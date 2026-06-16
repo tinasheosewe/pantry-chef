@@ -474,49 +474,49 @@ final class KitchenStore {
                 line("olive oil", nil, "Olive oil", staple: true)
             ],
             steps: [
-                CookStep("Bring a pot of salted water to the boil and cook the orzo until al dente.", timerSeconds: 540),
-                CookStep("Wilt the spinach into the brown butter until just collapsed — about two minutes.", timerSeconds: 120),
-                CookStep("Fold the orzo and crumbled feta through; finish with lemon, season, and serve.")
+                CookStep("Bring a pot of salted water to the boil and cook the orzo until al dente.", timerSeconds: 540, phase: .cook, attention: .passive),
+                CookStep("Wilt the spinach into the brown butter until just collapsed — about two minutes.", timerSeconds: 120, phase: .cook, attention: .active),
+                CookStep("Fold the orzo and crumbled feta through; finish with lemon, season, and serve.", phase: .finish, attention: .active)
             ])
         let shakshuka = Dish(
             name: "Shakshuka", plate: plate([.protein, .produce, .spices], 2), time: "30 min",
             blurb: "Eggs poached in a paprika tomato sauce.",
             ingredients: [line("eggs", "4", "Eggs"), line("tomato", "400 g", "Tomatoes"),
                           line("onion", "1", "Onion"), line("paprika", nil, "Paprika", staple: true)],
-            steps: [CookStep("Soften the onion, add tomatoes and paprika, simmer to a sauce.", timerSeconds: 600),
-                    CookStep("Make wells, crack in the eggs, cover and cook until just set.", timerSeconds: 480)])
+            steps: [CookStep("Soften the onion, add tomatoes and paprika, simmer to a sauce.", timerSeconds: 600, phase: .cook, attention: .passive),
+                    CookStep("Make wells, crack in the eggs, cover and cook until just set.", timerSeconds: 480, phase: .cook, attention: .passive)])
         let stirfry = Dish(
             name: "Tuesday stir-fry", plate: plate([.produce, .protein], 14), time: "20 min", isYours: true,
             isFavorite: true,
             blurb: "Hot pan, whatever's crisp, twenty minutes.",
             ingredients: [line("baby spinach", "200 g", "Spinach"), line("feta", "100 g", "Feta")],
-            steps: [CookStep("Get the pan smoking hot, then go fast.")])
+            steps: [CookStep("Get the pan smoking hot, then go fast.", phase: .cook, attention: .active)])
         let salmon = Dish(
             name: "Miso butter salmon", plate: plate([.protein, .oils], 5), time: "18 min",
             blurb: "Miso butter does the work; the oven the rest.",
             ingredients: [line("salmon", "2", "Salmon fillets"), line("miso", "2 tbsp", "Miso"),
                           line("butter", "20 g", "Butter")],
-            steps: [CookStep("Whisk miso into soft butter; coat the salmon."),
-                    CookStep("Roast until the centre just flakes.", timerSeconds: 600)])
+            steps: [CookStep("Whisk miso into soft butter; coat the salmon.", phase: .prep, attention: .active, ingredient: "salmon"),
+                    CookStep("Roast until the centre just flakes.", timerSeconds: 600, phase: .cook, attention: .passive, ingredient: "salmon")])
         let ragu = Dish(
             name: "Lamb ragù", plate: plate([.protein, .pasta, .produce], 3), time: "2 h 10",
             blurb: "Brown hard, braise low — and it freezes beautifully.",
             ingredients: [line("lamb", "500 g", "Lamb mince"), line("orzo", "2 cups", "Orzo"),
                           line("onion", "1", "Onion"), line("tomato", "400 g", "Tomatoes")],
-            steps: [CookStep("Brown the lamb hard, then build the sofrito.", timerSeconds: 600),
-                    CookStep("Add tomatoes and braise low and slow.", timerSeconds: 5400)])
+            steps: [CookStep("Brown the lamb hard, then build the sofrito.", timerSeconds: 600, phase: .cook, attention: .active, ingredient: "lamb"),
+                    CookStep("Add tomatoes and braise low and slow.", timerSeconds: 5400, phase: .cook, attention: .passive, ingredient: "tomato")])
         let greens = Dish(
             name: "Lemon greens", plate: plate([.produce, .dairy], 7), time: "20 min",
             blurb: "Blistered greens, cold cheese, sharp lemon.",
             ingredients: [line("baby spinach", "200 g", "Spinach"), line("feta", "100 g", "Feta"),
                           line("lemon", "1", "Lemon")],
-            steps: [CookStep("Blister the greens, dress with lemon, crumble over feta.")])
+            steps: [CookStep("Blister the greens, dress with lemon, crumble over feta.", phase: .cook, attention: .active)])
         let frittata = Dish(
             name: "Herb frittata", plate: plate([.dairy, .produce], 9), time: "15 min",
             blurb: "Beaten eggs, folded greens, five minutes under the grill.",
             ingredients: [line("eggs", "6", "Eggs"), line("feta", "100 g", "Feta"),
                           line("baby spinach", "100 g", "Spinach")],
-            steps: [CookStep("Beat the eggs, fold in greens and feta, set under the grill.", timerSeconds: 480)])
+            steps: [CookStep("Beat the eggs, fold in greens and feta, set under the grill.", timerSeconds: 480, phase: .cook, attention: .passive)])
 
         library = [orzo, shakshuka, stirfry, salmon, ragu, greens]
 
