@@ -79,8 +79,8 @@ struct RedesignRootView: View {
                     .presentationDetents([.medium])
             }
             .sheet(item: $planTarget) { target in
-                PlanDaySheet(store: store, date: target.date) { dish in
-                    store.planMeal(dish, on: target.date)
+                PlanDaySheet(store: store, date: target.date) { dish, part in
+                    store.planMeal(dish, on: target.date, part: part)
                     planTarget = nil
                 }
                 .presentationDetents([.medium, .large])
@@ -344,7 +344,8 @@ struct VerticalDashedRule: View {
 private struct PlanDaySheet: View {
     var store: KitchenStore
     let date: Date
-    var onPlan: (Dish) -> Void
+    var onPlan: (Dish, DayPart) -> Void
+    @State private var part: DayPart = .evening
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -352,11 +353,12 @@ private struct PlanDaySheet: View {
                 .foregroundStyle(Theme.Palette.ink).padding(.top, 22)
             Text("Pick something — missing items go to your list.")
                 .font(Theme.Typography.note(12)).foregroundStyle(Theme.Palette.warmGray).padding(.top, 3)
+            partPicker.padding(.top, 12)
             DashedRule().padding(.top, 10)
             ScrollView {
                 VStack(spacing: 0) {
                     ForEach(store.library) { dish in
-                        Button { onPlan(dish) } label: {
+                        Button { onPlan(dish, part) } label: {
                             LeaderRow {
                                 HStack(spacing: 9) {
                                     PlateView(name: dish.name, composition: dish.plate, size: 26)
@@ -376,6 +378,24 @@ private struct PlanDaySheet: View {
         }
         .padding(.horizontal, 20)
         .background(KitchenBackground())
+    }
+
+    /// Optional, low-friction sense of which meal — defaults to evening, the common
+    /// plan. The day still holds the meals; this just tells lunch from dinner.
+    private var partPicker: some View {
+        HStack(spacing: 8) {
+            ForEach(DayPart.allCases, id: \.self) { p in
+                let selected = part == p
+                Button { part = p } label: {
+                    Text(p.tag.uppercased()).font(.system(size: 9.5, weight: .medium)).tracking(1.2)
+                        .foregroundStyle(selected ? Theme.Palette.cream : Theme.Palette.ink.opacity(0.7))
+                        .padding(.horizontal, 11).padding(.vertical, 7)
+                        .background(Rectangle().fill(selected ? Theme.Palette.ink : .clear))
+                        .overlay(Rectangle().strokeBorder(Theme.Palette.ink.opacity(selected ? 0 : 0.4), lineWidth: 1))
+                }
+                .buttonStyle(.plain)
+            }
+        }
     }
 
     @ViewBuilder private func readinessLabel(for dish: Dish) -> some View {

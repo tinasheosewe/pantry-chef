@@ -20,6 +20,61 @@ struct JournalItem: Identifiable, Equatable, Sendable {
     }
 }
 
+/// A light sense of *when* in the day a meal sits — enough to tell lunch from dinner
+/// without imposing a rigid breakfast/lunch/dinner grid (the app plans by day, not by
+/// slot, spec §4). Ordered so a day's meals read morning → evening.
+enum DayPart: Int, CaseIterable, Equatable, Sendable, Comparable {
+    case morning, midday, evening
+
+    static func < (a: DayPart, b: DayPart) -> Bool { a.rawValue < b.rawValue }
+
+    /// Lower-case tag for a planned-meal card.
+    var tag: String {
+        switch self {
+        case .morning: return "morning"
+        case .midday:  return "midday"
+        case .evening: return "evening"
+        }
+    }
+
+    /// The hour a meal of this part anchors to, so date-sorting orders a day's meals.
+    var anchorHour: Int {
+        switch self {
+        case .morning: return 8
+        case .midday:  return 13
+        case .evening: return 19
+        }
+    }
+
+    /// The "you could…" persuasion eyebrow, keyed to the time of day (spec §5).
+    var youCould: String {
+        switch self {
+        case .morning: return "This morning you could…"
+        case .midday:  return "For lunch you could…"
+        case .evening: return "Tonight you could…"
+        }
+    }
+
+    /// Plain "now" label once a meal is committed/served (matches the time of day).
+    var nowLabel: String {
+        switch self {
+        case .morning: return "This morning"
+        case .midday:  return "Midday"
+        case .evening: return "Tonight"
+        }
+    }
+
+    /// What part of the day it is right now — the default for a fresh plan and the
+    /// key for the now-module's voice.
+    static func current(_ now: Date = Date(), calendar: Calendar = .current) -> DayPart {
+        switch calendar.component(.hour, from: now) {
+        case 5..<11:  return .morning
+        case 11..<16: return .midday
+        default:      return .evening
+        }
+    }
+}
+
 /// A meal committed to a future day (spec §4, "future = consequence", solid node).
 struct PlannedMeal: Identifiable, Equatable, Sendable {
     let id: UUID
@@ -27,13 +82,16 @@ struct PlannedMeal: Identifiable, Equatable, Sendable {
     let name: String
     let plate: PlateComposition
     let level: MealPrepLevel
+    /// Which part of the day it's planned for — tells lunch from dinner on the card.
+    let dayPart: DayPart
     /// Items this meal still needs, already routed to the list.
     var missingCount: Int
 
     init(id: UUID = UUID(), date: Date, name: String, plate: PlateComposition,
-         level: MealPrepLevel, missingCount: Int = 0) {
+         level: MealPrepLevel, dayPart: DayPart = .evening, missingCount: Int = 0) {
         self.id = id; self.date = date; self.name = name
-        self.plate = plate; self.level = level; self.missingCount = missingCount
+        self.plate = plate; self.level = level
+        self.dayPart = dayPart; self.missingCount = missingCount
     }
 }
 

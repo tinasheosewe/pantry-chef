@@ -74,7 +74,7 @@ struct TimelineRow: View {
         HStack(spacing: 11) {
             PlateView(name: m.name, composition: m.plate, size: Theme.Metric.plateRow)
             VStack(alignment: .leading, spacing: 2) {
-                Text(DayLabel.eyebrow(for: m.date).uppercased())
+                Text("\(DayLabel.eyebrow(for: m.date)) · \(m.dayPart.tag)".uppercased())
                     .font(.system(size: 9)).tracking(Theme.Metric.eyebrowTracking)
                     .foregroundStyle(Theme.Palette.ink.opacity(0.55))
                 Text(m.name).font(Theme.Typography.dish(16)).foregroundStyle(Theme.Palette.ink)

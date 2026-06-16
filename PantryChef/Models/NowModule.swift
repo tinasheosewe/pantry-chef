@@ -66,13 +66,15 @@ enum NowState: Equatable, Sendable {
     case cooking(CookingProgress)
     case cooked(CookedSummary)
 
-    /// The eyebrow label for each state.
-    var eyebrow: String {
+    /// The eyebrow label for each state, keyed to the time of day so the "could…"
+    /// invitation isn't dinner-only ("This morning you could…" / "For lunch you
+    /// could…" / "Tonight you could…").
+    func eyebrow(at part: DayPart) -> String {
         switch self {
-        case .open: return "Tonight you could…"
-        case .committed: return "Tonight"
+        case .open: return part.youCould
+        case .committed: return part.nowLabel
         case .cooking: return "On the stove"
-        case .cooked: return "Done tonight"
+        case .cooked: return "Done \(part.nowLabel.lowercased())"
         }
     }
 }

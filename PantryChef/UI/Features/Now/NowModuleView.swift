@@ -17,7 +17,7 @@ struct NowModuleView: View {
     }
 
     private var eyebrow: some View {
-        Eyebrow(text: state.eyebrow, tone: isCooked ? .win : .urgent)
+        Eyebrow(text: state.eyebrow(at: DayPart.current()), tone: isCooked ? .win : .urgent)
     }
     private var isCooked: Bool { if case .cooked = state { return true } else { return false } }
 

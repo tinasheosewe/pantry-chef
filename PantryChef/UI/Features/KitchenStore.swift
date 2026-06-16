@@ -259,11 +259,12 @@ final class KitchenStore {
         }
     }
 
-    func planMeal(_ dish: Dish, on date: Date) {
-        let noon = cal.date(bySettingHour: 12, minute: 0, second: 0, of: date) ?? date
+    func planMeal(_ dish: Dish, on date: Date, part: DayPart = .evening) {
+        // Anchor the hour to the part so a day's meals sort morning → evening.
+        let when = cal.date(bySettingHour: part.anchorHour, minute: 0, second: 0, of: date) ?? date
         events.append(DatedEvent(kind: .meal(PlannedMeal(
-            date: noon, name: dish.name, plate: dish.plate, level: .cooked,
-            missingCount: readiness(for: dish).missingCount))))
+            date: when, name: dish.name, plate: dish.plate, level: .cooked,
+            dayPart: part, missingCount: readiness(for: dish).missingCount))))
     }
 
     func dismissProposal(_ id: UUID) {
@@ -622,7 +623,8 @@ final class KitchenStore {
         events = [
             DatedEvent(kind: .expiry(ExpiryMilestone(date: day(3), itemName: "spinach"))),
             DatedEvent(kind: .meal(PlannedMeal(date: day(8), name: salmon.name,
-                                               plate: salmon.plate, level: .cooked, missingCount: 2))),
+                                               plate: salmon.plate, level: .cooked,
+                                               dayPart: .evening, missingCount: 2))),
             DatedEvent(kind: .proposal(Proposal(date: day(12), text: "Your list hit 5 items — milk runs out around Monday.")))
         ]
         whispers = [DatedWhisper(date: day(1), text: "ragù waiting · 3 portions")]
