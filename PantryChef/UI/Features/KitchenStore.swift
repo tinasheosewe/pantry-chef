@@ -103,14 +103,26 @@ struct StockItem: Identifiable, Equatable {
         return copy
     }
 
+    /// Days left *right now*. The stored count is the estimate as of `storageSince`,
+    /// and it counts down with the calendar — so something logged today with 10 days
+    /// reads 1 day nine days on, and 0 once it's past (never negative). Storage moves
+    /// and manual edits re-anchor it (each sets a fresh estimate as of the change).
+    /// nil unless it's a tracked perishable.
+    func daysLeft(now: Date = Date()) -> Int? {
+        guard case .perishable(_, let stored?) = measure else { return nil }
+        return max(0, stored - Int(ExpiryEngine.daysBetween(storageSince, now)))
+    }
+
     /// Fraction of shelf life used up right now, inferred from the days-left we're
-    /// showing against the current location's safe lifetime. Falls back to the
-    /// tracked fraction plus the current stint when there's no displayed estimate to
-    /// read (untracked item) or no catalog life to read it against.
+    /// showing — the *live* remaining (the stored estimate already ticked down for
+    /// time spent in the current location) against that location's safe lifetime.
+    /// Falls back to the tracked fraction plus the current stint when there's no
+    /// displayed estimate to read (untracked item) or no catalog life to read against.
     private func currentConsumedFraction(now: Date) -> Double {
-        if case .perishable(_, let shown?) = measure,
+        if case .perishable(_, let stored?) = measure,
            let safe = ExpiryEngine.safeDays(catalogItemID: catalogItemID, storage: storage), safe > 0 {
-            return min(1, max(0, 1 - Double(shown) / Double(safe)))
+            let remaining = Double(stored) - ExpiryEngine.daysBetween(storageSince, now)
+            return min(1, max(0, 1 - remaining / Double(safe)))
         }
         return ExpiryEngine.consumedAfterStint(
             priorFraction: consumedFraction, daysInStint: ExpiryEngine.daysBetween(storageSince, now),

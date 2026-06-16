@@ -33,9 +33,10 @@ struct StockView: View {
         store.stock.filter { if case .made = $0.measure { return true } else { return false } }
     }
 
+    /// Live days-left: the stored estimate counts down from its anchor, so the
+    /// ledger (and its urgency sort) reflect today, not the day it was logged.
     private func days(_ item: StockItem) -> Int? {
-        if case .perishable(_, let d) = item.measure { return d }
-        return nil
+        item.daysLeft(now: store.today)
     }
 
     var body: some View {
@@ -167,12 +168,12 @@ struct StockView: View {
 
     @ViewBuilder private func trailing(_ item: StockItem) -> some View {
         switch item.measure {
-        case .perishable(let detail, let d):
+        case .perishable(let detail, _):
             HStack(spacing: 8) {
                 Text(detail.uppercased())
                     .font(.system(size: 10)).tracking(0.8)
                     .foregroundStyle(Theme.Palette.warmGraySoft)
-                if let d {
+                if let d = item.daysLeft(now: store.today) {
                     Text(d == 1 ? "1 DAY" : "\(d) DAYS")
                         .font(Theme.Typography.dish(11, weight: .semibold))
                         .foregroundStyle(d <= 3 ? Theme.Palette.paprika : Theme.Palette.warmGray)
@@ -269,10 +270,22 @@ private struct StockItemEditor: View {
                     set: { item.measure = .perishable(detail: $0, daysLeft: days) }))
             }
             field("Days left") {
-                Stepper(days.map { "\($0) days" } ?? "not tracked",
-                        value: Binding(get: { days ?? 7 },
-                                       set: { item.measure = .perishable(detail: detail, daysLeft: $0) }),
-                        in: 0...60)
+                HStack(spacing: 6) {
+                    TextField("not tracked", text: Binding(
+                        get: { item.daysLeft(now: Date()).map(String.init) ?? "" },
+                        set: { raw in
+                            let digits = raw.filter(\.isNumber)
+                            // A typed estimate is "this many days from now", so re-anchor
+                            // the freshness clock to today; empty clears tracking.
+                            item.storageSince = Date()
+                            item.consumedFraction = 0
+                            item.measure = .perishable(detail: detail,
+                                                       daysLeft: digits.isEmpty ? nil : Int(digits))
+                        }))
+                        .keyboardType(.numberPad)
+                        .fixedSize()
+                    if item.daysLeft(now: Date()) != nil { Text("days") }
+                }
             }
         case .staple(let level):
             field("Presence") {

@@ -89,4 +89,25 @@ final class StockItemStorageMoveTests: XCTestCase {
         let original = fridgeItem()
         XCTAssertEqual(original.moved(to: .refrigerated, now: now), original)
     }
+
+    func testDaysLeftTicksDownWithTheCalendar() {
+        // Logged today with 10 days, it reads 1 nine days on — and never goes negative.
+        let item = greekYogurt(fridgeDaysLeft: 10)
+        XCTAssertEqual(item.daysLeft(now: now), 10)
+        XCTAssertEqual(item.daysLeft(now: now.addingTimeInterval(9 * 86_400)), 1)
+        XCTAssertEqual(item.daysLeft(now: now.addingTimeInterval(30 * 86_400)), 0, "never negative")
+    }
+
+    func testMovingAfterTimePassesProjectsFromWhatIsLeftNow() {
+        // Spinach with 4 fridge-days, logged 2 days ago, has 2 left now; moving it must
+        // project from that 2 — the same as a fresh item that genuinely has 2 days left.
+        let aged = fridgeItem().moved(to: .frozen, now: now)             // 4 days, aged 2
+        let freshTwo = StockItem(key: "spinach", name: "Baby spinach",
+                                 plate: .init(categories: [.produce], seed: 1),
+                                 section: .useSoon, measure: .perishable(detail: "300 g", daysLeft: 2),
+                                 lastConfirmed: now, catalogItemID: "spinach",
+                                 category: .produce, storage: .refrigerated, storageSince: now)
+            .moved(to: .frozen, now: now)
+        XCTAssertEqual(daysLeft(aged), daysLeft(freshTwo))
+    }
 }
