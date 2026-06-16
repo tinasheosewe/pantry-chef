@@ -745,19 +745,42 @@ final class KitchenStore {
         library = [frittata, orzo, shakshuka, stirfry, salmon, ragu, greens]
 
         journal = [
+            JournalItem(date: day(-4), name: "Spinach & feta orzo", plate: orzo.plate,
+                        level: .cooked, note: "quick weeknight"),
             JournalItem(date: day(-2), name: "Lamb ragù", plate: plate([.protein, .pasta], 3),
                         level: .cooked, note: "batch cooked, 3 servings"),
             JournalItem(date: day(-1), name: "Shakshuka", plate: plate([.protein, .produce, .spices], 2),
                         level: .cooked, note: "your sixth this spring")
         ]
+        // A planned meal anchored to its day-part's hour (mirrors planMeal), carrying
+        // the dish's servings so the plan → cook hand-off scales correctly.
+        func plannedMeal(_ d: Dish, inDays n: Int, _ part: DayPart, missing: Int = 0) -> DatedEvent {
+            let when = cal.date(bySettingHour: part.anchorHour, minute: 0, second: 0, of: day(n)) ?? day(n)
+            return DatedEvent(kind: .meal(PlannedMeal(
+                date: when, name: d.name, plate: d.plate, level: .cooked,
+                dayPart: part, servings: d.servings, missingCount: missing)))
+        }
+        let nowPart = DayPart.current(now)
         events = [
+            // Today is planned: the current part's meal leads the now-module, the rest
+            // show in "Today's plan".
+            plannedMeal(stirfry, inDays: 0, nowPart),
+            plannedMeal(salmon, inDays: 0, nowPart == .evening ? .midday : .evening, missing: 2),
+            // A future day with two meals — shows the day-grouped card in the timeline.
+            plannedMeal(shakshuka, inDays: 2, .morning, missing: 3),
+            plannedMeal(orzo, inDays: 2, .evening, missing: 2),
+            // A deadline, a single far-out plan (week marker + fold around it), an invite.
             DatedEvent(kind: .expiry(ExpiryMilestone(date: day(3), itemName: "spinach"))),
-            DatedEvent(kind: .meal(PlannedMeal(date: day(8), name: salmon.name,
-                                               plate: salmon.plate, level: .cooked,
-                                               dayPart: .evening, missingCount: 2))),
+            plannedMeal(greens, inDays: 8, .evening, missing: 1),
             DatedEvent(kind: .proposal(Proposal(date: day(12), text: "Your list hit 5 items — milk runs out around Monday.")))
         ]
         whispers = [DatedWhisper(date: day(1), text: "ragù waiting · 3 portions")]
+        shoppingList = [
+            ShoppingEntry(name: "Eggs", amount: "1 dozen"),
+            ShoppingEntry(name: "Lemon", amount: "3"),
+            ShoppingEntry(name: "Onion"),
+            ShoppingEntry(name: "Miso", amount: "1 tub")
+        ]
 
         func catalogID(_ name: String) -> String? { IntakePipeline.bestCatalogID(for: name) }
         stock = [
@@ -787,7 +810,17 @@ final class KitchenStore {
                       catalogItemID: catalogID("Flour"), category: .bakingSupplies, storage: .pantry),
             StockItem(key: "olive oil", name: "Olive oil", plate: plate([.oils], 8),
                       section: .staples, measure: .staple(.runningLow),
-                      catalogItemID: catalogID("Olive oil"), category: .oils, storage: .pantry)
+                      catalogItemID: catalogID("Olive oil"), category: .oils, storage: .pantry),
+            // Applesauce is the egg substitute — so the frittata reads as "cookable with
+            // a swap" out of the box, showcasing the substitution tier.
+            StockItem(key: "applesauce", name: "Applesauce", plate: plate([.condiments], 2),
+                      section: .staples, measure: .staple(.inStock),
+                      catalogItemID: catalogID("Applesauce"), category: .condiments, storage: .pantry),
+            // A frozen perishable — shows the freezer clock with a long days-left.
+            StockItem(key: "peas", name: "Frozen peas", plate: plate([.frozenFoods], 13),
+                      section: .have, measure: .perishable(detail: "1 bag", daysLeft: 90),
+                      lastConfirmed: day(-10), catalogItemID: catalogID("Peas"),
+                      category: .frozenFoods, storage: .frozen, storageSince: day(-10))
         ]
 
         // The fan is composed from real stock, so it's built here, once stock exists.
