@@ -93,36 +93,36 @@ struct NowModuleView: View {
     }
 
     private func cookedCard(_ s: CookedSummary) -> some View {
-        HStack(spacing: 11) {
-            PlateView(name: s.name, composition: s.plate, size: Theme.Metric.plateRow)
-                .overlay(alignment: .bottomTrailing) {
-                    Image(systemName: "checkmark.circle.fill")
-                        .font(.system(size: 15)).foregroundStyle(Theme.Palette.sage)
-                        .background(Circle().fill(Theme.Palette.cream).padding(1))
-                        .offset(x: 3, y: 3)
+        // Actions sit on their own row beneath the summary (not overlaid) so the
+        // primary button never overlaps the text or clips at the right edge.
+        VStack(alignment: .leading, spacing: 10) {
+            HStack(spacing: 11) {
+                PlateView(name: s.name, composition: s.plate, size: Theme.Metric.plateRow)
+                    .overlay(alignment: .bottomTrailing) {
+                        Image(systemName: "checkmark.circle.fill")
+                            .font(.system(size: 15)).foregroundStyle(Theme.Palette.sage)
+                            .background(Circle().fill(Theme.Palette.cream).padding(1))
+                            .offset(x: 3, y: 3)
+                    }
+                VStack(alignment: .leading, spacing: 3) {
+                    Text(s.name).font(Theme.Typography.dish(15)).foregroundStyle(Theme.Palette.ink)
+                    Text(s.summary).font(Theme.Typography.fact(12)).foregroundStyle(Theme.Palette.warmGray)
                 }
-            VStack(alignment: .leading, spacing: 3) {
-                Text(s.name).font(Theme.Typography.dish(15)).foregroundStyle(Theme.Palette.ink)
-                Text(s.summary).font(Theme.Typography.fact(12)).foregroundStyle(Theme.Palette.warmGray)
+                Spacer(minLength: 0)
             }
-            Spacer(minLength: 0)
-        }
-        .padding(.vertical, 8).frame(maxWidth: .infinity)
-        .overlay(alignment: .bottomTrailing) {
-            // A fresh cook offers "Log" (how much eaten/kept); once logged (dish nil),
-            // just a way back to the fan so the summary never dead-ends.
-            if let dish = s.dish {
-                actionRow(secondary: "Dismiss", primary: "Log",
-                          secondaryAction: onChange,
-                          primaryAction: { onLog(dish) })
-                    .padding(14)
-            } else {
+            HStack(spacing: 12) {
+                Spacer(minLength: 0)
+                // A fresh cook offers "Log" (how much eaten/kept); once logged (dish
+                // nil), just a Dismiss back to the fan so the summary never dead-ends.
                 Button("Dismiss", action: onChange)
                     .font(Theme.Typography.fact(12)).foregroundStyle(Theme.Palette.warmGraySoft)
                     .buttonStyle(.plain)
-                    .padding(14)
+                if let dish = s.dish {
+                    PaprikaButton(title: "Log") { onLog(dish) }
+                }
             }
         }
+        .padding(.vertical, 8).frame(maxWidth: .infinity)
     }
 
     private func actionRow(secondary: String, primary: String,
