@@ -48,9 +48,16 @@ struct ShoppingChecklistView: View {
                         .listRowInsets(EdgeInsets(top: 5, leading: 20, bottom: 5, trailing: 20))
                         .listRowBackground(Color.clear)
                         .listRowSeparatorTint(Theme.Palette.ink.opacity(0.18))
-                        // A full swipe removes the row outright — the swipe performs
-                        // the action, no button to then tap. Marking bought is the
-                        // checkbox tap, so there's no redundant swipe-to-bought.
+                        // Swipe right (leading) to mark bought, swipe left (trailing)
+                        // to remove — each swipe performs its action on a full swipe.
+                        // Tapping the check still toggles bought too.
+                        .swipeActions(edge: .leading, allowsFullSwipe: true) {
+                            Button { toggle(entry.name) } label: {
+                                Label(checked.contains(entry.name) ? "Un-cart" : "Bought",
+                                      systemImage: checked.contains(entry.name) ? "arrow.uturn.left" : "checkmark")
+                            }
+                            .tint(Theme.Palette.sage)
+                        }
                         .swipeActions(edge: .trailing, allowsFullSwipe: true) {
                             Button(role: .destructive) { remove(entry) } label: {
                                 Label("Remove", systemImage: "trash")
@@ -144,13 +151,14 @@ struct ShoppingChecklistView: View {
                 }
             }
             Spacer(minLength: 6)
-            // Count actually bought — pre-filled with the desired amount, editable.
+            // Amount actually bought — same structured number + unit-from-list as a
+            // recipe ingredient (no freeform text). Pre-filled with the desired amount.
             if isChecked {
-                TextField("count", text: Binding(
-                    get: { amounts[name] ?? "" }, set: { amounts[name] = $0 }))
+                AmountField(amount: Binding(
+                    get: { (amounts[name]?.isEmpty ?? true) ? nil : amounts[name] },
+                    set: { amounts[name] = $0 ?? "" }),
+                    qtyWidth: 40, unitWidth: 46)
                     .font(Theme.Typography.fact(13)).foregroundStyle(Theme.Palette.ink)
-                    .multilineTextAlignment(.trailing)
-                    .frame(width: 84)
                     .padding(.horizontal, 8).frame(minHeight: 34)
                     .overlay(Rectangle().strokeBorder(Theme.Palette.sage.opacity(0.7), lineWidth: 1))
             }

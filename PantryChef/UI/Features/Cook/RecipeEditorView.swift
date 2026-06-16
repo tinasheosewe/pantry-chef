@@ -84,12 +84,9 @@ struct RecipeEditorView: View {
             sectionTitle("Ingredients")
             ForEach($dish.ingredients) { $line in
                 HStack(spacing: 8) {
-                    TextField("qty", text: Binding(
-                        get: { Self.qtyText(line.amount) },
-                        set: { line = line.withAmount(qty: $0, unit: Self.unit(line.amount)) }))
-                        .keyboardType(.decimalPad)
-                        .frame(width: 48)
-                    unitMenu($line)
+                    AmountField(amount: Binding(
+                        get: { line.amount },
+                        set: { line = line.withAmount(qty: AmountText.qty($0), unit: AmountText.unit($0)) }))
                     Button {
                         beginResolve(phrase: line.name, lineID: line.id)
                     } label: {
@@ -121,22 +118,6 @@ struct RecipeEditorView: View {
                 }
             }
             .padding(.top, 2)
-        }
-    }
-
-    private func unitMenu(_ line: Binding<RecipeLine>) -> some View {
-        Menu {
-            Button("—") { line.wrappedValue = line.wrappedValue.withAmount(qty: Self.qtyText(line.wrappedValue.amount), unit: nil) }
-            ForEach(MeasurementUnit.allCases) { u in
-                Button(u.rawValue) { line.wrappedValue = line.wrappedValue.withAmount(qty: Self.qtyText(line.wrappedValue.amount), unit: u) }
-            }
-        } label: {
-            HStack(spacing: 2) {
-                Text(Self.unit(line.wrappedValue.amount)?.rawValue ?? "unit")
-                    .foregroundStyle(Self.unit(line.wrappedValue.amount) != nil ? Theme.Palette.ink : Theme.Palette.warmGraySoft)
-                Image(systemName: "chevron.down").font(.system(size: 9)).foregroundStyle(Theme.Palette.warmGraySoft)
-            }
-            .frame(width: 56)
         }
     }
 
@@ -178,18 +159,6 @@ struct RecipeEditorView: View {
             dish.ingredients.append(RecipeLine(key: key, amount: nil, name: display,
                                                catalogItemID: catalogItemID))
         }
-    }
-
-    // MARK: - Amount parsing helpers
-
-    private static func qtyText(_ amount: String?) -> String {
-        guard let amount, !amount.isEmpty else { return "" }
-        return amount.split(separator: " ", maxSplits: 1).map(String.init).first ?? ""
-    }
-    private static func unit(_ amount: String?) -> MeasurementUnit? {
-        guard let amount else { return nil }
-        let parts = amount.split(separator: " ", maxSplits: 1).map(String.init)
-        return parts.count > 1 ? MeasurementUnit(rawValue: parts[1]) : nil
     }
 
     // MARK: - Steps
