@@ -56,9 +56,6 @@ struct CookedSummary: Equatable, Sendable {
     let plate: PlateComposition
     /// "Cooked at 7:20 — 2 servings into the fridge. Good for 3 days."
     let summary: String
-    /// The dish just cooked, when this came from the cook instrument — so the "Done"
-    /// card can offer "Log" (how much was eaten / kept). nil once already logged.
-    var dish: Dish? = nil
 }
 
 /// The now-module's four states (spec §5 state machine). "Could" language is only

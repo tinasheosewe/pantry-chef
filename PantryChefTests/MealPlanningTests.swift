@@ -129,20 +129,28 @@ final class MealPlanningTests: XCTestCase {
         XCTAssertFalse(store.stock.contains { $0.name == "Minestrone" }, "nothing left → gone")
     }
 
-    func testLoggingACookBanksTheKeptPortionsAsLeftovers() {
-        let store = KitchenStore()
-        let plate = PlateComposition(categories: [.produce], seed: 1)
-        XCTAssertNil(store.availablePortions(named: "Minestrone"))
-        store.logCookedMeal(name: "Minestrone", plate: plate, kept: 2)   // ate some, kept 2
-        XCTAssertEqual(store.availablePortions(named: "Minestrone"), 2)
-        store.logCookedMeal(name: "Minestrone", plate: plate, kept: 1)   // cooked more → adds
-        XCTAssertEqual(store.availablePortions(named: "Minestrone"), 3, "banking adds to the leftover")
+    private func minestroneDish(servings: Int) -> Dish {
+        Dish(name: "Minestrone", plate: .init(categories: [.produce], seed: 1), time: "30 min",
+             servings: servings, ingredients: [])
     }
 
-    func testLoggingACookAteItAllBanksNothing() {
+    func testLoggingACookBanksTheServingsAndJournalsIt() {
         let store = KitchenStore()
-        store.logCookedMeal(name: "Minestrone", plate: .init(categories: [.produce], seed: 1), kept: 0)
-        XCTAssertNil(store.availablePortions(named: "Minestrone"), "ate it all → nothing banked")
+        let before = store.journal.count
+        store.logCooked(minestroneDish(servings: 3))
+        XCTAssertEqual(store.availablePortions(named: "Minestrone"), 3, "the full yield is banked")
+        XCTAssertEqual(store.journal.count, before + 1, "the cook is recorded in the journal")
+        store.logCooked(minestroneDish(servings: 3))   // cooked again → adds
+        XCTAssertEqual(store.availablePortions(named: "Minestrone"), 6, "cooking more adds to the leftover")
+    }
+
+    func testFinishingACookAutoBanksAndReturnsToTheFan() {
+        let store = KitchenStore()
+        store.finishCooking([minestroneDish(servings: 2)])
+        XCTAssertEqual(store.availablePortions(named: "Minestrone"), 2, "auto-banked, no extra tap")
+        if case .open = store.nowState {} else { XCTFail("cooking should return to the fan") }
+        XCTAssertTrue(store.fanOptions.contains { $0.name == "Minestrone" },
+                      "the cooked dish surfaces as a ready-made fan option")
     }
 
     func testPlanForNowMatchesTheCurrentPartOfDay() {

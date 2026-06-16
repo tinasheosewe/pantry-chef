@@ -8,8 +8,6 @@ struct NowModuleView: View {
     var onSeeAll: () -> Void = {}
     var onChange: () -> Void = {}
     var onResume: () -> Void = {}
-    /// Log how much of a freshly cooked dish was eaten / kept (the "Done" card).
-    var onLog: (Dish) -> Void = { _ in }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -112,14 +110,10 @@ struct NowModuleView: View {
             }
             HStack(spacing: 12) {
                 Spacer(minLength: 0)
-                // A fresh cook offers "Log" (how much eaten/kept); once logged (dish
-                // nil), just a Dismiss back to the fan so the summary never dead-ends.
+                // Post-eat-log confirmation — a way back to the fan, never a dead-end.
                 Button("Dismiss", action: onChange)
                     .font(Theme.Typography.fact(12)).foregroundStyle(Theme.Palette.warmGraySoft)
                     .buttonStyle(.plain)
-                if let dish = s.dish {
-                    PaprikaButton(title: "Log") { onLog(dish) }
-                }
             }
         }
         .padding(.vertical, 8).frame(maxWidth: .infinity)

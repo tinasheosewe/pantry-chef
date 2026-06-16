@@ -26,6 +26,9 @@ struct RecipeDetailView: View {
     var autofill: (String) async -> AIIngredientDefinition? = { _ in nil }
     /// Receives the dish to cook — scaling and applied swaps baked in.
     var onCook: (Dish) -> Void
+    /// "I made this" without walking the cook steps — banks the (scaled) servings as
+    /// leftovers and journals it, same as finishing the instrument.
+    var onLogCooked: (Dish) -> Void = { _ in }
     var onClose: () -> Void
 
     @State private var currentDish: Dish
@@ -55,6 +58,7 @@ struct RecipeDetailView: View {
          tweak: ((Dish, String) async -> Dish?)? = nil,
          autofill: @escaping (String) async -> AIIngredientDefinition? = { _ in nil },
          onCook: @escaping (Dish) -> Void,
+         onLogCooked: @escaping (Dish) -> Void = { _ in },
          onClose: @escaping () -> Void) {
         self.dish = dish
         self.readiness = readiness
@@ -68,6 +72,7 @@ struct RecipeDetailView: View {
         self.tweak = tweak
         self.autofill = autofill
         self.onCook = onCook
+        self.onLogCooked = onLogCooked
         self.onClose = onClose
         _currentDish = State(initialValue: dish)
         _baseline = State(initialValue: dish)
@@ -422,8 +427,18 @@ struct RecipeDetailView: View {
     private var cookBar: some View {
         VStack(spacing: 0) {
             SolidRule()
-            BlockButton(title: "Cook", fullWidth: true) { onCook(effectiveDish) }
-                .padding(.horizontal, 20).padding(.vertical, 12)
+            HStack(spacing: 12) {
+                // "I made this" without the step-by-step — logs it straight away.
+                Button { onLogCooked(effectiveDish) } label: {
+                    Text("MARK AS MADE").font(.system(size: 11, weight: .medium)).tracking(1.6)
+                        .foregroundStyle(Theme.Palette.ink)
+                        .padding(.vertical, 14).padding(.horizontal, 4)
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                BlockButton(title: "Cook", fullWidth: true) { onCook(effectiveDish) }
+            }
+            .padding(.horizontal, 20).padding(.vertical, 12)
         }
         .background(Theme.Palette.cream)
     }

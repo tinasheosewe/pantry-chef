@@ -389,23 +389,22 @@ final class KitchenStore {
     }
 
     func finishCooking(_ dishes: [Dish]) {
-        guard let first = dishes.first else { return }
-        let name = dishes.count > 1 ? "Tonight's dishes" : first.name
-        // The "Done" card doesn't auto-log eating — it offers "Log" (how much was
-        // eaten / kept) via the carried dish, so leftovers are banked truthfully.
-        nowState = .cooked(CookedSummary(name: name, plate: first.plate,
-                                         summary: "Cooked — log how much you keep.", dish: first))
+        // Cooking is *production*: auto-log each dish (bank its servings + journal it)
+        // — no extra tap, you already walked the steps — and return to the fan, where
+        // the dish now shows as ready-made. Eating is logged separately, when you eat.
+        for dish in dishes { logCooked(dish) }
+        resetNow()
     }
 
-    /// Log a freshly cooked dish: `kept` portions go to the fridge as leftovers
-    /// (0 = ate it all, full count = ate none). No plan to clear.
-    func logCookedMeal(name: String, plate: PlateComposition, kept: Int) {
-        bankLeftover(name: name, plate: plate, add: kept)
-        nowState = .cooked(CookedSummary(
-            name: name, plate: plate,
-            summary: kept > 0
-                ? "Cooked — \(kept) \(kept == 1 ? "portion" : "portions") in the fridge."
-                : "Cooked — all eaten."))
+    /// Record a cooked dish: bank its (scaled) servings as leftovers and journal it.
+    /// This is the single "I made this" operation — reached from finishing the cook
+    /// instrument or "Mark as made" on the recipe. No eat-time prompt; eating draws
+    /// the leftover down separately.
+    func logCooked(_ dish: Dish) {
+        bankLeftover(name: dish.name, plate: dish.plate, add: dish.servings)
+        journal.append(JournalItem(
+            date: today, name: dish.name, plate: dish.plate, level: .cooked,
+            note: "\(dish.servings) \(dish.servings == 1 ? "serving" : "servings")"))
     }
 
     /// Add `count` portions to a named leftover (cooking *produces* food), creating it

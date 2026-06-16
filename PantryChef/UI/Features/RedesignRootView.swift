@@ -33,8 +33,6 @@ struct RedesignRootView: View {
     @State private var editingMeal: PlannedMeal?
     /// A heat-and-eat meal being logged — drives the "how much is left?" prompt.
     @State private var loggingMeal: PlannedMeal?
-    /// A freshly cooked dish being logged — same prompt, banking what's kept.
-    @State private var loggingCooked: Dish?
     /// When a meal is planned for now, the now-module leads with it; this reveals the
     /// generic "you could…" suggestions instead, on demand.
     @State private var showSuggestions = false
@@ -116,14 +114,6 @@ struct RedesignRootView: View {
                     name: meal.name, plate: meal.plate, available: available,
                     defaultKept: max(0, available - meal.servings),
                     onLog: { kept in withAnimation { store.logPlannedMeal(meal, kept: kept) }; loggingMeal = nil })
-                .presentationDetents([.height(300)])
-            }
-            .sheet(item: $loggingCooked) { dish in
-                // Fresh cook: default to "ate none" (bank all) — don't presume you ate it.
-                ServingsOutcomeSheet(
-                    name: dish.name, plate: dish.plate, available: dish.servings,
-                    defaultKept: dish.servings,
-                    onLog: { kept in withAnimation { store.logCookedMeal(name: dish.name, plate: dish.plate, kept: kept) }; loggingCooked = nil })
                 .presentationDetents([.height(300)])
             }
             .fullScreenCover(item: $detailDish) { dish in
@@ -211,8 +201,7 @@ struct RedesignRootView: View {
                                     if case .cooking(let p) = store.nowState, let dish = p.dish {
                                         multiSession = CookSession(dishes: [dish])
                                     }
-                                },
-                                onLog: { dish in loggingCooked = dish }
+                                }
                             )
                         }
                         TodayPlanView(
@@ -269,6 +258,7 @@ private struct RecipeDetailScreen: View {
             },
             autofill: { await store.ai.generateIngredientDefinition(name: $0) },
             onCook: { effective in session = CookSession(dishes: [effective]) },
+            onLogCooked: { effective in store.logCooked(effective); onClose() },
             onClose: onClose
         )
         .fullScreenCover(item: $session) { s in
