@@ -7,8 +7,10 @@ struct TimelineView: View {
     let entries: [TimelineEntry]
     var today: Date = Date()
     var onTapDay: (Date) -> Void = { _ in }
-    /// Opens the recipe behind a tapped meal/journal node (by dish name).
+    /// Opens the recipe behind a tapped journal node (by dish name).
     var onOpenMeal: (String) -> Void = { _ in }
+    /// Opens the actions sheet for a tapped planned meal (open recipe / move / remove).
+    var onTapMeal: (PlannedMeal) -> Void = { _ in }
     var onDismissProposal: (UUID) -> Void = { _ in }
     var onOpenStock: () -> Void = {}
     /// Opens the date picker to plan a day beyond the visible horizon.
@@ -175,6 +177,7 @@ struct TimelineView: View {
             }
         } else {
             TimelineRow(entry: entry, onTapDay: onTapDay, onOpenMeal: onOpenMeal,
+                        onTapMeal: onTapMeal,
                         onDismissProposal: onDismissProposal, onOpenStock: onOpenStock)
         }
     }

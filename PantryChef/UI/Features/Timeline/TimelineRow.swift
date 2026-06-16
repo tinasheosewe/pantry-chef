@@ -6,6 +6,7 @@ struct TimelineRow: View {
     let entry: TimelineEntry
     var onTapDay: (Date) -> Void = { _ in }
     var onOpenMeal: (String) -> Void = { _ in }
+    var onTapMeal: (PlannedMeal) -> Void = { _ in }
     var onDismissProposal: (UUID) -> Void = { _ in }
     var onOpenStock: () -> Void = {}
 
@@ -36,7 +37,7 @@ struct TimelineRow: View {
         switch entry {
         case .now: nowSlot
         case .journal(let j): journalRow(j).contentShape(Rectangle()).onTapGesture { onOpenMeal(j.name) }
-        case .meal(let m): mealCard(m).onTapGesture { onOpenMeal(m.name) }
+        case .meal(let m): mealCard(m).onTapGesture { onTapMeal(m) }
         case .mealDay(let date, let meals): mealDayCard(date, meals)
         case .expiry(let e): expiryRow(e).contentShape(Rectangle()).onTapGesture { onOpenStock() }
         case .proposal(let p):
@@ -100,7 +101,7 @@ struct TimelineRow: View {
                 .font(.system(size: 9)).tracking(Theme.Metric.eyebrowTracking)
                 .foregroundStyle(Theme.Palette.ink.opacity(0.55))
             ForEach(meals) { m in
-                Button { onOpenMeal(m.name) } label: {
+                Button { onTapMeal(m) } label: {
                     HStack(spacing: 11) {
                         PlateView(name: m.name, composition: m.plate, size: Theme.Metric.plateMini)
                         VStack(alignment: .leading, spacing: 1) {

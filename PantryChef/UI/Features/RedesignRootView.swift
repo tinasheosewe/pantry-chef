@@ -30,6 +30,7 @@ struct RedesignRootView: View {
     @State private var detailDish: Dish?
     @State private var multiSession: CookSession?
     @State private var planTarget: PlanTarget?
+    @State private var editingMeal: PlannedMeal?
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
@@ -85,6 +86,14 @@ struct RedesignRootView: View {
                 }
                 .presentationDetents([.medium, .large])
             }
+            .sheet(item: $editingMeal) { meal in
+                PlannedMealSheet(
+                    meal: meal,
+                    onOpenRecipe: { editingMeal = nil; detailDish = store.dish(named: meal.name) },
+                    onSetPart: { store.setMealPart(meal.id, to: $0); editingMeal = nil },
+                    onRemove: { store.removeMeal(meal.id); editingMeal = nil })
+                .presentationDetents([.medium])
+            }
             .fullScreenCover(item: $detailDish) { dish in
                 // Cook is presented from *inside* this cover (a second cover on the
                 // same presenter never appears until the first dismisses).
@@ -117,6 +126,7 @@ struct RedesignRootView: View {
                 today: store.today,
                 onTapDay: { planTarget = PlanTarget(date: $0) },
                 onOpenMeal: { name in detailDish = store.dish(named: name) },
+                onTapMeal: { editingMeal = $0 },
                 onDismissProposal: { id in withAnimation { store.dismissProposal(id) } },
                 onOpenStock: { store.space = .stock },
                 onPlanAhead: { showPlanAhead = true },
@@ -145,6 +155,10 @@ struct RedesignRootView: View {
                                 }
                             }
                         )
+                        TodayPlanView(
+                            store: store,
+                            onTapMeal: { editingMeal = $0 },
+                            onAdd: { planTarget = PlanTarget(date: store.today) })
                         OnTheClockSection(store: store) { withAnimation { store.space = .stock } }
                         KitchenLedger(
                             store: store,
@@ -341,6 +355,118 @@ struct VerticalDashedRule: View {
 }
 
 /// Pick a dish to plan onto a tapped day.
+/// Today's committed meals, shown at the now-module — the future ruler starts at
+/// tomorrow, so this is where a plan made *for today* lives. Also the entry point to
+/// plan something for today (plan dinner in the morning, etc.).
+private struct TodayPlanView: View {
+    var store: KitchenStore
+    var onTapMeal: (PlannedMeal) -> Void
+    var onAdd: () -> Void
+
+    var body: some View {
+        let meals = store.todaysPlannedMeals
+        VStack(alignment: .leading, spacing: 8) {
+            if meals.isEmpty {
+                Button(action: onAdd) {
+                    Text("+ PLAN SOMETHING FOR TODAY")
+                        .font(.system(size: 10, weight: .medium)).tracking(1.4)
+                        .foregroundStyle(Theme.Palette.paprika)
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+            } else {
+                HStack {
+                    Eyebrow(text: "Today’s plan")
+                    Spacer()
+                    Button(action: onAdd) {
+                        Text("+ ADD").font(.system(size: 10, weight: .medium)).tracking(1.4)
+                            .foregroundStyle(Theme.Palette.paprika)
+                    }
+                    .buttonStyle(.plain)
+                }
+                ForEach(meals) { m in
+                    Button { onTapMeal(m) } label: {
+                        HStack(spacing: 11) {
+                            PlateView(name: m.name, composition: m.plate, size: Theme.Metric.plateMini)
+                            VStack(alignment: .leading, spacing: 1) {
+                                Text(m.dayPart.tag.uppercased())
+                                    .font(.system(size: 8.5)).tracking(Theme.Metric.eyebrowTracking)
+                                    .foregroundStyle(Theme.Palette.ink.opacity(0.4))
+                                Text(m.name).font(Theme.Typography.dish(15)).foregroundStyle(Theme.Palette.ink)
+                                if m.missingCount > 0 {
+                                    Text("NEEDS \(m.missingCount) → LIST")
+                                        .font(.system(size: 9)).tracking(1.6).foregroundStyle(Theme.Palette.paprika)
+                                }
+                            }
+                            Spacer(minLength: 0)
+                        }
+                        .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+        }
+        .padding(.vertical, 12)
+    }
+}
+
+/// Actions on a planned meal: open its recipe, move it to a different part of the
+/// day, or drop it from the plan (the timeline had no way to undo a plan before).
+private struct PlannedMealSheet: View {
+    let meal: PlannedMeal
+    var onOpenRecipe: () -> Void
+    var onSetPart: (DayPart) -> Void
+    var onRemove: () -> Void
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 18) {
+            HStack(spacing: 11) {
+                PlateView(name: meal.name, composition: meal.plate, size: 38)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(meal.name).font(Theme.Typography.dish(20)).foregroundStyle(Theme.Palette.ink)
+                    Text("\(DayLabel.full(for: meal.date)) · \(meal.dayPart.tag)".uppercased())
+                        .font(.system(size: 9)).tracking(Theme.Metric.eyebrowTracking)
+                        .foregroundStyle(Theme.Palette.ink.opacity(0.5))
+                }
+            }
+            .padding(.top, 24)
+
+            VStack(alignment: .leading, spacing: 6) {
+                Eyebrow(text: "Move to")
+                HStack(spacing: 8) {
+                    ForEach(DayPart.allCases, id: \.self) { p in
+                        let selected = p == meal.dayPart
+                        Button { onSetPart(p) } label: {
+                            Text(p.tag.uppercased()).font(.system(size: 9.5, weight: .medium)).tracking(1.2)
+                                .foregroundStyle(selected ? Theme.Palette.cream : Theme.Palette.ink.opacity(0.7))
+                                .padding(.horizontal, 11).padding(.vertical, 7)
+                                .background(Rectangle().fill(selected ? Theme.Palette.ink : .clear))
+                                .overlay(Rectangle().strokeBorder(Theme.Palette.ink.opacity(selected ? 0 : 0.4), lineWidth: 1))
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+            }
+
+            Button(action: onOpenRecipe) {
+                Text("OPEN RECIPE →").font(.system(size: 10)).tracking(1.8)
+                    .foregroundStyle(Theme.Palette.ink)
+            }
+            .buttonStyle(.plain)
+
+            Spacer()
+            Button(action: onRemove) {
+                Text("REMOVE FROM PLAN").font(.system(size: 10)).tracking(1.8)
+                    .foregroundStyle(Theme.Palette.paprika)
+            }
+            .buttonStyle(.plain)
+        }
+        .padding(20)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        .background(KitchenBackground())
+    }
+}
+
 private struct PlanDaySheet: View {
     var store: KitchenStore
     let date: Date

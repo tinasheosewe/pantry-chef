@@ -267,6 +267,35 @@ final class KitchenStore {
             dayPart: part, missingCount: readiness(for: dish).missingCount))))
     }
 
+    /// Planned meals on a given calendar day, ordered morning → evening.
+    func plannedMeals(on date: Date) -> [PlannedMeal] {
+        events.compactMap { event -> PlannedMeal? in
+            guard case .meal(let m) = event.kind, cal.isDate(m.date, inSameDayAs: date) else { return nil }
+            return m
+        }.sorted { ($0.dayPart, $0.date) < ($1.dayPart, $1.date) }
+    }
+
+    /// Today's committed meals — surfaced at the now-module (the future ruler starts
+    /// at tomorrow, so today's plan would otherwise have nowhere to show).
+    var todaysPlannedMeals: [PlannedMeal] { plannedMeals(on: today) }
+
+    /// Drop a meal from the plan.
+    func removeMeal(_ id: UUID) {
+        events.removeAll { if case .meal(let m) = $0.kind { return m.id == id } else { return false } }
+    }
+
+    /// Reassign a planned meal to a different part of its day, re-anchoring the hour
+    /// so it keeps sorting morning → evening.
+    func setMealPart(_ id: UUID, to part: DayPart) {
+        guard let i = events.firstIndex(where: {
+            if case .meal(let m) = $0.kind { return m.id == id } else { return false }
+        }), case .meal(let m) = events[i].kind, m.dayPart != part else { return }
+        let when = cal.date(bySettingHour: part.anchorHour, minute: 0, second: 0, of: m.date) ?? m.date
+        events[i] = DatedEvent(kind: .meal(PlannedMeal(
+            id: m.id, date: when, name: m.name, plate: m.plate, level: m.level,
+            dayPart: part, missingCount: m.missingCount)))
+    }
+
     func dismissProposal(_ id: UUID) {
         events.removeAll { if case .proposal(let p) = $0.kind { return p.id == id } else { return false } }
     }
