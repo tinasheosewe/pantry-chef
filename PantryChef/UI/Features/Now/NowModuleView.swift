@@ -109,11 +109,17 @@ struct NowModuleView: View {
         }
         .padding(.vertical, 8).frame(maxWidth: .infinity)
         .overlay(alignment: .bottomTrailing) {
-            // A fresh cook offers "Log" (how much eaten/kept); once logged, dish is nil.
+            // A fresh cook offers "Log" (how much eaten/kept); once logged (dish nil),
+            // just a way back to the fan so the summary never dead-ends.
             if let dish = s.dish {
                 actionRow(secondary: "Dismiss", primary: "Log",
                           secondaryAction: onChange,
                           primaryAction: { onLog(dish) })
+                    .padding(14)
+            } else {
+                Button("Dismiss", action: onChange)
+                    .font(Theme.Typography.fact(12)).foregroundStyle(Theme.Palette.warmGraySoft)
+                    .buttonStyle(.plain)
                     .padding(14)
             }
         }
