@@ -140,6 +140,7 @@ struct TimelineView: View {
         case .now: return today
         case .journal(let j): return j.date
         case .meal(let m): return m.date
+        case .mealDay(let d, _): return d
         case .expiry(let e): return e.date
         case .proposal(let p): return p.date
         case .day(let d, _): return d

@@ -23,6 +23,7 @@ struct TimelineRow: View {
         case .now: return .now
         case .journal: return .journal
         case .meal: return .meal
+        case .mealDay: return .meal
         case .expiry: return .expiry
         case .proposal: return .proposal
         case .day: return .day
@@ -36,6 +37,7 @@ struct TimelineRow: View {
         case .now: nowSlot
         case .journal(let j): journalRow(j).contentShape(Rectangle()).onTapGesture { onOpenMeal(j.name) }
         case .meal(let m): mealCard(m).onTapGesture { onOpenMeal(m.name) }
+        case .mealDay(let date, let meals): mealDayCard(date, meals)
         case .expiry(let e): expiryRow(e).contentShape(Rectangle()).onTapGesture { onOpenStock() }
         case .proposal(let p):
             proposalCard(p).onTapGesture { onDismissProposal(p.id) }
@@ -85,6 +87,39 @@ struct TimelineRow: View {
                 }
             }
             Spacer(minLength: 0)
+        }
+        .padding(.vertical, 6)
+        .frame(maxWidth: .infinity)
+    }
+
+    /// Several meals on one day under a single date header — one plate row each,
+    /// labelled by part (morning/midday/evening) instead of repeating the day.
+    private func mealDayCard(_ date: Date, _ meals: [PlannedMeal]) -> some View {
+        VStack(alignment: .leading, spacing: 9) {
+            Text(DayLabel.full(for: date).uppercased())
+                .font(.system(size: 9)).tracking(Theme.Metric.eyebrowTracking)
+                .foregroundStyle(Theme.Palette.ink.opacity(0.55))
+            ForEach(meals) { m in
+                Button { onOpenMeal(m.name) } label: {
+                    HStack(spacing: 11) {
+                        PlateView(name: m.name, composition: m.plate, size: Theme.Metric.plateMini)
+                        VStack(alignment: .leading, spacing: 1) {
+                            Text(m.dayPart.tag.uppercased())
+                                .font(.system(size: 8.5)).tracking(Theme.Metric.eyebrowTracking)
+                                .foregroundStyle(Theme.Palette.ink.opacity(0.4))
+                            Text(m.name).font(Theme.Typography.dish(15)).foregroundStyle(Theme.Palette.ink)
+                            if m.missingCount > 0 {
+                                Text("NEEDS \(m.missingCount) → LIST")
+                                    .font(.system(size: 9)).tracking(1.6)
+                                    .foregroundStyle(Theme.Palette.paprika)
+                            }
+                        }
+                        Spacer(minLength: 0)
+                    }
+                    .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+            }
         }
         .padding(.vertical, 6)
         .frame(maxWidth: .infinity)

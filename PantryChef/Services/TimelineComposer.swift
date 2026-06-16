@@ -101,10 +101,10 @@ struct TimelineComposer {
                 lastWeekStart = week
             }
 
-            let dayEvents = (eventsByDay[dayStart] ?? []).sorted { order($0) < order($1) }
+            let dayEvents = eventsByDay[dayStart] ?? []
             if !dayEvents.isEmpty {
                 flushSilentRun()
-                out += dayEvents.map(entry(for:))
+                out += dayEntries(dayStart: dayStart, events: dayEvents)
             } else if let whisper = whisperByDay[dayStart]?.first?.text {
                 flushSilentRun()
                 out.append(.day(date: dayStart, whisper: whisper))
@@ -126,8 +126,30 @@ struct TimelineComposer {
         }
     }
 
-    /// Stable within-day ordering: the committed meal leads, then the deadline it
-    /// addresses, then any invitation.
+    /// One day's rows: the meals lead (a single one as its own card, 2+ gathered into
+    /// a `.mealDay` under one header, always ordered morning → evening), then the
+    /// deadline they address, then any invitation.
+    private func dayEntries(dayStart: Date, events: [DatedEvent]) -> [TimelineEntry] {
+        var meals: [PlannedMeal] = []
+        var rest: [DatedEvent] = []
+        for event in events {
+            if case .meal(let m) = event.kind { meals.append(m) } else { rest.append(event) }
+        }
+        meals.sort { ($0.dayPart, $0.date) < ($1.dayPart, $1.date) }
+        rest.sort { (order($0), $0.date) < (order($1), $1.date) }
+
+        var out: [TimelineEntry] = []
+        if meals.count >= 2 {
+            out.append(.mealDay(date: dayStart, meals: meals))
+        } else {
+            out += meals.map(TimelineEntry.meal)
+        }
+        out += rest.map(entry(for:))
+        return out
+    }
+
+    /// Stable within-day ordering for non-meal events: the deadline before any
+    /// invitation (meals are pulled out and lead, in `dayEntries`).
     private func order(_ event: DatedEvent) -> Int {
         switch event.kind {
         case .meal: return 0

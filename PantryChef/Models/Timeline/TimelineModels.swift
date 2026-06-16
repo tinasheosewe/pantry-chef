@@ -169,6 +169,10 @@ enum TimelineEntry: Identifiable, Equatable, Sendable {
     case journal(JournalItem)
     case now
     case meal(PlannedMeal)
+    /// A day with several planned meals, gathered under one header so a busy week
+    /// reads as days-with-meals, not a wall of repeated day labels (spec §4 density).
+    /// Meals are ordered morning → evening.
+    case mealDay(date: Date, meals: [PlannedMeal])
     case expiry(ExpiryMilestone)
     case proposal(Proposal)
     /// A bare day on the ruler; `whisper` present means it earned a fact.
@@ -183,6 +187,7 @@ enum TimelineEntry: Identifiable, Equatable, Sendable {
         case .journal(let j): return "journal-\(j.id)"
         case .now: return "now"
         case .meal(let m): return "meal-\(m.id)"
+        case .mealDay(let date, _): return "mealday-\(date.timeIntervalSince1970)"
         case .expiry(let e): return "expiry-\(e.id)"
         case .proposal(let p): return "proposal-\(p.id)"
         case .day(let date, _): return "day-\(date.timeIntervalSince1970)"

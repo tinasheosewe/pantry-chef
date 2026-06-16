@@ -33,6 +33,7 @@ final class TimelineComposerTests: XCTestCase {
             case .now: return "NOW"
             case .journal(let j): return "J(\(j.name))"
             case .meal(let m): return "MEAL(\(m.name)@\(offset(m.date)))"
+            case .mealDay(let d, let meals): return "MEALDAY(\(offset(d)):\(meals.map(\.name).joined(separator: ",")))"
             case .expiry(let e): return "EXP(\(e.itemName)@\(offset(e.date)))"
             case .proposal: return "PROP"
             case .day(let d, let w): return w == nil ? "DAY(\(offset(d)))" : "WHISPER(\(offset(d)))"
@@ -48,9 +49,10 @@ final class TimelineComposerTests: XCTestCase {
                         events: events, whispers: whispers)
     }
 
-    private func plannedMeal(_ n: Int, _ name: String) -> DatedEvent {
+    private func plannedMeal(_ n: Int, _ name: String, _ part: DayPart = .evening) -> DatedEvent {
         .init(kind: .meal(PlannedMeal(date: day(n), name: name,
-                                      plate: .init(categories: [.produce], seed: 1), level: .cooked)))
+                                      plate: .init(categories: [.produce], seed: 1),
+                                      level: .cooked, dayPart: part)))
     }
     private func expiry(_ n: Int, _ item: String) -> DatedEvent {
         .init(kind: .expiry(ExpiryMilestone(date: day(n), itemName: item)))
@@ -101,6 +103,27 @@ final class TimelineComposerTests: XCTestCase {
         let entries = composer.compose(snapshot(
             horizon: 2, events: [expiry(1, "spinach"), plannedMeal(1, "Orzo")]))
         XCTAssertEqual(tokens(entries), ["NOW", "MEAL(Orzo@1)", "EXP(spinach@1)", "DAY(2)"])
+    }
+
+    func testALoneMealStaysAnIndividualCard() {
+        let entries = composer.compose(snapshot(horizon: 2, events: [plannedMeal(1, "Solo")]))
+        XCTAssertEqual(tokens(entries), ["NOW", "MEAL(Solo@1)", "DAY(2)"])
+    }
+
+    func testTwoMealsOnADayGroupUnderOneHeaderInPartOrder() {
+        // Dinner planned before breakfast; they gather under day 2 and read morning→evening.
+        let entries = composer.compose(snapshot(
+            horizon: 3, events: [plannedMeal(2, "Dinner", .evening),
+                                 plannedMeal(2, "Breakfast", .morning)]))
+        XCTAssertEqual(tokens(entries), ["NOW", "DAY(1)", "MEALDAY(2:Breakfast,Dinner)", "DAY(3)"])
+    }
+
+    func testGroupedMealsStillLeadTheDaysDeadline() {
+        let entries = composer.compose(snapshot(
+            horizon: 2, events: [expiry(1, "spinach"),
+                                 plannedMeal(1, "Lunch", .midday),
+                                 plannedMeal(1, "Supper", .evening)]))
+        XCTAssertEqual(tokens(entries), ["NOW", "MEALDAY(1:Lunch,Supper)", "EXP(spinach@1)", "DAY(2)"])
     }
 
     func testTodaysEventsAreNotInTheFutureRuler() {
