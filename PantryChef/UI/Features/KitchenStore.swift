@@ -154,7 +154,7 @@ struct ShoppingEntry: Identifiable, Equatable {
 final class KitchenStore {
     var today = Date()
     var space: RootSpace = .timeline
-    var nowState: NowState
+    var nowState: NowState = .open(options: [], selected: 0)
 
     var journal: [JournalItem]
     var events: [DatedEvent]
@@ -240,7 +240,8 @@ final class KitchenStore {
     }
 
     func resetNow() {
-        nowState = .open(options: fanOptions, selected: min(1, max(0, fanOptions.count - 1)))
+        fanOptions = composeFan()
+        nowState = .open(options: fanOptions, selected: 0)
     }
 
     func beginCooking(_ dishes: [Dish], stepIndex: Int, totalSteps: Int) {
@@ -387,6 +388,67 @@ final class KitchenStore {
             .evaluate(dish.requirements)
     }
 
+    /// The "tonight you could" fan, built from what's actually here (spec §5):
+    /// ready-made leftovers first — you'd heat and eat, not cook — then the dishes
+    /// you can make right now (ready before swap-ready), skipping anything that
+    /// clashes with the dietary profile. If little is fully ready, it's padded with
+    /// the closest dishes so the fan is never empty.
+    func composeFan() -> [FanOption] {
+        var out: [FanOption] = []
+
+        // 1) Ready-made: made/leftover stock you can eat tonight without cooking.
+        for item in stock where item.section == .made && item.certainty(now: today) > .likelyGone {
+            let detail: String
+            if case .made(let d) = item.measure { detail = d } else { detail = "" }
+            out.append(FanOption(
+                name: item.name, plate: item.plate,
+                subtitle: detail.isEmpty ? "ready-made" : detail,
+                reason: "Already made — heat and eat.",
+                readiness: .ready, level: .served, dish: nil))
+        }
+
+        // 2) Cookable now: dietary-safe library dishes, ready before swap-ready.
+        let safe = library.filter { DishInsights.conflicts($0, with: profile).isEmpty }
+            .map { (dish: $0, readiness: readiness(for: $0)) }
+        for entry in safe.filter({ $0.readiness.isMakeableNow })
+            .sorted(by: { Self.fanRank($0.readiness) < Self.fanRank($1.readiness) })
+            .prefix(4) {
+            out.append(fanOption(entry.dish, entry.readiness))
+        }
+
+        // 3) Never empty: if little is ready, offer the closest dishes (fewest missing).
+        if out.count < 2 {
+            for entry in safe.filter({ !$0.readiness.isMakeableNow })
+                .sorted(by: { $0.readiness.missingCount < $1.readiness.missingCount })
+                .prefix(3 - out.count) {
+                out.append(fanOption(entry.dish, entry.readiness))
+            }
+        }
+        return Array(out.prefix(5))
+    }
+
+    private func fanOption(_ dish: Dish, _ r: Readiness) -> FanOption {
+        let detail: String
+        switch r {
+        case .ready: detail = "\(dish.time) · all on hand"
+        case .readyWithSwaps(let s): detail = "\(dish.time) · \(SwapPhrase.count(s.count))"
+        case .needs(let items): detail = "\(dish.time) · needs \(items.count)"
+        }
+        return FanOption(name: dish.name, plate: dish.plate, subtitle: detail,
+                         reason: dish.blurb ?? "Ready from what you have.",
+                         readiness: r, level: .cooked, dish: dish)
+    }
+
+    private static func fanRank(_ r: Readiness) -> Int {
+        switch r { case .ready: return 0; case .readyWithSwaps: return 1; case .needs: return 2 }
+    }
+
+    /// Log a ready-made pick as eaten tonight — no cook instrument, just the record.
+    func logEaten(_ option: FanOption) {
+        nowState = .cooked(CookedSummary(
+            name: option.name, plate: option.plate, summary: "Logged — eaten tonight."))
+    }
+
     /// Whether a recipe line is on hand right now (for the gathering checklist) —
     /// same matcher as readiness, so the two can never disagree: catalog id first,
     /// then the name fallback.
@@ -518,19 +580,7 @@ final class KitchenStore {
                           line("baby spinach", "100 g", "Spinach")],
             steps: [CookStep("Beat the eggs, fold in greens and feta, set under the grill.", timerSeconds: 480, phase: .cook, attention: .passive)])
 
-        library = [orzo, shakshuka, stirfry, salmon, ragu, greens]
-
-        let options = [
-            FanOption(name: frittata.name, plate: frittata.plate, subtitle: "15 min · 5 of 5 on hand",
-                      reason: "The fast pick — fifteen minutes, start to plate.", dish: frittata),
-            FanOption(name: orzo.name, plate: orzo.plate, subtitle: "25 min · 6 of 6 on hand",
-                      reason: "The rescue pick — spinach won't see Friday.", dish: orzo),
-            FanOption(name: ragu.name, plate: ragu.plate, subtitle: "2 h 10 · 7 of 9 on hand",
-                      reason: "The ambitious pick — and it freezes beautifully.",
-                      readiness: .needs(items: ["wine", "celery"]), dish: ragu)
-        ]
-        fanOptions = options
-        nowState = .open(options: options, selected: 1)
+        library = [frittata, orzo, shakshuka, stirfry, salmon, ragu, greens]
 
         journal = [
             JournalItem(date: day(-2), name: "Lamb ragù", plate: plate([.protein, .pasta], 3),
@@ -576,6 +626,10 @@ final class KitchenStore {
                       section: .staples, measure: .staple(.runningLow),
                       catalogItemID: catalogID("Olive oil"), category: .oils, storage: .pantry)
         ]
+
+        // The fan is composed from real stock, so it's built here, once stock exists.
+        fanOptions = composeFan()
+        nowState = .open(options: fanOptions, selected: 0)
 
         // Screenshot/CI hook: open straight to a given space.
         if let forced = ProcessInfo.processInfo.environment["PC_SPACE"],

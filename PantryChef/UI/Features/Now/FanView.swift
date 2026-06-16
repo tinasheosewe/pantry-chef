@@ -83,7 +83,7 @@ struct FanView: View {
 
     private func actions(_ option: FanOption) -> some View {
         HStack(spacing: 8) {
-            BlockButton(title: "Cook") { onCook(option) }
+            BlockButton(title: option.level.verb) { onCook(option) }
             if count > 1 {
                 OutlineButton(title: "⟨ \(alternateNames) ⟩") { advance(1) }
             }

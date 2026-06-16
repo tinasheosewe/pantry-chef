@@ -341,7 +341,8 @@ final class AIService {
 
     // MARK: - Recipe Modification
 
-    func modifyRecipe(_ dish: Dish, feedback: String, pantryIngredients: [String]) async -> Dish? {
+    func modifyRecipe(_ dish: Dish, feedback: String, pantryIngredients: [String],
+                      avoid: [String] = []) async -> Dish? {
         let ingredientList = dish.ingredients.map(\.display).joined(separator: "\n")
 
         let stepList = dish.steps.enumerated().map { index, step in
@@ -356,6 +357,9 @@ final class AIService {
         contextLines.append("\nSteps:\n\(stepList)")
         if !pantryIngredients.isEmpty {
             contextLines.append("\nUser's pantry contains: \(pantryIngredients.joined(separator: ", "))")
+        }
+        if !avoid.isEmpty {
+            contextLines.append("\nThe household AVOIDS these — never introduce them: \(avoid.joined(separator: ", "))")
         }
         contextLines.append("\nUser's modification request: \(feedback)")
 
@@ -381,6 +385,10 @@ final class AIService {
         - Do NOT assume the user already has anything cooked or prepared on hand. The pantry \
         list, even if it names a prepared dish, is not a shortcut — treat it only as a hint to \
         which raw ingredients are available, never as ready-to-add components.
+
+        DIETARY (critical): if the household avoids any allergens (listed above), the modified \
+        recipe must NOT contain them in any ingredient. If the user's request would require an \
+        avoided ingredient, use a compliant substitute and keep the whole dish safe.
 
         IMPORTANT: Use standard title capitalization for the recipe title. \
         Use sentence case for ingredient names (lowercase unless a proper noun). \

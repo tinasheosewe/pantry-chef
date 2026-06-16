@@ -125,7 +125,15 @@ struct RedesignRootView: View {
                     AnyView(VStack(alignment: .leading, spacing: 0) {
                         NowModuleView(
                             state: Binding(get: { store.nowState }, set: { store.nowState = $0 }),
-                            onCook: { option in detailDish = option.dish },
+                            onCook: { option in
+                                // A cookable dish opens the instrument; a ready-made
+                                // pick is just logged as eaten.
+                                if option.level.usesInstrument, let dish = option.dish {
+                                    detailDish = dish
+                                } else {
+                                    store.logEaten(option)
+                                }
+                            },
                             onSeeAll: {
                                 store.libraryFilter = .ready
                                 withAnimation { store.space = .library }
@@ -181,7 +189,8 @@ private struct RecipeDetailScreen: View {
             },
             tweak: { d, feedback in
                 await store.ai.modifyRecipe(d, feedback: feedback,
-                                            pantryIngredients: store.stock.map(\.name))
+                                            pantryIngredients: store.stock.map(\.name),
+                                            avoid: store.profile.avoided.map(\.title))
             },
             autofill: { await store.ai.generateIngredientDefinition(name: $0) },
             onCook: { effective in session = CookSession(dishes: [effective]) },
