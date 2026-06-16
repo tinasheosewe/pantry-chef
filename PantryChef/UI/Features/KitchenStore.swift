@@ -391,8 +391,35 @@ final class KitchenStore {
     func finishCooking(_ dishes: [Dish]) {
         guard let first = dishes.first else { return }
         let name = dishes.count > 1 ? "Tonight's dishes" : first.name
+        // The "Done" card doesn't auto-log eating — it offers "Log" (how much was
+        // eaten / kept) via the carried dish, so leftovers are banked truthfully.
         nowState = .cooked(CookedSummary(name: name, plate: first.plate,
-                                         summary: "Cooked — into the fridge. Good for a few days."))
+                                         summary: "Cooked — log how much you keep.", dish: first))
+    }
+
+    /// Log a freshly cooked dish: `kept` portions go to the fridge as leftovers
+    /// (0 = ate it all, full count = ate none). No plan to clear.
+    func logCookedMeal(name: String, plate: PlateComposition, kept: Int) {
+        bankLeftover(name: name, plate: plate, add: kept)
+        nowState = .cooked(CookedSummary(
+            name: name, plate: plate,
+            summary: kept > 0
+                ? "Cooked — \(kept) \(kept == 1 ? "portion" : "portions") in the fridge."
+                : "Cooked — all eaten."))
+    }
+
+    /// Add `count` portions to a named leftover (cooking *produces* food), creating it
+    /// if absent. Distinct from drawDownLeftover, which *sets* the remaining count.
+    private func bankLeftover(name: String, plate: PlateComposition, add count: Int) {
+        guard count > 0 else { return }
+        if let i = stock.firstIndex(where: { $0.name == name && $0.isMade }) {
+            let total = (stock[i].madePortions ?? 0) + count
+            stock[i].measure = .made(detail: leftoverDetail(total), portions: total)
+        } else {
+            stock.append(StockItem(key: name.lowercased(), name: name, plate: plate,
+                                   section: .made, measure: .made(detail: leftoverDetail(count), portions: count),
+                                   category: .other))
+        }
     }
 
     // MARK: - Stock & list mutations

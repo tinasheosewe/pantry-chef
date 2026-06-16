@@ -8,6 +8,8 @@ struct NowModuleView: View {
     var onSeeAll: () -> Void = {}
     var onChange: () -> Void = {}
     var onResume: () -> Void = {}
+    /// Log how much of a freshly cooked dish was eaten / kept (the "Done" card).
+    var onLog: (Dish) -> Void = { _ in }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -106,6 +108,15 @@ struct NowModuleView: View {
             Spacer(minLength: 0)
         }
         .padding(.vertical, 8).frame(maxWidth: .infinity)
+        .overlay(alignment: .bottomTrailing) {
+            // A fresh cook offers "Log" (how much eaten/kept); once logged, dish is nil.
+            if let dish = s.dish {
+                actionRow(secondary: "Dismiss", primary: "Log",
+                          secondaryAction: onChange,
+                          primaryAction: { onLog(dish) })
+                    .padding(14)
+            }
+        }
     }
 
     private func actionRow(secondary: String, primary: String,

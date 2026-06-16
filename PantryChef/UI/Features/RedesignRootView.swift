@@ -33,6 +33,8 @@ struct RedesignRootView: View {
     @State private var editingMeal: PlannedMeal?
     /// A heat-and-eat meal being logged — drives the "how much is left?" prompt.
     @State private var loggingMeal: PlannedMeal?
+    /// A freshly cooked dish being logged — same prompt, banking what's kept.
+    @State private var loggingCooked: Dish?
     /// When a meal is planned for now, the now-module leads with it; this reveals the
     /// generic "you could…" suggestions instead, on demand.
     @State private var showSuggestions = false
@@ -109,11 +111,20 @@ struct RedesignRootView: View {
                 .presentationDetents([.medium])
             }
             .sheet(item: $loggingMeal) { meal in
+                let available = store.availablePortions(named: meal.name) ?? meal.servings
                 ServingsOutcomeSheet(
-                    meal: meal,
-                    available: store.availablePortions(named: meal.name) ?? meal.servings,
+                    name: meal.name, plate: meal.plate, available: available,
+                    defaultKept: max(0, available - meal.servings),
                     onLog: { kept in withAnimation { store.logPlannedMeal(meal, kept: kept) }; loggingMeal = nil })
-                .presentationDetents([.height(280)])
+                .presentationDetents([.height(300)])
+            }
+            .sheet(item: $loggingCooked) { dish in
+                // Fresh cook: default to "ate none" (bank all) — don't presume you ate it.
+                ServingsOutcomeSheet(
+                    name: dish.name, plate: dish.plate, available: dish.servings,
+                    defaultKept: dish.servings,
+                    onLog: { kept in withAnimation { store.logCookedMeal(name: dish.name, plate: dish.plate, kept: kept) }; loggingCooked = nil })
+                .presentationDetents([.height(300)])
             }
             .fullScreenCover(item: $detailDish) { dish in
                 // Cook is presented from *inside* this cover (a second cover on the
@@ -200,7 +211,8 @@ struct RedesignRootView: View {
                                     if case .cooking(let p) = store.nowState, let dish = p.dish {
                                         multiSession = CookSession(dishes: [dish])
                                     }
-                                }
+                                },
+                                onLog: { dish in loggingCooked = dish }
                             )
                         }
                         TodayPlanView(
@@ -605,23 +617,32 @@ private struct PlannedMealSheet: View {
 /// when more than one portion is in play), not a guess made ahead of time. `kept`
 /// portions remain as leftovers; 0 means it's finished.
 private struct ServingsOutcomeSheet: View {
-    let meal: PlannedMeal
+    let name: String
+    let plate: PlateComposition
     let available: Int
     var onLog: (Int) -> Void
     @State private var kept: Int
 
-    init(meal: PlannedMeal, available: Int, onLog: @escaping (Int) -> Void) {
-        self.meal = meal; self.available = available; self.onLog = onLog
-        _kept = State(initialValue: max(0, available - meal.servings))
+    init(name: String, plate: PlateComposition, available: Int, defaultKept: Int,
+         onLog: @escaping (Int) -> Void) {
+        self.name = name; self.plate = plate; self.available = available; self.onLog = onLog
+        _kept = State(initialValue: min(max(0, defaultKept), max(0, available)))
+    }
+
+    /// kept == 0 → ate everything; kept == all → ate none (e.g. batch-cooked for later).
+    private var keptLabel: String {
+        if kept <= 0 { return "ate it all" }
+        if kept >= available { return "ate none" }
+        return "\(kept) left"
     }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 18) {
             HStack(spacing: 11) {
-                PlateView(name: meal.name, composition: meal.plate, size: 38)
+                PlateView(name: name, composition: plate, size: 38)
                 VStack(alignment: .leading, spacing: 2) {
-                    Text(meal.name).font(Theme.Typography.dish(20)).foregroundStyle(Theme.Palette.ink)
-                    Text("\(available) portions on hand".uppercased())
+                    Text(name).font(Theme.Typography.dish(20)).foregroundStyle(Theme.Palette.ink)
+                    Text("\(available) \(available == 1 ? "portion" : "portions")".uppercased())
                         .font(.system(size: 9)).tracking(Theme.Metric.eyebrowTracking)
                         .foregroundStyle(Theme.Palette.ink.opacity(0.5))
                 }
@@ -632,7 +653,7 @@ private struct ServingsOutcomeSheet: View {
                 Eyebrow(text: "How much is left?")
                 HStack(spacing: 16) {
                     stepper("−") { if kept > 0 { kept -= 1 } }
-                    Text(kept == 0 ? "ate it all" : "\(kept) left")
+                    Text(keptLabel)
                         .font(Theme.Typography.dish(16)).foregroundStyle(Theme.Palette.ink)
                         .frame(minWidth: 96)
                     stepper("＋") { if kept < available { kept += 1 } }

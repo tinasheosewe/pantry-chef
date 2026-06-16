@@ -129,6 +129,22 @@ final class MealPlanningTests: XCTestCase {
         XCTAssertFalse(store.stock.contains { $0.name == "Minestrone" }, "nothing left → gone")
     }
 
+    func testLoggingACookBanksTheKeptPortionsAsLeftovers() {
+        let store = KitchenStore()
+        let plate = PlateComposition(categories: [.produce], seed: 1)
+        XCTAssertNil(store.availablePortions(named: "Minestrone"))
+        store.logCookedMeal(name: "Minestrone", plate: plate, kept: 2)   // ate some, kept 2
+        XCTAssertEqual(store.availablePortions(named: "Minestrone"), 2)
+        store.logCookedMeal(name: "Minestrone", plate: plate, kept: 1)   // cooked more → adds
+        XCTAssertEqual(store.availablePortions(named: "Minestrone"), 3, "banking adds to the leftover")
+    }
+
+    func testLoggingACookAteItAllBanksNothing() {
+        let store = KitchenStore()
+        store.logCookedMeal(name: "Minestrone", plate: .init(categories: [.produce], seed: 1), kept: 0)
+        XCTAssertNil(store.availablePortions(named: "Minestrone"), "ate it all → nothing banked")
+    }
+
     func testPlanForNowMatchesTheCurrentPartOfDay() {
         let store = KitchenStore()
         store.today = Calendar.current.date(bySettingHour: 8, minute: 0, second: 0, of: Date())!  // morning
