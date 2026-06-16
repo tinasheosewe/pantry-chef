@@ -29,9 +29,6 @@ struct StockView: View {
     private var staples: [StockItem] {
         store.stock.filter { if case .staple = $0.measure { return true } else { return false } }
     }
-    private var made: [StockItem] {
-        store.stock.filter { if case .made = $0.measure { return true } else { return false } }
-    }
 
     /// Live days-left: the stored estimate counts down from its anchor, so the
     /// ledger (and its urgency sort) reflect today, not the day it was logged.
@@ -60,9 +57,8 @@ struct StockView: View {
                     if !staples.isEmpty {
                         section("Staples", staples)
                     }
-                    if !made.isEmpty {
-                        section("Made by you", made)
-                    }
+                    // Cooked/leftover dishes live in Dishes (and the now-module's
+                    // ready-made fan), not here — Stores is ingredients & staples.
                     if !store.shoppingList.isEmpty { listSection }
                 }
                 .padding(.horizontal, 20).padding(.bottom, 24)
