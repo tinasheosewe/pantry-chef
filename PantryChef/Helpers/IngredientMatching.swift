@@ -18,13 +18,18 @@ enum IngredientMatching {
     struct Index {
         private let normalizedKeys: Set<String>
         private let lookupKeys: Set<String>
+        private let catalogIDs: Set<String>
 
-        init(names: [String]) {
+        init(names: [String], catalogIDs: [String] = []) {
             normalizedKeys = Set(names.map { IngredientLexicon.normalizeIngredient($0) })
             lookupKeys = Set(names.map { IngredientLexicon.lookupKey($0) })
+            self.catalogIDs = Set(catalogIDs)
         }
 
-        /// True if some on-hand item satisfies `requirement`.
+        /// True if some on-hand item is exactly this catalog item.
+        func contains(catalogItemID: String) -> Bool { catalogIDs.contains(catalogItemID) }
+
+        /// True if some on-hand item satisfies `requirement` (by name).
         func contains(requirement: String) -> Bool {
             if normalizedKeys.contains(IngredientLexicon.normalizeIngredient(requirement)) { return true }
             if lookupKeys.contains(IngredientLexicon.lookupKey(requirement)) { return true }

@@ -62,13 +62,13 @@ struct RecipeEditorView: View {
             case .pick(let phrase, let lineID, let candidates):
                 IngredientPicker(
                     phrase: phrase, candidates: candidates,
-                    onPick: { applyResolved(name: $0.name, key: $0.id, lineID: lineID); resolving = nil },
+                    onPick: { applyResolved(name: $0.name, key: $0.id, catalogItemID: $0.id, lineID: lineID); resolving = nil },
                     onCustom: { resolving = .custom(phrase: phrase, lineID: lineID) },
                     onCancel: { resolving = nil })
             case .custom(let phrase, let lineID):
                 CustomIngredientForm(
                     name: phrase, autofill: autofill,
-                    onSave: { def in applyResolved(name: def.name, key: def.id, lineID: lineID); resolving = nil },
+                    onSave: { def in applyResolved(name: def.name, key: def.id, catalogItemID: def.id, lineID: lineID); resolving = nil },
                     onCancel: { resolving = nil })
             }
         }
@@ -149,8 +149,11 @@ struct RecipeEditorView: View {
         let (intake, decision) = IntakePipeline.resolve(phrase, using: { IntakeParser().parse($0) })
         switch decision {
         case .confident:
-            applyResolved(name: intake.suggestedName ?? intake.name,
-                          key: intake.resolvedItemID ?? IngredientLexicon.lookupKey(intake.name), lineID: lineID)
+            let resolvedName = intake.suggestedName ?? intake.name
+            applyResolved(name: resolvedName,
+                          key: intake.resolvedItemID ?? IngredientLexicon.lookupKey(intake.name),
+                          catalogItemID: IntakePipeline.bestCatalogID(for: resolvedName, resolvedItemID: intake.resolvedItemID),
+                          lineID: lineID)
         case .ambiguous(let candidates):
             resolving = .pick(phrase: phrase, lineID: lineID, candidates: candidates)
         case .custom:
@@ -158,14 +161,19 @@ struct RecipeEditorView: View {
         }
     }
 
-    /// Apply a resolved ingredient — update the line, or add a new one.
-    private func applyResolved(name: String, key: String, lineID: UUID?) {
+    /// Apply a resolved ingredient — update the line, or add a new one. `catalogItemID`
+    /// is the catalog identity the line resolved to (nil only for freeform), so the
+    /// line matches readiness by id, not by name.
+    private func applyResolved(name: String, key: String, catalogItemID: String?, lineID: UUID?) {
         let display = name.prefix(1).capitalized + name.dropFirst()
         if let lineID, let i = dish.ingredients.firstIndex(where: { $0.id == lineID }) {
             let old = dish.ingredients[i]
-            dish.ingredients[i] = RecipeLine(id: old.id, key: key, amount: old.amount, name: display, isStaple: old.isStaple)
+            dish.ingredients[i] = RecipeLine(id: old.id, key: key, amount: old.amount,
+                                             name: display, isStaple: old.isStaple,
+                                             catalogItemID: catalogItemID)
         } else {
-            dish.ingredients.append(RecipeLine(key: key, amount: nil, name: display))
+            dish.ingredients.append(RecipeLine(key: key, amount: nil, name: display,
+                                               catalogItemID: catalogItemID))
         }
     }
 

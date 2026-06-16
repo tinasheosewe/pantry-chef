@@ -387,9 +387,13 @@ final class KitchenStore {
             .evaluate(dish.requirements)
     }
 
-    /// Which ingredients are on hand right now (for the gathering checklist) — same
-    /// matcher as readiness, so the two can never disagree.
-    func onHand(_ key: String) -> Bool { presenceIndex.contains(requirement: key) }
+    /// Whether a recipe line is on hand right now (for the gathering checklist) —
+    /// same matcher as readiness, so the two can never disagree: catalog id first,
+    /// then the name fallback.
+    func onHand(_ line: RecipeLine) -> Bool {
+        if let id = line.catalogItemID, presenceIndex.contains(catalogItemID: id) { return true }
+        return presenceIndex.contains(requirement: line.key)
+    }
 
     /// The names we'll trust for readiness: everything except items the knowledge
     /// clock says are *probably gone*. This is the honesty rule — we stop asserting
@@ -401,8 +405,18 @@ final class KitchenStore {
         return stock.filter { $0.certainty(now: now) > .likelyGone }.map(\.name)
     }
 
+    /// The catalog identities we'll trust for readiness — same honesty rule as
+    /// `presentStockNames`, but exact, so an ID-bearing recipe line matches without
+    /// any name normalization.
+    private var presentStockCatalogIDs: [String] {
+        let now = today
+        return stock.filter { $0.certainty(now: now) > .likelyGone }.compactMap(\.catalogItemID)
+    }
+
     /// The single on-hand index, catalog/synonym-aware (see IngredientMatching).
-    private var presenceIndex: IngredientMatching.Index { .init(names: presentStockNames) }
+    private var presenceIndex: IngredientMatching.Index {
+        .init(names: presentStockNames, catalogIDs: presentStockCatalogIDs)
+    }
 
     /// The certainty of a stocked key, for surfaces that want to hedge their wording.
     func certainty(forKey key: String) -> ItemCertainty? {
@@ -438,7 +452,11 @@ final class KitchenStore {
         func day(_ n: Int) -> Date { cal.date(byAdding: .day, value: n, to: now)! }
         func plate(_ c: [FoodCategory], _ s: UInt64) -> PlateComposition { .init(categories: c, seed: s) }
         func line(_ key: String, _ amount: String?, _ name: String, staple: Bool = false) -> RecipeLine {
-            RecipeLine(key: key, amount: amount, name: name, isStaple: staple)
+            // Catalog identity is resolved once, here — so every seed line carries its
+            // catalog id and readiness matches by id, never by fuzzy name.
+            // (SeedDishCatalogTests guarantees they all resolve.)
+            RecipeLine(key: key, amount: amount, name: name, isStaple: staple,
+                       catalogItemID: IntakePipeline.bestCatalogID(for: name))
         }
         today = now
 
@@ -528,7 +546,7 @@ final class KitchenStore {
         ]
         whispers = [DatedWhisper(date: day(1), text: "ragù waiting · 3 portions")]
 
-        func catalogID(_ name: String) -> String? { PantryCatalog.resolveExact(name: name)?.id }
+        func catalogID(_ name: String) -> String? { IntakePipeline.bestCatalogID(for: name) }
         stock = [
             StockItem(key: "lamb ragu", name: "Lamb ragù", plate: plate([.protein, .pasta], 3),
                       section: .made, measure: .made(detail: "3 frozen portions · good through July"),
@@ -583,8 +601,11 @@ final class KitchenStore {
 /// PantryPresence backed by the one catalog-aware matcher.
 private struct StockPresence: PantryPresence {
     let index: IngredientMatching.Index
-    func hasOnHand(_ key: String) -> Bool { index.contains(requirement: key) }
-    func isKnownOut(_ key: String) -> Bool { false }
+    func hasOnHand(key: String, catalogItemID: String?) -> Bool {
+        if let id = catalogItemID, index.contains(catalogItemID: id) { return true }
+        return index.contains(requirement: key)
+    }
+    func isKnownOut(key: String, catalogItemID: String?) -> Bool { false }
 }
 
 private struct NoSwaps: SwapResolver {

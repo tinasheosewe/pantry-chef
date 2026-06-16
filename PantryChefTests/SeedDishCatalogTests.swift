@@ -28,4 +28,19 @@ final class SeedDishCatalogTests: XCTestCase {
             XCTFail("Seed ingredient does not map to catalog:\n  " + violations.joined(separator: "\n  "))
         }
     }
+
+    /// Catalog-by-id: every seed line must carry its resolved `catalogItemID`, so
+    /// readiness matches by identity rather than re-running the name mapping.
+    func testEverySeedLineCarriesCatalogID() {
+        let store = KitchenStore()
+        let seedDishes = store.library + store.fanOptions.compactMap(\.dish)
+
+        var missing: [String] = []
+        for dish in seedDishes {
+            for line in dish.ingredients where line.catalogItemID == nil {
+                missing.append("\(dish.name): '\(line.name)'")
+            }
+        }
+        XCTAssertTrue(missing.isEmpty, "Seed line missing catalogItemID:\n  " + missing.joined(separator: "\n  "))
+    }
 }

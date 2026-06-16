@@ -9,7 +9,7 @@ import SwiftUI
 struct RecipeDetailView: View {
     let dish: Dish
     let readiness: Readiness
-    var isOnHand: (String) -> Bool = { _ in true }
+    var isOnHand: (RecipeLine) -> Bool = { _ in true }
     /// Certainty for an on-hand ingredient, so the spread can hedge ("check?")
     /// instead of asserting a confident ✓ on a stale item (spec §7).
     var certaintyForKey: (String) -> ItemCertainty? = { _ in nil }
@@ -45,7 +45,7 @@ struct RecipeDetailView: View {
     struct SwapChoice: Equatable { let key: String; let name: String }
 
     init(dish: Dish, readiness: Readiness,
-         isOnHand: @escaping (String) -> Bool = { _ in true },
+         isOnHand: @escaping (RecipeLine) -> Bool = { _ in true },
          certaintyForKey: @escaping (String) -> ItemCertainty? = { _ in nil },
          onToggleFavorite: @escaping () -> Void = {},
          onUpdateDish: @escaping (Dish) -> Void = { _ in },
@@ -83,7 +83,7 @@ struct RecipeDetailView: View {
 
     private var missingLines: [RecipeLine] {
         effectiveDish.ingredients
-            .filter { !isOnHand($0.key) && !$0.isStaple && appliedSwaps[$0.id] == nil }
+            .filter { !isOnHand($0) && !$0.isStaple && appliedSwaps[$0.id] == nil }
     }
     private var missingNames: [String] { missingLines.map(\.name) }
 
@@ -309,7 +309,7 @@ struct RecipeDetailView: View {
 
     private func ingredientRow(_ line: RecipeLine) -> some View {
         let applied = appliedSwaps[line.id]
-        let onHand = applied != nil || isOnHand(line.key) || line.isStaple
+        let onHand = applied != nil || isOnHand(line) || line.isStaple
         let swaps = onHand ? [] : DishInsights.swaps(forKey: line.key)
         // On hand, but the knowledge clock has gone stale — don't assert a
         // confident check; ask the cook to verify (spec §7).

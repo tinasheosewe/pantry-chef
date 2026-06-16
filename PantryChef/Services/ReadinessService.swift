@@ -8,6 +8,14 @@ struct IngredientRequirement: Equatable, Sendable {
     /// Staples (flour, oil, salt) are assumed present unless explicitly flagged out
     /// (spec §7 resolution classes) — they never make a dish "unmakeable".
     let isStaple: Bool
+    /// The catalog item this requirement *is*, when known — matched directly, no
+    /// fuzzy name mapping. Nil falls back to name matching.
+    let catalogItemID: String?
+
+    init(key: String, displayName: String, isStaple: Bool, catalogItemID: String? = nil) {
+        self.key = key; self.displayName = displayName
+        self.isStaple = isStaple; self.catalogItemID = catalogItemID
+    }
 }
 
 /// A concrete substitution that would let a dish be made tonight: swap the missing
@@ -43,11 +51,12 @@ enum Readiness: Equatable, Sendable {
 /// and testable. Real implementations read the stock + confidence layer; tests and
 /// previews supply doubles.
 protocol PantryPresence {
-    /// True when the item keyed `key` is on hand with enough confidence to rely on.
-    func hasOnHand(_ key: String) -> Bool
+    /// True when the ingredient is on hand with enough confidence to rely on —
+    /// matched by catalog id when one is given, else by name key.
+    func hasOnHand(key: String, catalogItemID: String?) -> Bool
     /// True when a staple has been explicitly flagged low/out, overriding the
     /// "assume staples present" rule.
-    func isKnownOut(_ key: String) -> Bool
+    func isKnownOut(key: String, catalogItemID: String?) -> Bool
 }
 
 /// Resolves substitution targets for a missing ingredient, in priority order
@@ -69,10 +78,11 @@ struct ReadinessService {
         var usedSwaps: [SwapOption] = []
 
         for req in requirements {
-            if presence.hasOnHand(req.key) { continue }
-            if req.isStaple && !presence.isKnownOut(req.key) { continue }
+            if presence.hasOnHand(key: req.key, catalogItemID: req.catalogItemID) { continue }
+            if req.isStaple && !presence.isKnownOut(key: req.key, catalogItemID: req.catalogItemID) { continue }
 
-            if let target = swaps.swapTargets(for: req.key).first(where: { presence.hasOnHand($0.key) }) {
+            if let target = swaps.swapTargets(for: req.key)
+                .first(where: { presence.hasOnHand(key: $0.key, catalogItemID: nil) }) {
                 usedSwaps.append(SwapOption(fromName: req.displayName, toName: target.name))
             } else {
                 missing.append(req.displayName)

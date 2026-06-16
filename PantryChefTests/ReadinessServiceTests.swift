@@ -7,9 +7,13 @@ final class ReadinessServiceTests: XCTestCase {
 
     private struct Pantry: PantryPresence {
         var onHand: Set<String>
+        var onHandIDs: Set<String> = []
         var out: Set<String> = []
-        func hasOnHand(_ key: String) -> Bool { onHand.contains(key) }
-        func isKnownOut(_ key: String) -> Bool { out.contains(key) }
+        func hasOnHand(key: String, catalogItemID: String?) -> Bool {
+            if let id = catalogItemID, onHandIDs.contains(id) { return true }
+            return onHand.contains(key)
+        }
+        func isKnownOut(key: String, catalogItemID: String?) -> Bool { out.contains(key) }
     }
     private struct Swaps: SwapResolver {
         var map: [String: [(key: String, name: String)]] = [:]
@@ -27,6 +31,24 @@ final class ReadinessServiceTests: XCTestCase {
     func testEverythingOnHandIsReady() {
         let s = service(onHand: ["spinach", "feta", "orzo"])
         XCTAssertEqual(s.evaluate([req("spinach", "Spinach"), req("feta", "Feta"), req("orzo", "Orzo")]), .ready)
+    }
+
+    /// Catalog-by-id: a requirement matches by its catalog id even when the name key
+    /// is nowhere on hand — identity wins over fuzzy name matching.
+    func testMatchesByCatalogIDWhenNameKeyAbsent() {
+        let s = ReadinessService(presence: Pantry(onHand: [], onHandIDs: ["feta-aged-001"]),
+                                 swaps: Swaps())
+        let line = IngredientRequirement(key: "some-other-key", displayName: "Feta",
+                                         isStaple: false, catalogItemID: "feta-aged-001")
+        XCTAssertEqual(s.evaluate([line]), .ready)
+    }
+
+    func testCatalogIDMissIsNeeds() {
+        let s = ReadinessService(presence: Pantry(onHand: [], onHandIDs: ["cheddar-001"]),
+                                 swaps: Swaps())
+        let line = IngredientRequirement(key: "feta", displayName: "Feta",
+                                         isStaple: false, catalogItemID: "feta-aged-001")
+        XCTAssertEqual(s.evaluate([line]), .needs(items: ["Feta"]))
     }
 
     func testEmptyRequirementsIsReady() {

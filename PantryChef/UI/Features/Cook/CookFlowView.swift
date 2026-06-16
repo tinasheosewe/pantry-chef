@@ -7,7 +7,7 @@ import SwiftUI
 /// plate anchors, the timer is the hero.
 struct CookFlowView: View {
     let dishes: [Dish]
-    var isOnHand: (String) -> Bool = { _ in true }
+    var isOnHand: (RecipeLine) -> Bool = { _ in true }
     /// Reports live progress (step index, total) so the now-module can mirror it.
     var onStep: (Int, Int) -> Void = { _, _ in }
     var onDone: () -> Void
@@ -136,7 +136,7 @@ struct CookFlowView: View {
 
     private func gatherRow(_ line: RecipeLine) -> some View {
         let isGathered = gathered.contains(line.id)
-        let onHand = isOnHand(line.key)
+        let onHand = isOnHand(line)
         return Button {
             if isGathered { gathered.remove(line.id) } else { gathered.insert(line.id) }
         } label: {

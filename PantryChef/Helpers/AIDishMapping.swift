@@ -15,8 +15,11 @@ extension RawFullRecipe {
                 ? (unit.map { "\(QuantityFormat.short(ing.quantity)) \($0.rawValue)" }
                     ?? QuantityFormat.short(ing.quantity))
                 : nil
-            let isStaple = PantryCatalog.resolveExact(name: key)?.resolutionClass == .staple
-            return RecipeLine(key: key, amount: amount, name: ing.name, isStaple: isStaple)
+            let catalogID = IntakePipeline.bestCatalogID(for: ing.name,
+                                                         resolvedItemID: PantryCatalog.resolveExact(name: key)?.id)
+            let isStaple = catalogID.flatMap { PantryCatalog.itemsByID[$0] }?.resolutionClass == .staple
+            return RecipeLine(key: key, amount: amount, name: ing.name,
+                              isStaple: isStaple, catalogItemID: catalogID)
         }
         let cookSteps = steps.map { CookStep($0.instruction, timerSeconds: $0.timerMinutes.map { max(1, $0) * 60 }) }
         let totalMinutes = [prepTimeMinutes, cookTimeMinutes].compactMap { $0 }.reduce(0, +)

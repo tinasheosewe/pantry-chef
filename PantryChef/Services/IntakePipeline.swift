@@ -38,6 +38,16 @@ enum IntakePipeline {
         }
     }
 
+    /// The single best catalog id for an ingredient name, so a line can carry its
+    /// catalog identity. Cheap exact alias lookup first; the search engine's top
+    /// hit only as a fallback (covers names the alias index misses, like "spinach").
+    /// Returns nil only when nothing in the catalog matches at all.
+    static func bestCatalogID(for name: String, resolvedItemID: String? = nil) -> String? {
+        if let resolvedItemID { return resolvedItemID }
+        if let exact = PantryCatalog.resolveExact(name: name)?.id { return exact }
+        return candidates(for: name).first?.id
+    }
+
     /// Classify a parsed intake against its candidates.
     static func decide(_ intake: ParsedIntake, candidates: [IntakeCandidate]) -> IntakeDecision {
         if intake.confidence == .resolved { return .confident }
