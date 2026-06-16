@@ -15,6 +15,13 @@ final class MultiCookSchedulerTests: XCTestCase {
         schedule.map { $0.step.instruction }
     }
 
+    /// A dish built from explicit (instruction, phase, attention, timer) steps.
+    private func dish(_ name: String, _ steps: [(String, StepPhase, StepAttention, Int?)]) -> Dish {
+        Dish(name: name, plate: .init(categories: [.produce], seed: 1), time: "10 min",
+             ingredients: [],
+             steps: steps.map { CookStep($0.0, timerSeconds: $0.3, phase: $0.1, attention: $0.2) })
+    }
+
     // MARK: - Degenerate inputs
 
     func testEmptyIsEmpty() {
@@ -61,5 +68,31 @@ final class MultiCookSchedulerTests: XCTestCase {
         let long = dish("L", [3600])     // 60 min — should lead
         let schedule = names(MultiCookScheduler.schedule([short, long]))
         XCTAssertEqual(schedule, ["L1", "S1"])
+    }
+
+    // MARK: - Unified prep
+
+    /// All prep across dishes is gathered to the front (dish-then-step order), then
+    /// the cook phase runs — so you do every chop in one pass.
+    func testPrepIsUnifiedAndFrontLoaded() {
+        let a = dish("A", [("dice onion", .prep, .active, nil),
+                           ("sauté onion", .cook, .active, 120)])
+        let b = dish("B", [("chop tomato", .prep, .active, nil),
+                           ("simmer sauce", .cook, .passive, 1800)])
+        let schedule = names(MultiCookScheduler.schedule([a, b]))
+
+        // Both prep steps lead, in dish order…
+        XCTAssertEqual(Array(schedule.prefix(2)), ["dice onion", "chop tomato"])
+        // …then the cook phase, with the long simmer started before the sauté.
+        XCTAssertEqual(Array(schedule.suffix(2)), ["simmer sauce", "sauté onion"])
+    }
+
+    /// Prep front-loading preserves each dish's internal order and places every step
+    /// exactly once.
+    func testPrepKeepsPerDishOrderAndPlacesAllSteps() {
+        let a = dish("A", [("A prep1", .prep, .active, nil), ("A prep2", .prep, .active, nil),
+                           ("A cook", .cook, .active, 60)])
+        let schedule = names(MultiCookScheduler.schedule([a]))
+        XCTAssertEqual(schedule, ["A prep1", "A prep2", "A cook"])
     }
 }

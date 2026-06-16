@@ -191,10 +191,10 @@ struct CookFlowView: View {
     /// The live step, torn open: bordered sheet with a dashed top edge.
     private var ticket: some View {
         VStack(alignment: .leading, spacing: 0) {
-            if isMulti, let current = currentStep {
-                Text(current.dishName.uppercased())
+            if let current = currentStep, isMulti || current.step.phase == .prep {
+                Text(phaseLabel(for: current))
                     .font(.system(size: 9)).tracking(1.8)
-                    .foregroundStyle(Theme.Palette.paprika)
+                    .foregroundStyle(current.step.phase == .prep ? Theme.Palette.sage : Theme.Palette.paprika)
                     .padding(.bottom, 8)
             }
             Text(currentStep?.step.instruction ?? "")
@@ -247,6 +247,14 @@ struct CookFlowView: View {
         }
         let f = DateFormatter(); f.dateFormat = "HH:mm"
         return "started \(f.string(from: startedAt)) · eating by \(f.string(from: Date().addingTimeInterval(TimeInterval(remaining))))"
+    }
+
+    /// "PREP · DISH A" up front, then "DISH A" once the cooking starts — the unified
+    /// prep stage reads as its own thing.
+    private func phaseLabel(for s: ScheduledStep) -> String {
+        let prefix = s.step.phase == .prep ? "PREP" : nil
+        if isMulti { return [prefix, s.dishName.uppercased()].compactMap { $0 }.joined(separator: " · ") }
+        return prefix ?? ""
     }
 
     private var currentStep: ScheduledStep? {

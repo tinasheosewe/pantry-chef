@@ -37,14 +37,65 @@ struct RecipeLine: Identifiable, Equatable, Sendable {
     }
 }
 
-/// One cooking step, optionally timed.
+/// Where a step sits in the arc of cooking — prep is the knife work you can do up
+/// front (mise en place), cook is the heat, finish is plating.
+enum StepPhase: String, Equatable, Sendable { case prep, cook, finish }
+
+/// Whether a step holds the cook's hands (active) or runs on a timer they walk away
+/// from (passive) — the axis that decides what can overlap.
+enum StepAttention: String, Equatable, Sendable { case active, passive }
+
+/// One cooking step, optionally timed, and structurally tagged so the multi-dish
+/// scheduler can front-load prep and overlap passive waits. Tags are inferred from
+/// the text + timer when not given (`StepClassifier`), so every step carries them.
 struct CookStep: Identifiable, Equatable, Sendable {
     let id: UUID
     let instruction: String
     let timerSeconds: Int?
+    let phase: StepPhase
+    let attention: StepAttention
+    /// The ingredient this step centres on, when known (AI ingestion supplies it) —
+    /// for labelling and possible grouping in a unified prep list.
+    let ingredient: String?
 
-    init(id: UUID = UUID(), _ instruction: String, timerSeconds: Int? = nil) {
+    init(id: UUID = UUID(), _ instruction: String, timerSeconds: Int? = nil,
+         phase: StepPhase? = nil, attention: StepAttention? = nil, ingredient: String? = nil) {
         self.id = id; self.instruction = instruction; self.timerSeconds = timerSeconds
+        self.phase = phase ?? StepClassifier.phase(of: instruction)
+        self.attention = attention ?? StepClassifier.attention(of: instruction, timerSeconds: timerSeconds)
+        self.ingredient = ingredient
+    }
+}
+
+/// Infers a step's phase and attention from its wording (and timer) — the fallback
+/// that keeps every CookStep structurally tagged even when the source (a seed, a
+/// hand-typed editor step) doesn't say so explicitly.
+enum StepClassifier {
+    private static let finishVerbs = ["serve", "plate", "garnish", "drizzle over", "top with",
+                                      "finish with", "sprinkle over", "scatter over", "to serve"]
+    private static let prepVerbs = ["chop", "dice", "slice", "mince", "grate", "peel", "crush",
+                                    "cut ", "measure", "whisk together", "beat the", "combine the",
+                                    "mix together", "season the", "zest", "trim", "drain", "rinse",
+                                    "pat dry", "halve", "quarter", "cube", "shred", "juice the"]
+    private static let cookVerbs = ["cook", "fry", "sauté", "saute", "simmer", "boil", "bake",
+                                    "roast", "grill", "braise", "heat", "sear", "steam", "poach",
+                                    "toast", "melt", "caramel", "reduce", "stir-fry", "add", "fold in",
+                                    "bring to", "deglaze", "blanch", "warm"]
+    private static let passiveVerbs = ["simmer", "bake", "roast", "braise", "rest", "chill",
+                                       "marinate", "proof", "refrigerate", "cool", "steep", "reduce",
+                                       "slow cook", "let it", "leave to", "set aside", "infuse"]
+
+    static func phase(of instruction: String) -> StepPhase {
+        let s = instruction.lowercased()
+        if finishVerbs.contains(where: s.contains) { return .finish }
+        if cookVerbs.contains(where: s.contains) { return .cook }
+        if prepVerbs.contains(where: s.contains) { return .prep }
+        return .cook
+    }
+
+    static func attention(of instruction: String, timerSeconds: Int?) -> StepAttention {
+        if let t = timerSeconds, t >= AppConfig.passiveStepThresholdSeconds { return .passive }
+        return passiveVerbs.contains(where: instruction.lowercased().contains) ? .passive : .active
     }
 }
 
