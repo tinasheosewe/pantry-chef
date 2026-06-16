@@ -383,7 +383,7 @@ final class KitchenStore {
     /// Live readiness for a dish — the single ReadinessService over current stock,
     /// matched through the one catalog-aware IngredientMatching path.
     func readiness(for dish: Dish) -> Readiness {
-        ReadinessService(presence: StockPresence(index: presenceIndex), swaps: NoSwaps())
+        ReadinessService(presence: StockPresence(index: presenceIndex), swaps: CatalogSwapResolver())
             .evaluate(dish.requirements)
     }
 
@@ -608,6 +608,16 @@ private struct StockPresence: PantryPresence {
     func isKnownOut(key: String, catalogItemID: String?) -> Bool { false }
 }
 
-private struct NoSwaps: SwapResolver {
-    func swapTargets(for key: String) -> [(key: String, name: String)] { [] }
+/// The live swap resolver — reads the catalog's substitution enrichment by id, so a
+/// missing ingredient offers exactly the substitutes the catalog records for it.
+struct CatalogSwapResolver: SwapResolver {
+    func swapTargets(for requirement: IngredientRequirement) -> [SwapTarget] {
+        let item = requirement.catalogItemID.flatMap { PantryCatalog.itemsByID[$0] }
+            ?? PantryCatalog.resolveExact(name: requirement.key)
+        guard let item else { return [] }
+        return item.swaps.compactMap { swap in
+            guard let sub = PantryCatalog.itemsByID[swap.substituteItemID] else { return nil }
+            return SwapTarget(key: IngredientLexicon.lookupKey(sub.name), name: sub.name, catalogItemID: sub.id)
+        }
+    }
 }

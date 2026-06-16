@@ -25,6 +25,11 @@ struct SwapOption: Equatable, Sendable {
     let toName: String
 }
 
+/// One place to phrase a swap count, so every surface speaks the same way.
+enum SwapPhrase {
+    static func count(_ n: Int) -> String { n == 1 ? "1 swap" : "\(n) swaps" }
+}
+
 /// Whether a dish can be made from what's on hand (spec §6 readiness vocabulary).
 /// The single shape every surface speaks — Library, Explore, the fan, conflicts.
 enum Readiness: Equatable, Sendable {
@@ -59,10 +64,18 @@ protocol PantryPresence {
     func isKnownOut(key: String, catalogItemID: String?) -> Bool
 }
 
+/// A candidate substitute for a missing ingredient — carries the catalog identity
+/// so presence is checked by id, not name.
+struct SwapTarget: Equatable, Sendable {
+    let key: String
+    let name: String
+    let catalogItemID: String?
+}
+
 /// Resolves substitution targets for a missing ingredient, in priority order
-/// (curated swaps + the catalog `swaps` enrichment). Pure lookup.
+/// (the catalog `swaps` enrichment). Pure lookup.
 protocol SwapResolver {
-    func swapTargets(for key: String) -> [(key: String, name: String)]
+    func swapTargets(for requirement: IngredientRequirement) -> [SwapTarget]
 }
 
 /// The sole computer of dish readiness. Pure: it never reaches for global state, so
@@ -81,8 +94,8 @@ struct ReadinessService {
             if presence.hasOnHand(key: req.key, catalogItemID: req.catalogItemID) { continue }
             if req.isStaple && !presence.isKnownOut(key: req.key, catalogItemID: req.catalogItemID) { continue }
 
-            if let target = swaps.swapTargets(for: req.key)
-                .first(where: { presence.hasOnHand(key: $0.key, catalogItemID: nil) }) {
+            if let target = swaps.swapTargets(for: req)
+                .first(where: { presence.hasOnHand(key: $0.key, catalogItemID: $0.catalogItemID) }) {
                 usedSwaps.append(SwapOption(fromName: req.displayName, toName: target.name))
             } else {
                 missing.append(req.displayName)
@@ -90,7 +103,17 @@ struct ReadinessService {
         }
 
         if !missing.isEmpty { return .needs(items: missing) }
+        // A dish that leans on too many substitutes isn't really that dish. Past the
+        // cap (~a third of its non-staple ingredients), stop calling it makeable and
+        // surface the swapped-out ingredients as what it needs.
+        if usedSwaps.count > Self.swapCap(forNonStaple: requirements.lazy.filter { !$0.isStaple }.count) {
+            return .needs(items: usedSwaps.map(\.fromName))
+        }
         if !usedSwaps.isEmpty { return .readyWithSwaps(usedSwaps) }
         return .ready
     }
+
+    /// At most ~a third of a dish's non-staple ingredients may be substituted before
+    /// it stops counting as makeable (always allowing at least one).
+    static func swapCap(forNonStaple count: Int) -> Int { max(1, count / 3) }
 }

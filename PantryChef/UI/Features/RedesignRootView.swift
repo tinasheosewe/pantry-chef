@@ -372,7 +372,7 @@ private struct PlanDaySheet: View {
     @ViewBuilder private func readinessLabel(for dish: Dish) -> some View {
         switch store.readiness(for: dish) {
         case .ready: Text("READY").font(.system(size: 9)).tracking(1.6).foregroundStyle(Theme.Palette.sage)
-        case .readyWithSwaps: Text("WITH A SWAP").font(.system(size: 9)).tracking(1.6).foregroundStyle(Theme.Palette.sage)
+        case .readyWithSwaps(let swaps): Text("WITH \(SwapPhrase.count(swaps.count).uppercased())").font(.system(size: 9)).tracking(1.6).foregroundStyle(Theme.Palette.sage)
         case .needs(let items): Text("NEEDS \(items.count)").font(.system(size: 9)).tracking(1.6).foregroundStyle(Theme.Palette.paprika)
         }
     }

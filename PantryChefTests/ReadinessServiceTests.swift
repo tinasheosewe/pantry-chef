@@ -16,15 +16,18 @@ final class ReadinessServiceTests: XCTestCase {
         func isKnownOut(key: String, catalogItemID: String?) -> Bool { out.contains(key) }
     }
     private struct Swaps: SwapResolver {
-        var map: [String: [(key: String, name: String)]] = [:]
-        func swapTargets(for key: String) -> [(key: String, name: String)] { map[key] ?? [] }
+        var map: [String: [SwapTarget]] = [:]
+        func swapTargets(for requirement: IngredientRequirement) -> [SwapTarget] { map[requirement.key] ?? [] }
     }
 
     private func req(_ key: String, _ name: String, staple: Bool = false) -> IngredientRequirement {
         .init(key: key, displayName: name, isStaple: staple)
     }
+    private func swap(_ key: String, _ name: String) -> SwapTarget {
+        SwapTarget(key: key, name: name, catalogItemID: nil)
+    }
     private func service(onHand: Set<String>, out: Set<String> = [],
-                         swaps: [String: [(key: String, name: String)]] = [:]) -> ReadinessService {
+                         swaps: [String: [SwapTarget]] = [:]) -> ReadinessService {
         .init(presence: Pantry(onHand: onHand, out: out), swaps: Swaps(map: swaps))
     }
 
@@ -62,14 +65,32 @@ final class ReadinessServiceTests: XCTestCase {
     }
 
     func testMissingWithSwapOnHandIsReadyWithSwaps() {
-        let s = service(onHand: ["milk"], swaps: ["buttermilk": [(key: "milk", name: "Milk")]])
+        let s = service(onHand: ["milk"], swaps: ["buttermilk": [swap("milk", "Milk")]])
         XCTAssertEqual(s.evaluate([req("buttermilk", "Buttermilk")]),
                        .readyWithSwaps([SwapOption(fromName: "Buttermilk", toName: "Milk")]))
     }
 
     func testSwapTargetNotOnHandFallsToNeeds() {
-        let s = service(onHand: [], swaps: ["buttermilk": [(key: "milk", name: "Milk")]])
+        let s = service(onHand: [], swaps: ["buttermilk": [swap("milk", "Milk")]])
         XCTAssertEqual(s.evaluate([req("buttermilk", "Buttermilk")]), .needs(items: ["Buttermilk"]))
+    }
+
+    /// The cap: a dish leaning on too many substitutes stops being "makeable" and
+    /// surfaces the swapped ingredients as needs (≤ a third of non-staples allowed).
+    func testTooManySwapsIsNeedsNotReady() {
+        // 3 non-staple ingredients, all only satisfiable by a swap → cap is 1, so 3
+        // swaps blows it: not makeable.
+        let s = service(onHand: ["a2", "b2", "c2"],
+                        swaps: ["a": [swap("a2", "A2")], "b": [swap("b2", "B2")], "c": [swap("c2", "C2")]])
+        XCTAssertEqual(s.evaluate([req("a", "A"), req("b", "B"), req("c", "C")]),
+                       .needs(items: ["A", "B", "C"]))
+    }
+
+    func testSwapsWithinCapStayReady() {
+        // 3 non-staples, only one swapped (cap 1) → still makeable with a swap.
+        let s = service(onHand: ["a2", "b", "c"], swaps: ["a": [swap("a2", "A2")]])
+        XCTAssertEqual(s.evaluate([req("a", "A"), req("b", "B"), req("c", "C")]),
+                       .readyWithSwaps([SwapOption(fromName: "A", toName: "A2")]))
     }
 
     func testStaplesAreAssumedPresent() {
@@ -86,7 +107,7 @@ final class ReadinessServiceTests: XCTestCase {
 
     func testRealMissingDominatesOverAvailableSwaps() {
         // One ingredient swappable, one genuinely missing → not makeable.
-        let s = service(onHand: ["milk"], swaps: ["buttermilk": [(key: "milk", name: "Milk")]])
+        let s = service(onHand: ["milk"], swaps: ["buttermilk": [swap("milk", "Milk")]])
         let result = s.evaluate([req("buttermilk", "Buttermilk"), req("salmon", "Salmon")])
         XCTAssertEqual(result, .needs(items: ["Salmon"]))
         XCTAssertEqual(result.missingCount, 1)

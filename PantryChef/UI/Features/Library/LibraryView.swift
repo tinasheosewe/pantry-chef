@@ -260,8 +260,8 @@ private struct DishLine: View {
         switch readiness {
         case .ready:
             line("\(dish.time) · all on hand", Theme.Palette.warmGray)
-        case .readyWithSwaps:
-            line("\(dish.time) · ready with a swap", Theme.Palette.sage)
+        case .readyWithSwaps(let swaps):
+            line("\(dish.time) · ready · \(SwapPhrase.count(swaps.count))", Theme.Palette.sage)
         case .needs(let items):
             line("needs \(items.count) · \(Self.summarize(items))", Theme.Palette.paprika)
         }

@@ -236,8 +236,9 @@ struct RecipeDetailView: View {
         switch readiness {
         case .ready:
             Text("READY").font(.system(size: 10)).tracking(1.6).foregroundStyle(Theme.Palette.sage)
-        case .readyWithSwaps:
-            Text("SWAP-READY").font(.system(size: 10)).tracking(1.6).foregroundStyle(Theme.Palette.sage)
+        case .readyWithSwaps(let swaps):
+            Text("READY · \(SwapPhrase.count(swaps.count).uppercased())")
+                .font(.system(size: 10)).tracking(1.6).foregroundStyle(Theme.Palette.sage)
         case .needs(let items):
             Text("NEEDS \(items.count)").font(.system(size: 10)).tracking(1.6).foregroundStyle(Theme.Palette.paprika)
         }
