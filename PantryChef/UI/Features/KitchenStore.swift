@@ -10,7 +10,9 @@ struct StockItem: Identifiable, Equatable {
     enum Measure: Equatable {
         case perishable(detail: String, daysLeft: Int?)
         case staple(StapleLevel)
-        case made(detail: String)
+        /// Leftover / batch-cooked food. `portions` is the structured count drawn down
+        /// as it's eaten (nil when we only have the free-text `detail`).
+        case made(detail: String, portions: Int? = nil)
     }
     enum StapleLevel: Equatable {
         case inStock, runningLow, out
@@ -112,6 +114,11 @@ struct StockItem: Identifiable, Equatable {
         guard case .perishable(_, let stored?) = measure else { return nil }
         return max(0, stored - Int(ExpiryEngine.daysBetween(storageSince, now)))
     }
+
+    /// A leftover / batch-cooked item.
+    var isMade: Bool { if case .made = measure { return true } else { return false } }
+    /// Portions remaining for a leftover (nil unless tracked by count).
+    var madePortions: Int? { if case .made(_, let p) = measure { return p } else { return nil } }
 
     /// Fraction of shelf life used up right now, inferred from the days-left we're
     /// showing — the *live* remaining (the stored estimate already ticked down for
@@ -306,14 +313,36 @@ final class KitchenStore {
         events.removeAll { if case .meal(let m) = $0.kind { return m.id == id } else { return false } }
     }
 
-    /// Log a planned heat-and-eat meal as eaten and clear it from the plan (no cook
-    /// instrument — mirrors `logEaten`).
-    func logPlannedMeal(_ meal: PlannedMeal) {
+    /// Portions on hand for a named leftover/made item (nil if not tracked by count).
+    func availablePortions(named name: String) -> Int? {
+        stock.first { $0.name == name }?.madePortions
+    }
+
+    /// Log a planned heat-and-eat meal as eaten, truthful about what's left: `kept`
+    /// portions remain as made stock (0 = finished). Clears the plan, mirrors logEaten.
+    func logPlannedMeal(_ meal: PlannedMeal, kept: Int = 0) {
+        removeMeal(meal.id)
+        drawDownLeftover(name: meal.name, plate: meal.plate, to: kept)
         nowState = .cooked(CookedSummary(
             name: meal.name, plate: meal.plate,
-            summary: "Logged — \(meal.servings) \(meal.servings == 1 ? "serving" : "servings") eaten."))
-        removeMeal(meal.id)
+            summary: kept > 0
+                ? "Logged — \(kept) \(kept == 1 ? "portion" : "portions") left."
+                : "Logged — all eaten."))
     }
+
+    /// Set a named leftover to `kept` portions: update it, remove it (0), or create it.
+    private func drawDownLeftover(name: String, plate: PlateComposition, to kept: Int) {
+        if let i = stock.firstIndex(where: { $0.name == name && $0.isMade }) {
+            if kept <= 0 { stock.remove(at: i) }
+            else { stock[i].measure = .made(detail: leftoverDetail(kept), portions: kept) }
+        } else if kept > 0 {
+            stock.append(StockItem(key: name.lowercased(), name: name, plate: plate,
+                                   section: .made, measure: .made(detail: leftoverDetail(kept), portions: kept),
+                                   category: .other))
+        }
+    }
+
+    private func leftoverDetail(_ n: Int) -> String { "\(n) \(n == 1 ? "portion" : "portions")" }
 
     /// Reassign a planned meal to a different part of its day, re-anchoring the hour
     /// so it keeps sorting morning → evening.
@@ -506,7 +535,7 @@ final class KitchenStore {
         // 1) Ready-made: made/leftover stock you can eat tonight without cooking.
         for item in stock where item.section == .made && item.certainty(now: today) > .likelyGone {
             let detail: String
-            if case .made(let d) = item.measure { detail = d } else { detail = "" }
+            if case .made(let d, _) = item.measure { detail = d } else { detail = "" }
             out.append(FanOption(
                 name: item.name, plate: item.plate,
                 subtitle: detail.isEmpty ? "ready-made" : detail,
@@ -707,7 +736,7 @@ final class KitchenStore {
         func catalogID(_ name: String) -> String? { IntakePipeline.bestCatalogID(for: name) }
         stock = [
             StockItem(key: "lamb ragu", name: "Lamb ragù", plate: plate([.protein, .pasta], 3),
-                      section: .made, measure: .made(detail: "3 frozen portions · good through July"),
+                      section: .made, measure: .made(detail: "frozen · good through July", portions: 3),
                       lastConfirmed: day(-3), category: .protein, storage: .frozen, storageSince: day(-3)),
             StockItem(key: "baby spinach", name: "Baby spinach", plate: plate([.produce], 1),
                       section: .useSoon, measure: .perishable(detail: "300 g", daysLeft: 2),

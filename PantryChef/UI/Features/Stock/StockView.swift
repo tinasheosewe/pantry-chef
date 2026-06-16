@@ -185,8 +185,8 @@ struct StockView: View {
             case .runningLow: OutlineTag(text: "Low — listed", tone: .urgent)
             case .out: OutlineTag(text: "Out", tone: .urgent)
             }
-        case .made(let detail):
-            Text(detail.uppercased())
+        case .made(let detail, let portions):
+            Text((portions.map { "\($0) \($0 == 1 ? "portion" : "portions")" } ?? detail).uppercased())
                 .font(.system(size: 10)).tracking(0.8)
                 .foregroundStyle(Theme.Palette.warmGray)
                 .lineLimit(1)
@@ -295,11 +295,17 @@ private struct StockItemEditor: View {
                     stapleChip("Out", .out, level)
                 }
             }
-        case .made(let detail):
+        case .made(let detail, let portions):
             field("Portions") {
-                TextField("e.g. 3 frozen portions", text: Binding(
+                Stepper(portions.map { "\($0) \($0 == 1 ? "portion" : "portions")" } ?? "not counted",
+                        value: Binding(get: { portions ?? 1 },
+                                       set: { item.measure = .made(detail: detail, portions: $0) }),
+                        in: 0...24)
+            }
+            field("Note") {
+                TextField("e.g. frozen · good through July", text: Binding(
                     get: { detail },
-                    set: { item.measure = .made(detail: $0) }))
+                    set: { item.measure = .made(detail: $0, portions: portions) }))
             }
         }
     }

@@ -31,6 +31,8 @@ struct RedesignRootView: View {
     @State private var multiSession: CookSession?
     @State private var planTarget: PlanTarget?
     @State private var editingMeal: PlannedMeal?
+    /// A heat-and-eat meal being logged — drives the "how much is left?" prompt.
+    @State private var loggingMeal: PlannedMeal?
     /// When a meal is planned for now, the now-module leads with it; this reveals the
     /// generic "you could…" suggestions instead, on demand.
     @State private var showSuggestions = false
@@ -99,10 +101,19 @@ struct RedesignRootView: View {
                         store.setMealServings(meal.id, to: servings)
                         editingMeal = nil
                         var acted = meal; acted.servings = servings
-                        actOnPlan(acted)
+                        // Defer so this sheet finishes dismissing before the next one
+                        // (cook cover / leftover prompt) presents.
+                        DispatchQueue.main.async { actOnPlan(acted) }
                     },
                     onRemove: { store.removeMeal(meal.id); editingMeal = nil })
                 .presentationDetents([.medium])
+            }
+            .sheet(item: $loggingMeal) { meal in
+                ServingsOutcomeSheet(
+                    meal: meal,
+                    available: store.availablePortions(named: meal.name) ?? meal.servings,
+                    onLog: { kept in withAnimation { store.logPlannedMeal(meal, kept: kept) }; loggingMeal = nil })
+                .presentationDetents([.height(280)])
             }
             .fullScreenCover(item: $detailDish) { dish in
                 // Cook is presented from *inside* this cover (a second cover on the
@@ -137,7 +148,11 @@ struct RedesignRootView: View {
         if meal.isCookable {
             detailDish = store.dish(named: meal.name)?.scaled(to: meal.servings)
         } else {
-            withAnimation { store.logPlannedMeal(meal) }
+            // Heat-and-eat: ask what's left only when there's more than one portion in
+            // play (the moment you actually know — not a guess made ahead of time).
+            let available = store.availablePortions(named: meal.name) ?? meal.servings
+            if available > 1 { loggingMeal = meal }
+            else { withAnimation { store.logPlannedMeal(meal, kept: 0) } }
         }
     }
 
@@ -568,6 +583,68 @@ private struct PlannedMealSheet: View {
             Button(action: onRemove) {
                 Text("REMOVE FROM PLAN").font(.system(size: 10)).tracking(1.8)
                     .foregroundStyle(Theme.Palette.paprika)
+            }
+            .buttonStyle(.plain)
+        }
+        .padding(20)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        .background(KitchenBackground())
+    }
+
+    private func stepper(_ glyph: String, _ action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Text(glyph).font(.system(size: 16, weight: .light)).foregroundStyle(Theme.Palette.ink)
+                .frame(width: 40, height: 36)
+                .overlay(Rectangle().strokeBorder(Theme.Palette.ink.opacity(0.4), lineWidth: 1))
+        }
+        .buttonStyle(.plain)
+    }
+}
+
+/// "How much is left?" — the truth captured at the moment of eating (one tap, only
+/// when more than one portion is in play), not a guess made ahead of time. `kept`
+/// portions remain as leftovers; 0 means it's finished.
+private struct ServingsOutcomeSheet: View {
+    let meal: PlannedMeal
+    let available: Int
+    var onLog: (Int) -> Void
+    @State private var kept: Int
+
+    init(meal: PlannedMeal, available: Int, onLog: @escaping (Int) -> Void) {
+        self.meal = meal; self.available = available; self.onLog = onLog
+        _kept = State(initialValue: max(0, available - meal.servings))
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 18) {
+            HStack(spacing: 11) {
+                PlateView(name: meal.name, composition: meal.plate, size: 38)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(meal.name).font(Theme.Typography.dish(20)).foregroundStyle(Theme.Palette.ink)
+                    Text("\(available) portions on hand".uppercased())
+                        .font(.system(size: 9)).tracking(Theme.Metric.eyebrowTracking)
+                        .foregroundStyle(Theme.Palette.ink.opacity(0.5))
+                }
+            }
+            .padding(.top, 24)
+
+            VStack(alignment: .leading, spacing: 6) {
+                Eyebrow(text: "How much is left?")
+                HStack(spacing: 16) {
+                    stepper("−") { if kept > 0 { kept -= 1 } }
+                    Text(kept == 0 ? "ate it all" : "\(kept) left")
+                        .font(Theme.Typography.dish(16)).foregroundStyle(Theme.Palette.ink)
+                        .frame(minWidth: 96)
+                    stepper("＋") { if kept < available { kept += 1 } }
+                }
+            }
+
+            Spacer()
+            Button { onLog(kept) } label: {
+                Text("LOG IT").font(.system(size: 11, weight: .medium)).tracking(1.6)
+                    .foregroundStyle(Theme.Palette.cream)
+                    .frame(maxWidth: .infinity).padding(.vertical, 13)
+                    .background(Rectangle().fill(Theme.Palette.paprika))
             }
             .buttonStyle(.plain)
         }

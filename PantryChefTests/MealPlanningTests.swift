@@ -101,6 +101,34 @@ final class MealPlanningTests: XCTestCase {
         XCTAssertNil(store.todaysPlannedMeals.first { $0.id == m!.id }, "logging clears it from the plan")
     }
 
+    // A leftover with a name not used by the seed stock, to avoid fixture collisions.
+    private func minestroneLeftover(portions: Int) -> StockItem {
+        StockItem(key: "minestrone", name: "Minestrone", plate: .init(categories: [.produce], seed: 1),
+                  section: .made, measure: .made(detail: "\(portions) portions", portions: portions),
+                  category: .other)
+    }
+
+    func testLoggingALeftoverDrawsDownThePortionsKept() {
+        let store = KitchenStore()
+        store.stock.append(minestroneLeftover(portions: 2))
+        store.planLeftover(store.stock.last!, on: store.today, part: .evening, servings: 1)
+        let m = store.todaysPlannedMeals.last { $0.name == "Minestrone" }!
+        XCTAssertEqual(store.availablePortions(named: "Minestrone"), 2)
+        store.logPlannedMeal(m, kept: 1)               // ate one of two
+        XCTAssertEqual(store.availablePortions(named: "Minestrone"), 1, "one portion remains")
+        XCTAssertNil(store.todaysPlannedMeals.first { $0.id == m.id }, "the plan is cleared")
+    }
+
+    func testLoggingAteItAllRemovesTheLeftover() {
+        let store = KitchenStore()
+        store.stock.append(minestroneLeftover(portions: 2))
+        store.planLeftover(store.stock.last!, on: store.today, part: .evening, servings: 2)
+        let m = store.todaysPlannedMeals.last { $0.name == "Minestrone" }!
+        store.logPlannedMeal(m, kept: 0)               // ate it all
+        XCTAssertNil(store.availablePortions(named: "Minestrone"))
+        XCTAssertFalse(store.stock.contains { $0.name == "Minestrone" }, "nothing left → gone")
+    }
+
     func testPlanForNowMatchesTheCurrentPartOfDay() {
         let store = KitchenStore()
         store.today = Calendar.current.date(bySettingHour: 8, minute: 0, second: 0, of: Date())!  // morning
