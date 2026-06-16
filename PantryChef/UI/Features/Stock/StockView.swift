@@ -132,9 +132,10 @@ struct StockView: View {
             Text(hedge(item.certainty(now: store.today)))
                 .font(Theme.Typography.note(10.5)).foregroundStyle(Theme.Palette.paprika)
             Spacer(minLength: 4)
+            // Only "still here" or "finished" — a non-staple carries a real
+            // quantity, so a discrete "low" reads as noise (that's a staple idea).
             checkTag("Still here") { withAnimation { store.reconfirm(item.id) } }
-            checkTag("Low") { withAnimation { store.markLow(item.id) } }
-            checkTag("Gone", urgent: true) { withAnimation { store.markGone(item.id) } }
+            checkTag("Finished", urgent: true) { withAnimation { store.markGone(item.id) } }
         }
         .padding(.leading, 18).padding(.bottom, 4)
     }
