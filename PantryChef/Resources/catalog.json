@@ -82980,7 +82980,7 @@
   },
   {
     "id": "goat-s-milk",
-    "name": "goat's milk",
+    "name": "goat's milk ricotta",
     "category": "Dairy & Eggs",
     "defaultUnit": "oz",
     "defaultQuantity": 15.0,
@@ -83063,6 +83063,9 @@
         "ratio": "1:1",
         "notes": "Same family as ricotta."
       }
+    ],
+    "aliases": [
+      "goat's milk"
     ]
   },
   {
@@ -176107,7 +176110,7 @@
   },
   {
     "id": "sheep-s-milk",
-    "name": "sheep's milk",
+    "name": "sheep's milk ricotta",
     "category": "Dairy & Eggs",
     "defaultUnit": "oz",
     "defaultQuantity": 15.0,
@@ -176191,6 +176194,9 @@
         "ratio": "1:1",
         "notes": "Same family as ricotta."
       }
+    ],
+    "aliases": [
+      "sheep's milk"
     ]
   },
   {
