@@ -36,6 +36,36 @@ fix; revisit if scanning the feed still feels like work.
 The meal sheet supports change-part (morning/midday/evening within the same day) and
 remove, but not moving a plan to a *different day*. Deferred when remove/reassign landed.
 
+### Procedural proposal generator (rebuy / run-out synthesis, density-capped)
+The "Your list hit 5 items — milk runs out around Monday" invitation is currently a
+hardcoded seed string (the spec's own example; milk isn't even in stock). Make it real:
+a generator that synthesizes the list state + the nearest run-out into ONE invitation,
+with density as a first-class constraint — aggregate (don't emit per-item), threshold +
+require an action, rank and hard-cap (~1 in the visible window), respect dismissals,
+and anchor to the consequence date. Distinct from per-item spoilage, which the expiry
+diamonds already show. Two "runs out" senses: spoilage (food clock — have it) vs
+depletion (rebuy rhythm — needs purchase history we don't track yet; spec's "rebuy
+inference still TODO"). Easy first cut: list-count + soonest food-clock run-out.
+
+### Cooked dishes appear under both Stores and Dishes (dedupe)
+A made/leftover dish shows in Stores ("Made by you") *and* as a recipe in Dishes — reads
+as duplication. Consider restricting cooked/leftover dishes to just the Dishes screen
+(or otherwise disambiguating inventory-vs-recipe). Decision needed: leftovers-as-
+inventory in Stores is useful, so weigh that against the redundancy. (From testing.)
+
+### Substitution notes accessible during the cook
+Swaps chosen on the recipe (and their notes, e.g. ratios / "same family as…") aren't
+surfaced in the cook flow, so mid-cook users lose track of what they substituted and
+why. Carry the applied swaps + notes into the cook instrument (gathering + steps).
+(From testing.)
+
+### Structured, numeric swap quantities (translatable units) in the gathering screen
+Substitutes can change the amount, but the swap `ratio` is a free-form string ("1:1").
+Make quantity changes **numeric in real, convertible units** (not free text) so a swap
+can adjust the gathered amount, and show the adjusted quantity on the ingredient-
+gathering (mise en place) screen. Pairs with the structured-quantity model the
+"decrement raw ingredients" item also needs. (From testing.)
+
 ## Done
 
 ### Auto-log cooked food + log-from-recipe (done — `logCooked`)
