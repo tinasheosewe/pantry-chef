@@ -37,19 +37,49 @@ enum ResolutionClassifier {
     /// Representative shelf life: the midpoint of the range for the item's default
     /// storage, falling back to the longest range it defines. Nil when no data.
     static func representativeShelfLifeDays(_ item: PantryCatalogItemDefinition) -> Int? {
-        if let range = item.freshnessByStorage[item.defaultStorage] {
-            return midpoint(range)
-        }
-        return item.freshnessByStorage.values.map(midpoint).max()
+        anchorShelfLife(item)?.days
     }
 
     /// Safe days for an item kept in a *specific* storage — the midpoint of that
-    /// storage's freshness range, falling back to the representative shelf life.
-    /// The single source of this lookup; ExpiryEngine and ConfidenceEngine both
-    /// call here rather than re-deriving it (DRY — consolidation audit §3).
+    /// storage's freshness range. When the catalog doesn't specify *this* storage,
+    /// estimate it by scaling the item's best-known shelf life by the relative
+    /// preservation weight of the two locations, so colder storage extends life (and
+    /// a storage move stays reversible) instead of inheriting an unrelated number —
+    /// the old fallback handed the freezer the fridge's days, making freezing a no-op.
+    /// An explicit range always wins. The single source of this lookup; ExpiryEngine
+    /// and ConfidenceEngine both call here rather than re-deriving it (DRY —
+    /// consolidation audit §3).
     static func safeDays(_ item: PantryCatalogItemDefinition, in storage: PantryStorage) -> Int? {
         if let range = item.freshnessByStorage[storage] { return midpoint(range) }
-        return representativeShelfLifeDays(item)
+        guard let anchor = anchorShelfLife(item) else { return nil }
+        if anchor.storage == storage { return anchor.days }
+        let scaled = Double(anchor.days) * preservationWeight(storage) / preservationWeight(anchor.storage)
+        return max(1, Int(scaled.rounded()))
+    }
+
+    /// The item's most representative known shelf life and the storage it came from:
+    /// its default storage when the catalog defines a range there, else the
+    /// longest-keeping range it defines. nil when the item carries no freshness data.
+    private static func anchorShelfLife(_ item: PantryCatalogItemDefinition) -> (storage: PantryStorage, days: Int)? {
+        if let range = item.freshnessByStorage[item.defaultStorage] {
+            return (item.defaultStorage, midpoint(range))
+        }
+        return item.freshnessByStorage
+            .max { midpoint($0.value) < midpoint($1.value) }
+            .map { ($0.key, midpoint($0.value)) }
+    }
+
+    /// Relative shelf-life weight per storage tier — roughly how much longer food
+    /// keeps as it gets colder. Used only to estimate a storage the catalog leaves
+    /// unspecified (an explicit range always wins). Calibrated to the catalog's own
+    /// cross-storage medians at the conservative end (fridge ≈ 2× pantry, freezer
+    /// ≈ 6× fridge) so we extend life without over-claiming it.
+    private static func preservationWeight(_ storage: PantryStorage) -> Double {
+        switch storage {
+        case .pantry:       return 1
+        case .refrigerated: return 2
+        case .frozen:       return 12
+        }
     }
 
     private static func midpoint(_ range: ClosedRange<Int>) -> Int {

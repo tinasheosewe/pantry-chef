@@ -67,9 +67,16 @@ struct StockItem: Identifiable, Equatable {
         self.consumedFraction = consumedFraction
     }
 
-    /// Move to a new storage location, blending the freshness clock: the time spent
-    /// in the current location is folded into `consumedFraction`, then the days-left
-    /// is re-projected from the new location's shelf life (spec §7). Pure.
+    /// Move to a new storage location, re-projecting the freshness clock: the share
+    /// of shelf life already used carries over, and the days-left is recomputed from
+    /// the new location's shelf life (spec §7). Pure.
+    ///
+    /// The "used so far" is read from the days-left we're *currently showing*, not a
+    /// separately tracked fraction — a seed value or a manual Stepper edit changes
+    /// what's on screen without touching `consumedFraction`, and projecting from the
+    /// stale fraction discarded that. Reading the shown estimate makes a sequence of
+    /// moves consistent and exactly reversible: fridge → freezer → fridge lands back
+    /// on the original days-left.
     ///
     /// `adjustDaysLeft` is the user's Settings preference: when off, only the storage
     /// label changes — the freshness clock and the displayed days-left are left
@@ -82,10 +89,8 @@ struct StockItem: Identifiable, Equatable {
             return copy
         }
         var copy = self
-        let stint = ExpiryEngine.daysBetween(storageSince, now)
-        copy.consumedFraction = ExpiryEngine.consumedAfterStint(
-            priorFraction: consumedFraction, daysInStint: stint,
-            storage: storage, catalogItemID: catalogItemID)
+        let consumed = currentConsumedFraction(now: now)
+        copy.consumedFraction = consumed
         copy.storage = newStorage
         copy.storageSince = now
         if case .perishable(let detail, _) = measure {
@@ -93,9 +98,23 @@ struct StockItem: Identifiable, Equatable {
                 detail: detail,
                 daysLeft: ExpiryEngine.freshDaysLeft(catalogItemID: catalogItemID,
                                                      storage: newStorage,
-                                                     consumedFraction: copy.consumedFraction))
+                                                     consumedFraction: consumed))
         }
         return copy
+    }
+
+    /// Fraction of shelf life used up right now, inferred from the days-left we're
+    /// showing against the current location's safe lifetime. Falls back to the
+    /// tracked fraction plus the current stint when there's no displayed estimate to
+    /// read (untracked item) or no catalog life to read it against.
+    private func currentConsumedFraction(now: Date) -> Double {
+        if case .perishable(_, let shown?) = measure,
+           let safe = ExpiryEngine.safeDays(catalogItemID: catalogItemID, storage: storage), safe > 0 {
+            return min(1, max(0, 1 - Double(shown) / Double(safe)))
+        }
+        return ExpiryEngine.consumedAfterStint(
+            priorFraction: consumedFraction, daysInStint: ExpiryEngine.daysBetween(storageSince, now),
+            storage: storage, catalogItemID: catalogItemID)
     }
 
     /// Tracking class for the knowledge clock. Staples almost never need
