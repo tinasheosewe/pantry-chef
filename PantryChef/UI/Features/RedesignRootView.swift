@@ -193,7 +193,7 @@ struct RedesignRootView: View {
                                     }
                                 },
                                 onSeeAll: {
-                                    store.libraryFilter = .ready
+                                    store.libraryFilter = .all
                                     withAnimation { store.space = .library }
                                 },
                                 onChange: { store.resetNow() },

@@ -20,7 +20,7 @@ struct LibraryView: View {
             let passesFilter: Bool
             switch filter {
             case .all: passesFilter = true
-            case .ready: passesFilter = store.readiness(for: dish).isMakeableNow
+            case .ready: passesFilter = store.readiness(for: dish).isMakeableNow   // on hand OR with swaps
             case .under30: passesFilter = (dish.minutes ?? .max) <= 30
             case .favorites: passesFilter = dish.isFavorite
             }
@@ -29,7 +29,11 @@ struct LibraryView: View {
         }
     }
 
-    private var readyDishes: [Dish] { dishes.filter { store.readiness(for: $0).isMakeableNow } }
+    // Makeable-now splits into two: everything on hand, vs cookable only with a swap.
+    private var onHandDishes: [Dish] { dishes.filter { store.readiness(for: $0) == .ready } }
+    private var swapDishes: [Dish] {
+        dishes.filter { if case .readyWithSwaps = store.readiness(for: $0) { return true } else { return false } }
+    }
     private var shopDishes: [Dish] { dishes.filter { !store.readiness(for: $0).isMakeableNow } }
 
     var body: some View {
@@ -43,9 +47,13 @@ struct LibraryView: View {
             .padding(.horizontal, 20).padding(.top, 6)
             ScrollView {
                 VStack(alignment: .leading, spacing: 0) {
-                    if !readyDishes.isEmpty {
-                        Eyebrow(text: "Ready tonight", tone: .urgent).padding(.top, 12)
-                        list(readyDishes)
+                    if !onHandDishes.isEmpty {
+                        Eyebrow(text: "All on hand", tone: .urgent).padding(.top, 12)
+                        list(onHandDishes)
+                    }
+                    if !swapDishes.isEmpty {
+                        Eyebrow(text: "Cookable with a swap").padding(.top, 14)
+                        list(swapDishes)
                     }
                     if !shopDishes.isEmpty {
                         Eyebrow(text: "Worth a shop").padding(.top, 14)
