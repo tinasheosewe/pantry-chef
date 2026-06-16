@@ -81,17 +81,27 @@ struct PlannedMeal: Identifiable, Equatable, Sendable {
     let date: Date
     let name: String
     let plate: PlateComposition
+    /// How this meal happens: `.cooked` runs the recipe through the cook instrument;
+    /// `.served`/`.justAte` are heat-and-eat (a leftover, an apple) — logged, not cooked.
     let level: MealPrepLevel
     /// Which part of the day it's planned for — tells lunch from dinner on the card.
     let dayPart: DayPart
+    /// How many servings this plan is for — the count to cook to (carried into the
+    /// cook instrument) or, for a leftover, the portions intended to eat.
+    var servings: Int
     /// Items this meal still needs, already routed to the list.
     var missingCount: Int
 
+    /// Whether acting on this plan runs the cook instrument (recipe) vs. just logging
+    /// that it was eaten (leftover/simple).
+    var isCookable: Bool { level.usesInstrument }
+
     init(id: UUID = UUID(), date: Date, name: String, plate: PlateComposition,
-         level: MealPrepLevel, dayPart: DayPart = .evening, missingCount: Int = 0) {
+         level: MealPrepLevel, dayPart: DayPart = .evening, servings: Int = 2,
+         missingCount: Int = 0) {
         self.id = id; self.date = date; self.name = name
         self.plate = plate; self.level = level
-        self.dayPart = dayPart; self.missingCount = missingCount
+        self.dayPart = dayPart; self.servings = servings; self.missingCount = missingCount
     }
 }
 

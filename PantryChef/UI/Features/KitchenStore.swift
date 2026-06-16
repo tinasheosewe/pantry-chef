@@ -259,12 +259,27 @@ final class KitchenStore {
         }
     }
 
-    func planMeal(_ dish: Dish, on date: Date, part: DayPart = .evening) {
+    func planMeal(_ dish: Dish, on date: Date, part: DayPart = .evening, servings: Int? = nil) {
         // Anchor the hour to the part so a day's meals sort morning → evening.
         let when = cal.date(bySettingHour: part.anchorHour, minute: 0, second: 0, of: date) ?? date
         events.append(DatedEvent(kind: .meal(PlannedMeal(
             date: when, name: dish.name, plate: dish.plate, level: .cooked,
-            dayPart: part, missingCount: readiness(for: dish).missingCount))))
+            dayPart: part, servings: servings ?? dish.servings,
+            missingCount: readiness(for: dish).missingCount))))
+    }
+
+    /// Plan a leftover / ready-made dish — heat-and-eat, logged not cooked.
+    /// `servings` is the portions you intend to eat.
+    func planLeftover(_ item: StockItem, on date: Date, part: DayPart = .evening, servings: Int = 1) {
+        let when = cal.date(bySettingHour: part.anchorHour, minute: 0, second: 0, of: date) ?? date
+        events.append(DatedEvent(kind: .meal(PlannedMeal(
+            date: when, name: item.name, plate: item.plate, level: .served,
+            dayPart: part, servings: servings, missingCount: 0))))
+    }
+
+    /// Made / leftover stock you can plan to simply reheat (the "cooked dish" case).
+    var leftovers: [StockItem] {
+        stock.filter { if case .made = $0.measure { return true } else { return false } }
     }
 
     /// Planned meals on a given calendar day, ordered morning → evening.
@@ -279,21 +294,52 @@ final class KitchenStore {
     /// at tomorrow, so today's plan would otherwise have nowhere to show).
     var todaysPlannedMeals: [PlannedMeal] { plannedMeals(on: today) }
 
+    /// The plan to foreground in the now-module: today's meal for the current part of
+    /// day, if any — so a plan leads instead of the generic "you could…" fan.
+    var planForNow: PlannedMeal? {
+        let part = DayPart.current(today)
+        return todaysPlannedMeals.first { $0.dayPart == part }
+    }
+
     /// Drop a meal from the plan.
     func removeMeal(_ id: UUID) {
         events.removeAll { if case .meal(let m) = $0.kind { return m.id == id } else { return false } }
     }
 
+    /// Log a planned heat-and-eat meal as eaten and clear it from the plan (no cook
+    /// instrument — mirrors `logEaten`).
+    func logPlannedMeal(_ meal: PlannedMeal) {
+        nowState = .cooked(CookedSummary(
+            name: meal.name, plate: meal.plate,
+            summary: "Logged — \(meal.servings) \(meal.servings == 1 ? "serving" : "servings") eaten."))
+        removeMeal(meal.id)
+    }
+
     /// Reassign a planned meal to a different part of its day, re-anchoring the hour
     /// so it keeps sorting morning → evening.
     func setMealPart(_ id: UUID, to part: DayPart) {
+        updateMeal(id) { m in
+            guard m.dayPart != part else { return m }
+            let when = cal.date(bySettingHour: part.anchorHour, minute: 0, second: 0, of: m.date) ?? m.date
+            return PlannedMeal(id: m.id, date: when, name: m.name, plate: m.plate, level: m.level,
+                               dayPart: part, servings: m.servings, missingCount: m.missingCount)
+        }
+    }
+
+    /// Change how many servings a planned meal is for (carried into the cook instrument).
+    func setMealServings(_ id: UUID, to servings: Int) {
+        guard servings > 0 else { return }
+        updateMeal(id) { m in
+            PlannedMeal(id: m.id, date: m.date, name: m.name, plate: m.plate, level: m.level,
+                        dayPart: m.dayPart, servings: servings, missingCount: m.missingCount)
+        }
+    }
+
+    private func updateMeal(_ id: UUID, _ transform: (PlannedMeal) -> PlannedMeal) {
         guard let i = events.firstIndex(where: {
             if case .meal(let m) = $0.kind { return m.id == id } else { return false }
-        }), case .meal(let m) = events[i].kind, m.dayPart != part else { return }
-        let when = cal.date(bySettingHour: part.anchorHour, minute: 0, second: 0, of: m.date) ?? m.date
-        events[i] = DatedEvent(kind: .meal(PlannedMeal(
-            id: m.id, date: when, name: m.name, plate: m.plate, level: m.level,
-            dayPart: part, missingCount: m.missingCount)))
+        }), case .meal(let m) = events[i].kind else { return }
+        events[i] = DatedEvent(kind: .meal(transform(m)))
     }
 
     func dismissProposal(_ id: UUID) {

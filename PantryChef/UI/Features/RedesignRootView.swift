@@ -31,6 +31,9 @@ struct RedesignRootView: View {
     @State private var multiSession: CookSession?
     @State private var planTarget: PlanTarget?
     @State private var editingMeal: PlannedMeal?
+    /// When a meal is planned for now, the now-module leads with it; this reveals the
+    /// generic "you could…" suggestions instead, on demand.
+    @State private var showSuggestions = false
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
@@ -56,6 +59,7 @@ struct RedesignRootView: View {
             .onChange(of: scenePhase) { _, phase in
                 if phase == .active {
                     store.today = Date()          // un-freeze the knowledge clock
+                    showSuggestions = false       // let the plan lead again
                     ThemeManager.shared.refresh()
                     PlateRenderLibrary.shared.sweep()
                 }
@@ -80,17 +84,23 @@ struct RedesignRootView: View {
                     .presentationDetents([.medium])
             }
             .sheet(item: $planTarget) { target in
-                PlanDaySheet(store: store, date: target.date) { dish, part in
-                    store.planMeal(dish, on: target.date, part: part)
-                    planTarget = nil
-                }
+                PlanDaySheet(
+                    store: store, date: target.date,
+                    onPlan: { dish, part in store.planMeal(dish, on: target.date, part: part); planTarget = nil },
+                    onPlanLeftover: { item, part in store.planLeftover(item, on: target.date, part: part); planTarget = nil })
                 .presentationDetents([.medium, .large])
             }
             .sheet(item: $editingMeal) { meal in
                 PlannedMealSheet(
                     meal: meal,
-                    onOpenRecipe: { editingMeal = nil; detailDish = store.dish(named: meal.name) },
-                    onSetPart: { store.setMealPart(meal.id, to: $0); editingMeal = nil },
+                    onSetPart: { store.setMealPart(meal.id, to: $0) },
+                    onSetServings: { store.setMealServings(meal.id, to: $0) },
+                    onAct: { servings in
+                        store.setMealServings(meal.id, to: servings)
+                        editingMeal = nil
+                        var acted = meal; acted.servings = servings
+                        actOnPlan(acted)
+                    },
                     onRemove: { store.removeMeal(meal.id); editingMeal = nil })
                 .presentationDetents([.medium])
             }
@@ -118,6 +128,19 @@ struct RedesignRootView: View {
         }
     }
 
+    /// The now-module is idle (no cook/commit in flight), so a plan may lead it.
+    private var isIdleNow: Bool { if case .open = store.nowState { return true } else { return false } }
+
+    /// Act on a planned meal: cook a recipe (instrument, scaled to its servings) or
+    /// log a heat-and-eat one as eaten.
+    private func actOnPlan(_ meal: PlannedMeal) {
+        if meal.isCookable {
+            detailDish = store.dish(named: meal.name)?.scaled(to: meal.servings)
+        } else {
+            withAnimation { store.logPlannedMeal(meal) }
+        }
+    }
+
     @ViewBuilder private var space: some View {
         switch store.space {
         case .timeline:
@@ -133,30 +156,41 @@ struct RedesignRootView: View {
                 onSettings: { showSettings = true },
                 nowContent: {
                     AnyView(VStack(alignment: .leading, spacing: 0) {
-                        NowModuleView(
-                            state: Binding(get: { store.nowState }, set: { store.nowState = $0 }),
-                            onCook: { option in
-                                // A cookable dish opens the instrument; a ready-made
-                                // pick is just logged as eaten.
-                                if option.level.usesInstrument, let dish = option.dish {
-                                    detailDish = dish
-                                } else {
-                                    store.logEaten(option)
+                        if isIdleNow, let plan = store.planForNow, !showSuggestions {
+                            // A meal is planned for now — it leads, with the generic
+                            // "you could…" suggestions one tap away.
+                            PlannedNowView(
+                                meal: plan,
+                                onAct: { actOnPlan(plan) },
+                                onEdit: { editingMeal = plan },
+                                onSeeOptions: { withAnimation { showSuggestions = true } })
+                        } else {
+                            NowModuleView(
+                                state: Binding(get: { store.nowState }, set: { store.nowState = $0 }),
+                                onCook: { option in
+                                    // A cookable dish opens the instrument; a ready-made
+                                    // pick is just logged as eaten.
+                                    if option.level.usesInstrument, let dish = option.dish {
+                                        detailDish = dish
+                                    } else {
+                                        store.logEaten(option)
+                                    }
+                                },
+                                onSeeAll: {
+                                    store.libraryFilter = .ready
+                                    withAnimation { store.space = .library }
+                                },
+                                onChange: { store.resetNow() },
+                                onResume: {
+                                    if case .cooking(let p) = store.nowState, let dish = p.dish {
+                                        multiSession = CookSession(dishes: [dish])
+                                    }
                                 }
-                            },
-                            onSeeAll: {
-                                store.libraryFilter = .ready
-                                withAnimation { store.space = .library }
-                            },
-                            onChange: { store.resetNow() },
-                            onResume: {
-                                if case .cooking(let p) = store.nowState, let dish = p.dish {
-                                    multiSession = CookSession(dishes: [dish])
-                                }
-                            }
-                        )
+                            )
+                        }
                         TodayPlanView(
                             store: store,
+                            excluding: (isIdleNow && !showSuggestions) ? store.planForNow?.id : nil,
                             onTapMeal: { editingMeal = $0 },
                             onAdd: { planTarget = PlanTarget(date: store.today) })
                         OnTheClockSection(store: store) { withAnimation { store.space = .stock } }
@@ -360,63 +394,127 @@ struct VerticalDashedRule: View {
 /// plan something for today (plan dinner in the morning, etc.).
 private struct TodayPlanView: View {
     var store: KitchenStore
+    /// The meal the now-module is already foregrounding, so we don't list it twice.
+    var excluding: UUID? = nil
     var onTapMeal: (PlannedMeal) -> Void
     var onAdd: () -> Void
 
     var body: some View {
-        let meals = store.todaysPlannedMeals
+        let all = store.todaysPlannedMeals
+        let meals = all.filter { $0.id != excluding }
         VStack(alignment: .leading, spacing: 8) {
             if meals.isEmpty {
-                Button(action: onAdd) {
-                    Text("+ PLAN SOMETHING FOR TODAY")
-                        .font(.system(size: 10, weight: .medium)).tracking(1.4)
-                        .foregroundStyle(Theme.Palette.paprika)
-                        .contentShape(Rectangle())
-                }
-                .buttonStyle(.plain)
+                addLine(all.isEmpty ? "+ PLAN SOMETHING FOR TODAY" : "+ ADD TO TODAY")
             } else {
                 HStack {
                     Eyebrow(text: "Today’s plan")
                     Spacer()
-                    Button(action: onAdd) {
-                        Text("+ ADD").font(.system(size: 10, weight: .medium)).tracking(1.4)
-                            .foregroundStyle(Theme.Palette.paprika)
-                    }
-                    .buttonStyle(.plain)
+                    addLine("+ ADD")
                 }
                 ForEach(meals) { m in
-                    Button { onTapMeal(m) } label: {
-                        HStack(spacing: 11) {
-                            PlateView(name: m.name, composition: m.plate, size: Theme.Metric.plateMini)
-                            VStack(alignment: .leading, spacing: 1) {
-                                Text(m.dayPart.tag.uppercased())
-                                    .font(.system(size: 8.5)).tracking(Theme.Metric.eyebrowTracking)
-                                    .foregroundStyle(Theme.Palette.ink.opacity(0.4))
-                                Text(m.name).font(Theme.Typography.dish(15)).foregroundStyle(Theme.Palette.ink)
-                                if m.missingCount > 0 {
-                                    Text("NEEDS \(m.missingCount) → LIST")
-                                        .font(.system(size: 9)).tracking(1.6).foregroundStyle(Theme.Palette.paprika)
-                                }
-                            }
-                            Spacer(minLength: 0)
-                        }
-                        .contentShape(Rectangle())
-                    }
-                    .buttonStyle(.plain)
+                    Button { onTapMeal(m) } label: { row(m) }
+                        .buttonStyle(.plain)
                 }
             }
         }
         .padding(.vertical, 12)
     }
+
+    private func addLine(_ title: String) -> some View {
+        Button(action: onAdd) {
+            Text(title).font(.system(size: 10, weight: .medium)).tracking(1.4)
+                .foregroundStyle(Theme.Palette.paprika).contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+    }
+
+    private func row(_ m: PlannedMeal) -> some View {
+        HStack(spacing: 11) {
+            PlateView(name: m.name, composition: m.plate, size: Theme.Metric.plateMini)
+            VStack(alignment: .leading, spacing: 1) {
+                Text("\(m.dayPart.tag) · serves \(m.servings)".uppercased())
+                    .font(.system(size: 8.5)).tracking(Theme.Metric.eyebrowTracking)
+                    .foregroundStyle(Theme.Palette.ink.opacity(0.4))
+                Text(m.name).font(Theme.Typography.dish(15)).foregroundStyle(Theme.Palette.ink)
+                if m.missingCount > 0 {
+                    Text("NEEDS \(m.missingCount) → LIST")
+                        .font(.system(size: 9)).tracking(1.6).foregroundStyle(Theme.Palette.paprika)
+                }
+            }
+            Spacer(minLength: 0)
+        }
+        .contentShape(Rectangle())
+    }
 }
 
-/// Actions on a planned meal: open its recipe, move it to a different part of the
-/// day, or drop it from the plan (the timeline had no way to undo a plan before).
+/// The now-module leading with a meal planned for the current part of day: the thing
+/// to do now (Cook a recipe / Log a leftover, at its servings), with the generic
+/// "you could…" suggestions one tap away.
+private struct PlannedNowView: View {
+    let meal: PlannedMeal
+    var onAct: () -> Void
+    var onEdit: () -> Void
+    var onSeeOptions: () -> Void
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Eyebrow(text: "\(meal.dayPart.nowLabel) · planned", tone: .urgent)
+            Button(action: onEdit) {
+                HStack(spacing: 12) {
+                    PlateView(name: meal.name, composition: meal.plate, size: Theme.Metric.plateRow)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(meal.name).font(Theme.Typography.dish(18)).foregroundStyle(Theme.Palette.ink)
+                        Text("serves \(meal.servings)" + (meal.missingCount > 0 ? " · needs \(meal.missingCount)" : ""))
+                            .font(Theme.Typography.fact(12)).foregroundStyle(Theme.Palette.warmGray)
+                    }
+                    Spacer(minLength: 0)
+                }
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            HStack(spacing: 14) {
+                Button(action: onAct) {
+                    Text(meal.isCookable ? "COOK" : "LOG IT")
+                        .font(.system(size: 11, weight: .medium)).tracking(1.6)
+                        .foregroundStyle(Theme.Palette.cream)
+                        .padding(.horizontal, 18).padding(.vertical, 10)
+                        .background(Rectangle().fill(Theme.Palette.paprika))
+                }
+                .buttonStyle(.plain)
+                Spacer()
+                Button(action: onSeeOptions) {
+                    Text("see other options →").font(Theme.Typography.fact(12))
+                        .foregroundStyle(Theme.Palette.warmGray)
+                }
+                .buttonStyle(.plain)
+            }
+        }
+        .padding(.bottom, 12)
+    }
+}
+
+/// Actions on a planned meal: adjust its servings (carried into the cook instrument),
+/// move it to a different part of the day, cook it (recipe) or log it (leftover), or
+/// drop it from the plan.
 private struct PlannedMealSheet: View {
     let meal: PlannedMeal
-    var onOpenRecipe: () -> Void
     var onSetPart: (DayPart) -> Void
+    var onSetServings: (Int) -> Void
+    /// Cook (recipe) or log (leftover) at the chosen servings.
+    var onAct: (Int) -> Void
     var onRemove: () -> Void
+
+    @State private var servings: Int
+    @State private var part: DayPart
+
+    init(meal: PlannedMeal, onSetPart: @escaping (DayPart) -> Void,
+         onSetServings: @escaping (Int) -> Void, onAct: @escaping (Int) -> Void,
+         onRemove: @escaping () -> Void) {
+        self.meal = meal; self.onSetPart = onSetPart
+        self.onSetServings = onSetServings; self.onAct = onAct; self.onRemove = onRemove
+        _servings = State(initialValue: meal.servings)
+        _part = State(initialValue: meal.dayPart)
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 18) {
@@ -424,7 +522,7 @@ private struct PlannedMealSheet: View {
                 PlateView(name: meal.name, composition: meal.plate, size: 38)
                 VStack(alignment: .leading, spacing: 2) {
                     Text(meal.name).font(Theme.Typography.dish(20)).foregroundStyle(Theme.Palette.ink)
-                    Text("\(DayLabel.full(for: meal.date)) · \(meal.dayPart.tag)".uppercased())
+                    Text("\(DayLabel.full(for: meal.date)) · \(part.tag)".uppercased())
                         .font(.system(size: 9)).tracking(Theme.Metric.eyebrowTracking)
                         .foregroundStyle(Theme.Palette.ink.opacity(0.5))
                 }
@@ -432,11 +530,20 @@ private struct PlannedMealSheet: View {
             .padding(.top, 24)
 
             VStack(alignment: .leading, spacing: 6) {
+                Eyebrow(text: "Servings")
+                HStack(spacing: 16) {
+                    stepper("−") { if servings > 1 { servings -= 1; onSetServings(servings) } }
+                    Text("\(servings)").font(Theme.Typography.dish(17)).foregroundStyle(Theme.Palette.ink)
+                    stepper("＋") { if servings < 24 { servings += 1; onSetServings(servings) } }
+                }
+            }
+
+            VStack(alignment: .leading, spacing: 6) {
                 Eyebrow(text: "Move to")
                 HStack(spacing: 8) {
                     ForEach(DayPart.allCases, id: \.self) { p in
-                        let selected = p == meal.dayPart
-                        Button { onSetPart(p) } label: {
+                        let selected = p == part
+                        Button { part = p; onSetPart(p) } label: {
                             Text(p.tag.uppercased()).font(.system(size: 9.5, weight: .medium)).tracking(1.2)
                                 .foregroundStyle(selected ? Theme.Palette.cream : Theme.Palette.ink.opacity(0.7))
                                 .padding(.horizontal, 11).padding(.vertical, 7)
@@ -448,9 +555,12 @@ private struct PlannedMealSheet: View {
                 }
             }
 
-            Button(action: onOpenRecipe) {
-                Text("OPEN RECIPE →").font(.system(size: 10)).tracking(1.8)
-                    .foregroundStyle(Theme.Palette.ink)
+            Button { onAct(servings) } label: {
+                Text(meal.isCookable ? "COOK →" : "LOG IT EATEN")
+                    .font(.system(size: 11, weight: .medium)).tracking(1.6)
+                    .foregroundStyle(Theme.Palette.cream)
+                    .padding(.horizontal, 18).padding(.vertical, 11)
+                    .background(Rectangle().fill(Theme.Palette.paprika))
             }
             .buttonStyle(.plain)
 
@@ -465,12 +575,22 @@ private struct PlannedMealSheet: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .background(KitchenBackground())
     }
+
+    private func stepper(_ glyph: String, _ action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Text(glyph).font(.system(size: 16, weight: .light)).foregroundStyle(Theme.Palette.ink)
+                .frame(width: 40, height: 36)
+                .overlay(Rectangle().strokeBorder(Theme.Palette.ink.opacity(0.4), lineWidth: 1))
+        }
+        .buttonStyle(.plain)
+    }
 }
 
 private struct PlanDaySheet: View {
     var store: KitchenStore
     let date: Date
     var onPlan: (Dish, DayPart) -> Void
+    var onPlanLeftover: (StockItem, DayPart) -> Void = { _, _ in }
     @State private var part: DayPart = .evening
 
     var body: some View {
@@ -483,6 +603,30 @@ private struct PlanDaySheet: View {
             DashedRule().padding(.top, 10)
             ScrollView {
                 VStack(spacing: 0) {
+                    // Leftovers / ready-made first — heat-and-eat, no cooking.
+                    if !store.leftovers.isEmpty {
+                        Eyebrow(text: "Leftovers — heat & eat")
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(.top, 10).padding(.bottom, 2)
+                        ForEach(store.leftovers) { item in
+                            Button { onPlanLeftover(item, part) } label: {
+                                LeaderRow {
+                                    HStack(spacing: 9) {
+                                        PlateView(name: item.name, composition: item.plate, size: 26)
+                                        Text(item.name).font(Theme.Typography.dish(14)).foregroundStyle(Theme.Palette.ink)
+                                    }
+                                } trailing: {
+                                    Text("READY").font(.system(size: 9)).tracking(1.6).foregroundStyle(Theme.Palette.sage)
+                                }
+                                .padding(.vertical, 9).contentShape(Rectangle())
+                            }
+                            .buttonStyle(.plain)
+                            DashedRule(opacity: 0.5)
+                        }
+                        Eyebrow(text: "Cook something")
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(.top, 12).padding(.bottom, 2)
+                    }
                     ForEach(store.library) { dish in
                         Button { onPlan(dish, part) } label: {
                             LeaderRow {

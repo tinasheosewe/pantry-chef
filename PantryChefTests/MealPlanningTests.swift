@@ -74,4 +74,40 @@ final class MealPlanningTests: XCTestCase {
         let parts = store.todaysPlannedMeals.map(\.dayPart)
         XCTAssertEqual(parts, parts.sorted(), "today's meals must order morning → evening")
     }
+
+    func testPlanMealTakesTheDishServingsAndCanBeChanged() {
+        let store = KitchenStore()
+        let dish = store.library[0]
+        store.planMeal(dish, on: store.today, part: .evening)
+        let m = store.todaysPlannedMeals.last!
+        XCTAssertEqual(m.servings, dish.servings, "a plan starts at the recipe's serving count")
+        XCTAssertTrue(m.isCookable)
+        store.setMealServings(m.id, to: 6)
+        XCTAssertEqual(store.todaysPlannedMeals.first { $0.id == m.id }?.servings, 6)
+    }
+
+    func testPlanLeftoverIsHeatAndEatAndLogsAway() {
+        let store = KitchenStore()
+        let leftover = StockItem(key: "ragu", name: "Lamb ragù",
+                                 plate: .init(categories: [.protein], seed: 1),
+                                 section: .made, measure: .made(detail: "3 portions"),
+                                 category: .protein)
+        store.planLeftover(leftover, on: store.today, part: .evening, servings: 2)
+        let m = store.todaysPlannedMeals.last { $0.name == "Lamb ragù" }
+        XCTAssertEqual(m?.level, .served)
+        XCTAssertEqual(m?.isCookable, false, "a leftover is logged, not cooked")
+        XCTAssertEqual(m?.servings, 2)
+        store.logPlannedMeal(m!)
+        XCTAssertNil(store.todaysPlannedMeals.first { $0.id == m!.id }, "logging clears it from the plan")
+    }
+
+    func testPlanForNowMatchesTheCurrentPartOfDay() {
+        let store = KitchenStore()
+        store.today = Calendar.current.date(bySettingHour: 8, minute: 0, second: 0, of: Date())!  // morning
+        let dish = store.library[0]
+        store.planMeal(dish, on: store.today, part: .evening)
+        XCTAssertNil(store.planForNow, "an evening plan isn't 'now' in the morning")
+        store.planMeal(dish, on: store.today, part: .morning)
+        XCTAssertEqual(store.planForNow?.dayPart, .morning)
+    }
 }
