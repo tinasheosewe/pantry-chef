@@ -450,10 +450,10 @@ final class KitchenStore {
     }
 
     /// Whether a recipe line is on hand right now (for the gathering checklist) —
-    /// same matcher as readiness, so the two can never disagree: catalog id first,
-    /// then the name fallback.
+    /// same matcher as readiness, so the two can never disagree: catalog identity +
+    /// lineage for an id-bearing line, name only for a line with no catalog id.
     func onHand(_ line: RecipeLine) -> Bool {
-        if let id = line.catalogItemID, presenceIndex.contains(catalogItemID: id) { return true }
+        if let id = line.catalogItemID { return presenceIndex.contains(catalogItemID: id) }
         return presenceIndex.contains(requirement: line.key)
     }
 
@@ -656,7 +656,10 @@ final class KitchenStore {
 private struct StockPresence: PantryPresence {
     let index: IngredientMatching.Index
     func hasOnHand(key: String, catalogItemID: String?) -> Bool {
-        if let id = catalogItemID, index.contains(catalogItemID: id) { return true }
+        // An id-bearing ingredient matches by catalog identity + lineage only — no
+        // fuzzy name reconciliation. Name matching is the fallback solely for a line
+        // that carries no catalog id at all.
+        if let id = catalogItemID { return index.contains(catalogItemID: id) }
         return index.contains(requirement: key)
     }
     func isKnownOut(key: String, catalogItemID: String?) -> Bool { false }

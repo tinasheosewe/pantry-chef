@@ -72,6 +72,7 @@
 		985C92B3D17DA6D0C3EE23F0 /* NowModuleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED6332873D469B3DAEC6B4B2 /* NowModuleView.swift */; };
 		9A124B1DA41417E6559A52A7 /* spinach-feta-orzo.png in Resources */ = {isa = PBXBuildFile; fileRef = 8F74F8E43FACC12115B59545 /* spinach-feta-orzo.png */; };
 		9A7B80CB49163E59D70F1219 /* ComposerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DA1BF81A96A4A7C8DEDFB4E /* ComposerView.swift */; };
+		9AD09898E5C888D5DD3CB7BD /* IngredientMatchingLineageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1164E8B1FE358D08AE6BFF7 /* IngredientMatchingLineageTests.swift */; };
 		9DA1F30C0BD3CA620392E7C9 /* lamb-ragu.png in Resources */ = {isa = PBXBuildFile; fileRef = C8F8447FD64B783B5D19DCE0 /* lamb-ragu.png */; };
 		A6CAE03956F89C0F006554BF /* TimelineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DDC82E2714A8DFE77408CE9 /* TimelineView.swift */; };
 		A6FC1CD87ABE4C6FCF2FB7E6 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BD5873FFB9C1243801AD033 /* Theme.swift */; };
@@ -193,6 +194,7 @@
 		99EDB3A919F342036B1A4A1A /* AIDishMappingTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AIDishMappingTests.swift; sourceTree = "<group>"; };
 		9F857530EA4DFD2289D8D6E0 /* PantryAddFrequencyTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PantryAddFrequencyTracker.swift; sourceTree = "<group>"; };
 		A078E82E845BCC2B8C09E291 /* PantryChefTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = PantryChefTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		A1164E8B1FE358D08AE6BFF7 /* IngredientMatchingLineageTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = IngredientMatchingLineageTests.swift; sourceTree = "<group>"; };
 		A16DF6ABA8E8C73E7BB93F32 /* TelemetryReporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TelemetryReporter.swift; sourceTree = "<group>"; };
 		A1C329655335AFFA3C9D8582 /* KitchenConfig.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = KitchenConfig.swift; sourceTree = "<group>"; };
 		A2182BF9EFCF19CC499891FD /* ReadinessService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ReadinessService.swift; sourceTree = "<group>"; };
@@ -386,6 +388,7 @@
 				E3403E0E0CEC4D7B9F57BC6A /* IntakePipelineTests.swift */,
 				56846FEA588376592A76B680 /* SeedDishCatalogTests.swift */,
 				A4EF7D7D249A9E3B0A95E9C2 /* StockItemStorageMoveTests.swift */,
+				A1164E8B1FE358D08AE6BFF7 /* IngredientMatchingLineageTests.swift */,
 			);
 			path = PantryChefTests;
 			sourceTree = "<group>";
@@ -890,6 +893,7 @@
 				87F526236C65466C6A727AE1 /* IntakePipelineTests.swift in Sources */,
 				0D574F78BDC28376F33CEA94 /* SeedDishCatalogTests.swift in Sources */,
 				13056D1F7FA9F38FF08A1B85 /* StockItemStorageMoveTests.swift in Sources */,
+				9AD09898E5C888D5DD3CB7BD /* IngredientMatchingLineageTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1013,7 +1017,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = "Provisions";
+				INFOPLIST_KEY_CFBundleDisplayName = Provisions;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -1129,7 +1133,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = "Provisions";
+				INFOPLIST_KEY_CFBundleDisplayName = Provisions;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
