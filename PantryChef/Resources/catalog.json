@@ -77,10 +77,6 @@
     "defaultStorage": "Refrigerated",
     "aliases": [
       "1 percent milk",
-      "lactaid",
-      "lactaid 1%",
-      "lactose-free 1% milk",
-      "lactosefree milk",
       "lowfat milk",
       "one percent milk"
     ],
@@ -127,7 +123,7 @@
       ]
     },
     "parentIds": [
-      "lactose-free-milk"
+      "milk"
     ],
     "gramsPerCup": 240.0,
     "allergens": [
@@ -137,18 +133,6 @@
       "Vegetarian",
       "Gluten-Free",
       "Nut-Free"
-    ],
-    "swaps": [
-      {
-        "substituteItemID": "lactose-free-milk-2",
-        "ratio": "1:1",
-        "notes": "Same family as lactose-free milk."
-      },
-      {
-        "substituteItemID": "lactose-free-milk-skim",
-        "ratio": "1:1",
-        "notes": "Same family as lactose-free milk."
-      }
     ]
   },
   {
@@ -106343,8 +106327,12 @@
     "defaultQuantity": 4.0,
     "defaultStorage": "Refrigerated",
     "aliases": [
+      "lactaid",
+      "lactaid 1%",
       "lactose free dairy milk",
-      "lactose-free milks"
+      "lactose-free 1% milk",
+      "lactose-free milks",
+      "lactosefree milk"
     ],
     "facets": [
       {
@@ -106458,11 +106446,6 @@
     ],
     "swaps": [
       {
-        "substituteItemID": "1",
-        "ratio": "1:1",
-        "notes": "Same family as lactose-free milk."
-      },
-      {
         "substituteItemID": "lactose-free-milk-skim",
         "ratio": "1:1",
         "notes": "Same family as lactose-free milk."
@@ -106531,11 +106514,6 @@
       "Nut-Free"
     ],
     "swaps": [
-      {
-        "substituteItemID": "1",
-        "ratio": "1:1",
-        "notes": "Same family as lactose-free milk."
-      },
       {
         "substituteItemID": "lactose-free-milk-2",
         "ratio": "1:1",

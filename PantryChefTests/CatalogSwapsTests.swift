@@ -41,4 +41,15 @@ final class CatalogSwapsTests: XCTestCase {
         let tiers = cs.map(\.tier.rawValue)
         XCTAssertEqual(tiers, tiers.sorted(), "candidates must be ordered curated → sibling → family")
     }
+
+    func testOnePercentMilkIsAPlainMilkVarietyNotLactoseFree() {
+        // `1` ("1% milk") was mis-nested under lactose-free-milk; it's ordinary dairy
+        // 1% milk, so it now sits with the other plain-milk fat grades and is no longer
+        // a confident (sibling) swap for the lactose-free line.
+        let cs = CatalogSwaps.candidates(forItemID: "1", includeFamily: false)
+        XCTAssertTrue(cs.contains { $0.id == "milk-2" && $0.tier == .sibling })
+        XCTAssertTrue(cs.contains { $0.id == "whole-milk" && $0.tier == .sibling })
+        XCTAssertFalse(ids(cs).contains("lactose-free-milk-2"))
+        XCTAssertFalse(ids(cs).contains("lactose-free-milk-skim"))
+    }
 }
