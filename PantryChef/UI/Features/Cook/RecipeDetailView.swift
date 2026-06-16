@@ -42,7 +42,7 @@ struct RecipeDetailView: View {
     @State private var baseline: Dish
     @State private var pendingChanges = false
 
-    struct SwapChoice: Equatable { let key: String; let name: String }
+    struct SwapChoice: Equatable { let key: String; let name: String; let catalogItemID: String? }
 
     init(dish: Dish, readiness: Readiness,
          isOnHand: @escaping (RecipeLine) -> Bool = { _ in true },
@@ -77,7 +77,8 @@ struct RecipeDetailView: View {
     /// The dish as it will actually be cooked: scaled, then swaps applied.
     private var effectiveDish: Dish {
         appliedSwaps.reduce(currentDish.scaled(to: servings)) { partial, entry in
-            partial.applyingSwap(to: entry.key, key: entry.value.key, name: entry.value.name)
+            partial.applyingSwap(to: entry.key, key: entry.value.key, name: entry.value.name,
+                                 catalogItemID: entry.value.catalogItemID)
         }
     }
 
@@ -308,10 +309,26 @@ struct RecipeDetailView: View {
         }
     }
 
+    /// A catalog substitute paired with whether you actually have it on hand, so the
+    /// list can lead with the swaps that work tonight.
+    private struct RankedSwap: Identifiable {
+        let suggestion: DishInsights.SwapSuggestion
+        let onHand: Bool
+        var id: String { suggestion.id }
+    }
+
+    /// Every recorded substitute for a missing line, the ones you have first.
+    private func rankedSwaps(for line: RecipeLine) -> [RankedSwap] {
+        DishInsights.swaps(for: line).map { s in
+            RankedSwap(suggestion: s,
+                       onHand: isOnHand(RecipeLine(key: s.key, name: s.name, catalogItemID: s.catalogItemID)))
+        }
+        .sorted { $0.onHand && !$1.onHand }
+    }
+
     private func ingredientRow(_ line: RecipeLine) -> some View {
         let applied = appliedSwaps[line.id]
         let onHand = applied != nil || isOnHand(line) || line.isStaple
-        let swaps = onHand ? [] : DishInsights.swaps(forKey: line.key)
         // On hand, but the knowledge clock has gone stale — don't assert a
         // confident check; ask the cook to verify (spec §7).
         let uncertain = onHand && applied == nil && !line.isStaple
@@ -335,25 +352,42 @@ struct RecipeDetailView: View {
                 }
             }
             if let applied {
-                Button {
-                    withAnimation { appliedSwaps[line.id] = nil }
-                } label: {
+                Button { withAnimation { appliedSwaps[line.id] = nil } } label: {
                     Text("↻ using \(applied.name) — tap to undo")
                         .font(Theme.Typography.fact(10.5)).foregroundStyle(Theme.Palette.sage).padding(.leading, 26)
                 }
                 .buttonStyle(.plain)
-            } else if let swap = swaps.first {
-                Button {
-                    withAnimation { appliedSwaps[line.id] = SwapChoice(key: swap.key, name: swap.name) }
-                } label: {
-                    Text("↻ swap: \(swap.name)\(swap.notes.map { " — \($0)" } ?? "")")
-                        .font(Theme.Typography.fact(10.5)).foregroundStyle(Theme.Palette.sage)
-                        .multilineTextAlignment(.leading).padding(.leading, 26)
+            } else if !onHand && !line.isStaple {
+                // Surface every substitute and let the cook choose — the ones already
+                // on hand lead and read in sage, the rest are dimmed alternatives.
+                let ranked = rankedSwaps(for: line)
+                VStack(alignment: .leading, spacing: 3) {
+                    ForEach(ranked.prefix(3)) { entry in swapCandidate(line: line, entry: entry) }
                 }
-                .buttonStyle(.plain)
+                .padding(.leading, 26)
             }
         }
         .padding(.vertical, 9)
+    }
+
+    private func swapCandidate(line: RecipeLine, entry: RankedSwap) -> some View {
+        let s = entry.suggestion
+        return Button {
+            withAnimation { appliedSwaps[line.id] = SwapChoice(key: s.key, name: s.name, catalogItemID: s.catalogItemID) }
+        } label: {
+            HStack(spacing: 6) {
+                Text("↻ \(s.name)\(s.notes.map { " — \($0)" } ?? "")")
+                    .font(Theme.Typography.fact(10.5))
+                    .foregroundStyle(entry.onHand ? Theme.Palette.sage : Theme.Palette.warmGray)
+                    .multilineTextAlignment(.leading)
+                if entry.onHand {
+                    Text("· HAVE").font(.system(size: 8.5, weight: .medium)).tracking(1)
+                        .foregroundStyle(Theme.Palette.sage)
+                }
+            }
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
     }
 
     private var method: some View {

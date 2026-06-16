@@ -21,13 +21,27 @@ enum DishInsights {
         allergens(for: dish).filter { profile.avoided.contains($0) }
     }
 
-    /// Substitutions for an ingredient, resolved to a pantry key + readable name +
-    /// notes — the key is what readiness/gathering match against.
-    static func swaps(forKey key: String) -> [(key: String, name: String, notes: String?)] {
-        guard let item = PantryCatalog.resolveExact(name: key) else { return [] }
+    /// One catalog-recorded substitute for an ingredient — its catalog identity (so
+    /// presence is checked by id), a readable name, and the cook's note.
+    struct SwapSuggestion: Identifiable, Equatable {
+        let key: String
+        let name: String
+        let catalogItemID: String?
+        let notes: String?
+        var id: String { catalogItemID ?? key }
+    }
+
+    /// Substitutions for a recipe line, resolved through its catalog identity (id
+    /// first, name only as a fallback) — every candidate the catalog records, so the
+    /// cook can choose, not just take the first.
+    static func swaps(for line: RecipeLine) -> [SwapSuggestion] {
+        let item = line.catalogItemID.flatMap { PantryCatalog.itemsByID[$0] }
+            ?? PantryCatalog.resolveExact(name: line.key)
+        guard let item else { return [] }
         return item.swaps.compactMap { swap in
-            guard let target = PantryCatalog.itemsByID[swap.substituteItemID] else { return nil }
-            return (IngredientLexicon.lookupKey(target.name), target.name, swap.notes)
+            guard let sub = PantryCatalog.itemsByID[swap.substituteItemID] else { return nil }
+            return SwapSuggestion(key: IngredientLexicon.lookupKey(sub.name), name: sub.name,
+                                  catalogItemID: sub.id, notes: swap.notes)
         }
     }
 }
