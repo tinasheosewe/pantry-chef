@@ -185,18 +185,16 @@ final class KitchenStore {
     /// no API key is configured.
     let ai = AIService()
 
-    /// The timeline window. Starts generous and grows without bound as the user
-    /// scrolls toward either edge — effectively infinite, composed lazily.
-    var horizonDays = 60
-    var pastDays = 45
+    /// The timeline window — a bounded, honest horizon rather than a pretend-
+    /// infinite scroll: a couple of weeks ahead to plan against, a short tail of
+    /// recent record behind. Planning further is an explicit act (the horizon cap).
+    let horizonDays = 16
+    let pastDays = 10
 
     var timelineEntries: [TimelineEntry] {
         composer.compose(KitchenSnapshot(today: today, horizonDays: horizonDays, pastDays: pastDays,
                                          journal: journal, events: events, whispers: whispers))
     }
-
-    func extendFuture() { horizonDays += 60 }
-    func extendPast() { pastDays += 60 }
 
     // MARK: - Actions
 
@@ -424,15 +422,7 @@ final class KitchenStore {
         if let i = stock.firstIndex(where: { $0.id == id }) { stock[i].lastConfirmed = today }
     }
 
-    /// "Running low." Re-confirm presence and put it on the list; staples flip to low.
-    func markLow(_ id: UUID) {
-        guard let i = stock.firstIndex(where: { $0.id == id }) else { return }
-        stock[i].lastConfirmed = today
-        if case .staple = stock[i].measure { stock[i].measure = .staple(.runningLow) }
-        addToList(name: stock[i].name)
-    }
-
-    /// "Gone." Drop it from stock and offer it back on the list.
+    /// "Finished." Drop it from stock and offer it back on the list.
     func markGone(_ id: UUID) {
         guard let i = stock.firstIndex(where: { $0.id == id }) else { return }
         let name = stock[i].name

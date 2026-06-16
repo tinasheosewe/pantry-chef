@@ -11,8 +11,8 @@ struct TimelineView: View {
     var onOpenMeal: (String) -> Void = { _ in }
     var onDismissProposal: (UUID) -> Void = { _ in }
     var onOpenStock: () -> Void = {}
-    var onReachStart: () -> Void = {}
-    var onReachEnd: () -> Void = {}
+    /// Opens the date picker to plan a day beyond the visible horizon.
+    var onPlanAhead: () -> Void = {}
     /// Opens the app's Settings surface (preferences + dietary profile).
     var onSettings: () -> Void = {}
     /// Live content for the `.now` row (the now-module). When nil, a placeholder
@@ -21,7 +21,6 @@ struct TimelineView: View {
 
     @State private var visibleID: String?
     @State private var unfolded: Set<String> = []
-    @State private var extending = false
     /// Flipped on for a single runloop tick to kill in-flight scroll momentum so
     /// "return to today" lands even when tapped mid-deceleration.
     @State private var scrollLocked = false
@@ -32,11 +31,12 @@ struct TimelineView: View {
                 header(proxy)
                 ScrollView {
                     LazyVStack(alignment: .leading, spacing: 0) {
+                        recordCap
                         ForEach(entries) { entry in
                             rows(for: entry)
                                 .id(entry.id)
-                                .onAppear { edgeCheck(entry) }
                         }
+                        horizonCap
                     }
                     .scrollTargetLayout()
                     .padding(.top, 8)
@@ -190,19 +190,31 @@ struct TimelineView: View {
         return days
     }
 
-    // MARK: - Infinite extension
+    // MARK: - Bounds
 
-    private func edgeCheck(_ entry: TimelineEntry) {
-        guard !extending else { return }
-        if entry.id == entries.first?.id {
-            extending = true
-            onReachStart()
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { extending = false }
-        } else if entry.id == entries.last?.id {
-            extending = true
-            onReachEnd()
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { extending = false }
+    /// The page has honest ends rather than a pretend-infinite scroll: a quiet mark
+    /// where your record begins, and a planning horizon you extend on purpose.
+    private var recordCap: some View {
+        Text("— start of your record —")
+            .font(Theme.Typography.note(10.5)).tracking(1.2)
+            .foregroundStyle(Theme.Palette.ink.opacity(0.32))
+            .frame(maxWidth: .infinity, alignment: .center)
+            .padding(.top, 2).padding(.bottom, 10)
+    }
+
+    private var horizonCap: some View {
+        VStack(spacing: 11) {
+            DashedRule()
+                .padding(.leading, Theme.Metric.spineWidth).padding(.trailing, Theme.Metric.lg)
+            Button(action: onPlanAhead) {
+                Text("PLAN A DAY AHEAD →")
+                    .font(.system(size: 10, weight: .medium)).tracking(Theme.Metric.eyebrowTracking)
+                    .foregroundStyle(Theme.Palette.paprika)
+                    .padding(.vertical, 6).contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
         }
+        .padding(.top, 16)
     }
 
     private var background: some View {

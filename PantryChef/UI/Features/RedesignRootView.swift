@@ -26,6 +26,7 @@ struct RedesignRootView: View {
     @State private var store = KitchenStore()
     @State private var showComposer = false
     @State private var showSettings = false
+    @State private var showPlanAhead = false
     @State private var detailDish: Dish?
     @State private var multiSession: CookSession?
     @State private var planTarget: PlanTarget?
@@ -65,6 +66,17 @@ struct RedesignRootView: View {
             .sheet(isPresented: $showSettings) {
                 SettingsView(store: store, onClose: { showSettings = false })
                     .presentationDetents([.medium, .large])
+            }
+            .sheet(isPresented: $showPlanAhead) {
+                PlanAheadSheet(
+                    onPick: { date in
+                        showPlanAhead = false
+                        // Hand off to the day planner on the next tick — presenting a
+                        // sheet while another dismisses in the same runloop no-ops it.
+                        DispatchQueue.main.async { planTarget = PlanTarget(date: date) }
+                    },
+                    onClose: { showPlanAhead = false })
+                    .presentationDetents([.medium])
             }
             .sheet(item: $planTarget) { target in
                 PlanDaySheet(store: store, date: target.date) { dish in
@@ -107,8 +119,7 @@ struct RedesignRootView: View {
                 onOpenMeal: { name in detailDish = store.dish(named: name) },
                 onDismissProposal: { id in withAnimation { store.dismissProposal(id) } },
                 onOpenStock: { store.space = .stock },
-                onReachStart: { store.extendPast() },
-                onReachEnd: { store.extendFuture() },
+                onPlanAhead: { showPlanAhead = true },
                 onSettings: { showSettings = true },
                 nowContent: {
                     AnyView(VStack(alignment: .leading, spacing: 0) {
@@ -364,6 +375,46 @@ private struct PlanDaySheet: View {
         case .readyWithSwaps: Text("WITH A SWAP").font(.system(size: 9)).tracking(1.6).foregroundStyle(Theme.Palette.sage)
         case .needs(let items): Text("NEEDS \(items.count)").font(.system(size: 9)).tracking(1.6).foregroundStyle(Theme.Palette.paprika)
         }
+    }
+}
+
+/// Pick a day beyond the visible horizon to plan — the timeline's honest answer to
+/// "what about later?" instead of an endless scroll.
+private struct PlanAheadSheet: View {
+    var onPick: (Date) -> Void
+    var onClose: () -> Void
+    @State private var date = Calendar.current.date(byAdding: .day, value: 21, to: Date()) ?? Date()
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            HStack {
+                Text("Plan a day").font(Theme.Typography.dish(20)).foregroundStyle(Theme.Palette.ink)
+                Spacer()
+                Button("Done", action: onClose)
+                    .font(Theme.Typography.fact(14, weight: .medium)).foregroundStyle(Theme.Palette.paprika)
+                    .buttonStyle(.plain)
+            }
+            .padding(.top, 22)
+            DashedRule().padding(.top, 10)
+            DatePicker("", selection: $date, in: Date()..., displayedComponents: .date)
+                .datePickerStyle(.graphical)
+                .tint(Theme.Palette.paprika)
+                .labelsHidden()
+                .padding(.top, 6)
+            Button { onPick(date) } label: {
+                Text("PLAN \(DayLabel.full(for: date).uppercased()) →")
+                    .font(.system(size: 11, weight: .medium)).tracking(1.4)
+                    .foregroundStyle(Theme.Palette.cream)
+                    .frame(maxWidth: .infinity).padding(.vertical, 13)
+                    .background(Rectangle().fill(Theme.Palette.ink))
+            }
+            .buttonStyle(.plain)
+            .padding(.top, 4)
+            Spacer(minLength: 0)
+        }
+        .padding(.horizontal, 20)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        .background(KitchenBackground())
     }
 }
 
