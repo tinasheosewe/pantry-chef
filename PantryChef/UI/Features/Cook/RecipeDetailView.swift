@@ -430,7 +430,7 @@ struct RecipeDetailView: View {
             HStack(spacing: 12) {
                 // "I made this" without the step-by-step — logs it straight away.
                 Button { onLogCooked(effectiveDish) } label: {
-                    Text("MARK AS MADE").font(.system(size: 11, weight: .medium)).tracking(1.6)
+                    Text("COOKED IT").font(.system(size: 11, weight: .medium)).tracking(1.6)
                         .foregroundStyle(Theme.Palette.ink)
                         .padding(.vertical, 14).padding(.horizontal, 4)
                         .contentShape(Rectangle())
