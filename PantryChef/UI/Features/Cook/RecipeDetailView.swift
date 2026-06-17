@@ -384,7 +384,9 @@ struct RecipeDetailView: View {
             withAnimation { appliedSwaps[line.id] = SwapChoice(key: s.key, name: s.name, catalogItemID: s.catalogItemID, note: s.notes) }
         } label: {
             HStack(spacing: 6) {
-                Text("↻ \(s.name)\(s.notes.map { " — \($0)" } ?? "")")
+                // Just the substitute name to choose from; its note/guidance appears
+                // once accepted (the "using …" line), not on every option.
+                Text("↻ \(s.name)")
                     .font(Theme.Typography.fact(10.5))
                     .foregroundStyle(entry.onHand ? Theme.Palette.sage : Theme.Palette.warmGray)
                     .multilineTextAlignment(.leading)

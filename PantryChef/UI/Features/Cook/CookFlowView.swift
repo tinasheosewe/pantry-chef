@@ -169,6 +169,7 @@ struct CookFlowView: View {
     private var cooking: some View {
         VStack(alignment: .leading, spacing: 0) {
             progress.padding(.top, 14)
+            swapsStrip
             ticket.padding(.top, 14)
             if let next = nextStep {
                 nextTicket(next).padding(.top, 8)
@@ -189,6 +190,26 @@ struct CookFlowView: View {
                     if value.translation.width < 0 { advance(1) } else { advance(-1) }
                 }
         )
+    }
+
+    /// Accepted substitutions in this cook — kept glanceable through the steps, so
+    /// mid-cook you still know what you swapped in (and the note: ratio / quantity).
+    private var swappedLines: [RecipeLine] { allLines.filter { $0.swapNote != nil } }
+
+    @ViewBuilder private var swapsStrip: some View {
+        if !swappedLines.isEmpty {
+            VStack(alignment: .leading, spacing: 3) {
+                ForEach(swappedLines) { line in
+                    Text("↻ \(line.name)\(line.swapNote.map { " — \($0)" } ?? "")")
+                        .font(Theme.Typography.fact(11)).foregroundStyle(Theme.Palette.sage)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.horizontal, 12).padding(.vertical, 8)
+            .background(Rectangle().fill(Theme.Palette.sage.opacity(0.10)))
+            .padding(.top, 10)
+        }
     }
 
     private func advance(_ direction: Int) {

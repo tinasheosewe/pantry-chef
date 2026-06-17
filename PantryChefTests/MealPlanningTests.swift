@@ -155,6 +155,7 @@ final class MealPlanningTests: XCTestCase {
 
     func testPlanForNowMatchesTheCurrentPartOfDay() {
         let store = KitchenStore()
+        store.events.removeAll()   // ignore the sample seed's own today-plans
         store.today = Calendar.current.date(bySettingHour: 8, minute: 0, second: 0, of: Date())!  // morning
         let dish = store.library[0]
         store.planMeal(dish, on: store.today, part: .evening)
