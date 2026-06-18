@@ -265,12 +265,15 @@ struct ShoppingChecklistView: View {
     private func addGrabbed(name: String, amount: String?) {
         guard !name.isEmpty else { return }
         let display = name.prefix(1).capitalized + name.dropFirst()
+        let category = store.listCategory(forName: display)
         if !entries.contains(where: { $0.name.lowercased() == display.lowercased() }) {
-            extras.append(ShoppingEntry(name: display, amount: amount,
-                                        category: store.listCategory(forName: display)))
+            extras.append(ShoppingEntry(name: display, amount: amount, category: category))
         }
         amounts[display] = amount ?? ""
         checked.insert(display)
+        // If a category filter is on and the new item belongs to a different aisle, it
+        // would be added but hidden — drop to "All" so it's never added out of sight.
+        if let sel = selectedCategory, sel != category { selectedCategory = nil }
         addingFocused = true
     }
 }

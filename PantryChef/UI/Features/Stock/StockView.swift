@@ -88,7 +88,8 @@ struct StockView: View {
                     }
                     // Cooked/leftover dishes live in Dishes (and the now-module's
                     // ready-made fan), not here — Stores is ingredients & staples.
-                    if !store.shoppingList.isEmpty { listSection }
+                    // The list preview follows the same category filter as the inventory.
+                    if !scopedShoppingList.isEmpty { listSection }
                 }
                 .padding(.horizontal, 20).padding(.bottom, 24)
             }
@@ -315,20 +316,37 @@ struct StockView: View {
         }
     }
 
+    /// The shopping list, filtered to the same category as the inventory above it.
+    private var scopedShoppingList: [ShoppingEntry] {
+        guard let cat = selectedCategory else { return store.shoppingList }
+        return store.shoppingList.filter { $0.category == cat }
+    }
+
     /// A read-only preview — managing the list (amounts, bought, removal) happens in
     /// the Shop run, so there's one place to keep it in sync. Grouped by category
-    /// (same aisle order as the inventory). The whole section taps through to Shop.
+    /// (same aisle order as the inventory), and filtered to the selected chip. The
+    /// whole section taps through to Shop.
     private var listSection: some View {
         Button { shopping = true } label: {
             VStack(alignment: .leading, spacing: 0) {
-                HStack(alignment: .firstTextBaseline) {
-                    Eyebrow(text: "The list — \(store.shoppingList.count)", tone: .urgent)
-                    Spacer()
-                    Text("SHOP →").font(.system(size: 11, weight: .medium)).tracking(1.4)
+                // A bold rule + cart-headed title so the list clearly starts here — not
+                // a quiet eyebrow you scroll past.
+                SolidRule().padding(.top, 22)
+                HStack(spacing: 8) {
+                    Image(systemName: "cart.fill").font(.system(size: 14))
                         .foregroundStyle(Theme.Palette.paprika)
+                    Text("Shopping list").font(Theme.Typography.dish(19)).foregroundStyle(Theme.Palette.ink)
+                    Text("\(scopedShoppingList.count)")
+                        .font(Theme.Typography.numeral(13, weight: .semibold))
+                        .foregroundStyle(Theme.Palette.warmGray)
+                    Spacer()
+                    Text("SHOP →").font(.system(size: 10, weight: .semibold)).tracking(1.4)
+                        .foregroundStyle(Theme.Palette.cream)
+                        .padding(.horizontal, 11).padding(.vertical, 7)
+                        .background(Rectangle().fill(Theme.Palette.paprika))
                 }
-                .padding(.top, 14)
-                ForEach(store.shoppingByCategory(store.shoppingList), id: \.0) { cat, items in
+                .padding(.top, 12).padding(.bottom, 4)
+                ForEach(store.shoppingByCategory(scopedShoppingList), id: \.0) { cat, items in
                     sectionHeader(cat, items.count)
                     ForEach(items) { entry in
                         HStack(spacing: 9) {
