@@ -14,7 +14,7 @@ enum FeedLens: String, CaseIterable, Identifiable {
         switch self {
         case .all: return "For you"
         case .makeNow: return "Make now"
-        case .oneSwap: return "One swap"
+        case .oneSwap: return "With a swap"
         case .shop: return "Shop"
         case .useItUp: return "Use it up"
         case .quick: return "Quick"
@@ -41,6 +41,68 @@ struct FeedFilters: Equatable {
         if let d = diet, !dish.diets.contains(where: { $0.caseInsensitiveCompare(d) == .orderedSame }) { return false }
         if let mins = maxMinutes, (dish.minutes ?? .max) > mins { return false }
         return true
+    }
+}
+
+/// Pantry-aware filtering + tile-building, shared by the Today feed AND browse-all so
+/// both speak one filter model. Lives in the view layer (it needs FeedLens/FeedItem and
+/// the readiness colours), as an extension on the store that owns readiness.
+extension KitchenStore {
+    /// Which lens a dish belongs to. The pantry tiers (makeNow/oneSwap/shop) are the
+    /// app's core, derived from live readiness.
+    func matches(_ dish: Dish, lens: FeedLens) -> Bool {
+        switch lens {
+        case .all: return true
+        case .makeNow: if case .ready = readiness(for: dish) { return true }; return false
+        case .oneSwap: if case .readyWithSwaps = readiness(for: dish) { return true }; return false
+        case .shop: if case .needs = readiness(for: dish) { return true }; return false
+        case .useItUp: return usesExpiring(dish)
+        case .quick: return (dish.minutes ?? .max) <= 25
+        case .highProtein: return dish.plate.weights.first?.category == .protein
+        }
+    }
+
+    /// A dish that uses something expiring soon (the "use it up" lens + the feature pick).
+    func usesExpiring(_ dish: Dish) -> Bool {
+        let expiring = expiringSoon().map { $0.name.lowercased() }
+        guard !expiring.isEmpty else { return false }
+        return dish.ingredients.contains { ing in
+            let name = ing.name.lowercased()
+            return expiring.contains { name.contains($0) || $0.contains(name) }
+        }
+    }
+
+    /// The dish as a feed tile, pantry stamp baked in (MAKE NOW / WITH A SWAP / NEEDS N).
+    /// The count of swaps is deliberately not surfaced — the cook only acts on "can I
+    /// make it." No stamp until readiness is warm.
+    func feedItem(_ dish: Dish) -> FeedItem {
+        let meta = dish.minutes.map { "\($0) min" } ?? dish.time
+        guard readinessReady else { return FeedItem(dish: dish, meta: meta, stamp: nil) }
+        switch readiness(for: dish) {
+        case .ready:
+            return FeedItem(dish: dish, meta: meta, stamp: "MAKE NOW", stampColor: Theme.Palette.sage)
+        case .readyWithSwaps:
+            return FeedItem(dish: dish, meta: meta, stamp: "WITH A SWAP", stampColor: Theme.Palette.ink)
+        case .needs(let items):
+            return FeedItem(dish: dish, meta: meta, stamp: "NEEDS \(items.count)", stampColor: Theme.Palette.warmGray)
+        }
+    }
+
+    // Distinct facet values across the library, for the "More filters" sheet.
+    func libraryCuisines() -> [String] { distinctLibraryTag { $0.cuisine } }
+    func libraryMealTypes() -> [String] { distinctLibraryTag { $0.mealType } }
+    func libraryDiets() -> [String] {
+        var seen = Set<String>(); var out: [String] = []
+        for dish in library { for d in dish.diets where seen.insert(d.lowercased()).inserted { out.append(d) } }
+        return out.sorted()
+    }
+    private func distinctLibraryTag(_ key: (Dish) -> String?) -> [String] {
+        var seen = Set<String>(); var out: [String] = []
+        for dish in library {
+            guard let v = key(dish), !v.isEmpty else { continue }
+            if seen.insert(v.lowercased()).inserted { out.append(v) }
+        }
+        return out.sorted()
     }
 }
 

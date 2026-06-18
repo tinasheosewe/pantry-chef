@@ -209,7 +209,6 @@ final class KitchenStore {
     /// its days-left from the new location's shelf life; when off, only the label
     /// changes and your own estimate stands. See `StockItem.moved(to:now:adjustDaysLeft:)`.
     var autoAdjustDaysOnStorageChange = true
-    var libraryFilter: LibraryFilter = .all
     var shoppingList: [ShoppingEntry] = [
         ShoppingEntry(name: "Olive oil"),
         ShoppingEntry(name: "Salmon", amount: "2 fillets"),

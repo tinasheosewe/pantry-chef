@@ -245,24 +245,18 @@ struct RedesignRootView: View {
     }
 
     /// The loud pantry-intelligence headline — the app's whole reason to exist, stated
-    /// up top: how many recipes your pantry can make right now, and how many are one
-    /// swap away. (Appears once readiness is warm.)
+    /// up top: one honest number — how many recipes you can make tonight (as written or
+    /// with a small substitution; both are "makeable"). The count of swaps is noise the
+    /// cook doesn't act on, so it's not surfaced here. (Appears once readiness is warm.)
     @ViewBuilder private var pantryHeadline: some View {
         if store.readinessReady {
-            let now = store.library.filter { if case .ready = store.readiness(for: $0) { return true } else { return false } }.count
-            let swap = store.library.filter { if case .readyWithSwaps = store.readiness(for: $0) { return true } else { return false } }.count
-            VStack(alignment: .leading, spacing: 3) {
-                (Text("\(now) ").font(Theme.Typography.dish(28, weight: .semibold))
-                    + Text(now == 1 ? "recipe you can make now" : "recipes you can make now")
-                        .font(Theme.Typography.dish(19)))
-                    .foregroundStyle(Theme.Palette.ink)
-                    .fixedSize(horizontal: false, vertical: true)
-                if swap > 0 {
-                    Text("+ \(swap) more with a single swap")
-                        .font(Theme.Typography.note(13)).foregroundStyle(Theme.Palette.sage)
-                }
-            }
-            .padding(.horizontal, Theme.Metric.lg).padding(.top, 12)
+            let makeable = store.library.filter { store.readiness(for: $0).isMakeableNow }.count
+            (Text("\(makeable) ").font(Theme.Typography.dish(28, weight: .semibold))
+                + Text(makeable == 1 ? "recipe you can make tonight" : "recipes you can make tonight")
+                    .font(Theme.Typography.dish(19)))
+                .foregroundStyle(Theme.Palette.ink)
+                .fixedSize(horizontal: false, vertical: true)
+                .padding(.horizontal, Theme.Metric.lg).padding(.top, 12)
         }
     }
 
@@ -277,7 +271,7 @@ struct RedesignRootView: View {
                             onOpen: { detailDish = $0 })
                     .padding(.horizontal, Theme.Metric.lg).padding(.top, 18)
             }
-            tierRail("One swap away", "Cook it with a single substitution", .oneSwap)
+            tierRail("With a swap", "Cook it with a small substitution", .oneSwap)
             tierRail("A quick shop", "You're an ingredient or two short", .shop, sortByMissing: true)
             browseAllFooter.padding(.top, 22)
         } else {
@@ -418,48 +412,11 @@ struct RedesignRootView: View {
 
     // MARK: - Feed data (the categorizer)
 
-    private func feedItem(_ dish: Dish) -> FeedItem {
-        // Every tile shouts its pantry status — the whole point of the app. "MAKE NOW"
-        // (all on hand) avoids "ready" reading as already-cooked; "1 SWAP" is the old
-        // cookable-with-a-swap signal; "NEEDS N" is what you'd shop for. Until readiness
-        // is warm, no stamp.
-        let meta = dish.minutes.map { "\($0) min" } ?? dish.time
-        guard store.readinessReady else { return FeedItem(dish: dish, meta: meta, stamp: nil) }
-        switch store.readiness(for: dish) {
-        case .ready:
-            return FeedItem(dish: dish, meta: meta, stamp: "MAKE NOW", stampColor: Theme.Palette.sage)
-        case .readyWithSwaps(let swaps):
-            return FeedItem(dish: dish, meta: meta,
-                            stamp: swaps.count == 1 ? "1 SWAP" : "\(swaps.count) SWAPS",
-                            stampColor: Theme.Palette.ink)
-        case .needs(let items):
-            return FeedItem(dish: dish, meta: meta, stamp: "NEEDS \(items.count)",
-                            stampColor: Theme.Palette.warmGray)
-        }
-    }
-
-    /// Which lens a dish belongs to. The pantry tiers (makeNow/oneSwap/shop) are the
-    /// app's core, derived from live readiness.
-    private func matches(_ dish: Dish, _ lens: FeedLens) -> Bool {
-        switch lens {
-        case .all: return true
-        case .makeNow: if case .ready = store.readiness(for: dish) { return true }; return false
-        case .oneSwap: if case .readyWithSwaps = store.readiness(for: dish) { return true }; return false
-        case .shop: if case .needs = store.readiness(for: dish) { return true }; return false
-        case .useItUp: return usesExpiring(dish)
-        case .quick: return (dish.minutes ?? .max) <= 25
-        case .highProtein: return dish.plate.weights.first?.category == .protein
-        }
-    }
-
-    private func usesExpiring(_ dish: Dish) -> Bool {
-        let expiring = store.expiringSoon().map { $0.name.lowercased() }
-        guard !expiring.isEmpty else { return false }
-        return dish.ingredients.contains { ing in
-            let name = ing.name.lowercased()
-            return expiring.contains { name.contains($0) || $0.contains(name) }
-        }
-    }
+    // Tile + lens logic is shared with browse-all — it lives on the store (see
+    // TodayFeed.swift). These thin aliases keep the feed's call sites tidy.
+    private func feedItem(_ dish: Dish) -> FeedItem { store.feedItem(dish) }
+    private func matches(_ dish: Dish, _ lens: FeedLens) -> Bool { store.matches(dish, lens: lens) }
+    private func usesExpiring(_ dish: Dish) -> Bool { store.usesExpiring(dish) }
 
     /// Name of the dish the hero is already showing (planned meal, or the selected fan
     /// option), so the rails/feature don't echo it back at you a second time.
@@ -537,10 +494,7 @@ struct RedesignRootView: View {
                         store.logEaten(option)
                     }
                 },
-                onSeeAll: {
-                    store.libraryFilter = .all
-                    showAllDishes = true
-                },
+                onSeeAll: { showAllDishes = true },
                 onChange: { store.resetNow() },
                 onResume: {
                     if case .cooking(let p) = store.nowState, let dish = p.dish {
@@ -960,7 +914,7 @@ private struct PlanDaySheet: View {
     @ViewBuilder private func readinessLabel(for dish: Dish) -> some View {
         switch store.readiness(for: dish) {
         case .ready: Text("READY").font(.system(size: 9)).tracking(1.6).foregroundStyle(Theme.Palette.sage)
-        case .readyWithSwaps(let swaps): Text("WITH \(SwapPhrase.count(swaps.count).uppercased())").font(.system(size: 9)).tracking(1.6).foregroundStyle(Theme.Palette.sage)
+        case .readyWithSwaps: Text("WITH A SWAP").font(.system(size: 9)).tracking(1.6).foregroundStyle(Theme.Palette.sage)
         case .needs(let items): Text("NEEDS \(items.count)").font(.system(size: 9)).tracking(1.6).foregroundStyle(Theme.Palette.paprika)
         }
     }

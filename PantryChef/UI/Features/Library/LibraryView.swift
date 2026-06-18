@@ -1,133 +1,90 @@
 import SwiftUI
 
-/// Dishes — the printed index (spec §3/§6, Field Notes). Every dish gets its
-/// sentence and a fact line; sections group by *reason* (ready tonight / worth a
-/// shop); the small-caps filter line narrows the page. Readiness is live via
-/// ReadinessService; the dietary profile flags conflicts.
+/// Browse every dish — the SAME pantry lenses, "More filters" sheet, and painted-plate
+/// tiles as the Today feed, so the two share one filter model. A two-column tile grid
+/// with search and a "cook together" multi-select. (Tapping a feed tier's "see all"
+/// filters the feed in place; this is the full, searchable index.)
 struct LibraryView: View {
     var store: KitchenStore
     var onCook: (Dish) -> Void = { _ in }
     var onCookTogether: ([Dish]) -> Void = { _ in }
 
+    @State private var lens: FeedLens
+    @State private var filters = FeedFilters()
+    @State private var query = ""
+    @State private var showFilters = false
     @State private var selecting = false
     @State private var selectedIDs: Set<UUID> = []
-    @State private var query = ""
 
-    private var filter: LibraryFilter { store.libraryFilter }
+    init(store: KitchenStore, onCook: @escaping (Dish) -> Void = { _ in },
+         onCookTogether: @escaping ([Dish]) -> Void = { _ in }, initialLens: FeedLens = .all) {
+        self.store = store
+        self.onCook = onCook
+        self.onCookTogether = onCookTogether
+        _lens = State(initialValue: initialLens)
+    }
 
+    /// The library through the active lens + secondary filters + the name search.
     private var dishes: [Dish] {
-        store.library.filter { dish in
-            let passesFilter: Bool
-            switch filter {
-            case .all: passesFilter = true
-            case .ready: passesFilter = store.readiness(for: dish).isMakeableNow   // on hand OR with swaps
-            case .under30: passesFilter = (dish.minutes ?? .max) <= 30
-            case .favorites: passesFilter = dish.isFavorite
-            }
-            let q = query.trimmingCharacters(in: .whitespaces).lowercased()
-            return passesFilter && (q.isEmpty || dish.name.lowercased().contains(q))
+        let q = query.trimmingCharacters(in: .whitespaces).lowercased()
+        return store.library.filter { dish in
+            store.matches(dish, lens: lens) && filters.accepts(dish)
+                && (q.isEmpty || dish.name.lowercased().contains(q))
         }
     }
 
-    // Makeable-now splits into two: everything on hand, vs cookable only with a swap.
-    private var onHandDishes: [Dish] { dishes.filter { store.readiness(for: $0) == .ready } }
-    private var swapDishes: [Dish] {
-        dishes.filter { if case .readyWithSwaps = store.readiness(for: $0) { return true } else { return false } }
-    }
-    private var shopDishes: [Dish] { dishes.filter { !store.readiness(for: $0).isMakeableNow } }
-
     var body: some View {
         VStack(spacing: 0) {
-            VStack(alignment: .leading, spacing: 8) {
-                header
-                filterLine
-                searchField
-                DashedRule()
-            }
-            .padding(.horizontal, 20).padding(.top, 6)
+            header.padding(.horizontal, Theme.Metric.lg).padding(.top, 6)
+            searchField.padding(.horizontal, Theme.Metric.lg).padding(.top, 8)
+            IntentPills(selected: $lens, filterCount: filters.activeCount,
+                        onOpenFilters: { showFilters = true })
+                .padding(.top, 10)
+            DashedRule().padding(.horizontal, Theme.Metric.lg).padding(.top, 8)
             ScrollView {
-                VStack(alignment: .leading, spacing: 0) {
-                    if !onHandDishes.isEmpty {
-                        Eyebrow(text: "All on hand", tone: .urgent).padding(.top, 12)
-                        list(onHandDishes)
+                if dishes.isEmpty {
+                    Text("Nothing matches — clear a filter or your search.")
+                        .font(Theme.Typography.note(12.5)).foregroundStyle(Theme.Palette.warmGray)
+                        .frame(maxWidth: .infinity).padding(.top, 28)
+                } else {
+                    LazyVGrid(columns: [GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12)],
+                              alignment: .leading, spacing: 16) {
+                        ForEach(dishes) { dish in tile(dish) }
                     }
-                    if !swapDishes.isEmpty {
-                        Eyebrow(text: "Cookable with a swap").padding(.top, 14)
-                        list(swapDishes)
-                    }
-                    if !shopDishes.isEmpty {
-                        Eyebrow(text: "Worth a shop").padding(.top, 14)
-                        list(shopDishes)
-                    }
-                    if dishes.isEmpty {
-                        Text("Nothing here — clear the filter or add a dish with ＋.")
-                            .font(Theme.Typography.note(12.5)).foregroundStyle(Theme.Palette.warmGray)
-                            .padding(.top, 18)
-                    }
+                    .padding(.horizontal, Theme.Metric.lg).padding(.top, 14).padding(.bottom, 24)
                 }
-                .padding(.horizontal, 20).padding(.bottom, 24)
             }
         }
         .background(KitchenBackground())
         .safeAreaInset(edge: .bottom) {
             if selecting && !selectedIDs.isEmpty { cookTogetherBar }
         }
+        .sheet(isPresented: $showFilters) {
+            FeedFiltersSheet(
+                filters: $filters,
+                cuisines: store.libraryCuisines(),
+                diets: store.libraryDiets(),
+                mealTypes: store.libraryMealTypes(),
+                resultCount: dishes.count,
+                onClose: { showFilters = false })
+            .presentationDetents([.medium, .large])
+        }
     }
 
-    // MARK: - Header & filters
+    // MARK: - Header & search
 
     private var header: some View {
-        HStack(alignment: .firstTextBaseline) {
+        HStack(alignment: .firstTextBaseline, spacing: 7) {
             Text("Dishes").font(Theme.Typography.dish(22)).foregroundStyle(Theme.Palette.ink)
+            Text("\(store.library.count)").font(Theme.Typography.numeral(12, weight: .semibold))
+                .foregroundStyle(Theme.Palette.warmGray)
             Spacer()
-            Button {
-                withAnimation { selecting.toggle(); selectedIDs = [] }
-            } label: {
+            Button { withAnimation { selecting.toggle(); selectedIDs = [] } } label: {
                 Text(selecting ? "CANCEL" : "COOK TOGETHER")
                     .font(.system(size: 9, weight: .medium)).tracking(1.8)
-                    .foregroundStyle(Theme.Palette.paprika)
-                    .contentShape(Rectangle())
+                    .foregroundStyle(Theme.Palette.paprika).contentShape(Rectangle())
             }
             .buttonStyle(.plain)
-        }
-    }
-
-    /// "24 — ALL · READY 6 · UNDER 30' · YOURS": the current cut underlined tomato.
-    private var filterLine: some View {
-        HStack(spacing: 0) {
-            Text("\(store.library.count) — ")
-                .font(.system(size: 10)).tracking(1.4)
-                .foregroundStyle(Theme.Palette.ink.opacity(0.55))
-            ForEach(LibraryFilter.allCases) { f in
-                let selected = filter == f
-                Button {
-                    withAnimation(.easeOut(duration: 0.2)) { store.libraryFilter = f }
-                } label: {
-                    Text(label(f))
-                        .font(.system(size: 10, weight: selected ? .semibold : .regular)).tracking(1.4)
-                        .foregroundStyle(selected ? Theme.Palette.paprika : Theme.Palette.ink.opacity(0.55))
-                        .overlay(alignment: .bottom) {
-                            if selected {
-                                Rectangle().fill(Theme.Palette.paprika).frame(height: 1).offset(y: 2)
-                            }
-                        }
-                        .contentShape(Rectangle())
-                }
-                .buttonStyle(.plain)
-                if f != LibraryFilter.allCases.last {
-                    Text(" · ").font(.system(size: 10)).foregroundStyle(Theme.Palette.ink.opacity(0.4))
-                }
-            }
-            Spacer(minLength: 0)
-        }
-    }
-
-    private func label(_ f: LibraryFilter) -> String {
-        switch f {
-        case .all: return "ALL"
-        case .ready: return "READY \(store.library.filter { store.readiness(for: $0).isMakeableNow }.count)"
-        case .under30: return "UNDER 30'"
-        case .favorites: return "YOURS"
         }
     }
 
@@ -135,9 +92,8 @@ struct LibraryView: View {
         HStack(spacing: 7) {
             Image(systemName: "magnifyingglass").font(.system(size: 11))
                 .foregroundStyle(Theme.Palette.ink.opacity(0.45))
-            TextField("Search the catalog", text: $query)
-                .font(Theme.Typography.fact(13))
-                .foregroundStyle(Theme.Palette.ink)
+            TextField("Search dishes", text: $query)
+                .font(Theme.Typography.fact(13)).foregroundStyle(Theme.Palette.ink)
             if !query.isEmpty {
                 Button { query = "" } label: {
                     Image(systemName: "xmark").font(.system(size: 11))
@@ -148,32 +104,26 @@ struct LibraryView: View {
         }
     }
 
-    // MARK: - The index
+    // MARK: - Grid
 
-    private func list(_ group: [Dish]) -> some View {
-        VStack(alignment: .leading, spacing: 0) {
-            ForEach(group) { dish in
-                Button { tap(dish) } label: {
-                    DishLine(dish: dish,
-                             readiness: store.readiness(for: dish),
-                             conflicts: DishInsights.conflicts(dish, with: store.profile),
-                             selecting: selecting,
-                             isSelected: selectedIDs.contains(dish.id),
-                             onToggleFavorite: { store.toggleFavorite(dish.id) })
-                        .contentShape(Rectangle())
-                }
-                .buttonStyle(.plain)
-                if dish.id != group.last?.id { DashedRule(opacity: 0.55) }
+    @ViewBuilder private func tile(_ dish: Dish) -> some View {
+        let selected = selectedIDs.contains(dish.id)
+        RecipeTile(item: store.feedItem(dish)) { tapped in
+            if selecting {
+                if selected { selectedIDs.remove(dish.id) } else { selectedIDs.insert(dish.id) }
+            } else {
+                onCook(tapped)
             }
         }
-    }
-
-    private func tap(_ dish: Dish) {
-        if selecting {
-            if selectedIDs.contains(dish.id) { selectedIDs.remove(dish.id) } else { selectedIDs.insert(dish.id) }
-        } else {
-            onCook(dish)
+        .overlay(alignment: .topTrailing) {
+            if selecting {
+                Image(systemName: selected ? "checkmark.circle.fill" : "circle")
+                    .font(.system(size: 18))
+                    .foregroundStyle(selected ? Theme.Palette.paprika : Theme.Palette.ink.opacity(0.35))
+                    .padding(8)
+            }
         }
+        .opacity(selecting && !selected ? 0.6 : 1)
     }
 
     private var cookTogetherBar: some View {
@@ -181,8 +131,7 @@ struct LibraryView: View {
             SolidRule()
             HStack {
                 Text("\(selectedIDs.count) SELECTED")
-                    .font(.system(size: 9)).tracking(1.8)
-                    .foregroundStyle(Theme.Palette.ink.opacity(0.55))
+                    .font(.system(size: 9)).tracking(1.8).foregroundStyle(Theme.Palette.ink.opacity(0.55))
                 Spacer()
                 BlockButton(title: "Cook \(selectedIDs.count) together") {
                     let chosen = store.library.filter { selectedIDs.contains($0.id) }
@@ -195,106 +144,3 @@ struct LibraryView: View {
         .background(Theme.Palette.cream)
     }
 }
-
-enum LibraryFilter: String, CaseIterable, Identifiable {
-    case all, ready, under30, favorites
-    var id: String { rawValue }
-}
-
-/// One index line: plate · serif name (♥ YOURS rides along) · its sentence · the
-/// fact line. The fact line tells the truth about readiness.
-private struct DishLine: View {
-    let dish: Dish
-    let readiness: Readiness
-    let conflicts: [Allergen]
-    var selecting = false
-    var isSelected = false
-    var onToggleFavorite: () -> Void = {}
-
-    var body: some View {
-        HStack(alignment: .top, spacing: 11) {
-            if selecting {
-                Rectangle()
-                    .strokeBorder(isSelected ? Theme.Palette.paprika : Theme.Palette.ink.opacity(0.4), lineWidth: 1)
-                    .background(Rectangle().fill(isSelected ? Theme.Palette.paprika : .clear))
-                    .frame(width: 14, height: 14)
-                    .overlay {
-                        if isSelected {
-                            Image(systemName: "checkmark").font(.system(size: 8, weight: .bold))
-                                .foregroundStyle(Theme.Palette.cream)
-                        }
-                    }
-                    .padding(.top, 12)
-            }
-            PlateView(name: dish.name, composition: dish.plate, size: 38)
-                .padding(.top, 6)
-            VStack(alignment: .leading, spacing: 2) {
-                HStack(spacing: 6) {
-                    Text(dish.name).font(Theme.Typography.dish(15)).foregroundStyle(Theme.Palette.ink)
-                    if dish.isYours {
-                        Text("♥ YOURS").font(.system(size: 8)).tracking(1.4)
-                            .foregroundStyle(Theme.Palette.paprika)
-                    }
-                }
-                if let blurb = dish.blurb {
-                    Text(blurb).font(Theme.Typography.note(11.5)).foregroundStyle(Theme.Palette.warmGray)
-                        .fixedSize(horizontal: false, vertical: true)
-                }
-                factLine
-                if !conflicts.isEmpty {
-                    Text("CONTAINS \(conflicts.map(\.title).joined(separator: ", ").uppercased())")
-                        .font(.system(size: 8)).tracking(1.4)
-                        .foregroundStyle(Theme.Palette.paprika)
-                }
-            }
-            Spacer(minLength: 0)
-            if !selecting {
-                Button(action: onToggleFavorite) {
-                    Image(systemName: dish.isFavorite ? "heart.fill" : "heart")
-                        .font(.system(size: 11))
-                        .foregroundStyle(dish.isFavorite ? Theme.Palette.paprika : Theme.Palette.ink.opacity(0.35))
-                        .frame(width: 30, height: 30)
-                        .contentShape(Rectangle())
-                }
-                .buttonStyle(.plain)
-                .accessibilityLabel(dish.isFavorite ? "Unfavorite" : "Favorite")
-            }
-        }
-        .padding(.vertical, 9)
-        .opacity(selecting && !isSelected ? 0.65 : 1)
-    }
-
-    @ViewBuilder private var factLine: some View {
-        switch readiness {
-        case .ready:
-            line("\(dish.time) · all on hand", Theme.Palette.warmGray)
-        case .readyWithSwaps(let swaps):
-            line("\(dish.time) · ready · \(SwapPhrase.count(swaps.count))", Theme.Palette.sage)
-        case .needs(let items):
-            line("needs \(items.count) · \(Self.summarize(items))", Theme.Palette.paprika)
-        }
-    }
-
-    /// Up to 3 names or ~24 chars, whichever comes first, then an ellipsis if there
-    /// is more — so the fact line never overflows and truncation is always marked.
-    static func summarize(_ items: [String], maxCount: Int = 3, maxChars: Int = 24) -> String {
-        var shown: [String] = []
-        var chars = 0
-        for item in items {
-            if shown.count >= maxCount { break }
-            if !shown.isEmpty && chars + item.count > maxChars { break }
-            shown.append(item)
-            chars += item.count + 2
-        }
-        let joined = shown.joined(separator: ", ")
-        return shown.count < items.count ? "\(joined)…" : joined
-    }
-
-    // Facts read sentence-case at a real size, not tiny tracked caps — the most
-    // important line on the row should be the most legible (UI agents §4).
-    private func line(_ text: String, _ color: Color) -> some View {
-        Text(text).font(Theme.Typography.fact(11.5)).foregroundStyle(color)
-            .padding(.top, 1)
-    }
-}
-
