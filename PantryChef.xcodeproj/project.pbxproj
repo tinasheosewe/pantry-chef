@@ -98,6 +98,7 @@
 		4CA332DA2C92C1ED2A30D846 /* StepTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA7710DAEA864CA8E70D8332 /* StepTask.swift */; };
 		4CFCEA836C4A80D9889B688E /* butternut-squash-soup.png in Resources */ = {isa = PBXBuildFile; fileRef = 7BBBD397EC06270A6418A321 /* butternut-squash-soup.png */; };
 		4EE220109F2FDCAA2FFB63E6 /* StockView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45E7B9238FFCA86D187E2420 /* StockView.swift */; };
+		4FEF02D71BF388A5F333047C /* RecipeBrowse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95566320DE07DA4B713F4C78 /* RecipeBrowse.swift */; };
 		500CF21AC8F3E7493C6F0DA1 /* ShoppingChecklistView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7091D990752C6197CCF02458 /* ShoppingChecklistView.swift */; };
 		51CF84BA05DF578F3EE56EC0 /* lentil-shepherd-s-pie.png in Resources */ = {isa = PBXBuildFile; fileRef = E80D0B656D67EAC31F4A110A /* lentil-shepherd-s-pie.png */; };
 		52DA0436D9382E6A62A4A473 /* maple-roasted-root-vegetables.png in Resources */ = {isa = PBXBuildFile; fileRef = 05629F5F5A7393838E0D6B7D /* maple-roasted-root-vegetables.png */; };
@@ -516,6 +517,7 @@
 		8F74F8E43FACC12115B59545 /* spinach-feta-orzo.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "spinach-feta-orzo.png"; sourceTree = "<group>"; };
 		8FBFC564EA27F3946F11716C /* quinoa-tabbouleh.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "quinoa-tabbouleh.png"; sourceTree = "<group>"; };
 		8FCEC8B8F6798B31E6C80413 /* harira.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = harira.png; sourceTree = "<group>"; };
+		95566320DE07DA4B713F4C78 /* RecipeBrowse.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RecipeBrowse.swift; sourceTree = "<group>"; };
 		95C9519844097DC56EE0E2AA /* sheet-pan-fajitas.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "sheet-pan-fajitas.png"; sourceTree = "<group>"; };
 		9697622A6D46C228E5379556 /* NowModule.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NowModule.swift; sourceTree = "<group>"; };
 		97F769A09EF6DC426A57DC8B /* IntakeParserTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = IntakeParserTests.swift; sourceTree = "<group>"; };
@@ -679,6 +681,7 @@
 			children = (
 				039DE23286DA5BF1F840B8EF /* TodayFeed.swift */,
 				37D2DE4E7AE893634E203960 /* RecipeSeed.swift */,
+				95566320DE07DA4B713F4C78 /* RecipeBrowse.swift */,
 			);
 			name = Today;
 			path = Today;
@@ -1651,6 +1654,7 @@
 				71D7C5ADA6DF7F74486CDE1B /* CatalogSwaps.swift in Sources */,
 				C2C444DEFFD9288E344ABFA0 /* TodayFeed.swift in Sources */,
 				00E1153D471A7982E0CA3F86 /* RecipeSeed.swift in Sources */,
+				4FEF02D71BF388A5F333047C /* RecipeBrowse.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -74,9 +74,11 @@ extension KitchenStore {
         }
     }
 
-    /// The dish as a feed tile, pantry stamp baked in (MAKE NOW / WITH A SWAP / NEEDS N).
-    /// The count of swaps is deliberately not surfaced — the cook only acts on "can I
-    /// make it." No stamp until readiness is warm.
+    /// The dish as a feed tile, pantry stamp baked in (MAKE NOW / WITH A SWAP /
+    /// NEEDS n · WANTS w). The count of swaps is deliberately not surfaced — the cook
+    /// only acts on "can I make it." When it must be shopped for, the stamp carries
+    /// both counts: what blocks it (Needs) and what it'd take to make it as written
+    /// (Wants). No stamp until readiness is warm.
     func feedItem(_ dish: Dish) -> FeedItem {
         let meta = dish.minutes.map { "\($0) min" } ?? dish.time
         guard readinessReady else { return FeedItem(dish: dish, meta: meta, stamp: nil) }
@@ -85,8 +87,11 @@ extension KitchenStore {
             return FeedItem(dish: dish, meta: meta, stamp: "MAKE NOW", stampColor: Theme.Palette.sage)
         case .readyWithSwaps:
             return FeedItem(dish: dish, meta: meta, stamp: "WITH A SWAP", stampColor: Theme.Palette.ink)
-        case .needs(let items):
-            return FeedItem(dish: dish, meta: meta, stamp: "NEEDS \(items.count)", stampColor: Theme.Palette.warmGray)
+        case .needs:
+            let counts = shoppingCounts(for: dish)
+            return FeedItem(dish: dish, meta: meta,
+                            stamp: ShopPhrase.stamp(needs: counts.needs, wants: counts.wants),
+                            stampColor: Theme.Palette.warmGray)
         }
     }
 

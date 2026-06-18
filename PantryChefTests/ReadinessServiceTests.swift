@@ -146,4 +146,40 @@ final class ReadinessServiceTests: XCTestCase {
         XCTAssertTrue(Readiness.readyWithSwaps([]).isMakeableNow)
         XCTAssertFalse(Readiness.needs(items: ["x"]).isMakeableNow)
     }
+
+    // MARK: - Wants (shop-for-as-written) vs Needs
+
+    /// Wants counts every line you'd buy to make it as written — essential *and*
+    /// optional — and ignores substitutes; staples you keep on hand don't count.
+    func testWantsCountsOptionalAndIgnoresSwaps() {
+        // buttermilk has an on-hand swap (milk) → Needs would be 0, but Wants still
+        // counts it (you want the real thing); the optional dill is missing too.
+        let s = service(onHand: ["spinach", "milk"], swaps: ["buttermilk": [swap("milk", "Milk")]])
+        let reqs = [req("spinach", "Spinach"),
+                    req("buttermilk", "Buttermilk"),
+                    req("dill", "Dill", essential: false),
+                    req("salt", "Salt", staple: true)]
+        XCTAssertEqual(s.wants(reqs), 2)                 // buttermilk + dill (not salt, not spinach)
+        XCTAssertEqual(s.evaluate(reqs).missingCount, 0) // makeable: needs 0
+    }
+
+    func testWantsIsZeroWhenFullyStockedAsWritten() {
+        let s = service(onHand: ["spinach", "feta"])
+        XCTAssertEqual(s.wants([req("spinach", "Spinach"), req("feta", "Feta"),
+                                req("salt", "Salt", staple: true)]), 0)
+    }
+
+    func testWantsCountsAStapleFlaggedOut() {
+        let s = service(onHand: ["spinach"], out: ["oliveOil"])
+        XCTAssertEqual(s.wants([req("spinach", "Spinach"), req("oliveOil", "Olive oil", staple: true)]), 1)
+    }
+
+    // MARK: - ShopPhrase (the shared stamp)
+
+    func testShopPhraseStamp() {
+        XCTAssertNil(ShopPhrase.stamp(needs: 0, wants: 0))
+        XCTAssertEqual(ShopPhrase.stamp(needs: 0, wants: 3), "WANTS 3")
+        XCTAssertEqual(ShopPhrase.stamp(needs: 2, wants: 2), "NEEDS 2")        // equal → just needs
+        XCTAssertEqual(ShopPhrase.stamp(needs: 1, wants: 4), "NEEDS 1 · WANTS 4")
+    }
 }

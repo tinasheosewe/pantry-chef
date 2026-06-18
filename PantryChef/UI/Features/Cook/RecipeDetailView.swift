@@ -238,16 +238,28 @@ struct RecipeDetailView: View {
         .disabled(aiBusy)
     }
 
+    /// "Wants": everything you'd shop for to cook it *exactly as written* — essential
+    /// and optional alike, ignoring substitutes (staples you keep on hand don't count).
+    /// Mirrors `ReadinessService.wants` over this page's own on-hand check.
+    private var wantsCount: Int {
+        currentDish.ingredients.filter { !isOnHand($0) && !$0.isStaple }.count
+    }
+
     @ViewBuilder private var readinessLabel: some View {
         switch readiness {
         case .ready:
-            Text("READY").font(.system(size: 10)).tracking(1.6).foregroundStyle(Theme.Palette.sage)
+            band(wantsCount > 0 ? "READY · WANTS \(wantsCount)" : "READY", Theme.Palette.sage)
         case .readyWithSwaps(let swaps):
-            Text("READY · \(SwapPhrase.count(swaps.count).uppercased())")
-                .font(.system(size: 10)).tracking(1.6).foregroundStyle(Theme.Palette.sage)
+            band("READY · \(SwapPhrase.count(swaps.count).uppercased())", Theme.Palette.sage)
         case .needs(let items):
-            Text("NEEDS \(items.count)").font(.system(size: 10)).tracking(1.6).foregroundStyle(Theme.Palette.paprika)
+            // Needs blocks it; Wants rides alongside when it adds beyond the blockers.
+            band(ShopPhrase.stamp(needs: items.count, wants: max(wantsCount, items.count)) ?? "NEEDS \(items.count)",
+                 Theme.Palette.paprika)
         }
+    }
+
+    private func band(_ text: String, _ color: Color) -> some View {
+        Text(text).font(.system(size: 10)).tracking(1.6).foregroundStyle(color)
     }
 
     // MARK: - AI actions (explicit, on-demand)

@@ -631,6 +631,27 @@ final class KitchenStore {
     @ObservationIgnored private var readinessCache: [UUID: Readiness] = [:]
     @ObservationIgnored private var readinessCacheKey = ""
 
+    /// The two shopping counts a dish shows (recipe page + tile):
+    /// - `needs`: essential lines blocking it tonight (= `readiness.missingCount`).
+    /// - `wants`: everything you'd buy to make it exactly as written, incl. optional,
+    ///   ignoring substitutes (`ReadinessService.wants`). Always `wants >= needs`.
+    /// Cached on the same fingerprint as readiness — tiles read it every render.
+    func shoppingCounts(for dish: Dish) -> (needs: Int, wants: Int) {
+        let key = readinessFingerprint
+        if key != readinessCacheKey { readinessCache.removeAll(); wantsCache.removeAll(); readinessCacheKey = key }
+        let needs = readiness(for: dish).missingCount
+        let wants: Int
+        if let cached = wantsCache[dish.id] { wants = cached }
+        else {
+            wants = ReadinessService(presence: StockPresence(index: presenceIndex),
+                                     swaps: CatalogSwapResolver()).wants(dish.requirements)
+            wantsCache[dish.id] = wants
+        }
+        return (needs, wants)
+    }
+
+    @ObservationIgnored private var wantsCache: [UUID: Int] = [:]
+
     /// Post-launch warmup (runs after first paint): fill the readiness cache for the
     /// whole library, compose the opening fan from it, and reveal the ready bits.
     func warmReadinessAndFan() {
@@ -780,6 +801,11 @@ final class KitchenStore {
         "Onion": "onion", "Orzo": "pasta", "Paprika": "paprika", "Peas": "pea",
         "Salmon fillets": "salmon-oily-fish", "spinach": "spinach", "Spinach": "spinach",
         "Tomatoes": "tomato",
+        // Added for the rewritten curated dishes — ids matched to the demo stock so
+        // they read "ready now" and `init` still does zero catalog lookups.
+        "Broccoli": "broccoli", "Carrots": "carrot", "Garlic": "garlic", "Ginger": "ginger",
+        "Frozen peas": "pea", "Cooked rice": "rice", "Soy sauce": "soy-sauce",
+        "Spring onions": "scallion", "Chilli flakes": "chili-flakes",
     ]
 
     init() {
@@ -787,11 +813,13 @@ final class KitchenStore {
         let now = Date()
         func day(_ n: Int) -> Date { cal.date(byAdding: .day, value: n, to: now)! }
         func plate(_ c: [FoodCategory], _ s: UInt64) -> PlateComposition { .init(categories: c, seed: s) }
-        func line(_ key: String, _ amount: String?, _ name: String, staple: Bool = false) -> RecipeLine {
+        func line(_ key: String, _ amount: String?, _ name: String,
+                  staple: Bool = false, optional: Bool = false) -> RecipeLine {
             // Catalog identity is resolved once, here — so every seed line carries its
             // catalog id and readiness matches by id, never by fuzzy name.
-            // (SeedDishCatalogTests guarantees they all resolve.)
-            RecipeLine(key: key, amount: amount, name: name, isStaple: staple,
+            // (SeedDishCatalogTests guarantees they all resolve.) `optional` lines are
+            // garnishes/finishes — a missing one is a "want", never a blocker.
+            RecipeLine(key: key, amount: amount, name: name, isStaple: staple, essential: !optional,
                        catalogItemID: Self.seedCatalogIDs[name] ?? IntakePipeline.bestCatalogID(for: name))
         }
         today = now
@@ -828,9 +856,25 @@ final class KitchenStore {
         let stirfry = Dish(
             name: "Tuesday stir-fry", plate: plate([.produce, .protein], 14), time: "20 min", isYours: true,
             isFavorite: true,
-            blurb: "Hot pan, whatever's crisp, twenty minutes.",
-            ingredients: [line("baby spinach", "200 g", "Spinach"), line("feta", "100 g", "Feta")],
-            steps: [CookStep("Get the pan smoking hot, then go fast.", phase: .cook, attention: .active)],
+            blurb: "Hot pan, day-old rice, whatever's crisp — twenty minutes.",
+            ingredients: [
+                line("broccoli", "1 head", "Broccoli"),
+                line("carrot", "2", "Carrots"),
+                line("pea", "1 cup", "Frozen peas"),
+                line("garlic", "3 cloves", "Garlic"),
+                line("ginger", "1 tbsp, grated", "Ginger"),
+                line("eggs", "2", "Eggs"),
+                line("rice", "2 cups, cooked", "Cooked rice", staple: true),
+                line("soy sauce", "2 tbsp", "Soy sauce", staple: true),
+                line("olive oil", "1 tbsp", "Olive oil", staple: true),
+                line("scallion", "2", "Spring onions", optional: true)
+            ],
+            steps: [
+                CookStep("Cut the broccoli into small florets and slice the carrots thin on the diagonal; mince the garlic and ginger.", phase: .prep, attention: .active),
+                CookStep("Heat the oil in a wok over your highest flame and stir-fry the broccoli and carrots until crisp-tender and blistered in spots.", timerSeconds: 300, phase: .cook, attention: .active),
+                CookStep("Push the veg aside, scramble the eggs in the bare pan, then toss in the peas, garlic and ginger until fragrant.", timerSeconds: 120, phase: .cook, attention: .active),
+                CookStep("Add the cooked rice and soy sauce; toss hard over high heat until everything's coated and steaming. Scatter with spring onions.", timerSeconds: 180, phase: .finish, attention: .active)
+            ],
             cuisine: "Asian", mealType: "dinner", course: "main",
             diets: ["vegetarian"], methods: ["stovetop", "one-pan"])
         let salmon = Dish(
@@ -852,11 +896,21 @@ final class KitchenStore {
             cuisine: "Italian", mealType: "dinner", course: "main",
             diets: ["high-protein"], methods: ["stovetop", "slow-cook"])
         let greens = Dish(
-            name: "Lemon greens", plate: plate([.produce, .dairy], 7), time: "20 min",
-            blurb: "Blistered greens, cold cheese, sharp lemon.",
-            ingredients: [line("baby spinach", "200 g", "Spinach"), line("feta", "100 g", "Feta"),
-                          line("lemon", "1", "Lemon")],
-            steps: [CookStep("Blister the greens, dress with lemon, crumble over feta.", phase: .cook, attention: .active)],
+            name: "Lemon greens", plate: plate([.produce, .dairy], 7), time: "15 min",
+            blurb: "Garlicky wilted spinach, sharp lemon, salty feta — the side that goes with anything.",
+            ingredients: [
+                line("baby spinach", "300 g", "Spinach"),
+                line("garlic", "2 cloves", "Garlic"),
+                line("lemon", "1", "Lemon"),
+                line("feta", "80 g", "Feta"),
+                line("olive oil", "2 tbsp", "Olive oil", staple: true),
+                line("chili flakes", "a pinch", "Chilli flakes", staple: true, optional: true)
+            ],
+            steps: [
+                CookStep("Warm the olive oil in a wide pan and sizzle the thinly sliced garlic until pale gold and fragrant — don't let it brown.", timerSeconds: 120, phase: .cook, attention: .active),
+                CookStep("Add the spinach in handfuls, tossing, until just wilted and glossy.", timerSeconds: 180, phase: .cook, attention: .active),
+                CookStep("Off the heat, squeeze over the lemon and season. Crumble the feta on top and finish with a pinch of chilli flakes.", phase: .finish, attention: .active)
+            ],
             cuisine: "Mediterranean", mealType: "lunch", course: "side",
             diets: ["vegetarian", "gluten-free"], methods: ["stovetop"])
         let frittata = Dish(

@@ -911,59 +911,50 @@ private struct PlanDaySheet: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            Text("Plan \(DayLabel.full(for: date))").font(Theme.Typography.dish(20))
-                .foregroundStyle(Theme.Palette.ink).padding(.top, 22)
-            Text("Pick something — missing items go to your list.")
-                .font(Theme.Typography.note(12)).foregroundStyle(Theme.Palette.warmGray).padding(.top, 3)
-            partPicker.padding(.top, 12)
-            DashedRule().padding(.top, 10)
-            ScrollView {
-                VStack(spacing: 0) {
-                    // Leftovers / ready-made first — heat-and-eat, no cooking.
-                    if !store.leftovers.isEmpty {
-                        Eyebrow(text: "Leftovers — heat & eat")
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .padding(.top, 10).padding(.bottom, 2)
-                        ForEach(store.leftovers) { item in
-                            Button { onPlanLeftover(item, part) } label: {
-                                LeaderRow {
-                                    HStack(spacing: 9) {
-                                        PlateView(name: item.name, composition: item.plate, size: 26)
-                                        Text(item.name).font(Theme.Typography.dish(14)).foregroundStyle(Theme.Palette.ink)
-                                    }
-                                } trailing: {
-                                    Text("READY").font(.system(size: 9)).tracking(1.6).foregroundStyle(Theme.Palette.sage)
-                                }
-                                .padding(.vertical, 9).contentShape(Rectangle())
-                            }
-                            .buttonStyle(.plain)
-                            DashedRule(opacity: 0.5)
-                        }
-                        Eyebrow(text: "Cook something")
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .padding(.top, 12).padding(.bottom, 2)
-                    }
-                    ForEach(store.library) { dish in
-                        Button { onPlan(dish, part) } label: {
+            // Header + leftovers are padded to match the browse grid below (which pads
+            // itself), so chips, search and tiles all line up on one margin.
+            VStack(alignment: .leading, spacing: 0) {
+                Text("Plan \(DayLabel.full(for: date))").font(Theme.Typography.dish(20))
+                    .foregroundStyle(Theme.Palette.ink).padding(.top, 22)
+                Text("Pick something — missing items go to your list.")
+                    .font(Theme.Typography.note(12)).foregroundStyle(Theme.Palette.warmGray).padding(.top, 3)
+                partPicker.padding(.top, 12)
+                DashedRule().padding(.top, 10)
+                // Leftovers / ready-made first — heat-and-eat, no cooking.
+                if !store.leftovers.isEmpty {
+                    Eyebrow(text: "Leftovers — heat & eat")
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.top, 12).padding(.bottom, 4)
+                    ForEach(store.leftovers) { item in
+                        Button { onPlanLeftover(item, part) } label: {
                             LeaderRow {
                                 HStack(spacing: 9) {
-                                    PlateView(name: dish.name, composition: dish.plate, size: 26)
-                                    Text(dish.name).font(Theme.Typography.dish(14)).foregroundStyle(Theme.Palette.ink)
+                                    PlateView(name: item.name, composition: item.plate, size: 26)
+                                    Text(item.name).font(Theme.Typography.dish(14)).foregroundStyle(Theme.Palette.ink)
                                 }
                             } trailing: {
-                                readinessLabel(for: dish)
+                                Text("READY").font(.system(size: 9)).tracking(1.6).foregroundStyle(Theme.Palette.sage)
                             }
                             .padding(.vertical, 9).contentShape(Rectangle())
                         }
                         .buttonStyle(.plain)
-                        if dish.id != store.library.last?.id { DashedRule(opacity: 0.5) }
+                        DashedRule(opacity: 0.5)
                     }
                 }
-                .padding(.top, 8)
             }
+            .padding(.horizontal, Theme.Metric.lg)
+            // Then the same browse UI as Today (chips · search · filters · readiness-
+            // sorted tiles) instead of the old flat, unsorted, unfilterable list.
+            RecipeBrowse(store: store, library: browseLibrary) { onPlan($0, part) }
+                .padding(.top, store.leftovers.isEmpty ? 4 : 10)
         }
-        .padding(.horizontal, 20)
         .background(KitchenBackground())
+    }
+
+    /// The dishes the picker browses — dietary-filtered, never surfacing something the
+    /// user can't eat (mirrors the Today feed's `feedLibrary`).
+    private var browseLibrary: [Dish] {
+        store.library.filter { DishInsights.conflicts($0, with: store.profile).isEmpty }
     }
 
     /// Optional, low-friction sense of which meal — defaults to evening, the common
@@ -981,14 +972,6 @@ private struct PlanDaySheet: View {
                 }
                 .buttonStyle(.plain)
             }
-        }
-    }
-
-    @ViewBuilder private func readinessLabel(for dish: Dish) -> some View {
-        switch store.readiness(for: dish) {
-        case .ready: Text("READY").font(.system(size: 9)).tracking(1.6).foregroundStyle(Theme.Palette.sage)
-        case .readyWithSwaps: Text("WITH A SWAP").font(.system(size: 9)).tracking(1.6).foregroundStyle(Theme.Palette.sage)
-        case .needs(let items): Text("NEEDS \(items.count)").font(.system(size: 9)).tracking(1.6).foregroundStyle(Theme.Palette.paprika)
         }
     }
 }

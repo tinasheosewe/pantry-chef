@@ -35,6 +35,18 @@ enum SwapPhrase {
     static func count(_ n: Int) -> String { n == 1 ? "1 swap" : "\(n) swaps" }
 }
 
+/// One place to phrase the two shopping counts (Needs / Wants), so the feed tile and
+/// the recipe page always agree. Needs leads when it blocks cooking; Wants rides
+/// alongside only when it adds something beyond the blockers.
+enum ShopPhrase {
+    /// Compact stamp: "NEEDS 1 · WANTS 4", "NEEDS 2", "WANTS 3", or nil for fully stocked.
+    static func stamp(needs: Int, wants: Int) -> String? {
+        if needs > 0 { return wants > needs ? "NEEDS \(needs) · WANTS \(wants)" : "NEEDS \(needs)" }
+        if wants > 0 { return "WANTS \(wants)" }
+        return nil
+    }
+}
+
 /// Whether a dish can be made from what's on hand (spec §6 readiness vocabulary).
 /// The single shape every surface speaks — Library, Explore, the fan, conflicts.
 enum Readiness: Equatable, Sendable {
@@ -124,4 +136,18 @@ struct ReadinessService {
     /// At most ~a third of a dish's non-staple ingredients may be substituted before
     /// it stops counting as makeable (always allowing at least one).
     static func swapCap(forNonStaple count: Int) -> Int { max(1, count / 3) }
+
+    /// How many lines you'd shop for to make the dish *exactly as written* — both
+    /// essential and optional, and **ignoring substitutes** (you want the real
+    /// ingredient, not a stand-in). Staples you're assumed to keep don't count
+    /// unless flagged out. This is "Wants"; `Readiness.missingCount` is "Needs"
+    /// (essential-only, satisfied by an on-hand swap). Wants ≥ Needs always.
+    func wants(_ requirements: [IngredientRequirement]) -> Int {
+        requirements.reduce(into: 0) { acc, req in
+            let onHand = presence.hasOnHand(key: req.key, catalogItemID: req.catalogItemID)
+            let staplePresent = req.isStaple
+                && !presence.isKnownOut(key: req.key, catalogItemID: req.catalogItemID)
+            if !onHand && !staplePresent { acc += 1 }
+        }
+    }
 }
