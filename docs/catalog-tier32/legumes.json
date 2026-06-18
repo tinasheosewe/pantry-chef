@@ -1,0 +1,187 @@
+{
+  "category": "Legumes & Beans",
+  "structural": [
+    {
+      "op": "merge",
+      "from": "black-eyed",
+      "into": "black-eyed-pea",
+      "note": "Duplicate crop (Vigna unguiculata). 'black-eyed' (name 'black eyed cowpea', child of cowpea) folds into the better-named root 'black-eyed-pea', which keeps richer aliases (black-eyed peas/southern pea/chawli/crowder pea). Reparented under cowpea below."
+    },
+    {
+      "op": "reparent",
+      "id": "black-eyed-pea",
+      "parentIds": ["cowpea"],
+      "note": "After merge, park the canonical black-eyed pea under the cowpea tree (it was a stray root) so the cowpea family is one tree."
+    },
+    {
+      "op": "merge",
+      "from": "borlotti-beans",
+      "into": "cranberry-beans",
+      "note": "True redundancy: borlotti is the same crop as cranberry beans. A separate 'borlotti-beans' item was created during enrichment even though 'cranberry-beans' already carries the borlotti/rosecoco/romano aliases — exactly the duplicate the audit warned against. Fold into cranberry-beans (canonical)."
+    },
+    {
+      "op": "merge",
+      "from": "broad",
+      "into": "fava",
+      "note": "Same species (Vicia faba); 'broad' (UK) = 'fava' (US). 'fava' is the richer item (faba/ful/horse/windsor aliases). Fold 'broad' in as regional aliases. fava already parented under beans."
+    },
+    {
+      "op": "reparent",
+      "id": "toor-dal",
+      "parentIds": ["pigeon-pea"],
+      "note": "Toor dal IS split pigeon pea (Cajanus cajan). Was a stray root; make it the split child of pigeon-pea. Duplicated 'arhar dal' alias removed from toor-dal in cleanups (kept on pigeon-pea)."
+    },
+    {
+      "op": "reparent",
+      "id": "mung-dal",
+      "parentIds": ["mung"],
+      "note": "Mung dal is the split form of the whole mung bean. Was a disconnected root; hang it (with its dehusked/with-skin children) off 'mung' so whole/split form one tree."
+    },
+    {
+      "op": "reid",
+      "from": "hickory",
+      "to": "hickory-baked-beans",
+      "note": "Opaque single-word id for a baked-beans flavor child of baked-beans; self-describe it. No references."
+    },
+    {
+      "op": "reid",
+      "from": "maple",
+      "to": "maple-baked-beans",
+      "note": "Opaque single-word id (baked-beans flavor). No references."
+    },
+    {
+      "op": "reid",
+      "from": "vegetarian",
+      "to": "vegetarian-baked-beans",
+      "note": "Opaque generic word 'vegetarian' that could collide conceptually; it is a baked-beans flavor child. No references."
+    },
+    {
+      "op": "reid",
+      "from": "desi",
+      "to": "desi-chickpea",
+      "note": "Opaque single-word id for the desi chickpea type (child of chickpea). No references."
+    },
+    {
+      "op": "reid",
+      "from": "kabuli",
+      "to": "kabuli-chickpea",
+      "note": "Opaque single-word id for the kabuli chickpea type (child of chickpea). No references."
+    },
+    {
+      "op": "reid",
+      "from": "calico",
+      "to": "calico-cowpea",
+      "note": "Opaque single-word id (cowpea type). No references."
+    },
+    {
+      "op": "reid",
+      "from": "crowder",
+      "to": "crowder-cowpea",
+      "note": "Opaque single-word id (cowpea type). No references."
+    },
+    {
+      "op": "reid",
+      "from": "with-skin",
+      "to": "mung-dal-with-skin",
+      "note": "Opaque id for the split-with-skin mung dal form (child of mung-dal). No references."
+    },
+    {
+      "op": "reid",
+      "from": "dehusked",
+      "to": "mung-dal-dehusked",
+      "note": "Opaque id for the dehusked mung dal form (child of mung-dal). No references."
+    }
+  ],
+  "cleanups": [
+    {
+      "op": "setAllergens",
+      "id": "cream-cowpea",
+      "allergens": [],
+      "note": "Cowpeas contain no dairy. Strip the bogus ['dairy'] allergen (copy/paste bug)."
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "cream-cowpea",
+      "dietaryTags": ["Vegan", "Vegetarian", "Gluten-Free", "Dairy-Free", "Nut-Free"],
+      "note": "Restore Vegan and Dairy-Free to match cowpea siblings (red-cowpea, cowpea). Pairs with the allergen strip above. NOTE: gramsPerCup is 240 here vs 195 on siblings (also looks copied from a dairy entry), but there is no gramsPerCup op in the spec, so it cannot be fixed via these ops — flagging for manual correction."
+    },
+    {
+      "op": "removeAlias",
+      "id": "beans",
+      "alias": "edamame",
+      "note": "Misrouted: edamame is now its own item (id 'edamame', child of soy). Remove from the generic root."
+    },
+    {
+      "op": "removeAlias",
+      "id": "beans",
+      "alias": "faba bean",
+      "note": "Belongs to fava (Vicia faba), not the generic root. Added to fava below."
+    },
+    {
+      "op": "removeAlias",
+      "id": "beans",
+      "alias": "ful",
+      "note": "Egyptian ful medames = fava/broad bean. Belongs to fava, added below."
+    },
+    {
+      "op": "removeAlias",
+      "id": "beans",
+      "alias": "haricot",
+      "note": "Haricot = navy bean; navy already carries 'haricot beans'/'haricot bean'. Add bare 'haricot' to navy below."
+    },
+    {
+      "op": "removeAlias",
+      "id": "beans",
+      "alias": "bean sprout",
+      "note": "Sprouted form (Produce), not a dried legume synonym. Strip from generic root."
+    },
+    {
+      "op": "removeAlias",
+      "id": "beans",
+      "alias": "bean sprouts",
+      "note": "Sprouted form (Produce). Strip from generic root."
+    },
+    {
+      "op": "removeAlias",
+      "id": "beans",
+      "alias": "fresh bean sprouts",
+      "note": "Sprouted form (Produce). Strip from generic root. (No 'bean sprout' item exists in the live catalog to relocate to; leaving unrouted rather than inventing one.)"
+    },
+    {
+      "op": "addAlias",
+      "id": "fava",
+      "alias": "faba bean",
+      "note": "Singular faba bean (only 'faba beans' present); moved off generic root."
+    },
+    {
+      "op": "addAlias",
+      "id": "fava",
+      "alias": "ful",
+      "note": "Bare 'ful' (only 'ful medames' present); moved off generic root."
+    },
+    {
+      "op": "addAlias",
+      "id": "fava",
+      "alias": "broad bean",
+      "note": "Regional UK name folded in via the broad->fava merge; ensure singular present."
+    },
+    {
+      "op": "addAlias",
+      "id": "fava",
+      "alias": "broad beans",
+      "note": "Regional UK plural; from broad->fava merge."
+    },
+    {
+      "op": "addAlias",
+      "id": "navy",
+      "alias": "haricot",
+      "note": "Bare 'haricot' moved off generic root; navy already has 'haricot beans'/'haricot bean'."
+    },
+    {
+      "op": "removeAlias",
+      "id": "toor-dal",
+      "alias": "arhar dal",
+      "note": "Duplicated alias: keep 'arhar dal' on pigeon-pea (whole) only. toor-dal keeps 'split pigeon pea'/'toor daal'/'tuvar dal' and is now a child of pigeon-pea."
+    }
+  ]
+}

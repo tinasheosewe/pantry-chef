@@ -1,0 +1,301 @@
+{
+  "category": "Grains & Cereals",
+  "structural": [
+    {
+      "op": "rename",
+      "id": "millet",
+      "name": "millet",
+      "note": "id 'millet' is named 'millet porridge' but is the base grain; rename to plain millet."
+    },
+    {
+      "op": "reparent",
+      "id": "millet",
+      "parentIds": [],
+      "note": "Re-home millet off the cooked-dish 'porridge' bucket; it is a base grain and root of the millet varieties."
+    },
+    {
+      "op": "rename",
+      "id": "barley",
+      "name": "barley",
+      "note": "id 'barley' is named 'barley groats'; rename to canonical whole barley. Contains gluten (GF already off, allergen gluten already set)."
+    },
+    {
+      "op": "reparent",
+      "id": "barley",
+      "parentIds": [],
+      "note": "Re-home barley off generic 'groats'; it is a base grain and parent of pearl/pot/quick-cooking barley."
+    },
+    {
+      "op": "rename",
+      "id": "cornmeal",
+      "name": "cornmeal",
+      "note": "id 'cornmeal' is named 'cornmeal porridge'; cornmeal is a dry milled corn product, not a cooked porridge."
+    },
+    {
+      "op": "reparent",
+      "id": "cornmeal",
+      "parentIds": [],
+      "note": "Re-home cornmeal off 'porridge'; it is a dry milled product. Children blue-cornmeal/maize-meal-porridge/cornmeal-white/yellow-cornmeal stay under it."
+    },
+    {
+      "op": "setStorage",
+      "id": "hominy",
+      "defaultStorage": "Pantry",
+      "note": "Resolve the mixed dried/canned freshness ambiguity by settling on the dried-hominy form (long pantry life)."
+    },
+    {
+      "op": "setFreshness",
+      "id": "hominy",
+      "freshnessByStorage": { "Pantry": [365, 1095] },
+      "note": "Drop the canned/cooked Refrigerated [3,7] (and stray Frozen) entries that conflicted with dried hominy's long pantry life; keep a single coherent dried-hominy map."
+    }
+  ],
+  "cleanups": [
+    {
+      "op": "rename",
+      "id": "barnyard",
+      "name": "barnyard millet",
+      "note": "Drop the spurious 'porridge' suffix inherited from the mislabeled parent."
+    },
+    {
+      "op": "rename",
+      "id": "foxtail",
+      "name": "foxtail millet"
+    },
+    {
+      "op": "rename",
+      "id": "proso",
+      "name": "proso millet"
+    },
+    {
+      "op": "rename",
+      "id": "finger-millet",
+      "name": "finger millet"
+    },
+    {
+      "op": "rename",
+      "id": "cornmeal-white",
+      "name": "white cornmeal",
+      "note": "Was 'cornmeal porridge white'; drop porridge suffix and order naturally."
+    },
+    {
+      "op": "rename",
+      "id": "yellow-cornmeal",
+      "name": "yellow cornmeal",
+      "note": "Was 'yellow cornmeal porridge'; drop porridge suffix."
+    },
+    {
+      "op": "rename",
+      "id": "pearl-barley",
+      "name": "pearl barley",
+      "note": "Was 'pearl barley groats'."
+    },
+    {
+      "op": "removeAlias",
+      "id": "pearl-barley",
+      "alias": "pearl millet",
+      "note": "pearl millet is bajra (a millet), not pearl barley; the canonical 'pearl-millet' item already owns this name."
+    },
+    {
+      "op": "rename",
+      "id": "wheat",
+      "name": "wheat bran",
+      "note": "Keep this item as genuine wheat bran under 'bran'. The canonical whole-wheat item 'wheat-berries' already exists, so this entry is repurposed to true bran."
+    },
+    {
+      "op": "removeAlias",
+      "id": "wheat",
+      "alias": "wheat berries",
+      "note": "Berry/whole-wheat aliases belong to the existing 'wheat-berries' item, not to wheat bran."
+    },
+    {
+      "op": "removeAlias",
+      "id": "wheat",
+      "alias": "whole wheat"
+    },
+    {
+      "op": "removeAlias",
+      "id": "wheat",
+      "alias": "wheat grain"
+    },
+    {
+      "op": "addAlias",
+      "id": "wheat",
+      "alias": "wheat bran flakes",
+      "note": "Give the repurposed bran item a bran-specific alias alongside its existing 'wheat bran' name."
+    },
+    {
+      "op": "removeAlias",
+      "id": "oat-bran",
+      "alias": "oatmeal",
+      "note": "Oat-bran alias bleed: these belong to 'oats' / 'oat-groats', not oat bran."
+    },
+    {
+      "op": "removeAlias",
+      "id": "oat-bran",
+      "alias": "oat groats"
+    },
+    {
+      "op": "removeAlias",
+      "id": "oat-bran",
+      "alias": "grain groats"
+    },
+    {
+      "op": "removeAlias",
+      "id": "oat-bran",
+      "alias": "groat"
+    },
+    {
+      "op": "removeAlias",
+      "id": "oat-bran",
+      "alias": "whole groats"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "kamut",
+      "dietaryTags": ["Vegetarian", "Vegan", "Dairy-Free", "Nut-Free"],
+      "note": "kamut (khorasan) is a wheat species — not gluten-free."
+    },
+    {
+      "op": "setAllergens",
+      "id": "kamut",
+      "allergens": ["gluten"]
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "freekeh",
+      "dietaryTags": ["Vegetarian", "Vegan", "Dairy-Free", "Nut-Free"],
+      "note": "freekeh is roasted green durum wheat — contains gluten."
+    },
+    {
+      "op": "setAllergens",
+      "id": "freekeh",
+      "allergens": ["gluten"]
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "bran",
+      "dietaryTags": ["Vegetarian", "Vegan", "Dairy-Free", "Nut-Free"],
+      "note": "Generic 'bran' spans wheat/oat/rice bran (mixed gluten status); a generic bucket should not assert Gluten-Free."
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "groats",
+      "dietaryTags": ["Vegetarian", "Vegan", "Dairy-Free", "Nut-Free"],
+      "note": "Generic 'groats' covers barley/rye/buckwheat groats with mixed gluten status; drop the Gluten-Free assertion."
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "multigrain-porridge",
+      "dietaryTags": ["Vegetarian", "Vegan", "Dairy-Free", "Nut-Free"],
+      "note": "Multigrain blends typically include wheat/barley/rye; drop GF, matching siblings multigrain-cereal/whole-grain/cold-cereal which already carry gluten."
+    },
+    {
+      "op": "setAllergens",
+      "id": "multigrain-porridge",
+      "allergens": ["gluten"]
+    },
+    {
+      "op": "recategorize",
+      "id": "potato-flakes",
+      "category": "Produce",
+      "note": "Instant mashed / dehydrated potato flakes is not a grain or cereal; move to Produce."
+    },
+    {
+      "op": "removeAlias",
+      "id": "rice-bran",
+      "alias": "rice porridge",
+      "note": "rice bran is a milling byproduct, not a porridge; 'rice porridge' belongs to congee/cream-of-rice."
+    },
+    {
+      "op": "removeAlias",
+      "id": "sorghum-white",
+      "alias": "jowar",
+      "note": "Child reused the full parent ('sorghum') alias list; strip the generic copies."
+    },
+    {
+      "op": "removeAlias",
+      "id": "sorghum-white",
+      "alias": "milo"
+    },
+    {
+      "op": "removeAlias",
+      "id": "sorghum-white",
+      "alias": "sorghum grain"
+    },
+    {
+      "op": "removeAlias",
+      "id": "sorghum-white",
+      "alias": "sorghums"
+    },
+    {
+      "op": "addAlias",
+      "id": "sorghum-white",
+      "alias": "white jowar",
+      "note": "Give white sorghum its own specific aliases."
+    },
+    {
+      "op": "addAlias",
+      "id": "sorghum-white",
+      "alias": "white milo"
+    },
+    {
+      "op": "removeAlias",
+      "id": "quick",
+      "alias": "quick oats",
+      "note": "'quick grits' (id 'quick') wrongly carried 'quick oats'; that belongs to the oats/oats-instant line."
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "cream-of-rice",
+      "dietaryTags": ["Vegetarian", "Vegan", "Gluten-Free", "Dairy-Free", "Nut-Free"],
+      "note": "Cream of rice is plain milled rice — add Vegan + Dairy-Free for consistency with other rice items."
+    },
+    {
+      "op": "setAllergens",
+      "id": "cream-of-rice",
+      "allergens": [],
+      "note": "Spurious 'dairy' allergen on plain rice cereal conflicted with the corrected Vegan/Dairy-Free tags; clear it."
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "cream-of-wheat",
+      "dietaryTags": ["Vegetarian", "Vegan", "Dairy-Free", "Nut-Free"],
+      "note": "Cream of wheat (farina) is plant-based — add Vegan + Dairy-Free; stays NOT Gluten-Free (it is wheat)."
+    },
+    {
+      "op": "setAllergens",
+      "id": "cream-of-wheat",
+      "allergens": ["gluten"],
+      "note": "Drop the spurious 'dairy' allergen (conflicts with corrected Dairy-Free); keep gluten."
+    },
+    {
+      "op": "removeAlias",
+      "id": "durum",
+      "alias": "semolinas",
+      "note": "'semolinas' duplicates the parent 'semolina'; durum is the wheat species, not its milled product."
+    },
+    {
+      "op": "addAlias",
+      "id": "durum",
+      "alias": "durum wheat",
+      "note": "Durum-specific aliases."
+    },
+    {
+      "op": "addAlias",
+      "id": "durum",
+      "alias": "triticum durum"
+    },
+    {
+      "op": "addAlias",
+      "id": "durum",
+      "alias": "hard wheat"
+    },
+    {
+      "op": "removeAlias",
+      "id": "hominy",
+      "alias": "canned hominy",
+      "note": "Item settled on the dried-hominy form (Pantry); drop the canned alias that drove the mixed freshness."
+    }
+  ]
+}

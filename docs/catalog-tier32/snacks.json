@@ -1,0 +1,37 @@
+{
+  "category": "Snacks",
+  "structural": [
+    {
+      "op": "reparent",
+      "id": "pretzel-crisp",
+      "parentIds": [],
+      "note": "parentIds was [\"pretzel\"], but id 'pretzel' is 'pretzel bun' (Breads & Bakery). The audit's intended snack-pretzel parent was never created (the bare 'pretzel' id was already taken by the bun, owned by the Breads agent), so this Snacks child was left parented to a bread item in another category. No snack-pretzel parent exists in Snacks, so demote to root."
+    },
+    {
+      "op": "reparent",
+      "id": "filled-pretzel",
+      "parentIds": [],
+      "note": "Same bug as pretzel-crisp: parentIds [\"pretzel\"] points at 'pretzel bun' (Breads & Bakery), a cross-category mis-parent. Demote to root since no snack-pretzel parent exists."
+    }
+  ],
+  "cleanups": [
+    {
+      "op": "setDietaryTags",
+      "id": "vanilla-wafer",
+      "dietaryTags": ["Vegetarian", "Nut-Free"],
+      "note": "Was tagged Gluten-Free, Vegan, Dairy-Free. Classic vanilla wafers (Nilla) are wheat-flour based (NOT gluten-free), and many brands contain milk/whey (Vegan/Dairy-Free unsafe). Reduce to Vegetarian + Nut-Free; gluten allergen added in companion op."
+    },
+    {
+      "op": "setAllergens",
+      "id": "vanilla-wafer",
+      "allergens": ["gluten"],
+      "note": "Item had no allergens at all despite being wheat-flour wafers. Add gluten. (Pairs with the setDietaryTags op removing the contradictory Gluten-Free tag.)"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "cracker",
+      "dietaryTags": ["Vegetarian", "Nut-Free"],
+      "note": "Umbrella 'cracker' carried Vegan + Dairy-Free, but its own variant/facet list includes 'butter' and 'ritz', which contain dairy/butter. The umbrella shouldn't claim Vegan/Dairy-Free unconditionally; drop both, keep Vegetarian + Nut-Free. gluten allergen already present and left intact."
+    }
+  ]
+}

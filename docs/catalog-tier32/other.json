@@ -1,0 +1,11 @@
+{
+  "category": "Other",
+  "structural": [
+    {"op": "reid", "from": "mixed-plant", "to": "mixed-plant-protein-powder", "note": "Naming consistency with the 9 sibling *-protein-powder children of protein-powder; no parent/swap references point at the old id, so the repoint is a no-op beyond the rename itself."}
+  ],
+  "cleanups": [
+    {"op": "setDietaryTags", "id": "collagen", "dietaryTags": ["Gluten-Free", "Dairy-Free", "Nut-Free"], "note": "Collagen protein is exclusively animal-derived (bovine/marine/porcine) — remove the incorrect Vegan and Vegetarian tags. Left allergens null: generic collagen powder is not specifically marine-sourced, so no fish allergen is asserted."},
+    {"op": "addAlias", "id": "whey-protein-powder", "alias": "whey protein", "note": "New; 'whey isolate' and 'whey protein isolate' already present."},
+    {"op": "addAlias", "id": "soy-protein-powder", "alias": "soy protein", "note": "New; 'soy protein isolate' already present."}
+  ]
+}

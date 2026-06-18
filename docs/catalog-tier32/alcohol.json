@@ -1,0 +1,121 @@
+{
+  "category": "Alcohol & Spirits",
+  "structural": [
+    {
+      "op": "recategorize",
+      "id": "mirin",
+      "category": "Alcohol & Spirits",
+      "note": "Audit + task note: mirin is an alcoholic sweetened rice 'wine' and a rice-wine sibling, currently mis-filed under Condiments & Sauces. Moving it into Alcohol & Spirits alongside sake/shaoxing. (Alcohol-vs-condiment overlap is acknowledged in the audit; placed here per the audit's recommendation.)"
+    },
+    {
+      "op": "reparent",
+      "id": "mirin",
+      "parentIds": ["rice-wine"],
+      "note": "mirin has empty parentIds in the live catalog; re-home under the existing 'rice-wine' parent so it joins sake/shaoxing-wine. rice-wine confirmed present."
+    },
+    {
+      "op": "reid",
+      "from": "red-wine",
+      "to": "red-wine-vinegar",
+      "note": "Live id 'red-wine' actually maps to name 'red wine vinegar' (category Condiments & Sauces, parent vinegar) — a mis-keyed/misleading id. Per task instruction, reid to disambiguate the condiment rather than clobber it. No references point at 'red-wine' (verified: 0 parentIds/swaps), so the repoint is a no-op and safe. This frees the 'red-wine' id for a true drinking red-wine item later (which cannot be created here — no create op exists). The audit's proposed 'red wine' newItem was never applied to the live catalog."
+    }
+  ],
+  "cleanups": [
+    {
+      "op": "removeAlias",
+      "id": "bourbon",
+      "alias": "whiskeys",
+      "note": "Generic whiskey plural belongs on the 'whiskey' parent, not the bourbon child (collision: bare 'whiskey' would match bourbon)."
+    },
+    {
+      "op": "removeAlias",
+      "id": "bourbon",
+      "alias": "whiskies",
+      "note": "Generic whiskey plural belongs on the 'whiskey' parent."
+    },
+    {
+      "op": "removeAlias",
+      "id": "bourbon",
+      "alias": "whisky",
+      "note": "Generic 'whisky' belongs on the 'whiskey' parent; bourbon keeps 'bourbons' and its name 'bourbon whiskey'."
+    },
+    {
+      "op": "removeAlias",
+      "id": "shochu",
+      "alias": "korean soju",
+      "note": "'soju' is a separate live item that already owns 'korean soju'; Japanese shochu should not cross-alias to it. shochu keeps 'japanese shochu','shochus'."
+    },
+    {
+      "op": "removeAlias",
+      "id": "sake",
+      "alias": "rice wines",
+      "note": "Plural belongs to the parent 'rice-wine' (which carries 'rice wines'); child duplicating it dilutes parent matching. sake keeps 'japanese rice wine','nihonshu','sakes'."
+    },
+    {
+      "op": "removeAlias",
+      "id": "aquavit-herbal",
+      "alias": "akvavit",
+      "note": "Copied verbatim from the 'aquavit' parent; generic input should route to the parent, not the herbal child."
+    },
+    {
+      "op": "removeAlias",
+      "id": "aquavit-herbal",
+      "alias": "aqua vitae",
+      "note": "Copied verbatim from the 'aquavit' parent."
+    },
+    {
+      "op": "removeAlias",
+      "id": "aquavit-herbal",
+      "alias": "aquavits",
+      "note": "Copied verbatim from the 'aquavit' parent."
+    },
+    {
+      "op": "removeAlias",
+      "id": "schnapps-herbal",
+      "alias": "german schnapps",
+      "note": "Copied verbatim from the 'schnapps' parent; generic schnapps input should route to the parent."
+    },
+    {
+      "op": "removeAlias",
+      "id": "schnapps-herbal",
+      "alias": "schnaaps",
+      "note": "Copied verbatim from the 'schnapps' parent."
+    },
+    {
+      "op": "removeAlias",
+      "id": "schnapps-herbal",
+      "alias": "schnappses",
+      "note": "Copied verbatim from the 'schnapps' parent."
+    },
+    {
+      "op": "removeAlias",
+      "id": "schnapps-herbal",
+      "alias": "schnaps",
+      "note": "Copied verbatim from the 'schnapps' parent."
+    },
+    {
+      "op": "removeAlias",
+      "id": "tequila",
+      "alias": "agave spirit",
+      "note": "Overlaps with 'mezcal' (the broader agave category, which retains 'agave spirit'). Tequila keeps 'tequilas'."
+    },
+    {
+      "op": "removeAlias",
+      "id": "fortified-wine",
+      "alias": "vin",
+      "note": "Generic wine alias bleeds over from the 'wine' parent (which carries 'vin'); now that concrete fortified children exist, keep generic wine terms on 'wine' only."
+    },
+    {
+      "op": "removeAlias",
+      "id": "fortified-wine",
+      "alias": "vino",
+      "note": "Generic wine alias belongs on the 'wine' parent."
+    },
+    {
+      "op": "removeAlias",
+      "id": "fortified-wine",
+      "alias": "wines",
+      "note": "Generic wine plural belongs on the 'wine' parent."
+    }
+  ]
+}

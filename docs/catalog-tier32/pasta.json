@@ -1,0 +1,42 @@
+{
+  "category": "Pasta & Noodles",
+  "structural": [],
+  "cleanups": [
+    {
+      "op": "removeAlias",
+      "id": "pasta",
+      "alias": "noodles",
+      "note": "Cross-item collision: 'noodles' resolves to both 'noodle' (Asian/soup umbrella) and 'pasta' (Italian umbrella). Keep it on 'noodle' only. 'pasta' still has 'pastas','italian pasta','dried pasta','pasta noodles','italian noodles'. Verified against live catalog: both items carry 'noodles'."
+    },
+    {
+      "op": "removeAlias",
+      "id": "vermicelli",
+      "alias": "rice vermicelli",
+      "note": "Misfiled alias: id=vermicelli is the WHEAT 'vermicelli fideo' (parent=fideo). 'rice vermicelli' is a separate rice noodle and already exists as its own item id=rice-vermicelli (parent=rice-noodle). Removing the leaked alias resolves the false match. Verified: vermicelli.aliases == ['rice vermicelli'] and rice-vermicelli exists."
+    },
+    {
+      "op": "removeAlias",
+      "id": "rice-vermicelli",
+      "alias": "rice vermicelli",
+      "note": "Redundant self-alias: 'rice vermicelli' duplicates the item's own name. Removing the alias avoids a dup token; the canonical name still matches. Verified: rice-vermicelli.name=='rice vermicelli' and it also lists 'rice vermicelli' in aliases."
+    },
+    {
+      "op": "removeAlias",
+      "id": "meat-ravioli",
+      "alias": "meat tortellini",
+      "note": "Wrong-family alias leak: 'meat tortellini' describes a tortellini, not a ravioli; the tortellini family (parent id=tortellini, plus sausage-tortellini) already covers it. There is no 'meat-tortellini' item to re-home it to, so drop. Verified: meat-ravioli.aliases == ['meat tortellini']."
+    },
+    {
+      "op": "removeAlias",
+      "id": "sausage-tortellini",
+      "alias": "tortellinis",
+      "note": "Collision with parent: 'tortellinis' is also an alias of the generic parent id=tortellini, so it would match every tortellini variant to the sausage child. Remove from the child; parent keeps it. Verified: sausage-tortellini.aliases == ['tortellinis'] and tortellini.aliases includes 'tortellinis'."
+    },
+    {
+      "op": "removeAlias",
+      "id": "manicotti",
+      "alias": "cannelloni tubes",
+      "note": "Alias leak surfaced by collision scan (not in original audit): 'cannelloni tubes' resolves to both manicotti and cannelloni. The phrase genuinely names cannelloni; cannelloni already carries it. Keep on cannelloni, remove the leaked copy from manicotti. Verified: both manicotti and cannelloni list 'cannelloni tubes'."
+    }
+  ]
+}

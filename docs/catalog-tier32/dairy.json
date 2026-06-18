@@ -1,0 +1,523 @@
+{
+  "category": "Dairy & Eggs",
+  "structural": [
+    {
+      "op": "merge",
+      "from": "crema",
+      "into": "sour-cream",
+      "note": "redundancy: 'crema sour cream' (id=crema) duplicates 'sour cream' and shares its exact aliases ['sour creams','sourcreams'] with no crema-specific terms. Verified live: crema has only the generic sour-cream aliases. Mexican crema is not distinct enough as stored, so fold it in; sour-cream gains 'crema sour cream' as an alias."
+    },
+    {
+      "op": "rename",
+      "id": "cream-double",
+      "name": "double cream",
+      "note": "issue/NAMING: 'cream double' reads machine-y; the human form 'double cream' is canonical. Verified live: cream-double has name 'cream double', empty aliases. Renaming makes it the single home for 'double cream' (the heavy-cream alias is removed in cleanups)."
+    },
+    {
+      "op": "rename",
+      "id": "butter-cultured",
+      "name": "cultured butter",
+      "note": "NAMING: machine-y 'butter cultured' -> readable 'cultured butter' (already its alias)."
+    },
+    {
+      "op": "rename",
+      "id": "buttermilk-cultured",
+      "name": "cultured buttermilk",
+      "note": "NAMING: 'buttermilk cultured' -> 'cultured buttermilk' (already its alias)."
+    },
+    {
+      "op": "rename",
+      "id": "crème-fraîche-cultured",
+      "name": "cultured crème fraîche",
+      "note": "NAMING: 'crème fraîche cultured' -> 'cultured crème fraîche'. Verified id 'crème-fraîche-cultured' exists (accented form)."
+    },
+    {
+      "op": "rename",
+      "id": "crème-fraîche-double",
+      "name": "double crème fraîche",
+      "note": "NAMING: 'crème fraîche double' -> 'double crème fraîche'. Verified id 'crème-fraîche-double' exists (accented form)."
+    },
+    {
+      "op": "rename",
+      "id": "cream-cheese-double",
+      "name": "double cream cheese",
+      "note": "NAMING: 'cream cheese double' -> 'double cream cheese'."
+    },
+    {
+      "op": "rename",
+      "id": "kefir-plain",
+      "name": "plain kefir",
+      "note": "NAMING: 'kefir plain' -> 'plain kefir'."
+    },
+    {
+      "op": "rename",
+      "id": "quark-plain",
+      "name": "plain quark",
+      "note": "NAMING: 'quark plain' -> 'plain quark'."
+    },
+    {
+      "op": "rename",
+      "id": "skyr-plain",
+      "name": "plain skyr",
+      "note": "NAMING: 'skyr plain' -> 'plain skyr'."
+    },
+    {
+      "op": "rename",
+      "id": "yogurt-flavored",
+      "name": "flavored yogurt",
+      "note": "NAMING: 'yogurt flavored' -> 'flavored yogurt' (already its alias)."
+    },
+    {
+      "op": "rename",
+      "id": "quark-flavored",
+      "name": "flavored quark",
+      "note": "NAMING: 'quark flavored' -> 'flavored quark'."
+    },
+    {
+      "op": "rename",
+      "id": "kefir-flavored",
+      "name": "flavored kefir",
+      "note": "NAMING: 'kefir flavored' -> 'flavored kefir'."
+    },
+    {
+      "op": "rename",
+      "id": "goat-milk",
+      "name": "goat milk yogurt",
+      "note": "Cosmetic/identity clarity: id is 'goat-milk' but the item IS goat-milk YOGURT (already its name). No rename of value needed; name already correct. Kept here only to flag that the misleading id is intentionally left (reid would collide with the milk-vs-yogurt semantics handled via alias cleanup below)."
+    }
+  ],
+  "cleanups": [
+    {
+      "op": "setDietaryTags",
+      "id": "non-dairy-milk",
+      "dietaryTags": ["Vegetarian", "Vegan", "Gluten-Free", "Dairy-Free", "Nut-Free"],
+      "note": "TAG fix: parent plant-milk was ['Vegetarian','Gluten-Free','Nut-Free']; add Vegan+Dairy-Free to match its children."
+    },
+    {
+      "op": "setAllergens",
+      "id": "non-dairy-milk",
+      "allergens": [],
+      "note": "TAG fix: parent plant-milk carried allergens ['dairy'] which contradicts a non-dairy product. Verified live: allergens=['dairy']. Clear it."
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "goat-milk",
+      "dietaryTags": ["Vegetarian", "Gluten-Free", "Nut-Free"],
+      "note": "TAG gap: goat-milk yogurt had only ['Gluten-Free','Nut-Free']; add Vegetarian for consistency with all other dairy/yogurt items. Verified live."
+    },
+    {
+      "op": "removeAlias",
+      "id": "goat-milk",
+      "alias": "caprine milk",
+      "note": "Wrong-product alias: this item is goat-milk YOGURT; 'caprine milk' describes the milk. Verified live present."
+    },
+    {
+      "op": "removeAlias",
+      "id": "goat-milk",
+      "alias": "chèvre milk",
+      "note": "Wrong-product alias (milk, not yogurt). Verified live present."
+    },
+    {
+      "op": "removeAlias",
+      "id": "goat-milk",
+      "alias": "goatmilk",
+      "note": "Wrong-product alias (milk, not yogurt). Verified live present."
+    },
+    {
+      "op": "removeAlias",
+      "id": "goat-milk",
+      "alias": "lait de chèvre",
+      "note": "Wrong-product alias (milk, not yogurt). Verified live present."
+    },
+    {
+      "op": "removeAlias",
+      "id": "nonfat-cottage-cheese",
+      "alias": "nonfat yogurt",
+      "note": "Wrong-product alias: this is cottage cheese, not yogurt. Verified live: aliases=['nonfat yogurt']."
+    },
+    {
+      "op": "removeAlias",
+      "id": "low-fat",
+      "alias": "low-fat yogurt",
+      "note": "Wrong-product alias: id 'low-fat' is 'low fat buttermilk', not yogurt. Verified live: aliases=['low-fat yogurt']."
+    },
+    {
+      "op": "removeAlias",
+      "id": "skyr-plain",
+      "alias": "low-fat plain yogurt",
+      "note": "Generic plain-yogurt term mis-attached to skyr. Verified live present."
+    },
+    {
+      "op": "removeAlias",
+      "id": "skyr-plain",
+      "alias": "nonfat plain yogurt",
+      "note": "Generic plain-yogurt term mis-attached to skyr. Verified live present."
+    },
+    {
+      "op": "removeAlias",
+      "id": "whole-milk",
+      "alias": "whole-milk yogurt",
+      "note": "Wrong-product alias: a yogurt, not whole milk. Verified live: aliases include 'whole-milk yogurt'."
+    },
+    {
+      "op": "removeAlias",
+      "id": "nacho",
+      "alias": "cheese sauces",
+      "note": "Generic parent alias leaked onto child 'nacho cheese sauce'. Verified live: nacho aliases=['cheese sauces','queso'], identical to parent cheese-sauce."
+    },
+    {
+      "op": "removeAlias",
+      "id": "nacho",
+      "alias": "queso",
+      "note": "Generic parent alias leaked onto child. Verified live present."
+    },
+    {
+      "op": "addAlias",
+      "id": "nacho",
+      "alias": "nacho cheese",
+      "note": "Give nacho its own specific search term after removing the generic leaked aliases."
+    },
+    {
+      "op": "addAlias",
+      "id": "nacho",
+      "alias": "nacho sauce",
+      "note": "Nacho-specific alias."
+    },
+    {
+      "op": "removeAlias",
+      "id": "malai",
+      "alias": "fresh paneer",
+      "note": "Generic paneer alias duplicated on child 'malai paneer'; belongs on the 'paneer' parent only. Verified live: malai aliases=['fresh paneer','indian cottage cheese','paneers']."
+    },
+    {
+      "op": "removeAlias",
+      "id": "malai",
+      "alias": "indian cottage cheese",
+      "note": "Generic paneer alias on child; belongs on parent. Verified live present."
+    },
+    {
+      "op": "removeAlias",
+      "id": "malai",
+      "alias": "paneers",
+      "note": "Generic paneer alias on child; belongs on parent. Verified live present."
+    },
+    {
+      "op": "addAlias",
+      "id": "malai",
+      "alias": "cream paneer",
+      "note": "Malai-specific alias to retain searchability after removing generics."
+    },
+    {
+      "op": "removeAlias",
+      "id": "cottage-cheese",
+      "alias": "paneer (loose)",
+      "note": "Cross-product alias now redundant: 'paneer' exists as its own top-level item. Verified live: cottage-cheese aliases include 'paneer (loose)'."
+    },
+    {
+      "op": "removeAlias",
+      "id": "cottage-cheese",
+      "alias": "farmers cheese",
+      "note": "Cross-product alias now redundant: dedicated 'farmer-cheese' item exists (verified, parent=quark, holds 'farmers cheese'). Verified live present on cottage-cheese."
+    },
+    {
+      "op": "removeAlias",
+      "id": "dairy-free",
+      "alias": "aerosol cream",
+      "note": "Generic dairy whipped-cream alias leaked onto 'dairy free whipped cream' child. Verified live: dairy-free aliases=['aerosol cream','chantilly cream','whipped creams'], identical to whipped-cream parent."
+    },
+    {
+      "op": "removeAlias",
+      "id": "dairy-free",
+      "alias": "chantilly cream",
+      "note": "Generic dairy whipped-cream alias leaked onto dairy-free child. Verified live present."
+    },
+    {
+      "op": "removeAlias",
+      "id": "dairy-free",
+      "alias": "whipped creams",
+      "note": "Generic whipped-cream alias leaked onto dairy-free child; belongs on whipped-cream parent. Verified live present."
+    },
+    {
+      "op": "addAlias",
+      "id": "dairy-free",
+      "alias": "vegan whipped cream",
+      "note": "Give the dairy-free child its own term after removing generic dairy aliases."
+    },
+    {
+      "op": "removeAlias",
+      "id": "powdered-milk-skim",
+      "alias": "dry milk",
+      "note": "Generic powdered-milk alias duplicated on the skim child; belongs on 'powdered-milk' parent. Verified live: powdered-milk-skim aliases=['dry milk','instant milk','milk powder','powdered milks','skim milk']."
+    },
+    {
+      "op": "removeAlias",
+      "id": "powdered-milk-skim",
+      "alias": "instant milk",
+      "note": "Generic powdered-milk alias on child; belongs on parent. Verified live present."
+    },
+    {
+      "op": "removeAlias",
+      "id": "powdered-milk-skim",
+      "alias": "milk powder",
+      "note": "Generic powdered-milk alias on child; belongs on parent. Verified live present."
+    },
+    {
+      "op": "removeAlias",
+      "id": "powdered-milk-skim",
+      "alias": "powdered milks",
+      "note": "Generic powdered-milk alias on child; belongs on parent. Verified live present. ('skim milk' kept — it's the skim-specific term.)"
+    },
+    {
+      "op": "addAlias",
+      "id": "powdered-milk-skim",
+      "alias": "nonfat dry milk",
+      "note": "Skim-specific alias to retain searchability."
+    },
+    {
+      "op": "removeAlias",
+      "id": "cream-cheese",
+      "alias": "neufchatel",
+      "note": "Parent alias competes with dedicated 'neufchatel' child item (verified exists). Remove from cream-cheese parent. Verified live: cream-cheese aliases include 'neufchatel'."
+    },
+    {
+      "op": "addAlias",
+      "id": "neufchatel",
+      "alias": "neufchatel",
+      "note": "neufchatel child currently has NO aliases; give it the base spelling-variant term so search still resolves after pruning the cheese/cream-cheese parents."
+    },
+    {
+      "op": "addAlias",
+      "id": "neufchatel",
+      "alias": "neufchatel cheese",
+      "note": "Retain search term being pruned off the 'cheese' parent."
+    },
+    {
+      "op": "removeAlias",
+      "id": "colby",
+      "alias": "colby-jack cheese",
+      "note": "Dedicated 'colby-jack' item exists (verified, name 'colby jack string cheese'); plain colby should not claim it. Verified live: colby aliases=['colby-jack cheese']."
+    },
+    {
+      "op": "setStorage",
+      "id": "evaporated-milk-2",
+      "defaultStorage": "Pantry",
+      "note": "Storage bug: parent 'evaporated-milk' and sibling 'whole-evaporated-milk' are Pantry (unopened evaporated milk is shelf-stable); 'evaporated milk 2%' was Refrigerated. Verified live: evaporated-milk-2 storage=Refrigerated."
+    },
+    {
+      "op": "removeAlias",
+      "id": "heavy",
+      "alias": "double cream",
+      "note": "Resolve duplicate 'double cream': dedicated child item (id=cream-double, renamed to 'double cream' in structural) is its canonical home; remove the competing alias from heavy-cream. Verified live: heavy aliases=['double cream']."
+    },
+    {
+      "op": "addAlias",
+      "id": "cream-double",
+      "alias": "double cream",
+      "note": "Ensure the renamed 'double cream' item carries 'double cream' as a search alias (it had no aliases live)."
+    },
+    {
+      "op": "removeAlias",
+      "id": "cheese",
+      "alias": "bleu cheese",
+      "note": "Promote/dedupe: blue cheese has a dedicated item (id=blue-cheese). Move spelling variant 'bleu cheese' off the catch-all. Verified live on cheese parent."
+    },
+    {
+      "op": "addAlias",
+      "id": "blue-cheese",
+      "alias": "bleu cheese",
+      "note": "Retain 'bleu cheese' search term on the dedicated blue-cheese item after pruning from 'cheese'."
+    },
+    {
+      "op": "removeAlias",
+      "id": "cheese",
+      "alias": "boursin cheese",
+      "note": "Dedicated 'boursin' item exists (holds 'boursin cheese'). Prune from cheese catch-all. Verified live."
+    },
+    {
+      "op": "removeAlias",
+      "id": "cheese",
+      "alias": "burrata cheese",
+      "note": "Dedicated 'burrata' item exists (holds 'burrata cheese'). Prune. Verified live."
+    },
+    {
+      "op": "removeAlias",
+      "id": "cheese",
+      "alias": "camembert cheese",
+      "note": "Dedicated 'camembert' item exists (holds 'camembert cheese'). Prune. Verified live."
+    },
+    {
+      "op": "removeAlias",
+      "id": "cheese",
+      "alias": "chevre cheese",
+      "note": "Dedicated 'goat-cheese' item exists (holds 'chevre'/'chèvre'). Prune 'chevre cheese' from catch-all. Verified live."
+    },
+    {
+      "op": "removeAlias",
+      "id": "cheese",
+      "alias": "edam cheese",
+      "note": "Dedicated 'edam' item exists (holds 'edam cheese'). Prune. Verified live."
+    },
+    {
+      "op": "removeAlias",
+      "id": "cheese",
+      "alias": "emmenthaler cheese",
+      "note": "Dedicated 'emmental' item exists (holds 'emmenthaler'). Prune 'emmenthaler cheese' from catch-all. Verified live."
+    },
+    {
+      "op": "removeAlias",
+      "id": "cheese",
+      "alias": "farmer cheese",
+      "note": "Dedicated 'farmer-cheese' item exists (name 'farmer cheese'). Prune from catch-all. Verified live."
+    },
+    {
+      "op": "removeAlias",
+      "id": "cheese",
+      "alias": "fresco cheese",
+      "note": "Dedicated 'queso-fresco' item exists. Prune 'fresco cheese' from catch-all. Verified live."
+    },
+    {
+      "op": "removeAlias",
+      "id": "cheese",
+      "alias": "halloumi cheese",
+      "note": "Dedicated 'halloumi' item exists (holds 'halloumi cheese'). Prune. Verified live."
+    },
+    {
+      "op": "removeAlias",
+      "id": "cheese",
+      "alias": "haloumi cheese",
+      "note": "Dedicated 'halloumi' item holds 'haloumi'. Prune 'haloumi cheese' from catch-all. Verified live."
+    },
+    {
+      "op": "removeAlias",
+      "id": "cheese",
+      "alias": "jarlsberg cheese",
+      "note": "Dedicated 'jarlsberg' item exists (holds 'jarlsberg cheese'). Prune. Verified live."
+    },
+    {
+      "op": "removeAlias",
+      "id": "cheese",
+      "alias": "neufchatel cheese",
+      "note": "Dedicated 'neufchatel' item exists; 'neufchatel cheese' moved onto it (see addAlias). Prune from catch-all. Verified live."
+    },
+    {
+      "op": "removeAlias",
+      "id": "cheese",
+      "alias": "philadelphia neufchatel cheese",
+      "note": "Brand-specific neufchatel variant; covered by dedicated 'neufchatel' item. Prune from catch-all. Verified live."
+    },
+    {
+      "op": "removeAlias",
+      "id": "cheese",
+      "alias": "oaxaca cheese",
+      "note": "Dedicated 'queso-oaxaca' item exists (holds 'oaxaca cheese'). Prune. Verified live."
+    },
+    {
+      "op": "removeAlias",
+      "id": "cheese",
+      "alias": "padano cheese",
+      "note": "Dedicated 'grana-padano' item exists. Move 'padano' search term there (see addAlias). Prune from catch-all. Verified live."
+    },
+    {
+      "op": "addAlias",
+      "id": "grana-padano",
+      "alias": "padano",
+      "note": "Retain 'padano' search term on the dedicated grana-padano item after pruning 'padano cheese' from 'cheese'."
+    },
+    {
+      "op": "removeAlias",
+      "id": "cheese",
+      "alias": "paneer cheese",
+      "note": "Dedicated top-level 'paneer' item exists. Move 'paneer cheese' there (see addAlias). Prune from catch-all. Verified live."
+    },
+    {
+      "op": "addAlias",
+      "id": "paneer",
+      "alias": "paneer cheese",
+      "note": "Retain 'paneer cheese' search term on the dedicated paneer item after pruning from 'cheese'."
+    },
+    {
+      "op": "removeAlias",
+      "id": "cheese",
+      "alias": "panela cheese",
+      "note": "Dedicated 'panela-cheese' item exists. Prune from catch-all. Verified live."
+    },
+    {
+      "op": "removeAlias",
+      "id": "cheese",
+      "alias": "process cheese",
+      "note": "Dedicated 'processed-cheese-slices' item exists (holds 'process cheese'). Prune from catch-all. Verified live."
+    },
+    {
+      "op": "removeAlias",
+      "id": "cheese",
+      "alias": "processed cheese",
+      "note": "Covered by 'processed-cheese-slices'; add canonical term there (see addAlias). Prune from catch-all. Verified live."
+    },
+    {
+      "op": "addAlias",
+      "id": "processed-cheese-slices",
+      "alias": "processed cheese",
+      "note": "Retain 'processed cheese' search term on the dedicated item after pruning from 'cheese'."
+    },
+    {
+      "op": "removeAlias",
+      "id": "cheese",
+      "alias": "processed cheese food",
+      "note": "Dedicated 'processed-cheese-slices' item holds 'processed cheese food'. Prune from catch-all. Verified live."
+    },
+    {
+      "op": "removeAlias",
+      "id": "cheese",
+      "alias": "raclette cheese",
+      "note": "Dedicated 'raclette' item exists (holds 'raclette cheese'). Prune. Verified live."
+    },
+    {
+      "op": "removeAlias",
+      "id": "cheese",
+      "alias": "ricotta salata cheese",
+      "note": "Dedicated 'ricotta-salata' item exists. Prune from catch-all. Verified live."
+    },
+    {
+      "op": "removeAlias",
+      "id": "cheese",
+      "alias": "roquefort cheese",
+      "note": "Dedicated 'roquefort' item exists (holds 'roquefort cheese'). Prune. Verified live."
+    },
+    {
+      "op": "removeAlias",
+      "id": "cheese",
+      "alias": "soy cheese",
+      "note": "Dedicated 'vegan-cheese' item holds 'soy cheese'. Prune from dairy catch-all (it is also a non-dairy term that shouldn't sit on the dairy 'cheese' item). Verified live."
+    },
+    {
+      "op": "removeAlias",
+      "id": "cheese",
+      "alias": "stilton cheese",
+      "note": "Dedicated 'stilton' item exists (holds 'stilton cheese'). Prune. Verified live."
+    },
+    {
+      "op": "removeAlias",
+      "id": "cheese",
+      "alias": "taleggio cheese",
+      "note": "Dedicated 'taleggio' item exists (holds 'taleggio cheese'). Prune. Verified live."
+    },
+    {
+      "op": "removeAlias",
+      "id": "cheese",
+      "alias": "vegan cheese",
+      "note": "Dedicated 'vegan-cheese' item exists (name 'vegan cheese'); a non-dairy analog should not sit on the dairy 'cheese' catch-all. Prune. Verified live."
+    },
+    {
+      "op": "removeAlias",
+      "id": "cheese",
+      "alias": "cheese curd",
+      "note": "Dedicated 'cheese-curds' item exists. Move singular 'cheese curd' there (see addAlias). Prune from catch-all. Verified live."
+    },
+    {
+      "op": "addAlias",
+      "id": "cheese-curds",
+      "alias": "cheese curd",
+      "note": "Retain singular 'cheese curd' search term on the dedicated cheese-curds item after pruning from 'cheese'."
+    }
+  ]
+}

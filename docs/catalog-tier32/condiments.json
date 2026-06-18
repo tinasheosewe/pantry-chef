@@ -1,0 +1,457 @@
+{
+  "category": "Condiments & Sauces",
+  "structural": [
+    {
+      "op": "merge",
+      "from": "ketchup-regular",
+      "into": "ketchup",
+      "note": "Redundancy: 'regular' ketchup is identical to base ketchup, no aliases, no distinct data."
+    },
+    {
+      "op": "merge",
+      "from": "ketchup-spicy",
+      "into": "ketchup",
+      "note": "Heat-variant shell of ketchup (no aliases, no distinct shelf-life signal); spiciness is a facet, not a SKU."
+    },
+    {
+      "op": "merge",
+      "from": "oyster-sauce-regular",
+      "into": "oyster-sauce",
+      "note": "Redundancy: 'regular' oyster sauce duplicates the base; fold its aliases (chinese oyster sauce, vegetarian oyster sauce) into oyster-sauce."
+    },
+    {
+      "op": "merge",
+      "from": "teriyaki-sauce-regular",
+      "into": "teriyaki-sauce",
+      "note": "Redundancy: 'regular' variant identical to base teriyaki-sauce."
+    },
+    {
+      "op": "merge",
+      "from": "teriyaki-sauce-spicy",
+      "into": "teriyaki-sauce",
+      "note": "Heat-variant shell of teriyaki-sauce, no aliases."
+    },
+    {
+      "op": "merge",
+      "from": "worcestershire-sauce-regular",
+      "into": "worcestershire-sauce",
+      "note": "Redundancy: 'regular' variant identical to base worcestershire-sauce (also resolves the storage inconsistency: child was Refrigerated, base is Pantry)."
+    },
+    {
+      "op": "merge",
+      "from": "worcestershire-sauce-spicy",
+      "into": "worcestershire-sauce",
+      "note": "Heat-variant shell of worcestershire-sauce, no aliases."
+    },
+    {
+      "op": "merge",
+      "from": "tamarind-paste-regular",
+      "into": "tamarind-paste",
+      "note": "Redundancy: 'regular' variant duplicates base; fold its useful aliases (tamarind concentrate, tamarind pulp, tamarind puree) into tamarind-paste."
+    },
+    {
+      "op": "merge",
+      "from": "classic-chimichurri",
+      "into": "chimichurri",
+      "note": "Redundancy: classic chimichurri == base chimichurri, no aliases."
+    },
+    {
+      "op": "merge",
+      "from": "green-chimichurri",
+      "into": "chimichurri",
+      "note": "Redundancy: green chimichurri is the standard/default chimichurri. NOTE: its leaked alias 'green enchilada sauce' is removed first by the cleanup pass below — but since structural runs before cleanups, that alias would be folded into chimichurri. To avoid this, do NOT remove it from green-chimichurri separately; instead a cleanup removeAlias on chimichurri handles it post-merge."
+    },
+    {
+      "op": "merge",
+      "from": "chimichurri-spicy",
+      "into": "chimichurri",
+      "note": "Heat-variant shell of chimichurri, no aliases."
+    },
+    {
+      "op": "merge",
+      "from": "chimichurri-smoky",
+      "into": "chimichurri",
+      "note": "Flavor-variant shell of chimichurri, no aliases."
+    },
+    {
+      "op": "merge",
+      "from": "original-barbecue-sauce",
+      "into": "barbecue-sauce",
+      "note": "Redundancy: 'original' BBQ == base barbecue-sauce, no aliases."
+    },
+    {
+      "op": "merge",
+      "from": "barbecue-sauce-spicy",
+      "into": "barbecue-sauce",
+      "note": "Heat-variant shell of barbecue-sauce, no aliases."
+    },
+    {
+      "op": "merge",
+      "from": "barbecue-sauce-smoky",
+      "into": "barbecue-sauce",
+      "note": "Flavor-variant shell of barbecue-sauce, no aliases."
+    },
+    {
+      "op": "merge",
+      "from": "brown-sauce-spicy",
+      "into": "brown-sauce",
+      "note": "Heat-variant shell of brown-sauce, no aliases."
+    },
+    {
+      "op": "merge",
+      "from": "brown-sauce-smoky",
+      "into": "brown-sauce",
+      "note": "Flavor-variant shell of brown-sauce, no aliases."
+    },
+    {
+      "op": "merge",
+      "from": "chili-sauce-hot",
+      "into": "chili-sauce",
+      "note": "Heat-variant shell of chili-sauce; fold its alias 'hot chili sauce' into the base."
+    },
+    {
+      "op": "merge",
+      "from": "chili-sauce-spicy",
+      "into": "chili-sauce",
+      "note": "Second near-identical heat-variant shell of chili-sauce, no aliases."
+    },
+    {
+      "op": "merge",
+      "from": "hoisin-sauce-spicy",
+      "into": "hoisin-sauce",
+      "note": "Heat-variant shell of hoisin-sauce; aliases (hoisin, hoisin sauces, chinese barbecue sauce) duplicate the base."
+    },
+    {
+      "op": "merge",
+      "from": "adobo-sauce-smoky",
+      "into": "adobo-sauce",
+      "note": "Flavor-variant shell of adobo-sauce, no aliases (chipotle-adobo-sauce is the meaningful distinct child, left intact)."
+    },
+    {
+      "op": "merge",
+      "from": "adobo-sauce-spicy",
+      "into": "adobo-sauce",
+      "note": "Heat-variant shell of adobo-sauce, no aliases."
+    },
+    {
+      "op": "merge",
+      "from": "salsa-hot",
+      "into": "salsa",
+      "note": "Heat-variant shell of salsa, no aliases."
+    },
+    {
+      "op": "merge",
+      "from": "sweet-and-sour-sauce-spicy",
+      "into": "sweet-and-sour-sauce",
+      "note": "Heat-variant shell; aliases duplicate the base sweet-and-sour-sauce."
+    },
+    {
+      "op": "merge",
+      "from": "peanut-sauce-spicy",
+      "into": "peanut-sauce",
+      "note": "Heat-variant shell of peanut-sauce; aliases (satay sauce, peanut dipping sauce) duplicate/belong on the base."
+    },
+    {
+      "op": "merge",
+      "from": "guacamole-spicy",
+      "into": "guacamole",
+      "note": "Heat-variant shell of guacamole; aliases (guac, avocado dip) duplicate the base."
+    },
+    {
+      "op": "merge",
+      "from": "hummus-spicy",
+      "into": "hummus",
+      "note": "Heat-variant shell of hummus; aliases (houmous, humus, chickpea dip) duplicate the base."
+    },
+    {
+      "op": "merge",
+      "from": "cocktail-sauce-spicy",
+      "into": "cocktail-sauce",
+      "note": "Heat-variant shell of cocktail-sauce, no aliases."
+    },
+    {
+      "op": "merge",
+      "from": "pickle-relish-spicy",
+      "into": "pickle-relish",
+      "note": "Heat-variant shell of pickle-relish, no aliases."
+    },
+    {
+      "op": "merge",
+      "from": "pickled-ginger-spicy",
+      "into": "pickled-ginger",
+      "note": "Heat-variant shell of pickled-ginger; aliases (gari, sushi ginger) duplicate the base."
+    },
+    {
+      "op": "merge",
+      "from": "tartar-sauce-spicy",
+      "into": "tartar-sauce",
+      "note": "Heat-variant shell of tartar-sauce; aliases (tartare sauce) duplicate the base."
+    },
+    {
+      "op": "merge",
+      "from": "duck-sauce-spicy",
+      "into": "duck-sauce",
+      "note": "Heat-variant shell of duck-sauce, no aliases."
+    },
+    {
+      "op": "merge",
+      "from": "plum-sauce-spicy",
+      "into": "plum-sauce",
+      "note": "Heat-variant shell of plum-sauce, no aliases."
+    },
+    {
+      "op": "merge",
+      "from": "plum-duck-sauce",
+      "into": "duck-sauce",
+      "note": "Redundancy + data bug: plum-duck-sauce has the garbled name 'plum' (collides conceptually with produce 'plum') and is parented under duck-sauce — it is a duplicate of duck-sauce. Fold it in; the applier repoints any references and removes it."
+    },
+    {
+      "op": "reparent",
+      "id": "duck-sauce",
+      "parentIds": ["sauce", "plum-sauce"],
+      "note": "Fix the garbled plum web: duck-sauce was parented on the produce id 'plum' (+sauce). Duck sauce is a sweet plum/apricot sauce, so re-home it under plum-sauce + sauce and drop the direct produce-plum parent that caused the circular/garbled plum relationship the audit flagged."
+    },
+    {
+      "op": "reparent",
+      "id": "plum-sauce",
+      "parentIds": ["sauce"],
+      "note": "Fix the garbled plum web: plum-sauce was parented on the produce id 'plum' (+sauce). The audit flagged the plum/duck-sauce/produce-plum parentage as circular/garbled; keep plum-sauce under the generic 'sauce' only."
+    }
+  ],
+  "cleanups": [
+    {
+      "op": "removeAlias",
+      "id": "creamy-horseradish",
+      "alias": "creamy peanut butter",
+      "note": "Copy-paste leak from peanut-butter; wrong product (and would falsely imply a peanut allergen on a horseradish condiment)."
+    },
+    {
+      "op": "removeAlias",
+      "id": "crunchy-chocolate-hazelnut-spread",
+      "alias": "crunchy peanut butter",
+      "note": "Copy-paste leak from peanut-butter; this is a hazelnut spread (tree-nut), not peanut."
+    },
+    {
+      "op": "removeAlias",
+      "id": "corn-pico-de-gallo",
+      "alias": "light corn syrup",
+      "note": "Corn-syrup alias leak (wrong product); corn-pico-de-gallo is a salsa, not a syrup."
+    },
+    {
+      "op": "removeAlias",
+      "id": "corn-pico-de-gallo",
+      "alias": "light-colored corn syrup",
+      "note": "Corn-syrup alias leak (wrong product)."
+    },
+    {
+      "op": "removeAlias",
+      "id": "corn-pico-de-gallo",
+      "alias": "white corn syrup",
+      "note": "Corn-syrup alias leak (wrong product)."
+    },
+    {
+      "op": "addAlias",
+      "id": "corn-pico-de-gallo",
+      "alias": "corn salsa",
+      "note": "Add the correct descriptor after stripping the corn-syrup leaks. (Kept corn-pico-de-gallo as a distinct item rather than merging into pico-de-gallo, to avoid folding the leaked corn-syrup aliases into the base during the structural pass.)"
+    },
+    {
+      "op": "removeAlias",
+      "id": "chimichurri",
+      "alias": "green enchilada sauce",
+      "note": "Cleanup of the alias leak that the merged green-chimichurri carried in. 'green enchilada sauce' is a wrong product; remove it from chimichurri (runs after the structural merge that folded green-chimichurri in)."
+    },
+    {
+      "op": "removeAlias",
+      "id": "red-chimichurri",
+      "alias": "red enchilada sauce",
+      "note": "Alias leak; 'red enchilada sauce' is a wrong product. (red-chimichurri is kept as a distinct item — only green/classic were merged as base duplicates.)"
+    },
+    {
+      "op": "removeAlias",
+      "id": "white-balsamic-vinegar",
+      "alias": "white gravy",
+      "note": "Copy-paste leak; 'white gravy' is a wrong product."
+    },
+    {
+      "op": "removeAlias",
+      "id": "white-balsamic-vinegar",
+      "alias": "aceto balsamico",
+      "note": "Wrong alias: 'aceto balsamico' is dark balsamic, not white balsamic."
+    },
+    {
+      "op": "removeAlias",
+      "id": "white-balsamic-vinegar",
+      "alias": "balsamic",
+      "note": "Wrong alias: bare 'balsamic' is the dark vinegar; remove from white-balsamic-vinegar to avoid mis-resolution."
+    },
+    {
+      "op": "removeAlias",
+      "id": "white-balsamic-vinegar",
+      "alias": "balsamic vinegars",
+      "note": "Wrong alias: refers to dark balsamic-vinegar, not the white variant."
+    },
+    {
+      "op": "addAlias",
+      "id": "white-balsamic-vinegar",
+      "alias": "white balsamic",
+      "note": "Add the correct short descriptor after removing the dark-balsamic aliases."
+    },
+    {
+      "op": "removeAlias",
+      "id": "sweet-adobo-sauce",
+      "alias": "sweet relish",
+      "note": "Wrong product alias leak; 'sweet relish' is a pickle relish, not adobo."
+    },
+    {
+      "op": "removeAlias",
+      "id": "thai-chili-sauce",
+      "alias": "thai peanut sauce",
+      "note": "Peanut sauce is a distinct product; remove this leaked alias (it would also falsely imply a peanut allergen)."
+    },
+    {
+      "op": "rename",
+      "id": "vegetarian-black-bean-sauce",
+      "name": "vegetarian black bean sauce",
+      "note": "Fix truncated display name 'vegetarian' -> 'vegetarian black bean sauce'."
+    },
+    {
+      "op": "removeAlias",
+      "id": "gochujang",
+      "alias": "sambal",
+      "note": "Inherited generic chili-paste alias; sambal is a different Indonesian product and mis-resolves to gochujang."
+    },
+    {
+      "op": "removeAlias",
+      "id": "gochujang",
+      "alias": "chile paste",
+      "note": "Inherited generic chili-paste alias; too broad for the specific Korean gochujang."
+    },
+    {
+      "op": "removeAlias",
+      "id": "gochujang",
+      "alias": "chili pastes",
+      "note": "Inherited generic chili-paste alias; too broad for gochujang."
+    },
+    {
+      "op": "removeAlias",
+      "id": "gochujang",
+      "alias": "chilli paste",
+      "note": "Inherited generic chili-paste alias; too broad for gochujang."
+    },
+    {
+      "op": "removeAlias",
+      "id": "chili-paste",
+      "alias": "sambal",
+      "note": "Sambal is a distinct Indonesian item, not a synonym for generic chili-paste; remove to stop conflation."
+    },
+    {
+      "op": "removeAlias",
+      "id": "mustard",
+      "alias": "black mustard seed",
+      "note": "Mustard SEED belongs in Spices & Herbs, not as an alias of the prepared-mustard condiment. (Not recategorizing — Spices agent owns that — just removing the leaked seed alias.)"
+    },
+    {
+      "op": "removeAlias",
+      "id": "mustard",
+      "alias": "white mustard seed",
+      "note": "Mustard seed alias leak; belongs in Spices & Herbs."
+    },
+    {
+      "op": "removeAlias",
+      "id": "mustard",
+      "alias": "yellow mustard seed",
+      "note": "Mustard seed alias leak; belongs in Spices & Herbs."
+    },
+    {
+      "op": "removeAlias",
+      "id": "mustard",
+      "alias": "brown mustard seed",
+      "note": "Mustard seed alias leak; belongs in Spices & Herbs."
+    },
+    {
+      "op": "removeAlias",
+      "id": "mustard",
+      "alias": "remoulades",
+      "note": "Remoulade is its own mayonnaise-based condiment, not a synonym for mustard; remove the wrong alias."
+    },
+    {
+      "op": "removeAlias",
+      "id": "beef-bouillon",
+      "alias": "bouillon cubes",
+      "note": "Duplicated parent-bouillon alias; keep only beef-specific aliases on beef-bouillon."
+    },
+    {
+      "op": "removeAlias",
+      "id": "beef-bouillon",
+      "alias": "bouillon granules",
+      "note": "Duplicated parent-bouillon alias."
+    },
+    {
+      "op": "removeAlias",
+      "id": "beef-bouillon",
+      "alias": "broth cube",
+      "note": "Duplicated parent-bouillon alias."
+    },
+    {
+      "op": "removeAlias",
+      "id": "beef-bouillon",
+      "alias": "broth cubes",
+      "note": "Duplicated parent-bouillon alias."
+    },
+    {
+      "op": "removeAlias",
+      "id": "beef-bouillon",
+      "alias": "stock cube",
+      "note": "Duplicated parent-bouillon alias."
+    },
+    {
+      "op": "removeAlias",
+      "id": "beef-bouillon",
+      "alias": "stock cubes",
+      "note": "Duplicated parent-bouillon alias; the surviving beef-specific aliases (beef bouillon cube/granule/powder, beef demi-glace) stay."
+    },
+    {
+      "op": "addAlias",
+      "id": "fish-sauce",
+      "alias": "ngan pya ye",
+      "note": "Audit aliasAddition; Burmese fish sauce name not yet present."
+    },
+    {
+      "op": "addAlias",
+      "id": "sriracha",
+      "alias": "tuong ot sriracha",
+      "note": "Audit aliasAddition; Vietnamese name not yet present."
+    },
+    {
+      "op": "addAlias",
+      "id": "hummus",
+      "alias": "hommus bi tahini",
+      "note": "Audit aliasAddition; not yet present."
+    },
+    {
+      "op": "addAlias",
+      "id": "mango-chutney",
+      "alias": "aam ki chutney",
+      "note": "Audit aliasAddition; Hindi name not yet present."
+    },
+    {
+      "op": "addAlias",
+      "id": "balsamic-vinegar",
+      "alias": "aceto balsamico di modena",
+      "note": "Audit aliasAddition; full PDO name not yet present (and complements removing 'balsamic' aliases from the white variant)."
+    },
+    {
+      "op": "addAlias",
+      "id": "pomegranate-molasses",
+      "alias": "rob el rumman",
+      "note": "Audit aliasAddition; Arabic name not yet present."
+    },
+    {
+      "op": "addAlias",
+      "id": "dijon-mustard",
+      "alias": "moutarde de dijon",
+      "note": "Audit aliasAddition; French name not yet present."
+    }
+  ]
+}

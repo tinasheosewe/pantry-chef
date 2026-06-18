@@ -1,0 +1,12 @@
+{
+  "category": "Frozen Foods",
+  "structural": [],
+  "cleanups": [
+    {"op": "addAlias", "id": "ice-cream", "alias": "gelato", "note": "Audit flags gelato/sorbet/frozen-yogurt as missing surface forms that match nothing in the catalog; fold into the existing Frozen Foods ice-cream item rather than creating siblings."},
+    {"op": "addAlias", "id": "ice-cream", "alias": "frozen yogurt", "note": "Common frozen-dessert surface form; currently matches no item. Allergen [dairy] still holds."},
+    {"op": "addAlias", "id": "ice-cream", "alias": "froyo", "note": "Colloquial frozen-yogurt form; currently matches no item."},
+    {"op": "addAlias", "id": "ice-cream", "alias": "sorbet", "note": "Audit suggests absorbing sorbet as an alias; currently matches no item. Note: sorbet is dairy-free, but folding it as an alias of ice-cream is the audit's recommendation and avoids a new item."},
+    {"op": "addAlias", "id": "ice-cream", "alias": "sherbet", "note": "Frozen-dessert surface form; currently matches no item."},
+    {"op": "addAlias", "id": "ice-cream", "alias": "soft serve", "note": "Frozen-dessert surface form; currently matches no item."}
+  ]
+}

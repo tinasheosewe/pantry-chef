@@ -1,0 +1,132 @@
+{
+  "category": "Canned & Jarred",
+  "structural": [
+    {
+      "op": "recategorize",
+      "id": "enchilada-sauce",
+      "category": "Canned & Jarred",
+      "note": "Audit mis-route fix: enchilada-sauce is a canned chile-tomato product currently filed under Condiments & Sauces. Verified it lives in Condiments & Sauces in the live catalog; this agent owns the move per the task brief."
+    },
+    {
+      "op": "rename",
+      "id": "fire-roasted",
+      "name": "fire roasted tomatoes",
+      "note": "Non-human-readable facet-fragment name 'fire roasted'. Verified live name is bare 'fire roasted'. Renamed to include the product noun. Swap references are by id and unaffected."
+    },
+    {
+      "op": "merge",
+      "from": "cheese-cream-soup",
+      "into": "cheddar-cream-soup",
+      "note": "True duplicate: both are children of cream-soup, identical storage/freshness/allergens(dairy)/dietaryTags; 'cheese cream soup' is aliased 'cream of cheddar cheese soup'. cheese-cream-soup has no children or swap refs. Survivor cheddar-cream-soup gains 'cheese cream soup' + aliases ['cheddar cheese soup','cream of cheddar cheese soup'] as aliases."
+    },
+    {
+      "op": "merge",
+      "from": "coconut-milk-organic",
+      "into": "coconut-milk",
+      "note": "Redundancy (audit-named pair): 'organic' is a sourcing facet, not a distinct ingredient. Identical aliases ['canned coconut milk','coconut milks'] and allergens['tree-nut'] to coconut-milk. No children; no swap refs. Folding the organic twin into the canonical item."
+    },
+    {
+      "op": "merge",
+      "from": "tomato-paste-organic",
+      "into": "tomato-paste",
+      "note": "Redundancy (audit-named pair): duplicate aliases ['canned tomato paste','tomato pastes']; organic adds no ingredient distinction. No children; no swap refs."
+    },
+    {
+      "op": "drop",
+      "id": "puree",
+      "note": "Ambiguous bare item (display 'purée', no parent, no children, no swap refs). The real tomato puree product already exists as 'tomato-puree' (Canned & Jarred, carrying the passata aliases), so renaming this to tomato puree would duplicate it. Removed as bogus/ambiguous per audit."
+    }
+  ],
+  "cleanups": [
+    {
+      "op": "removeAlias",
+      "id": "fire-roasted",
+      "alias": "passata",
+      "note": "Mis-routed alias: passata is strained uncooked tomato puree, not a fire-roasted sauce. Already correctly carried by 'tomato-puree' and 'tomato-passata'."
+    },
+    {
+      "op": "removeAlias",
+      "id": "fire-roasted",
+      "alias": "salsa di pomodoro",
+      "note": "Mis-routed alias (same as passata); covered by 'tomato-puree'."
+    },
+    {
+      "op": "removeAlias",
+      "id": "chicken-broth",
+      "alias": "chicken soup",
+      "note": "Cream/condensed soup alias on a stock item; broth is not soup."
+    },
+    {
+      "op": "removeAlias",
+      "id": "chicken-broth",
+      "alias": "cream of chicken soup",
+      "note": "Cream-of-chicken is a condensed cream soup (cream-soup family), not a broth."
+    },
+    {
+      "op": "removeAlias",
+      "id": "mushroom-broth",
+      "alias": "cream of mushroom soup",
+      "note": "Cream of mushroom is a cream soup, not a broth."
+    },
+    {
+      "op": "removeAlias",
+      "id": "mushroom-broth",
+      "alias": "mushroom soup",
+      "note": "Condensed soup alias mis-attached to stock."
+    },
+    {
+      "op": "removeAlias",
+      "id": "vegetable",
+      "alias": "cream of vegetable soup",
+      "note": "Cream soup, not a broth. Item name is already 'vegetable broth' (Tier 1); kept 'veg broth' alias."
+    },
+    {
+      "op": "removeAlias",
+      "id": "vegetable",
+      "alias": "vegetable soup",
+      "note": "Ready/condensed soup alias mis-attached to vegetable stock."
+    },
+    {
+      "op": "removeAlias",
+      "id": "tropical-fruit-cocktail",
+      "alias": "canned fruit cocktail",
+      "note": "Duplicated verbatim from parent 'fruit-cocktail'; tropical is a flavor child and should not re-claim the generic aliases."
+    },
+    {
+      "op": "removeAlias",
+      "id": "tropical-fruit-cocktail",
+      "alias": "fruit cocktails",
+      "note": "Duplicate of parent fruit-cocktail alias."
+    },
+    {
+      "op": "removeAlias",
+      "id": "tropical-fruit-cocktail",
+      "alias": "mixed fruit",
+      "note": "Duplicate of parent fruit-cocktail alias."
+    },
+    {
+      "op": "rename",
+      "id": "pie-mix",
+      "name": "pumpkin pie mix",
+      "note": "Live name 'pie mix pumpkin puree' wrongly implies equivalence with plain pumpkin puree. It is sweetened/spiced pie MIX, not interchangeable with puree. Renamed for clarity (parentIds left as-is; no parent-edit op requested)."
+    },
+    {
+      "op": "setStorage",
+      "id": "sauerkraut-organic",
+      "defaultStorage": "Refrigerated",
+      "note": "Align with parent 'sauerkraut' (Refrigerated). The organic twin was Pantry, conflating shelf-stable canned kraut with refrigerated fresh kraut under one node."
+    },
+    {
+      "op": "setFreshness",
+      "id": "sauerkraut-organic",
+      "freshnessByStorage": {"Pantry": [180, 365], "Refrigerated": [30, 90], "Frozen": [90, 180]},
+      "note": "Match parent 'sauerkraut' freshness. The old Refrigerated [5,7] was a generic-template leak; brined kraut keeps ~30-90 days refrigerated."
+    },
+    {
+      "op": "setFreshness",
+      "id": "applesauce-organic",
+      "freshnessByStorage": {"Pantry": [180, 365], "Refrigerated": [7, 14], "Frozen": [60, 180]},
+      "note": "'Organic' should not extend shelf life. Match parent 'applesauce' (Pantry [180,365], Refrigerated [7,14], Frozen [60,180]); twin had Pantry [365,1095]/Refrigerated [5,7]."
+    }
+  ]
+}

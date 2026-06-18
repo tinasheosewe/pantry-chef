@@ -1,0 +1,318 @@
+{
+  "category": "Baking & Sweeteners",
+  "structural": [
+    {
+      "op": "rename",
+      "id": "00",
+      "name": "00 flour",
+      "note": "Bare name '00' is unrecognisable in a picker; rename to Italian doppio-zero '00 flour'. Aliases added in cleanups."
+    },
+    {
+      "op": "rename",
+      "id": "chocolate",
+      "name": "chocolate cake mix",
+      "note": "id 'chocolate' actually holds a cake mix; the live name is already 'chocolate cake mix' so this is a no-op safety rename. Misleading aliases removed in cleanups."
+    },
+    {
+      "op": "merge",
+      "from": "confectioners",
+      "into": "powdered-sugar",
+      "note": "Redundancy: confectioners sugar == powdered sugar. powdered-sugar is the canonical/clear-named anchor of the 3-way collapse; its name+aliases ('confectioner's sugar', 'confectioners' sugar') fold in as aliases."
+    },
+    {
+      "op": "merge",
+      "from": "icing",
+      "into": "powdered-sugar",
+      "note": "Redundancy: 'icing sugar' is the UK/AU name for powdered/confectioners' sugar. Fold 'icing sugar' in as an alias on the canonical powdered-sugar."
+    },
+    {
+      "op": "merge",
+      "from": "regular-golden-syrup",
+      "into": "golden-syrup",
+      "note": "Redundancy: regular-golden-syrup is a child with identical aliases ('golden','golden syrups','light treacle') and no distinguishing attribute; fold into the top-level golden-syrup."
+    },
+    {
+      "op": "setStorage",
+      "id": "sourdough-starter-gluten-free",
+      "defaultStorage": "Refrigerated",
+      "note": "A live starter is refrigerated regardless of gluten content; parent sourdough-starter is Refrigerated. Fixes inconsistent Pantry default."
+    },
+    {
+      "op": "recategorize",
+      "id": "rose-water",
+      "category": "Baking & Sweeteners",
+      "note": "Audit wants it homed under the baking 'extract' tree; currently sits in Condiments & Sauces with no parent. Owning the move."
+    },
+    {
+      "op": "reparent",
+      "id": "rose-water",
+      "parentIds": [
+        "extract"
+      ],
+      "note": "Parent to the extract/flavouring tree per audit; was a root with parentIds=[]."
+    },
+    {
+      "op": "recategorize",
+      "id": "orange-blossom-water",
+      "category": "Baking & Sweeteners",
+      "note": "Audit wants it homed under the baking 'extract' tree; currently sits in Condiments & Sauces with no parent. Owning the move."
+    },
+    {
+      "op": "reparent",
+      "id": "orange-blossom-water",
+      "parentIds": [
+        "extract"
+      ],
+      "note": "Parent to the extract/flavouring tree per audit; was a root with parentIds=[]."
+    }
+  ],
+  "cleanups": [
+    {
+      "op": "setDietaryTags",
+      "id": "00",
+      "dietaryTags": [
+        "Vegetarian",
+        "Vegan",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "00 is doppio-zero WHEAT flour; remove the wrong Gluten-Free tag (parent 'flour' is also not GF)."
+    },
+    {
+      "op": "setAllergens",
+      "id": "00",
+      "allergens": [
+        "gluten"
+      ],
+      "note": "Wheat flour contains gluten; live data had allergens null."
+    },
+    {
+      "op": "addAlias",
+      "id": "00",
+      "alias": "doppio zero flour"
+    },
+    {
+      "op": "addAlias",
+      "id": "00",
+      "alias": "tipo 00"
+    },
+    {
+      "op": "addAlias",
+      "id": "00",
+      "alias": "00 pizza flour"
+    },
+    {
+      "op": "removeAlias",
+      "id": "brewer-s",
+      "alias": "baker's yeast",
+      "note": "Brewer's yeast (Saccharomyces, often inactive/nutritional) is NOT baker's yeast; conflation mis-maps recipes."
+    },
+    {
+      "op": "addAlias",
+      "id": "brewer-s",
+      "alias": "brewers yeast"
+    },
+    {
+      "op": "addAlias",
+      "id": "brewer-s",
+      "alias": "inactive yeast"
+    },
+    {
+      "op": "removeAlias",
+      "id": "chocolate",
+      "alias": "chocolates",
+      "note": "This id is a cake mix, not eating chocolate; remove misleading alias."
+    },
+    {
+      "op": "removeAlias",
+      "id": "chocolate",
+      "alias": "cooking chocolate",
+      "note": "Maps baking chocolate onto a cake mix; remove."
+    },
+    {
+      "op": "removeAlias",
+      "id": "white-sugar",
+      "alias": "white cake mix",
+      "note": "A cake mix is not white sugar; data-entry leak from the cake-mix tree."
+    },
+    {
+      "op": "addAlias",
+      "id": "white-sugar",
+      "alias": "table sugar"
+    },
+    {
+      "op": "removeAlias",
+      "id": "light-brown-sugar",
+      "alias": "dark brown sugar",
+      "note": "Dark brown sugar is a distinct product (more molasses); aliasing onto light brown sugar is wrong. (New 'dark brown sugar' item is out of op scope.)"
+    },
+    {
+      "op": "removeAlias",
+      "id": "baking-chocolate",
+      "alias": "dark chocolate",
+      "note": "Unsweetened baking chocolate is not the same as sweetened dark chocolate."
+    },
+    {
+      "op": "removeAlias",
+      "id": "baking-chocolate",
+      "alias": "bittersweet chocolate",
+      "note": "Bittersweet contains sugar; not unsweetened baking chocolate."
+    },
+    {
+      "op": "addAlias",
+      "id": "baking-chocolate",
+      "alias": "unsweetened baking chocolate"
+    },
+    {
+      "op": "addAlias",
+      "id": "baking-chocolate",
+      "alias": "baker's chocolate"
+    },
+    {
+      "op": "removeAlias",
+      "id": "strawberry-custard-powder",
+      "alias": "strawberry flavored gelatin",
+      "note": "Gelatin alias on a custard-powder item; wrong family."
+    },
+    {
+      "op": "removeAlias",
+      "id": "strawberry-custard-powder",
+      "alias": "strawberry gelatin"
+    },
+    {
+      "op": "removeAlias",
+      "id": "strawberry-custard-powder",
+      "alias": "strawberry jello"
+    },
+    {
+      "op": "removeAlias",
+      "id": "cherry-candied-fruit",
+      "alias": "cherry jello",
+      "note": "Jello is gelatin, not candied fruit."
+    },
+    {
+      "op": "addAlias",
+      "id": "cherry-candied-fruit",
+      "alias": "glace cherry"
+    },
+    {
+      "op": "addAlias",
+      "id": "cherry-candied-fruit",
+      "alias": "glace cherries"
+    },
+    {
+      "op": "addAlias",
+      "id": "cherry-candied-fruit",
+      "alias": "cocktail cherries"
+    },
+    {
+      "op": "removeAlias",
+      "id": "lemon-cake-mix",
+      "alias": "lemon flavored gelatin",
+      "note": "Gelatin aliases on a cake mix; wrong family."
+    },
+    {
+      "op": "removeAlias",
+      "id": "lemon-cake-mix",
+      "alias": "lemon gelatin"
+    },
+    {
+      "op": "removeAlias",
+      "id": "lemon-cake-mix",
+      "alias": "lemon jello"
+    },
+    {
+      "op": "removeAlias",
+      "id": "orange-extract",
+      "alias": "orange flavored gelatin",
+      "note": "An extract is not a gelatin dessert."
+    },
+    {
+      "op": "removeAlias",
+      "id": "orange-extract",
+      "alias": "orange gelatin"
+    },
+    {
+      "op": "removeAlias",
+      "id": "orange-extract",
+      "alias": "orange jello"
+    },
+    {
+      "op": "addAlias",
+      "id": "orange-extract",
+      "alias": "orange essence"
+    },
+    {
+      "op": "addAlias",
+      "id": "orange-extract",
+      "alias": "natural orange flavour"
+    },
+    {
+      "op": "removeAlias",
+      "id": "potato-starch",
+      "alias": "potato flour",
+      "note": "Potato flour (whole cooked potato) and potato starch (extracted starch) are different products."
+    },
+    {
+      "op": "removeAlias",
+      "id": "marzipan",
+      "alias": "almond paste",
+      "note": "Marzipan and almond paste differ in sugar:almond ratio; distinct products. (New 'almond paste' item is out of op scope.)"
+    },
+    {
+      "op": "addAlias",
+      "id": "powdered-sugar",
+      "alias": "confectioners sugar"
+    },
+    {
+      "op": "addAlias",
+      "id": "powdered-sugar",
+      "alias": "icing sugar"
+    },
+    {
+      "op": "addAlias",
+      "id": "powdered-sugar",
+      "alias": "4x sugar"
+    },
+    {
+      "op": "addAlias",
+      "id": "caster",
+      "alias": "superfine sugar"
+    },
+    {
+      "op": "addAlias",
+      "id": "turbinado",
+      "alias": "sugar in the raw"
+    },
+    {
+      "op": "addAlias",
+      "id": "golden-syrup",
+      "alias": "cane syrup"
+    },
+    {
+      "op": "addAlias",
+      "id": "almond-flour",
+      "alias": "almond meal"
+    },
+    {
+      "op": "addAlias",
+      "id": "almond-flour",
+      "alias": "almond powder"
+    },
+    {
+      "op": "addAlias",
+      "id": "all-purpose",
+      "alias": "ap flour"
+    },
+    {
+      "op": "addAlias",
+      "id": "rapid-rise",
+      "alias": "instant yeast"
+    },
+    {
+      "op": "addAlias",
+      "id": "chocolate-chips",
+      "alias": "semisweet chocolate"
+    }
+  ]
+}

@@ -1,0 +1,79 @@
+{
+  "category": "Nuts & Seeds",
+  "structural": [
+    {
+      "op": "merge",
+      "from": "nigella-sativa",
+      "into": "nigella-seed",
+      "note": "Redundancy: nigella-sativa ('nigella sativa seed') is the Latin binomial of nigella-seed (kalonji/black cumin) — identical aliases, freshness, tags. nigella-seed already carries 'nigella sativa' as an alias (Tier-1). Fold the binomial item into the common-name canonical."
+    },
+    {
+      "op": "merge",
+      "from": "oriental",
+      "into": "poppy-seed",
+      "note": "Redundancy: 'oriental poppy seed' is spurious (oriental poppy is ornamental, not a culinary seed) and duplicates poppy-seed (same khus-khus/poppy-seeds aliases + freshness). poppy-seed is the canonical; white-poppy-seed already exists as the real culinary split."
+    },
+    {
+      "op": "merge",
+      "from": "egusi",
+      "into": "egusi-seed",
+      "note": "Redundancy: two egusi entries — 'egusi melon seed' (id egusi, child of melon-seed, no aliases) and standalone 'egusi seed' (id egusi-seed, better aliases). Keep the recognized standalone name egusi-seed; fold the duplicate in."
+    },
+    {
+      "op": "reparent",
+      "id": "egusi-seed",
+      "parentIds": ["melon-seed"],
+      "note": "After folding the egusi duplicate, re-home the surviving egusi-seed under melon-seed (egusi is ground melon seed), preserving the parentage the dropped duplicate had."
+    },
+    {
+      "op": "setFreshness",
+      "id": "lotus-seed",
+      "freshnessByStorage": {"Pantry": [365, 730], "Refrigerated": [365, 730], "Frozen": [730, 1095]},
+      "note": "Freshness bug: Refrigerated [30,60] was SHORTER than Pantry [365,730] for a dry seed (the 30-60 window belongs to fresh lotus seed only). Refrigerated should be >= Pantry; added a Frozen window to match dry-seed modeling."
+    }
+  ],
+  "cleanups": [
+    {
+      "op": "setDietaryTags",
+      "id": "mixed-nuts",
+      "dietaryTags": ["Vegetarian", "Vegan", "Gluten-Free", "Dairy-Free"],
+      "note": "Remove 'Nut-Free' — mixed nuts contain tree nuts and usually peanuts; they are a top allergen and must not claim Nut-Free."
+    },
+    {
+      "op": "setAllergens",
+      "id": "mixed-nuts",
+      "allergens": ["tree-nut", "peanut"],
+      "note": "Mixed nuts carry tree-nut and (typically) peanut allergens; was empty. Agrees with the de-Nut-Free dietary change."
+    },
+    {
+      "op": "rename",
+      "id": "mixed-nuts",
+      "name": "mixed nuts",
+      "note": "Display was the mangled 'mixed nuts nut'; correct to 'mixed nuts'."
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "nut",
+      "dietaryTags": ["Vegetarian", "Vegan", "Gluten-Free", "Dairy-Free"],
+      "note": "Remove 'Nut-Free' — the generic 'nut' parent is by definition not nut-free."
+    },
+    {
+      "op": "removeAlias",
+      "id": "nut",
+      "alias": "ground nut",
+      "note": "'ground nut' is the British/African word for peanut, not the generic nut — it caused a groundnut collision. peanut already carries 'ground nut'/'groundnut'/'groundnuts' aliases (Tier-1), so removing here resolves it cleanly."
+    },
+    {
+      "op": "removeAlias",
+      "id": "white-chia-seed",
+      "alias": "white poppy seed",
+      "note": "Data error: white chia (a chia color morph) is not white poppy seed (khus-khus). The standalone white-poppy-seed item now exists, so drop this mis-resolving alias."
+    },
+    {
+      "op": "removeAlias",
+      "id": "watermelon-seed",
+      "alias": "egusi",
+      "note": "Remove the cross 'egusi' alias so watermelon-seed (snack kernel) doesn't mis-resolve into egusi-seed (ground gourd-seed stew base); keep them culinarily distinct."
+    }
+  ]
+}

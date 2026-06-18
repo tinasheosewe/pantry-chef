@@ -1,0 +1,1634 @@
+{
+  "category": "Protein",
+  "structural": [
+    {
+      "op": "reparent",
+      "id": "crab",
+      "parentIds": [],
+      "note": "crustacean, not a fish ball; was under fish-ball"
+    },
+    {
+      "op": "rename",
+      "id": "crab",
+      "name": "crab",
+      "note": "strip mangled 'fish ball' suffix from 'crab fish ball'"
+    },
+    {
+      "op": "reparent",
+      "id": "lobster",
+      "parentIds": [],
+      "note": "crustacean, not a fish ball"
+    },
+    {
+      "op": "rename",
+      "id": "lobster",
+      "name": "lobster",
+      "note": "strip mangled suffix from 'lobster fish ball'"
+    },
+    {
+      "op": "rename",
+      "id": "dungeness",
+      "name": "dungeness crab",
+      "note": "strip inherited 'fish ball' suffix"
+    },
+    {
+      "op": "rename",
+      "id": "king-crab",
+      "name": "king crab",
+      "note": "strip inherited 'fish ball' suffix"
+    },
+    {
+      "op": "rename",
+      "id": "snow-crab",
+      "name": "snow crab",
+      "note": "strip inherited 'fish ball' suffix"
+    },
+    {
+      "op": "rename",
+      "id": "stone-crab",
+      "name": "stone crab",
+      "note": "strip inherited 'fish ball' suffix"
+    },
+    {
+      "op": "rename",
+      "id": "spanner",
+      "name": "spanner crab",
+      "note": "strip inherited 'fish ball' suffix"
+    },
+    {
+      "op": "rename",
+      "id": "peekytoe",
+      "name": "peekytoe crab",
+      "note": "strip inherited 'fish ball' suffix"
+    },
+    {
+      "op": "merge",
+      "from": "squid",
+      "into": "calamari",
+      "note": "squid ('squid fish ball') and calamari are the same animal; calamari is the canonical node; squid has no children/refs"
+    },
+    {
+      "op": "reparent",
+      "id": "cuttlefish",
+      "parentIds": [],
+      "note": "cephalopod, not a fish ball"
+    },
+    {
+      "op": "rename",
+      "id": "cuttlefish",
+      "name": "cuttlefish",
+      "note": "strip mangled suffix from 'cuttlefish fish ball'"
+    },
+    {
+      "op": "reparent",
+      "id": "mackerel",
+      "parentIds": [
+        "oily-fish"
+      ],
+      "note": "finfish, not a fish ball; align with other oily fish"
+    },
+    {
+      "op": "rename",
+      "id": "mackerel",
+      "name": "mackerel",
+      "note": "strip 'fish ball' suffix"
+    },
+    {
+      "op": "reparent",
+      "id": "pollock",
+      "parentIds": [
+        "white-fish"
+      ],
+      "note": "whitefish, not a fish ball"
+    },
+    {
+      "op": "rename",
+      "id": "pollock",
+      "name": "pollock",
+      "note": "strip 'fish ball' suffix"
+    },
+    {
+      "op": "reparent",
+      "id": "white-fish",
+      "parentIds": [],
+      "note": "generic whitefish bucket, not a fish ball"
+    },
+    {
+      "op": "rename",
+      "id": "white-fish",
+      "name": "white fish",
+      "note": "strip 'ball' from 'white fish ball'"
+    },
+    {
+      "op": "reparent",
+      "id": "tempeh",
+      "parentIds": [],
+      "note": "base ingredient, not a type of burger"
+    },
+    {
+      "op": "rename",
+      "id": "tempeh",
+      "name": "tempeh",
+      "note": "strip 'vegan burger' from 'tempeh vegan burger'"
+    },
+    {
+      "op": "reparent",
+      "id": "seitan",
+      "parentIds": [],
+      "note": "base ingredient, not a burger"
+    },
+    {
+      "op": "rename",
+      "id": "seitan",
+      "name": "seitan",
+      "note": "strip 'vegan burger'; keep NOT Gluten-Free (wheat)"
+    },
+    {
+      "op": "rename",
+      "id": "soybean",
+      "name": "soybean tempeh",
+      "note": "strip 'vegan burger' suffix; keep tempeh parent"
+    },
+    {
+      "op": "rename",
+      "id": "chickpea-tempeh",
+      "name": "chickpea tempeh",
+      "note": "strip 'vegan burger' suffix"
+    },
+    {
+      "op": "rename",
+      "id": "multigrain-tempeh",
+      "name": "multigrain tempeh",
+      "note": "strip 'vegan burger' suffix"
+    },
+    {
+      "op": "reparent",
+      "id": "sausage",
+      "parentIds": [
+        "cured-meat"
+      ],
+      "note": "generic sausage belongs under cured-meat, not boar"
+    },
+    {
+      "op": "rename",
+      "id": "sausage",
+      "name": "sausage",
+      "note": "strip 'boar' from 'sausage boar'"
+    },
+    {
+      "op": "rename",
+      "id": "mahi-mahi",
+      "name": "mahi-mahi",
+      "note": "restore full name from truncated 'mahi'"
+    },
+    {
+      "op": "rename",
+      "id": "mahi-mahi-steak",
+      "name": "mahi-mahi steak",
+      "note": "restore full name"
+    },
+    {
+      "op": "rename",
+      "id": "mahi-mahi-whole",
+      "name": "mahi-mahi whole",
+      "note": "restore full name"
+    },
+    {
+      "op": "merge",
+      "from": "skin-on",
+      "into": "mahi-mahi",
+      "note": "'skin on mahi' is a trivial presentation variant, not a distinct ingredient"
+    },
+    {
+      "op": "merge",
+      "from": "tentacle",
+      "into": "octopus",
+      "note": "'octopus tentacle' is a presentation variant of octopus"
+    },
+    {
+      "op": "merge",
+      "from": "octopus-whole",
+      "into": "octopus",
+      "note": "presentation variant"
+    },
+    {
+      "op": "merge",
+      "from": "tentacles",
+      "into": "calamari",
+      "note": "'tentacles calamari' presentation variant"
+    },
+    {
+      "op": "merge",
+      "from": "tubes",
+      "into": "calamari",
+      "note": "'tubes calamari' presentation variant"
+    },
+    {
+      "op": "merge",
+      "from": "calamari-whole",
+      "into": "calamari",
+      "note": "presentation variant"
+    },
+    {
+      "op": "merge",
+      "from": "meat",
+      "into": "mussel",
+      "note": "'meat mussel' junk leaf == mussel meat"
+    },
+    {
+      "op": "merge",
+      "from": "mussel-whole",
+      "into": "mussel",
+      "note": "presentation variant of mussel"
+    },
+    {
+      "op": "reid",
+      "from": "chicken",
+      "to": "chicken-meatball",
+      "note": "this node IS the chicken meatball (parent meatball); free the bare 'chicken' id; repoints back/gizzard/chicken-broth + meatball swaps"
+    },
+    {
+      "op": "merge",
+      "from": "gizzard",
+      "into": "chicken-gizzard",
+      "note": "'gizzard chicken meatball' duplicates proper chicken-gizzard offal item"
+    },
+    {
+      "op": "reparent",
+      "id": "back",
+      "parentIds": [
+        "chicken-meat"
+      ],
+      "note": "chicken back belongs under the real chicken node, not the meatball node"
+    },
+    {
+      "op": "rename",
+      "id": "back",
+      "name": "chicken back",
+      "note": "strip 'chicken meatball' from 'back chicken meatball'"
+    },
+    {
+      "op": "merge",
+      "from": "egg-quail",
+      "into": "quail-egg",
+      "note": "egg-quail (Protein, parented under quail) duplicates quail-egg in Dairy & Eggs"
+    },
+    {
+      "op": "rename",
+      "id": "salmon-oily-fish",
+      "name": "salmon",
+      "note": "already named 'salmon'; keep as the FRESH salmon node (canned-salmon/smoked-salmon now exist separately)"
+    }
+  ],
+  "cleanups": [
+    {
+      "op": "setDietaryTags",
+      "id": "anchovy",
+      "dietaryTags": [
+        "Pescatarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "seafood missing Pescatarian"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "atlantic",
+      "dietaryTags": [
+        "Pescatarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "seafood missing Pescatarian"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "baby-octopus",
+      "dietaryTags": [
+        "Pescatarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "seafood missing Pescatarian"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "bay",
+      "dietaryTags": [
+        "Pescatarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "seafood missing Pescatarian"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "belon",
+      "dietaryTags": [
+        "Pescatarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "seafood missing Pescatarian"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "beluga",
+      "dietaryTags": [
+        "Pescatarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "seafood missing Pescatarian"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "bighead",
+      "dietaryTags": [
+        "Pescatarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "seafood missing Pescatarian"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "blue-point",
+      "dietaryTags": [
+        "Pescatarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "seafood missing Pescatarian"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "brown-shrimp",
+      "dietaryTags": [
+        "Pescatarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "seafood missing Pescatarian"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "calamari",
+      "dietaryTags": [
+        "Pescatarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "seafood missing Pescatarian"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "calico-scallop",
+      "dietaryTags": [
+        "Pescatarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "seafood missing Pescatarian"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "carp",
+      "dietaryTags": [
+        "Pescatarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "seafood missing Pescatarian"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "caviar",
+      "dietaryTags": [
+        "Pescatarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "seafood missing Pescatarian"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "cherrystone",
+      "dietaryTags": [
+        "Pescatarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "seafood missing Pescatarian"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "clam",
+      "dietaryTags": [
+        "Pescatarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "seafood missing Pescatarian"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "cod",
+      "dietaryTags": [
+        "Pescatarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "seafood missing Pescatarian"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "colossal",
+      "dietaryTags": [
+        "Pescatarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "seafood missing Pescatarian"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "common",
+      "dietaryTags": [
+        "Pescatarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "seafood missing Pescatarian"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "crab",
+      "dietaryTags": [
+        "Pescatarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "seafood missing Pescatarian"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "crawfish",
+      "dietaryTags": [
+        "Pescatarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "seafood missing Pescatarian"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "crucian",
+      "dietaryTags": [
+        "Pescatarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "seafood missing Pescatarian"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "cuttlefish",
+      "dietaryTags": [
+        "Pescatarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "seafood missing Pescatarian"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "dungeness",
+      "dietaryTags": [
+        "Pescatarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "seafood missing Pescatarian"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "eel",
+      "dietaryTags": [
+        "Pescatarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "seafood missing Pescatarian"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "european-flat",
+      "dietaryTags": [
+        "Pescatarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "seafood missing Pescatarian"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "fish-ball",
+      "dietaryTags": [
+        "Pescatarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "seafood missing Pescatarian"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "geoduck",
+      "dietaryTags": [
+        "Pescatarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "seafood missing Pescatarian"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "grass",
+      "dietaryTags": [
+        "Pescatarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "seafood missing Pescatarian"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "green-lipped",
+      "dietaryTags": [
+        "Pescatarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "seafood missing Pescatarian"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "hard-shell",
+      "dietaryTags": [
+        "Pescatarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "seafood missing Pescatarian"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "herring",
+      "dietaryTags": [
+        "Pescatarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "seafood missing Pescatarian"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "jumbo-prawn",
+      "dietaryTags": [
+        "Pescatarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "seafood missing Pescatarian"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "kaluga",
+      "dietaryTags": [
+        "Pescatarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "seafood missing Pescatarian"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "king",
+      "dietaryTags": [
+        "Pescatarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "seafood missing Pescatarian"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "king-crab",
+      "dietaryTags": [
+        "Pescatarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "seafood missing Pescatarian"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "kumamoto",
+      "dietaryTags": [
+        "Pescatarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "seafood missing Pescatarian"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "large-octopus",
+      "dietaryTags": [
+        "Pescatarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "seafood missing Pescatarian"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "little-neck",
+      "dietaryTags": [
+        "Pescatarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "seafood missing Pescatarian"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "lobster",
+      "dietaryTags": [
+        "Pescatarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "seafood missing Pescatarian"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "mackerel",
+      "dietaryTags": [
+        "Pescatarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "seafood missing Pescatarian"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "mahi-mahi",
+      "dietaryTags": [
+        "Pescatarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "seafood missing Pescatarian"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "manila",
+      "dietaryTags": [
+        "Pescatarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "seafood missing Pescatarian"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "mediterranean",
+      "dietaryTags": [
+        "Pescatarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "seafood missing Pescatarian"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "medium-prawn",
+      "dietaryTags": [
+        "Pescatarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "seafood missing Pescatarian"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "mirror",
+      "dietaryTags": [
+        "Pescatarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "seafood missing Pescatarian"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "mussel",
+      "dietaryTags": [
+        "Pescatarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "seafood missing Pescatarian"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "octopus",
+      "dietaryTags": [
+        "Pescatarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "seafood missing Pescatarian"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "oily-fish",
+      "dietaryTags": [
+        "Pescatarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "seafood missing Pescatarian"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "olympia",
+      "dietaryTags": [
+        "Pescatarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "seafood missing Pescatarian"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "osetra",
+      "dietaryTags": [
+        "Pescatarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "seafood missing Pescatarian"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "oyster",
+      "dietaryTags": [
+        "Pescatarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "seafood missing Pescatarian"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "pacific",
+      "dietaryTags": [
+        "Pescatarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "seafood missing Pescatarian"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "paddlefish",
+      "dietaryTags": [
+        "Pescatarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "seafood missing Pescatarian"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "peekytoe",
+      "dietaryTags": [
+        "Pescatarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "seafood missing Pescatarian"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "pollock",
+      "dietaryTags": [
+        "Pescatarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "seafood missing Pescatarian"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "prawn",
+      "dietaryTags": [
+        "Pescatarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "seafood missing Pescatarian"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "quahog",
+      "dietaryTags": [
+        "Pescatarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "seafood missing Pescatarian"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "queen-scallop",
+      "dietaryTags": [
+        "Pescatarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "seafood missing Pescatarian"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "razor",
+      "dietaryTags": [
+        "Pescatarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "seafood missing Pescatarian"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "red-swamp",
+      "dietaryTags": [
+        "Pescatarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "seafood missing Pescatarian"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "rock",
+      "dietaryTags": [
+        "Pescatarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "seafood missing Pescatarian"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "rusty",
+      "dietaryTags": [
+        "Pescatarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "seafood missing Pescatarian"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "salmon-oily-fish",
+      "dietaryTags": [
+        "Pescatarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "seafood missing Pescatarian"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "salmon-roe",
+      "dietaryTags": [
+        "Pescatarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "seafood missing Pescatarian"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "salt-cod",
+      "dietaryTags": [
+        "Pescatarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "seafood missing Pescatarian"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "salt-cod-fillet",
+      "dietaryTags": [
+        "Pescatarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "seafood missing Pescatarian"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "salt-cod-loin",
+      "dietaryTags": [
+        "Pescatarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "seafood missing Pescatarian"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "salt-cod-whole",
+      "dietaryTags": [
+        "Pescatarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "seafood missing Pescatarian"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "sardine",
+      "dietaryTags": [
+        "Pescatarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "seafood missing Pescatarian"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "scallop",
+      "dietaryTags": [
+        "Pescatarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "seafood missing Pescatarian"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "sea-scallop",
+      "dietaryTags": [
+        "Pescatarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "seafood missing Pescatarian"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "sevruga",
+      "dietaryTags": [
+        "Pescatarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "seafood missing Pescatarian"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "shrimp",
+      "dietaryTags": [
+        "Pescatarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "seafood missing Pescatarian"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "shrimp-fish-ball",
+      "dietaryTags": [
+        "Pescatarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "seafood missing Pescatarian"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "signal",
+      "dietaryTags": [
+        "Pescatarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "seafood missing Pescatarian"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "silver",
+      "dietaryTags": [
+        "Pescatarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "seafood missing Pescatarian"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "small",
+      "dietaryTags": [
+        "Pescatarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "seafood missing Pescatarian"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "snow-crab",
+      "dietaryTags": [
+        "Pescatarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "seafood missing Pescatarian"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "soft-shell",
+      "dietaryTags": [
+        "Pescatarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "seafood missing Pescatarian"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "spanner",
+      "dietaryTags": [
+        "Pescatarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "seafood missing Pescatarian"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "sterlet",
+      "dietaryTags": [
+        "Pescatarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "seafood missing Pescatarian"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "stone-crab",
+      "dietaryTags": [
+        "Pescatarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "seafood missing Pescatarian"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "swordfish",
+      "dietaryTags": [
+        "Pescatarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "seafood missing Pescatarian"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "tiger",
+      "dietaryTags": [
+        "Pescatarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "seafood missing Pescatarian"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "trout",
+      "dietaryTags": [
+        "Pescatarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "seafood missing Pescatarian"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "trout-roe",
+      "dietaryTags": [
+        "Pescatarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "seafood missing Pescatarian"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "tuna",
+      "dietaryTags": [
+        "Pescatarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "seafood missing Pescatarian"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "white-fish",
+      "dietaryTags": [
+        "Pescatarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "seafood missing Pescatarian"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "white-river",
+      "dietaryTags": [
+        "Pescatarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "seafood missing Pescatarian"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "white-shrimp",
+      "dietaryTags": [
+        "Pescatarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "seafood missing Pescatarian"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "whitefish-roe",
+      "dietaryTags": [
+        "Pescatarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "seafood missing Pescatarian"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "frog-legs",
+      "dietaryTags": [
+        "Pescatarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "seafood missing Pescatarian"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "surimi",
+      "dietaryTags": [
+        "Pescatarian",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "commercial surimi typically contains wheat starch -> not Gluten-Free; add Pescatarian"
+    },
+    {
+      "op": "setAllergens",
+      "id": "surimi",
+      "allergens": [
+        "fish",
+        "gluten"
+      ],
+      "note": "surimi binds with wheat starch"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "imitation-crab",
+      "dietaryTags": [
+        "Pescatarian",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "commercial surimi typically contains wheat starch -> not Gluten-Free; add Pescatarian"
+    },
+    {
+      "op": "setAllergens",
+      "id": "imitation-crab",
+      "allergens": [
+        "fish",
+        "shellfish",
+        "gluten"
+      ],
+      "note": "surimi binds with wheat starch"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "imitation-lobster",
+      "dietaryTags": [
+        "Pescatarian",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "commercial surimi typically contains wheat starch -> not Gluten-Free; add Pescatarian"
+    },
+    {
+      "op": "setAllergens",
+      "id": "imitation-lobster",
+      "allergens": [
+        "fish",
+        "shellfish",
+        "gluten"
+      ],
+      "note": "surimi binds with wheat starch"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "imitation-scallop",
+      "dietaryTags": [
+        "Pescatarian",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "commercial surimi typically contains wheat starch -> not Gluten-Free; add Pescatarian"
+    },
+    {
+      "op": "setAllergens",
+      "id": "imitation-scallop",
+      "allergens": [
+        "fish",
+        "shellfish",
+        "gluten"
+      ],
+      "note": "surimi binds with wheat starch"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "imitation-shrimp",
+      "dietaryTags": [
+        "Pescatarian",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "commercial surimi typically contains wheat starch -> not Gluten-Free; add Pescatarian"
+    },
+    {
+      "op": "setAllergens",
+      "id": "imitation-shrimp",
+      "allergens": [
+        "fish",
+        "shellfish",
+        "gluten"
+      ],
+      "note": "surimi binds with wheat starch"
+    },
+    {
+      "op": "setAllergens",
+      "id": "crab",
+      "allergens": [
+        "shellfish"
+      ],
+      "note": "crustacean/cephalopod, not fish; remove spurious 'fish' allergen inherited from fish-ball"
+    },
+    {
+      "op": "setAllergens",
+      "id": "lobster",
+      "allergens": [
+        "shellfish"
+      ],
+      "note": "crustacean/cephalopod, not fish; remove spurious 'fish' allergen inherited from fish-ball"
+    },
+    {
+      "op": "setAllergens",
+      "id": "dungeness",
+      "allergens": [
+        "shellfish"
+      ],
+      "note": "crustacean/cephalopod, not fish; remove spurious 'fish' allergen inherited from fish-ball"
+    },
+    {
+      "op": "setAllergens",
+      "id": "king-crab",
+      "allergens": [
+        "shellfish"
+      ],
+      "note": "crustacean/cephalopod, not fish; remove spurious 'fish' allergen inherited from fish-ball"
+    },
+    {
+      "op": "setAllergens",
+      "id": "snow-crab",
+      "allergens": [
+        "shellfish"
+      ],
+      "note": "crustacean/cephalopod, not fish; remove spurious 'fish' allergen inherited from fish-ball"
+    },
+    {
+      "op": "setAllergens",
+      "id": "stone-crab",
+      "allergens": [
+        "shellfish"
+      ],
+      "note": "crustacean/cephalopod, not fish; remove spurious 'fish' allergen inherited from fish-ball"
+    },
+    {
+      "op": "setAllergens",
+      "id": "spanner",
+      "allergens": [
+        "shellfish"
+      ],
+      "note": "crustacean/cephalopod, not fish; remove spurious 'fish' allergen inherited from fish-ball"
+    },
+    {
+      "op": "setAllergens",
+      "id": "peekytoe",
+      "allergens": [
+        "shellfish"
+      ],
+      "note": "crustacean/cephalopod, not fish; remove spurious 'fish' allergen inherited from fish-ball"
+    },
+    {
+      "op": "setAllergens",
+      "id": "cuttlefish",
+      "allergens": [
+        "shellfish"
+      ],
+      "note": "crustacean/cephalopod, not fish; remove spurious 'fish' allergen inherited from fish-ball"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "pheasant",
+      "dietaryTags": [
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "pheasant is meat; remove bogus Vegetarian/Vegan tags"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "pheasant-breast",
+      "dietaryTags": [
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "pheasant is meat; remove bogus Vegetarian/Vegan tags"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "pheasant-ground",
+      "dietaryTags": [
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "pheasant is meat; remove bogus Vegetarian/Vegan tags"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "pheasant-leg",
+      "dietaryTags": [
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "pheasant is meat; remove bogus Vegetarian/Vegan tags"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "pheasant-thigh",
+      "dietaryTags": [
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "pheasant is meat; remove bogus Vegetarian/Vegan tags"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "pheasant-whole",
+      "dietaryTags": [
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "pheasant is meat; remove bogus Vegetarian/Vegan tags"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "pheasant-wing",
+      "dietaryTags": [
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "pheasant is meat; remove bogus Vegetarian/Vegan tags"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "italian-meatball",
+      "dietaryTags": [
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "italian meatball is meat; remove bogus Vegetarian/Vegan"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "swedish-meatball",
+      "dietaryTags": [
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "swedish meatball is meat; remove bogus Vegetarian/Vegan"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "beef-style",
+      "dietaryTags": [
+        "Vegetarian",
+        "Vegan",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "seitan analog; add Vegetarian/Vegan, keep NOT Gluten-Free"
+    },
+    {
+      "op": "setDietaryTags",
+      "id": "chicken-style",
+      "dietaryTags": [
+        "Vegetarian",
+        "Vegan",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "note": "seitan analog; add Vegetarian/Vegan, keep NOT Gluten-Free"
+    },
+    {
+      "op": "rename",
+      "id": "hash",
+      "name": "corned beef hash",
+      "note": "clean 'hash corned beef' -> 'corned beef hash'"
+    },
+    {
+      "op": "rename",
+      "id": "anchovy",
+      "name": "anchovy",
+      "note": "strip mangled 'oily fish' suffix"
+    },
+    {
+      "op": "rename",
+      "id": "eel",
+      "name": "eel",
+      "note": "strip mangled 'oily fish' suffix"
+    },
+    {
+      "op": "rename",
+      "id": "herring",
+      "name": "herring",
+      "note": "strip mangled 'oily fish' suffix"
+    },
+    {
+      "op": "rename",
+      "id": "sardine",
+      "name": "sardine",
+      "note": "strip mangled 'oily fish' suffix"
+    },
+    {
+      "op": "rename",
+      "id": "trout",
+      "name": "trout",
+      "note": "strip mangled 'oily fish' suffix"
+    },
+    {
+      "op": "rename",
+      "id": "luncheon-meat",
+      "name": "luncheon meat",
+      "note": "strip 'cured'/'cured meat' suffix"
+    },
+    {
+      "op": "rename",
+      "id": "landjager",
+      "name": "landjäger",
+      "note": "strip 'cured'/'cured meat' suffix"
+    },
+    {
+      "op": "setStorage",
+      "id": "tuna",
+      "defaultStorage": "Refrigerated",
+      "note": "standardize fresh finfish default to Refrigerated"
+    }
+  ]
+}

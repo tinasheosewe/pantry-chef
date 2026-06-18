@@ -1,0 +1,210 @@
+{
+  "category": "Oils & Fats",
+  "structural": [
+    {
+      "op": "reparent",
+      "id": "coconut-oil-refined",
+      "parentIds": ["coconut-oil-base"],
+      "note": "Live bug still present: 'coconut-oil-refined' is parented to the SPRAY ('coconut-oil'), not a real coconut oil base. Repoint to the real base 'coconut-oil-base' (Tier 1 already added it). The later reid coconut-oil-base->coconut-oil will carry this ref along."
+    },
+    {
+      "op": "reid",
+      "from": "coconut-oil",
+      "to": "coconut-oil-spray",
+      "note": "Live 'coconut-oil' id holds the cooking SPRAY (name 'coconut oil cooking spray', parent cooking-spray). Free the clean id for the real base oil. Must run after the reparent above so coconut-oil-refined no longer points here."
+    },
+    {
+      "op": "reid",
+      "from": "coconut-oil-base",
+      "to": "coconut-oil",
+      "note": "Promote the real base oil (added in Tier 1 as 'coconut-oil-base') to the clean canonical id now that the spray has vacated it. Repoints children extra-virgin-coconut-oil and (via the reparent above) coconut-oil-refined."
+    },
+    {
+      "op": "reid",
+      "from": "avocado-oil",
+      "to": "avocado-oil-spray",
+      "note": "Live 'avocado-oil' id holds the cooking SPRAY (name 'avocado oil cooking spray', parent cooking-spray). Free the clean id for the real base oil."
+    },
+    {
+      "op": "reid",
+      "from": "avocado-oil-base",
+      "to": "avocado-oil",
+      "note": "Promote the real avocado oil base (Tier 1 'avocado-oil-base') to the clean canonical id now vacated by the spray."
+    },
+    {
+      "op": "merge",
+      "from": "pomace",
+      "into": "olive-pomace-oil",
+      "note": "Redundancy: 'pomace' (name 'pomace oil', parented to generic 'oil', aliases null) is the unqualified version of the now-existing 'olive-pomace-oil' (Tier 1, parented to olive-oil). Pomace oil is specifically an olive byproduct, so fold the generic one into the clearer child."
+    },
+    {
+      "op": "merge",
+      "from": "vanaspati",
+      "into": "vegetable-ghee",
+      "note": "Redundancy: vanaspati IS the technical name for hydrogenated vegetable ghee/Dalda; the two share aliases 'dalda' and 'vegetable ghees' and identical tags. Fold vanaspati into vegetable-ghee (vegetable-ghee gains 'vanaspati vegetable ghee' + 'vanaspati ghee' as aliases)."
+    },
+    {
+      "op": "merge",
+      "from": "pure",
+      "into": "oil",
+      "note": "Redundancy: 'pure' (name 'pure oil', aliases null, identical tags) is a label-extraction artifact duplicating generic 'oil'. Fold in."
+    },
+    {
+      "op": "merge",
+      "from": "oil-light",
+      "into": "oil",
+      "note": "Redundancy: 'oil-light' (name 'oil light', aliases null) duplicates generic 'oil' with an ambiguous name ('light' = flavor/color, not calories). Fold in."
+    },
+    {
+      "op": "merge",
+      "from": "kachi-ghani-cold-pressed",
+      "into": "mustard-oil-unrefined",
+      "note": "Redundancy: kachi ghani IS cold-pressed/unrefined mustard oil. Tier 1 'mustard-oil-unrefined' already carries the alias 'kachi ghani'. Fold the opaque 'kachi-ghani-cold-pressed' (aliases null) into it; the mustard-oil-refined swap pointing at kachi-ghani gets repointed."
+    },
+    {
+      "op": "reid",
+      "from": "bitter",
+      "to": "bitter-almond-oil",
+      "note": "Opaque/collision-prone id 'bitter' for 'bitter almond oil'. Alias cleanup follows in cleanups against the new id."
+    },
+    {
+      "op": "reid",
+      "from": "neutral",
+      "to": "neutral-oil",
+      "note": "Opaque id 'neutral' for 'neutral oil'. Kept as a standalone matching bucket (not merged) but given a clear id."
+    },
+    {
+      "op": "reid",
+      "from": "cold-pressed",
+      "to": "pecan-oil-cold-pressed",
+      "note": "Opaque id 'cold-pressed' for 'cold pressed pecan oil' (parent pecan-oil). Re-id to reflect the item. (Overlaps with pecan-oil-unrefined but left as a distinct sibling; both swap-referenced.)"
+    },
+    {
+      "op": "reid",
+      "from": "styrian",
+      "to": "styrian-pumpkin-seed-oil",
+      "note": "Opaque id 'styrian' for 'styrian pumpkin seed oil' (parent pumpkin-seed-oil)."
+    },
+    {
+      "op": "reid",
+      "from": "cow",
+      "to": "cow-ghee",
+      "note": "Opaque id 'cow' for 'cow ghee' (parent ghee)."
+    },
+    {
+      "op": "reid",
+      "from": "buffalo",
+      "to": "buffalo-ghee",
+      "note": "Opaque id 'buffalo' for 'buffalo ghee' (parent ghee)."
+    },
+    {
+      "op": "reid",
+      "from": "tub",
+      "to": "tub-margarine",
+      "note": "Opaque id 'tub' for 'tub margarine' (parent margarine); sibling to stick-margarine."
+    },
+    {
+      "op": "reid",
+      "from": "canola",
+      "to": "canola-cooking-spray",
+      "note": "Opaque id 'canola' for 'canola cooking spray' (parent cooking-spray); disambiguate from canola-oil."
+    },
+    {
+      "op": "reid",
+      "from": "non-hydrogenated",
+      "to": "non-hydrogenated-shortening",
+      "note": "Opaque id 'non-hydrogenated' for 'non hydrogenated shortening' (parent shortening)."
+    },
+    {
+      "op": "reid",
+      "from": "butter-flavor",
+      "to": "butter-flavor-cooking-spray",
+      "note": "Opaque id 'butter-flavor' for 'butter flavor cooking spray' (parent cooking-spray); disambiguate from the shortening below."
+    },
+    {
+      "op": "reid",
+      "from": "butter-flavored",
+      "to": "butter-flavored-shortening",
+      "note": "Opaque id 'butter-flavored' for 'butter flavored shortening' (parent shortening); near-identical sibling id to 'butter-flavor' was collision-prone."
+    }
+  ],
+  "cleanups": [
+    {
+      "op": "removeAlias",
+      "id": "bitter-almond-oil",
+      "alias": "almond oils",
+      "note": "Wrong alias inherited from almond-oil; describes plain/sweet almond oil and collides with almond-oil's own alias."
+    },
+    {
+      "op": "removeAlias",
+      "id": "bitter-almond-oil",
+      "alias": "huile d'amande",
+      "note": "Wrong alias inherited from almond-oil (= plain almond oil in French). Collides with almond-oil."
+    },
+    {
+      "op": "addAlias",
+      "id": "bitter-almond-oil",
+      "alias": "amande amère",
+      "note": "Correct French name for bitter almond oil."
+    },
+    {
+      "op": "addAlias",
+      "id": "bitter-almond-oil",
+      "alias": "bitter almond essence oil"
+    },
+    {
+      "op": "removeAlias",
+      "id": "avocado-oil-spray",
+      "alias": "oil spray",
+      "note": "Over-generic alias on the avocado spray; would mis-match many sprays. Belongs on the cooking-spray parent (added below)."
+    },
+    {
+      "op": "addAlias",
+      "id": "cooking-spray",
+      "alias": "oil spray",
+      "note": "Generic spray alias relocated here from avocado-oil-spray."
+    },
+    {
+      "op": "removeAlias",
+      "id": "sesame-oil",
+      "alias": "toasted sesame oil",
+      "note": "Now a distinct child item 'toasted-sesame-oil' (Tier 1). Keep light/raw sesame aliases on the base."
+    },
+    {
+      "op": "removeAlias",
+      "id": "palm-oil",
+      "alias": "red palm oil",
+      "note": "Now a distinct child item 'red-palm-oil' (Tier 1). Keep refined-palm aliases on base."
+    },
+    {
+      "op": "removeAlias",
+      "id": "tallow",
+      "alias": "suet",
+      "note": "Suet (raw kidney fat) is now its own item; it is distinct from rendered tallow. Base already has 'beef dripping'/'dripping'/'rendered fat'."
+    },
+    {
+      "op": "removeAlias",
+      "id": "olive-oil",
+      "alias": "pam",
+      "note": "Brand/spray term; belongs on cooking-spray, not liquid olive oil."
+    },
+    {
+      "op": "removeAlias",
+      "id": "olive-oil",
+      "alias": "aerosol oil",
+      "note": "Spray term; belongs on cooking-spray, not liquid olive oil."
+    },
+    {
+      "op": "addAlias",
+      "id": "cooking-spray",
+      "alias": "pam",
+      "note": "Relocated from olive-oil; PAM is the canonical spray brand."
+    },
+    {
+      "op": "addAlias",
+      "id": "cooking-spray",
+      "alias": "aerosol oil",
+      "note": "Relocated from olive-oil."
+    }
+  ]
+}

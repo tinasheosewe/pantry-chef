@@ -1,0 +1,155 @@
+{
+  "category": "Breads & Bakery",
+  "structural": [
+    {"op":"reparent","id":"classic-cornbread","parentIds":["stuffing"],"note":"'classic cornbread stuffing' is a stuffing product, but was parented to the 'cornbread' bread (the cornbread re-model already landed: id 'cornbread' is now the standalone bread loaf). Re-home under 'stuffing' so the stuffing variants no longer hang off the bread."},
+    {"op":"reparent","id":"honey-cornbread","parentIds":["stuffing"],"note":"'honey cornbread stuffing' — stuffing variant mis-parented under the cornbread bread; re-home under 'stuffing'."},
+    {"op":"reparent","id":"jalapeno-cornbread","parentIds":["stuffing"],"note":"'jalapeño cornbread stuffing' — stuffing variant mis-parented under the cornbread bread; re-home under 'stuffing'."},
+    {"op":"reparent","id":"skillet","parentIds":["stuffing"],"note":"'skillet cornbread stuffing' — stuffing variant mis-parented under the cornbread bread; re-home under 'stuffing'."}
+  ],
+  "cleanups": [
+    {"op":"setDietaryTags","id":"almond-croissant","dietaryTags":["Vegetarian"],"note":"Wheat+butter pastry with almond filling: drop Gluten-Free, Vegan and Dairy-Free; keep Vegetarian (Nut-Free already absent)."},
+    {"op":"setAllergens","id":"almond-croissant","allergens":["gluten","tree-nut","dairy"]},
+
+    {"op":"setDietaryTags","id":"american-waffle","dietaryTags":["Vegetarian","Vegan","Dairy-Free","Nut-Free"],"note":"Remove Gluten-Free (wheat)."},
+    {"op":"setAllergens","id":"american-waffle","allergens":["gluten"]},
+
+    {"op":"setDietaryTags","id":"apple-pie","dietaryTags":["Vegetarian","Vegan","Dairy-Free","Nut-Free"],"note":"Remove Gluten-Free (wheat crust)."},
+    {"op":"setAllergens","id":"apple-pie","allergens":["gluten"]},
+
+    {"op":"setDietaryTags","id":"babka","dietaryTags":["Vegetarian","Nut-Free"],"note":"Enriched egg dough: remove Gluten-Free, Vegan and Dairy-Free."},
+    {"op":"setAllergens","id":"babka","allergens":["gluten","egg"]},
+
+    {"op":"setDietaryTags","id":"banana-pancake","dietaryTags":["Vegetarian","Vegan","Dairy-Free","Nut-Free"],"note":"Remove Gluten-Free."},
+    {"op":"setAllergens","id":"banana-pancake","allergens":["gluten"]},
+
+    {"op":"setDietaryTags","id":"belgian-waffle","dietaryTags":["Vegetarian","Vegan","Dairy-Free","Nut-Free"],"note":"Remove Gluten-Free."},
+    {"op":"setAllergens","id":"belgian-waffle","allergens":["gluten"]},
+
+    {"op":"setDietaryTags","id":"brussels","dietaryTags":["Vegetarian","Vegan","Dairy-Free","Nut-Free"],"note":"brussels waffle: remove Gluten-Free."},
+    {"op":"setAllergens","id":"brussels","allergens":["gluten"]},
+
+    {"op":"setDietaryTags","id":"chapati","dietaryTags":["Vegetarian","Vegan","Dairy-Free","Nut-Free"],"note":"Whole-wheat atta: remove Gluten-Free."},
+    {"op":"setAllergens","id":"chapati","allergens":["gluten"]},
+
+    {"op":"setDietaryTags","id":"cheese-babka","dietaryTags":["Vegetarian","Nut-Free"],"note":"Remove Gluten-Free; cheese filling keeps it off Dairy-Free (already is)."},
+    {"op":"setAllergens","id":"cheese-babka","allergens":["gluten","dairy","egg"]},
+
+    {"op":"setDietaryTags","id":"cherry-pie","dietaryTags":["Vegetarian","Vegan","Dairy-Free","Nut-Free"],"note":"Remove Gluten-Free."},
+    {"op":"setAllergens","id":"cherry-pie","allergens":["gluten"]},
+
+    {"op":"setDietaryTags","id":"chicken-pot","dietaryTags":["Nut-Free"],"note":"Chicken pot pie: remove Gluten-Free (wheat crust) and Dairy-Free (cream filling); not vegetarian (chicken)."},
+    {"op":"setAllergens","id":"chicken-pot","allergens":["gluten","dairy"]},
+
+    {"op":"setDietaryTags","id":"cinnamon-babka","dietaryTags":["Vegetarian","Nut-Free"],"note":"Egg dough: remove Gluten-Free, Vegan, Dairy-Free."},
+    {"op":"setAllergens","id":"cinnamon-babka","allergens":["gluten","egg"]},
+
+    {"op":"setDietaryTags","id":"cranberry-scone","dietaryTags":["Vegetarian","Nut-Free"],"note":"Scones contain butter/dairy: remove Gluten-Free, Vegan, Dairy-Free."},
+    {"op":"setAllergens","id":"cranberry-scone","allergens":["gluten","dairy"]},
+
+    {"op":"setDietaryTags","id":"crescent-roll","dietaryTags":["Vegetarian","Vegan","Dairy-Free","Nut-Free"],"note":"Remove Gluten-Free (canned crescent dough is wheat; commonly margarine, leaving vegan/DF)."},
+    {"op":"setAllergens","id":"crescent-roll","allergens":["gluten"]},
+
+    {"op":"setDietaryTags","id":"croissant","dietaryTags":["Vegetarian"],"note":"True butter croissant: remove Gluten-Free, Vegan, Dairy-Free."},
+    {"op":"setAllergens","id":"croissant","allergens":["gluten","dairy"]},
+
+    {"op":"setDietaryTags","id":"crumpet","dietaryTags":["Vegetarian","Vegan","Dairy-Free","Nut-Free"],"note":"Remove Gluten-Free."},
+    {"op":"setAllergens","id":"crumpet","allergens":["gluten"]},
+
+    {"op":"setDietaryTags","id":"dough","dietaryTags":["Vegetarian","Vegan","Dairy-Free","Nut-Free"],"note":"Generic (default wheat) dough: remove Gluten-Free."},
+    {"op":"setAllergens","id":"dough","allergens":["gluten"]},
+
+    {"op":"setDietaryTags","id":"dough-sourdough","dietaryTags":["Vegetarian","Vegan","Dairy-Free","Nut-Free"],"note":"Remove Gluten-Free."},
+    {"op":"setAllergens","id":"dough-sourdough","allergens":["gluten"]},
+
+    {"op":"setDietaryTags","id":"flatbread","dietaryTags":["Vegetarian","Vegan","Dairy-Free","Nut-Free"],"note":"Generic (default wheat) flatbread parent: remove Gluten-Free."},
+    {"op":"setAllergens","id":"flatbread","allergens":["gluten"]},
+
+    {"op":"setDietaryTags","id":"ham-and-cheese","dietaryTags":["Nut-Free"],"note":"Ham & cheese croissant: remove Gluten-Free; not vegetarian (ham)."},
+    {"op":"setAllergens","id":"ham-and-cheese","allergens":["gluten","dairy"]},
+
+    {"op":"setDietaryTags","id":"key-lime","dietaryTags":["Vegetarian","Nut-Free"],"note":"Graham/biscuit crust (wheat) + dairy filling: remove Gluten-Free, Vegan, Dairy-Free."},
+    {"op":"setAllergens","id":"key-lime","allergens":["gluten","dairy"]},
+
+    {"op":"setDietaryTags","id":"lavash","dietaryTags":["Vegetarian","Vegan","Dairy-Free","Nut-Free"],"note":"Remove Gluten-Free."},
+    {"op":"setAllergens","id":"lavash","allergens":["gluten"]},
+
+    {"op":"setDietaryTags","id":"lemon-meringue","dietaryTags":["Vegetarian","Nut-Free"],"note":"Wheat crust: remove Gluten-Free; not Dairy-Free (lemon curd has butter)."},
+    {"op":"setAllergens","id":"lemon-meringue","allergens":["gluten","egg","dairy"]},
+
+    {"op":"setDietaryTags","id":"liege","dietaryTags":["Vegetarian","Nut-Free"],"note":"Liège waffle: remove Gluten-Free; brioche-style egg/butter dough so drop Vegan/Dairy-Free."},
+    {"op":"setAllergens","id":"liege","allergens":["gluten","egg","dairy"]},
+
+    {"op":"setDietaryTags","id":"mini-croissant","dietaryTags":["Vegetarian"],"note":"Butter croissant: remove Gluten-Free, Vegan, Dairy-Free."},
+    {"op":"setAllergens","id":"mini-croissant","allergens":["gluten","dairy"]},
+
+    {"op":"setDietaryTags","id":"nut-babka","dietaryTags":["Vegetarian"],"note":"Nut-filled egg babka: remove Gluten-Free, Vegan, Dairy-Free and Nut-Free."},
+    {"op":"setAllergens","id":"nut-babka","allergens":["gluten","egg","tree-nut"]},
+
+    {"op":"setDietaryTags","id":"nutella","dietaryTags":["Vegetarian"],"note":"Nutella babka: remove Gluten-Free, Vegan (Nutella has milk), Dairy-Free."},
+    {"op":"setAllergens","id":"nutella","allergens":["gluten","tree-nut","dairy"]},
+
+    {"op":"setDietaryTags","id":"pancake","dietaryTags":["Vegetarian","Vegan","Dairy-Free","Nut-Free"],"note":"Generic pancake: remove Gluten-Free."},
+    {"op":"setAllergens","id":"pancake","allergens":["gluten"]},
+
+    {"op":"setDietaryTags","id":"pecan-pie","dietaryTags":["Vegetarian"],"note":"Wheat crust + pecans + egg/butter filling: remove Gluten-Free, Vegan, Dairy-Free."},
+    {"op":"setAllergens","id":"pecan-pie","allergens":["gluten","tree-nut","egg","dairy"]},
+
+    {"op":"setDietaryTags","id":"phyllo","dietaryTags":["Vegetarian","Vegan","Dairy-Free","Nut-Free"],"note":"Phyllo pie shell is wheat dough: remove Gluten-Free."},
+    {"op":"setAllergens","id":"phyllo","allergens":["gluten"]},
+
+    {"op":"setDietaryTags","id":"pie","dietaryTags":["Vegetarian","Vegan","Dairy-Free","Nut-Free"],"note":"Generic pie (default wheat crust): remove Gluten-Free."},
+    {"op":"setAllergens","id":"pie","allergens":["gluten"]},
+
+    {"op":"setDietaryTags","id":"pie-shell","dietaryTags":["Vegetarian","Vegan","Dairy-Free","Nut-Free"],"note":"Remove Gluten-Free (default wheat shell)."},
+    {"op":"setAllergens","id":"pie-shell","allergens":["gluten"]},
+
+    {"op":"setDietaryTags","id":"pita","dietaryTags":["Vegetarian","Vegan","Dairy-Free","Nut-Free"],"note":"Remove Gluten-Free."},
+    {"op":"setAllergens","id":"pita","allergens":["gluten"]},
+
+    {"op":"setDietaryTags","id":"pizza","dietaryTags":["Vegetarian","Vegan","Dairy-Free","Nut-Free"],"note":"Pizza dough (wheat): remove Gluten-Free."},
+    {"op":"setAllergens","id":"pizza","allergens":["gluten"]},
+
+    {"op":"setDietaryTags","id":"poppy-seed-babka","dietaryTags":["Vegetarian","Nut-Free"],"note":"Egg babka: remove Gluten-Free, Vegan, Dairy-Free."},
+    {"op":"setAllergens","id":"poppy-seed-babka","allergens":["gluten","egg"]},
+
+    {"op":"setDietaryTags","id":"protein","dietaryTags":["Vegetarian","Vegan","Dairy-Free","Nut-Free"],"note":"Protein pancake (default wheat): remove Gluten-Free."},
+    {"op":"setAllergens","id":"protein","allergens":["gluten"]},
+
+    {"op":"setDietaryTags","id":"raisin-scone","dietaryTags":["Vegetarian","Nut-Free"],"note":"Scones contain butter/dairy: remove Gluten-Free, Vegan, Dairy-Free."},
+    {"op":"setAllergens","id":"raisin-scone","allergens":["gluten","dairy"]},
+
+    {"op":"setDietaryTags","id":"roti","dietaryTags":["Vegetarian","Vegan","Dairy-Free","Nut-Free"],"note":"Whole-wheat: remove Gluten-Free."},
+    {"op":"setAllergens","id":"roti","allergens":["gluten"]},
+
+    {"op":"setDietaryTags","id":"scone","dietaryTags":["Vegetarian","Nut-Free"],"note":"Generic scone (butter/dairy): remove Gluten-Free, Vegan, Dairy-Free."},
+    {"op":"setAllergens","id":"scone","allergens":["gluten","dairy"]},
+
+    {"op":"setDietaryTags","id":"shepherd-s","dietaryTags":["Nut-Free"],"note":"Shepherd's pie is a ground-meat dish: remove Vegetarian, Vegan and Gluten-Free; mashed-potato top has no pastry so gluten not asserted, but it is not veg/vegan. Dairy-Free left as-is per audit (mash often has butter, but audit did not direct removal — keeping conservative)."},
+
+    {"op":"setDietaryTags","id":"sweet-potato-pie","dietaryTags":["Vegetarian","Nut-Free"],"note":"Wheat crust + dairy/egg custard: remove Gluten-Free, Vegan, Dairy-Free."},
+    {"op":"setAllergens","id":"sweet-potato-pie","allergens":["gluten","dairy","egg"]},
+
+    {"op":"setDietaryTags","id":"tandoori","dietaryTags":["Vegetarian","Vegan","Dairy-Free","Nut-Free"],"note":"Tandoori flatbread (wheat): remove Gluten-Free."},
+    {"op":"setAllergens","id":"tandoori","allergens":["gluten"]},
+
+    {"op":"setDietaryTags","id":"texas-toast","dietaryTags":["Vegetarian","Vegan","Dairy-Free","Nut-Free"],"note":"Remove Gluten-Free (thick wheat toast)."},
+    {"op":"setAllergens","id":"texas-toast","allergens":["gluten"]},
+
+    {"op":"setDietaryTags","id":"waffle","dietaryTags":["Vegetarian","Vegan","Dairy-Free","Nut-Free"],"note":"Generic waffle (wheat): remove Gluten-Free."},
+    {"op":"setAllergens","id":"waffle","allergens":["gluten"]},
+
+    {"op":"setDietaryTags","id":"wrapper","dietaryTags":["Vegetarian","Vegan","Dairy-Free","Nut-Free"],"note":"Generic wrapper defaults to wheat egg-roll/wonton wrappers: remove Gluten-Free (rice-paper is the exception, now its own item spring-roll-wrapper)."},
+    {"op":"setAllergens","id":"wrapper","allergens":["gluten"]},
+
+    {"op":"setDietaryTags","id":"cheesecake","dietaryTags":["Vegetarian","Nut-Free"],"note":"Cream-cheese filling on biscuit base: remove Vegan and Dairy-Free."},
+    {"op":"setAllergens","id":"cheesecake","allergens":["gluten","dairy","egg"]},
+
+    {"op":"setDietaryTags","id":"asiago-bagel","dietaryTags":["Vegetarian","Nut-Free"],"note":"Asiago is cheese: remove Vegan and Dairy-Free."},
+    {"op":"setAllergens","id":"asiago-bagel","allergens":["gluten","dairy"]},
+
+    {"op":"setDietaryTags","id":"peanut-butter-cookie-dough","dietaryTags":["Vegetarian"],"note":"Raw cookie dough typically contains egg/butter: drop Vegan and Dairy-Free; keep Vegetarian. (Nut-Free correctly absent.)"},
+    {"op":"setAllergens","id":"peanut-butter-cookie-dough","allergens":["gluten","peanut","egg","dairy"]},
+
+    {"op":"setStorage","id":"garlic-bread-sourdough","defaultStorage":"Frozen","note":"Align with sibling: garlic-bread is Frozen but garlic-bread-sourdough was Pantry while carrying frozen-bread freshness numbers. Make storage Frozen to match the family and its own freshness window."}
+  ]
+}

@@ -1,0 +1,133 @@
+{
+  "category": "Spices & Herbs",
+  "structural": [
+    {
+      "op": "removeAlias",
+      "id": "wild-szechuan-peppercorn",
+      "alias": "chinese peppercorn",
+      "note": "Child wild-szechuan-peppercorn copies parent szechuan-peppercorn's entire alias set, making the two indistinguishable by input. Trim the parent-shared generic terms so only wild-specific terms remain. (redundancies)"
+    },
+    {
+      "op": "removeAlias",
+      "id": "wild-szechuan-peppercorn",
+      "alias": "hua jiao",
+      "note": "Parent/child alias collision with szechuan-peppercorn."
+    },
+    {
+      "op": "removeAlias",
+      "id": "wild-szechuan-peppercorn",
+      "alias": "sichuan pepper",
+      "note": "Parent/child alias collision with szechuan-peppercorn."
+    },
+    {
+      "op": "removeAlias",
+      "id": "wild-szechuan-peppercorn",
+      "alias": "sichuan peppercorn",
+      "note": "Parent/child alias collision with szechuan-peppercorn."
+    },
+    {
+      "op": "removeAlias",
+      "id": "wild-szechuan-peppercorn",
+      "alias": "szechuan peppercorns",
+      "note": "Parent/child alias collision with szechuan-peppercorn. After trimming all five shared aliases, add wild-specific terms below so the child still resolves."
+    },
+    {
+      "op": "addAlias",
+      "id": "wild-szechuan-peppercorn",
+      "alias": "wild sichuan pepper",
+      "note": "Wild-specific term to keep the disambiguated child resolvable."
+    },
+    {
+      "op": "addAlias",
+      "id": "wild-szechuan-peppercorn",
+      "alias": "timur pepper",
+      "note": "Wild-specific term (Himalayan wild Sichuan pepper) to keep the child resolvable."
+    },
+    {
+      "op": "setStorage",
+      "id": "herb",
+      "defaultStorage": "Pantry",
+      "note": "herb grill seasoning is a dried shelf-stable blend (parent grill-seasoning), but defaultStorage was Refrigerated with a fresh-herb shelf life. Correct it to Pantry."
+    },
+    {
+      "op": "setFreshness",
+      "id": "herb",
+      "freshnessByStorage": {"Pantry": [180, 365]},
+      "note": "Pantry [1,3] days was a data error carried over from a fresh-herb profile; a dried grill seasoning keeps ~6-12 months. Drops the bogus Refrigerated [3,7] range too."
+    },
+    {
+      "op": "reid",
+      "from": "afghan",
+      "to": "afghan-saffron",
+      "note": "Non-descriptive single-token id for afghan saffron (parentIds=[saffron]); align with sibling pattern. Target id is free; reid repoints references."
+    },
+    {
+      "op": "reid",
+      "from": "sea",
+      "to": "sea-salt",
+      "note": "Non-descriptive single-token id for sea salt (parentIds=[salt]); align with siblings (kosher-salt, table-salt, rock-salt). Target id is free; reid repoints references."
+    }
+  ],
+  "cleanups": [
+    {
+      "op": "removeAlias",
+      "id": "spanish-paprika",
+      "alias": "spanish saffron",
+      "note": "Copy/paste error: saffron is an unrelated spice. Verified the bad alias is live on spanish-paprika."
+    },
+    {
+      "op": "addAlias",
+      "id": "spanish-paprika",
+      "alias": "pimenton dulce",
+      "note": "Correct Spanish term for sweet paprika; not owned by any other item."
+    },
+    {
+      "op": "addAlias",
+      "id": "spanish-paprika",
+      "alias": "spanish sweet paprika",
+      "note": "Correct disambiguating alias; not owned by any other item."
+    },
+    {
+      "op": "removeAlias",
+      "id": "dried-orange-peel",
+      "alias": "orange zest",
+      "note": "Generic fresh-produce term that mis-matches citrus zest; the more specific 'dried orange zest' and 'dried orange peels' aliases are retained."
+    },
+    {
+      "op": "removeAlias",
+      "id": "herb",
+      "alias": "herbs",
+      "note": "Over-broad alias on herb-grill-seasoning that swallows any generic 'herbs' input."
+    },
+    {
+      "op": "removeAlias",
+      "id": "herb",
+      "alias": "fresh herbs",
+      "note": "Over-broad/contradictory alias (item is a dried seasoning, not fresh herbs)."
+    },
+    {
+      "op": "removeAlias",
+      "id": "herb",
+      "alias": "fresh herb",
+      "note": "Over-broad/contradictory alias (item is a dried seasoning, not a fresh herb)."
+    },
+    {
+      "op": "removeAlias",
+      "id": "herb",
+      "alias": "mixed herbs",
+      "note": "Over-broad alias that wrongly captures generic 'mixed herbs' input."
+    },
+    {
+      "op": "removeAlias",
+      "id": "mexican-oregano",
+      "alias": "mexican",
+      "note": "Bare alias 'mexican' matches unrelated 'mexican ...' inputs; specific aliases (oregano mexicano, dried mexican oregano, lippia graveolens) retained."
+    },
+    {
+      "op": "removeAlias",
+      "id": "monosodium-glutamate",
+      "alias": "monosodium glutamate powder",
+      "note": "Redundant with the item name 'monosodium glutamate'; msg/ajinomoto/umami seasoning/e621 aliases retained."
+    }
+  ]
+}

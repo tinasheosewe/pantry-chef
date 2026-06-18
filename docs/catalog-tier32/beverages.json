@@ -1,0 +1,26 @@
+{
+  "category": "Beverages",
+  "structural": [
+    {"op": "merge", "from": "original-energy-drink", "into": "energy-drink", "note": "'original energy drink' is the base energy drink with no distinguishing attribute; fold into parent."},
+    {"op": "merge", "from": "energy-drink-berry", "into": "energy-drink", "note": "'energy drink berry' is a flavor variant, not a distinct stocking ingredient; fold into parent."},
+    {"op": "merge", "from": "regular-club-soda", "into": "club-soda", "note": "'regular club soda' is identical to 'club soda'; fold into parent."},
+    {"op": "merge", "from": "soda-diet", "into": "soda", "note": "diet vs regular is a sweetener variant, not a distinct cooking ingredient; fold into parent."},
+    {"op": "merge", "from": "tonic-water-diet", "into": "tonic-water", "note": "diet tonic is a sweetener variant of tonic water; fold into parent."},
+    {"op": "merge", "from": "root-beer-diet", "into": "root-beer", "note": "diet root beer is a sweetener variant; fold into parent."},
+    {"op": "merge", "from": "herbal-tea-berry", "into": "herbal-tea", "note": "'herbal tea berry' is a flavor variant whose aliases duplicate herbal-tea verbatim; fold into parent."},
+    {"op": "merge", "from": "kombucha-berry", "into": "kombucha", "note": "'kombucha berry' is a flavor variant AND has factually wrong Pantry [365,730] storage (kombucha is a live-culture drink, parent is correctly Refrigerated [14,30]); fold into parent."},
+    {"op": "merge", "from": "sparkling-water-berry", "into": "sparkling-water", "note": "'sparkling water berry' is a flavor variant; fold into parent."},
+    {"op": "merge", "from": "organic-matcha", "into": "matcha", "note": "'organic matcha tea' differs only by the organic label, not as an ingredient; fold into parent."},
+    {"op": "merge", "from": "spicy-ginger-beer", "into": "ginger-beer", "note": "'spicy ginger beer' is a flavor-intensity variant; fold into ginger-beer. Its stray 'ginger ale' alias folds in too and is stripped in cleanups."},
+    {"op": "reid", "from": "decaf", "to": "decaf-tea", "note": "id 'decaf' is too generic for what should be a plain decaf tea; give it a clear id."},
+    {"op": "reparent", "id": "decaf-tea", "parentIds": ["tea"], "note": "decaf tea is not chai-specific; reparent from 'chai' to 'tea'."},
+    {"op": "rename", "id": "decaf-tea", "name": "decaf tea", "note": "rename from 'decaf chai tea' to plain 'decaf tea'."}
+  ],
+  "cleanups": [
+    {"op": "removeAlias", "id": "ginger-beer", "alias": "ginger ale", "note": "Alias leak: ginger ale is a distinct, milder soft drink (own item 'ginger-ale' under soda exists). Remove from ginger-beer. (Also strips the copy folded in by merging spicy-ginger-beer.)"},
+    {"op": "removeAlias", "id": "decaf-tea", "alias": "chais", "note": "Misleading alias copied verbatim from chai; decaf-tea is generic decaf tea, not chai."},
+    {"op": "removeAlias", "id": "decaf-tea", "alias": "spiced tea", "note": "Misleading alias copied verbatim from chai; decaf-tea is generic decaf tea."},
+    {"op": "setAllergens", "id": "eggnog", "allergens": ["dairy", "egg"], "note": "Eggnog is a milk-and-egg drink; it was missing the 'dairy' allergen (had only 'egg')."},
+    {"op": "setDietaryTags", "id": "eggnog", "dietaryTags": ["Vegetarian", "Gluten-Free", "Nut-Free"], "note": "Drop the incorrect 'Dairy-Free' tag — eggnog contains dairy (must agree with the dairy allergen)."}
+  ]
+}
