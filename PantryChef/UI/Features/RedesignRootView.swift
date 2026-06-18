@@ -36,6 +36,10 @@ struct RedesignRootView: View {
     /// When a meal is planned for now, the now-module leads with it; this reveals the
     /// generic "you could…" suggestions instead, on demand.
     @State private var showSuggestions = false
+    /// The Today feed's active intent lens (the chips). `.all` = the curated default.
+    @State private var feedLens: FeedLens = .all
+    /// Full dish library, opened from the feed's "browse all" / now-module "see all".
+    @State private var showAllDishes = false
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
@@ -125,6 +129,14 @@ struct RedesignRootView: View {
             .fullScreenCover(item: $multiSession) { session in
                 CookFlowScreen(store: store, session: session, onClose: { multiSession = nil })
             }
+            .sheet(isPresented: $showAllDishes) {
+                LibraryView(
+                    store: store,
+                    onCook: { dish in showAllDishes = false; DispatchQueue.main.async { detailDish = dish } },
+                    onCookTogether: { dishes in showAllDishes = false; DispatchQueue.main.async { multiSession = CookSession(dishes: dishes) } }
+                )
+                .presentationDetents([.large])
+            }
     }
 
     /// One true line per page (the mock's "№ 163 · sunset 21:43").
@@ -134,8 +146,6 @@ struct RedesignRootView: View {
         case .today:
             let dayNumber = Calendar.current.ordinality(of: .day, in: .year, for: store.today) ?? 0
             return "№ \(dayNumber) · \(ready) ready tonight"
-        case .ideas:
-            return "\(store.library.count) dishes · \(ready) ready"
         case .plan:
             return "\(store.todaysPlannedMeals.count) planned today · plan ahead"
         case .pantry:
@@ -163,13 +173,7 @@ struct RedesignRootView: View {
     @ViewBuilder private var space: some View {
         switch store.space {
         case .today:
-            todayHome
-        case .ideas:
-            LibraryView(
-                store: store,
-                onCook: { dish in detailDish = dish },
-                onCookTogether: { dishes in multiSession = CookSession(dishes: dishes) }
-            )
+            todayFeed
         case .plan:
             TimelineView(
                 entries: store.timelineEntries,
@@ -195,27 +199,138 @@ struct RedesignRootView: View {
         }
     }
 
-    /// The calm Today hero — just "what to do now" + today's plan. The dense ruler
-    /// moved to Plan; expiry + ledger moved to Pantry (approachability redesign:
-    /// testers were greeted by a wall of text and bounced).
-    @ViewBuilder private var todayHome: some View {
+    /// The Today feed (approachability redesign): a pinned "cook now" hero over an
+    /// image-led recipe feed. Default lens ("For you") = named intent rails with one
+    /// editorial feature woven in; a specific lens collapses to a filtered grid. This
+    /// merged the old Today + Ideas tabs — the only unique content was the feed.
+    @ViewBuilder private var todayFeed: some View {
         VStack(spacing: 0) {
             todayHeader
             ScrollView {
-                VStack(alignment: .leading, spacing: 0) {
-                    nowModule
-                    TodayPlanView(
-                        store: store,
-                        excluding: (isIdleNow && !showSuggestions) ? store.planForNow?.id : nil,
-                        onTapMeal: { editingMeal = $0 },
-                        onAdd: { planTarget = PlanTarget(date: store.today) })
+                LazyVStack(alignment: .leading, spacing: 0) {
+                    if feedLens == .all {
+                        nowModule
+                            .padding(.horizontal, Theme.Metric.lg)
+                            .padding(.top, 10)
+                    }
+                    IntentPills(selected: $feedLens).padding(.top, feedLens == .all ? 16 : 12)
+                    if feedLens == .all {
+                        forYouFeed
+                        browseAllFooter.padding(.top, 20)
+                    } else {
+                        lensGrid(feedLens)
+                    }
                 }
-                .padding(.horizontal, Theme.Metric.lg)
-                .padding(.top, 10)
                 .padding(.bottom, 28)
             }
         }
         .background(Theme.Palette.cream.ignoresSafeArea())
+    }
+
+    /// The curated default: intent rails with one magazine feature after the first rail.
+    @ViewBuilder private var forYouFeed: some View {
+        let rails = defaultRails
+        ForEach(Array(rails.enumerated()), id: \.element.id) { idx, rail in
+            RecipeRail(rail: rail, onOpen: { detailDish = $0 })
+            if idx == 0, let feature = featureItem {
+                FeatureCard(item: feature, eyebrow: featureEyebrow, subtitle: featureSubtitle,
+                            onOpen: { detailDish = $0 })
+                    .padding(.horizontal, Theme.Metric.lg).padding(.top, 18)
+            }
+        }
+    }
+
+    /// A specific lens → a two-column grid of every matching dish.
+    @ViewBuilder private func lensGrid(_ lens: FeedLens) -> some View {
+        let dishes = store.library.filter { matches($0, lens) }
+        if dishes.isEmpty {
+            Text("Nothing here right now.")
+                .font(Theme.Typography.note(13)).foregroundStyle(Theme.Palette.warmGray)
+                .frame(maxWidth: .infinity).padding(.top, 40)
+        } else {
+            LazyVGrid(columns: [GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12)],
+                      alignment: .leading, spacing: 16) {
+                ForEach(dishes) { dish in
+                    RecipeTile(item: feedItem(dish), onOpen: { detailDish = $0 })
+                }
+            }
+            .padding(.horizontal, Theme.Metric.lg).padding(.top, 14)
+        }
+    }
+
+    private var browseAllFooter: some View {
+        Button { showAllDishes = true } label: {
+            Text("BROWSE ALL DISHES →")
+                .font(.system(size: 11, weight: .medium)).tracking(1.4)
+                .foregroundStyle(Theme.Palette.paprika)
+                .frame(maxWidth: .infinity).padding(.vertical, 12).contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+    }
+
+    // MARK: - Feed data (the categorizer)
+
+    private func feedItem(_ dish: Dish) -> FeedItem {
+        let ready = store.readiness(for: dish).isMakeableNow
+        return FeedItem(dish: dish, meta: dish.minutes.map { "\($0) min" } ?? dish.time,
+                        stamp: ready ? "READY" : nil)
+    }
+
+    /// Which lens a dish belongs to. Derived from the recipe itself + live pantry state.
+    private func matches(_ dish: Dish, _ lens: FeedLens) -> Bool {
+        switch lens {
+        case .all: return true
+        case .readyNow: return store.readiness(for: dish).isMakeableNow
+        case .useItUp: return usesExpiring(dish)
+        case .quick: return (dish.minutes ?? .max) <= 25
+        case .family: return dish.servings >= 4
+        case .highProtein: return dish.plate.weights.first?.category == .protein
+        }
+    }
+
+    private func usesExpiring(_ dish: Dish) -> Bool {
+        let expiring = store.expiringSoon().map { $0.name.lowercased() }
+        guard !expiring.isEmpty else { return false }
+        return dish.ingredients.contains { ing in
+            let name = ing.name.lowercased()
+            return expiring.contains { name.contains($0) || $0.contains(name) }
+        }
+    }
+
+    private var defaultRails: [FeedRail] {
+        var rails: [FeedRail] = []
+        let ready = store.library.filter { store.readiness(for: $0).isMakeableNow }
+        if !ready.isEmpty {
+            rails.append(FeedRail(title: "Ready now", subtitle: "Cook with what's on hand",
+                                  items: ready.prefix(10).map(feedItem)))
+        }
+        let fast = store.library.filter { ($0.minutes ?? .max) <= 25 }
+        if !fast.isEmpty {
+            rails.append(FeedRail(title: "Fast tonight", subtitle: "Under thirty minutes",
+                                  items: fast.prefix(10).map(feedItem)))
+        }
+        let family = store.library.filter { $0.servings >= 4 }
+        if !family.isEmpty {
+            rails.append(FeedRail(title: "Feeds the table", subtitle: "Serves four or more",
+                                  items: family.prefix(10).map(feedItem)))
+        }
+        return rails
+    }
+
+    /// The editorial feature — lead with a "use it up" dish when something's expiring,
+    /// else the strongest ready-now pick.
+    private var featureDish: Dish? {
+        if let d = store.library.first(where: usesExpiring) { return d }
+        return store.library.first { store.readiness(for: $0).isMakeableNow }
+    }
+    private var featureItem: FeedItem? { featureDish.map(feedItem) }
+    private var featureEyebrow: String { (featureDish.map(usesExpiring) ?? false) ? "Use it up" : "Ready now" }
+    private var featureSubtitle: String {
+        if (featureDish.map(usesExpiring) ?? false), let soon = store.expiringSoon().first,
+           let d = soon.daysLeft(now: store.today) {
+            return "Your \(soon.name.lowercased()) won't keep — \(d <= 0 ? "use it today" : "\(d) day\(d == 1 ? "" : "s") left")."
+        }
+        return "Ready right now with what's on hand."
     }
 
     /// Date + settings, a single quiet line over the hero.
@@ -262,7 +377,7 @@ struct RedesignRootView: View {
                 },
                 onSeeAll: {
                     store.libraryFilter = .all
-                    withAnimation { store.space = .ideas }
+                    showAllDishes = true
                 },
                 onChange: { store.resetNow() },
                 onResume: {

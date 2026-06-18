@@ -1,18 +1,17 @@
 import SwiftUI
 
-/// The four root spaces of the redesign, split for approachability (testers found
-/// one combined feed overwhelming): Today is the calm "what now"; Ideas is the
-/// visual recipe feed; Plan is the day-by-day ruler; Pantry holds stock + expiry
-/// warnings. Cook is an instrument, and "add" is the composer — neither is a space.
+/// The three root spaces of the redesign. Today is the feed-first landing — a pinned
+/// "cook now" hero over an image-led recipe feed (it absorbed the old Ideas tab, whose
+/// only unique content was the feed). Plan is the day-by-day ruler; Pantry holds stock
+/// + expiry warnings. Cook is an instrument, and "add" is the composer — not spaces.
 enum RootSpace: String, CaseIterable, Identifiable, Sendable {
-    case today, ideas, plan, pantry
+    case today, plan, pantry
 
     var id: String { rawValue }
 
     var title: String {
         switch self {
         case .today: return "Today"
-        case .ideas: return "Ideas"
         case .plan: return "Plan"
         case .pantry: return "Pantry"
         }
