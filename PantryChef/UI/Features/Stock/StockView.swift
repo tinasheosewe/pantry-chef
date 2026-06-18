@@ -9,9 +9,9 @@ struct StockView: View {
 
     @State private var editing: StockItem?
     @State private var shopping = false
-    /// The category tile currently opened to its items — tap a tile to expand it,
-    /// tap again to close. nil = the grid sits collapsed.
-    @State private var openCategory: FoodCategory?
+    /// The category filter chip in effect — nil = "All" (everything, grouped under
+    /// headers); a value narrows the list to that one category.
+    @State private var selectedCategory: FoodCategory?
     /// The item whose "add to list" quantity we're asking for (we ask how much rather
     /// than guessing an amount).
     @State private var listing: ListPrompt?
@@ -59,12 +59,6 @@ struct StockView: View {
         item.daysLeft(now: store.today)
     }
 
-    /// Category tiles laid out two-per-row, so we can slot an expanded panel between rows.
-    private var tileRows: [[(FoodCategory, [StockItem])]] {
-        let g = groups
-        return stride(from: 0, to: g.count, by: 2).map { Array(g[$0..<min($0 + 2, g.count)]) }
-    }
-
     var body: some View {
         VStack(spacing: 0) {
             VStack(alignment: .leading, spacing: 4) {
@@ -75,21 +69,24 @@ struct StockView: View {
                 DashedRule().padding(.top, 6)
             }
             .padding(.horizontal, 20).padding(.top, 6)
+            // The category chips stay pinned above the list, so switching category is
+            // one tap from anywhere — no scrolling back up to a tile grid.
+            categoryRail.padding(.top, 10).padding(.bottom, 2)
+            DashedRule().padding(.horizontal, 20)
             ScrollView {
                 VStack(alignment: .leading, spacing: 0) {
-                    if !urgent.isEmpty { warningBand }
-                    Eyebrow(text: "By category").padding(.top, 16).padding(.bottom, 10)
-                    // Rows of two tiles; an opened category's items unfold full-width
-                    // directly beneath its own row, never at the bottom of the grid.
-                    ForEach(Array(tileRows.enumerated()), id: \.offset) { _, pair in
-                        HStack(alignment: .top, spacing: 10) {
-                            ForEach(pair, id: \.0) { cat, items in categoryTile(cat, items) }
-                            if pair.count == 1 { Color.clear.frame(maxWidth: .infinity) }
-                        }
-                        .padding(.bottom, 10)
-                        if let cat = openCategory, pair.contains(where: { $0.0 == cat }),
-                           let items = groups.first(where: { $0.0 == cat })?.1 {
-                            expandedPanel(cat, items)
+                    // The cross-cutting expiry warning rides the top of "All" only — in a
+                    // single category, those items still flag their own day counts inline.
+                    if selectedCategory == nil, !urgent.isEmpty { warningBand }
+                    if let cat = selectedCategory {
+                        let items = groups.first { $0.0 == cat }?.1 ?? []
+                        sectionHeader(cat, items.count)
+                        ForEach(items) { item in row(item) }
+                    } else {
+                        ForEach(groups, id: \.0) { cat, items in
+                            sectionHeader(cat, items.count)
+                            ForEach(items) { item in row(item) }
+                            DashedRule().padding(.top, 11)
                         }
                     }
                     // Cooked/leftover dishes live in Dishes (and the now-module's
@@ -121,66 +118,60 @@ struct StockView: View {
         }
     }
 
-    // MARK: - Category tiles
+    // MARK: - Category chips + section headers
 
-    /// One pantry category as a tile: its emoji, name, item count, and a paprika
-    /// hint when something inside is expiring. Tap to open its items below the grid.
-    private func categoryTile(_ cat: FoodCategory, _ items: [StockItem]) -> some View {
-        let urgentCount = items.filter { urgentIDs.contains($0.id) }.count
-        let isOpen = openCategory == cat
-        return Button {
-            withAnimation(.snappy(duration: 0.22)) { openCategory = isOpen ? nil : cat }
-        } label: {
-            VStack(alignment: .leading, spacing: 5) {
-                HStack(alignment: .top) {
-                    Text(EmojiPlate.categoryFace(cat)).font(.system(size: 26))
-                    Spacer(minLength: 2)
-                    if urgentCount > 0 {
-                        Text("\(urgentCount) SOON")
-                            .font(.system(size: 8.5, weight: .semibold)).tracking(0.6)
-                            .foregroundStyle(Theme.Palette.paprika)
+    /// The pinned category filter rail: "All" then one chip per non-empty category
+    /// (emoji + name, a paprika dot when something inside is expiring). Tap to narrow
+    /// the list; tap "All" to see everything grouped.
+    private var categoryRail: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 8) {
+                chip("All", emoji: nil, on: selectedCategory == nil, urgent: false) {
+                    selectedCategory = nil
+                }
+                ForEach(groups, id: \.0) { cat, items in
+                    chip(cat.rawValue, emoji: EmojiPlate.categoryFace(cat),
+                         on: selectedCategory == cat,
+                         urgent: items.contains { urgentIDs.contains($0.id) }) {
+                        selectedCategory = cat
                     }
                 }
-                Text(cat.rawValue).font(Theme.Typography.dish(13))
-                    .foregroundStyle(Theme.Palette.ink).lineLimit(1).minimumScaleFactor(0.8)
-                Text("\(items.count) \(items.count == 1 ? "item" : "items")")
-                    .font(Theme.Typography.note(10.5)).foregroundStyle(Theme.Palette.warmGray)
             }
-            .frame(maxWidth: .infinity, minHeight: 86, alignment: .topLeading)
-            .padding(12)
-            .background(Rectangle().fill(Theme.Palette.creamRaised))
-            .overlay(Rectangle().fill(cat.color.opacity(isOpen ? 0.07 : 0)))
-            .overlay(alignment: .leading) {
-                Rectangle().fill(cat.color).frame(width: 3) // a slim category spine
+            .padding(.horizontal, 20)
+        }
+    }
+
+    private func chip(_ title: String, emoji: String?, on: Bool, urgent: Bool,
+                      _ tap: @escaping () -> Void) -> some View {
+        Button { withAnimation(.easeOut(duration: 0.15)) { tap() } } label: {
+            HStack(spacing: 5) {
+                if let emoji { Text(emoji).font(.system(size: 12)) }
+                Text(title.uppercased())
+                    .font(.system(size: 10.5, weight: on ? .semibold : .regular)).tracking(1.0)
+                if urgent {
+                    Circle().fill(Theme.Palette.paprika).frame(width: 5, height: 5)
+                }
             }
-            .overlay(Rectangle().strokeBorder(
-                isOpen ? cat.color : Theme.Palette.ink.opacity(0.18), lineWidth: isOpen ? 1.5 : 1))
+            .foregroundStyle(on ? Theme.Palette.cream : Theme.Palette.ink)
+            .padding(.horizontal, 11).padding(.vertical, 7)
+            .background(Rectangle().fill(on ? Theme.Palette.ink : .clear))
+            .overlay(Rectangle().strokeBorder(Theme.Palette.ink.opacity(on ? 0 : 0.4), lineWidth: 1))
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
     }
 
-    /// The opened category's items, full-width beneath the grid — the familiar
-    /// ledger rows (tap → editor; expiring/low lines carry a one-tap "+ list").
-    private func expandedPanel(_ cat: FoodCategory, _ items: [StockItem]) -> some View {
-        VStack(alignment: .leading, spacing: 0) {
-            HStack(spacing: 6) {
-                Text(EmojiPlate.categoryFace(cat)).font(.system(size: 15))
-                Eyebrow(text: cat.rawValue)
-                Spacer()
-                Button { withAnimation(.snappy(duration: 0.2)) { openCategory = nil } } label: {
-                    Image(systemName: "xmark").font(.system(size: 11, weight: .semibold))
-                        .foregroundStyle(Theme.Palette.warmGray).frame(minWidth: 30, minHeight: 30)
-                }.buttonStyle(.plain)
-            }
-            ForEach(items) { item in row(item) }
+    /// A category's section header in the list — emoji, name, count, and a slim
+    /// color spine, so "All" reads as labelled blocks rather than one long run.
+    private func sectionHeader(_ cat: FoodCategory, _ count: Int) -> some View {
+        HStack(spacing: 7) {
+            Rectangle().fill(cat.color).frame(width: 3, height: 13)
+            Text(EmojiPlate.categoryFace(cat)).font(.system(size: 13))
+            Eyebrow(text: cat.rawValue)
+            Text("\(count)").font(Theme.Typography.note(10.5)).foregroundStyle(Theme.Palette.warmGray)
+            Spacer()
         }
-        .padding(.horizontal, 12).padding(.top, 10).padding(.bottom, 6)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Rectangle().fill(Theme.Palette.creamRaised.opacity(0.5)))
-        .overlay(Rectangle().strokeBorder(cat.color.opacity(0.5), lineWidth: 1))
-        .padding(.top, 10)
-        .transition(.opacity)
+        .padding(.top, 14).padding(.bottom, 2)
     }
 
     /// The expiry warning: a tomato-bordered band at the very top, so spoilage reads
