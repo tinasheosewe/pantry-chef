@@ -33,7 +33,6 @@ struct TimelineView: View {
                 header(proxy)
                 ScrollView {
                     LazyVStack(alignment: .leading, spacing: 0) {
-                        recordCap
                         ForEach(entries) { entry in
                             rows(for: entry)
                                 .id(entry.id)
@@ -123,10 +122,9 @@ struct TimelineView: View {
         return isAwayFromNow ? DayLabel.month(for: visible) : DayLabel.monthDayLong(for: today)
     }
 
-    /// "FRIDAY — DAY 163"
+    /// "FRIDAY" — just the weekday; the day-of-year count was noise.
     private var headerMeta: String {
-        let dayNumber = Calendar.current.ordinality(of: .day, in: .year, for: today) ?? 0
-        return "\(DayLabel.eyebrow(for: today).uppercased()) — DAY \(dayNumber)"
+        DayLabel.eyebrow(for: today).uppercased()
     }
 
     private var isAwayFromNow: Bool {
@@ -196,16 +194,8 @@ struct TimelineView: View {
 
     // MARK: - Bounds
 
-    /// The page has honest ends rather than a pretend-infinite scroll: a quiet mark
-    /// where your record begins, and a planning horizon you extend on purpose.
-    private var recordCap: some View {
-        Text("— start of your record —")
-            .font(Theme.Typography.note(10.5)).tracking(1.2)
-            .foregroundStyle(Theme.Palette.ink.opacity(0.32))
-            .frame(maxWidth: .infinity, alignment: .center)
-            .padding(.top, 2).padding(.bottom, 10)
-    }
-
+    /// The page extends to a planning horizon you push out on purpose (the start no
+    /// longer carries a "start of your record" mark — it was needless furniture).
     private var horizonCap: some View {
         VStack(spacing: 11) {
             DashedRule()
