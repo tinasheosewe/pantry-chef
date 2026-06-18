@@ -118,17 +118,24 @@ enum Theme {
     /// content-size category on each body pass. The root clamps the maximum so
     /// the editorial layout still holds at large sizes.
     enum Typography {
+        /// One global multiplier on every face — testers found the app small and
+        /// text-heavy ("larger words"), so the whole type system reads a step bigger.
+        /// Kept as a single knob so the scale is trivial to retune from a screenshot.
+        static let scale: CGFloat = 1.12
+
         /// Display serif — for dish names and editorial moments.
         static func dish(_ size: CGFloat, weight: Font.Weight = .medium) -> Font {
-            FontLoader.frauncesAvailable
-                ? .custom("Fraunces", size: size, relativeTo: .body).weight(weight)
-                : .system(size: size, weight: weight, design: .serif)
+            let s = size * scale
+            return FontLoader.frauncesAvailable
+                ? .custom("Fraunces", size: s, relativeTo: .body).weight(weight)
+                : .system(size: s, weight: weight, design: .serif)
         }
         /// Display serif italic — the sommelier reasoning line.
         static func note(_ size: CGFloat = 13) -> Font {
-            FontLoader.frauncesAvailable
-                ? .custom("Fraunces-Italic", size: size, relativeTo: .body)
-                : .system(size: size, weight: .regular, design: .serif).italic()
+            let s = size * scale
+            return FontLoader.frauncesAvailable
+                ? .custom("Fraunces-Italic", size: s, relativeTo: .body)
+                : .system(size: s, weight: .regular, design: .serif).italic()
         }
         /// Sans — all functional text, metadata, labels. Scaled for Dynamic Type.
         static func fact(_ size: CGFloat, weight: Font.Weight = .regular) -> Font {
@@ -145,6 +152,7 @@ enum Theme {
         /// our fixed point sizes still grow with the user's setting.
         private static func scaledSystem(size: CGFloat, weight: Font.Weight,
                                          monospacedDigit: Bool = false) -> Font {
+            let size = size * scale
             let base = monospacedDigit
                 ? UIFont.monospacedDigitSystemFont(ofSize: size, weight: uiWeight(weight))
                 : UIFont.systemFont(ofSize: size, weight: uiWeight(weight))
