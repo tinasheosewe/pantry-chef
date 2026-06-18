@@ -1,0 +1,939 @@
+{
+  "category": "Pasta & Noodles",
+  "summary": "38 items, heavily skewed toward sub-variants (egg-noodle, fideo, gnocchi, ravioli, cellophane families) while the most common Italian pasta SHAPES are entirely absent: there is a generic 'pasta' parent but no spaghetti, penne, fusilli, rigatoni, farfalle, orzo, linguine, fettuccine, macaroni, tagliatelle, etc. as items. Asian noodles are also thin: rice-noodle, egg-noodle and cellophane-noodle exist, but ramen, udon, soba, somen, hokkien, and shirataki are missing. Couscous correctly lives in Grains & Cereals and dumpling/wonton wrappers in Breads & Bakery, so those are out of scope. Main work: (1) add the canonical Italian shapes under the existing 'pasta' parent, (2) add the missing core Asian noodles, (3) resolve the 'noodle' vs 'pasta' overlap (both alias 'noodles'), and (4) fix the misfiled 'vermicelli fideo' whose alias 'rice vermicelli' conflicts with its wheat-fideo parent.",
+  "issues": [
+    "Comprehensiveness (Italian shapes): the dominant everyday shapes are missing as items — spaghetti, penne, fusilli, rigatoni, farfalle, orzo, linguine, fettuccine, macaroni, tagliatelle, orecchiette, ditalini, conchiglie, rotini, ziti, bucatini, manicotti, cannelloni, angel hair/capellini, rotelle. The catalog only has a single generic 'pasta' parent to absorb all of these.",
+    "Comprehensiveness (Asian noodles): no ramen, udon, soba, somen, hokkien, or shirataki/konjac items. Only generic rice-noodle, egg-noodle and cellophane-noodle exist.",
+    "Comprehensiveness (fresh vs dried): the catalog conflates a generic dried 'pasta' parent with a separate Refrigerated 'ravioli/tortellini' fresh family, but there is no 'fresh pasta'/'fresh egg pasta' item and no spaghetti/penne/etc. that a user could mark as fresh vs dried.",
+    "Parent/child: the 'pasta' top-level item has NO children even though it is clearly intended as the umbrella for Italian shapes; meanwhile sub-families (egg-noodle, fideo, gnocchi, ravioli, tortellini, cellophane-noodle, rice-noodle) are well-parented. New shapes should hang off 'pasta'.",
+    "Redundancy/ambiguity: both 'noodle' (generic Asian/soup noodle) and 'pasta' carry the alias 'noodles', so a user typing 'noodles' is ambiguous. 'noodle' should keep 'noodles'; remove 'noodles' from 'pasta' aliases (it already has 'pasta','pastas','italian pasta').",
+    "Misfiling: 'vermicelli' (id=vermicelli, name='vermicelli fideo', parent=fideo) is a WHEAT fideo product but carries alias 'rice vermicelli' — rice vermicelli is a separate rice-noodle product and should not be an alias here. Either drop the alias or split a distinct rice-vermicelli item under rice-noodle.",
+    "Well-formedness: 'gnocchi' and all its children default to storage='Pantry' with Pantry freshness [90,180], but shelf-stable vacuum-packed gnocchi is the common Pantry form while fresh gnocchi is refrigerated — the [90,180] Pantry range is plausible for shelf-stable but the family lacks a clear fresh-vs-shelf-stable distinction (minor).",
+    "Naming consistency: sub-variants are named as '<x> egg noodle' / '<x> fideo' / '<x> gnocchi' (e.g. 'nidi egg noodle', 'coiled fideo', 'jewish style egg noodle'), which is verbose and inconsistent with how shoppers name them; consider display names like 'nidi (egg noodle nests)'. Functional but worth noting.",
+    "Dietary tags: 'egg-noodle' and its children should NOT be Vegan (they contain egg); confirm tags. cellophane-noodle is correctly Vegan/GF. Soba (to be added) is typically wheat+buckwheat and is NOT gluten-free unless 100% buckwheat."
+  ],
+  "redundancies": [
+    [
+      "noodle",
+      "pasta",
+      "Both carry the alias 'noodles'. 'noodle' is the generic Asian/soup-noodle umbrella; 'pasta' is the Italian umbrella. Keep 'noodles' on 'noodle' only; remove it from 'pasta'."
+    ],
+    [
+      "vermicelli",
+      "rice-noodle",
+      "'vermicelli fideo' (a wheat fideo) aliases 'rice vermicelli', but rice vermicelli belongs to the rice-noodle family. Overlapping alias creates a false match."
+    ],
+    [
+      "meat-ravioli",
+      "sausage-tortellini",
+      "'meat-ravioli' carries alias 'meat tortellini' which actually describes a tortellini, not a ravioli; tortellini already exists as its own parent with 'sausage-tortellini'. Move/normalize that alias."
+    ]
+  ],
+  "aliasAdditions": [
+    {
+      "itemId": "pasta",
+      "add": [
+        "dried pasta",
+        "pasta noodles",
+        "italian noodles"
+      ]
+    },
+    {
+      "itemId": "gnocchi",
+      "add": [
+        "potato dumplings",
+        "gnocchi pasta"
+      ]
+    },
+    {
+      "itemId": "lasagna",
+      "add": [
+        "lasagna sheets",
+        "oven-ready lasagna"
+      ]
+    },
+    {
+      "itemId": "egg-noodle",
+      "add": [
+        "wide egg noodles",
+        "kluski",
+        "extra-wide noodles"
+      ]
+    },
+    {
+      "itemId": "rice-noodle",
+      "add": [
+        "rice stick",
+        "rice sticks",
+        "rice stick noodles",
+        "ho fun",
+        "bun"
+      ]
+    },
+    {
+      "itemId": "ravioli",
+      "add": [
+        "fresh ravioli",
+        "refrigerated ravioli"
+      ]
+    },
+    {
+      "itemId": "tortellini",
+      "add": [
+        "cheese tortellini",
+        "fresh tortellini"
+      ]
+    },
+    {
+      "itemId": "fideo",
+      "add": [
+        "fideo noodles",
+        "sopa seca noodles"
+      ]
+    },
+    {
+      "itemId": "pho",
+      "add": [
+        "pho noodles",
+        "banh pho",
+        "flat rice noodle"
+      ]
+    },
+    {
+      "itemId": "pad-thai",
+      "add": [
+        "pad thai noodles",
+        "thai rice stick"
+      ]
+    }
+  ],
+  "newItems": [
+    {
+      "name": "spaghetti",
+      "aliases": [
+        "spaghetti pasta",
+        "thin spaghetti",
+        "spaghettini",
+        "spag"
+      ],
+      "parentName": "pasta",
+      "defaultStorage": "Pantry",
+      "freshnessDays": {
+        "Pantry": [
+          365,
+          730
+        ]
+      },
+      "dietaryTags": [
+        "Vegan",
+        "Vegetarian",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Italy; long round rod, the archetypal dried pasta."
+    },
+    {
+      "name": "angel hair",
+      "aliases": [
+        "capellini",
+        "capelli d'angelo",
+        "angel hair pasta"
+      ],
+      "parentName": "pasta",
+      "defaultStorage": "Pantry",
+      "freshnessDays": {
+        "Pantry": [
+          365,
+          730
+        ]
+      },
+      "dietaryTags": [
+        "Vegan",
+        "Vegetarian",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Italy; very fine long strand."
+    },
+    {
+      "name": "penne",
+      "aliases": [
+        "penne pasta",
+        "penne rigate",
+        "penne lisce",
+        "mostaccioli"
+      ],
+      "parentName": "pasta",
+      "defaultStorage": "Pantry",
+      "freshnessDays": {
+        "Pantry": [
+          365,
+          730
+        ]
+      },
+      "dietaryTags": [
+        "Vegan",
+        "Vegetarian",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Italy; angled tube, ridged (rigate) or smooth (lisce)."
+    },
+    {
+      "name": "rigatoni",
+      "aliases": [
+        "rigatoni pasta",
+        "ridged tube pasta"
+      ],
+      "parentName": "pasta",
+      "defaultStorage": "Pantry",
+      "freshnessDays": {
+        "Pantry": [
+          365,
+          730
+        ]
+      },
+      "dietaryTags": [
+        "Vegan",
+        "Vegetarian",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Italy; large ridged tube."
+    },
+    {
+      "name": "fusilli",
+      "aliases": [
+        "fusilli pasta",
+        "rotini",
+        "spiral pasta",
+        "corkscrew pasta",
+        "spirals"
+      ],
+      "parentName": "pasta",
+      "defaultStorage": "Pantry",
+      "freshnessDays": {
+        "Pantry": [
+          365,
+          730
+        ]
+      },
+      "dietaryTags": [
+        "Vegan",
+        "Vegetarian",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Italy; spiral/corkscrew shape (rotini is the US cut variant)."
+    },
+    {
+      "name": "farfalle",
+      "aliases": [
+        "farfalle pasta",
+        "bow tie pasta",
+        "bowtie pasta",
+        "butterfly pasta"
+      ],
+      "parentName": "pasta",
+      "defaultStorage": "Pantry",
+      "freshnessDays": {
+        "Pantry": [
+          365,
+          730
+        ]
+      },
+      "dietaryTags": [
+        "Vegan",
+        "Vegetarian",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Italy; bow-tie / butterfly shape."
+    },
+    {
+      "name": "macaroni",
+      "aliases": [
+        "elbow macaroni",
+        "macaroni pasta",
+        "elbows",
+        "elbow pasta",
+        "maccheroni"
+      ],
+      "parentName": "pasta",
+      "defaultStorage": "Pantry",
+      "freshnessDays": {
+        "Pantry": [
+          365,
+          730
+        ]
+      },
+      "dietaryTags": [
+        "Vegan",
+        "Vegetarian",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Italy; small curved tube, mac & cheese staple."
+    },
+    {
+      "name": "linguine",
+      "aliases": [
+        "linguine pasta",
+        "linguini"
+      ],
+      "parentName": "pasta",
+      "defaultStorage": "Pantry",
+      "freshnessDays": {
+        "Pantry": [
+          365,
+          730
+        ]
+      },
+      "dietaryTags": [
+        "Vegan",
+        "Vegetarian",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Italy; flat narrow ribbon."
+    },
+    {
+      "name": "fettuccine",
+      "aliases": [
+        "fettuccine pasta",
+        "fettuccini",
+        "fettucine"
+      ],
+      "parentName": "pasta",
+      "defaultStorage": "Pantry",
+      "freshnessDays": {
+        "Pantry": [
+          365,
+          730
+        ]
+      },
+      "dietaryTags": [
+        "Vegan",
+        "Vegetarian",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Italy; flat wide ribbon, ~6mm."
+    },
+    {
+      "name": "tagliatelle",
+      "aliases": [
+        "tagliatelle pasta",
+        "tagliolini"
+      ],
+      "parentName": "pasta",
+      "defaultStorage": "Pantry",
+      "freshnessDays": {
+        "Pantry": [
+          365,
+          730
+        ]
+      },
+      "dietaryTags": [
+        "Vegan",
+        "Vegetarian",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Emilia-Romagna, Italy; flat egg-ribbon, often sold dried as nests."
+    },
+    {
+      "name": "pappardelle",
+      "aliases": [
+        "pappardelle pasta",
+        "broad ribbon pasta"
+      ],
+      "parentName": "pasta",
+      "defaultStorage": "Pantry",
+      "freshnessDays": {
+        "Pantry": [
+          365,
+          730
+        ]
+      },
+      "dietaryTags": [
+        "Vegan",
+        "Vegetarian",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Tuscany, Italy; very broad flat ribbon."
+    },
+    {
+      "name": "orzo",
+      "aliases": [
+        "orzo pasta",
+        "risoni",
+        "rice-shaped pasta"
+      ],
+      "parentName": "pasta",
+      "defaultStorage": "Pantry",
+      "freshnessDays": {
+        "Pantry": [
+          365,
+          730
+        ]
+      },
+      "dietaryTags": [
+        "Vegan",
+        "Vegetarian",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Italy; rice-grain-shaped pastina, also called risoni."
+    },
+    {
+      "name": "orecchiette",
+      "aliases": [
+        "orecchiette pasta",
+        "little ears pasta"
+      ],
+      "parentName": "pasta",
+      "defaultStorage": "Pantry",
+      "freshnessDays": {
+        "Pantry": [
+          365,
+          730
+        ]
+      },
+      "dietaryTags": [
+        "Vegan",
+        "Vegetarian",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Puglia, Italy; small ear-shaped pasta."
+    },
+    {
+      "name": "conchiglie",
+      "aliases": [
+        "conchiglie pasta",
+        "shell pasta",
+        "pasta shells",
+        "shells",
+        "conchiglioni",
+        "jumbo shells"
+      ],
+      "parentName": "pasta",
+      "defaultStorage": "Pantry",
+      "freshnessDays": {
+        "Pantry": [
+          365,
+          730
+        ]
+      },
+      "dietaryTags": [
+        "Vegan",
+        "Vegetarian",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Italy; shell shape (conchiglioni = jumbo stuffing shells)."
+    },
+    {
+      "name": "ditalini",
+      "aliases": [
+        "ditalini pasta",
+        "tubettini",
+        "salad macaroni",
+        "soup pasta"
+      ],
+      "parentName": "pasta",
+      "defaultStorage": "Pantry",
+      "freshnessDays": {
+        "Pantry": [
+          365,
+          730
+        ]
+      },
+      "dietaryTags": [
+        "Vegan",
+        "Vegetarian",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Italy; tiny short tubes, classic for pasta e fagioli & minestrone."
+    },
+    {
+      "name": "bucatini",
+      "aliases": [
+        "bucatini pasta",
+        "perciatelli"
+      ],
+      "parentName": "pasta",
+      "defaultStorage": "Pantry",
+      "freshnessDays": {
+        "Pantry": [
+          365,
+          730
+        ]
+      },
+      "dietaryTags": [
+        "Vegan",
+        "Vegetarian",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Lazio, Italy; thick spaghetti with a hollow center."
+    },
+    {
+      "name": "ziti",
+      "aliases": [
+        "ziti pasta",
+        "baked ziti pasta"
+      ],
+      "parentName": "pasta",
+      "defaultStorage": "Pantry",
+      "freshnessDays": {
+        "Pantry": [
+          365,
+          730
+        ]
+      },
+      "dietaryTags": [
+        "Vegan",
+        "Vegetarian",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Campania, Italy; long smooth tube, baked-ziti staple."
+    },
+    {
+      "name": "rigatoni rotelle",
+      "aliases": [
+        "rotelle",
+        "wagon wheel pasta",
+        "ruote",
+        "wheel pasta"
+      ],
+      "parentName": "pasta",
+      "defaultStorage": "Pantry",
+      "freshnessDays": {
+        "Pantry": [
+          365,
+          730
+        ]
+      },
+      "dietaryTags": [
+        "Vegan",
+        "Vegetarian",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Italy; wagon-wheel shape (ruote/rotelle)."
+    },
+    {
+      "name": "cavatappi",
+      "aliases": [
+        "cavatappi pasta",
+        "cellentani",
+        "corkscrew tube pasta"
+      ],
+      "parentName": "pasta",
+      "defaultStorage": "Pantry",
+      "freshnessDays": {
+        "Pantry": [
+          365,
+          730
+        ]
+      },
+      "dietaryTags": [
+        "Vegan",
+        "Vegetarian",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Italy; hollow corkscrew tube."
+    },
+    {
+      "name": "manicotti",
+      "aliases": [
+        "manicotti pasta",
+        "cannelloni tubes",
+        "stuffing tubes"
+      ],
+      "parentName": "pasta",
+      "defaultStorage": "Pantry",
+      "freshnessDays": {
+        "Pantry": [
+          365,
+          730
+        ]
+      },
+      "dietaryTags": [
+        "Vegan",
+        "Vegetarian",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Italian-American; large tubes for stuffing/baking."
+    },
+    {
+      "name": "cannelloni",
+      "aliases": [
+        "cannelloni pasta",
+        "cannelloni tubes"
+      ],
+      "parentName": "pasta",
+      "defaultStorage": "Pantry",
+      "freshnessDays": {
+        "Pantry": [
+          365,
+          730
+        ]
+      },
+      "dietaryTags": [
+        "Vegan",
+        "Vegetarian",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Italy; large stuffable tubes baked in sauce."
+    },
+    {
+      "name": "pastina",
+      "aliases": [
+        "pastina pasta",
+        "stelline",
+        "acini di pepe",
+        "tiny pasta",
+        "soup pasta stars"
+      ],
+      "parentName": "pasta",
+      "defaultStorage": "Pantry",
+      "freshnessDays": {
+        "Pantry": [
+          365,
+          730
+        ]
+      },
+      "dietaryTags": [
+        "Vegan",
+        "Vegetarian",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Italy; tiny pasta shapes (stelline/acini di pepe) for broths & kids."
+    },
+    {
+      "name": "fresh pasta",
+      "aliases": [
+        "fresh egg pasta",
+        "pasta fresca",
+        "homemade pasta",
+        "refrigerated pasta"
+      ],
+      "parentName": "pasta",
+      "defaultStorage": "Refrigerated",
+      "freshnessDays": {
+        "Refrigerated": [
+          3,
+          7
+        ]
+      },
+      "dietaryTags": [
+        "Vegetarian",
+        "Nut-Free"
+      ],
+      "notes": "Italy; fresh egg pasta, sold refrigerated, much shorter shelf life than dried; contains egg."
+    },
+    {
+      "name": "whole wheat pasta",
+      "aliases": [
+        "whole wheat spaghetti",
+        "whole grain pasta",
+        "wholemeal pasta",
+        "wholewheat pasta"
+      ],
+      "parentName": "pasta",
+      "defaultStorage": "Pantry",
+      "freshnessDays": {
+        "Pantry": [
+          365,
+          730
+        ]
+      },
+      "dietaryTags": [
+        "Vegan",
+        "Vegetarian",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Whole-grain durum wheat pasta."
+    },
+    {
+      "name": "gluten-free pasta",
+      "aliases": [
+        "gluten free pasta",
+        "rice pasta",
+        "corn pasta",
+        "chickpea pasta",
+        "lentil pasta",
+        "legume pasta"
+      ],
+      "parentName": "pasta",
+      "defaultStorage": "Pantry",
+      "freshnessDays": {
+        "Pantry": [
+          365,
+          730
+        ]
+      },
+      "dietaryTags": [
+        "Vegan",
+        "Vegetarian",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "GF pasta from rice/corn/legume flours; common dietary alternative."
+    },
+    {
+      "name": "ramen noodles",
+      "aliases": [
+        "ramen",
+        "instant ramen",
+        "ramen noodle",
+        "instant noodles",
+        "chuka soba"
+      ],
+      "parentName": "noodle",
+      "defaultStorage": "Pantry",
+      "freshnessDays": {
+        "Pantry": [
+          180,
+          365
+        ]
+      },
+      "dietaryTags": [
+        "Vegetarian",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Japan/China; wheat alkaline noodle. Dried/instant cake form; fresh ramen exists but dried is the pantry staple."
+    },
+    {
+      "name": "udon noodles",
+      "aliases": [
+        "udon",
+        "udon noodle",
+        "sanuki udon"
+      ],
+      "parentName": "noodle",
+      "defaultStorage": "Pantry",
+      "freshnessDays": {
+        "Pantry": [
+          180,
+          365
+        ]
+      },
+      "dietaryTags": [
+        "Vegan",
+        "Vegetarian",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Japan; thick wheat noodle. Sold dried (pantry) or vacuum-packed fresh (refrigerated)."
+    },
+    {
+      "name": "soba noodles",
+      "aliases": [
+        "soba",
+        "soba noodle",
+        "buckwheat noodles",
+        "buckwheat noodle"
+      ],
+      "parentName": "noodle",
+      "defaultStorage": "Pantry",
+      "freshnessDays": {
+        "Pantry": [
+          365,
+          730
+        ]
+      },
+      "dietaryTags": [
+        "Vegan",
+        "Vegetarian",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Japan; buckwheat noodle. Usually wheat+buckwheat blend so NOT gluten-free by default (only 100% buckwheat soba is GF)."
+    },
+    {
+      "name": "somen noodles",
+      "aliases": [
+        "somen",
+        "somen noodle",
+        "sōmen",
+        "thin wheat noodles"
+      ],
+      "parentName": "noodle",
+      "defaultStorage": "Pantry",
+      "freshnessDays": {
+        "Pantry": [
+          365,
+          730
+        ]
+      },
+      "dietaryTags": [
+        "Vegan",
+        "Vegetarian",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Japan; very thin dried wheat noodle, served chilled."
+    },
+    {
+      "name": "hokkien noodles",
+      "aliases": [
+        "hokkien",
+        "hokkien noodle",
+        "hokkien mee",
+        "yellow wheat noodles"
+      ],
+      "parentName": "noodle",
+      "defaultStorage": "Refrigerated",
+      "freshnessDays": {
+        "Refrigerated": [
+          7,
+          14
+        ]
+      },
+      "dietaryTags": [
+        "Vegan",
+        "Vegetarian",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Malaysia/Singapore/SE-Asia; thick fresh yellow wheat noodle, usually sold refrigerated."
+    },
+    {
+      "name": "shirataki noodles",
+      "aliases": [
+        "shirataki",
+        "konjac noodles",
+        "konnyaku noodles",
+        "miracle noodles",
+        "konjac pasta"
+      ],
+      "parentName": "noodle",
+      "defaultStorage": "Refrigerated",
+      "freshnessDays": {
+        "Refrigerated": [
+          60,
+          180
+        ]
+      },
+      "dietaryTags": [
+        "Vegan",
+        "Vegetarian",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Japan; konjac yam noodle, naturally gluten-free & near-zero-carb. Often sold packed in water (refrigerated); shelf-stable vacuum packs also exist."
+    },
+    {
+      "name": "rice vermicelli",
+      "aliases": [
+        "rice vermicelli",
+        "rice noodle vermicelli",
+        "mai fun",
+        "maifun",
+        "bun rice noodle",
+        "thin rice noodles"
+      ],
+      "parentName": "rice-noodle",
+      "defaultStorage": "Pantry",
+      "freshnessDays": {
+        "Pantry": [
+          365,
+          730
+        ]
+      },
+      "dietaryTags": [
+        "Vegan",
+        "Vegetarian",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "China/Vietnam/SE-Asia; very thin rice noodle. Distinct from wheat 'vermicelli fideo' currently filed under fideo."
+    },
+    {
+      "name": "wide rice noodles",
+      "aliases": [
+        "chow fun noodles",
+        "ho fun",
+        "he fen",
+        "flat rice noodles",
+        "sen yai"
+      ],
+      "parentName": "rice-noodle",
+      "defaultStorage": "Pantry",
+      "freshnessDays": {
+        "Pantry": [
+          365,
+          730
+        ]
+      },
+      "dietaryTags": [
+        "Vegan",
+        "Vegetarian",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Southern China/SE-Asia; broad flat rice noodle (chow fun / ho fun)."
+    },
+    {
+      "name": "lo mein noodles",
+      "aliases": [
+        "lo mein",
+        "lo mein noodle",
+        "fresh egg noodles chinese"
+      ],
+      "parentName": "egg-noodle",
+      "defaultStorage": "Refrigerated",
+      "freshnessDays": {
+        "Refrigerated": [
+          7,
+          14
+        ]
+      },
+      "dietaryTags": [
+        "Vegetarian",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "China; soft fresh wheat-egg noodle for tossed lo mein; contains egg."
+    }
+  ],
+  "cleanups": [
+    {
+      "itemId": "pasta",
+      "fix": "Remove the alias 'noodles' (kept on the 'noodle' item) to resolve the cross-item collision; pasta already has 'pasta','pastas','italian pasta'."
+    },
+    {
+      "itemId": "vermicelli",
+      "fix": "Remove alias 'rice vermicelli' — this item is a WHEAT fideo. Rice vermicelli is being added as its own item under rice-noodle. Consider renaming display name from 'vermicelli fideo' to just 'vermicelli (fideo)' for clarity."
+    },
+    {
+      "itemId": "meat-ravioli",
+      "fix": "Drop the alias 'meat tortellini' (it describes a tortellini, not a ravioli; tortellini family already covers it)."
+    },
+    {
+      "itemId": "sausage-tortellini",
+      "fix": "Has alias 'tortellinis' which duplicates the generic 'tortellini' parent's alias — remove from the child to avoid matching every tortellini variant to sausage."
+    },
+    {
+      "itemId": "egg-noodle",
+      "fix": "Verify dietaryTags exclude Vegan (egg noodles contain egg); they should be Vegetarian/Nut-Free, not Vegan/Dairy-Free-only without egg consideration."
+    },
+    {
+      "itemId": "noodle",
+      "fix": "This generic 'noodle' item is now the parent for ramen/udon/soba/somen/hokkien/shirataki additions; confirm its role as the Asian-noodle umbrella and keep alias 'noodles' here."
+    }
+  ]
+}

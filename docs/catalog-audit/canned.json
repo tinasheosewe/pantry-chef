@@ -1,0 +1,241 @@
+{
+  "category": "Canned & Jarred",
+  "summary": "89 items audited. The category is heavily skewed toward a few well-developed families (cream-of soups, tomato sauces, fruit preserves, broths/stocks, juice concentrates, mincemeat, cranberry sauce, applesauce) and is thin or absent on the genuinely canned-only staples a recipe app needs most: canned tomatoes in their canonical forms (whole/crushed/diced/passata), canned coconut milk is present but canned beans/fish/olives/peppers are deliberately NOT here because the catalog's convention puts the canonical product elsewhere (beans+chickpeas in 'Legumes & Beans' with a Pantry [365,1095] canned shelf-life baked in; tuna/sardines/anchovies/salmon/clams in 'Protein'; olives/artichoke/corn/jackfruit/water-chestnut/beet/pimento in 'Produce'; capers/tapenade/relish/anchovy-paste/black-bean-sauce in 'Condiments & Sauces'; evaporated milk in 'Dairy & Eggs'). I respected that convention and did NOT duplicate fresh equivalents; instead I propose canned-only products that have no canonical home (canned tomatoes by cut, tomato puree/passata, condensed soups, enchilada/adobo sauces, jarred peppers/pickled goods, condensed/evaporated specifics, jackfruit-in-brine, water chestnuts). Several existing items have mis-routed aliases ('cream of X soup' attached to broths, 'passata' attached to an item literally named 'fire roasted'), facet-fragment names that are not human-readable on their own ('puree', 'bavarian', 'fire roasted', 'jellied', 'no beans', 'with rum'), and storage/freshness inconsistencies between an item and its 'organic' twin.",
+  "issues": [
+    "MIS-ROUTED ALIAS: 'fire-roasted' (display name literally 'fire roasted', parent tomato-sauce) carries aliases ['passata','salsa di pomodoro']. Passata is strained/sieved uncooked tomato puree, a distinct product from a fire-roasted tomato sauce. These aliases should move to a proper 'tomato passata' item (proposed below); 'fire-roasted' should be 'fire roasted tomatoes' or 'fire roasted tomato sauce'.",
+    "MIS-ROUTED ALIAS: 'chicken-broth' (parent broth+chicken) carries aliases ['chicken soup','cream of chicken soup']. Cream-of-chicken is a condensed cream soup, not a broth; the alias belongs on a cream-soup child, not on stock.",
+    "MIS-ROUTED ALIAS: 'mushroom-broth' (parent broth) carries aliases ['cream of mushroom soup','mushroom soup']. Cream of mushroom is a cream soup, not a broth.",
+    "MIS-ROUTED ALIAS: 'vegetable' (vegetable broth, parent broth) carries alias 'cream of vegetable soup' — again a cream soup, not a broth.",
+    "MIS-ROUTED ALIAS: 'tomato-soup' carries 'cream of tomato soup' but has no link to the cream-soup family; and 'cheese-cream-soup' vs 'cheddar-cream-soup' overlap (see redundancies).",
+    "WRONG-FRUIT FACET: 'apple-juice-concentrate' has facet color option 'orange' and facetAliases mapping 'orange juice concentrate'/'orange' onto it. Orange juice concentrate is a different fruit and should not be an alias of apple juice concentrate.",
+    "NON-HUMAN-READABLE NAMES (facet-fragment stubs): 'fire-roasted'(=fire roasted), 'italian-herb'(=italian herb), 'no-salt-added'(=no salt added), 'puree'(=purée), 'bavarian'(=bavarian sauerkraut OK-ish), 'jellied'(=jellied cranberry sauce), 'whole-berry', 'stemless', 'with-stems', 'no-beans', 'with-beans', 'with-rum', 'with-brandy', 'no-suet', 'pie-mix', 'vegetable'(=vegetable broth), 'mixed-berry'. Many read as bare adjectives without their parent noun; display names should include the product (e.g. 'no salt added tomato sauce').",
+    "AMBIGUOUS BARE ITEM: 'puree' (display 'purée') has no parent and an unclear referent — tomato? fruit? It overlaps with 'tomato-paste'/'pumpkin-puree' and should either be removed or specified as 'tomato puree'.",
+    "STORAGE INCONSISTENCY: 'sauerkraut' defaultStorage=Refrigerated (correct for refrigerated/fresh kraut) but its child 'sauerkraut-organic' defaultStorage=Pantry with Pantry [365,1095]; 'bavarian'/'wine-sauerkraut' are Refrigerated. A canned/jarred shelf-stable kraut and a refrigerated fresh kraut are different products being conflated under one node.",
+    "STORAGE/FRESHNESS INCONSISTENCY between base and 'organic' twins: e.g. 'applesauce' Pantry [180,365] vs 'applesauce-organic' Pantry [365,1095]; 'coconut-cream'/'coconut-milk' Frozen [60,180] vs their organic twins Frozen [90,180]. 'Organic' should not change shelf life; pick one freshness profile per product.",
+    "OPENED-FRESHNESS LIKELY WRONG for brined/oil-packed jarred goods: tomato products correctly drop to Refrigerated [3,7] once opened, but jarred items in brine/oil (olives, pickles, peppers, capers, maraschino) keep 1-2 months refrigerated. 'pickle'/'maraschino-cherry' use Refrigerated [30,90] (good); any new jarred-in-brine item should follow that, not [3,7].",
+    "REDUNDANT ORGANIC SUBTREE: the catalog encodes 'organic' as a separate child item for many products (applesauce-organic, broth-organic, coconut-cream-organic, coconut-milk-organic, cranberry-sauce-organic, pumpkin-puree-organic, sauerkraut-organic, tomato-paste-organic, tomato-sauce-organic). 'Organic' is a sourcing facet, not a distinct ingredient; this inflates the category and creates the freshness mismatches above. Consider collapsing to a facet rather than child items (noted, not auto-fixing).",
+    "GAP — canned tomatoes: there is NO canned whole/crushed/diced/stewed tomato item and no tomato puree/passata. 'tomato-sauce','tomato-paste','fire-roasted' exist but the workhorse 'a can of chopped tomatoes' (the single most-used canned ingredient in savory recipes) is missing. Fresh 'tomato' (Produce) does not substitute in recipes that call for canned.",
+    "GAP — condensed milk family incomplete: 'sweetened-condensed-milk' exists; evaporated milk lives in Dairy & Eggs (acceptable), but there is no 'dulce de leche' and no plain 'condensed milk' disambiguation.",
+    "GAP — chiles/peppers: only 'canned-green-chile' exists. No chipotle-in-adobo, no canned/jarred jalapeños (pickled), no roasted red peppers (jarred), no pimientos jar form, no enchilada/red chile sauce.",
+    "GAP — jarred antipasti: no jarred artichoke hearts (Produce 'artichoke' has no Pantry/canned profile), no marinated/jarred peppers, no sun-dried tomatoes in oil, no giardiniera, no pepperoncini.",
+    "GAP — global/Asian canned staples: no canned water chestnuts (Produce item exists but as fresh-style, Pantry [365,1095] is actually fine), no bamboo shoots canned, no canned young/green jackfruit in brine for the canned aisle (Produce 'canned-young' jackfruit exists but is filed under Produce with Refrigerated default — odd for a canned product), no canned coconut milk light/full variants beyond what exists.",
+    "GAP — soups beyond cream-of and tomato: no canned minestrone/lentil/vegetable/chicken-noodle ready soup, no canned bisque, no broth concentrate/bouillon paste (bouillon may live in Spices).",
+    "GAP — pie/dessert: 'cherry/lemon/pumpkin' pie fillings exist but no apple pie filling and no canned cherry/blueberry pie filling for the common ones — apple is conspicuously missing given applesauce is well-covered."
+  ],
+  "redundancies": [
+    ["cheese-cream-soup", "cheddar-cream-soup", "'cheese cream soup' (aliased 'cream of cheddar cheese soup') and 'cheddar cream soup' are the same product; cheddar is the cheese. Merge into one (keep 'cheddar-cream-soup', fold cheese aliases in)."],
+    ["fruit-cocktail", "tropical-fruit-cocktail", "Both carry identical aliases ['canned fruit cocktail','fruit cocktails','mixed fruit']; tropical is a flavor variant of the same canned fruit cocktail. Keep parent 'fruit-cocktail', make tropical a true child without duplicate aliases."],
+    ["coconut-milk", "coconut-milk-organic", "'organic' is a sourcing facet, not a distinct ingredient; identical aliases ['canned coconut milk','coconut milks']. Same applies to every '-organic' twin (applesauce/broth/coconut-cream/cranberry-sauce/pumpkin-puree/sauerkraut/tomato-paste/tomato-sauce)."],
+    ["tomato-paste", "tomato-paste-organic", "Duplicate aliases ['canned tomato paste','tomato pastes']; organic adds no ingredient distinction."],
+    ["puree", "tomato-paste", "Bare 'puree' (purée) with no parent overlaps ambiguously with tomato-paste / pumpkin-puree; if it means tomato puree it duplicates the proposed canned-tomato-puree, if generic it should be removed."],
+    ["chicken-broth", "chicken-stock", "'chicken-broth' and 'chicken-stock' both exist with chicken-stock as a thin child of broth; broth vs stock is a near-synonym distinction most recipes treat as 1:1. Consider merging (keep one, alias the other) — also true of beef-broth/'beef stock', vegetable/'vegetable-stock'."],
+    ["fire-roasted", "tomato-sauce", "'fire-roasted' is a flavor variant child of tomato-sauce but its name and the 'passata' alias make it read as a standalone tomato product; the passata alias is the real redundancy/mis-route (passata is not fire-roasted)."]
+  ],
+  "aliasAdditions": [
+    {"itemId": "tomato-paste", "add": ["concentrato di pomodoro", "tomato concentrate", "double concentrate"]},
+    {"itemId": "tomato-sauce", "add": ["passata di pomodoro", "tomato passata", "salsa de tomate"]},
+    {"itemId": "coconut-milk", "add": ["full fat coconut milk", "light coconut milk", "santan", "gata"]},
+    {"itemId": "coconut-cream", "add": ["thick coconut milk", "kara"]},
+    {"itemId": "sweetened-condensed-milk", "add": ["leche condensada", "condensed milk", "milkmaid"]},
+    {"itemId": "sauerkraut", "add": ["choucroute", "sauerkraut jar", "jarred sauerkraut"]},
+    {"itemId": "canned-green-chile", "add": ["hatch green chile", "chopped green chiles", "fire roasted green chiles"]},
+    {"itemId": "pumpkin-puree", "add": ["pumpkin pie filling unsweetened", "100% pumpkin", "tinned pumpkin"]},
+    {"itemId": "orange-marmalade", "add": ["marmalade", "seville orange marmalade"]},
+    {"itemId": "cranberry-sauce", "add": ["cranberry relish", "tinned cranberry"]},
+    {"itemId": "broth", "add": ["bone broth", "bouillon", "stock cube broth"]},
+    {"itemId": "fruit-preserve", "add": ["jam", "jelly", "conserve", "confiture"]},
+    {"itemId": "fire-roasted", "add": ["fire roasted tomatoes", "fire roasted diced tomatoes"]},
+    {"itemId": "applesauce", "add": ["apple puree", "apple compote", "unsweetened apple sauce"]},
+    {"itemId": "vegetable", "add": ["veg broth", "vegetable bouillon", "vegetable stock"]},
+    {"itemId": "tomato-soup", "add": ["condensed tomato soup", "tinned tomato soup"]}
+  ],
+  "newItems": [
+    {
+      "name": "canned diced tomatoes",
+      "aliases": ["diced tomatoes", "chopped tomatoes", "canned chopped tomatoes", "tinned tomatoes", "pomodori a cubetti", "petits dés de tomates"],
+      "parentName": null,
+      "defaultStorage": "Pantry",
+      "freshnessDays": {"Pantry": [365, 1095], "Refrigerated": [5, 7], "Frozen": [60, 180]},
+      "dietaryTags": ["Vegan", "Vegetarian", "Gluten-Free", "Dairy-Free", "Nut-Free"],
+      "notes": "The single most-used canned ingredient in savory cooking and currently absent. Unopened 18-24mo peak / indefinite if undamaged; opened 5-7 days refrigerated (StillTasty/USDA)."
+    },
+    {
+      "name": "canned whole peeled tomatoes",
+      "aliases": ["whole peeled tomatoes", "whole tomatoes", "pomodori pelati", "san marzano tomatoes", "plum tomatoes canned"],
+      "parentName": "canned diced tomatoes",
+      "defaultStorage": "Pantry",
+      "freshnessDays": {"Pantry": [365, 1095], "Refrigerated": [5, 7], "Frozen": [60, 180]},
+      "dietaryTags": ["Vegan", "Vegetarian", "Gluten-Free", "Dairy-Free", "Nut-Free"],
+      "notes": "Whole peeled (often San Marzano) packed in juice/puree; the base for many sauces."
+    },
+    {
+      "name": "canned crushed tomatoes",
+      "aliases": ["crushed tomatoes", "tomato pulp", "ground peeled tomatoes", "polpa di pomodoro"],
+      "parentName": "canned diced tomatoes",
+      "defaultStorage": "Pantry",
+      "freshnessDays": {"Pantry": [365, 1095], "Refrigerated": [5, 7], "Frozen": [60, 180]},
+      "dietaryTags": ["Vegan", "Vegetarian", "Gluten-Free", "Dairy-Free", "Nut-Free"],
+      "notes": "Distinct cut from diced/whole; thicker, partially broken down."
+    },
+    {
+      "name": "tomato puree",
+      "aliases": ["tomato purée", "passata", "tomato passata", "passata di pomodoro", "sieved tomatoes", "strained tomatoes", "salsa di pomodoro"],
+      "parentName": "canned diced tomatoes",
+      "defaultStorage": "Pantry",
+      "freshnessDays": {"Pantry": [365, 1095], "Refrigerated": [5, 7], "Frozen": [60, 180]},
+      "dietaryTags": ["Vegan", "Vegetarian", "Gluten-Free", "Dairy-Free", "Nut-Free"],
+      "notes": "Receives the 'passata' aliases currently mis-attached to 'fire-roasted'. Smooth strained uncooked tomato; thinner than paste, thicker than juice."
+    },
+    {
+      "name": "stewed tomatoes",
+      "aliases": ["canned stewed tomatoes", "tinned stewed tomatoes"],
+      "parentName": "canned diced tomatoes",
+      "defaultStorage": "Pantry",
+      "freshnessDays": {"Pantry": [365, 1095], "Refrigerated": [5, 7], "Frozen": [60, 180]},
+      "dietaryTags": ["Vegan", "Vegetarian", "Gluten-Free", "Dairy-Free", "Nut-Free"],
+      "notes": "Diced tomatoes pre-seasoned with onion/celery/pepper; common American pantry staple."
+    },
+    {
+      "name": "diced tomatoes with green chiles",
+      "aliases": ["rotel", "ro-tel", "tomatoes and green chilies", "tomatoes with chiles"],
+      "parentName": "canned diced tomatoes",
+      "defaultStorage": "Pantry",
+      "freshnessDays": {"Pantry": [365, 1095], "Refrigerated": [5, 7], "Frozen": [60, 180]},
+      "dietaryTags": ["Vegan", "Vegetarian", "Gluten-Free", "Dairy-Free", "Nut-Free"],
+      "notes": "Distinct branded staple (Rotel) widely called for in Tex-Mex/dip recipes."
+    },
+    {
+      "name": "chipotle peppers in adobo",
+      "aliases": ["chipotle in adobo", "chipotles in adobo sauce", "canned chipotle peppers", "adobo chiles"],
+      "parentName": null,
+      "defaultStorage": "Pantry",
+      "freshnessDays": {"Pantry": [365, 1095], "Refrigerated": [30, 60], "Frozen": [180, 365]},
+      "dietaryTags": ["Vegan", "Vegetarian", "Gluten-Free", "Dairy-Free", "Nut-Free"],
+      "notes": "Unopened 3-5yr; opened keeps 1-2 months refrigerated (StillTasty), 6mo frozen. No canonical fresh equivalent."
+    },
+    {
+      "name": "jarred roasted red peppers",
+      "aliases": ["roasted red peppers", "roasted peppers", "piquillo peppers", "jarred peppers", "peperoni arrostiti"],
+      "parentName": null,
+      "defaultStorage": "Pantry",
+      "freshnessDays": {"Pantry": [365, 1095], "Refrigerated": [30, 60], "Frozen": [180, 365]},
+      "dietaryTags": ["Vegan", "Vegetarian", "Gluten-Free", "Dairy-Free", "Nut-Free"],
+      "notes": "Unopened jar 3-5yr peak; opened keeps ~1-2 months refrigerated in its brine/oil (StillTasty)."
+    },
+    {
+      "name": "pickled jalapenos",
+      "aliases": ["pickled jalapeños", "jarred jalapenos", "nacho jalapenos", "jalapeno slices", "jalapenos en escabeche"],
+      "parentName": null,
+      "defaultStorage": "Refrigerated",
+      "freshnessDays": {"Pantry": [180, 365], "Refrigerated": [30, 90]},
+      "dietaryTags": ["Vegan", "Vegetarian", "Gluten-Free", "Dairy-Free", "Nut-Free"],
+      "notes": "Pickled, brine-packed; distinct from fresh jalapeño (Produce). Opened keeps 1-3mo refrigerated like other pickled goods."
+    },
+    {
+      "name": "jarred artichoke hearts",
+      "aliases": ["artichoke hearts", "marinated artichoke hearts", "canned artichoke hearts", "artichoke hearts in brine"],
+      "parentName": null,
+      "defaultStorage": "Pantry",
+      "freshnessDays": {"Pantry": [365, 1095], "Refrigerated": [10, 14], "Frozen": [180, 365]},
+      "dietaryTags": ["Vegan", "Vegetarian", "Gluten-Free", "Dairy-Free", "Nut-Free"],
+      "notes": "Fresh 'artichoke' lives in Produce with no Pantry profile; canned/jarred hearts are a distinct pantry product used in dips/salads/pizza."
+    },
+    {
+      "name": "sun-dried tomatoes in oil",
+      "aliases": ["sundried tomatoes", "sun dried tomatoes", "pomodori secchi", "oil-packed sun-dried tomatoes"],
+      "parentName": null,
+      "defaultStorage": "Pantry",
+      "freshnessDays": {"Pantry": [365, 730], "Refrigerated": [30, 60]},
+      "dietaryTags": ["Vegan", "Vegetarian", "Gluten-Free", "Dairy-Free", "Nut-Free"],
+      "notes": "Oil-packed jarred form; opened keeps 1-2 months refrigerated submerged in oil."
+    },
+    {
+      "name": "canned coconut milk light",
+      "aliases": ["light coconut milk", "reduced fat coconut milk", "lite coconut milk"],
+      "parentName": "coconut milk",
+      "defaultStorage": "Pantry",
+      "freshnessDays": {"Pantry": [365, 1095], "Refrigerated": [5, 7], "Frozen": [60, 180]},
+      "dietaryTags": ["Vegan", "Vegetarian", "Gluten-Free", "Dairy-Free", "Nut-Free"],
+      "notes": "Distinct from full-fat for recipe macros; common SKU. Child of existing coconut-milk."
+    },
+    {
+      "name": "dulce de leche",
+      "aliases": ["caramelized condensed milk", "milk caramel", "manjar", "cajeta"],
+      "parentName": "sweetened condensed milk",
+      "defaultStorage": "Pantry",
+      "freshnessDays": {"Pantry": [365, 730], "Refrigerated": [21, 30]},
+      "dietaryTags": ["Vegetarian", "Gluten-Free", "Nut-Free"],
+      "notes": "Canned caramelized milk; contains dairy (not Vegan/Dairy-Free). Sibling of sweetened condensed milk."
+    },
+    {
+      "name": "enchilada sauce",
+      "aliases": ["red enchilada sauce", "green enchilada sauce", "canned enchilada sauce", "salsa para enchiladas"],
+      "parentName": null,
+      "defaultStorage": "Pantry",
+      "freshnessDays": {"Pantry": [365, 1095], "Refrigerated": [7, 10], "Frozen": [60, 180]},
+      "dietaryTags": ["Vegan", "Vegetarian", "Gluten-Free", "Dairy-Free", "Nut-Free"],
+      "notes": "Canned chile-tomato sauce, distinct from generic tomato sauce; staple in Mexican recipes."
+    },
+    {
+      "name": "pumpkin pie mix",
+      "aliases": ["spiced pumpkin pie filling", "sweetened pumpkin pie filling"],
+      "parentName": "pumpkin pie filling",
+      "defaultStorage": "Pantry",
+      "freshnessDays": {"Pantry": [365, 1095], "Refrigerated": [7, 14], "Frozen": [60, 180]},
+      "dietaryTags": ["Vegetarian", "Gluten-Free", "Nut-Free"],
+      "notes": "Disambiguation child: spiced/sweetened pie MIX (contains dairy/eggs varies) vs plain pumpkin puree. Existing 'pie-mix' is mislabeled as pumpkin puree; this clarifies the sweetened mix is NOT interchangeable with puree."
+    },
+    {
+      "name": "apple pie filling",
+      "aliases": ["canned apple pie filling", "apple filling"],
+      "parentName": "pie filling",
+      "defaultStorage": "Pantry",
+      "freshnessDays": {"Pantry": [365, 1095], "Refrigerated": [7, 14], "Frozen": [60, 180]},
+      "dietaryTags": ["Vegan", "Vegetarian", "Dairy-Free", "Nut-Free"],
+      "notes": "Conspicuous gap: cherry/lemon/pumpkin fillings exist, apple (the most common) does not. May contain gluten thickeners so Gluten-Free omitted."
+    },
+    {
+      "name": "canned green chile enchilada base",
+      "aliases": ["hatch chile sauce", "green chile sauce", "canned green chile sauce"],
+      "parentName": "canned green chile",
+      "defaultStorage": "Pantry",
+      "freshnessDays": {"Pantry": [365, 1095], "Refrigerated": [7, 10], "Frozen": [60, 180]},
+      "dietaryTags": ["Vegan", "Vegetarian", "Gluten-Free", "Dairy-Free", "Nut-Free"],
+      "notes": "Southwestern staple sauce form; child of existing canned-green-chile."
+    },
+    {
+      "name": "canned baked beans in tomato sauce",
+      "aliases": ["baked beans tin", "beans in tomato sauce", "heinz beans"],
+      "parentName": null,
+      "defaultStorage": "Pantry",
+      "freshnessDays": {"Pantry": [365, 1095], "Refrigerated": [3, 5], "Frozen": [60, 180]},
+      "dietaryTags": ["Vegan", "Vegetarian", "Gluten-Free", "Dairy-Free", "Nut-Free"],
+      "notes": "OPTIONAL / convention note: 'baked-beans' already exists in 'Legumes & Beans'. Include here ONLY if the app wants the British 'beans on toast' tin discoverable in the canned aisle; otherwise rely on the existing Legumes entry. Listed for completeness, flagged as likely redundant."
+    },
+    {
+      "name": "canned minestrone soup",
+      "aliases": ["minestrone", "canned vegetable soup", "ready soup", "tinned soup"],
+      "parentName": null,
+      "defaultStorage": "Pantry",
+      "freshnessDays": {"Pantry": [365, 1095], "Refrigerated": [3, 5], "Frozen": [60, 180]},
+      "dietaryTags": ["Vegan", "Vegetarian", "Dairy-Free", "Nut-Free"],
+      "notes": "Ready-to-eat canned soups are absent (only cream-of and tomato exist). Represents the heat-and-serve soup aisle; many contain gluten pasta so Gluten-Free omitted."
+    }
+  ],
+  "cleanups": [
+    {"itemId": "fire-roasted", "fix": "Rename display to 'fire roasted tomatoes' (or 'fire roasted tomato sauce'); REMOVE aliases 'passata' and 'salsa di pomodoro' (move passata to the proposed tomato-puree item)."},
+    {"itemId": "chicken-broth", "fix": "Remove aliases 'chicken soup' and 'cream of chicken soup' (these are a condensed cream soup, not stock); add a proper cream-of-chicken under cream-soup if desired."},
+    {"itemId": "mushroom-broth", "fix": "Remove aliases 'cream of mushroom soup' and 'mushroom soup'; cream of mushroom is a cream soup, not broth."},
+    {"itemId": "vegetable", "fix": "Rename display to 'vegetable broth'; remove alias 'cream of vegetable soup'."},
+    {"itemId": "apple-juice-concentrate", "fix": "Remove the 'orange'/'orange juice concentrate' facetAliases and the color facet option 'orange' — wrong fruit."},
+    {"itemId": "puree", "fix": "Either rename to 'tomato puree' and parent under canned tomatoes, or remove as ambiguous (overlaps pumpkin-puree/tomato-paste)."},
+    {"itemId": "sauerkraut-organic", "fix": "Align defaultStorage with parent 'sauerkraut' (Refrigerated) OR split shelf-stable canned kraut from refrigerated fresh kraut; current Pantry [365,1095] vs parent Refrigerated is inconsistent."},
+    {"itemId": "applesauce-organic", "fix": "Match freshness to parent 'applesauce' (Pantry [180,365]); 'organic' should not extend Pantry to [365,1095]. Same correction for all '-organic' twins."},
+    {"itemId": "cheese-cream-soup", "fix": "Merge into 'cheddar-cream-soup' (same product); fold aliases ['cheddar cheese soup','cream of cheddar cheese soup'] into the survivor."},
+    {"itemId": "tropical-fruit-cocktail", "fix": "Make a true flavor child of 'fruit-cocktail' and drop the duplicated aliases ['canned fruit cocktail','fruit cocktails','mixed fruit']."},
+    {"itemId": "pie-mix", "fix": "Rename display 'pie mix pumpkin puree' is confusing — it is sweetened/spiced pumpkin PIE MIX, NOT plain puree; rename to 'pumpkin pie mix' and stop implying it equals pumpkin-puree (they are not interchangeable)."},
+    {"itemId": "tomato-paste-organic", "fix": "Collapse into 'tomato-paste' (organic = facet); remove duplicate aliases."},
+    {"itemId": "coconut-milk-organic", "fix": "Collapse into 'coconut-milk' (organic = facet); duplicate aliases ['canned coconut milk','coconut milks']."},
+    {"itemId": "tomato-soup", "fix": "Optionally add link to cream-soup family or keep standalone; alias 'cream of tomato soup' is fine but ensure it is not also the canonical for condensed tomato-cream-soup."}
+  ]
+}

@@ -1,0 +1,1183 @@
+{
+  "category": "Grains & Cereals",
+  "summary": "Audited all 93 catalog items with category 'Grains & Cereals'. The set covers a solid breakfast-cereal and whole-grain core, but is undermined by a pervasive naming defect: many base staples carry a processed-form suffix in their name even though their id is the bare grain (id 'millet' is named 'millet porridge', id 'barley' is 'barley groats', id 'cornmeal' is 'cornmeal porridge', id 'wheat' is 'wheat bran', id 'oat-bran' carries oat/oatmeal aliases). This both mislabels the item and corrupts the parent/child tree (millet varieties hang off 'millet porridge'; wheat berries hang off 'bran'). There are also gluten-free tagging errors (freekeh and kamut are wheat, kamut tagged GF; the generic 'bran'/'groats' buckets tagged GF despite including wheat/barley/rye forms), several alias collisions and copy-paste duplicates (sorghum-white reuses sorghum's aliases; pearl-barley aliased 'pearl millet'; rice-bran aliased 'rice porridge'), and a non-grain item ('potato-flakes', instant mashed potato) miscategorised here. Coverage gaps are large and global: only ~9 rice types exist (no red rice, black/forbidden rice, parboiled/converted, glutinous/sweet rice as a distinct item, paella/bomba, calrose, koshihikari, carolina gold, matta/kerala red, camargue, calasparra, valencia, broken/jasmine-brown), and whole-grain staples sorghum is present but pearl millet, job's tears (coix), wild-harvested grains, cracked wheat, wheat berries (as its own item), rye berries, triticale, brown/red/black rice flakes, rice cakes, instant/parboiled rice, mochi/glutinous, and many global porridges (atole, mamaliga, ugali, sadza, injera-teff, ogi/pap, congee already buried as a porridge alias) are missing. Recommend liberal global expansion.",
+  "issues": [
+    "NAMING: id 'millet' is named 'millet porridge' — it is the base grain millet, not a porridge. The four millet varieties (barnyard, foxtail, proso, finger-millet) are all named '<x> millet porridge' for the same reason and parented under it.",
+    "NAMING: id 'barley' is named 'barley groats'; the base whole-grain barley should be 'barley'. 'pearl-barley' is correctly a child but named 'pearl barley groats'.",
+    "NAMING: id 'cornmeal' is named 'cornmeal porridge' and parented under 'porridge'; cornmeal is a dry milled corn product, not a cooked porridge. Children 'cornmeal-white'/'yellow-cornmeal' inherit the wrong name.",
+    "NAMING: id 'wheat' is named 'wheat bran' and parented under 'bran', yet its aliases are 'wheat berries','wheat grain','whole wheat' — i.e. it is meant to be whole wheat / wheat berries, not bran. Mislabeled and mis-parented.",
+    "NAMING/ALIAS: id 'oat-bran' (named 'oat bran', parent 'bran') carries aliases 'oatmeal','oat groats','grain groats','groat','whole groats' — these belong to oats, not oat bran. Alias bleed.",
+    "TAXONOMY: there is no single canonical 'wheat berries' item; whole wheat is conflated into the 'wheat bran' entry. Likewise no canonical 'oat groats' (folded into oat-bran) and no canonical 'cracked wheat'.",
+    "GLUTEN: 'kamut' (khorasan wheat) is tagged Gluten-Free — incorrect, it is a wheat species and contains gluten.",
+    "GLUTEN: 'freekeh' is tagged Gluten-Free — incorrect, freekeh is roasted green durum wheat and contains gluten.",
+    "GLUTEN: generic buckets 'bran' and 'groats' are tagged Gluten-Free, but as written they encompass wheat bran / barley & rye groats which contain gluten; a generic bucket should not assert Gluten-Free.",
+    "GLUTEN: 'multigrain-porridge' and 'multigrain cereal' family — multigrain-porridge is tagged Gluten-Free but multigrain mixes typically include wheat/barley/rye; should drop GF unless specified gluten-free.",
+    "CATEGORY: 'potato-flakes' (instant mashed potato / dehydrated potato flakes) is not a grain or cereal; it belongs in 'Produce' or 'Other', not 'Grains & Cereals'.",
+    "ALIAS COLLISION: 'pearl-barley' (pearl barley) lists 'pearl millet' as an alias — pearl millet is a different grain (bajra), not pearl barley.",
+    "ALIAS COLLISION: 'rice-bran' lists alias 'rice porridge', and 'cream-of-rice' also lists alias 'rice porridge' — rice bran is not rice porridge; duplicate/incorrect alias.",
+    "ALIAS DUPLICATION: 'sorghum-white' copies the exact aliases of 'sorghum' ('jowar','milo','sorghum grain','sorghums') — the white-sorghum child should not reuse the parent's full alias list.",
+    "ALIAS: 'durum' (durum semolina) and 'semolina' both alias 'semolinas'; durum is a wheat species while semolina is its milled product — hierarchy is fine but durum's alias should reference durum wheat, not 'semolinas'.",
+    "FRESHNESS: 'hominy grits' has Refrigerated [3,7] and Pantry [365,1095] — the values mix canned/cooked hominy (short fridge life) with dried hominy (long pantry life) in one item; ambiguous.",
+    "FRESHNESS: cereal-family items (cereal, corn-flakes, bran-flakes, oatmeal cereal, puffed-rice, rice-puffs, shredded-wheat, wheat-squares) have no Frozen entry while most other grains do — inconsistent storage map (cereals are rarely frozen, so this may be intentional but is uneven).",
+    "GRANULARITY: 'cold-cereal' is named 'cold cereal multigrain' and parented under 'multigrain cereal' — odd specificity; the generic 'cold cereal' concept is already an alias on 'cereal'.",
+    "COVERAGE: rice is thin — missing red rice, black/forbidden rice, parboiled/converted rice, glutinous/sweet rice (only 'sticky rice' exists), paella/bomba/valencia/calasparra, calrose, koshihikari, carolina gold, matta/kerala red, camargue red, broken rice, brown jasmine/basmati, rice flakes (poha), puffed/flattened rice.",
+    "COVERAGE: missing global whole grains/pseudo-grains — pearl millet (bajra), job's tears (coix/hato mugi), triticale, rye berries, wheat berries (canonical), cracked wheat, oat groats (canonical), Kamut as wheat, einkorn/emmer present, fonio present, but black/red rice, wild rice present.",
+    "COVERAGE: missing many global porridge/prepared staples — atole, mamaliga, ugali/sadza (maize meal porridge), injera batter (teff), ogi/pap, tsampa (roasted barley), and congee is buried only as an alias on 'porridge'."
+  ],
+  "redundancies": [
+    [
+      "barley",
+      "pearl-barley",
+      "id 'barley' is named 'barley groats' and 'pearl-barley' is 'pearl barley groats'; once 'barley' is renamed to plain barley the two are distinct, but as currently named both read as barley-groats forms and overlap."
+    ],
+    [
+      "oat-bran",
+      "oats",
+      "oat-bran carries aliases 'oatmeal','oat groats','whole groats' that belong to 'oats'; the two overlap heavily and oat-bran's aliases should move to oats."
+    ],
+    [
+      "rice-bran",
+      "cream-of-rice",
+      "both list alias 'rice porridge'; one of them is wrong (rice bran is a milling byproduct, cream-of-rice is a cooked rice cereal)."
+    ],
+    [
+      "porridge",
+      "millet",
+      "id 'millet' named 'millet porridge' overlaps conceptually with the generic 'porridge' bucket; the grain millet should be split from any porridge sense."
+    ],
+    [
+      "cornmeal",
+      "polenta",
+      "cornmeal (named 'cornmeal porridge') and polenta are the same ground-corn product at different grinds/origins; acceptable as siblings but the 'porridge' naming on cornmeal blurs them."
+    ],
+    [
+      "grits",
+      "polenta",
+      "grits and polenta are both coarse-ground corn; near-duplicates distinguished mainly by region (US South vs Italy) and corn type — keep both but note overlap."
+    ],
+    [
+      "quick",
+      "oats-instant",
+      "'quick grits' (id 'quick') carries alias 'quick oats' which duplicates the oats/oats-instant line; the alias is misplaced."
+    ]
+  ],
+  "aliasAdditions": [
+    {
+      "itemId": "rice",
+      "add": [
+        "white rice",
+        "long-grain rice",
+        "uncooked rice",
+        "steamed rice",
+        "cooked rice"
+      ]
+    },
+    {
+      "itemId": "basmati",
+      "add": [
+        "basmati",
+        "brown basmati",
+        "white basmati",
+        "indian rice",
+        "pakistani rice",
+        "aged basmati"
+      ]
+    },
+    {
+      "itemId": "jasmine",
+      "add": [
+        "jasmine",
+        "thai jasmine rice",
+        "thai fragrant rice",
+        "hom mali",
+        "brown jasmine rice"
+      ]
+    },
+    {
+      "itemId": "arborio",
+      "add": [
+        "arborio",
+        "risotto rice",
+        "carnaroli",
+        "vialone nano",
+        "italian rice"
+      ]
+    },
+    {
+      "itemId": "sushi",
+      "add": [
+        "sushi",
+        "japonica rice",
+        "calrose",
+        "koshihikari",
+        "japanese rice",
+        "short grain japanese rice"
+      ]
+    },
+    {
+      "itemId": "sticky",
+      "add": [
+        "glutinous rice",
+        "sweet rice",
+        "sticky rice",
+        "mochi rice",
+        "mochigome",
+        "thai sticky rice",
+        "khao niaow"
+      ]
+    },
+    {
+      "itemId": "brown-rice",
+      "add": [
+        "brown rice",
+        "wholegrain rice",
+        "wholemeal rice",
+        "brown long grain rice",
+        "cargo rice"
+      ]
+    },
+    {
+      "itemId": "wild-rice",
+      "add": [
+        "manoomin",
+        "ojibwe rice",
+        "lake rice",
+        "zizania"
+      ]
+    },
+    {
+      "itemId": "quinoa",
+      "add": [
+        "red quinoa",
+        "black quinoa",
+        "kinwa",
+        "andean quinoa"
+      ]
+    },
+    {
+      "itemId": "oats",
+      "add": [
+        "oat groats",
+        "whole oats",
+        "porridge oats",
+        "jumbo oats",
+        "scottish oats"
+      ]
+    },
+    {
+      "itemId": "couscous",
+      "add": [
+        "maftoul",
+        "north african couscous",
+        "instant couscous"
+      ]
+    },
+    {
+      "itemId": "bulgur",
+      "add": [
+        "cracked wheat",
+        "ala",
+        "pourgouri",
+        "tabbouleh wheat"
+      ]
+    },
+    {
+      "itemId": "farro",
+      "add": [
+        "farro grande",
+        "pearled farro",
+        "whole farro",
+        "ancient wheat"
+      ]
+    },
+    {
+      "itemId": "sorghum",
+      "add": [
+        "broomcorn",
+        "great millet",
+        "guinea corn",
+        "kafir corn"
+      ]
+    },
+    {
+      "itemId": "millet",
+      "add": [
+        "proso millet",
+        "common millet",
+        "white millet",
+        "bajra"
+      ]
+    },
+    {
+      "itemId": "polenta",
+      "add": [
+        "corn polenta",
+        "polenta meal",
+        "coarse cornmeal",
+        "granoturco"
+      ]
+    },
+    {
+      "itemId": "grits",
+      "add": [
+        "hominy grits",
+        "southern grits",
+        "yellow grits",
+        "white grits"
+      ]
+    },
+    {
+      "itemId": "matzo",
+      "add": [
+        "matzoh",
+        "passover bread",
+        "matzo cracker"
+      ]
+    },
+    {
+      "itemId": "buckwheat",
+      "add": [
+        "soba grain",
+        "buckwheat kernels",
+        "raw buckwheat",
+        "toasted buckwheat",
+        "grechka"
+      ]
+    },
+    {
+      "itemId": "freekeh",
+      "add": [
+        "farik",
+        "freek",
+        "roasted green wheat",
+        "cracked freekeh"
+      ]
+    },
+    {
+      "itemId": "spelt",
+      "add": [
+        "dinkel wheat",
+        "spelt wheat berries"
+      ]
+    },
+    {
+      "itemId": "teff",
+      "add": [
+        "tef",
+        "ethiopian teff",
+        "brown teff",
+        "ivory teff",
+        "injera grain"
+      ]
+    },
+    {
+      "itemId": "fonio",
+      "add": [
+        "white fonio",
+        "black fonio",
+        "findi",
+        "iburu"
+      ]
+    },
+    {
+      "itemId": "amaranth",
+      "add": [
+        "rajgira",
+        "kiwicha",
+        "amaranth flour",
+        "popped amaranth"
+      ]
+    },
+    {
+      "itemId": "cornmeal",
+      "add": [
+        "maize meal",
+        "mealie meal",
+        "corn flour (uk)",
+        "fine cornmeal",
+        "blue cornmeal"
+      ]
+    },
+    {
+      "itemId": "semolina",
+      "add": [
+        "sooji",
+        "rava",
+        "farina di semola",
+        "fine semolina",
+        "coarse semolina"
+      ]
+    },
+    {
+      "itemId": "granola",
+      "add": [
+        "granola clusters",
+        "baked granola",
+        "nut-free granola"
+      ]
+    },
+    {
+      "itemId": "muesli",
+      "add": [
+        "birchermuesli",
+        "untoasted muesli",
+        "fruit muesli"
+      ]
+    },
+    {
+      "itemId": "cereal",
+      "add": [
+        "ready-to-eat cereal",
+        "boxed cereal",
+        "flaked cereal",
+        "puffed cereal"
+      ]
+    }
+  ],
+  "newItems": [
+    {
+      "name": "red rice",
+      "aliases": [
+        "camargue red rice",
+        "bhutanese red rice",
+        "thai red rice",
+        "matta rice",
+        "kerala red rice",
+        "rosematta",
+        "red cargo rice",
+        "himalayan red rice"
+      ],
+      "parentName": "rice",
+      "defaultStorage": "Pantry",
+      "freshnessDays": {
+        "Pantry": [
+          365,
+          730
+        ]
+      },
+      "dietaryTags": [
+        "Vegetarian",
+        "Vegan",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Whole-grain red-bran rice; staples across Bhutan, Kerala (Palakkadan Matta), Thailand and the Camargue (France)."
+    },
+    {
+      "name": "black rice",
+      "aliases": [
+        "forbidden rice",
+        "chinese black rice",
+        "purple rice",
+        "emperor's rice",
+        "riso venere",
+        "venus rice"
+      ],
+      "parentName": "rice",
+      "defaultStorage": "Pantry",
+      "freshnessDays": {
+        "Pantry": [
+          365,
+          730
+        ]
+      },
+      "dietaryTags": [
+        "Vegetarian",
+        "Vegan",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Anthocyanin-rich whole-grain rice; Chinese 'forbidden rice' and Italian riso Venere."
+    },
+    {
+      "name": "glutinous rice",
+      "aliases": [
+        "sweet rice",
+        "sticky rice",
+        "mochi rice",
+        "mochigome",
+        "thai sticky rice",
+        "khao niaow",
+        "black sticky rice"
+      ],
+      "parentName": "rice",
+      "defaultStorage": "Pantry",
+      "freshnessDays": {
+        "Pantry": [
+          365,
+          730
+        ]
+      },
+      "dietaryTags": [
+        "Vegetarian",
+        "Vegan",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Low-amylose sticky rice for SE/East Asian dishes; despite the name it contains no gluten."
+    },
+    {
+      "name": "parboiled rice",
+      "aliases": [
+        "converted rice",
+        "easy-cook rice",
+        "sella rice",
+        "golden sella",
+        "uncle ben's style rice"
+      ],
+      "parentName": "rice",
+      "defaultStorage": "Pantry",
+      "freshnessDays": {
+        "Pantry": [
+          365,
+          730
+        ]
+      },
+      "dietaryTags": [
+        "Vegetarian",
+        "Vegan",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Pre-steamed rough rice that stays firm and separate; common in India, West Africa and the US South."
+    },
+    {
+      "name": "paella rice",
+      "aliases": [
+        "bomba rice",
+        "valencia rice",
+        "calasparra rice",
+        "spanish rice",
+        "arroz bomba"
+      ],
+      "parentName": "rice",
+      "defaultStorage": "Pantry",
+      "freshnessDays": {
+        "Pantry": [
+          365,
+          730
+        ]
+      },
+      "dietaryTags": [
+        "Vegetarian",
+        "Vegan",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Short/medium-grain Spanish rice (Bomba, Calasparra) prized for paella; absorbs broth without bursting."
+    },
+    {
+      "name": "carolina gold rice",
+      "aliases": [
+        "carolina rice",
+        "heirloom long grain rice",
+        "lowcountry rice"
+      ],
+      "parentName": "rice",
+      "defaultStorage": "Pantry",
+      "freshnessDays": {
+        "Pantry": [
+          365,
+          730
+        ]
+      },
+      "dietaryTags": [
+        "Vegetarian",
+        "Vegan",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Heritage aromatic American long-grain rice from the Carolina Lowcountry."
+    },
+    {
+      "name": "rice flakes",
+      "aliases": [
+        "poha",
+        "flattened rice",
+        "beaten rice",
+        "chivda",
+        "aval",
+        "pinipig",
+        "avalakki"
+      ],
+      "parentName": "rice",
+      "defaultStorage": "Pantry",
+      "freshnessDays": {
+        "Pantry": [
+          180,
+          365
+        ]
+      },
+      "dietaryTags": [
+        "Vegetarian",
+        "Vegan",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Pressed/flattened rice; staple in Indian poha and SE Asian snacks."
+    },
+    {
+      "name": "broken rice",
+      "aliases": [
+        "com tam",
+        "fragmented rice",
+        "rice fragments",
+        "broken jasmine rice"
+      ],
+      "parentName": "rice",
+      "defaultStorage": "Pantry",
+      "freshnessDays": {
+        "Pantry": [
+          365,
+          730
+        ]
+      },
+      "dietaryTags": [
+        "Vegetarian",
+        "Vegan",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Milled rice fragments; staple of Vietnamese com tam and West African dishes."
+    },
+    {
+      "name": "rice cakes",
+      "aliases": [
+        "puffed rice cakes",
+        "korean rice cakes",
+        "tteok",
+        "mochi cakes",
+        "plain rice cakes"
+      ],
+      "parentName": "rice",
+      "defaultStorage": "Pantry",
+      "freshnessDays": {
+        "Pantry": [
+          120,
+          270
+        ]
+      },
+      "dietaryTags": [
+        "Vegetarian",
+        "Vegan",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Puffed/pressed rice cakes; includes Western snack cakes and East Asian tteok."
+    },
+    {
+      "name": "wheat berries",
+      "aliases": [
+        "wheatberries",
+        "whole wheat kernels",
+        "hard wheat berries",
+        "soft wheat berries",
+        "winter wheat berries"
+      ],
+      "parentName": null,
+      "defaultStorage": "Pantry",
+      "freshnessDays": {
+        "Pantry": [
+          180,
+          365
+        ]
+      },
+      "dietaryTags": [
+        "Vegetarian",
+        "Vegan",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Whole intact wheat kernels (contains gluten); base for salads and pilafs. Splits the mislabeled 'wheat bran' entry."
+    },
+    {
+      "name": "cracked wheat",
+      "aliases": [
+        "dalia",
+        "broken wheat",
+        "lapsi",
+        "groats wheat",
+        "samba godhumai"
+      ],
+      "parentName": "wheat berries",
+      "defaultStorage": "Pantry",
+      "freshnessDays": {
+        "Pantry": [
+          180,
+          365
+        ]
+      },
+      "dietaryTags": [
+        "Vegetarian",
+        "Vegan",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Coarsely cracked raw wheat (unlike bulgur, not pre-cooked); South Asian dalia porridge. Contains gluten."
+    },
+    {
+      "name": "triticale",
+      "aliases": [
+        "triticale berries",
+        "wheat-rye hybrid",
+        "rimpau"
+      ],
+      "parentName": null,
+      "defaultStorage": "Pantry",
+      "freshnessDays": {
+        "Pantry": [
+          180,
+          365
+        ]
+      },
+      "dietaryTags": [
+        "Vegetarian",
+        "Vegan",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Wheat x rye hybrid grain; contains gluten."
+    },
+    {
+      "name": "rye berries",
+      "aliases": [
+        "whole rye kernels",
+        "rye grain",
+        "rye groats"
+      ],
+      "parentName": null,
+      "defaultStorage": "Pantry",
+      "freshnessDays": {
+        "Pantry": [
+          180,
+          365
+        ]
+      },
+      "dietaryTags": [
+        "Vegetarian",
+        "Vegan",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Whole rye kernels; contains gluten. Canonicalizes the 'rye groats' entry."
+    },
+    {
+      "name": "oat groats",
+      "aliases": [
+        "whole oat groats",
+        "hulled oats",
+        "raw oats",
+        "groat oats"
+      ],
+      "parentName": "oats",
+      "defaultStorage": "Pantry",
+      "freshnessDays": {
+        "Pantry": [
+          180,
+          365
+        ]
+      },
+      "dietaryTags": [
+        "Vegetarian",
+        "Vegan",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Whole intact oat kernels; pulls the misplaced oat-groat aliases off the 'oat bran' entry."
+    },
+    {
+      "name": "pearl millet",
+      "aliases": [
+        "bajra",
+        "bajri",
+        "kambu",
+        "sajje",
+        "cumbu",
+        "spiked millet"
+      ],
+      "parentName": "millet",
+      "defaultStorage": "Pantry",
+      "freshnessDays": {
+        "Pantry": [
+          180,
+          365
+        ]
+      },
+      "dietaryTags": [
+        "Vegetarian",
+        "Vegan",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "India/Africa staple (bajra); distinct from the mislabeled 'pearl barley' alias."
+    },
+    {
+      "name": "kodo millet",
+      "aliases": [
+        "kodo",
+        "varagu",
+        "arikelu",
+        "harka",
+        "kodra"
+      ],
+      "parentName": "millet",
+      "defaultStorage": "Pantry",
+      "freshnessDays": {
+        "Pantry": [
+          180,
+          365
+        ]
+      },
+      "dietaryTags": [
+        "Vegetarian",
+        "Vegan",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "South Indian minor millet."
+    },
+    {
+      "name": "little millet",
+      "aliases": [
+        "samai",
+        "kutki",
+        "sama",
+        "moraiyo",
+        "little-millet"
+      ],
+      "parentName": "millet",
+      "defaultStorage": "Pantry",
+      "freshnessDays": {
+        "Pantry": [
+          180,
+          365
+        ]
+      },
+      "dietaryTags": [
+        "Vegetarian",
+        "Vegan",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Indian minor millet (samai)."
+    },
+    {
+      "name": "job's tears",
+      "aliases": [
+        "coix",
+        "hato mugi",
+        "adlay",
+        "chinese pearl barley",
+        "yi yi ren",
+        "pearl barley (chinese)"
+      ],
+      "parentName": null,
+      "defaultStorage": "Pantry",
+      "freshnessDays": {
+        "Pantry": [
+          180,
+          365
+        ]
+      },
+      "dietaryTags": [
+        "Vegetarian",
+        "Vegan",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Coix lacryma-jobi; East/SE Asian grain often mislabeled 'Chinese pearl barley'. Gluten-free."
+    },
+    {
+      "name": "masa harina",
+      "aliases": [
+        "masa",
+        "corn masa flour",
+        "nixtamalized corn flour",
+        "maseca",
+        "instant masa"
+      ],
+      "parentName": null,
+      "defaultStorage": "Pantry",
+      "freshnessDays": {
+        "Pantry": [
+          180,
+          365
+        ]
+      },
+      "dietaryTags": [
+        "Vegetarian",
+        "Vegan",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Nixtamalized corn flour for tortillas/tamales (Mexico/Central America)."
+    },
+    {
+      "name": "blue cornmeal",
+      "aliases": [
+        "blue corn meal",
+        "harina de maiz azul",
+        "blue corn flour"
+      ],
+      "parentName": "cornmeal",
+      "defaultStorage": "Pantry",
+      "freshnessDays": {
+        "Pantry": [
+          180,
+          365
+        ]
+      },
+      "dietaryTags": [
+        "Vegetarian",
+        "Vegan",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Southwestern/Native American blue maize meal."
+    },
+    {
+      "name": "popcorn kernels",
+      "aliases": [
+        "popping corn",
+        "popcorn",
+        "corn kernels for popping",
+        "unpopped popcorn"
+      ],
+      "parentName": null,
+      "defaultStorage": "Pantry",
+      "freshnessDays": {
+        "Pantry": [
+          365,
+          730
+        ]
+      },
+      "dietaryTags": [
+        "Vegetarian",
+        "Vegan",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Whole dried popping-corn kernels; a whole grain."
+    },
+    {
+      "name": "maize meal porridge",
+      "aliases": [
+        "ugali",
+        "sadza",
+        "pap",
+        "nshima",
+        "mealie pap",
+        "sima",
+        "fufu corn"
+      ],
+      "parentName": "cornmeal",
+      "defaultStorage": "Pantry",
+      "freshnessDays": {
+        "Pantry": [
+          180,
+          365
+        ]
+      },
+      "dietaryTags": [
+        "Vegetarian",
+        "Vegan",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Sub-Saharan staple stiff maize porridge (ugali/sadza/pap/nshima); sold as the dry meal."
+    },
+    {
+      "name": "congee",
+      "aliases": [
+        "jook",
+        "rice porridge",
+        "okayu",
+        "juk",
+        "bubur",
+        "canjee"
+      ],
+      "parentName": "porridge",
+      "defaultStorage": "Pantry",
+      "freshnessDays": {
+        "Pantry": [
+          180,
+          365
+        ]
+      },
+      "dietaryTags": [
+        "Vegetarian",
+        "Vegan",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "East/SE Asian rice porridge; currently only an alias on 'porridge' — promote to its own item."
+    },
+    {
+      "name": "tsampa",
+      "aliases": [
+        "roasted barley flour",
+        "tibetan tsampa",
+        "pak",
+        "rtsam pa"
+      ],
+      "parentName": null,
+      "defaultStorage": "Pantry",
+      "freshnessDays": {
+        "Pantry": [
+          180,
+          365
+        ]
+      },
+      "dietaryTags": [
+        "Vegetarian",
+        "Vegan",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Tibetan roasted-barley flour staple; contains gluten (barley)."
+    },
+    {
+      "name": "rice krispies cereal",
+      "aliases": [
+        "crisped rice cereal",
+        "rice crispies",
+        "crispy rice cereal",
+        "rice bubbles"
+      ],
+      "parentName": "cereal",
+      "defaultStorage": "Pantry",
+      "freshnessDays": {
+        "Pantry": [
+          60,
+          180
+        ]
+      },
+      "dietaryTags": [
+        "Vegetarian",
+        "Vegan",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Crisped-rice breakfast cereal."
+    },
+    {
+      "name": "frosted flakes cereal",
+      "aliases": [
+        "sugar frosted flakes",
+        "frosties",
+        "sweetened corn flakes"
+      ],
+      "parentName": "corn flakes cereal",
+      "defaultStorage": "Pantry",
+      "freshnessDays": {
+        "Pantry": [
+          60,
+          180
+        ]
+      },
+      "dietaryTags": [
+        "Vegetarian",
+        "Vegan",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Sugar-coated corn flakes."
+    },
+    {
+      "name": "oat ring cereal",
+      "aliases": [
+        "cheerios",
+        "toasted oat cereal",
+        "oat o's",
+        "oat rings"
+      ],
+      "parentName": "cereal",
+      "defaultStorage": "Pantry",
+      "freshnessDays": {
+        "Pantry": [
+          60,
+          180
+        ]
+      },
+      "dietaryTags": [
+        "Vegetarian",
+        "Vegan",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Toasted whole-oat ring cereal."
+    },
+    {
+      "name": "wheat biscuit cereal",
+      "aliases": [
+        "weetabix",
+        "wheat biscuits",
+        "weet-bix",
+        "shredded wheat biscuits"
+      ],
+      "parentName": "cereal",
+      "defaultStorage": "Pantry",
+      "freshnessDays": {
+        "Pantry": [
+          60,
+          180
+        ]
+      },
+      "dietaryTags": [
+        "Vegetarian",
+        "Vegan",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Whole-wheat biscuit cereal (Weetabix/Weet-Bix). Contains gluten."
+    },
+    {
+      "name": "puffed wheat cereal",
+      "aliases": [
+        "puffed wheat",
+        "wheat puffs cereal"
+      ],
+      "parentName": "cereal",
+      "defaultStorage": "Pantry",
+      "freshnessDays": {
+        "Pantry": [
+          60,
+          180
+        ]
+      },
+      "dietaryTags": [
+        "Vegetarian",
+        "Vegan",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Puffed-wheat breakfast cereal. Contains gluten."
+    },
+    {
+      "name": "instant oatmeal packets",
+      "aliases": [
+        "instant oatmeal",
+        "flavored instant oatmeal",
+        "oatmeal sachets",
+        "quick oatmeal cups"
+      ],
+      "parentName": "oatmeal cereal",
+      "defaultStorage": "Pantry",
+      "freshnessDays": {
+        "Pantry": [
+          180,
+          365
+        ]
+      },
+      "dietaryTags": [
+        "Vegetarian",
+        "Vegan",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Single-serve instant oatmeal."
+    }
+  ],
+  "cleanups": [
+    {
+      "itemId": "millet",
+      "fix": "Rename 'millet porridge' -> 'millet' (the base grain). Keep porridge sense out of this item; update children barnyard/foxtail/proso/finger-millet names from '<x> millet porridge' to '<x> millet'."
+    },
+    {
+      "itemId": "barley",
+      "fix": "Rename 'barley groats' -> 'barley'; it is the canonical whole barley. Re-point children pearl-barley/pot/quick-cooking to this. Note: barley contains gluten — keep GF OFF (already off)."
+    },
+    {
+      "itemId": "cornmeal",
+      "fix": "Rename 'cornmeal porridge' -> 'cornmeal'; re-parent off 'porridge' (cornmeal is a dry milled product). Rename children cornmeal-white/yellow-cornmeal to '... cornmeal'."
+    },
+    {
+      "itemId": "wheat",
+      "fix": "This item (id 'wheat', name 'wheat bran', parent 'bran', aliases wheat berries/whole wheat) is mislabeled. Split: make 'wheat' = whole wheat / wheat berries (parent none, NO Gluten-Free) and create a separate proper 'wheat bran' under 'bran'. Or rename to 'whole wheat' and move bran aliases out."
+    },
+    {
+      "itemId": "oat-bran",
+      "fix": "Remove aliases 'oatmeal','oat groats','grain groats','groat','whole groats' from oat bran — they belong to 'oats'/new 'oat groats'. Keep only true oat-bran aliases."
+    },
+    {
+      "itemId": "kamut",
+      "fix": "Remove 'Gluten-Free' tag — kamut/khorasan is a wheat species and contains gluten. Tags should be Vegetarian, Vegan, Dairy-Free, Nut-Free."
+    },
+    {
+      "itemId": "freekeh",
+      "fix": "Remove 'Gluten-Free' tag — freekeh is roasted green durum wheat and contains gluten. Tags should be Vegetarian, Vegan, Dairy-Free, Nut-Free."
+    },
+    {
+      "itemId": "bran",
+      "fix": "Drop 'Gluten-Free' from the generic 'bran' bucket (it spans wheat/oat/rice bran, not all gluten-free), or split into wheat-bran (gluten) vs rice/oat-bran (GF)."
+    },
+    {
+      "itemId": "groats",
+      "fix": "Drop 'Gluten-Free' from the generic 'groats' bucket; it covers barley/rye/buckwheat groats with mixed gluten status."
+    },
+    {
+      "itemId": "multigrain-porridge",
+      "fix": "Reconsider 'Gluten-Free' — multigrain blends usually contain wheat/barley/rye; drop GF unless the product is certified gluten-free."
+    },
+    {
+      "itemId": "potato-flakes",
+      "fix": "Move out of 'Grains & Cereals' — instant mashed potato / dehydrated potato flakes belong in 'Produce' (or 'Other'); it is not a grain or cereal."
+    },
+    {
+      "itemId": "pearl-barley",
+      "fix": "Remove alias 'pearl millet' — that is bajra (a millet), not pearl barley. Rename name 'pearl barley groats' -> 'pearl barley'."
+    },
+    {
+      "itemId": "rice-bran",
+      "fix": "Remove alias 'rice porridge' — rice bran is a milling byproduct, not a porridge; rice porridge belongs to congee/cream-of-rice."
+    },
+    {
+      "itemId": "sorghum-white",
+      "fix": "Replace copy-pasted parent aliases ('jowar','milo','sorghum grain','sorghums') with white-sorghum-specific aliases (e.g. 'white jowar','white milo','pearl white sorghum')."
+    },
+    {
+      "itemId": "quick",
+      "fix": "Remove alias 'quick oats' from 'quick grits' — it belongs to oats/oats-instant; keep grits-specific aliases only."
+    },
+    {
+      "itemId": "cream-of-rice",
+      "fix": "Tags are 'Vegetarian, Gluten-Free, Nut-Free' — cream of rice is plain rice, so it is also Vegan and Dairy-Free; add 'Vegan' and 'Dairy-Free' (it omits both, inconsistent with other rice items)."
+    },
+    {
+      "itemId": "cream-of-wheat",
+      "fix": "Tags are only 'Vegetarian, Nut-Free' — cream of wheat (farina) is plant-based, so add 'Vegan' and 'Dairy-Free' (it is wheat, so correctly NOT Gluten-Free)."
+    },
+    {
+      "itemId": "durum",
+      "fix": "Alias 'semolinas' duplicates the parent 'semolina'; replace with durum-wheat-specific aliases ('durum wheat','triticum durum','hard wheat')."
+    },
+    {
+      "itemId": "cold-cereal",
+      "fix": "Name 'cold cereal multigrain' / id 'cold-cereal' is oddly specific and overlaps the 'cold cereal' alias already on 'cereal'; consider merging into 'multigrain cereal' or generalizing."
+    },
+    {
+      "itemId": "hominy",
+      "fix": "Freshness mixes dried (Pantry 365-1095) and canned/cooked (Refrigerated 3-7) hominy in one item; split into 'dried hominy' (pantry) and 'canned hominy' or pick one form to keep the freshness map coherent."
+    }
+  ]
+}

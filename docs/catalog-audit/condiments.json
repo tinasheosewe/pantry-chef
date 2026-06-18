@@ -1,0 +1,2325 @@
+{
+  "category": "Condiments & Sauces",
+  "summary": "Audited 161 items in Condiments & Sauces. Coverage of Western and East-Asian staples is decent (ketchup, mustard, mayo, soy, hoisin, oyster, fish sauce, gochujang, doubanjiang, miso, teriyaki, BBQ, chimichurri, tahini, hummus, salsa). But the category is bloated with low-value flavor-variant children ('-spicy'/'-smoky'/'-regular' shells with no distinct data) while missing many globally common condiments: sambal oelek, sambal badjak, ssamjang, XO sauce, harissa, zhug/schug, chermoula, ajvar, mojo, romesco, salsa verde (Italian and Mexican), aioli, ranch/thousand-island/blue-cheese/caesar/green-goddess dressings, nuoc cham, ponzu is present but no kecap manis, doenjang, gochugaru-paste, chiu chow chili oil, chili crisp/crunch, calamansi, ume/umeboshi paste, wasabi, karashi, gochujang's soy cousin doenjang, tkemali, tonkatsu sauce, okonomiyaki sauce, unagi sauce, yuzu kosho, mole, tomatillo/green salsa, queso/cheese sauce, alfredo, vodka sauce, arrabbiata, tomato passata/sugo, gravy gaps (sausage/country/onion), nutritional-yeast-free gaps, pickled-jalapeno/giardiniera-style condiments, and many vinegars used as condiments (sherry, malt, champagne, distilled white, black/Chinkiang, coconut, ume plum). Several real data bugs exist: copy-pasted wrong aliases (peanut-butter / corn-syrup / enchilada strings leaking into horseradish, pico de gallo, etc.), the 'plum-duck-sauce' item is mislabeled 'plum', and a confused plum/duck-sauce parent web. Recommend pruning redundant variant shells, fixing leaked aliases, and adding the global condiments below (liberal/global inclusion).",
+  "issues": [
+    "Massive low-value '-spicy'/'-smoky'/'-regular'/'-hot' variant inflation: e.g. barbecue-sauce-smoky, barbecue-sauce-spicy, brown-sauce-smoky, brown-sauce-spicy, chimichurri-smoky, chimichurri-spicy, ketchup-regular, ketchup-spicy, teriyaki-sauce-regular, teriyaki-sauce-spicy, worcestershire-sauce-regular/-spicy, oyster-sauce-regular, tamarind-paste-regular, sweet-and-sour-sauce-spicy, peanut-sauce-spicy, guacamole-spicy, hummus-spicy, salsa-hot, chili-sauce-hot, chili-sauce-spicy, cocktail-sauce-spicy, duck-sauce-spicy, enchilada-sauce-hot, pickle-relish-spicy, pickled-ginger-spicy, plum-sauce-spicy, tartar-sauce-spicy. These are heat/flavor adjectives on a base item, not distinct pantry SKUs; most carry empty aliases and add no shelf-life signal. Consider collapsing into the parent (a 'spiciness' facet) rather than separate catalog items.",
+    "Wrong/leaked aliases from copy-paste (clear data bugs): creamy-horseradish has alias 'creamy peanut butter'; crunchy-chocolate-hazelnut-spread has alias 'crunchy peanut butter'; corn-pico-de-gallo has aliases 'light corn syrup','light-colored corn syrup','white corn syrup'; green-chimichurri has alias 'green enchilada sauce'; red-chimichurri has alias 'red enchilada sauce'; white-balsamic-vinegar has alias 'white gravy'; sweet-adobo-sauce has alias 'sweet relish'; thai-chili-sauce has alias 'thai peanut sauce'.",
+    "plum-duck-sauce: id is 'plum-duck-sauce' but name is just 'plum' and parent is duck-sauce — confusing. The actual fruit 'plum' should not live here; this looks like a duplicate/garbled record. Also plum-sauce lists parent 'plum' (a produce id) AND duck-sauce lists parent 'plum' — circular/garbled plum web.",
+    "gochujang inherits generic aliases 'sambal','chile paste','chili pastes','chilli paste' from chili-paste — these are wrong for gochujang (sambal is a different Indonesian product) and will cause mismatches.",
+    "chili-paste itself lists 'sambal' as an alias, conflating a generic chili paste with the specific Indonesian sambal family.",
+    "Storage inconsistency among variants of the SAME product: enchilada-sauce is Pantry but enchilada-sauce-hot is Refrigerated (mild/medium are Pantry); barbecue-sauce is Refrigerated while original-barbecue-sauce (child) is Refrigerated but bottled BBQ is shelf-stable until opened; worcestershire-sauce is Pantry but worcestershire-sauce-regular child is Refrigerated. Storage should be consistent within a product family.",
+    "vegetarian-black-bean-sauce has name 'vegetarian' (truncated); oyster-sauce-regular name fine but redundant with parent.",
+    "mustard base item carries an enormous alias dump that mixes prepared mustard, mustard powder, AND mustard SEEDS ('black mustard seed','white mustard seed','yellow mustard seed') — seeds belong in Spices & Herbs, not as aliases of the condiment. 'remoulades' is also wrongly aliased onto mustard.",
+    "syrup and sauce and paste are extremely generic catch-all base items (syrup aliases include vanilla/strawberry/raspberry/cane/honey syrups spanning Baking and Beverages). 'syrup' arguably belongs in Baking & Sweeteners, not Condiments & Sauces.",
+    "bouillon family (beef/chicken/fish/lamb/mushroom/vegetable bouillon, demi-glace) is arguably its own 'stocks & broths' concept rather than a condiment; beef-bouillon alias list duplicates the parent bouillon aliases verbatim.",
+    "orange-blossom-water and rose-water are flavorings/baking aromatics, not really condiments/sauces — likely miscategorized.",
+    "tartar-sauce parent includes 'mayonnaise' (good) but remoulade has no parent despite being a mayonnaise-based sauce; aioli is missing entirely.",
+    "tajin is categorized here but is a seasoning blend (Spices & Herbs) — borderline; chili-lime seasoning is more spice than sauce.",
+    "Missing freshness 'Pantry' on several shelf-stable-until-opened bottled sauces stored as Refrigerated (e.g. hoisin, oyster, teriyaki, sriracha) — fine if intended as after-opening, but inconsistent with fish-sauce/soy-sauce which keep a Pantry window."
+  ],
+  "redundancies": [
+    [
+      "ketchup",
+      "ketchup-regular",
+      "ketchup-regular is just ketchup with no distinguishing data; collapse"
+    ],
+    [
+      "oyster-sauce",
+      "oyster-sauce-regular",
+      "regular variant identical to base oyster sauce"
+    ],
+    [
+      "teriyaki-sauce",
+      "teriyaki-sauce-regular",
+      "regular variant identical to base"
+    ],
+    [
+      "worcestershire-sauce",
+      "worcestershire-sauce-regular",
+      "regular variant identical to base"
+    ],
+    [
+      "tamarind-paste",
+      "tamarind-paste-regular",
+      "regular variant identical to base, shares all aliases"
+    ],
+    [
+      "chimichurri",
+      "classic-chimichurri",
+      "classic chimichurri == base chimichurri; classic-chimichurri also overlaps green-chimichurri"
+    ],
+    [
+      "chimichurri",
+      "green-chimichurri",
+      "green chimichurri is the standard/default chimichurri; both green and classic duplicate the base"
+    ],
+    [
+      "barbecue-sauce",
+      "original-barbecue-sauce",
+      "'original' BBQ == base barbecue sauce"
+    ],
+    [
+      "bouillon",
+      "beef-bouillon",
+      "beef-bouillon copies the parent bouillon alias list verbatim (broth/stock cube strings); aliases at minimum are redundant"
+    ],
+    [
+      "chili-sauce",
+      "chili-sauce-hot",
+      "chili-sauce-hot and chili-sauce-spicy are duplicate heat variants of the same base"
+    ],
+    [
+      "chili-sauce-hot",
+      "chili-sauce-spicy",
+      "two near-identical heat-variant shells of chili-sauce"
+    ],
+    [
+      "hoisin-sauce",
+      "hoisin-sauce-spicy",
+      "spicy variant duplicates base aliases, no distinct data"
+    ],
+    [
+      "pico-de-gallo",
+      "corn-pico-de-gallo",
+      "corn-pico-de-gallo carries corn-syrup aliases (data bug) and is a niche variant of pico de gallo"
+    ],
+    [
+      "adobo-sauce",
+      "adobo-sauce-smoky",
+      "smoky/spicy adobo variants are heat shells of adobo-sauce; chipotle-adobo-sauce is the meaningful one"
+    ],
+    [
+      "adobo-sauce-smoky",
+      "adobo-sauce-spicy",
+      "duplicate heat-variant shells"
+    ],
+    [
+      "plum-duck-sauce",
+      "duck-sauce",
+      "plum-duck-sauce (name 'plum') is a garbled duplicate of duck-sauce"
+    ]
+  ],
+  "aliasAdditions": [
+    {
+      "itemId": "fish-sauce",
+      "add": [
+        "nam pla",
+        "nuoc mam",
+        "patis",
+        "budu",
+        "shottsuru",
+        "colatura",
+        "ngan pya ye"
+      ]
+    },
+    {
+      "itemId": "soy-sauce",
+      "add": [
+        "shoyu",
+        "tamari",
+        "light soy sauce",
+        "dark soy sauce",
+        "koikuchi",
+        "usukuchi",
+        "jiangyou",
+        "ganjang",
+        "kecap asin"
+      ]
+    },
+    {
+      "itemId": "hoisin-sauce",
+      "add": [
+        "haixian sauce",
+        "hoi sin"
+      ]
+    },
+    {
+      "itemId": "oyster-sauce",
+      "add": [
+        "hao you",
+        "stir-fry sauce"
+      ]
+    },
+    {
+      "itemId": "sriracha",
+      "add": [
+        "sriraja",
+        "huy fong",
+        "tuong ot sriracha"
+      ]
+    },
+    {
+      "itemId": "gochujang",
+      "add": [
+        "korean red pepper paste",
+        "hot pepper paste",
+        "kochujang"
+      ]
+    },
+    {
+      "itemId": "doubanjiang",
+      "add": [
+        "toban djan",
+        "pixian doubanjiang",
+        "broad bean chili paste",
+        "spicy bean paste",
+        "tobanjan"
+      ]
+    },
+    {
+      "itemId": "miso",
+      "add": [
+        "white miso",
+        "shiro miso",
+        "red miso",
+        "aka miso",
+        "awase miso",
+        "barley miso",
+        "mugi miso",
+        "soybean paste"
+      ]
+    },
+    {
+      "itemId": "tahini",
+      "add": [
+        "tahineh",
+        "ardeh",
+        "rashi",
+        "sesame seed paste"
+      ]
+    },
+    {
+      "itemId": "hummus",
+      "add": [
+        "hommos",
+        "hommus",
+        "hommus bi tahini"
+      ]
+    },
+    {
+      "itemId": "tzatziki-sauce",
+      "add": [
+        "tzatziki dip",
+        "cacik",
+        "tarator"
+      ]
+    },
+    {
+      "itemId": "chutney",
+      "add": [
+        "chatni",
+        "achar",
+        "indian relish"
+      ]
+    },
+    {
+      "itemId": "mango-chutney",
+      "add": [
+        "aam ki chutney",
+        "major grey chutney"
+      ]
+    },
+    {
+      "itemId": "sweet-chili-sauce",
+      "add": [
+        "thai sweet chilli sauce",
+        "mae ploy",
+        "nam jim kai"
+      ]
+    },
+    {
+      "itemId": "ponzu",
+      "add": [
+        "ponzu sauce",
+        "citrus ponzu"
+      ]
+    },
+    {
+      "itemId": "mirin",
+      "add": [
+        "hon mirin",
+        "aji-mirin",
+        "mirin-fu"
+      ]
+    },
+    {
+      "itemId": "rice-vinegar",
+      "add": [
+        "rice wine vinegar",
+        "mitsukan",
+        "kurozu"
+      ]
+    },
+    {
+      "itemId": "balsamic-vinegar",
+      "add": [
+        "balsamic glaze",
+        "balsamic reduction",
+        "aceto balsamico di modena"
+      ]
+    },
+    {
+      "itemId": "worcestershire-sauce",
+      "add": [
+        "lea and perrins",
+        "worcester"
+      ]
+    },
+    {
+      "itemId": "pomegranate-molasses",
+      "add": [
+        "rob el rumman",
+        "narsharab",
+        "pomegranate molases"
+      ]
+    },
+    {
+      "itemId": "kimchi",
+      "add": [
+        "baechu kimchi",
+        "napa cabbage kimchi",
+        "gimchi"
+      ]
+    },
+    {
+      "itemId": "shrimp-paste",
+      "add": [
+        "belacan",
+        "kapi",
+        "terasi",
+        "bagoong",
+        "mam tom",
+        "ngapi"
+      ]
+    },
+    {
+      "itemId": "curry-paste",
+      "add": [
+        "red curry paste",
+        "green curry paste",
+        "yellow curry paste",
+        "massaman curry paste",
+        "panang curry paste",
+        "nam prik pao"
+      ]
+    },
+    {
+      "itemId": "peanut-sauce",
+      "add": [
+        "sate sauce",
+        "gado gado sauce",
+        "bumbu kacang"
+      ]
+    },
+    {
+      "itemId": "marinara",
+      "add": [
+        "marinara sauce",
+        "napoli sauce",
+        "pomodoro sauce"
+      ]
+    },
+    {
+      "itemId": "pesto",
+      "add": [
+        "pesto genovese",
+        "basil pesto",
+        "pesto alla genovese"
+      ]
+    },
+    {
+      "itemId": "guacamole",
+      "add": [
+        "guacamole dip",
+        "mashed avocado"
+      ]
+    },
+    {
+      "itemId": "horseradish",
+      "add": [
+        "prepared horseradish",
+        "horseradish sauce"
+      ]
+    },
+    {
+      "itemId": "dijon-mustard",
+      "add": [
+        "moutarde de dijon"
+      ]
+    },
+    {
+      "itemId": "liquid-smoke",
+      "add": [
+        "hickory liquid smoke",
+        "mesquite liquid smoke"
+      ]
+    }
+  ],
+  "newItems": [
+    {
+      "name": "sambal oelek",
+      "aliases": [
+        "sambal ulek",
+        "ground fresh chili paste",
+        "indonesian chili paste"
+      ],
+      "parentName": "chili-paste",
+      "defaultStorage": "Refrigerated",
+      "freshnessDays": {
+        "Refrigerated": [
+          180,
+          365
+        ]
+      },
+      "dietaryTags": [
+        "Vegan",
+        "Vegetarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Indonesian raw chili paste (Indonesia/Malaysia); base of many sambals."
+    },
+    {
+      "name": "sambal badjak",
+      "aliases": [
+        "sambal bajak",
+        "sweet chili sambal"
+      ],
+      "parentName": "chili-paste",
+      "defaultStorage": "Refrigerated",
+      "freshnessDays": {
+        "Refrigerated": [
+          180,
+          365
+        ]
+      },
+      "dietaryTags": [
+        "Vegan",
+        "Vegetarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Sweet-spicy fried Indonesian sambal."
+    },
+    {
+      "name": "ssamjang",
+      "aliases": [
+        "korean dipping sauce",
+        "ssam jang",
+        "korean bbq dipping paste"
+      ],
+      "parentName": "bean-paste",
+      "defaultStorage": "Refrigerated",
+      "freshnessDays": {
+        "Refrigerated": [
+          180,
+          365
+        ]
+      },
+      "dietaryTags": [
+        "Vegan",
+        "Vegetarian",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Korean dipping paste of doenjang + gochujang for ssam wraps."
+    },
+    {
+      "name": "doenjang",
+      "aliases": [
+        "korean soybean paste",
+        "dwenjang",
+        "fermented soybean paste"
+      ],
+      "parentName": "bean-paste",
+      "defaultStorage": "Refrigerated",
+      "freshnessDays": {
+        "Refrigerated": [
+          180,
+          730
+        ]
+      },
+      "dietaryTags": [
+        "Vegan",
+        "Vegetarian",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Korean fermented soybean paste; miso's Korean cousin."
+    },
+    {
+      "name": "XO sauce",
+      "aliases": [
+        "xo sauce",
+        "x.o. sauce",
+        "luxury seafood sauce"
+      ],
+      "parentName": "sauce",
+      "defaultStorage": "Refrigerated",
+      "freshnessDays": {
+        "Refrigerated": [
+          60,
+          180
+        ]
+      },
+      "dietaryTags": [
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Hong Kong umami sauce of dried scallops, shrimp, chili, ham."
+    },
+    {
+      "name": "chili crisp",
+      "aliases": [
+        "chili crunch",
+        "chilli crisp",
+        "lao gan ma",
+        "crispy chili oil",
+        "chili oil with crunch"
+      ],
+      "parentName": "chili-oil",
+      "defaultStorage": "Pantry",
+      "freshnessDays": {
+        "Refrigerated": [
+          180,
+          365
+        ]
+      },
+      "dietaryTags": [
+        "Vegan",
+        "Vegetarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Chinese crunchy chili-in-oil condiment (e.g. Lao Gan Ma)."
+    },
+    {
+      "name": "harissa",
+      "aliases": [
+        "harissa paste",
+        "rose harissa",
+        "tunisian chili paste",
+        "hrous"
+      ],
+      "parentName": "chili-paste",
+      "defaultStorage": "Refrigerated",
+      "freshnessDays": {
+        "Refrigerated": [
+          60,
+          180
+        ]
+      },
+      "dietaryTags": [
+        "Vegan",
+        "Vegetarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "North African (Tunisia) chili-and-spice paste."
+    },
+    {
+      "name": "zhug",
+      "aliases": [
+        "zhoug",
+        "schug",
+        "skhug",
+        "yemenite hot sauce",
+        "green zhug"
+      ],
+      "parentName": "hot-sauce",
+      "defaultStorage": "Refrigerated",
+      "freshnessDays": {
+        "Refrigerated": [
+          14,
+          60
+        ]
+      },
+      "dietaryTags": [
+        "Vegan",
+        "Vegetarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Yemenite/Israeli fresh chili-cilantro hot sauce."
+    },
+    {
+      "name": "chermoula",
+      "aliases": [
+        "charmoula",
+        "moroccan marinade"
+      ],
+      "parentName": "sauce",
+      "defaultStorage": "Refrigerated",
+      "freshnessDays": {
+        "Refrigerated": [
+          7,
+          21
+        ]
+      },
+      "dietaryTags": [
+        "Vegan",
+        "Vegetarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Maghrebi herb-and-spice marinade/sauce."
+    },
+    {
+      "name": "ajvar",
+      "aliases": [
+        "aivar",
+        "red pepper relish",
+        "balkan pepper spread"
+      ],
+      "parentName": "sauce",
+      "defaultStorage": "Refrigerated",
+      "freshnessDays": {
+        "Refrigerated": [
+          60,
+          180
+        ]
+      },
+      "dietaryTags": [
+        "Vegan",
+        "Vegetarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Balkan roasted red pepper and eggplant relish."
+    },
+    {
+      "name": "muhammara",
+      "aliases": [
+        "mhammara",
+        "red pepper walnut dip"
+      ],
+      "parentName": "sauce",
+      "defaultStorage": "Refrigerated",
+      "freshnessDays": {
+        "Refrigerated": [
+          7,
+          14
+        ]
+      },
+      "dietaryTags": [
+        "Vegan",
+        "Vegetarian",
+        "Gluten-Free",
+        "Dairy-Free"
+      ],
+      "notes": "Syrian/Levantine roasted pepper + walnut dip (contains nuts)."
+    },
+    {
+      "name": "romesco",
+      "aliases": [
+        "romesco sauce",
+        "salsa romesco"
+      ],
+      "parentName": "sauce",
+      "defaultStorage": "Refrigerated",
+      "freshnessDays": {
+        "Refrigerated": [
+          7,
+          14
+        ]
+      },
+      "dietaryTags": [
+        "Vegan",
+        "Vegetarian",
+        "Gluten-Free",
+        "Dairy-Free"
+      ],
+      "notes": "Catalan (Spain) roasted pepper, tomato and nut sauce (contains nuts)."
+    },
+    {
+      "name": "aioli",
+      "aliases": [
+        "aïoli",
+        "garlic aioli",
+        "allioli",
+        "garlic mayonnaise"
+      ],
+      "parentName": "mayonnaise",
+      "defaultStorage": "Refrigerated",
+      "freshnessDays": {
+        "Refrigerated": [
+          7,
+          14
+        ]
+      },
+      "dietaryTags": [
+        "Vegetarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Mediterranean garlic emulsion sauce."
+    },
+    {
+      "name": "mojo sauce",
+      "aliases": [
+        "mojo",
+        "mojo criollo",
+        "mojo verde",
+        "cuban garlic citrus sauce"
+      ],
+      "parentName": "sauce",
+      "defaultStorage": "Refrigerated",
+      "freshnessDays": {
+        "Refrigerated": [
+          14,
+          30
+        ]
+      },
+      "dietaryTags": [
+        "Vegan",
+        "Vegetarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Canarian/Cuban garlic-citrus sauce."
+    },
+    {
+      "name": "salsa verde",
+      "aliases": [
+        "green salsa",
+        "salsa verde mexicana",
+        "tomatillo salsa"
+      ],
+      "parentName": "salsa",
+      "defaultStorage": "Refrigerated",
+      "freshnessDays": {
+        "Refrigerated": [
+          7,
+          14
+        ]
+      },
+      "dietaryTags": [
+        "Vegan",
+        "Vegetarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Mexican tomatillo-based green salsa (distinct from Italian salsa verde)."
+    },
+    {
+      "name": "salsa roja",
+      "aliases": [
+        "red salsa",
+        "salsa de chile rojo",
+        "table salsa"
+      ],
+      "parentName": "salsa",
+      "defaultStorage": "Refrigerated",
+      "freshnessDays": {
+        "Refrigerated": [
+          7,
+          14
+        ]
+      },
+      "dietaryTags": [
+        "Vegan",
+        "Vegetarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Mexican red table salsa."
+    },
+    {
+      "name": "salsa macha",
+      "aliases": [
+        "macha",
+        "mexican chili oil"
+      ],
+      "parentName": "chili-oil",
+      "defaultStorage": "Pantry",
+      "freshnessDays": {
+        "Refrigerated": [
+          90,
+          180
+        ]
+      },
+      "dietaryTags": [
+        "Vegan",
+        "Vegetarian",
+        "Gluten-Free",
+        "Dairy-Free"
+      ],
+      "notes": "Oaxacan chili-and-nut/seed oil salsa (often contains nuts/seeds)."
+    },
+    {
+      "name": "mole",
+      "aliases": [
+        "mole poblano",
+        "mole sauce",
+        "mole negro",
+        "mole paste"
+      ],
+      "parentName": "sauce",
+      "defaultStorage": "Refrigerated",
+      "freshnessDays": {
+        "Refrigerated": [
+          14,
+          60
+        ]
+      },
+      "dietaryTags": [
+        "Vegetarian",
+        "Gluten-Free",
+        "Dairy-Free"
+      ],
+      "notes": "Mexican complex chili-chocolate-spice sauce (contains nuts/seeds; some not vegetarian if lard)."
+    },
+    {
+      "name": "tomatillo sauce",
+      "aliases": [
+        "green enchilada sauce",
+        "salsa de tomatillo"
+      ],
+      "parentName": "sauce",
+      "defaultStorage": "Refrigerated",
+      "freshnessDays": {
+        "Refrigerated": [
+          10,
+          21
+        ]
+      },
+      "dietaryTags": [
+        "Vegan",
+        "Vegetarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Mexican green tomatillo cooking sauce."
+    },
+    {
+      "name": "queso sauce",
+      "aliases": [
+        "queso",
+        "cheese sauce",
+        "nacho cheese sauce",
+        "queso dip"
+      ],
+      "parentName": "sauce",
+      "defaultStorage": "Refrigerated",
+      "freshnessDays": {
+        "Refrigerated": [
+          7,
+          14
+        ]
+      },
+      "dietaryTags": [
+        "Vegetarian",
+        "Gluten-Free",
+        "Nut-Free"
+      ],
+      "notes": "Tex-Mex melted cheese sauce/dip (contains dairy)."
+    },
+    {
+      "name": "alfredo sauce",
+      "aliases": [
+        "alfredo",
+        "fettuccine alfredo sauce",
+        "white pasta sauce"
+      ],
+      "parentName": "sauce",
+      "defaultStorage": "Refrigerated",
+      "freshnessDays": {
+        "Refrigerated": [
+          7,
+          14
+        ]
+      },
+      "dietaryTags": [
+        "Vegetarian",
+        "Gluten-Free",
+        "Nut-Free"
+      ],
+      "notes": "Italian-American cream-and-cheese pasta sauce (contains dairy)."
+    },
+    {
+      "name": "vodka sauce",
+      "aliases": [
+        "penne alla vodka sauce",
+        "tomato cream sauce"
+      ],
+      "parentName": "sauce",
+      "defaultStorage": "Refrigerated",
+      "freshnessDays": {
+        "Refrigerated": [
+          7,
+          14
+        ]
+      },
+      "dietaryTags": [
+        "Vegetarian",
+        "Gluten-Free",
+        "Nut-Free"
+      ],
+      "notes": "Italian-American tomato-cream pasta sauce (contains dairy)."
+    },
+    {
+      "name": "arrabbiata sauce",
+      "aliases": [
+        "arrabiata",
+        "spicy tomato sauce",
+        "sugo all'arrabbiata"
+      ],
+      "parentName": "marinara",
+      "defaultStorage": "Pantry",
+      "freshnessDays": {
+        "Refrigerated": [
+          7,
+          14
+        ]
+      },
+      "dietaryTags": [
+        "Vegan",
+        "Vegetarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Spicy Italian tomato pasta sauce."
+    },
+    {
+      "name": "tomato passata",
+      "aliases": [
+        "passata",
+        "strained tomatoes",
+        "tomato puree sauce",
+        "sugo"
+      ],
+      "parentName": "sauce",
+      "defaultStorage": "Pantry",
+      "freshnessDays": {
+        "Refrigerated": [
+          5,
+          10
+        ]
+      },
+      "dietaryTags": [
+        "Vegan",
+        "Vegetarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Italian uncooked strained tomato base."
+    },
+    {
+      "name": "nuoc cham",
+      "aliases": [
+        "nuoc mam cham",
+        "vietnamese dipping sauce",
+        "nuoc mam pha"
+      ],
+      "parentName": "fish-sauce",
+      "defaultStorage": "Refrigerated",
+      "freshnessDays": {
+        "Refrigerated": [
+          14,
+          30
+        ]
+      },
+      "dietaryTags": [
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Vietnamese fish-sauce dipping sauce with lime, sugar, chili."
+    },
+    {
+      "name": "kecap manis",
+      "aliases": [
+        "ketjap manis",
+        "indonesian sweet soy sauce",
+        "sweet soy sauce"
+      ],
+      "parentName": "soy-sauce",
+      "defaultStorage": "Pantry",
+      "freshnessDays": {
+        "Refrigerated": [
+          365,
+          730
+        ]
+      },
+      "dietaryTags": [
+        "Vegan",
+        "Vegetarian",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Indonesian thick sweet soy sauce."
+    },
+    {
+      "name": "tonkatsu sauce",
+      "aliases": [
+        "katsu sauce",
+        "japanese brown sauce",
+        "bulldog sauce"
+      ],
+      "parentName": "brown-sauce",
+      "defaultStorage": "Refrigerated",
+      "freshnessDays": {
+        "Refrigerated": [
+          180,
+          365
+        ]
+      },
+      "dietaryTags": [
+        "Vegan",
+        "Vegetarian",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Japanese thick Worcestershire-style sauce for katsu."
+    },
+    {
+      "name": "okonomiyaki sauce",
+      "aliases": [
+        "okonomi sauce",
+        "otafuku sauce"
+      ],
+      "parentName": "brown-sauce",
+      "defaultStorage": "Refrigerated",
+      "freshnessDays": {
+        "Refrigerated": [
+          180,
+          365
+        ]
+      },
+      "dietaryTags": [
+        "Vegan",
+        "Vegetarian",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Japanese sweet-savory sauce for okonomiyaki/takoyaki."
+    },
+    {
+      "name": "unagi sauce",
+      "aliases": [
+        "eel sauce",
+        "nitsume",
+        "kabayaki sauce"
+      ],
+      "parentName": "soy-sauce",
+      "defaultStorage": "Refrigerated",
+      "freshnessDays": {
+        "Refrigerated": [
+          90,
+          180
+        ]
+      },
+      "dietaryTags": [
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Japanese sweet soy glaze for eel/sushi (contains fish/soy)."
+    },
+    {
+      "name": "yuzu kosho",
+      "aliases": [
+        "yuzukosho",
+        "yuzu pepper paste"
+      ],
+      "parentName": "chili-paste",
+      "defaultStorage": "Refrigerated",
+      "freshnessDays": {
+        "Refrigerated": [
+          180,
+          365
+        ]
+      },
+      "dietaryTags": [
+        "Vegan",
+        "Vegetarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Japanese fermented chili-yuzu-salt paste."
+    },
+    {
+      "name": "wasabi paste",
+      "aliases": [
+        "wasabi",
+        "japanese horseradish",
+        "namida"
+      ],
+      "parentName": "horseradish",
+      "defaultStorage": "Refrigerated",
+      "freshnessDays": {
+        "Refrigerated": [
+          180,
+          365
+        ]
+      },
+      "dietaryTags": [
+        "Vegan",
+        "Vegetarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Japanese pungent green condiment (often horseradish-based)."
+    },
+    {
+      "name": "karashi",
+      "aliases": [
+        "japanese hot mustard",
+        "karashi mustard"
+      ],
+      "parentName": "mustard",
+      "defaultStorage": "Refrigerated",
+      "freshnessDays": {
+        "Refrigerated": [
+          180,
+          365
+        ]
+      },
+      "dietaryTags": [
+        "Vegan",
+        "Vegetarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Japanese fiery yellow mustard paste."
+    },
+    {
+      "name": "kewpie mayonnaise",
+      "aliases": [
+        "kewpie",
+        "japanese mayonnaise",
+        "japanese mayo"
+      ],
+      "parentName": "mayonnaise",
+      "defaultStorage": "Refrigerated",
+      "freshnessDays": {
+        "Refrigerated": [
+          60,
+          180
+        ]
+      },
+      "dietaryTags": [
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Japanese egg-yolk mayonnaise with rice vinegar/MSG."
+    },
+    {
+      "name": "calamansi",
+      "aliases": [
+        "calamansi juice",
+        "kalamansi",
+        "philippine lime",
+        "calamondin"
+      ],
+      "parentName": "lime-juice",
+      "defaultStorage": "Refrigerated",
+      "freshnessDays": {
+        "Refrigerated": [
+          7,
+          14
+        ]
+      },
+      "dietaryTags": [
+        "Vegan",
+        "Vegetarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Philippine citrus used as a souring condiment."
+    },
+    {
+      "name": "umeboshi paste",
+      "aliases": [
+        "ume paste",
+        "pickled plum paste",
+        "bainiku"
+      ],
+      "parentName": "paste",
+      "defaultStorage": "Refrigerated",
+      "freshnessDays": {
+        "Refrigerated": [
+          180,
+          365
+        ]
+      },
+      "dietaryTags": [
+        "Vegan",
+        "Vegetarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Japanese salted-plum paste."
+    },
+    {
+      "name": "ranch dressing",
+      "aliases": [
+        "ranch",
+        "buttermilk ranch",
+        "ranch dip"
+      ],
+      "parentName": "dressing",
+      "defaultStorage": "Refrigerated",
+      "freshnessDays": {
+        "Refrigerated": [
+          30,
+          90
+        ]
+      },
+      "dietaryTags": [
+        "Vegetarian",
+        "Gluten-Free",
+        "Nut-Free"
+      ],
+      "notes": "American buttermilk-herb dressing (contains dairy)."
+    },
+    {
+      "name": "thousand island dressing",
+      "aliases": [
+        "thousand island",
+        "1000 island dressing",
+        "russian dressing"
+      ],
+      "parentName": "dressing",
+      "defaultStorage": "Refrigerated",
+      "freshnessDays": {
+        "Refrigerated": [
+          30,
+          90
+        ]
+      },
+      "dietaryTags": [
+        "Vegetarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "American mayo-ketchup-relish dressing."
+    },
+    {
+      "name": "blue cheese dressing",
+      "aliases": [
+        "bleu cheese dressing",
+        "blue cheese dip"
+      ],
+      "parentName": "dressing",
+      "defaultStorage": "Refrigerated",
+      "freshnessDays": {
+        "Refrigerated": [
+          30,
+          60
+        ]
+      },
+      "dietaryTags": [
+        "Vegetarian",
+        "Gluten-Free",
+        "Nut-Free"
+      ],
+      "notes": "American creamy blue-cheese dressing (contains dairy)."
+    },
+    {
+      "name": "caesar dressing",
+      "aliases": [
+        "cesar dressing",
+        "caesar salad dressing"
+      ],
+      "parentName": "dressing",
+      "defaultStorage": "Refrigerated",
+      "freshnessDays": {
+        "Refrigerated": [
+          30,
+          60
+        ]
+      },
+      "dietaryTags": [
+        "Gluten-Free",
+        "Nut-Free"
+      ],
+      "notes": "Anchovy-egg-parmesan dressing (contains dairy/fish)."
+    },
+    {
+      "name": "italian dressing",
+      "aliases": [
+        "italian salad dressing",
+        "zesty italian",
+        "vinaigrette"
+      ],
+      "parentName": "dressing",
+      "defaultStorage": "Refrigerated",
+      "freshnessDays": {
+        "Refrigerated": [
+          60,
+          180
+        ]
+      },
+      "dietaryTags": [
+        "Vegan",
+        "Vegetarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Oil-and-vinegar herb dressing."
+    },
+    {
+      "name": "green goddess dressing",
+      "aliases": [
+        "green goddess",
+        "green goddess dip"
+      ],
+      "parentName": "dressing",
+      "defaultStorage": "Refrigerated",
+      "freshnessDays": {
+        "Refrigerated": [
+          10,
+          21
+        ]
+      },
+      "dietaryTags": [
+        "Vegetarian",
+        "Gluten-Free",
+        "Nut-Free"
+      ],
+      "notes": "Herb-mayo-anchovy dressing."
+    },
+    {
+      "name": "honey mustard",
+      "aliases": [
+        "honey mustard sauce",
+        "honey mustard dressing"
+      ],
+      "parentName": "mustard",
+      "defaultStorage": "Refrigerated",
+      "freshnessDays": {
+        "Refrigerated": [
+          90,
+          180
+        ]
+      },
+      "dietaryTags": [
+        "Vegetarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Sweet mustard condiment."
+    },
+    {
+      "name": "whole grain mustard",
+      "aliases": [
+        "wholegrain mustard",
+        "grainy mustard",
+        "moutarde a l'ancienne",
+        "stone ground mustard"
+      ],
+      "parentName": "mustard",
+      "defaultStorage": "Refrigerated",
+      "freshnessDays": {
+        "Refrigerated": [
+          180,
+          365
+        ]
+      },
+      "dietaryTags": [
+        "Vegan",
+        "Vegetarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Coarse mustard with intact seeds."
+    },
+    {
+      "name": "yellow mustard",
+      "aliases": [
+        "american mustard",
+        "ballpark mustard",
+        "prepared yellow mustard"
+      ],
+      "parentName": "mustard",
+      "defaultStorage": "Refrigerated",
+      "freshnessDays": {
+        "Refrigerated": [
+          180,
+          365
+        ]
+      },
+      "dietaryTags": [
+        "Vegan",
+        "Vegetarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "American mild turmeric-tinted mustard."
+    },
+    {
+      "name": "english mustard",
+      "aliases": [
+        "hot english mustard",
+        "colmans mustard"
+      ],
+      "parentName": "mustard",
+      "defaultStorage": "Refrigerated",
+      "freshnessDays": {
+        "Refrigerated": [
+          180,
+          365
+        ]
+      },
+      "dietaryTags": [
+        "Vegan",
+        "Vegetarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "British fiery mustard."
+    },
+    {
+      "name": "spicy brown mustard",
+      "aliases": [
+        "brown mustard",
+        "deli mustard"
+      ],
+      "parentName": "mustard",
+      "defaultStorage": "Refrigerated",
+      "freshnessDays": {
+        "Refrigerated": [
+          180,
+          365
+        ]
+      },
+      "dietaryTags": [
+        "Vegan",
+        "Vegetarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "American deli-style brown mustard."
+    },
+    {
+      "name": "chili garlic sauce",
+      "aliases": [
+        "chili garlic",
+        "tuong ot toi",
+        "garlic chili sauce"
+      ],
+      "parentName": "chili-sauce",
+      "defaultStorage": "Refrigerated",
+      "freshnessDays": {
+        "Refrigerated": [
+          180,
+          365
+        ]
+      },
+      "dietaryTags": [
+        "Vegan",
+        "Vegetarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Chinese/Vietnamese coarse chili-garlic sauce (Huy Fong)."
+    },
+    {
+      "name": "sambal terasi",
+      "aliases": [
+        "sambal belacan",
+        "shrimp paste sambal"
+      ],
+      "parentName": "chili-paste",
+      "defaultStorage": "Refrigerated",
+      "freshnessDays": {
+        "Refrigerated": [
+          30,
+          90
+        ]
+      },
+      "dietaryTags": [
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Indonesian/Malay chili-shrimp-paste sambal (contains seafood)."
+    },
+    {
+      "name": "buffalo sauce",
+      "aliases": [
+        "buffalo wing sauce",
+        "frank's hot sauce",
+        "wing sauce"
+      ],
+      "parentName": "hot-sauce",
+      "defaultStorage": "Refrigerated",
+      "freshnessDays": {
+        "Refrigerated": [
+          180,
+          365
+        ]
+      },
+      "dietaryTags": [
+        "Vegetarian",
+        "Gluten-Free",
+        "Nut-Free"
+      ],
+      "notes": "American cayenne-butter wing sauce (contains dairy)."
+    },
+    {
+      "name": "tabasco sauce",
+      "aliases": [
+        "tabasco",
+        "louisiana hot sauce",
+        "pepper vinegar sauce"
+      ],
+      "parentName": "hot-sauce",
+      "defaultStorage": "Pantry",
+      "freshnessDays": {
+        "Refrigerated": [
+          1095,
+          1825
+        ]
+      },
+      "dietaryTags": [
+        "Vegan",
+        "Vegetarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Louisiana fermented-pepper vinegar hot sauce."
+    },
+    {
+      "name": "scotch bonnet pepper sauce",
+      "aliases": [
+        "caribbean hot sauce",
+        "pepper sauce",
+        "scotch bonnet sauce"
+      ],
+      "parentName": "hot-sauce",
+      "defaultStorage": "Refrigerated",
+      "freshnessDays": {
+        "Refrigerated": [
+          180,
+          365
+        ]
+      },
+      "dietaryTags": [
+        "Vegan",
+        "Vegetarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Caribbean fiery pepper sauce."
+    },
+    {
+      "name": "piri piri sauce",
+      "aliases": [
+        "peri peri sauce",
+        "piripiri",
+        "pili pili"
+      ],
+      "parentName": "hot-sauce",
+      "defaultStorage": "Refrigerated",
+      "freshnessDays": {
+        "Refrigerated": [
+          90,
+          180
+        ]
+      },
+      "dietaryTags": [
+        "Vegan",
+        "Vegetarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Portuguese/African bird's-eye chili sauce."
+    },
+    {
+      "name": "berbere paste",
+      "aliases": [
+        "berbere",
+        "ethiopian spice paste",
+        "awaze"
+      ],
+      "parentName": "chili-paste",
+      "defaultStorage": "Refrigerated",
+      "freshnessDays": {
+        "Refrigerated": [
+          90,
+          180
+        ]
+      },
+      "dietaryTags": [
+        "Vegan",
+        "Vegetarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Ethiopian chili-spice paste."
+    },
+    {
+      "name": "tkemali",
+      "aliases": [
+        "tkemali sauce",
+        "georgian plum sauce",
+        "sour plum sauce"
+      ],
+      "parentName": "plum-sauce",
+      "defaultStorage": "Refrigerated",
+      "freshnessDays": {
+        "Refrigerated": [
+          60,
+          180
+        ]
+      },
+      "dietaryTags": [
+        "Vegan",
+        "Vegetarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Georgian sour-plum sauce."
+    },
+    {
+      "name": "adjika",
+      "aliases": [
+        "ajika",
+        "abkhazian pepper paste",
+        "georgian chili paste"
+      ],
+      "parentName": "chili-paste",
+      "defaultStorage": "Refrigerated",
+      "freshnessDays": {
+        "Refrigerated": [
+          90,
+          180
+        ]
+      },
+      "dietaryTags": [
+        "Vegan",
+        "Vegetarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Georgian/Abkhazian hot pepper paste."
+    },
+    {
+      "name": "satay sauce",
+      "aliases": [
+        "sate sauce",
+        "indonesian peanut sauce"
+      ],
+      "parentName": "peanut-sauce",
+      "defaultStorage": "Refrigerated",
+      "freshnessDays": {
+        "Refrigerated": [
+          7,
+          14
+        ]
+      },
+      "dietaryTags": [
+        "Vegan",
+        "Vegetarian",
+        "Gluten-Free",
+        "Dairy-Free"
+      ],
+      "notes": "Southeast Asian peanut dipping sauce (contains peanuts)."
+    },
+    {
+      "name": "tamari",
+      "aliases": [
+        "gluten-free soy sauce",
+        "wheat-free soy sauce"
+      ],
+      "parentName": "soy-sauce",
+      "defaultStorage": "Pantry",
+      "freshnessDays": {
+        "Refrigerated": [
+          365,
+          1095
+        ]
+      },
+      "dietaryTags": [
+        "Vegan",
+        "Vegetarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Japanese (usually) wheat-free soy sauce."
+    },
+    {
+      "name": "coconut aminos",
+      "aliases": [
+        "coconut amino sauce",
+        "soy-free seasoning sauce"
+      ],
+      "parentName": "soy-sauce",
+      "defaultStorage": "Pantry",
+      "freshnessDays": {
+        "Refrigerated": [
+          180,
+          365
+        ]
+      },
+      "dietaryTags": [
+        "Vegan",
+        "Vegetarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Soy-free coconut-sap seasoning sauce."
+    },
+    {
+      "name": "Maggi seasoning sauce",
+      "aliases": [
+        "maggi sauce",
+        "maggi",
+        "liquid seasoning"
+      ],
+      "parentName": "sauce",
+      "defaultStorage": "Pantry",
+      "freshnessDays": {
+        "Refrigerated": [
+          365,
+          1095
+        ]
+      },
+      "dietaryTags": [
+        "Vegan",
+        "Vegetarian",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "European/Asian umami liquid seasoning."
+    },
+    {
+      "name": "fermented bean curd",
+      "aliases": [
+        "furu",
+        "tofu cheese",
+        "preserved tofu",
+        "doufuru",
+        "red bean curd"
+      ],
+      "parentName": "bean-paste",
+      "defaultStorage": "Refrigerated",
+      "freshnessDays": {
+        "Refrigerated": [
+          180,
+          365
+        ]
+      },
+      "dietaryTags": [
+        "Vegan",
+        "Vegetarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Chinese fermented tofu condiment."
+    },
+    {
+      "name": "sweet bean sauce",
+      "aliases": [
+        "tianmianjiang",
+        "sweet flour paste",
+        "sweet wheat paste"
+      ],
+      "parentName": "bean-paste",
+      "defaultStorage": "Refrigerated",
+      "freshnessDays": {
+        "Refrigerated": [
+          180,
+          365
+        ]
+      },
+      "dietaryTags": [
+        "Vegan",
+        "Vegetarian",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Chinese sweet fermented paste (Peking duck)."
+    },
+    {
+      "name": "sesame paste",
+      "aliases": [
+        "chinese sesame paste",
+        "zhi ma jiang",
+        "toasted sesame paste"
+      ],
+      "parentName": "tahini",
+      "defaultStorage": "Pantry",
+      "freshnessDays": {
+        "Refrigerated": [
+          180,
+          365
+        ]
+      },
+      "dietaryTags": [
+        "Vegan",
+        "Vegetarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Chinese toasted-sesame paste (darker than tahini)."
+    },
+    {
+      "name": "garum masala paste",
+      "aliases": [
+        "ginger garlic paste",
+        "ginger-garlic paste",
+        "adrak lehsun paste"
+      ],
+      "parentName": "paste",
+      "defaultStorage": "Refrigerated",
+      "freshnessDays": {
+        "Refrigerated": [
+          30,
+          90
+        ]
+      },
+      "dietaryTags": [
+        "Vegan",
+        "Vegetarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "South Asian ginger-garlic aromatic paste (very common recipe base)."
+    },
+    {
+      "name": "tomato paste",
+      "aliases": [
+        "tomato puree concentrate",
+        "concentrated tomato paste",
+        "double concentrate"
+      ],
+      "parentName": "tomato",
+      "defaultStorage": "Pantry",
+      "freshnessDays": {
+        "Refrigerated": [
+          5,
+          10
+        ]
+      },
+      "dietaryTags": [
+        "Vegan",
+        "Vegetarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Concentrated tomato condiment/base (only add if not already in Canned & Jarred)."
+    },
+    {
+      "name": "sherry vinegar",
+      "aliases": [
+        "sherry vinegar",
+        "vinagre de jerez"
+      ],
+      "parentName": "vinegar",
+      "defaultStorage": "Pantry",
+      "freshnessDays": {
+        "Refrigerated": [
+          730,
+          1460
+        ]
+      },
+      "dietaryTags": [
+        "Vegan",
+        "Vegetarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Spanish sherry vinegar."
+    },
+    {
+      "name": "malt vinegar",
+      "aliases": [
+        "barley malt vinegar",
+        "chip shop vinegar"
+      ],
+      "parentName": "vinegar",
+      "defaultStorage": "Pantry",
+      "freshnessDays": {
+        "Refrigerated": [
+          730,
+          1460
+        ]
+      },
+      "dietaryTags": [
+        "Vegan",
+        "Vegetarian",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "British malt vinegar (contains gluten)."
+    },
+    {
+      "name": "distilled white vinegar",
+      "aliases": [
+        "white vinegar",
+        "spirit vinegar",
+        "distilled vinegar"
+      ],
+      "parentName": "vinegar",
+      "defaultStorage": "Pantry",
+      "freshnessDays": {
+        "Refrigerated": [
+          1460,
+          2920
+        ]
+      },
+      "dietaryTags": [
+        "Vegan",
+        "Vegetarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Neutral distilled vinegar."
+    },
+    {
+      "name": "black vinegar",
+      "aliases": [
+        "chinkiang vinegar",
+        "chinese black vinegar",
+        "zhenjiang vinegar"
+      ],
+      "parentName": "vinegar",
+      "defaultStorage": "Pantry",
+      "freshnessDays": {
+        "Refrigerated": [
+          730,
+          1460
+        ]
+      },
+      "dietaryTags": [
+        "Vegan",
+        "Vegetarian",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Chinese aged black rice vinegar."
+    },
+    {
+      "name": "champagne vinegar",
+      "aliases": [
+        "champagne wine vinegar"
+      ],
+      "parentName": "wine-vinegar",
+      "defaultStorage": "Pantry",
+      "freshnessDays": {
+        "Refrigerated": [
+          730,
+          1460
+        ]
+      },
+      "dietaryTags": [
+        "Vegan",
+        "Vegetarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Mild French wine vinegar."
+    },
+    {
+      "name": "white wine vinegar",
+      "aliases": [
+        "white-wine vinegar"
+      ],
+      "parentName": "wine-vinegar",
+      "defaultStorage": "Pantry",
+      "freshnessDays": {
+        "Refrigerated": [
+          730,
+          1460
+        ]
+      },
+      "dietaryTags": [
+        "Vegan",
+        "Vegetarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "White wine vinegar (common in vinaigrettes)."
+    },
+    {
+      "name": "ume plum vinegar",
+      "aliases": [
+        "umeboshi vinegar",
+        "ume su",
+        "pickled plum vinegar"
+      ],
+      "parentName": "vinegar",
+      "defaultStorage": "Pantry",
+      "freshnessDays": {
+        "Refrigerated": [
+          365,
+          730
+        ]
+      },
+      "dietaryTags": [
+        "Vegan",
+        "Vegetarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Japanese salty-sour plum brine used as vinegar."
+    },
+    {
+      "name": "giardiniera",
+      "aliases": [
+        "italian pickled vegetables",
+        "chicago giardiniera",
+        "sottaceti"
+      ],
+      "parentName": "pickle-relish",
+      "defaultStorage": "Refrigerated",
+      "freshnessDays": {
+        "Refrigerated": [
+          60,
+          180
+        ]
+      },
+      "dietaryTags": [
+        "Vegan",
+        "Vegetarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Italian-American pickled vegetable relish/condiment."
+    },
+    {
+      "name": "pickled jalapenos",
+      "aliases": [
+        "pickled jalapeno",
+        "jalapenos en escabeche",
+        "nacho jalapenos"
+      ],
+      "parentName": "pickle-relish",
+      "defaultStorage": "Refrigerated",
+      "freshnessDays": {
+        "Refrigerated": [
+          60,
+          180
+        ]
+      },
+      "dietaryTags": [
+        "Vegan",
+        "Vegetarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Mexican pickled chili condiment."
+    },
+    {
+      "name": "branston pickle",
+      "aliases": [
+        "sweet pickle relish",
+        "ploughman's pickle",
+        "brown pickle"
+      ],
+      "parentName": "pickle-relish",
+      "defaultStorage": "Refrigerated",
+      "freshnessDays": {
+        "Refrigerated": [
+          60,
+          180
+        ]
+      },
+      "dietaryTags": [
+        "Vegan",
+        "Vegetarian",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "British sweet-tangy vegetable pickle (contains gluten)."
+    },
+    {
+      "name": "cranberry sauce",
+      "aliases": [
+        "cranberry relish",
+        "jellied cranberry sauce"
+      ],
+      "parentName": "sauce",
+      "defaultStorage": "Pantry",
+      "freshnessDays": {
+        "Refrigerated": [
+          7,
+          14
+        ]
+      },
+      "dietaryTags": [
+        "Vegan",
+        "Vegetarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "American holiday fruit condiment."
+    },
+    {
+      "name": "applesauce",
+      "aliases": [
+        "apple sauce",
+        "apple compote",
+        "stewed apple"
+      ],
+      "parentName": "sauce",
+      "defaultStorage": "Pantry",
+      "freshnessDays": {
+        "Refrigerated": [
+          7,
+          14
+        ]
+      },
+      "dietaryTags": [
+        "Vegan",
+        "Vegetarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Pureed apple condiment/baking aid."
+    },
+    {
+      "name": "mint sauce",
+      "aliases": [
+        "mint jelly",
+        "british mint sauce"
+      ],
+      "parentName": "sauce",
+      "defaultStorage": "Pantry",
+      "freshnessDays": {
+        "Refrigerated": [
+          180,
+          365
+        ]
+      },
+      "dietaryTags": [
+        "Vegan",
+        "Vegetarian",
+        "Gluten-Free",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "British mint-vinegar sauce for lamb."
+    },
+    {
+      "name": "hollandaise sauce",
+      "aliases": [
+        "hollandaise",
+        "egg butter sauce"
+      ],
+      "parentName": "sauce",
+      "defaultStorage": "Refrigerated",
+      "freshnessDays": {
+        "Refrigerated": [
+          2,
+          5
+        ]
+      },
+      "dietaryTags": [
+        "Vegetarian",
+        "Gluten-Free",
+        "Nut-Free"
+      ],
+      "notes": "French egg-butter emulsion sauce (contains dairy/egg)."
+    },
+    {
+      "name": "gravy granules",
+      "aliases": [
+        "instant gravy",
+        "gravy mix",
+        "gravy powder",
+        "bisto"
+      ],
+      "parentName": "gravy",
+      "defaultStorage": "Pantry",
+      "freshnessDays": {
+        "Refrigerated": [
+          365,
+          730
+        ]
+      },
+      "dietaryTags": [
+        "Vegan",
+        "Vegetarian",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Dehydrated instant gravy."
+    },
+    {
+      "name": "sausage gravy",
+      "aliases": [
+        "country gravy",
+        "white sausage gravy"
+      ],
+      "parentName": "gravy",
+      "defaultStorage": "Refrigerated",
+      "freshnessDays": {
+        "Refrigerated": [
+          2,
+          4
+        ]
+      },
+      "dietaryTags": [
+        "Gluten-Free",
+        "Nut-Free"
+      ],
+      "notes": "American breakfast gravy (contains meat/dairy)."
+    },
+    {
+      "name": "vegetable bouillon",
+      "aliases": [
+        "vegetable stock cube",
+        "veggie bouillon",
+        "vegetable broth cube"
+      ],
+      "parentName": "bouillon",
+      "defaultStorage": "Pantry",
+      "freshnessDays": {
+        "Refrigerated": [
+          365,
+          730
+        ]
+      },
+      "dietaryTags": [
+        "Vegan",
+        "Vegetarian",
+        "Dairy-Free",
+        "Nut-Free"
+      ],
+      "notes": "Vegetable stock concentrate (notable gap: only meat/fish/mushroom bouillons exist)."
+    }
+  ],
+  "cleanups": [
+    {
+      "itemId": "creamy-horseradish",
+      "fix": "Remove erroneous alias 'creamy peanut butter' (copy-paste leak from peanut-butter)."
+    },
+    {
+      "itemId": "crunchy-chocolate-hazelnut-spread",
+      "fix": "Remove erroneous alias 'crunchy peanut butter'."
+    },
+    {
+      "itemId": "corn-pico-de-gallo",
+      "fix": "Remove corn-syrup aliases 'light corn syrup','light-colored corn syrup','white corn syrup' (wrong product); add 'corn salsa' instead."
+    },
+    {
+      "itemId": "green-chimichurri",
+      "fix": "Remove alias 'green enchilada sauce' (wrong product)."
+    },
+    {
+      "itemId": "red-chimichurri",
+      "fix": "Remove alias 'red enchilada sauce' (wrong product)."
+    },
+    {
+      "itemId": "white-balsamic-vinegar",
+      "fix": "Remove wrong aliases 'white gravy', plus 'aceto balsamico','balsamic','balsamic vinegars' (those are dark balsamic); add 'white balsamic'."
+    },
+    {
+      "itemId": "sweet-adobo-sauce",
+      "fix": "Remove alias 'sweet relish' (wrong product)."
+    },
+    {
+      "itemId": "thai-chili-sauce",
+      "fix": "Remove alias 'thai peanut sauce' (peanut sauce is a distinct product); keep thai chili descriptors."
+    },
+    {
+      "itemId": "plum-duck-sauce",
+      "fix": "Fix name 'plum' -> rename to 'plum duck sauce' or merge into duck-sauce; ensure it does not collide with the produce 'plum'."
+    },
+    {
+      "itemId": "vegetarian-black-bean-sauce",
+      "fix": "Fix truncated name 'vegetarian' -> 'vegetarian black bean sauce'."
+    },
+    {
+      "itemId": "gochujang",
+      "fix": "Remove inherited generic aliases 'sambal','chile paste','chili pastes','chilli paste'; keep gochujang-specific names. Sambal is a different product."
+    },
+    {
+      "itemId": "chili-paste",
+      "fix": "Remove alias 'sambal' (sambal is a distinct Indonesian item; will be added separately)."
+    },
+    {
+      "itemId": "mustard",
+      "fix": "Move mustard SEED aliases ('black/white/yellow mustard seed') out to Spices & Herbs; remove 'remoulades' alias (remoulade is its own item); trim the over-broad dump now that specific mustard children (dijon, yellow, english, whole-grain, brown, honey) exist."
+    },
+    {
+      "itemId": "enchilada-sauce-hot",
+      "fix": "Set defaultStorage to 'Pantry' to match enchilada-sauce / mild / medium (bottled enchilada sauce is shelf-stable until opened)."
+    },
+    {
+      "itemId": "worcestershire-sauce-regular",
+      "fix": "Set defaultStorage to 'Pantry' to match base worcestershire-sauce (it is shelf-stable)."
+    },
+    {
+      "itemId": "beef-bouillon",
+      "fix": "Remove duplicated parent-bouillon aliases ('bouillon cubes','broth cube', etc.); keep only beef-specific aliases."
+    },
+    {
+      "itemId": "miso",
+      "fix": "defaultStorage Refrigerated is correct, but consider adding the common white/red distinction via the new aliases rather than separate items."
+    },
+    {
+      "itemId": "tartar-sauce",
+      "fix": "Good parents; consider parenting remoulade under mayonnaise too for consistency."
+    },
+    {
+      "itemId": "syrup",
+      "fix": "Reconsider category: 'syrup' (with cane/vanilla/strawberry aliases) is a sweetener; likely belongs in Baking & Sweeteners, not Condiments & Sauces."
+    },
+    {
+      "itemId": "orange-blossom-water",
+      "fix": "Likely miscategorized; orange-blossom water is a baking/flavoring aromatic, not a condiment/sauce."
+    },
+    {
+      "itemId": "rose-water",
+      "fix": "Likely miscategorized; rose water is a flavoring aromatic, better under Baking & Sweeteners or Other."
+    },
+    {
+      "itemId": "tajin",
+      "fix": "Tajin is a dry seasoning blend; consider moving to Spices & Herbs."
+    }
+  ]
+}

@@ -1,0 +1,217 @@
+{
+  "category": "Beverages",
+  "summary": "The Beverages category holds 35 items and is small and uneven. Core stocking staples (tea, coffee, soda, sparkling/club soda, tonic, juices, coconut water, kombucha, lemonade, eggnog, chai/matcha/herbal tea, ginger beer) are present, but coverage is thinned by machine-generated 'brand variant' children that add no real ingredient distinction (e.g. 'energy drink berry', 'herbal tea berry', 'kombucha berry', 'sparkling water berry', 'original energy drink', 'regular club soda', 'soda diet', 'tonic water diet', 'root beer diet'). Most of these are clutter, not genuine sub-types. Real cooking-relevant gaps are concentrated in (1) drinking juices used in recipes and braises/glazes/marinades (orange, apple, pomegranate, cranberry, grape, pineapple, white/red grape) which are mostly missing from Beverages -- only generic 'fruit juice', 'tomato juice', 'vegetable juice' exist here; (2) coffee forms used in baking/desserts/braises (espresso, instant coffee, cold brew); (3) cocoa/hot-chocolate drinks; (4) global cooking liquids (dashi is absent catalog-wide; ginger ale is conflated with ginger beer; aguas frescas, hibiscus/tamarind drinks, aloe drink, switchel, malta). Stocks/broths/bouillon are already well covered in Canned & Jarred and Condiments & Sauces -- NOT proposed here. Milk alternatives (almond/oat/soy/coconut/rice/pea/etc.) are fully covered in Dairy & Eggs -- NOT proposed here. A few alias/parent defects exist (horchata mis-aliased as 'rice milk'; ginger beer aliased as 'ginger ale'; matcha/chai/herbal/decaf placed under 'tea' but the catalog has no consistent tea-type taxonomy).",
+  "issues": [
+    "Many items are auto-generated 'variant' children with no ingredient meaning: 'energy-drink-berry', 'original-energy-drink' (both just duplicate 'energy-drink'), 'herbal-tea-berry', 'kombucha-berry' (a flavor, and it flips storage to Pantry which is wrong for kombucha), 'sparkling-water-berry', 'regular-club-soda' (identical to 'club-soda'), 'soda-diet', 'tonic-water-diet', 'root-beer-diet', 'organic-matcha', 'spicy-ginger-beer'. These bloat the category without helping a home cook track inventory.",
+    "horchata lists 'rice milk' as an alias, which is misleading -- horchata is a sweetened, often cinnamon-spiced rice (or tigernut) drink, not a generic dairy-free rice milk. Catalog already routes the literal 'rice milk' concept to 'rice-non-dairy-milk' in Dairy & Eggs.",
+    "ginger-beer lists 'ginger ale' as an alias and 'spicy-ginger-beer' as a child, conflating two distinct beverages. Ginger ale (sweet, mild, carbonated soft drink common in recipes/punch) and ginger beer (stronger, brewed/fermented-style, used in Moscow Mules and Caribbean cooking) should be separate; ginger ale is currently unrepresented as its own item.",
+    "Drinking juices most used in cooking are missing from Beverages: orange juice, apple juice, pomegranate juice, cranberry juice, grape juice, pineapple juice exist only as concentrates (Canned & Jarred) or as condiment-grade citrus (lemon-juice/lime-juice in Condiments). A cook stocking 'orange juice' or 'cranberry juice' for a glaze/braise/marinade has no matching item.",
+    "Coffee is a single generic 'coffee' item; espresso, instant coffee, and cold brew -- all distinct cooking/baking ingredients (espresso powder in chocolate desserts, instant coffee in tiramisu, cold brew concentrate) -- have no entry. 'espresso' returns zero catalog hits.",
+    "No cocoa/hot-chocolate drink item; 'chocolate-milk' exists but ready-to-mix cocoa / drinking chocolate is absent. (cocoa powder lives in Baking & Sweeteners, which is correct, but the prepared drink is a separate stocking concept.)",
+    "Dashi (Japanese soup stock, a foundational cooking liquid) returns zero hits catalog-wide -- a notable global cooking gap, though arguably belongs in Canned & Jarred/Condiments rather than Beverages.",
+    "matcha, chai, herbal-tea, decaf are parented under 'tea', but black/green/oolong/white teas have no item-level representation (they live only as facet options on 'tea'). Parent-child tea taxonomy is partial and inconsistent.",
+    "kombucha-berry overrides storage to Pantry [365,730] while its parent kombucha is correctly Refrigerated [14,30]; kombucha is a live-culture drink that must stay refrigerated, so the child's freshness/storage is factually wrong.",
+    "tea freshness [365,730] Pantry is fine for dry tea, but matcha is set to [180,365] which is more realistic (matcha degrades faster) -- inconsistent but defensible; flagging for awareness."
+  ],
+  "redundancies": [
+    ["energy-drink", "original-energy-drink", "'original energy drink' is just the base energy drink with no distinguishing attribute; collapse into the parent"],
+    ["energy-drink", "energy-drink-berry", "'energy drink berry' is a flavor variant, not a separate stocking ingredient; redundant child"],
+    ["club-soda", "regular-club-soda", "'regular club soda' is identical to 'club soda' with no added meaning"],
+    ["soda", "soda-diet", "diet vs regular is a sweetener variant, not a distinct cooking ingredient; redundant"],
+    ["tonic-water", "tonic-water-diet", "diet tonic is a sweetener variant of tonic water; redundant for inventory/cooking"],
+    ["root-beer", "root-beer-diet", "diet root beer is a sweetener variant; redundant"],
+    ["herbal-tea", "herbal-tea-berry", "'herbal tea berry' is a flavor variant of herbal tea; redundant child, also duplicates herbal-tea aliases verbatim"],
+    ["kombucha", "kombucha-berry", "'kombucha berry' is a flavor variant of kombucha and additionally has incorrect Pantry storage; redundant"],
+    ["sparkling-water", "sparkling-water-berry", "'sparkling water berry' is a flavor variant; redundant child"],
+    ["matcha", "organic-matcha", "'organic matcha tea' differs only by the organic label, not as an ingredient; redundant child"],
+    ["ginger-beer", "spicy-ginger-beer", "'spicy ginger beer' is a flavor intensity variant; redundant (and recommend instead splitting out a proper 'ginger ale' item)"],
+    ["ginger-beer", "ginger ale (alias)", "ginger ale and ginger beer are different beverages; the alias should be removed and ginger ale added as its own item"]
+  ],
+  "aliasAdditions": [
+    {"itemId": "coffee", "add": ["ground coffee", "coffee beans", "brewed coffee", "black coffee", "filter coffee", "cafe"]},
+    {"itemId": "tea", "add": ["black tea", "green tea", "oolong tea", "white tea", "earl grey", "english breakfast", "loose leaf tea", "tea bags"]},
+    {"itemId": "matcha", "add": ["matcha powder", "ceremonial matcha", "culinary matcha"]},
+    {"itemId": "sparkling-water", "add": ["fizzy water", "soda water", "mineral water", "perrier", "la croix"]},
+    {"itemId": "soda", "add": ["fizzy drink", "carbonated soft drink", "cola", "lemon-lime soda", "cream soda"]},
+    {"itemId": "coconut-water", "add": ["tender coconut water", "young coconut water"]},
+    {"itemId": "kombucha", "add": ["booch", "scoby tea"]},
+    {"itemId": "fruit-juice", "add": ["mixed fruit juice", "fruit punch", "juice blend"]},
+    {"itemId": "tomato-juice", "add": ["v8 tomato", "bloody mary mix"]},
+    {"itemId": "lemonade", "add": ["cloudy lemonade", "pink lemonade", "fresh lemonade"]},
+    {"itemId": "mate", "add": ["yerba", "erva mate", "chimarrao"]},
+    {"itemId": "cider", "add": ["apple cider", "non-alcoholic cider", "sweet cider"]},
+    {"itemId": "eggnog", "add": ["egg nog drink", "rumless nog"]}
+  ],
+  "newItems": [
+    {
+      "name": "orange juice",
+      "aliases": ["oj", "orange juices", "fresh orange juice", "no pulp orange juice"],
+      "parentName": "fruit juice",
+      "defaultStorage": "Refrigerated",
+      "freshnessDays": {"Refrigerated": [7, 10]},
+      "dietaryTags": ["Vegan", "Vegetarian", "Gluten-Free", "Dairy-Free", "Nut-Free"],
+      "notes": "Very common cooking/baking liquid (marinades, glazes, cakes, vinaigrettes, brunch). Opened cartons keep ~7-10 days refrigerated per shelf-life sources; shelf-stable cartons exist but Refrigerated is the safer default."
+    },
+    {
+      "name": "apple juice",
+      "aliases": ["apple juices", "cloudy apple juice", "clear apple juice"],
+      "parentName": "fruit juice",
+      "defaultStorage": "Refrigerated",
+      "freshnessDays": {"Refrigerated": [7, 10]},
+      "dietaryTags": ["Vegan", "Vegetarian", "Gluten-Free", "Dairy-Free", "Nut-Free"],
+      "notes": "Used in braises, pork/ham glazes, slow-cooker dishes, and baking. Distinct from 'cider' and from 'apple juice concentrate' (Canned & Jarred). ~7-10 days opened refrigerated."
+    },
+    {
+      "name": "cranberry juice",
+      "aliases": ["cranberry juices", "cranberry cocktail", "cranberry juice cocktail"],
+      "parentName": "fruit juice",
+      "defaultStorage": "Refrigerated",
+      "freshnessDays": {"Refrigerated": [7, 10]},
+      "dietaryTags": ["Vegan", "Vegetarian", "Gluten-Free", "Dairy-Free", "Nut-Free"],
+      "notes": "Common in sauces, glazes, cocktails (Cosmopolitan), and holiday cooking. High-acid; ~7-10 days opened refrigerated. Distinct from cranberry-juice-concentrate (Canned & Jarred)."
+    },
+    {
+      "name": "pomegranate juice",
+      "aliases": ["pomegranate juices", "pom juice"],
+      "parentName": "fruit juice",
+      "defaultStorage": "Refrigerated",
+      "freshnessDays": {"Refrigerated": [7, 10]},
+      "dietaryTags": ["Vegan", "Vegetarian", "Gluten-Free", "Dairy-Free", "Nut-Free"],
+      "notes": "Used in Middle Eastern/Persian cooking, reductions, marinades and dressings; reduces into a syrup similar to pomegranate molasses. Acidic; ~7-10 days opened."
+    },
+    {
+      "name": "grape juice",
+      "aliases": ["grape juices", "white grape juice", "red grape juice", "concord grape juice"],
+      "parentName": "fruit juice",
+      "defaultStorage": "Refrigerated",
+      "freshnessDays": {"Refrigerated": [7, 10]},
+      "dietaryTags": ["Vegan", "Vegetarian", "Gluten-Free", "Dairy-Free", "Nut-Free"],
+      "notes": "Used in non-alcoholic braises/sauces, jelly, and as a wine substitute in cooking. ~7-10 days opened refrigerated."
+    },
+    {
+      "name": "pineapple juice",
+      "aliases": ["pineapple juices", "ananas juice"],
+      "parentName": "fruit juice",
+      "defaultStorage": "Refrigerated",
+      "freshnessDays": {"Refrigerated": [7, 10]},
+      "dietaryTags": ["Vegan", "Vegetarian", "Gluten-Free", "Dairy-Free", "Nut-Free"],
+      "notes": "Common meat tenderizer/marinade base (Hawaiian, teriyaki), glazes, and tropical sauces. Distinct from pineapple-juice-concentrate (Canned & Jarred). ~7-10 days opened."
+    },
+    {
+      "name": "espresso",
+      "aliases": ["espresso shot", "brewed espresso", "espresso powder", "instant espresso"],
+      "parentName": "coffee",
+      "defaultStorage": "Pantry",
+      "freshnessDays": {"Refrigerated": [3, 5]},
+      "dietaryTags": ["Vegan", "Vegetarian", "Gluten-Free", "Dairy-Free", "Nut-Free"],
+      "notes": "Concentrated coffee; espresso powder is a staple in chocolate baking and tiramisu, brewed espresso used in desserts/sauces. Pantry for powder; brewed keeps only a few days refrigerated."
+    },
+    {
+      "name": "instant coffee",
+      "aliases": ["instant coffee granules", "coffee granules", "freeze-dried coffee", "instant coffee powder"],
+      "parentName": "coffee",
+      "defaultStorage": "Pantry",
+      "freshnessDays": {"Refrigerated": [365, 730]},
+      "dietaryTags": ["Vegan", "Vegetarian", "Gluten-Free", "Dairy-Free", "Nut-Free"],
+      "notes": "Used dissolved in baking (coffee cakes, mocha frostings), dalgona coffee, and quick brews. Long shelf life sealed in pantry."
+    },
+    {
+      "name": "cold brew coffee",
+      "aliases": ["cold brew", "cold brew concentrate", "iced coffee concentrate"],
+      "parentName": "coffee",
+      "defaultStorage": "Refrigerated",
+      "freshnessDays": {"Refrigerated": [7, 14]},
+      "dietaryTags": ["Vegan", "Vegetarian", "Gluten-Free", "Dairy-Free", "Nut-Free"],
+      "notes": "Ready-to-drink or concentrate stocked in the fridge; used in coffee-based desserts and drinks. Concentrate keeps ~1-2 weeks refrigerated."
+    },
+    {
+      "name": "hot chocolate",
+      "aliases": ["hot cocoa", "drinking chocolate", "cocoa drink", "cocoa mix", "hot chocolate mix"],
+      "parentName": null,
+      "defaultStorage": "Pantry",
+      "freshnessDays": {"Refrigerated": [365, 730]},
+      "dietaryTags": ["Vegetarian", "Gluten-Free", "Nut-Free"],
+      "notes": "Powdered/ready-to-mix drinking chocolate, distinct from baking 'cocoa powder'. Often contains milk solids so not tagged Vegan/Dairy-Free by default. Long pantry shelf life."
+    },
+    {
+      "name": "ginger ale",
+      "aliases": ["ginger ales", "ginger soda", "dry ginger ale"],
+      "parentName": "soda",
+      "defaultStorage": "Pantry",
+      "freshnessDays": {"Refrigerated": [365, 730]},
+      "dietaryTags": ["Vegan", "Vegetarian", "Gluten-Free", "Dairy-Free", "Nut-Free"],
+      "notes": "Sweet, mild carbonated soft drink used in punches, brines, ham glazes and batters; distinct from the brewed/stronger 'ginger beer'. Should replace the 'ginger ale' alias currently on ginger-beer."
+    },
+    {
+      "name": "cola",
+      "aliases": ["colas", "cola soda", "coke", "pepsi"],
+      "parentName": "soda",
+      "defaultStorage": "Pantry",
+      "freshnessDays": {"Refrigerated": [365, 730]},
+      "dietaryTags": ["Vegan", "Vegetarian", "Gluten-Free", "Dairy-Free", "Nut-Free"],
+      "notes": "Generic cola (not brand-specific) is a genuine cooking ingredient: cola-braised meats, ham glazes, BBQ sauces. Kept generic to avoid a brand list."
+    },
+    {
+      "name": "hibiscus tea",
+      "aliases": ["hibiscus", "agua de jamaica", "jamaica", "roselle tea", "sorrel drink"],
+      "parentName": "herbal tea",
+      "defaultStorage": "Pantry",
+      "freshnessDays": {"Refrigerated": [365, 730]},
+      "dietaryTags": ["Vegan", "Vegetarian", "Gluten-Free", "Dairy-Free", "Nut-Free"],
+      "notes": "Global staple (Mexican agua de jamaica, Caribbean sorrel, West African bissap); used as a drink and in syrups/poaching liquids. Dried calyces or tea, long pantry life."
+    },
+    {
+      "name": "rooibos tea",
+      "aliases": ["rooibos", "red tea", "red bush tea", "rooibos teas"],
+      "parentName": "herbal tea",
+      "defaultStorage": "Pantry",
+      "freshnessDays": {"Refrigerated": [365, 730]},
+      "dietaryTags": ["Vegan", "Vegetarian", "Gluten-Free", "Dairy-Free", "Nut-Free"],
+      "notes": "Caffeine-free South African herbal tea, also used in poaching and infusions. Long pantry shelf life. Filed under herbal-tea."
+    },
+    {
+      "name": "horchata",
+      "aliases": ["agua de horchata", "horchatas"],
+      "parentName": null,
+      "defaultStorage": "Refrigerated",
+      "freshnessDays": {"Refrigerated": [5, 10]},
+      "dietaryTags": ["Vegan", "Vegetarian", "Gluten-Free", "Dairy-Free", "Nut-Free"],
+      "notes": "Not a new item -- duplicate of existing 'horchata'; included only to show the corrected alias set (drop the misleading 'rice milk' alias). See cleanups."
+    },
+    {
+      "name": "aloe vera drink",
+      "aliases": ["aloe drink", "aloe vera juice", "aloe water", "aloe juice"],
+      "parentName": null,
+      "defaultStorage": "Refrigerated",
+      "freshnessDays": {"Refrigerated": [7, 14]},
+      "dietaryTags": ["Vegan", "Vegetarian", "Gluten-Free", "Dairy-Free", "Nut-Free"],
+      "notes": "Popular global ready-to-drink beverage (often with pulp bits); used in drinks and some desserts. Refrigerate after opening."
+    },
+    {
+      "name": "malta",
+      "aliases": ["malt drink", "malta india", "non-alcoholic malt beverage", "malt soda"],
+      "parentName": null,
+      "defaultStorage": "Pantry",
+      "freshnessDays": {"Refrigerated": [365, 730]},
+      "dietaryTags": ["Vegetarian", "Vegan", "Dairy-Free", "Nut-Free"],
+      "notes": "Non-alcoholic carbonated malt beverage common in Caribbean/Latin American cuisines; used as a drink and in some marinades/cakes. Contains barley so not Gluten-Free."
+    }
+  ],
+  "cleanups": [
+    {"itemId": "horchata", "fix": "Remove the 'rice milk' alias (misleading; generic rice milk is rice-non-dairy-milk in Dairy & Eggs). Keep 'agua de horchata' and 'horchatas'."},
+    {"itemId": "ginger-beer", "fix": "Remove the 'ginger ale' alias; add the separate 'ginger ale' item (parent soda) instead. Ginger ale and ginger beer are distinct beverages."},
+    {"itemId": "kombucha-berry", "fix": "If kept at all, correct storage from Pantry [365,730] to Refrigerated [14,30] to match parent kombucha; kombucha is a live-culture drink. Preferably remove as a redundant flavor variant."},
+    {"itemId": "decaf", "fix": "Rename display from 'decaf chai tea' / id 'decaf' to something clearer like 'decaf tea' or 'decaffeinated tea', or fold decaf into a facet; current id 'decaf' is too generic for a chai-specific child and its aliases ('chais','spiced tea') are copied from chai."},
+    {"itemId": "herbal-tea-berry", "fix": "Remove (flavor variant, duplicates herbal-tea aliases verbatim)."},
+    {"itemId": "sparkling-water-berry", "fix": "Remove (flavor variant of sparkling water)."},
+    {"itemId": "energy-drink-berry", "fix": "Remove (flavor variant of energy drink)."},
+    {"itemId": "original-energy-drink", "fix": "Remove (identical to base energy-drink)."},
+    {"itemId": "regular-club-soda", "fix": "Remove (identical to club-soda)."},
+    {"itemId": "soda-diet", "fix": "Remove or convert to a sweetener facet on soda (diet vs regular is not a distinct ingredient)."},
+    {"itemId": "tonic-water-diet", "fix": "Remove or convert to a sweetener facet on tonic-water."},
+    {"itemId": "root-beer-diet", "fix": "Remove or convert to a sweetener facet on root-beer."},
+    {"itemId": "organic-matcha", "fix": "Remove (differs only by 'organic' label, not an ingredient distinction)."},
+    {"itemId": "spicy-ginger-beer", "fix": "Remove (intensity variant of ginger-beer)."},
+    {"itemId": "kombucha-berry", "fix": "Remove as redundant flavor variant (also see storage fix above)."}
+  ]
+}

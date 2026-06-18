@@ -1,0 +1,36 @@
+{
+  "category": "Other",
+  "summary": "All 11 'Other' items are protein-powder supplements: a parent 'protein-powder' plus 10 source-specific children (beef, casein, collagen, egg, hemp, mixed-plant, pea, rice, soy, whey), all parented to 'protein-powder', all stored Pantry with 365/730-day freshness and identical facets/swaps. This is a coherent, well-formed family. Protein powder is a sports-nutrition / supplement TYPE that has no clean home in the 18 categories: it is not a whole-food (Protein holds meat/fish/tofu/tempeh/seitan), not a Beverage, and not Dairy (the 'whey' there is the dairy by-product, not the supplement). RECOMMENDATION: leave the whole family in 'Other' — it is the correct catch-all here, not a misfile. The one real defect is data, not placement: 'collagen' is tagged Vegan but collagen is exclusively animal-derived. No items belong in a real category; no missing category is implied (a dedicated 'Supplements' category would be the only candidate but is out of scope for 18).",
+  "issues": [
+    {"itemId": "collagen", "issue": "Tagged 'Vegan' AND 'Dairy-Free', but collagen protein is exclusively animal-derived (bovine/marine/porcine). It is not even Vegetarian. dietaryTags are wrong."},
+    {"itemId": "collagen", "issue": "Animal-derived collagen should carry an allergen if marine-sourced (fish), and at minimum must not claim Vegan/Vegetarian. allergens is currently null."},
+    {"itemId": "whey-protein-powder", "issue": "Marked 'Vegetarian' which is correct for whey, but note potential confusion with the separate 'whey' family in Dairy & Eggs (acid/isolate/hydrolysate whey) — these are distinct (dairy by-product vs supplement). Not a defect, flagged for reviewer awareness only."},
+    {"itemId": "beef-protein-powder", "issue": "No allergens listed; beef-derived is fine, but it is animal-derived so 'Vegetarian' is correctly absent — consistent. No fix needed, noted for completeness."}
+  ],
+  "redundancies": [],
+  "aliasAdditions": [
+    {"itemId": "whey-protein-powder", "add": ["whey isolate", "whey protein", "whey protein isolate"]},
+    {"itemId": "casein", "add": ["casein protein", "micellar casein"]},
+    {"itemId": "collagen", "add": ["collagen peptides", "collagen powder", "hydrolyzed collagen"]},
+    {"itemId": "pea-protein-powder", "add": ["pea protein"]},
+    {"itemId": "soy-protein-powder", "add": ["soy protein", "soy protein isolate"]},
+    {"itemId": "hemp-protein-powder", "add": ["hemp protein"]},
+    {"itemId": "rice-protein-powder", "add": ["brown rice protein", "rice protein"]},
+    {"itemId": "egg-protein-powder", "add": ["egg white protein", "egg protein"]},
+    {"itemId": "beef-protein-powder", "add": ["beef isolate"]}
+  ],
+  "newItems": [],
+  "cleanups": [
+    {"itemId": "collagen", "fix": "Fix dietaryTags: remove 'Vegan' and 'Vegetarian' (collagen is animal-derived). Keep category Other."},
+    {"itemId": "protein-powder", "fix": "Other-is-fine: keep in Other (supplement type, no real-category home)."},
+    {"itemId": "whey-protein-powder", "fix": "Other-is-fine: keep in Other (supplement, distinct from Dairy & Eggs 'whey')."},
+    {"itemId": "casein", "fix": "Other-is-fine: keep in Other (supplement)."},
+    {"itemId": "beef-protein-powder", "fix": "Other-is-fine: keep in Other (supplement)."},
+    {"itemId": "egg-protein-powder", "fix": "Other-is-fine: keep in Other (supplement)."},
+    {"itemId": "hemp-protein-powder", "fix": "Other-is-fine: keep in Other (supplement)."},
+    {"itemId": "mixed-plant", "fix": "Other-is-fine: keep in Other (supplement). Optional: rename id to 'mixed-plant-protein-powder' for naming consistency with siblings; update parent/swap references if so."},
+    {"itemId": "pea-protein-powder", "fix": "Other-is-fine: keep in Other (supplement)."},
+    {"itemId": "rice-protein-powder", "fix": "Other-is-fine: keep in Other (supplement)."},
+    {"itemId": "soy-protein-powder", "fix": "Other-is-fine: keep in Other (supplement)."}
+  ]
+}

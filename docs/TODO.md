@@ -5,6 +5,25 @@ each item.
 
 ## Open
 
+### Live-data audit follow-ups (from the two-agent audit)
+The store is `@Observable` and views read live through computed props — cook/eat/shop/
+storage-move all propagate. Fixed already: Stock editor used `Date()` not `store.today`.
+Remaining (in priority order):
+1. **Plan timeline shows frozen seed data (TOP).** The expiry diamond + leftover whisper
+   are hardcoded `events`/`whispers` in the seed (`KitchenStore` ~L858/L862), never
+   recomputed — so the Plan tab contradicts Pantry/Feed after a stock change (e.g. still
+   says "ragù waiting · 3 portions" after you eat it). Fix: derive timeline expiry
+   milestones from `expiringSoon()` and the leftover whisper from `leftovers` inside
+   `timelineEntries`. (Do next.)
+2. **`store.today` only re-ticks on app foreground**, so certainty decay, day-part, the
+   expiry badge/bands won't roll over while the app stays open overnight. Consistent
+   across views (not a divergence) but stale. Consider a midnight/periodic refresh —
+   weigh against the deliberate knowledge-clock freeze ([[pantrychef-two-freshness-clocks]]).
+3. Low: `readinessReady` is a one-shot latch (no recovery if the warm Task never runs —
+   in practice it always does); `fanOptions` is a stored snapshot that can go stale on the
+   open fan (mostly moot now the idle fan is gone from Today). Add a comment on
+   `readinessFingerprint` asserting readiness must depend only on presence, never expiry.
+
 ### Move heavy services to a backend server (consider later)
 On-device is wrong for the compute-heavy / cost-bearing pieces. Candidates to move
 server-side, with reasons:

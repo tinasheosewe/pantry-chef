@@ -75,6 +75,7 @@ struct StockView: View {
         .sheet(item: $editing) { item in
             StockItemEditor(
                 item: item,
+                today: store.today,
                 adjustDaysOnStorageChange: store.autoAdjustDaysOnStorageChange,
                 onSave: { store.updateStock($0); editing = nil },
                 onRemove: { store.removeStock($0); editing = nil }
@@ -277,6 +278,9 @@ struct StockView: View {
 /// Edit one stock item: amount/detail, days left or staple level, section, remove.
 private struct StockItemEditor: View {
     @State var item: StockItem
+    /// The app's clock (not wall-clock `Date()`), so edits re-anchor against the same
+    /// `today` the rest of the app reads — they agree even when `today` is pinned.
+    var today: Date = Date()
     /// Mirror of the Settings preference — gates whether changing storage re-projects
     /// the days-left or only relabels where the item is kept.
     var adjustDaysOnStorageChange = true
@@ -321,19 +325,19 @@ private struct StockItemEditor: View {
             field("Days left") {
                 HStack(spacing: 6) {
                     TextField("not tracked", text: Binding(
-                        get: { item.daysLeft(now: Date()).map(String.init) ?? "" },
+                        get: { item.daysLeft(now: today).map(String.init) ?? "" },
                         set: { raw in
                             let digits = raw.filter(\.isNumber)
                             // A typed estimate is "this many days from now", so re-anchor
                             // the freshness clock to today; empty clears tracking.
-                            item.storageSince = Date()
+                            item.storageSince = today
                             item.consumedFraction = 0
                             item.measure = .perishable(detail: detail,
                                                        daysLeft: digits.isEmpty ? nil : Int(digits))
                         }))
                         .keyboardType(.numberPad)
                         .fixedSize()
-                    if item.daysLeft(now: Date()) != nil { Text("days") }
+                    if item.daysLeft(now: today) != nil { Text("days") }
                 }
             }
         case .staple(let level):
@@ -379,7 +383,7 @@ private struct StockItemEditor: View {
             HStack(spacing: 8) {
                 ForEach([PantryStorage.pantry, .refrigerated, .frozen], id: \.self) { storage in
                     let selected = item.storage == storage
-                    Button { item = item.moved(to: storage, now: Date(), adjustDaysLeft: adjustDaysOnStorageChange) } label: {
+                    Button { item = item.moved(to: storage, now: today, adjustDaysLeft: adjustDaysOnStorageChange) } label: {
                         Text(storageLabel(storage)).font(.system(size: 9.5, weight: .medium)).tracking(1.2)
                             .foregroundStyle(selected ? Theme.Palette.cream : Theme.Palette.ink.opacity(0.7))
                             .padding(.horizontal, 11).padding(.vertical, 7)
