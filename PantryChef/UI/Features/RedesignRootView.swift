@@ -38,9 +38,6 @@ struct RedesignRootView: View {
     /// Secondary "More filters" (cuisine/diet/meal type/time) layered on the lens.
     @State private var feedFilters = FeedFilters()
     @State private var showFilters = false
-    /// "Browse all" mode: the .all lens shown as a flat grid (not the curated rails) —
-    /// the in-page replacement for the old bottom-sheet library.
-    @State private var browseAll = false
     /// Name search, shown in any grid view (every lens except the "For you" landing).
     @State private var feedSearch = ""
     /// "Cook together" multi-select over the grid.
@@ -204,10 +201,10 @@ struct RedesignRootView: View {
     private var todayFeed: some View {
         // The curated "For you" rails show only on the default lens with no extra
         // filters; any lens or filter turns the feed into a filtered grid.
-        // "For you" with no filters/browse = the curated landing. Any lens, filter, or
-        // "browse all" turns the feed into an in-page grid (the old bottom-sheet library
-        // is gone — browsing lives right here).
-        let curatedView = feedLens == .all && feedFilters.isEmpty && !browseAll
+        // "For you" with no filters = the curated landing. Any other lens (incl. the "All"
+        // grid) or a filter turns the feed into an in-page grid — the old bottom-sheet
+        // library is gone, browsing lives right here.
+        let curatedView = feedLens == .all && feedFilters.isEmpty
         return VStack(spacing: 0) {
             todayHeader
             ScrollView {
@@ -400,31 +397,30 @@ struct RedesignRootView: View {
         .opacity(selecting && !isSel ? 0.6 : 1)
     }
 
-    /// Chips bind through here so picking a lens exits "browse all" + any selection.
+    /// Chips bind through here so picking a lens clears the search + any selection.
     private var lensBinding: Binding<FeedLens> {
         Binding(get: { feedLens },
-                set: { feedLens = $0; browseAll = false; selecting = false; selectedIDs = []; feedSearch = "" })
+                set: { feedLens = $0; selecting = false; selectedIDs = []; feedSearch = "" })
     }
 
-    /// Search + "cook together" — sits above the grid in every non-curated view.
+    /// Search + "cook together" — sits just under the chips in every non-curated view.
+    /// Search is the inline editorial style (magnifier + text, no boxed field); "cook
+    /// together" rides the same line as a small-caps link.
     private var gridControls: some View {
-        HStack(spacing: 10) {
-            HStack(spacing: 7) {
-                Image(systemName: "magnifyingglass").font(.system(size: 11))
-                    .foregroundStyle(Theme.Palette.ink.opacity(0.45))
-                TextField("Search dishes", text: $feedSearch)
-                    .font(Theme.Typography.fact(13)).foregroundStyle(Theme.Palette.ink)
-                if !feedSearch.isEmpty {
-                    Button { feedSearch = "" } label: {
-                        Image(systemName: "xmark").font(.system(size: 11)).foregroundStyle(Theme.Palette.ink.opacity(0.45))
-                    }.buttonStyle(.plain)
-                }
+        HStack(spacing: 12) {
+            Image(systemName: "magnifyingglass").font(.system(size: 11))
+                .foregroundStyle(Theme.Palette.ink.opacity(0.45))
+            TextField("Search dishes", text: $feedSearch)
+                .font(Theme.Typography.fact(13)).foregroundStyle(Theme.Palette.ink)
+            if !feedSearch.isEmpty {
+                Button { feedSearch = "" } label: {
+                    Image(systemName: "xmark").font(.system(size: 11)).foregroundStyle(Theme.Palette.ink.opacity(0.45))
+                }.buttonStyle(.plain)
             }
-            .padding(.horizontal, 10).padding(.vertical, 7)
-            .overlay(Rectangle().strokeBorder(Theme.Palette.ink.opacity(0.25), lineWidth: 1))
+            Spacer(minLength: 8)
             Button { withAnimation { selecting.toggle(); selectedIDs = [] } } label: {
                 Text(selecting ? "CANCEL" : "COOK TOGETHER")
-                    .font(.system(size: 9, weight: .medium)).tracking(1.2)
+                    .font(.system(size: 9, weight: .medium)).tracking(1.4)
                     .foregroundStyle(Theme.Palette.paprika).fixedSize().contentShape(Rectangle())
             }
             .buttonStyle(.plain)
@@ -476,7 +472,7 @@ struct RedesignRootView: View {
     }
 
     private var browseAllFooter: some View {
-        Button { withAnimation { browseAll = true } } label: {
+        Button { withAnimation { feedLens = .everything } } label: {
             Text("BROWSE ALL DISHES →")
                 .font(.system(size: 11, weight: .medium)).tracking(1.4)
                 .foregroundStyle(Theme.Palette.paprika)
@@ -569,7 +565,7 @@ struct RedesignRootView: View {
                         store.logEaten(option)
                     }
                 },
-                onSeeAll: { withAnimation { browseAll = true } },
+                onSeeAll: { withAnimation { feedLens = .everything } },
                 onChange: { store.resetNow() },
                 onResume: {
                     if case .cooking(let p) = store.nowState, let dish = p.dish {

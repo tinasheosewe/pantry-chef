@@ -5,14 +5,16 @@ import SwiftUI
 /// to a single filtered grid. Pantry-aware lenses (Ready now / Use it up) are the
 /// app's moat, so they lead.
 enum FeedLens: String, CaseIterable, Identifiable {
-    case all, makeNow, oneSwap, shop, useItUp, quick, highProtein
+    case all, everything, makeNow, oneSwap, shop, useItUp, quick, highProtein
 
     var id: String { rawValue }
 
-    /// Pantry-intelligence lenses lead — these are the app's whole point.
+    /// Pantry-intelligence lenses lead — these are the app's whole point. "All" sits
+    /// second (right after the curated "For you"): the whole library as a flat grid.
     var title: String {
         switch self {
         case .all: return "For you"
+        case .everything: return "All"
         case .makeNow: return "Make now"
         case .oneSwap: return "With a swap"
         case .shop: return "Shop"
@@ -52,7 +54,7 @@ extension KitchenStore {
     /// app's core, derived from live readiness.
     func matches(_ dish: Dish, lens: FeedLens) -> Bool {
         switch lens {
-        case .all: return true
+        case .all, .everything: return true
         case .makeNow: if case .ready = readiness(for: dish) { return true }; return false
         case .oneSwap: if case .readyWithSwaps = readiness(for: dish) { return true }; return false
         case .shop: if case .needs = readiness(for: dish) { return true }; return false
