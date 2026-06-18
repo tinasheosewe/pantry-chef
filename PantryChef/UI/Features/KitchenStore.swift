@@ -722,6 +722,19 @@ final class KitchenStore {
 
     func parse(_ phrase: String) -> ParsedIntake { parser.parse(phrase) }
 
+    /// Pre-resolved catalog ids for the hand-built seed (curated dishes + demo stock),
+    /// so `init` does ZERO catalog lookups — the 2,277-item catalog index then builds
+    /// off the main thread (see the detached warm below) instead of blocking first paint.
+    /// Regenerate via SeedDishCatalogTests if the seed's ingredient names change.
+    private static let seedCatalogIDs: [String: String] = [
+        "Applesauce": "applesauce", "Baby spinach": "baby-spinach-mix", "Butter": "butter",
+        "Eggs": "egg", "Feta": "feta", "Flour": "flour", "Greek yogurt": "greek-yogurt",
+        "Lamb mince": "lamb", "Lemon": "lemon", "Miso": "miso", "Olive oil": "olive-oil",
+        "Onion": "onion", "Orzo": "pasta", "Paprika": "paprika", "Peas": "pea",
+        "Salmon fillets": "salmon-oily-fish", "spinach": "spinach", "Spinach": "spinach",
+        "Tomatoes": "tomato",
+    ]
+
     init() {
         let cal = Calendar.current
         let now = Date()
@@ -732,7 +745,7 @@ final class KitchenStore {
             // catalog id and readiness matches by id, never by fuzzy name.
             // (SeedDishCatalogTests guarantees they all resolve.)
             RecipeLine(key: key, amount: amount, name: name, isStaple: staple,
-                       catalogItemID: IntakePipeline.bestCatalogID(for: name))
+                       catalogItemID: Self.seedCatalogIDs[name] ?? IntakePipeline.bestCatalogID(for: name))
         }
         today = now
 
@@ -854,7 +867,7 @@ final class KitchenStore {
             ShoppingEntry(name: "Miso", amount: "1 tub")
         ]
 
-        func catalogID(_ name: String) -> String? { IntakePipeline.bestCatalogID(for: name) }
+        func catalogID(_ name: String) -> String? { Self.seedCatalogIDs[name] ?? IntakePipeline.bestCatalogID(for: name) }
         stock = [
             StockItem(key: "lamb ragu", name: "Lamb ragù", plate: plate([.protein, .pasta], 3),
                       section: .made, measure: .made(detail: "frozen · good through July", portions: 3),
@@ -895,11 +908,15 @@ final class KitchenStore {
                       category: .frozenFoods, storage: .frozen, storageSince: day(-10))
         ]
 
-        // Readiness over a ~200-dish library is the cold-launch cost (composeFan walks
-        // it), so defer it: open with an empty fan and warm on the next runloop, after
-        // first paint. See warmReadinessAndFan().
+        // The cold-launch cost is the 2,277-item catalog index build (triggered the
+        // first time anything resolves a name). Init no longer touches the catalog (seed
+        // ids are pre-baked above), so force that build on a BACKGROUND thread, then warm
+        // readiness + the fan on the main actor. First paint isn't blocked by either.
         nowState = .open(options: [], selected: 0)
-        Task { @MainActor [weak self] in self?.warmReadinessAndFan() }
+        Task.detached(priority: .userInitiated) { [weak self] in
+            _ = IntakePipeline.bestCatalogID(for: "salt")   // builds the catalog indices off-main
+            await MainActor.run { self?.warmReadinessAndFan() }
+        }
 
         // Screenshot/CI hook: open straight to a given space.
         if let forced = ProcessInfo.processInfo.environment["PC_SPACE"],

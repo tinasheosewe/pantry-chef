@@ -4,6 +4,12 @@ enum AppBundleResourceLocator {
     private final class BundleMarker {}
 
     static func url(forResource name: String, withExtension ext: String) -> URL? {
+        // Fast path: our resources live in the main bundle (and this module's bundle).
+        // Check those before the exhaustive scan — building the full candidate list
+        // enumerates every loaded framework, which costs hundreds of ms on launch.
+        for bundle in [Bundle.main, Bundle(for: BundleMarker.self)] {
+            if let url = bundle.url(forResource: name, withExtension: ext) { return url }
+        }
         for bundle in candidateBundles() {
             if let url = bundle.url(forResource: name, withExtension: ext) {
                 return url

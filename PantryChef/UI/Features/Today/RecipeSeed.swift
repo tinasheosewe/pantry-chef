@@ -45,7 +45,11 @@ enum RecipeSeed {
     static let all: [Dish] = load()
 
     private static func load() -> [Dish] {
-        guard let url = AppBundleResourceLocator.url(forResource: "seed_recipes", withExtension: "json"),
+        // Bundle.main first — it has the resource and is instant. Only fall back to the
+        // exhaustive locator (which enumerates every loaded framework, ~hundreds of ms)
+        // if that misses, so the seed load doesn't pay that cost on every cold launch.
+        guard let url = Bundle.main.url(forResource: "seed_recipes", withExtension: "json")
+                ?? AppBundleResourceLocator.url(forResource: "seed_recipes", withExtension: "json"),
               let data = try? Data(contentsOf: url) else {
             AppLog.error("[RecipeSeed] seed_recipes.json not found")
             return []

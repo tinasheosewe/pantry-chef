@@ -63,18 +63,22 @@ struct CookStep: Identifiable, Equatable, Sendable {
     let id: UUID
     let instruction: String
     let timerSeconds: Int?
-    let phase: StepPhase
-    let attention: StepAttention
     /// The ingredient this step centres on, when known (AI ingestion supplies it) —
     /// for labelling and possible grouping in a unified prep list.
     let ingredient: String?
+    private let rawPhase: StepPhase?
+    private let rawAttention: StepAttention?
+
+    /// Phase/attention are inferred from the text + timer when not given. Computed
+    /// lazily (not at init) so loading a ~200-recipe library doesn't classify ~1,200
+    /// steps up front — only the handful in the dish you actually cook get classified.
+    var phase: StepPhase { rawPhase ?? StepClassifier.phase(of: instruction) }
+    var attention: StepAttention { rawAttention ?? StepClassifier.attention(of: instruction, timerSeconds: timerSeconds) }
 
     init(id: UUID = UUID(), _ instruction: String, timerSeconds: Int? = nil,
          phase: StepPhase? = nil, attention: StepAttention? = nil, ingredient: String? = nil) {
         self.id = id; self.instruction = instruction; self.timerSeconds = timerSeconds
-        self.phase = phase ?? StepClassifier.phase(of: instruction)
-        self.attention = attention ?? StepClassifier.attention(of: instruction, timerSeconds: timerSeconds)
-        self.ingredient = ingredient
+        self.rawPhase = phase; self.rawAttention = attention; self.ingredient = ingredient
     }
 }
 
