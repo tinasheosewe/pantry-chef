@@ -18,14 +18,10 @@ struct TimelineComposer {
         let todayStart = calendar.startOfDay(for: snapshot.today)
         var out: [TimelineEntry] = []
 
-        // Past — a backward ruler when a window is set, else just the journal record.
+        // Past — a backward ruler of the journal record, only when a history window is
+        // set. With pastDays == 0 the plan starts at today (no history tail).
         if snapshot.pastDays > 0 {
             out += composePast(snapshot, todayStart: todayStart)
-        } else {
-            out += snapshot.journal
-                .filter { calendar.startOfDay(for: $0.date) < todayStart }
-                .sorted { $0.date < $1.date }
-                .map(TimelineEntry.journal)
         }
 
         // Now — the anchor; its content is the now-module's job.

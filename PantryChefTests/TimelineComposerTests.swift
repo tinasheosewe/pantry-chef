@@ -134,11 +134,14 @@ final class TimelineComposerTests: XCTestCase {
 
     // MARK: - Past journal
 
-    func testJournalIsPastOrderedOldestFirstBeforeNow() {
+    func testNoHistoryWhenPastWindowIsZero() {
+        // The plan starts at today: with pastDays == 0 there is no history tail, so even a
+        // populated journal contributes nothing before NOW. (Ordering when history *is*
+        // shown is covered by testPastRulerFoldsQuietDaysAndPlacesJournal.)
         let j1 = JournalItem(date: day(-3), name: "Ragù", plate: .init(categories: [.protein], seed: 1), level: .cooked)
         let j2 = JournalItem(date: day(-1), name: "Shakshuka", plate: .init(categories: [.protein], seed: 2), level: .cooked)
         let entries = composer.compose(snapshot(horizon: 0, journal: [j2, j1]))
-        XCTAssertEqual(tokens(entries), ["J(Ragù)", "J(Shakshuka)", "NOW"])
+        XCTAssertEqual(tokens(entries), ["NOW"])
     }
 
     func testPastRulerFoldsQuietDaysAndPlacesJournal() {

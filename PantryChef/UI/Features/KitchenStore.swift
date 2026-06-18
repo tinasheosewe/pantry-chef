@@ -232,7 +232,9 @@ final class KitchenStore {
     /// infinite scroll: a couple of weeks ahead to plan against, a short tail of
     /// recent record behind. Planning further is an explicit act (the horizon cap).
     let horizonDays = 16
-    let pastDays = 10
+    /// The plan starts at today — no history tail. (The cooking record lives in the
+    /// journal; the forward plan isn't where you relive last week.)
+    let pastDays = 0
 
     var timelineEntries: [TimelineEntry] {
         // Expiry diamonds and leftover whispers are derived from LIVE stock (not seeded),
@@ -890,44 +892,79 @@ final class KitchenStore {
         ]
 
         func catalogID(_ name: String) -> String? { Self.seedCatalogIDs[name] ?? IntakePipeline.bestCatalogID(for: name) }
+        // A realistic, moderately-stocked household kitchen: a leftover, a few things to
+        // use soon, a full fridge/freezer, and the pantry backbone. catalogItemIDs are set
+        // literally (the ids the seed recipes use) so readiness matches by identity and the
+        // init does zero catalog lookups (launch stays fast).
+        func perish(_ key: String, _ name: String, _ id: String, _ cat: FoodCategory, _ store: PantryStorage,
+                    _ detail: String, daysLeft: Double, confirmed: Int, since: Int, _ seed: UInt64,
+                    _ section: StockItem.Section = .have) -> StockItem {
+            StockItem(key: key, name: name, plate: plate([cat], seed), section: section,
+                      measure: .perishable(detail: detail, daysLeft: daysLeft),
+                      lastConfirmed: day(confirmed), catalogItemID: id, category: cat,
+                      storage: store, storageSince: day(since))
+        }
+        func staple(_ key: String, _ name: String, _ id: String, _ cat: FoodCategory,
+                    _ level: StockItem.StapleLevel, _ seed: UInt64) -> StockItem {
+            StockItem(key: key, name: name, plate: plate([cat], seed), section: .staples,
+                      measure: .staple(level), catalogItemID: id, category: cat, storage: .pantry)
+        }
         stock = [
+            // Leftover from a batch-cook — the "eat first" whisper + a heat-and-eat plan.
             StockItem(key: "lamb ragu", name: "Lamb ragù", plate: plate([.protein, .pasta], 3),
                       section: .made, measure: .made(detail: "frozen · good through July", portions: 3),
                       lastConfirmed: day(-3), category: .protein, storage: .frozen, storageSince: day(-3)),
-            StockItem(key: "baby spinach", name: "Baby spinach", plate: plate([.produce], 1),
-                      section: .useSoon, measure: .perishable(detail: "300 g", daysLeft: 2),
-                      lastConfirmed: day(0),        // just bought — certain
-                      catalogItemID: catalogID("spinach"), category: .produce,
-                      storage: .refrigerated, storageSince: day(0)),
-            StockItem(key: "greek yogurt", name: "Greek yogurt", plate: plate([.dairy], 4),
-                      section: .useSoon, measure: .perishable(detail: "500 g", daysLeft: 3),
-                      lastConfirmed: day(-2),       // probable — trust it silently
-                      catalogItemID: catalogID("Greek yogurt"), category: .dairy,
-                      storage: .refrigerated, storageSince: day(-2)),
-            StockItem(key: "feta", name: "Feta", plate: plate([.dairy], 7),
-                      section: .have, measure: .perishable(detail: "200 g", daysLeft: 18),
-                      lastConfirmed: day(-22),      // uncertain — worth a one-tap check
-                      catalogItemID: catalogID("Feta"), category: .dairy,
-                      storage: .refrigerated, storageSince: day(-22)),
-            StockItem(key: "orzo", name: "Orzo", plate: plate([.pasta], 6),
-                      section: .staples, measure: .staple(.inStock),
-                      catalogItemID: catalogID("Orzo"), category: .pasta, storage: .pantry),
-            StockItem(key: "flour", name: "Flour", plate: plate([.bakingSupplies], 11),
-                      section: .staples, measure: .staple(.inStock),
-                      catalogItemID: catalogID("Flour"), category: .bakingSupplies, storage: .pantry),
-            StockItem(key: "olive oil", name: "Olive oil", plate: plate([.oils], 8),
-                      section: .staples, measure: .staple(.runningLow),
-                      catalogItemID: catalogID("Olive oil"), category: .oils, storage: .pantry),
-            // Applesauce is the egg substitute — so the frittata reads as "cookable with
-            // a swap" out of the box, showcasing the substitution tier.
-            StockItem(key: "applesauce", name: "Applesauce", plate: plate([.condiments], 2),
-                      section: .staples, measure: .staple(.inStock),
-                      catalogItemID: catalogID("Applesauce"), category: .condiments, storage: .pantry),
-            // A frozen perishable — shows the freezer clock with a long days-left.
-            StockItem(key: "peas", name: "Frozen peas", plate: plate([.frozenFoods], 13),
-                      section: .have, measure: .perishable(detail: "1 bag", daysLeft: 90),
-                      lastConfirmed: day(-10), catalogItemID: catalogID("Peas"),
-                      category: .frozenFoods, storage: .frozen, storageSince: day(-10))
+
+            // Use soon — the warning band.
+            perish("baby spinach", "Baby spinach", "spinach", .produce, .refrigerated, "300 g", daysLeft: 2, confirmed: 0, since: 0, 1, .useSoon),
+            perish("chicken thighs", "Chicken thighs", "chicken-thigh", .protein, .refrigerated, "6 thighs", daysLeft: 3, confirmed: -1, since: -1, 21, .useSoon),
+            perish("milk", "Milk", "milk", .dairy, .refrigerated, "2 L", daysLeft: 5, confirmed: -2, since: -2, 9, .useSoon),
+
+            // Fridge — on hand.
+            StockItem(key: "eggs", name: "Eggs", plate: plate([.dairy], 5), section: .have,
+                      measure: .perishable(detail: "10 left", daysLeft: 16), lastConfirmed: day(-3),
+                      catalogItemID: "egg", category: .dairy, storage: .refrigerated, storageSince: day(-3)),
+            perish("greek yogurt", "Greek yogurt", "greek-yogurt", .dairy, .refrigerated, "500 g", daysLeft: 9, confirmed: -2, since: -2, 4),
+            perish("butter", "Butter", "butter", .dairy, .refrigerated, "250 g", daysLeft: 40, confirmed: -6, since: -6, 12),
+            perish("cheddar", "Cheddar", "cheddar", .dairy, .refrigerated, "block", daysLeft: 30, confirmed: -6, since: -6, 14),
+            perish("parmesan", "Parmesan", "parmesan", .dairy, .refrigerated, "wedge", daysLeft: 60, confirmed: -8, since: -8, 17),
+            // Stale knowledge clock — plenty of shelf life, but logged 3 weeks ago, so it
+            // reads "check?" (certainty decays even when the food clock is fine).
+            perish("feta", "Feta", "feta", .dairy, .refrigerated, "200 g", daysLeft: 18, confirmed: -22, since: -2, 7),
+            perish("carrots", "Carrots", "carrot", .produce, .refrigerated, "1 bag", daysLeft: 18, confirmed: -5, since: -5, 19),
+            perish("broccoli", "Broccoli", "broccoli", .produce, .refrigerated, "1 head", daysLeft: 6, confirmed: -2, since: -2, 23),
+            perish("tomatoes", "Tomatoes", "tomato", .produce, .refrigerated, "5", daysLeft: 8, confirmed: -3, since: -3, 25),
+            perish("lemon", "Lemons", "lemon", .produce, .refrigerated, "3", daysLeft: 20, confirmed: -5, since: -5, 31),
+
+            // Freezer.
+            perish("ground beef", "Ground beef", "beef-ground", .protein, .frozen, "500 g", daysLeft: 120, confirmed: -14, since: -14, 27),
+            perish("salmon", "Salmon fillets", "salmon-oily-fish", .protein, .frozen, "2 fillets", daysLeft: 120, confirmed: -14, since: -14, 33),
+            perish("peas", "Frozen peas", "pea", .frozenFoods, .frozen, "1 bag", daysLeft: 120, confirmed: -10, since: -10, 13),
+
+            // Pantry — on hand.
+            StockItem(key: "onion", name: "Onions", plate: plate([.produce], 35), section: .have,
+                      measure: .staple(.inStock), catalogItemID: "onion", category: .produce, storage: .pantry),
+            StockItem(key: "garlic", name: "Garlic", plate: plate([.produce], 37), section: .have,
+                      measure: .staple(.inStock), catalogItemID: "garlic", category: .produce, storage: .pantry),
+            StockItem(key: "ginger", name: "Ginger", plate: plate([.produce], 39), section: .have,
+                      measure: .staple(.inStock), catalogItemID: "ginger", category: .produce, storage: .pantry),
+            StockItem(key: "canned tomatoes", name: "Canned tomatoes", plate: plate([.canned], 41), section: .have,
+                      measure: .staple(.inStock), catalogItemID: "canned-ripe", category: .canned, storage: .pantry),
+            StockItem(key: "black beans", name: "Black beans", plate: plate([.legumes], 43), section: .have,
+                      measure: .staple(.inStock), catalogItemID: "black-beans", category: .legumes, storage: .pantry),
+            StockItem(key: "chickpeas", name: "Chickpeas", plate: plate([.legumes], 45), section: .have,
+                      measure: .staple(.inStock), catalogItemID: "chickpea", category: .legumes, storage: .pantry),
+            StockItem(key: "tortillas", name: "Corn tortillas", plate: plate([.breads], 47), section: .have,
+                      measure: .perishable(detail: "1 pack", daysLeft: 14), lastConfirmed: day(-4),
+                      catalogItemID: "corn", category: .breads, storage: .pantry, storageSince: day(-4)),
+
+            // Pantry backbone — staples.
+            staple("rice", "Rice", "rice", .grains, .inStock, 49),
+            staple("orzo", "Orzo", "pasta", .pasta, .inStock, 6),
+            staple("flour", "Flour", "flour", .bakingSupplies, .inStock, 11),
+            staple("oats", "Rolled oats", "oats", .grains, .inStock, 51),
+            staple("soy sauce", "Soy sauce", "soy-sauce", .condiments, .inStock, 53),
+            staple("olive oil", "Olive oil", "olive-oil", .oils, .runningLow, 8)
         ]
 
         // The cold-launch cost is the 2,277-item catalog index build (triggered the
