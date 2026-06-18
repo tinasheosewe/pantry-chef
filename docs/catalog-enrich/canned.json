@@ -1,0 +1,1699 @@
+[
+  {
+    "id": "canned-diced-tomatoes",
+    "name": "canned diced tomatoes",
+    "category": "Canned & Jarred",
+    "defaultUnit": "can",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "diced tomatoes",
+      "chopped tomatoes",
+      "canned chopped tomatoes",
+      "tinned tomatoes",
+      "pomodori a cubetti",
+      "petits dés de tomates"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "diced"
+        ]
+      },
+      {
+        "key": "medium",
+        "options": [
+          "in tomato purée",
+          "in water"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "fire roasted",
+          "no salt added",
+          "plain"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "chunky"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "processing",
+        "value": "plain"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        365,
+        1095
+      ],
+      "Refrigerated": [
+        5,
+        7
+      ],
+      "Frozen": [
+        60,
+        180
+      ]
+    },
+    "parentIds": [
+      "tomato"
+    ],
+    "facetAliases": [
+      {
+        "text": "no salt added",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "no salt added"
+          }
+        ]
+      },
+      {
+        "text": "fire roasted diced tomatoes",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "fire roasted"
+          }
+        ]
+      }
+    ],
+    "gramsPerCup": 240.0,
+    "gramsPerPiece": 123.0,
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "canned-whole-peeled-tomatoes",
+        "ratio": "1:1",
+        "notes": "Same family as canned tomatoes; crush or chop the whole tomatoes to match."
+      },
+      {
+        "substituteItemID": "canned-crushed-tomatoes",
+        "ratio": "1:1",
+        "notes": "Same family as canned tomatoes; slightly smoother result."
+      },
+      {
+        "substituteItemID": "stewed-tomatoes",
+        "ratio": "1:1",
+        "notes": "Same family as canned tomatoes; stewed are pre-seasoned."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "canned-whole-peeled-tomatoes",
+    "name": "canned whole peeled tomatoes",
+    "category": "Canned & Jarred",
+    "defaultUnit": "can",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "whole peeled tomatoes",
+      "whole tomatoes",
+      "pomodori pelati",
+      "san marzano tomatoes",
+      "plum tomatoes canned"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "whole"
+        ]
+      },
+      {
+        "key": "medium",
+        "options": [
+          "in tomato purée",
+          "in water"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "no salt added",
+          "plain"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "chunky"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "processing",
+        "value": "plain"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        365,
+        1095
+      ],
+      "Refrigerated": [
+        5,
+        7
+      ],
+      "Frozen": [
+        60,
+        180
+      ]
+    },
+    "parentIds": [
+      "canned-diced-tomatoes"
+    ],
+    "facetAliases": [
+      {
+        "text": "no salt added",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "no salt added"
+          }
+        ]
+      }
+    ],
+    "gramsPerCup": 240.0,
+    "gramsPerPiece": 123.0,
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "canned-diced-tomatoes",
+        "ratio": "1:1",
+        "notes": "Same family as canned tomatoes."
+      },
+      {
+        "substituteItemID": "canned-crushed-tomatoes",
+        "ratio": "1:1",
+        "notes": "Same family as canned tomatoes."
+      },
+      {
+        "substituteItemID": "tomato-puree",
+        "ratio": "1:1",
+        "notes": "Same family as canned tomatoes; smoother, for blended sauces."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "canned-crushed-tomatoes",
+    "name": "canned crushed tomatoes",
+    "category": "Canned & Jarred",
+    "defaultUnit": "can",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "crushed tomatoes",
+      "tomato pulp",
+      "ground peeled tomatoes",
+      "polpa di pomodoro"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "crushed"
+        ]
+      },
+      {
+        "key": "medium",
+        "options": [
+          "in tomato purée"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "no salt added",
+          "plain"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "chunky",
+          "smooth"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "processing",
+        "value": "plain"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        365,
+        1095
+      ],
+      "Refrigerated": [
+        5,
+        7
+      ],
+      "Frozen": [
+        60,
+        180
+      ]
+    },
+    "parentIds": [
+      "canned-diced-tomatoes"
+    ],
+    "facetAliases": [
+      {
+        "text": "no salt added",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "no salt added"
+          }
+        ]
+      }
+    ],
+    "gramsPerCup": 240.0,
+    "gramsPerPiece": 123.0,
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "tomato-puree",
+        "ratio": "1:1",
+        "notes": "Same family as canned tomatoes; purée is smoother."
+      },
+      {
+        "substituteItemID": "canned-diced-tomatoes",
+        "ratio": "1:1",
+        "notes": "Same family as canned tomatoes."
+      },
+      {
+        "substituteItemID": "canned-whole-peeled-tomatoes",
+        "ratio": "1:1",
+        "notes": "Same family as canned tomatoes; crush before use."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "tomato-puree",
+    "name": "tomato puree",
+    "category": "Canned & Jarred",
+    "defaultUnit": "can",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "tomato purée",
+      "passata",
+      "tomato passata",
+      "passata di pomodoro",
+      "sieved tomatoes",
+      "strained tomatoes",
+      "salsa di pomodoro"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "puree"
+        ]
+      },
+      {
+        "key": "medium",
+        "options": [
+          "in tomato purée"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "no salt added",
+          "plain"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "smooth"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "texture",
+        "value": "smooth"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        365,
+        1095
+      ],
+      "Refrigerated": [
+        5,
+        7
+      ],
+      "Frozen": [
+        60,
+        180
+      ]
+    },
+    "parentIds": [
+      "canned-diced-tomatoes"
+    ],
+    "facetAliases": [
+      {
+        "text": "no salt added",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "no salt added"
+          }
+        ]
+      }
+    ],
+    "gramsPerCup": 250.0,
+    "gramsPerPiece": 123.0,
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "canned-crushed-tomatoes",
+        "ratio": "1:1",
+        "notes": "Same family as canned tomatoes; crushed are a touch chunkier."
+      },
+      {
+        "substituteItemID": "tomato-sauce",
+        "ratio": "1:1",
+        "notes": "Same family as tomato; sauce may be lightly seasoned."
+      },
+      {
+        "substituteItemID": "tomato-paste",
+        "ratio": "1:3",
+        "notes": "Paste is far more concentrated; thin 1 part paste with 2 parts water."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "stewed-tomatoes",
+    "name": "stewed tomatoes",
+    "category": "Canned & Jarred",
+    "defaultUnit": "can",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "canned stewed tomatoes",
+      "tinned stewed tomatoes"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "diced"
+        ]
+      },
+      {
+        "key": "medium",
+        "options": [
+          "in tomato purée",
+          "in water"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "seasoned"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "chunky"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "processing",
+        "value": "seasoned"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        365,
+        1095
+      ],
+      "Refrigerated": [
+        5,
+        7
+      ],
+      "Frozen": [
+        60,
+        180
+      ]
+    },
+    "parentIds": [
+      "canned-diced-tomatoes"
+    ],
+    "facetAliases": null,
+    "gramsPerCup": 240.0,
+    "gramsPerPiece": 123.0,
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "canned-diced-tomatoes",
+        "ratio": "1:1",
+        "notes": "Same family as canned tomatoes; add onion/celery/pepper to mimic seasoning."
+      },
+      {
+        "substituteItemID": "canned-crushed-tomatoes",
+        "ratio": "1:1",
+        "notes": "Same family as canned tomatoes."
+      },
+      {
+        "substituteItemID": "canned-whole-peeled-tomatoes",
+        "ratio": "1:1",
+        "notes": "Same family as canned tomatoes."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "diced-tomatoes-with-green-chiles",
+    "name": "diced tomatoes with green chiles",
+    "category": "Canned & Jarred",
+    "defaultUnit": "can",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "rotel",
+      "ro-tel",
+      "tomatoes and green chilies",
+      "tomatoes with chiles"
+    ],
+    "facets": [
+      {
+        "key": "grade",
+        "options": [
+          "hot",
+          "mild",
+          "original"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "diced"
+        ]
+      },
+      {
+        "key": "medium",
+        "options": [
+          "in tomato purée"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "chunky"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "grade",
+        "value": "original"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        365,
+        1095
+      ],
+      "Refrigerated": [
+        5,
+        7
+      ],
+      "Frozen": [
+        60,
+        180
+      ]
+    },
+    "parentIds": [
+      "canned-diced-tomatoes"
+    ],
+    "facetAliases": [
+      {
+        "text": "hot",
+        "facets": [
+          {
+            "key": "grade",
+            "value": "hot"
+          }
+        ]
+      },
+      {
+        "text": "mild",
+        "facets": [
+          {
+            "key": "grade",
+            "value": "mild"
+          }
+        ]
+      }
+    ],
+    "gramsPerCup": 240.0,
+    "gramsPerPiece": 123.0,
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "canned-diced-tomatoes",
+        "ratio": "1:1",
+        "notes": "Same family as canned tomatoes; add canned green chile for the heat."
+      },
+      {
+        "substituteItemID": "canned-green-chile",
+        "ratio": "1:1",
+        "notes": "Combine with diced tomatoes to rebuild the blend."
+      },
+      {
+        "substituteItemID": "stewed-tomatoes",
+        "ratio": "1:1",
+        "notes": "Same family as canned tomatoes."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "chipotle-peppers-in-adobo",
+    "name": "chipotle peppers in adobo",
+    "category": "Canned & Jarred",
+    "defaultUnit": "can",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "chipotle in adobo",
+      "chipotles in adobo sauce",
+      "canned chipotle peppers",
+      "adobo chiles"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "whole"
+        ]
+      },
+      {
+        "key": "medium",
+        "options": [
+          "in adobo sauce"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "whole",
+          "ground"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "preparation",
+        "value": "whole"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        365,
+        1095
+      ],
+      "Refrigerated": [
+        30,
+        60
+      ],
+      "Frozen": [
+        180,
+        365
+      ]
+    },
+    "parentIds": [
+      "chipotle"
+    ],
+    "facetAliases": null,
+    "gramsPerCup": 240.0,
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "chipotle",
+        "ratio": "1:1",
+        "notes": "Same chile; rehydrate dried chipotle and add a little vinegar/tomato for the adobo."
+      },
+      {
+        "substituteItemID": "canned-green-chile",
+        "ratio": "1:1",
+        "notes": "Milder smoke and heat; add smoked paprika to approximate."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "jarred-roasted-red-peppers",
+    "name": "jarred roasted red peppers",
+    "category": "Canned & Jarred",
+    "defaultUnit": "jar",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "roasted red peppers",
+      "roasted peppers",
+      "piquillo peppers",
+      "jarred peppers",
+      "peperoni arrostiti"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "whole",
+          "strips"
+        ]
+      },
+      {
+        "key": "medium",
+        "options": [
+          "in brine",
+          "in oil"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "sliced"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "medium",
+        "value": "in brine"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        365,
+        1095
+      ],
+      "Refrigerated": [
+        30,
+        60
+      ],
+      "Frozen": [
+        180,
+        365
+      ]
+    },
+    "parentIds": [
+      "bell"
+    ],
+    "facetAliases": null,
+    "gramsPerCup": 240.0,
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "bell",
+        "ratio": "1:1",
+        "notes": "Roast and peel a fresh red bell pepper to match."
+      },
+      {
+        "substituteItemID": "pimento",
+        "ratio": "1:1",
+        "notes": "Same family of jarred sweet red pepper; pimentos are smaller and milder."
+      },
+      {
+        "substituteItemID": "sun-dried-tomatoes-in-oil",
+        "ratio": "1:1",
+        "notes": "Different flavor but works as a jarred antipasto stand-in."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "pickled-jalapenos",
+    "name": "pickled jalapenos",
+    "category": "Canned & Jarred",
+    "defaultUnit": "jar",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "pickled jalapeños",
+      "jarred jalapenos",
+      "nacho jalapenos",
+      "jalapeno slices",
+      "jalapenos en escabeche"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "whole",
+          "rings"
+        ]
+      },
+      {
+        "key": "medium",
+        "options": [
+          "in brine"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "sliced",
+          "diced"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "preparation",
+        "value": "sliced"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        365
+      ],
+      "Refrigerated": [
+        30,
+        90
+      ]
+    },
+    "parentIds": [
+      "jalapeno"
+    ],
+    "facetAliases": null,
+    "gramsPerCup": 240.0,
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "jalapeno",
+        "ratio": "1:1",
+        "notes": "Fresh jalapeño lacks the pickled tang; add a splash of vinegar."
+      },
+      {
+        "substituteItemID": "serrano",
+        "ratio": "1:1",
+        "notes": "Hotter; pickle or use sparingly."
+      },
+      {
+        "substituteItemID": "canned-green-chile",
+        "ratio": "1:1",
+        "notes": "Milder canned chile alternative."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "jarred-artichoke-hearts",
+    "name": "jarred artichoke hearts",
+    "category": "Canned & Jarred",
+    "defaultUnit": "jar",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "artichoke hearts",
+      "marinated artichoke hearts",
+      "canned artichoke hearts",
+      "artichoke hearts in brine"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "whole",
+          "quartered"
+        ]
+      },
+      {
+        "key": "medium",
+        "options": [
+          "in brine",
+          "in oil"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "marinated"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "medium",
+        "value": "in brine"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        365,
+        1095
+      ],
+      "Refrigerated": [
+        10,
+        14
+      ],
+      "Frozen": [
+        180,
+        365
+      ]
+    },
+    "parentIds": [
+      "artichoke"
+    ],
+    "facetAliases": [
+      {
+        "text": "marinated artichoke hearts",
+        "facets": [
+          {
+            "key": "preparation",
+            "value": "marinated"
+          }
+        ]
+      }
+    ],
+    "gramsPerCup": 240.0,
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "artichoke",
+        "ratio": "1:1",
+        "notes": "Trim and cook fresh artichoke hearts to match."
+      },
+      {
+        "substituteItemID": "jarred-roasted-red-peppers",
+        "ratio": "1:1",
+        "notes": "Different antipasto vegetable; works in salads and dips."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "sun-dried-tomatoes-in-oil",
+    "name": "sun-dried tomatoes in oil",
+    "category": "Canned & Jarred",
+    "defaultUnit": "jar",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "sundried tomatoes",
+      "sun dried tomatoes",
+      "pomodori secchi",
+      "oil-packed sun-dried tomatoes"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "whole",
+          "julienne"
+        ]
+      },
+      {
+        "key": "medium",
+        "options": [
+          "in oil"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "marinated"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "medium",
+        "value": "in oil"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        365,
+        730
+      ],
+      "Refrigerated": [
+        30,
+        60
+      ]
+    },
+    "parentIds": [
+      "tomato"
+    ],
+    "facetAliases": null,
+    "gramsPerCup": 220.0,
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "tomato-paste",
+        "ratio": "1:2",
+        "notes": "For concentrated tomato flavor; use less paste than sun-dried."
+      },
+      {
+        "substituteItemID": "jarred-roasted-red-peppers",
+        "ratio": "1:1",
+        "notes": "Different jarred vegetable; works in pasta and antipasti."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "canned-coconut-milk-light",
+    "name": "canned coconut milk light",
+    "category": "Canned & Jarred",
+    "defaultUnit": "can",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "light coconut milk",
+      "reduced fat coconut milk",
+      "lite coconut milk"
+    ],
+    "facets": [
+      {
+        "key": "grade",
+        "options": [
+          "light"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "creamy",
+          "smooth"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "grade",
+        "value": "light"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        365,
+        1095
+      ],
+      "Refrigerated": [
+        5,
+        7
+      ],
+      "Frozen": [
+        60,
+        180
+      ]
+    },
+    "parentIds": [
+      "coconut-milk"
+    ],
+    "facetAliases": [
+      {
+        "text": "light",
+        "facets": [
+          {
+            "key": "grade",
+            "value": "light"
+          }
+        ]
+      }
+    ],
+    "gramsPerCup": 240.0,
+    "allergens": [
+      "tree-nut"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "coconut-milk",
+        "ratio": "1:1",
+        "notes": "Full-fat coconut milk; thin with water for a lighter texture."
+      },
+      {
+        "substituteItemID": "coconut-non-dairy-milk",
+        "ratio": "1:1",
+        "notes": "Carton coconut beverage is thinner; reduce other liquids."
+      },
+      {
+        "substituteItemID": "almond-non-dairy-milk",
+        "ratio": "1:1",
+        "notes": "Same family as non-dairy milk."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "dulce-de-leche",
+    "name": "dulce de leche",
+    "category": "Canned & Jarred",
+    "defaultUnit": "can",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "caramelized condensed milk",
+      "milk caramel",
+      "manjar",
+      "cajeta"
+    ],
+    "facets": [
+      {
+        "key": "texture",
+        "options": [
+          "smooth",
+          "thick"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "texture",
+        "value": "thick"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        365,
+        730
+      ],
+      "Refrigerated": [
+        21,
+        30
+      ]
+    },
+    "parentIds": [
+      "sweetened-condensed-milk"
+    ],
+    "facetAliases": null,
+    "gramsPerCup": 300.0,
+    "allergens": [
+      "dairy"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Gluten-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "sweetened-condensed-milk",
+        "ratio": "1:1",
+        "notes": "Simmer sweetened condensed milk until caramelized to make dulce de leche."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "enchilada-sauce",
+    "name": "enchilada sauce",
+    "category": "Canned & Jarred",
+    "defaultUnit": "can",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "enchilada sauces",
+      "mexican enchilada sauce",
+      "red enchilada sauce",
+      "green enchilada sauce",
+      "canned enchilada sauce",
+      "salsa para enchiladas"
+    ],
+    "facets": [
+      {
+        "key": "color",
+        "options": [
+          "green",
+          "red"
+        ]
+      },
+      {
+        "key": "grade",
+        "options": [
+          "hot",
+          "medium",
+          "mild"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "smooth"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "color",
+        "value": "red"
+      },
+      {
+        "key": "grade",
+        "value": "mild"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        365,
+        730
+      ],
+      "Refrigerated": [
+        7,
+        14
+      ],
+      "Frozen": [
+        90,
+        180
+      ]
+    },
+    "parentIds": null,
+    "facetAliases": [
+      {
+        "text": "red enchilada sauce",
+        "facets": [
+          {
+            "key": "color",
+            "value": "red"
+          }
+        ]
+      },
+      {
+        "text": "green enchilada sauce",
+        "facets": [
+          {
+            "key": "color",
+            "value": "green"
+          }
+        ]
+      }
+    ],
+    "gramsPerCup": 245.0,
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "tomato-sauce",
+        "ratio": "1:1",
+        "notes": "Season tomato sauce with chili powder, cumin and garlic to mimic enchilada sauce."
+      },
+      {
+        "substituteItemID": "canned-green-chile-enchilada-base",
+        "ratio": "1:1",
+        "notes": "Green chile base for the verde variant."
+      },
+      {
+        "substituteItemID": "chipotle-peppers-in-adobo",
+        "ratio": "1:2",
+        "notes": "Blend with tomato sauce for a smoky red sauce; use sparingly."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "pumpkin-pie-mix",
+    "name": "pumpkin pie mix",
+    "category": "Canned & Jarred",
+    "defaultUnit": "can",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "spiced pumpkin pie filling",
+      "sweetened pumpkin pie filling"
+    ],
+    "facets": [
+      {
+        "key": "texture",
+        "options": [
+          "smooth"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "texture",
+        "value": "smooth"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        365,
+        1095
+      ],
+      "Refrigerated": [
+        7,
+        14
+      ],
+      "Frozen": [
+        60,
+        180
+      ]
+    },
+    "parentIds": [
+      "pumpkin-pie-filling"
+    ],
+    "facetAliases": null,
+    "gramsPerCup": 250.0,
+    "dietaryTags": [
+      "Vegetarian",
+      "Gluten-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "pumpkin-pie-filling",
+        "ratio": "1:1",
+        "notes": "Same family as pie filling."
+      },
+      {
+        "substituteItemID": "pumpkin-puree",
+        "ratio": "1:1",
+        "notes": "Plain puree is unsweetened and unspiced; add sugar and pumpkin spice to match."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "apple-pie-filling",
+    "name": "apple pie filling",
+    "category": "Canned & Jarred",
+    "defaultUnit": "can",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "canned apple pie filling",
+      "apple filling"
+    ],
+    "facets": [
+      {
+        "key": "texture",
+        "options": [
+          "chunky",
+          "smooth"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "texture",
+        "value": "chunky"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        365,
+        1095
+      ],
+      "Refrigerated": [
+        7,
+        14
+      ],
+      "Frozen": [
+        60,
+        180
+      ]
+    },
+    "parentIds": [
+      "pie-filling"
+    ],
+    "facetAliases": null,
+    "gramsPerCup": 240.0,
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "cherry-pie-filling",
+        "ratio": "1:1",
+        "notes": "Same family as pie filling."
+      },
+      {
+        "substituteItemID": "pumpkin-pie-filling",
+        "ratio": "1:1",
+        "notes": "Same family as pie filling."
+      },
+      {
+        "substituteItemID": "applesauce",
+        "ratio": "1:1",
+        "notes": "Applesauce is thinner and less sweet; add sugar and starch to thicken."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "canned-green-chile-enchilada-base",
+    "name": "canned green chile enchilada base",
+    "category": "Canned & Jarred",
+    "defaultUnit": "can",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "hatch chile sauce",
+      "green chile sauce",
+      "canned green chile sauce"
+    ],
+    "facets": [
+      {
+        "key": "grade",
+        "options": [
+          "hot",
+          "mild"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "puree"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "smooth"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "grade",
+        "value": "mild"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        365,
+        1095
+      ],
+      "Refrigerated": [
+        7,
+        10
+      ],
+      "Frozen": [
+        60,
+        180
+      ]
+    },
+    "parentIds": [
+      "canned-green-chile"
+    ],
+    "facetAliases": [
+      {
+        "text": "hot",
+        "facets": [
+          {
+            "key": "grade",
+            "value": "hot"
+          }
+        ]
+      },
+      {
+        "text": "mild",
+        "facets": [
+          {
+            "key": "grade",
+            "value": "mild"
+          }
+        ]
+      }
+    ],
+    "gramsPerCup": 245.0,
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "canned-green-chile",
+        "ratio": "1:1",
+        "notes": "Blend canned green chiles with broth to make the sauce base."
+      },
+      {
+        "substituteItemID": "enchilada-sauce",
+        "ratio": "1:1",
+        "notes": "Use the green (verde) enchilada sauce variant."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "canned-baked-beans-in-tomato-sauce",
+    "name": "canned baked beans in tomato sauce",
+    "category": "Canned & Jarred",
+    "defaultUnit": "can",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "heinz beans",
+      "baked beans tin",
+      "beans in tomato sauce"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "whole"
+        ]
+      },
+      {
+        "key": "medium",
+        "options": [
+          "in tomato sauce"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "canned"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "preservation",
+        "value": "canned"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        365,
+        1095
+      ],
+      "Refrigerated": [
+        3,
+        5
+      ],
+      "Frozen": [
+        60,
+        180
+      ]
+    },
+    "parentIds": [
+      "baked-beans"
+    ],
+    "facetAliases": null,
+    "gramsPerCup": 240.0,
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "baked-beans",
+        "ratio": "1:1",
+        "notes": "Same product; the Legumes & Beans baked beans entry."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "canned-minestrone-soup",
+    "name": "canned minestrone soup",
+    "category": "Canned & Jarred",
+    "defaultUnit": "can",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "minestrone",
+      "canned vegetable soup",
+      "ready soup",
+      "tinned soup"
+    ],
+    "facets": [
+      {
+        "key": "grade",
+        "options": [
+          "condensed",
+          "reduced sodium",
+          "regular"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "chunky"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "grade",
+        "value": "regular"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        365,
+        1095
+      ],
+      "Refrigerated": [
+        3,
+        5
+      ],
+      "Frozen": [
+        60,
+        180
+      ]
+    },
+    "parentIds": null,
+    "facetAliases": [
+      {
+        "text": "condensed minestrone soup",
+        "facets": [
+          {
+            "key": "grade",
+            "value": "condensed"
+          }
+        ]
+      },
+      {
+        "text": "condensed",
+        "facets": [
+          {
+            "key": "grade",
+            "value": "condensed"
+          }
+        ]
+      }
+    ],
+    "gramsPerCup": 240.0,
+    "gramsPerPiece": 123.0,
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "tomato-soup",
+        "ratio": "1:1",
+        "notes": "Different canned soup; tomato base, no vegetables or pasta."
+      }
+    ],
+    "isUserDefined": false
+  }
+]

@@ -1,0 +1,3211 @@
+[
+  {
+    "id": "avocado-oil-base",
+    "name": "avocado oil",
+    "category": "Oils & Fats",
+    "defaultStorage": "Pantry",
+    "parentIds": [
+      "oil"
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        365
+      ]
+    },
+    "aliases": [
+      "avocado oils",
+      "huile d'avocat",
+      "refined avocado oil",
+      "virgin avocado oil"
+    ],
+    "facets": [
+      {
+        "key": "grade",
+        "options": [
+          "extra virgin",
+          "virgin"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "cold-pressed",
+          "expeller-pressed",
+          "refined",
+          "unrefined"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "processing",
+        "value": "refined"
+      }
+    ],
+    "facetAliases": [
+      {
+        "text": "extra virgin avocado oil",
+        "facets": [
+          {
+            "key": "grade",
+            "value": "extra virgin"
+          }
+        ]
+      },
+      {
+        "text": "extra virgin",
+        "facets": [
+          {
+            "key": "grade",
+            "value": "extra virgin"
+          }
+        ]
+      },
+      {
+        "text": "virgin avocado oil",
+        "facets": [
+          {
+            "key": "grade",
+            "value": "virgin"
+          }
+        ]
+      },
+      {
+        "text": "virgin",
+        "facets": [
+          {
+            "key": "grade",
+            "value": "virgin"
+          }
+        ]
+      },
+      {
+        "text": "refined avocado oil",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "refined"
+          }
+        ]
+      },
+      {
+        "text": "refined",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "refined"
+          }
+        ]
+      },
+      {
+        "text": "unrefined avocado oil",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "unrefined"
+          }
+        ]
+      },
+      {
+        "text": "unrefined",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "unrefined"
+          }
+        ]
+      }
+    ],
+    "gramsPerCup": 218.0,
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "olive-oil",
+        "ratio": "1:1",
+        "notes": "High smoke point; both neutral-fruity cooking oils."
+      },
+      {
+        "substituteItemID": "canola-oil",
+        "ratio": "1:1",
+        "notes": "Neutral high-heat substitute."
+      },
+      {
+        "substituteItemID": "grapeseed-oil",
+        "ratio": "1:1",
+        "notes": "Same family as oil."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "coconut-oil-base",
+    "name": "coconut oil",
+    "category": "Oils & Fats",
+    "defaultStorage": "Pantry",
+    "parentIds": [
+      "oil"
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        365,
+        730
+      ]
+    },
+    "aliases": [
+      "coconut oils",
+      "huile de coco",
+      "virgin coconut oil",
+      "cold-pressed coconut oil",
+      "copra oil",
+      "nariyal tel"
+    ],
+    "facets": [
+      {
+        "key": "processing",
+        "options": [
+          "cold-pressed",
+          "expeller-pressed",
+          "refined",
+          "unrefined"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "processing",
+        "value": "refined"
+      }
+    ],
+    "facetAliases": [
+      {
+        "text": "refined coconut oil",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "refined"
+          }
+        ]
+      },
+      {
+        "text": "rbd coconut oil",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "refined"
+          }
+        ]
+      },
+      {
+        "text": "refined",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "refined"
+          }
+        ]
+      },
+      {
+        "text": "unrefined coconut oil",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "unrefined"
+          }
+        ]
+      },
+      {
+        "text": "virgin coconut oil",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "unrefined"
+          }
+        ]
+      },
+      {
+        "text": "unrefined",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "unrefined"
+          }
+        ]
+      }
+    ],
+    "gramsPerCup": 218.0,
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "extra-virgin-coconut-oil",
+        "ratio": "1:1",
+        "notes": "Unrefined version of the same fat."
+      },
+      {
+        "substituteItemID": "palm-oil",
+        "ratio": "1:1",
+        "notes": "Comparable solid plant fat for baking."
+      },
+      {
+        "substituteItemID": "butter",
+        "ratio": "1:1",
+        "notes": "Swap by weight in baking; coconut oil is dairy-free."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "toasted-sesame-oil",
+    "name": "toasted sesame oil",
+    "category": "Oils & Fats",
+    "defaultStorage": "Pantry",
+    "parentIds": [
+      "sesame-oil"
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        365
+      ],
+      "Refrigerated": [
+        365,
+        730
+      ]
+    },
+    "aliases": [
+      "dark sesame oil",
+      "roasted sesame oil",
+      "asian sesame oil",
+      "hu ma you",
+      "goma abura"
+    ],
+    "facets": [
+      {
+        "key": "processing",
+        "options": [
+          "roasted",
+          "unrefined"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "processing",
+        "value": "roasted"
+      }
+    ],
+    "facetAliases": [
+      {
+        "text": "roasted sesame oil",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "roasted"
+          }
+        ]
+      },
+      {
+        "text": "roasted",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "roasted"
+          }
+        ]
+      },
+      {
+        "text": "unrefined",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "unrefined"
+          }
+        ]
+      }
+    ],
+    "gramsPerCup": 218.0,
+    "allergens": [
+      "sesame"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "sesame-oil",
+        "ratio": "1:1",
+        "notes": "Light sesame oil is milder; use less for finishing."
+      },
+      {
+        "substituteItemID": "perilla-oil",
+        "ratio": "1:1",
+        "notes": "Comparable nutty East-Asian finishing oil."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "extra-virgin-olive-oil",
+    "name": "extra virgin olive oil",
+    "category": "Oils & Fats",
+    "defaultStorage": "Pantry",
+    "parentIds": [
+      "olive-oil"
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        365
+      ]
+    },
+    "aliases": [
+      "evoo",
+      "extra-virgin olive oil",
+      "ev olive oil",
+      "olio extravergine"
+    ],
+    "facets": [
+      {
+        "key": "grade",
+        "options": [
+          "extra virgin"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "cold-pressed",
+          "unrefined"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "grade",
+        "value": "extra virgin"
+      },
+      {
+        "key": "processing",
+        "value": "cold-pressed"
+      }
+    ],
+    "facetAliases": [
+      {
+        "text": "extra virgin",
+        "facets": [
+          {
+            "key": "grade",
+            "value": "extra virgin"
+          }
+        ]
+      },
+      {
+        "text": "cold-pressed",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "cold-pressed"
+          }
+        ]
+      },
+      {
+        "text": "unrefined",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "unrefined"
+          }
+        ]
+      }
+    ],
+    "gramsPerCup": 218.0,
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "olive-oil",
+        "ratio": "1:1",
+        "notes": "Plain olive oil is milder; fine for cooking, less so for finishing."
+      },
+      {
+        "substituteItemID": "avocado-oil-base",
+        "ratio": "1:1",
+        "notes": "Neutral substitute for cooking."
+      },
+      {
+        "substituteItemID": "vegetable-oil",
+        "ratio": "1:1",
+        "notes": "Same family as oil."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "olive-pomace-oil",
+    "name": "olive pomace oil",
+    "category": "Oils & Fats",
+    "defaultStorage": "Pantry",
+    "parentIds": [
+      "olive-oil"
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        365
+      ]
+    },
+    "aliases": [
+      "pomace olive oil",
+      "olive-pomace oil",
+      "sansa oil",
+      "pomace oil"
+    ],
+    "facets": [
+      {
+        "key": "processing",
+        "options": [
+          "refined",
+          "blended"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "processing",
+        "value": "refined"
+      }
+    ],
+    "facetAliases": [
+      {
+        "text": "refined",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "refined"
+          }
+        ]
+      },
+      {
+        "text": "blended",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "blended"
+          }
+        ]
+      }
+    ],
+    "gramsPerCup": 218.0,
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "olive-oil",
+        "ratio": "1:1",
+        "notes": "Higher-grade olive oil; richer flavor."
+      },
+      {
+        "substituteItemID": "vegetable-oil",
+        "ratio": "1:1",
+        "notes": "Neutral high-heat substitute."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "brown-butter",
+    "name": "brown butter",
+    "category": "Oils & Fats",
+    "defaultStorage": "Refrigerated",
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        14,
+        30
+      ],
+      "Frozen": [
+        90,
+        180
+      ]
+    },
+    "aliases": [
+      "beurre noisette",
+      "browned butter",
+      "nut-brown butter"
+    ],
+    "facets": [
+      {
+        "key": "grade",
+        "options": [
+          "salted",
+          "unsalted"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "grade",
+        "value": "unsalted"
+      }
+    ],
+    "facetAliases": [
+      {
+        "text": "salted",
+        "facets": [
+          {
+            "key": "grade",
+            "value": "salted"
+          }
+        ]
+      },
+      {
+        "text": "unsalted",
+        "facets": [
+          {
+            "key": "grade",
+            "value": "unsalted"
+          }
+        ]
+      }
+    ],
+    "gramsPerCup": 205.0,
+    "allergens": [
+      "dairy"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Gluten-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "butter",
+        "ratio": "1:1",
+        "notes": "Plain butter lacks the toasted nuttiness."
+      },
+      {
+        "substituteItemID": "ghee",
+        "ratio": "1:1",
+        "notes": "Both are cooked butters; ghee has solids removed."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "red-palm-oil",
+    "name": "red palm oil",
+    "category": "Oils & Fats",
+    "defaultStorage": "Pantry",
+    "parentIds": [
+      "palm-oil"
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        365,
+        730
+      ]
+    },
+    "aliases": [
+      "unrefined palm oil",
+      "crude palm oil",
+      "dende oil",
+      "dendê",
+      "zomi",
+      "epo pupa"
+    ],
+    "facets": [
+      {
+        "key": "processing",
+        "options": [
+          "unrefined",
+          "cold-pressed"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "processing",
+        "value": "unrefined"
+      }
+    ],
+    "facetAliases": [
+      {
+        "text": "unrefined",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "unrefined"
+          }
+        ]
+      },
+      {
+        "text": "cold-pressed",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "cold-pressed"
+          }
+        ]
+      }
+    ],
+    "gramsPerCup": 218.0,
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "palm-oil",
+        "ratio": "1:1",
+        "notes": "Refined palm oil is neutral and pale, lacking the carotene flavor/color."
+      },
+      {
+        "substituteItemID": "palm-kernel-oil",
+        "ratio": "1:1",
+        "notes": "Same family as oil."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "palm-kernel-oil",
+    "name": "palm kernel oil",
+    "category": "Oils & Fats",
+    "defaultStorage": "Pantry",
+    "parentIds": [
+      "oil"
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        365,
+        730
+      ]
+    },
+    "aliases": [
+      "palmkernel oil",
+      "pko",
+      "palm seed oil"
+    ],
+    "facets": [
+      {
+        "key": "processing",
+        "options": [
+          "refined",
+          "unrefined"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "processing",
+        "value": "refined"
+      }
+    ],
+    "facetAliases": [
+      {
+        "text": "refined",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "refined"
+          }
+        ]
+      },
+      {
+        "text": "unrefined",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "unrefined"
+          }
+        ]
+      }
+    ],
+    "gramsPerCup": 218.0,
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "palm-oil",
+        "ratio": "1:1",
+        "notes": "From the pulp rather than the seed; less saturated."
+      },
+      {
+        "substituteItemID": "coconut-oil-base",
+        "ratio": "1:1",
+        "notes": "Comparable high-saturated tropical fat."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "suet",
+    "name": "suet",
+    "category": "Oils & Fats",
+    "defaultStorage": "Refrigerated",
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        60,
+        180
+      ],
+      "Frozen": [
+        180,
+        365
+      ]
+    },
+    "aliases": [
+      "beef suet",
+      "kidney suet",
+      "shredded suet",
+      "atora"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "shredded",
+          "block"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "shredded"
+      }
+    ],
+    "facetAliases": [
+      {
+        "text": "shredded suet",
+        "facets": [
+          {
+            "key": "form",
+            "value": "shredded"
+          }
+        ]
+      },
+      {
+        "text": "shredded",
+        "facets": [
+          {
+            "key": "form",
+            "value": "shredded"
+          }
+        ]
+      },
+      {
+        "text": "block",
+        "facets": [
+          {
+            "key": "form",
+            "value": "block"
+          }
+        ]
+      }
+    ],
+    "gramsPerCup": 205.0,
+    "dietaryTags": [
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "tallow",
+        "ratio": "1:1",
+        "notes": "Rendered beef fat; suet is the raw hard fat."
+      },
+      {
+        "substituteItemID": "lard",
+        "ratio": "1:1",
+        "notes": "Pork equivalent for pastry/puddings."
+      },
+      {
+        "substituteItemID": "vegetable-shortening",
+        "ratio": "1:1",
+        "notes": "Common vegetarian suet stand-in."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "palm-shortening",
+    "name": "palm shortening",
+    "category": "Oils & Fats",
+    "defaultStorage": "Pantry",
+    "parentIds": [
+      "shortening"
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        365,
+        730
+      ]
+    },
+    "aliases": [
+      "all-vegetable palm shortening",
+      "non-hydrogenated palm shortening"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "solid"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "non-hydrogenated"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "processing",
+        "value": "non-hydrogenated"
+      }
+    ],
+    "facetAliases": [
+      {
+        "text": "non-hydrogenated",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "non-hydrogenated"
+          }
+        ]
+      },
+      {
+        "text": "solid",
+        "facets": [
+          {
+            "key": "form",
+            "value": "solid"
+          }
+        ]
+      }
+    ],
+    "gramsPerCup": 205.0,
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "all-purpose-shortening",
+        "ratio": "1:1",
+        "notes": "Same family as shortening."
+      },
+      {
+        "substituteItemID": "non-hydrogenated",
+        "ratio": "1:1",
+        "notes": "Same family as shortening."
+      },
+      {
+        "substituteItemID": "coconut-oil-base",
+        "ratio": "1:1",
+        "notes": "Solid plant fat for baking."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "stick-margarine",
+    "name": "stick margarine",
+    "category": "Oils & Fats",
+    "defaultStorage": "Refrigerated",
+    "parentIds": [
+      "margarine"
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        60,
+        180
+      ],
+      "Frozen": [
+        180,
+        365
+      ]
+    },
+    "aliases": [
+      "block margarine",
+      "hard margarine",
+      "baking margarine"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "stick",
+          "block"
+        ]
+      },
+      {
+        "key": "grade",
+        "options": [
+          "salted",
+          "unsalted"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "hydrogenated",
+          "non-hydrogenated"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "stick"
+      }
+    ],
+    "facetAliases": [
+      {
+        "text": "stick",
+        "facets": [
+          {
+            "key": "form",
+            "value": "stick"
+          }
+        ]
+      },
+      {
+        "text": "block margarine",
+        "facets": [
+          {
+            "key": "form",
+            "value": "block"
+          }
+        ]
+      },
+      {
+        "text": "block",
+        "facets": [
+          {
+            "key": "form",
+            "value": "block"
+          }
+        ]
+      },
+      {
+        "text": "salted",
+        "facets": [
+          {
+            "key": "grade",
+            "value": "salted"
+          }
+        ]
+      },
+      {
+        "text": "unsalted",
+        "facets": [
+          {
+            "key": "grade",
+            "value": "unsalted"
+          }
+        ]
+      },
+      {
+        "text": "hydrogenated",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "hydrogenated"
+          }
+        ]
+      },
+      {
+        "text": "non-hydrogenated",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "non-hydrogenated"
+          }
+        ]
+      }
+    ],
+    "gramsPerCup": 227.0,
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "margarine",
+        "ratio": "1:1",
+        "notes": "Same family as margarine."
+      },
+      {
+        "substituteItemID": "butter",
+        "ratio": "1:1",
+        "notes": "Swap 1:1; butter is not dairy-free."
+      },
+      {
+        "substituteItemID": "all-purpose-shortening",
+        "ratio": "1:1",
+        "notes": "For baking when no water content is wanted."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "tea-seed-oil",
+    "name": "tea seed oil",
+    "category": "Oils & Fats",
+    "defaultStorage": "Pantry",
+    "parentIds": [
+      "oil"
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        365
+      ],
+      "Refrigerated": [
+        365,
+        730
+      ]
+    },
+    "aliases": [
+      "camellia oil",
+      "camellia seed oil",
+      "tsubaki oil",
+      "tea oil",
+      "cha you"
+    ],
+    "facets": [
+      {
+        "key": "processing",
+        "options": [
+          "refined",
+          "cold-pressed",
+          "unrefined"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "processing",
+        "value": "cold-pressed"
+      }
+    ],
+    "facetAliases": [
+      {
+        "text": "refined",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "refined"
+          }
+        ]
+      },
+      {
+        "text": "cold-pressed",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "cold-pressed"
+          }
+        ]
+      },
+      {
+        "text": "unrefined",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "unrefined"
+          }
+        ]
+      }
+    ],
+    "gramsPerCup": 218.0,
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "olive-oil",
+        "ratio": "1:1",
+        "notes": "Comparable monounsaturated cooking/finishing oil."
+      },
+      {
+        "substituteItemID": "rice-bran-oil",
+        "ratio": "1:1",
+        "notes": "Neutral high-smoke-point East-Asian frying oil."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "perilla-oil",
+    "name": "perilla oil",
+    "category": "Oils & Fats",
+    "defaultStorage": "Refrigerated",
+    "parentIds": [
+      "oil"
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        60,
+        120
+      ],
+      "Refrigerated": [
+        120,
+        240
+      ]
+    },
+    "aliases": [
+      "perilla seed oil",
+      "deulgireum",
+      "egoma oil",
+      "shiso oil"
+    ],
+    "facets": [
+      {
+        "key": "processing",
+        "options": [
+          "roasted",
+          "cold-pressed",
+          "unrefined"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "processing",
+        "value": "roasted"
+      }
+    ],
+    "facetAliases": [
+      {
+        "text": "roasted",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "roasted"
+          }
+        ]
+      },
+      {
+        "text": "cold-pressed",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "cold-pressed"
+          }
+        ]
+      },
+      {
+        "text": "unrefined",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "unrefined"
+          }
+        ]
+      }
+    ],
+    "gramsPerCup": 218.0,
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "toasted-sesame-oil",
+        "ratio": "1:1",
+        "notes": "Comparable nutty Korean/Japanese finishing oil."
+      },
+      {
+        "substituteItemID": "flaxseed-oil",
+        "ratio": "1:1",
+        "notes": "Both omega-3-rich, heat-sensitive finishing oils."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "argan-oil",
+    "name": "argan oil",
+    "category": "Oils & Fats",
+    "defaultStorage": "Pantry",
+    "parentIds": [
+      "oil"
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        365
+      ],
+      "Refrigerated": [
+        365,
+        730
+      ]
+    },
+    "aliases": [
+      "culinary argan oil",
+      "edible argan oil",
+      "huile d'argan",
+      "amlou base oil"
+    ],
+    "facets": [
+      {
+        "key": "processing",
+        "options": [
+          "roasted",
+          "cold-pressed",
+          "unrefined"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "processing",
+        "value": "roasted"
+      }
+    ],
+    "facetAliases": [
+      {
+        "text": "roasted",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "roasted"
+          }
+        ]
+      },
+      {
+        "text": "toasted argan oil",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "roasted"
+          }
+        ]
+      },
+      {
+        "text": "cold-pressed",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "cold-pressed"
+          }
+        ]
+      },
+      {
+        "text": "unrefined",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "unrefined"
+          }
+        ]
+      }
+    ],
+    "gramsPerCup": 218.0,
+    "allergens": [
+      "tree-nut"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "hazelnut-oil",
+        "ratio": "1:1",
+        "notes": "Comparable nutty finishing oil."
+      },
+      {
+        "substituteItemID": "walnut-oil",
+        "ratio": "1:1",
+        "notes": "Same nutty finishing-oil family."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "mustard-oil-unrefined",
+    "name": "mustard oil unrefined",
+    "category": "Oils & Fats",
+    "defaultStorage": "Pantry",
+    "parentIds": [
+      "mustard-oil"
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        365
+      ],
+      "Refrigerated": [
+        365,
+        730
+      ]
+    },
+    "aliases": [
+      "cold-pressed mustard oil",
+      "raw mustard oil",
+      "kachi ghani mustard oil",
+      "kachi ghani"
+    ],
+    "facets": [
+      {
+        "key": "processing",
+        "options": [
+          "cold-pressed",
+          "unrefined"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "processing",
+        "value": "cold-pressed"
+      }
+    ],
+    "facetAliases": [
+      {
+        "text": "cold-pressed",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "cold-pressed"
+          }
+        ]
+      },
+      {
+        "text": "kachi ghani",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "cold-pressed"
+          }
+        ]
+      },
+      {
+        "text": "unrefined",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "unrefined"
+          }
+        ]
+      }
+    ],
+    "gramsPerCup": 218.0,
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "mustard-oil",
+        "ratio": "1:1",
+        "notes": "Same family as oil."
+      },
+      {
+        "substituteItemID": "mustard-oil-refined",
+        "ratio": "1:1",
+        "notes": "Refined version is milder and higher-smoke-point."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "niger-seed-oil",
+    "name": "niger seed oil",
+    "category": "Oils & Fats",
+    "defaultStorage": "Pantry",
+    "parentIds": [
+      "oil"
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        120,
+        240
+      ],
+      "Refrigerated": [
+        240,
+        365
+      ]
+    },
+    "aliases": [
+      "ramtil oil",
+      "ramtel oil",
+      "nyger oil",
+      "noog abyssinia oil",
+      "inga seed oil"
+    ],
+    "facets": [
+      {
+        "key": "processing",
+        "options": [
+          "cold-pressed",
+          "unrefined",
+          "refined"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "processing",
+        "value": "cold-pressed"
+      }
+    ],
+    "facetAliases": [
+      {
+        "text": "cold-pressed",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "cold-pressed"
+          }
+        ]
+      },
+      {
+        "text": "unrefined",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "unrefined"
+          }
+        ]
+      },
+      {
+        "text": "refined",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "refined"
+          }
+        ]
+      }
+    ],
+    "gramsPerCup": 218.0,
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "sesame-oil",
+        "ratio": "1:1",
+        "notes": "Comparable nutty seed oil in Ethiopian/Indian cooking."
+      },
+      {
+        "substituteItemID": "sunflower-oil",
+        "ratio": "1:1",
+        "notes": "Neutral seed-oil substitute."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "black-seed-oil",
+    "name": "black seed oil",
+    "category": "Oils & Fats",
+    "defaultStorage": "Pantry",
+    "parentIds": [
+      "oil"
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        365
+      ],
+      "Refrigerated": [
+        365,
+        730
+      ]
+    },
+    "aliases": [
+      "nigella oil",
+      "kalonji oil",
+      "black cumin oil",
+      "habbat al barakah oil"
+    ],
+    "facets": [
+      {
+        "key": "processing",
+        "options": [
+          "cold-pressed",
+          "unrefined"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "processing",
+        "value": "cold-pressed"
+      }
+    ],
+    "facetAliases": [
+      {
+        "text": "cold-pressed",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "cold-pressed"
+          }
+        ]
+      },
+      {
+        "text": "unrefined",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "unrefined"
+          }
+        ]
+      }
+    ],
+    "gramsPerCup": 218.0,
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "mustard-oil",
+        "ratio": "1:1",
+        "notes": "Comparable pungent South-Asian finishing oil."
+      },
+      {
+        "substituteItemID": "sesame-oil",
+        "ratio": "1:1",
+        "notes": "Same family as oil."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "wheat-germ-oil",
+    "name": "wheat germ oil",
+    "category": "Oils & Fats",
+    "defaultStorage": "Refrigerated",
+    "parentIds": [
+      "oil"
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        60,
+        120
+      ],
+      "Refrigerated": [
+        120,
+        240
+      ]
+    },
+    "aliases": [
+      "wheatgerm oil",
+      "wheat-germ oil"
+    ],
+    "facets": [
+      {
+        "key": "processing",
+        "options": [
+          "cold-pressed",
+          "unrefined"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "processing",
+        "value": "cold-pressed"
+      }
+    ],
+    "facetAliases": [
+      {
+        "text": "cold-pressed",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "cold-pressed"
+          }
+        ]
+      },
+      {
+        "text": "unrefined",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "unrefined"
+          }
+        ]
+      }
+    ],
+    "gramsPerCup": 218.0,
+    "allergens": [
+      "gluten"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "flaxseed-oil",
+        "ratio": "1:1",
+        "notes": "Comparable vitamin/omega-rich finishing oil (gluten-free)."
+      },
+      {
+        "substituteItemID": "rice-bran-oil",
+        "ratio": "1:1",
+        "notes": "Neutral substitute when gluten must be avoided."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "apricot-kernel-oil",
+    "name": "apricot kernel oil",
+    "category": "Oils & Fats",
+    "defaultStorage": "Pantry",
+    "parentIds": [
+      "oil"
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        365
+      ],
+      "Refrigerated": [
+        365,
+        730
+      ]
+    },
+    "aliases": [
+      "apricot oil",
+      "culinary apricot kernel oil"
+    ],
+    "facets": [
+      {
+        "key": "processing",
+        "options": [
+          "cold-pressed",
+          "refined",
+          "unrefined"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "processing",
+        "value": "cold-pressed"
+      }
+    ],
+    "facetAliases": [
+      {
+        "text": "cold-pressed",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "cold-pressed"
+          }
+        ]
+      },
+      {
+        "text": "refined",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "refined"
+          }
+        ]
+      },
+      {
+        "text": "unrefined",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "unrefined"
+          }
+        ]
+      }
+    ],
+    "gramsPerCup": 218.0,
+    "allergens": [
+      "tree-nut"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "almond-oil",
+        "ratio": "1:1",
+        "notes": "Closely related kernel oil, mild and nutty."
+      },
+      {
+        "substituteItemID": "hazelnut-oil",
+        "ratio": "1:1",
+        "notes": "Same nutty finishing-oil family."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "poppyseed-oil",
+    "name": "poppyseed oil",
+    "category": "Oils & Fats",
+    "defaultStorage": "Pantry",
+    "parentIds": [
+      "oil"
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        120,
+        240
+      ],
+      "Refrigerated": [
+        240,
+        365
+      ]
+    },
+    "aliases": [
+      "poppy seed oil",
+      "huile d'œillette",
+      "khus khus oil"
+    ],
+    "facets": [
+      {
+        "key": "processing",
+        "options": [
+          "cold-pressed",
+          "refined",
+          "unrefined"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "processing",
+        "value": "cold-pressed"
+      }
+    ],
+    "facetAliases": [
+      {
+        "text": "cold-pressed",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "cold-pressed"
+          }
+        ]
+      },
+      {
+        "text": "refined",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "refined"
+          }
+        ]
+      },
+      {
+        "text": "unrefined",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "unrefined"
+          }
+        ]
+      }
+    ],
+    "gramsPerCup": 218.0,
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "sunflower-oil",
+        "ratio": "1:1",
+        "notes": "Neutral, delicate seed-oil substitute."
+      },
+      {
+        "substituteItemID": "walnut-oil",
+        "ratio": "1:1",
+        "notes": "Comparable delicate salad oil (adds tree nut)."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "tigernut-oil",
+    "name": "tigernut oil",
+    "category": "Oils & Fats",
+    "defaultStorage": "Pantry",
+    "parentIds": [
+      "oil"
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        365
+      ],
+      "Refrigerated": [
+        365,
+        730
+      ]
+    },
+    "aliases": [
+      "chufa oil",
+      "tiger nut oil",
+      "earth almond oil"
+    ],
+    "facets": [
+      {
+        "key": "processing",
+        "options": [
+          "cold-pressed",
+          "unrefined"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "processing",
+        "value": "cold-pressed"
+      }
+    ],
+    "facetAliases": [
+      {
+        "text": "cold-pressed",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "cold-pressed"
+          }
+        ]
+      },
+      {
+        "text": "unrefined",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "unrefined"
+          }
+        ]
+      }
+    ],
+    "gramsPerCup": 218.0,
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "olive-oil",
+        "ratio": "1:1",
+        "notes": "Comparable mild finishing oil."
+      },
+      {
+        "substituteItemID": "almond-oil",
+        "ratio": "1:1",
+        "notes": "Similar nutty-sweet profile (adds tree nut)."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "garlic-oil",
+    "name": "garlic oil",
+    "category": "Oils & Fats",
+    "defaultStorage": "Refrigerated",
+    "parentIds": [
+      "oil"
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        7,
+        30
+      ]
+    },
+    "aliases": [
+      "garlic-infused oil",
+      "roasted garlic oil"
+    ],
+    "facets": [
+      {
+        "key": "processing",
+        "options": [
+          "infused"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "processing",
+        "value": "infused"
+      }
+    ],
+    "facetAliases": [
+      {
+        "text": "infused",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "infused"
+          }
+        ]
+      },
+      {
+        "text": "garlic-infused oil",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "infused"
+          }
+        ]
+      }
+    ],
+    "gramsPerCup": 218.0,
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "chili-oil",
+        "ratio": "1:1",
+        "notes": "Other common infused finishing oil."
+      },
+      {
+        "substituteItemID": "olive-oil",
+        "ratio": "1:1",
+        "notes": "Add fresh garlic to plain oil."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "lemon-olive-oil",
+    "name": "lemon olive oil",
+    "category": "Oils & Fats",
+    "defaultStorage": "Pantry",
+    "parentIds": [
+      "olive-oil"
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        365
+      ]
+    },
+    "aliases": [
+      "citrus olive oil",
+      "agrumato lemon oil",
+      "infused olive oil"
+    ],
+    "facets": [
+      {
+        "key": "processing",
+        "options": [
+          "infused"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "processing",
+        "value": "infused"
+      }
+    ],
+    "facetAliases": [
+      {
+        "text": "infused",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "infused"
+          }
+        ]
+      },
+      {
+        "text": "agrumato",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "infused"
+          }
+        ]
+      }
+    ],
+    "gramsPerCup": 218.0,
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "olive-oil",
+        "ratio": "1:1",
+        "notes": "Plain olive oil plus lemon zest/juice."
+      },
+      {
+        "substituteItemID": "extra-virgin-olive-oil",
+        "ratio": "1:1",
+        "notes": "Same family; lacks the citrus note."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "schmaltz-with-gribenes",
+    "name": "schmaltz with gribenes",
+    "category": "Oils & Fats",
+    "defaultStorage": "Refrigerated",
+    "parentIds": [
+      "schmaltz"
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        30,
+        90
+      ],
+      "Frozen": [
+        120,
+        240
+      ]
+    },
+    "aliases": [
+      "gribenes",
+      "grieben",
+      "cracklings fat"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "with cracklings"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "with cracklings"
+      }
+    ],
+    "facetAliases": [
+      {
+        "text": "with cracklings",
+        "facets": [
+          {
+            "key": "form",
+            "value": "with cracklings"
+          }
+        ]
+      },
+      {
+        "text": "gribenes",
+        "facets": [
+          {
+            "key": "form",
+            "value": "with cracklings"
+          }
+        ]
+      }
+    ],
+    "gramsPerCup": 205.0,
+    "dietaryTags": [
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "schmaltz",
+        "ratio": "1:1",
+        "notes": "Plain rendered poultry fat without the cracklings."
+      },
+      {
+        "substituteItemID": "duck-fat",
+        "ratio": "1:1",
+        "notes": "Comparable rich poultry fat."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "pork-fatback",
+    "name": "pork fatback",
+    "category": "Oils & Fats",
+    "defaultStorage": "Refrigerated",
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        7,
+        14
+      ],
+      "Frozen": [
+        180,
+        365
+      ]
+    },
+    "aliases": [
+      "fatback",
+      "back fat",
+      "lardo (cured)",
+      "tocino"
+    ],
+    "facets": [
+      {
+        "key": "processing",
+        "options": [
+          "fresh",
+          "cured"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "processing",
+        "value": "fresh"
+      }
+    ],
+    "facetAliases": [
+      {
+        "text": "fresh",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "fresh"
+          }
+        ]
+      },
+      {
+        "text": "cured",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "cured"
+          }
+        ]
+      }
+    ],
+    "gramsPerCup": 205.0,
+    "dietaryTags": [
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "lard",
+        "ratio": "1:1",
+        "notes": "Rendered version of pork fat."
+      },
+      {
+        "substituteItemID": "leaf-lard",
+        "ratio": "1:1",
+        "notes": "Softer pork fat from around the kidneys."
+      },
+      {
+        "substituteItemID": "suet",
+        "ratio": "1:1",
+        "notes": "Beef equivalent of hard raw fat."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "leaf-lard",
+    "name": "leaf lard",
+    "category": "Oils & Fats",
+    "defaultStorage": "Refrigerated",
+    "parentIds": [
+      "lard"
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        30,
+        90
+      ],
+      "Refrigerated": [
+        180,
+        365
+      ],
+      "Frozen": [
+        365,
+        730
+      ]
+    },
+    "aliases": [
+      "leaf fat",
+      "pastry lard"
+    ],
+    "facets": [
+      {
+        "key": "processing",
+        "options": [
+          "rendered",
+          "unrendered"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "processing",
+        "value": "rendered"
+      }
+    ],
+    "facetAliases": [
+      {
+        "text": "rendered",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "rendered"
+          }
+        ]
+      },
+      {
+        "text": "unrendered",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "unrendered"
+          }
+        ]
+      }
+    ],
+    "gramsPerCup": 205.0,
+    "dietaryTags": [
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "lard",
+        "ratio": "1:1",
+        "notes": "Standard lard; leaf lard is the premium pastry grade."
+      },
+      {
+        "substituteItemID": "vegetable-shortening",
+        "ratio": "1:1",
+        "notes": "Vegetarian stand-in for pie crust."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "extra-virgin-coconut-oil",
+    "name": "extra virgin coconut oil",
+    "category": "Oils & Fats",
+    "defaultStorage": "Pantry",
+    "parentIds": [
+      "coconut-oil-base"
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        365,
+        730
+      ]
+    },
+    "aliases": [
+      "virgin coconut oil",
+      "unrefined coconut oil",
+      "cold-pressed coconut oil",
+      "vco"
+    ],
+    "facets": [
+      {
+        "key": "processing",
+        "options": [
+          "cold-pressed",
+          "unrefined"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "processing",
+        "value": "cold-pressed"
+      }
+    ],
+    "facetAliases": [
+      {
+        "text": "cold-pressed",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "cold-pressed"
+          }
+        ]
+      },
+      {
+        "text": "virgin",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "unrefined"
+          }
+        ]
+      },
+      {
+        "text": "unrefined",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "unrefined"
+          }
+        ]
+      }
+    ],
+    "gramsPerCup": 218.0,
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "coconut-oil-base",
+        "ratio": "1:1",
+        "notes": "Refined coconut oil is neutral; this keeps coconut aroma."
+      },
+      {
+        "substituteItemID": "coconut-oil-refined",
+        "ratio": "1:1",
+        "notes": "Refined sibling, milder flavor."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "high-oleic-sunflower-oil",
+    "name": "high-oleic sunflower oil",
+    "category": "Oils & Fats",
+    "defaultStorage": "Pantry",
+    "parentIds": [
+      "sunflower-oil"
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        365,
+        730
+      ]
+    },
+    "aliases": [
+      "high oleic sunflower oil",
+      "hoso",
+      "frying sunflower oil"
+    ],
+    "facets": [
+      {
+        "key": "processing",
+        "options": [
+          "refined",
+          "high-oleic"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "processing",
+        "value": "high-oleic"
+      }
+    ],
+    "facetAliases": [
+      {
+        "text": "high-oleic",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "high-oleic"
+          }
+        ]
+      },
+      {
+        "text": "refined",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "refined"
+          }
+        ]
+      }
+    ],
+    "gramsPerCup": 218.0,
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "sunflower-oil",
+        "ratio": "1:1",
+        "notes": "Same family; standard sunflower oil is less heat-stable."
+      },
+      {
+        "substituteItemID": "safflower-oil",
+        "ratio": "1:1",
+        "notes": "Comparable high-oleic frying oil."
+      },
+      {
+        "substituteItemID": "canola-oil",
+        "ratio": "1:1",
+        "notes": "Neutral high-heat substitute."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "blended-vegetable-oil",
+    "name": "blended vegetable oil",
+    "category": "Oils & Fats",
+    "defaultStorage": "Pantry",
+    "parentIds": [
+      "vegetable-oil"
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        365
+      ]
+    },
+    "aliases": [
+      "blended oil",
+      "salad oil blend",
+      "compound cooking oil"
+    ],
+    "facets": [
+      {
+        "key": "processing",
+        "options": [
+          "blended",
+          "refined"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "processing",
+        "value": "blended"
+      }
+    ],
+    "facetAliases": [
+      {
+        "text": "blended oil",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "blended"
+          }
+        ]
+      },
+      {
+        "text": "blended",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "blended"
+          }
+        ]
+      },
+      {
+        "text": "refined",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "refined"
+          }
+        ]
+      }
+    ],
+    "gramsPerCup": 218.0,
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "vegetable-oil",
+        "ratio": "1:1",
+        "notes": "Same family as oil."
+      },
+      {
+        "substituteItemID": "canola-oil",
+        "ratio": "1:1",
+        "notes": "Neutral single-seed substitute."
+      },
+      {
+        "substituteItemID": "sunflower-oil",
+        "ratio": "1:1",
+        "notes": "Same family as oil."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "duck-fat-cooking-spray",
+    "name": "duck fat cooking spray",
+    "category": "Oils & Fats",
+    "defaultStorage": "Pantry",
+    "parentIds": [
+      "cooking-spray"
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        365,
+        1095
+      ]
+    },
+    "aliases": [
+      "duck fat spray"
+    ],
+    "facets": [
+      {
+        "key": "processing",
+        "options": [
+          "propellant-based",
+          "propellant-free"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "facetAliases": [
+      {
+        "text": "propellant-based",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "propellant-based"
+          }
+        ]
+      },
+      {
+        "text": "propellant-free",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "propellant-free"
+          }
+        ]
+      }
+    ],
+    "gramsPerCup": 218.0,
+    "gramsPerPiece": 200.0,
+    "dietaryTags": [
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "cooking-spray",
+        "ratio": "1:1",
+        "notes": "Plain neutral spray; lacks duck-fat flavor."
+      },
+      {
+        "substituteItemID": "duck-fat",
+        "ratio": "1:1",
+        "notes": "Use liquid duck fat brushed on instead of sprayed."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "vegetable-oil-cooking-spray",
+    "name": "vegetable oil cooking spray",
+    "category": "Oils & Fats",
+    "defaultStorage": "Pantry",
+    "parentIds": [
+      "cooking-spray"
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        365,
+        1095
+      ]
+    },
+    "aliases": [
+      "vegetable cooking spray",
+      "neutral cooking spray"
+    ],
+    "facets": [
+      {
+        "key": "processing",
+        "options": [
+          "propellant-based",
+          "propellant-free"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "facetAliases": [
+      {
+        "text": "propellant-based",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "propellant-based"
+          }
+        ]
+      },
+      {
+        "text": "propellant-free",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "propellant-free"
+          }
+        ]
+      }
+    ],
+    "gramsPerCup": 218.0,
+    "gramsPerPiece": 200.0,
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "cooking-spray",
+        "ratio": "1:1",
+        "notes": "Same family as cooking spray."
+      },
+      {
+        "substituteItemID": "olive-oil-spray",
+        "ratio": "1:1",
+        "notes": "Same family as cooking spray."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "baking-spray-with-flour",
+    "name": "baking spray with flour",
+    "category": "Oils & Fats",
+    "defaultStorage": "Pantry",
+    "parentIds": [
+      "cooking-spray"
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        365,
+        1095
+      ]
+    },
+    "aliases": [
+      "flour baking spray",
+      "baker's spray",
+      "bak-klene"
+    ],
+    "facets": [
+      {
+        "key": "processing",
+        "options": [
+          "propellant-based",
+          "propellant-free"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "facetAliases": [
+      {
+        "text": "propellant-based",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "propellant-based"
+          }
+        ]
+      },
+      {
+        "text": "propellant-free",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "propellant-free"
+          }
+        ]
+      }
+    ],
+    "gramsPerCup": 218.0,
+    "gramsPerPiece": 200.0,
+    "allergens": [
+      "gluten"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "cooking-spray",
+        "ratio": "1:1",
+        "notes": "Plain spray plus a dusting of flour."
+      },
+      {
+        "substituteItemID": "vegetable-oil-cooking-spray",
+        "ratio": "1:1",
+        "notes": "Same family as cooking spray (no flour)."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "lardo",
+    "name": "lardo",
+    "category": "Oils & Fats",
+    "defaultStorage": "Refrigerated",
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        60,
+        180
+      ],
+      "Frozen": [
+        180,
+        365
+      ]
+    },
+    "aliases": [
+      "cured pork back fat",
+      "lardo di colonnata"
+    ],
+    "facets": [
+      {
+        "key": "processing",
+        "options": [
+          "cured"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "processing",
+        "value": "cured"
+      }
+    ],
+    "facetAliases": [
+      {
+        "text": "cured",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "cured"
+          }
+        ]
+      }
+    ],
+    "gramsPerCup": 205.0,
+    "dietaryTags": [
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "pork-fatback",
+        "ratio": "1:1",
+        "notes": "Fresh (uncured) version of the same cut."
+      },
+      {
+        "substituteItemID": "lard",
+        "ratio": "1:1",
+        "notes": "Rendered pork fat for cooking."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "yak-butter",
+    "name": "yak butter",
+    "category": "Oils & Fats",
+    "defaultStorage": "Refrigerated",
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        14,
+        60
+      ],
+      "Frozen": [
+        120,
+        240
+      ]
+    },
+    "aliases": [
+      "dri butter",
+      "po cha butter",
+      "himalayan butter"
+    ],
+    "facets": [
+      {
+        "key": "grade",
+        "options": [
+          "salted",
+          "unsalted"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "facetAliases": [
+      {
+        "text": "salted",
+        "facets": [
+          {
+            "key": "grade",
+            "value": "salted"
+          }
+        ]
+      },
+      {
+        "text": "unsalted",
+        "facets": [
+          {
+            "key": "grade",
+            "value": "unsalted"
+          }
+        ]
+      }
+    ],
+    "gramsPerCup": 205.0,
+    "allergens": [
+      "dairy"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Gluten-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "butter",
+        "ratio": "1:1",
+        "notes": "Cow butter is the closest common substitute."
+      },
+      {
+        "substituteItemID": "ghee",
+        "ratio": "1:1",
+        "notes": "Used similarly in Himalayan butter tea/cooking."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "smen",
+    "name": "smen",
+    "category": "Oils & Fats",
+    "defaultStorage": "Pantry",
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        365
+      ],
+      "Refrigerated": [
+        365,
+        730
+      ]
+    },
+    "aliases": [
+      "semn",
+      "preserved butter",
+      "moroccan fermented butter",
+      "saman"
+    ],
+    "facets": [
+      {
+        "key": "processing",
+        "options": [
+          "fermented",
+          "aged"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "processing",
+        "value": "fermented"
+      }
+    ],
+    "facetAliases": [
+      {
+        "text": "fermented",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "fermented"
+          }
+        ]
+      },
+      {
+        "text": "aged",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "aged"
+          }
+        ]
+      }
+    ],
+    "gramsPerCup": 210.0,
+    "allergens": [
+      "dairy"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Gluten-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "ghee",
+        "ratio": "1:1",
+        "notes": "Clarified butter without the fermented funk."
+      },
+      {
+        "substituteItemID": "clarified",
+        "ratio": "1:1",
+        "notes": "Clarified butter; smen is fermented and aged."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "kokum-butter",
+    "name": "kokum butter",
+    "category": "Oils & Fats",
+    "defaultStorage": "Pantry",
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        365,
+        730
+      ]
+    },
+    "aliases": [
+      "kokum fat",
+      "garcinia indica butter"
+    ],
+    "facets": [
+      {
+        "key": "processing",
+        "options": [
+          "refined",
+          "unrefined"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "processing",
+        "value": "unrefined"
+      }
+    ],
+    "facetAliases": [
+      {
+        "text": "refined",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "refined"
+          }
+        ]
+      },
+      {
+        "text": "unrefined",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "unrefined"
+          }
+        ]
+      }
+    ],
+    "gramsPerCup": 205.0,
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "coconut-oil-base",
+        "ratio": "1:1",
+        "notes": "Comparable stable plant fat."
+      },
+      {
+        "substituteItemID": "palm-oil",
+        "ratio": "1:1",
+        "notes": "Solid plant fat substitute."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "shea-butter-food-grade",
+    "name": "shea butter (food grade)",
+    "category": "Oils & Fats",
+    "defaultStorage": "Pantry",
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        365,
+        730
+      ]
+    },
+    "aliases": [
+      "edible shea butter",
+      "shea fat",
+      "karite butter",
+      "ori"
+    ],
+    "facets": [
+      {
+        "key": "processing",
+        "options": [
+          "refined",
+          "unrefined"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "processing",
+        "value": "unrefined"
+      }
+    ],
+    "facetAliases": [
+      {
+        "text": "refined",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "refined"
+          }
+        ]
+      },
+      {
+        "text": "unrefined",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "unrefined"
+          }
+        ]
+      }
+    ],
+    "gramsPerCup": 205.0,
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "coconut-oil-base",
+        "ratio": "1:1",
+        "notes": "Comparable stable plant fat for cooking/baking."
+      },
+      {
+        "substituteItemID": "palm-oil",
+        "ratio": "1:1",
+        "notes": "Cocoa-butter-equivalent plant fat."
+      }
+    ],
+    "isUserDefined": false
+  }
+]

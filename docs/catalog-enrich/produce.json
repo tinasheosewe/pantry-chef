@@ -1,0 +1,7056 @@
+[
+  {
+    "id": "cilantro-fresh",
+    "name": "cilantro (fresh)",
+    "category": "Produce",
+    "defaultStorage": "Refrigerated",
+    "aliases": [],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        4,
+        10
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "paste",
+          "whole leaves",
+          "sprigs"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "chopped",
+          "minced",
+          "torn",
+          "trimmed",
+          "washed"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "dried",
+          "fresh",
+          "frozen"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "preservation",
+        "value": "fresh"
+      }
+    ],
+    "gramsPerCup": 100,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "parsley",
+        "ratio": "1:1",
+        "notes": "Different flavor; works as a fresh garnish."
+      },
+      {
+        "substituteItemID": "culantro",
+        "ratio": "1:1",
+        "notes": "Stronger, more pungent; use less."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "flat-leaf-parsley-fresh",
+    "name": "flat-leaf parsley (fresh)",
+    "category": "Produce",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "fresh parsley",
+      "continental parsley"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        7,
+        14
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "paste",
+          "whole leaves",
+          "sprigs"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "chopped",
+          "minced",
+          "torn",
+          "trimmed",
+          "washed"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "dried",
+          "fresh",
+          "frozen"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "preservation",
+        "value": "fresh"
+      }
+    ],
+    "gramsPerCup": 100,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "cilantro",
+        "ratio": "1:1",
+        "notes": "Different flavor; both bright fresh garnishes."
+      },
+      {
+        "substituteItemID": "chervil",
+        "ratio": "1:1",
+        "notes": "Milder, anise note."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "fresh-basil",
+    "name": "fresh basil",
+    "category": "Produce",
+    "defaultStorage": "Refrigerated",
+    "aliases": [],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        5,
+        10
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "paste",
+          "whole leaves",
+          "sprigs"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "chopped",
+          "minced",
+          "torn",
+          "trimmed",
+          "washed"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "dried",
+          "fresh",
+          "frozen"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "preservation",
+        "value": "fresh"
+      }
+    ],
+    "gramsPerCup": 100,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "mint",
+        "ratio": "1:1",
+        "notes": "Different flavor; both bright fresh herbs."
+      },
+      {
+        "substituteItemID": "oregano",
+        "ratio": "1:1",
+        "notes": "More robust; use less."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "thai-basil",
+    "name": "thai basil",
+    "category": "Produce",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "horapha",
+      "anise basil"
+    ],
+    "parentIds": [
+      "basil"
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        365
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "paste",
+          "whole leaves",
+          "sprigs"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "chopped",
+          "minced",
+          "torn",
+          "trimmed",
+          "washed"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "dried",
+          "fresh",
+          "frozen"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "preservation",
+        "value": "fresh"
+      }
+    ],
+    "gramsPerCup": 100,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "basil",
+        "ratio": "1:1",
+        "notes": "Sweeter, less anise; closest swap."
+      },
+      {
+        "substituteItemID": "mint",
+        "ratio": "1:1",
+        "notes": "For the cooling note in SE-Asian dishes."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "holy-basil",
+    "name": "holy basil",
+    "category": "Produce",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "tulsi",
+      "kaprao",
+      "krapow"
+    ],
+    "parentIds": [
+      "fresh-basil"
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        4,
+        8
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "paste",
+          "whole leaves",
+          "sprigs"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "chopped",
+          "minced",
+          "torn",
+          "trimmed",
+          "washed"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "dried",
+          "fresh",
+          "frozen"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "preservation",
+        "value": "fresh"
+      }
+    ],
+    "gramsPerCup": 100,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "thai-basil",
+        "ratio": "1:1",
+        "notes": "Closest; sweeter and less peppery."
+      },
+      {
+        "substituteItemID": "basil",
+        "ratio": "1:1",
+        "notes": "Milder, no clove note."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "fresh-mint",
+    "name": "fresh mint",
+    "category": "Produce",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "spearmint",
+      "pudina",
+      "na'na"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        7,
+        14
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "paste",
+          "whole leaves",
+          "sprigs"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "chopped",
+          "minced",
+          "torn",
+          "trimmed",
+          "washed"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "dried",
+          "fresh",
+          "frozen"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "preservation",
+        "value": "fresh"
+      }
+    ],
+    "gramsPerCup": 100,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "basil",
+        "ratio": "1:1",
+        "notes": "Different flavor; both bright fresh herbs."
+      },
+      {
+        "substituteItemID": "cilantro",
+        "ratio": "1:1",
+        "notes": "For a fresh cooling garnish."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "fresh-dill",
+    "name": "fresh dill",
+    "category": "Produce",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "dill weed"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        5,
+        10
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "paste",
+          "whole leaves",
+          "sprigs"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "chopped",
+          "minced",
+          "torn",
+          "trimmed",
+          "washed"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "dried",
+          "fresh",
+          "frozen"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "preservation",
+        "value": "fresh"
+      }
+    ],
+    "gramsPerCup": 100,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "tarragon",
+        "ratio": "1:1",
+        "notes": "Both feathery, anise-leaning herbs."
+      },
+      {
+        "substituteItemID": "chervil",
+        "ratio": "1:1",
+        "notes": "Milder, similar delicacy."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "fresh-oregano",
+    "name": "fresh oregano",
+    "category": "Produce",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "rigani"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        7,
+        14
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "paste",
+          "whole leaves",
+          "sprigs"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "chopped",
+          "minced",
+          "torn",
+          "trimmed",
+          "washed"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "dried",
+          "fresh",
+          "frozen"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "preservation",
+        "value": "fresh"
+      }
+    ],
+    "gramsPerCup": 100,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "marjoram",
+        "ratio": "1:1",
+        "notes": "Sweeter, milder cousin."
+      },
+      {
+        "substituteItemID": "thyme",
+        "ratio": "1:1",
+        "notes": "Earthy; works in similar dishes."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "fresh-thyme",
+    "name": "fresh thyme",
+    "category": "Produce",
+    "defaultStorage": "Refrigerated",
+    "aliases": [],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        10,
+        21
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "paste",
+          "whole leaves",
+          "sprigs"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "chopped",
+          "minced",
+          "torn",
+          "trimmed",
+          "washed"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "dried",
+          "fresh",
+          "frozen"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "preservation",
+        "value": "fresh"
+      }
+    ],
+    "gramsPerCup": 100,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "oregano",
+        "ratio": "1:1",
+        "notes": "More robust; use a touch less."
+      },
+      {
+        "substituteItemID": "marjoram",
+        "ratio": "1:1",
+        "notes": "Sweeter, milder."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "fresh-rosemary",
+    "name": "fresh rosemary",
+    "category": "Produce",
+    "defaultStorage": "Refrigerated",
+    "aliases": [],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        10,
+        21
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "paste",
+          "whole leaves",
+          "sprigs"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "chopped",
+          "minced",
+          "torn",
+          "trimmed",
+          "washed"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "dried",
+          "fresh",
+          "frozen"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "preservation",
+        "value": "fresh"
+      }
+    ],
+    "gramsPerCup": 100,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "thyme",
+        "ratio": "1:1",
+        "notes": "Less piney; use a bit more."
+      },
+      {
+        "substituteItemID": "sage",
+        "ratio": "1:1",
+        "notes": "Earthy, savory alternative."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "fresh-sage",
+    "name": "fresh sage",
+    "category": "Produce",
+    "defaultStorage": "Refrigerated",
+    "aliases": [],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        7,
+        14
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "paste",
+          "whole leaves",
+          "sprigs"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "chopped",
+          "minced",
+          "torn",
+          "trimmed",
+          "washed"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "dried",
+          "fresh",
+          "frozen"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "preservation",
+        "value": "fresh"
+      }
+    ],
+    "gramsPerCup": 100,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "rosemary",
+        "ratio": "1:1",
+        "notes": "Both piney, robust herbs."
+      },
+      {
+        "substituteItemID": "thyme",
+        "ratio": "1:1",
+        "notes": "Milder, earthy."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "fresh-tarragon",
+    "name": "fresh tarragon",
+    "category": "Produce",
+    "defaultStorage": "Refrigerated",
+    "aliases": [],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        5,
+        10
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "paste",
+          "whole leaves",
+          "sprigs"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "chopped",
+          "minced",
+          "torn",
+          "trimmed",
+          "washed"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "dried",
+          "fresh",
+          "frozen"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "preservation",
+        "value": "fresh"
+      }
+    ],
+    "gramsPerCup": 100,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "chervil",
+        "ratio": "1:1",
+        "notes": "Both anise-leaning, delicate."
+      },
+      {
+        "substituteItemID": "dill",
+        "ratio": "1:1",
+        "notes": "Feathery, similar use."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "fresh-marjoram",
+    "name": "fresh marjoram",
+    "category": "Produce",
+    "defaultStorage": "Refrigerated",
+    "aliases": [],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        7,
+        14
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "paste",
+          "whole leaves",
+          "sprigs"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "chopped",
+          "minced",
+          "torn",
+          "trimmed",
+          "washed"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "dried",
+          "fresh",
+          "frozen"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "preservation",
+        "value": "fresh"
+      }
+    ],
+    "gramsPerCup": 100,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "oregano",
+        "ratio": "1:1",
+        "notes": "Bolder cousin; use less."
+      },
+      {
+        "substituteItemID": "thyme",
+        "ratio": "1:1",
+        "notes": "Earthy alternative."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "fresh-chervil",
+    "name": "fresh chervil",
+    "category": "Produce",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "cerfeuil"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        3,
+        7
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "paste",
+          "whole leaves",
+          "sprigs"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "chopped",
+          "minced",
+          "torn",
+          "trimmed",
+          "washed"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "dried",
+          "fresh",
+          "frozen"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "preservation",
+        "value": "fresh"
+      }
+    ],
+    "gramsPerCup": 100,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "tarragon",
+        "ratio": "1:1",
+        "notes": "Both delicate, anise notes."
+      },
+      {
+        "substituteItemID": "parsley",
+        "ratio": "1:1",
+        "notes": "Milder, similar texture."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "curry-leaf",
+    "name": "curry leaf",
+    "category": "Produce",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "curry leaves",
+      "kari patta",
+      "sweet neem leaf",
+      "kadi patta",
+      "meetha neem",
+      "karuveppilai"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        90,
+        180
+      ],
+      "Refrigerated": [
+        5,
+        14
+      ],
+      "Frozen": [
+        90,
+        180
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "whole leaves"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "torn",
+          "trimmed",
+          "bruised",
+          "washed"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "dried",
+          "fresh",
+          "frozen"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "preservation",
+        "value": "fresh"
+      }
+    ],
+    "gramsPerCup": 60,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "bay-leaf",
+        "ratio": "1:1",
+        "notes": "Different aroma; both aromatic cooking leaves."
+      },
+      {
+        "substituteItemID": "kaffir-lime-leaf",
+        "ratio": "1:1",
+        "notes": "For a citrusy SE-Asian aromatic."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "kaffir-lime-leaf",
+    "name": "kaffir lime leaf",
+    "category": "Produce",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "bai makrut",
+      "kaffir lime leaves",
+      "makrut lime leaf",
+      "thai lime leaf"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        90,
+        180
+      ],
+      "Refrigerated": [
+        7,
+        21
+      ],
+      "Frozen": [
+        180,
+        365
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "whole leaves"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "torn",
+          "trimmed",
+          "bruised",
+          "washed"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "dried",
+          "fresh",
+          "frozen"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "preservation",
+        "value": "fresh"
+      }
+    ],
+    "gramsPerCup": 60,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "lime",
+        "ratio": "1:1",
+        "notes": "Use zest of one lime per 2 leaves for the citrus note."
+      },
+      {
+        "substituteItemID": "curry-leaf",
+        "ratio": "1:1",
+        "notes": "Different but both SE/South-Asian aromatics."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "pandan-leaf",
+    "name": "pandan leaf",
+    "category": "Produce",
+    "defaultStorage": "Frozen",
+    "aliases": [
+      "pandan leaves",
+      "pandanus leaf",
+      "screwpine leaf"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        3,
+        7
+      ],
+      "Frozen": [
+        180,
+        365
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "whole leaves"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "torn",
+          "trimmed",
+          "bruised",
+          "washed"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "dried",
+          "fresh",
+          "frozen"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "preservation",
+        "value": "fresh"
+      }
+    ],
+    "gramsPerCup": 60,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "vanilla",
+        "ratio": "1:1",
+        "notes": "For a sweet aromatic note in desserts."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "shiso",
+    "name": "shiso",
+    "category": "Produce",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "perilla",
+      "ohba",
+      "ggaennip",
+      "Korean perilla"
+    ],
+    "parentIds": [
+      "furikake"
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        365
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "paste",
+          "whole leaves",
+          "sprigs"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "chopped",
+          "minced",
+          "torn",
+          "trimmed",
+          "washed"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "dried",
+          "fresh",
+          "frozen"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "preservation",
+        "value": "fresh"
+      }
+    ],
+    "gramsPerCup": 100,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "mint",
+        "ratio": "1:1",
+        "notes": "For a similar cooling, aromatic leaf."
+      },
+      {
+        "substituteItemID": "basil",
+        "ratio": "1:1",
+        "notes": "Aromatic broad leaf; different flavor."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "epazote",
+    "name": "epazote",
+    "category": "Produce",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "epazotes",
+      "mexican tea",
+      "wormseed",
+      "wormseed leaf",
+      "paico"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        365
+      ],
+      "Refrigerated": [
+        3,
+        5
+      ],
+      "Frozen": [
+        90,
+        180
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "paste",
+          "whole leaves",
+          "sprigs"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "chopped",
+          "minced",
+          "torn",
+          "trimmed",
+          "washed"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "dried",
+          "fresh",
+          "frozen"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "preservation",
+        "value": "fresh"
+      }
+    ],
+    "gramsPerCup": 100,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "cilantro",
+        "ratio": "1:1",
+        "notes": "Different flavor; closest fresh herb in Mexican cooking."
+      },
+      {
+        "substituteItemID": "oregano",
+        "ratio": "1:1",
+        "notes": "Earthy, robust note."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "culantro",
+    "name": "culantro",
+    "category": "Produce",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "recao",
+      "sawtooth coriander",
+      "ngo gai",
+      "shadow beni",
+      "mexican coriander"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        7,
+        14
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "paste",
+          "whole leaves",
+          "sprigs"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "chopped",
+          "minced",
+          "torn",
+          "trimmed",
+          "washed"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "dried",
+          "fresh",
+          "frozen"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "preservation",
+        "value": "fresh"
+      }
+    ],
+    "gramsPerCup": 100,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "cilantro",
+        "ratio": "1:1",
+        "notes": "Milder; use a bit more."
+      },
+      {
+        "substituteItemID": "parsley",
+        "ratio": "1:1",
+        "notes": "For a fresh green note."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "vietnamese-coriander",
+    "name": "vietnamese coriander",
+    "category": "Produce",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "rau ram",
+      "laksa leaf",
+      "vietnamese mint"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        5,
+        10
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "paste",
+          "whole leaves",
+          "sprigs"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "chopped",
+          "minced",
+          "torn",
+          "trimmed",
+          "washed"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "dried",
+          "fresh",
+          "frozen"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "preservation",
+        "value": "fresh"
+      }
+    ],
+    "gramsPerCup": 100,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "cilantro",
+        "ratio": "1:1",
+        "notes": "Closest fresh-herb flavor."
+      },
+      {
+        "substituteItemID": "mint",
+        "ratio": "1:1",
+        "notes": "For the cooling note."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "fresh-bay-leaf",
+    "name": "fresh bay leaf",
+    "category": "Produce",
+    "defaultStorage": "Refrigerated",
+    "aliases": [],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        14,
+        30
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "whole leaves"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "torn",
+          "trimmed",
+          "bruised",
+          "washed"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "dried",
+          "fresh",
+          "frozen"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "preservation",
+        "value": "fresh"
+      }
+    ],
+    "gramsPerCup": 60,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "bay-leaf",
+        "ratio": "2:1",
+        "notes": "Dried is more concentrated; use about half."
+      },
+      {
+        "substituteItemID": "curry-leaf",
+        "ratio": "1:1",
+        "notes": "Different aroma; both aromatic cooking leaves."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "garlic-chives",
+    "name": "garlic chives",
+    "category": "Produce",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "chinese chives",
+      "gow choy",
+      "nira",
+      "buchu"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        5,
+        10
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "paste",
+          "whole leaves",
+          "sprigs"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "chopped",
+          "minced",
+          "torn",
+          "trimmed",
+          "washed"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "dried",
+          "fresh",
+          "frozen"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "preservation",
+        "value": "fresh"
+      }
+    ],
+    "gramsPerCup": 100,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "garlic-scape",
+        "ratio": "1:1",
+        "notes": "Tender garlicky greens; closest swap."
+      },
+      {
+        "substituteItemID": "garlic",
+        "ratio": "1:1",
+        "notes": "Use a clove, minced, for the garlic note."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "pineapple",
+    "name": "pineapple",
+    "category": "Produce",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "ananas",
+      "fresh pineapple",
+      "Ananas comosus"
+    ],
+    "parentIds": [
+      "quince"
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        2,
+        4
+      ],
+      "Refrigerated": [
+        5,
+        7
+      ],
+      "Frozen": [
+        180,
+        365
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "puree",
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "diced",
+          "halved",
+          "peeled",
+          "pitted",
+          "sliced"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "canned",
+          "dried",
+          "fresh",
+          "frozen"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "gramsPerCup": 150,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "mango",
+        "ratio": "1:1",
+        "notes": "Sweet tropical swap."
+      },
+      {
+        "substituteItemID": "guava",
+        "ratio": "1:1",
+        "notes": "Tropical, fragrant."
+      }
+    ],
+    "isUserDefined": false,
+    "gramsPerPiece": 900.0
+  },
+  {
+    "id": "grape",
+    "name": "grape",
+    "category": "Produce",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "grapes",
+      "table grape",
+      "wine grape"
+    ],
+    "parentIds": [
+      "tomato"
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        1,
+        2
+      ],
+      "Refrigerated": [
+        7,
+        14
+      ],
+      "Frozen": [
+        180,
+        365
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "halved",
+          "washed"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "dried",
+          "fresh",
+          "frozen"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "preservation",
+        "value": "fresh"
+      }
+    ],
+    "gramsPerCup": 150,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "cherry",
+        "ratio": "1:1",
+        "notes": "For a cherry-tomato-style swap in savory use."
+      }
+    ],
+    "isUserDefined": false,
+    "gramsPerPiece": 5.0
+  },
+  {
+    "id": "mandarin",
+    "name": "mandarin",
+    "category": "Produce",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "tangerine",
+      "clementine",
+      "satsuma"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        14,
+        21
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "peel",
+          "rind",
+          "segments",
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "halved",
+          "juiced",
+          "peeled",
+          "seeded",
+          "sliced",
+          "wedged",
+          "zest",
+          "zested"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "canned",
+          "dried",
+          "fresh",
+          "frozen"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "gramsPerCup": 175,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "orange",
+        "ratio": "1:1",
+        "notes": "Larger and less sweet."
+      },
+      {
+        "substituteItemID": "grapefruit",
+        "ratio": "1:1",
+        "notes": "More tart and bitter."
+      }
+    ],
+    "isUserDefined": false,
+    "gramsPerPiece": 80.0
+  },
+  {
+    "id": "orange",
+    "name": "orange",
+    "category": "Produce",
+    "defaultStorage": "Refrigerated",
+    "aliases": [],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        14,
+        30
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "peel",
+          "rind",
+          "segments",
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "halved",
+          "juiced",
+          "peeled",
+          "seeded",
+          "sliced",
+          "wedged",
+          "zest",
+          "zested"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "canned",
+          "dried",
+          "fresh",
+          "frozen"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "gramsPerCup": 180,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "mandarin",
+        "ratio": "1:1",
+        "notes": "Sweeter, smaller; adjust count."
+      },
+      {
+        "substituteItemID": "grapefruit",
+        "ratio": "1:1",
+        "notes": "More tart and bitter."
+      }
+    ],
+    "isUserDefined": false,
+    "gramsPerPiece": 140.0
+  },
+  {
+    "id": "blood-orange",
+    "name": "blood orange",
+    "category": "Produce",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "sanguinello",
+      "moro orange",
+      "tarocco"
+    ],
+    "parentIds": [
+      "orange"
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        14,
+        30
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "peel",
+          "rind",
+          "segments",
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "halved",
+          "juiced",
+          "peeled",
+          "seeded",
+          "sliced",
+          "wedged",
+          "zest",
+          "zested"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "canned",
+          "dried",
+          "fresh",
+          "frozen"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "gramsPerCup": 180,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "orange",
+        "ratio": "1:1",
+        "notes": "Less berry note; same use."
+      },
+      {
+        "substituteItemID": "mandarin",
+        "ratio": "1:1",
+        "notes": "Sweeter, smaller."
+      }
+    ],
+    "isUserDefined": false,
+    "gramsPerPiece": 140.0
+  },
+  {
+    "id": "cherry-tomato",
+    "name": "cherry tomato",
+    "category": "Produce",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "cocktail tomato"
+    ],
+    "parentIds": [
+      "tomato"
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        5,
+        10
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "halved",
+          "quartered",
+          "sliced",
+          "washed"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "canned",
+          "dried",
+          "fresh",
+          "frozen",
+          "sun-dried"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "preservation",
+        "value": "fresh"
+      }
+    ],
+    "gramsPerCup": 150,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "tomato",
+        "ratio": "1:1",
+        "notes": "Larger; chop to match."
+      },
+      {
+        "substituteItemID": "grape",
+        "ratio": "1:1",
+        "notes": "Similar size, slightly sweeter."
+      }
+    ],
+    "isUserDefined": false,
+    "gramsPerPiece": 17.0
+  },
+  {
+    "id": "cassava",
+    "name": "cassava",
+    "category": "Produce",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "yuca",
+      "manioc",
+      "mogo",
+      "tapioca root",
+      "mandioca"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        5,
+        14
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "chunks",
+          "paste",
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "chopped",
+          "grated",
+          "julienned",
+          "minced",
+          "peeled",
+          "pre-cut",
+          "sliced",
+          "trimmed",
+          "unpeeled",
+          "washed"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "dried",
+          "fresh",
+          "frozen"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "gramsPerCup": 150,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "potato",
+        "ratio": "1:1",
+        "notes": "Starchy swap; boil or fry."
+      },
+      {
+        "substituteItemID": "taro",
+        "ratio": "1:1",
+        "notes": "Similar starchy tuber."
+      },
+      {
+        "substituteItemID": "yam",
+        "ratio": "1:1",
+        "notes": "Starchy tropical tuber."
+      }
+    ],
+    "isUserDefined": false,
+    "gramsPerPiece": 500.0
+  },
+  {
+    "id": "cassava-leaves",
+    "name": "cassava leaves",
+    "category": "Produce",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "pondu",
+      "saka saka",
+      "gozo leaf",
+      "ravitoto"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        3,
+        7
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "leaves",
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "chopped",
+          "pre-cut",
+          "shredded",
+          "sliced",
+          "trimmed",
+          "washed"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "fresh",
+          "frozen"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "gramsPerCup": 150,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "spinach",
+        "ratio": "1:1",
+        "notes": "Same family as leafy greens."
+      },
+      {
+        "substituteItemID": "amaranth",
+        "ratio": "1:1",
+        "notes": "Same family as leafy greens."
+      },
+      {
+        "substituteItemID": "kale",
+        "ratio": "1:1",
+        "notes": "Same family as leafy greens."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "chili-pepper",
+    "name": "chili pepper",
+    "category": "Produce",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "chile",
+      "hot pepper",
+      "chilli",
+      "fresh chili"
+    ],
+    "parentIds": [
+      "pepper"
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        7,
+        14
+      ]
+    },
+    "facets": [
+      {
+        "key": "color",
+        "options": [
+          "brown",
+          "green",
+          "orange",
+          "purple",
+          "red",
+          "white",
+          "yellow"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "cubed",
+          "deveined",
+          "diced",
+          "halved",
+          "minced",
+          "peeled",
+          "rings",
+          "seeded",
+          "sliced",
+          "strips",
+          "trimmed",
+          "washed"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "dried",
+          "fresh",
+          "frozen",
+          "pickled"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "grilled",
+          "roasted"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "gramsPerCup": 150,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "serrano",
+        "ratio": "1:1",
+        "notes": "Same family as pepper."
+      },
+      {
+        "substituteItemID": "jalapeno",
+        "ratio": "1:1",
+        "notes": "Same family as pepper."
+      },
+      {
+        "substituteItemID": "cayenne",
+        "ratio": "1:1",
+        "notes": "Same family as pepper."
+      },
+      {
+        "substituteItemID": "habanero",
+        "ratio": "1:1",
+        "notes": "Same family as pepper."
+      }
+    ],
+    "isUserDefined": false,
+    "gramsPerPiece": 14.0
+  },
+  {
+    "id": "bird-s-eye-chili",
+    "name": "bird's eye chili",
+    "category": "Produce",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "thai chili",
+      "prik kee noo",
+      "piri piri",
+      "african bird's eye"
+    ],
+    "parentIds": [
+      "pepper"
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        7,
+        14
+      ]
+    },
+    "facets": [
+      {
+        "key": "color",
+        "options": [
+          "brown",
+          "green",
+          "orange",
+          "purple",
+          "red",
+          "white",
+          "yellow"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "cubed",
+          "deveined",
+          "diced",
+          "halved",
+          "minced",
+          "peeled",
+          "rings",
+          "seeded",
+          "sliced",
+          "strips",
+          "trimmed",
+          "washed"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "dried",
+          "fresh",
+          "frozen",
+          "pickled"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "grilled",
+          "roasted"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "gramsPerCup": 150,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "serrano",
+        "ratio": "1:1",
+        "notes": "Same family as pepper."
+      },
+      {
+        "substituteItemID": "jalapeno",
+        "ratio": "1:1",
+        "notes": "Same family as pepper."
+      },
+      {
+        "substituteItemID": "cayenne",
+        "ratio": "1:1",
+        "notes": "Same family as pepper."
+      },
+      {
+        "substituteItemID": "habanero",
+        "ratio": "1:1",
+        "notes": "Same family as pepper."
+      }
+    ],
+    "isUserDefined": false,
+    "gramsPerPiece": 14.0
+  },
+  {
+    "id": "kashmiri-chili",
+    "name": "kashmiri chili",
+    "category": "Produce",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "kashmiri mirch"
+    ],
+    "parentIds": [
+      "pepper"
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        7,
+        14
+      ]
+    },
+    "facets": [
+      {
+        "key": "color",
+        "options": [
+          "brown",
+          "green",
+          "orange",
+          "purple",
+          "red",
+          "white",
+          "yellow"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "cubed",
+          "deveined",
+          "diced",
+          "halved",
+          "minced",
+          "peeled",
+          "rings",
+          "seeded",
+          "sliced",
+          "strips",
+          "trimmed",
+          "washed"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "dried",
+          "fresh",
+          "frozen",
+          "pickled"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "grilled",
+          "roasted"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "gramsPerCup": 150,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "serrano",
+        "ratio": "1:1",
+        "notes": "Same family as pepper."
+      },
+      {
+        "substituteItemID": "jalapeno",
+        "ratio": "1:1",
+        "notes": "Same family as pepper."
+      },
+      {
+        "substituteItemID": "cayenne",
+        "ratio": "1:1",
+        "notes": "Same family as pepper."
+      },
+      {
+        "substituteItemID": "habanero",
+        "ratio": "1:1",
+        "notes": "Same family as pepper."
+      }
+    ],
+    "isUserDefined": false,
+    "gramsPerPiece": 14.0
+  },
+  {
+    "id": "aji-amarillo",
+    "name": "aji amarillo",
+    "category": "Produce",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "yellow chili pepper",
+      "peruvian yellow chili"
+    ],
+    "parentIds": [
+      "pepper"
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        7,
+        14
+      ]
+    },
+    "facets": [
+      {
+        "key": "color",
+        "options": [
+          "brown",
+          "green",
+          "orange",
+          "purple",
+          "red",
+          "white",
+          "yellow"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "cubed",
+          "deveined",
+          "diced",
+          "halved",
+          "minced",
+          "peeled",
+          "rings",
+          "seeded",
+          "sliced",
+          "strips",
+          "trimmed",
+          "washed"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "dried",
+          "fresh",
+          "frozen",
+          "pickled"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "grilled",
+          "roasted"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "gramsPerCup": 150,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "serrano",
+        "ratio": "1:1",
+        "notes": "Same family as pepper."
+      },
+      {
+        "substituteItemID": "jalapeno",
+        "ratio": "1:1",
+        "notes": "Same family as pepper."
+      },
+      {
+        "substituteItemID": "cayenne",
+        "ratio": "1:1",
+        "notes": "Same family as pepper."
+      },
+      {
+        "substituteItemID": "habanero",
+        "ratio": "1:1",
+        "notes": "Same family as pepper."
+      }
+    ],
+    "isUserDefined": false,
+    "gramsPerPiece": 14.0
+  },
+  {
+    "id": "edamame",
+    "name": "edamame",
+    "category": "Produce",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "green soybean",
+      "soybean pod",
+      "mukimame"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        3,
+        5
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "pod",
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "cut",
+          "pre-cut",
+          "shelled",
+          "sliced",
+          "trimmed",
+          "washed"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "canned",
+          "fresh",
+          "frozen"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "preservation",
+        "value": "fresh"
+      }
+    ],
+    "gramsPerCup": 155,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "soybean",
+        "ratio": "1:1",
+        "notes": "Same bean, shelled/dried."
+      },
+      {
+        "substituteItemID": "pea",
+        "ratio": "1:1",
+        "notes": "For a green-bean swap in salads."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "fava-bean",
+    "name": "fava bean",
+    "category": "Produce",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "broad bean",
+      "ful",
+      "habas",
+      "horse bean"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        5,
+        7
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "pod",
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "cut",
+          "pre-cut",
+          "shelled",
+          "sliced",
+          "trimmed",
+          "washed"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "canned",
+          "fresh",
+          "frozen"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "preservation",
+        "value": "fresh"
+      }
+    ],
+    "gramsPerCup": 150,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "pea",
+        "ratio": "1:1",
+        "notes": "Sweeter, smaller."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "long-bean",
+    "name": "long bean",
+    "category": "Produce",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "yardlong bean",
+      "chinese long bean",
+      "snake bean",
+      "asparagus bean"
+    ],
+    "parentIds": [
+      "green-bean"
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        4,
+        7
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "pod",
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "cut",
+          "pre-cut",
+          "shelled",
+          "sliced",
+          "trimmed",
+          "washed"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "canned",
+          "fresh",
+          "frozen"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "preservation",
+        "value": "fresh"
+      }
+    ],
+    "gramsPerCup": 150,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "green-bean",
+        "ratio": "1:1",
+        "notes": "Same family as green bean."
+      },
+      {
+        "substituteItemID": "runner-bean",
+        "ratio": "1:1",
+        "notes": "Same family as green bean."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "runner-bean",
+    "name": "runner bean",
+    "category": "Produce",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "scarlet runner bean"
+    ],
+    "parentIds": [
+      "green-bean"
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        5,
+        7
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "pod",
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "cut",
+          "pre-cut",
+          "shelled",
+          "sliced",
+          "trimmed",
+          "washed"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "canned",
+          "fresh",
+          "frozen"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "preservation",
+        "value": "fresh"
+      }
+    ],
+    "gramsPerCup": 150,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "green-bean",
+        "ratio": "1:1",
+        "notes": "Same family as green bean."
+      },
+      {
+        "substituteItemID": "long-bean",
+        "ratio": "1:1",
+        "notes": "Same family as green bean."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "bitter-melon",
+    "name": "bitter melon",
+    "category": "Produce",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "bitter gourd",
+      "karela",
+      "ampalaya",
+      "goya"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        4,
+        7
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "puree",
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "cubed",
+          "diced",
+          "halved",
+          "peeled",
+          "sliced",
+          "trimmed",
+          "washed"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "canned",
+          "dried",
+          "fresh",
+          "frozen"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "gramsPerCup": 150,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "chayote",
+        "ratio": "1:1",
+        "notes": "Same family as gourd."
+      },
+      {
+        "substituteItemID": "zucchini",
+        "ratio": "1:1",
+        "notes": "Same family as gourd."
+      },
+      {
+        "substituteItemID": "cucumber",
+        "ratio": "1:1",
+        "notes": "Same family as gourd."
+      }
+    ],
+    "isUserDefined": false,
+    "gramsPerPiece": 300.0
+  },
+  {
+    "id": "bottle-gourd",
+    "name": "bottle gourd",
+    "category": "Produce",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "calabash",
+      "lauki",
+      "dudhi",
+      "opo squash",
+      "long melon"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        7,
+        14
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "puree",
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "cubed",
+          "diced",
+          "halved",
+          "peeled",
+          "sliced",
+          "trimmed",
+          "washed"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "canned",
+          "dried",
+          "fresh",
+          "frozen"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "gramsPerCup": 150,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "zucchini",
+        "ratio": "1:1",
+        "notes": "Same family as gourd."
+      },
+      {
+        "substituteItemID": "chayote",
+        "ratio": "1:1",
+        "notes": "Same family as gourd."
+      }
+    ],
+    "isUserDefined": false,
+    "gramsPerPiece": 1000.0
+  },
+  {
+    "id": "ridge-gourd",
+    "name": "ridge gourd",
+    "category": "Produce",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "luffa",
+      "turai",
+      "chinese okra",
+      "sponge gourd",
+      "silk squash"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        5,
+        10
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "puree",
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "cubed",
+          "diced",
+          "halved",
+          "peeled",
+          "sliced",
+          "trimmed",
+          "washed"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "canned",
+          "dried",
+          "fresh",
+          "frozen"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "gramsPerCup": 150,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "zucchini",
+        "ratio": "1:1",
+        "notes": "Same family as gourd."
+      },
+      {
+        "substituteItemID": "okra",
+        "ratio": "1:1",
+        "notes": "Same family as gourd."
+      }
+    ],
+    "isUserDefined": false,
+    "gramsPerPiece": 250.0
+  },
+  {
+    "id": "snake-gourd",
+    "name": "snake gourd",
+    "category": "Produce",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "padwal",
+      "chichinda"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        5,
+        10
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "puree",
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "cubed",
+          "diced",
+          "halved",
+          "peeled",
+          "sliced",
+          "trimmed",
+          "washed"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "canned",
+          "dried",
+          "fresh",
+          "frozen"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "gramsPerCup": 150,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "zucchini",
+        "ratio": "1:1",
+        "notes": "Same family as gourd."
+      },
+      {
+        "substituteItemID": "chayote",
+        "ratio": "1:1",
+        "notes": "Same family as gourd."
+      }
+    ],
+    "isUserDefined": false,
+    "gramsPerPiece": 400.0
+  },
+  {
+    "id": "winter-melon",
+    "name": "winter melon",
+    "category": "Produce",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "wax gourd",
+      "ash gourd",
+      "petha",
+      "dong gua",
+      "white gourd"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        14,
+        30
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "puree",
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "cubed",
+          "diced",
+          "halved",
+          "peeled",
+          "sliced",
+          "trimmed",
+          "washed"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "canned",
+          "dried",
+          "fresh",
+          "frozen"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "gramsPerCup": 150,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "chayote",
+        "ratio": "1:1",
+        "notes": "Same family as gourd."
+      },
+      {
+        "substituteItemID": "zucchini",
+        "ratio": "1:1",
+        "notes": "Same family as gourd."
+      }
+    ],
+    "isUserDefined": false,
+    "gramsPerPiece": 2000.0
+  },
+  {
+    "id": "banana-blossom",
+    "name": "banana blossom",
+    "category": "Produce",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "banana flower",
+      "banana heart",
+      "vazhaipoo"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        3,
+        5
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "whole",
+          "petals"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "chopped",
+          "shredded",
+          "sliced",
+          "trimmed"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "canned",
+          "fresh"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "gramsPerCup": 150,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "artichoke",
+        "ratio": "1:1",
+        "notes": "For the meaty, mild heart texture."
+      },
+      {
+        "substituteItemID": "jackfruit",
+        "ratio": "1:1",
+        "notes": "Shredded, as a meat alternative."
+      }
+    ],
+    "isUserDefined": false,
+    "gramsPerPiece": 400.0
+  },
+  {
+    "id": "drumstick-moringa-pod",
+    "name": "drumstick (moringa pod)",
+    "category": "Produce",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "moringa",
+      "sahjan",
+      "murungakkai",
+      "horseradish tree pod"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        5,
+        10
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "pod",
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "cut",
+          "pre-cut",
+          "shelled",
+          "sliced",
+          "trimmed",
+          "washed"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "canned",
+          "fresh",
+          "frozen"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "pod"
+      }
+    ],
+    "gramsPerCup": 150,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "green-bean",
+        "ratio": "1:1",
+        "notes": "For a pod-vegetable swap; different flavor."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "water-spinach",
+    "name": "water spinach",
+    "category": "Produce",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "kangkong",
+      "ong choy",
+      "morning glory",
+      "rau muong",
+      "kalmi saag"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        2,
+        4
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "leaves",
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "chopped",
+          "pre-cut",
+          "shredded",
+          "sliced",
+          "trimmed",
+          "washed"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "fresh",
+          "frozen"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "gramsPerCup": 150,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "spinach",
+        "ratio": "1:1",
+        "notes": "Same family as leafy greens."
+      },
+      {
+        "substituteItemID": "bok-choy",
+        "ratio": "1:1",
+        "notes": "Same family as leafy greens."
+      },
+      {
+        "substituteItemID": "amaranth",
+        "ratio": "1:1",
+        "notes": "Same family as leafy greens."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "choy-sum",
+    "name": "choy sum",
+    "category": "Produce",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "cai xin",
+      "chinese flowering cabbage"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        3,
+        6
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "leaves",
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "chopped",
+          "pre-cut",
+          "shredded",
+          "sliced",
+          "trimmed",
+          "washed"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "fresh",
+          "frozen"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "gramsPerCup": 150,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "bok-choy",
+        "ratio": "1:1",
+        "notes": "Same family as leafy greens."
+      },
+      {
+        "substituteItemID": "spinach",
+        "ratio": "1:1",
+        "notes": "Same family as leafy greens."
+      },
+      {
+        "substituteItemID": "kale",
+        "ratio": "1:1",
+        "notes": "Same family as leafy greens."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "tatsoi",
+    "name": "tatsoi",
+    "category": "Produce",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "spoon mustard",
+      "rosette bok choy"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        4,
+        8
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "leaves",
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "chopped",
+          "pre-cut",
+          "shredded",
+          "sliced",
+          "trimmed",
+          "washed"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "fresh",
+          "frozen"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "gramsPerCup": 150,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "bok-choy",
+        "ratio": "1:1",
+        "notes": "Same family as leafy greens."
+      },
+      {
+        "substituteItemID": "spinach",
+        "ratio": "1:1",
+        "notes": "Same family as leafy greens."
+      },
+      {
+        "substituteItemID": "watercress",
+        "ratio": "1:1",
+        "notes": "Same family as leafy greens."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "amaranth-greens",
+    "name": "amaranth greens",
+    "category": "Produce",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "callaloo",
+      "calalu",
+      "een choy",
+      "mchicha",
+      "terere",
+      "chinese spinach",
+      "bhaji"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        2,
+        4
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "leaves",
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "chopped",
+          "pre-cut",
+          "shredded",
+          "sliced",
+          "trimmed",
+          "washed"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "fresh",
+          "frozen"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "gramsPerCup": 150,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "spinach",
+        "ratio": "1:1",
+        "notes": "Same family as leafy greens."
+      },
+      {
+        "substituteItemID": "amaranth",
+        "ratio": "1:1",
+        "notes": "Same family as leafy greens."
+      },
+      {
+        "substituteItemID": "kale",
+        "ratio": "1:1",
+        "notes": "Same family as leafy greens."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "molokhia",
+    "name": "molokhia",
+    "category": "Produce",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "jute mallow",
+      "egyptian spinach",
+      "saluyot",
+      "ewedu",
+      "mloukhia"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        2,
+        4
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "leaves",
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "chopped",
+          "pre-cut",
+          "shredded",
+          "sliced",
+          "trimmed",
+          "washed"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "fresh",
+          "frozen"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "gramsPerCup": 150,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "spinach",
+        "ratio": "1:1",
+        "notes": "Same family as leafy greens."
+      },
+      {
+        "substituteItemID": "amaranth",
+        "ratio": "1:1",
+        "notes": "Same family as leafy greens."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "pumpkin-leaves",
+    "name": "pumpkin leaves",
+    "category": "Produce",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "seveve",
+      "ugu (substitute)",
+      "squash greens"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        2,
+        4
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "leaves",
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "chopped",
+          "pre-cut",
+          "shredded",
+          "sliced",
+          "trimmed",
+          "washed"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "fresh",
+          "frozen"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "gramsPerCup": 150,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "spinach",
+        "ratio": "1:1",
+        "notes": "Same family as leafy greens."
+      },
+      {
+        "substituteItemID": "amaranth",
+        "ratio": "1:1",
+        "notes": "Same family as leafy greens."
+      },
+      {
+        "substituteItemID": "kale",
+        "ratio": "1:1",
+        "notes": "Same family as leafy greens."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "cowpea-leaves",
+    "name": "cowpea leaves",
+    "category": "Produce",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "kunde",
+      "black-eyed pea leaves"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        2,
+        4
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "leaves",
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "chopped",
+          "pre-cut",
+          "shredded",
+          "sliced",
+          "trimmed",
+          "washed"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "fresh",
+          "frozen"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "gramsPerCup": 150,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "spinach",
+        "ratio": "1:1",
+        "notes": "Same family as leafy greens."
+      },
+      {
+        "substituteItemID": "amaranth",
+        "ratio": "1:1",
+        "notes": "Same family as leafy greens."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "african-nightshade-greens",
+    "name": "african nightshade greens",
+    "category": "Produce",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "managu",
+      "nightshade leaves",
+      "mnavu",
+      "osuga"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        2,
+        4
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "leaves",
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "chopped",
+          "pre-cut",
+          "shredded",
+          "sliced",
+          "trimmed",
+          "washed"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "fresh",
+          "frozen"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "gramsPerCup": 150,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "spinach",
+        "ratio": "1:1",
+        "notes": "Same family as leafy greens."
+      },
+      {
+        "substituteItemID": "amaranth",
+        "ratio": "1:1",
+        "notes": "Same family as leafy greens."
+      },
+      {
+        "substituteItemID": "kale",
+        "ratio": "1:1",
+        "notes": "Same family as leafy greens."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "spider-plant-greens",
+    "name": "spider plant greens",
+    "category": "Produce",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "saga",
+      "dek",
+      "cat's whiskers",
+      "akeyo"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        2,
+        4
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "leaves",
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "chopped",
+          "pre-cut",
+          "shredded",
+          "sliced",
+          "trimmed",
+          "washed"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "fresh",
+          "frozen"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "gramsPerCup": 150,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "spinach",
+        "ratio": "1:1",
+        "notes": "Same family as leafy greens."
+      },
+      {
+        "substituteItemID": "amaranth",
+        "ratio": "1:1",
+        "notes": "Same family as leafy greens."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "purslane",
+    "name": "purslane",
+    "category": "Produce",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "verdolaga",
+      "khurfa",
+      "pigweed"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        3,
+        6
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "leaves",
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "chopped",
+          "pre-cut",
+          "shredded",
+          "sliced",
+          "trimmed",
+          "washed"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "fresh",
+          "frozen"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "gramsPerCup": 150,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "watercress",
+        "ratio": "1:1",
+        "notes": "Same family as leafy greens."
+      },
+      {
+        "substituteItemID": "spinach",
+        "ratio": "1:1",
+        "notes": "Same family as leafy greens."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "garlic-scape",
+    "name": "garlic scape",
+    "category": "Produce",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "garlic shoot",
+      "green garlic",
+      "garlic flower stalk"
+    ],
+    "parentIds": [
+      "garlic"
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        7,
+        14
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "chopped",
+          "minced",
+          "sliced",
+          "trimmed",
+          "washed"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "fresh",
+          "frozen",
+          "pickled"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "gramsPerCup": 150,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "garlic",
+        "ratio": "1:1",
+        "notes": "Milder; closest flavor."
+      },
+      {
+        "substituteItemID": "garlic-chives",
+        "ratio": "1:1",
+        "notes": "Tender garlicky greens."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "fresh-turmeric",
+    "name": "fresh turmeric",
+    "category": "Produce",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "turmeric root",
+      "haldi root",
+      "fresh haldi"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        14,
+        30
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "chunks",
+          "paste",
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "chopped",
+          "grated",
+          "julienned",
+          "minced",
+          "peeled",
+          "pre-cut",
+          "sliced",
+          "trimmed",
+          "unpeeled",
+          "washed"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "dried",
+          "fresh",
+          "frozen"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "gramsPerCup": 150,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "turmeric",
+        "ratio": "6:1",
+        "notes": "Use ~1 tsp ground per 1 inch fresh."
+      },
+      {
+        "substituteItemID": "ginger",
+        "ratio": "1:1",
+        "notes": "For a fresh rhizome; different flavor."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "fresh-horseradish-root",
+    "name": "fresh horseradish root",
+    "category": "Produce",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "horseradish root",
+      "raifort"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        14,
+        30
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "chunks",
+          "paste",
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "chopped",
+          "grated",
+          "julienned",
+          "minced",
+          "peeled",
+          "pre-cut",
+          "sliced",
+          "trimmed",
+          "unpeeled",
+          "washed"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "dried",
+          "fresh",
+          "frozen"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "gramsPerCup": 245,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "horseradish",
+        "ratio": "1:1",
+        "notes": "Prepared/jarred; same pungent note."
+      },
+      {
+        "substituteItemID": "ginger",
+        "ratio": "1:1",
+        "notes": "Sharp fresh rhizome; different flavor."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "fingerroot",
+    "name": "fingerroot",
+    "category": "Produce",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "krachai",
+      "chinese keys",
+      "lesser galangal (culinary)",
+      "temu kunci"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        10,
+        21
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "chunks",
+          "paste",
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "chopped",
+          "grated",
+          "julienned",
+          "minced",
+          "peeled",
+          "pre-cut",
+          "sliced",
+          "trimmed",
+          "unpeeled",
+          "washed"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "dried",
+          "fresh",
+          "frozen"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "gramsPerCup": 150,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "galangal",
+        "ratio": "1:1",
+        "notes": "Closest SE-Asian rhizome."
+      },
+      {
+        "substituteItemID": "ginger",
+        "ratio": "1:1",
+        "notes": "Milder; different aroma."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "heart-of-palm",
+    "name": "heart of palm",
+    "category": "Produce",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "palmito",
+      "swamp cabbage",
+      "palm heart"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        5,
+        10
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "whole",
+          "stalk"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "sliced",
+          "diced",
+          "trimmed"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "canned",
+          "fresh"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "preservation",
+        "value": "fresh"
+      }
+    ],
+    "gramsPerCup": 150,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "artichoke",
+        "ratio": "1:1",
+        "notes": "Mild, tender; similar use."
+      },
+      {
+        "substituteItemID": "asparagus",
+        "ratio": "1:1",
+        "notes": "For a tender stalk swap."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "breadfruit",
+    "name": "breadfruit",
+    "category": "Produce",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "ulu",
+      "kelewele (cousin)"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        3,
+        7
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "puree",
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "diced",
+          "halved",
+          "peeled",
+          "pitted",
+          "sliced"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "canned",
+          "dried",
+          "fresh",
+          "frozen"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "gramsPerCup": 150,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "jackfruit",
+        "ratio": "1:1",
+        "notes": "Unripe, starchy tropical swap."
+      },
+      {
+        "substituteItemID": "potato",
+        "ratio": "1:1",
+        "notes": "Starchy when cooked unripe."
+      }
+    ],
+    "isUserDefined": false,
+    "gramsPerPiece": 1500.0
+  },
+  {
+    "id": "green-papaya",
+    "name": "green papaya",
+    "category": "Produce",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "unripe papaya",
+      "som tam papaya",
+      "raw papaya"
+    ],
+    "parentIds": [
+      "papaya"
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        7,
+        14
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "puree",
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "diced",
+          "halved",
+          "peeled",
+          "pitted",
+          "sliced"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "canned",
+          "dried",
+          "fresh",
+          "frozen"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "gramsPerCup": 150,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "papaya",
+        "ratio": "1:1",
+        "notes": "Use unripe/firm fruit."
+      },
+      {
+        "substituteItemID": "chayote",
+        "ratio": "1:1",
+        "notes": "For crunch in salads."
+      }
+    ],
+    "isUserDefined": false,
+    "gramsPerPiece": 1000.0
+  },
+  {
+    "id": "rambutan",
+    "name": "rambutan",
+    "category": "Produce",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "hairy lychee"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        5,
+        7
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "puree",
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "diced",
+          "halved",
+          "peeled",
+          "pitted",
+          "sliced"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "canned",
+          "dried",
+          "fresh",
+          "frozen"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "gramsPerCup": 150,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "lychee",
+        "ratio": "1:1",
+        "notes": "Nearly identical flesh."
+      },
+      {
+        "substituteItemID": "longan",
+        "ratio": "1:1",
+        "notes": "Similar translucent fruit."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "mangosteen",
+    "name": "mangosteen",
+    "category": "Produce",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "manggis"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        7,
+        14
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "puree",
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "diced",
+          "halved",
+          "peeled",
+          "pitted",
+          "sliced"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "canned",
+          "dried",
+          "fresh",
+          "frozen"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "gramsPerCup": 150,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "lychee",
+        "ratio": "1:1",
+        "notes": "Sweet-tart white flesh."
+      },
+      {
+        "substituteItemID": "rambutan",
+        "ratio": "1:1",
+        "notes": "Tropical translucent fruit."
+      }
+    ],
+    "isUserDefined": false,
+    "gramsPerPiece": 80.0
+  },
+  {
+    "id": "durian",
+    "name": "durian",
+    "category": "Produce",
+    "defaultStorage": "Refrigerated",
+    "aliases": [],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        3,
+        5
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "puree",
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "diced",
+          "halved",
+          "peeled",
+          "pitted",
+          "sliced"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "canned",
+          "dried",
+          "fresh",
+          "frozen"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "gramsPerCup": 150,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "jackfruit",
+        "ratio": "1:1",
+        "notes": "Custardy tropical flesh; milder."
+      },
+      {
+        "substituteItemID": "cherimoya",
+        "ratio": "1:1",
+        "notes": "Creamy custard texture."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "soursop",
+    "name": "soursop",
+    "category": "Produce",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "guanabana",
+      "graviola",
+      "guyabano",
+      "corossol"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        2,
+        5
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "puree",
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "diced",
+          "halved",
+          "peeled",
+          "pitted",
+          "sliced"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "canned",
+          "dried",
+          "fresh",
+          "frozen"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "gramsPerCup": 150,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "cherimoya",
+        "ratio": "1:1",
+        "notes": "Closest creamy custard-apple."
+      },
+      {
+        "substituteItemID": "sugar-apple",
+        "ratio": "1:1",
+        "notes": "Same Annona family."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "sugar-apple",
+    "name": "sugar apple",
+    "category": "Produce",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "sweetsop",
+      "sitaphal",
+      "atis",
+      "anon"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        2,
+        5
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "puree",
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "diced",
+          "halved",
+          "peeled",
+          "pitted",
+          "sliced"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "canned",
+          "dried",
+          "fresh",
+          "frozen"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "gramsPerCup": 150,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "cherimoya",
+        "ratio": "1:1",
+        "notes": "Same Annona family, larger."
+      },
+      {
+        "substituteItemID": "soursop",
+        "ratio": "1:1",
+        "notes": "Tangier Annona cousin."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "sapodilla",
+    "name": "sapodilla",
+    "category": "Produce",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "chikoo",
+      "sapote",
+      "naseberry",
+      "nispero"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        3,
+        7
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "puree",
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "diced",
+          "halved",
+          "peeled",
+          "pitted",
+          "sliced"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "canned",
+          "dried",
+          "fresh",
+          "frozen"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "gramsPerCup": 150,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "persimmon",
+        "ratio": "1:1",
+        "notes": "Sweet, soft when ripe."
+      },
+      {
+        "substituteItemID": "mamey-sapote",
+        "ratio": "1:1",
+        "notes": "Related sweet tropical fruit."
+      }
+    ],
+    "isUserDefined": false,
+    "gramsPerPiece": 150.0
+  },
+  {
+    "id": "mamey-sapote",
+    "name": "mamey sapote",
+    "category": "Produce",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "mamey",
+      "zapote"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        3,
+        7
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "puree",
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "diced",
+          "halved",
+          "peeled",
+          "pitted",
+          "sliced"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "canned",
+          "dried",
+          "fresh",
+          "frozen"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "gramsPerCup": 150,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "sapodilla",
+        "ratio": "1:1",
+        "notes": "Related sweet sapote."
+      },
+      {
+        "substituteItemID": "persimmon",
+        "ratio": "1:1",
+        "notes": "Soft sweet flesh."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "feijoa",
+    "name": "feijoa",
+    "category": "Produce",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "pineapple guava",
+      "guavasteen"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        7,
+        14
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "puree",
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "diced",
+          "halved",
+          "peeled",
+          "pitted",
+          "sliced"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "canned",
+          "dried",
+          "fresh",
+          "frozen"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "gramsPerCup": 150,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "guava",
+        "ratio": "1:1",
+        "notes": "Fragrant relative."
+      },
+      {
+        "substituteItemID": "kiwi",
+        "ratio": "1:1",
+        "notes": "Tart green flesh."
+      }
+    ],
+    "isUserDefined": false,
+    "gramsPerPiece": 50.0
+  },
+  {
+    "id": "loquat",
+    "name": "loquat",
+    "category": "Produce",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "nispero",
+      "biwa"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        5,
+        10
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "puree",
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "diced",
+          "halved",
+          "peeled",
+          "pitted",
+          "sliced"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "canned",
+          "dried",
+          "fresh",
+          "frozen"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "gramsPerCup": 150,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "apricot",
+        "ratio": "1:1",
+        "notes": "Sweet-tart stone-fruit feel."
+      },
+      {
+        "substituteItemID": "persimmon",
+        "ratio": "1:1",
+        "notes": "Soft sweet flesh."
+      }
+    ],
+    "isUserDefined": false,
+    "gramsPerPiece": 30.0
+  },
+  {
+    "id": "tamarillo",
+    "name": "tamarillo",
+    "category": "Produce",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "tree tomato"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        7,
+        14
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "puree",
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "diced",
+          "halved",
+          "peeled",
+          "pitted",
+          "sliced"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "canned",
+          "dried",
+          "fresh",
+          "frozen"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "gramsPerCup": 150,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "tomato",
+        "ratio": "1:1",
+        "notes": "Tart pulp; for savory use."
+      },
+      {
+        "substituteItemID": "persimmon",
+        "ratio": "1:1",
+        "notes": "For sweeter preparations."
+      }
+    ],
+    "isUserDefined": false,
+    "gramsPerPiece": 90.0
+  },
+  {
+    "id": "physalis",
+    "name": "physalis",
+    "category": "Produce",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "cape gooseberry",
+      "golden berry",
+      "ground cherry",
+      "aguaymanto",
+      "uchuva",
+      "inca berry"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        7,
+        14
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "puree",
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "diced",
+          "halved",
+          "peeled",
+          "pitted",
+          "sliced"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "canned",
+          "dried",
+          "fresh",
+          "frozen"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "gramsPerCup": 150,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "gooseberry",
+        "ratio": "1:1",
+        "notes": "Tart small berry."
+      },
+      {
+        "substituteItemID": "currant",
+        "ratio": "1:1",
+        "notes": "Tart, similar size."
+      }
+    ],
+    "isUserDefined": false,
+    "gramsPerPiece": 5.0
+  },
+  {
+    "id": "gooseberry",
+    "name": "gooseberry",
+    "category": "Produce",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "european gooseberry",
+      "ribes gooseberry"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        7,
+        14
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "mashed",
+          "washed"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "canned",
+          "dried",
+          "fresh",
+          "frozen",
+          "jam"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "preservation",
+        "value": "fresh"
+      }
+    ],
+    "gramsPerCup": 150,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "currant",
+        "ratio": "1:1",
+        "notes": "Tart small berry."
+      },
+      {
+        "substituteItemID": "cranberry",
+        "ratio": "1:1",
+        "notes": "Tart; for cooking."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "amla",
+    "name": "amla",
+    "category": "Produce",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "indian gooseberry",
+      "amalaki",
+      "nellikai"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        7,
+        14
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "puree",
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "diced",
+          "halved",
+          "peeled",
+          "pitted",
+          "sliced"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "canned",
+          "dried",
+          "fresh",
+          "frozen"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "gramsPerCup": 150,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "gooseberry",
+        "ratio": "1:1",
+        "notes": "Tart, astringent berry."
+      },
+      {
+        "substituteItemID": "lemon",
+        "ratio": "1:1",
+        "notes": "For the sour note."
+      }
+    ],
+    "isUserDefined": false,
+    "gramsPerPiece": 15.0
+  },
+  {
+    "id": "mulberry",
+    "name": "mulberry",
+    "category": "Produce",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "shahtoot",
+      "tut"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        2,
+        4
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "mashed",
+          "washed"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "canned",
+          "dried",
+          "fresh",
+          "frozen",
+          "jam"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "preservation",
+        "value": "fresh"
+      }
+    ],
+    "gramsPerCup": 150,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "blackberry",
+        "ratio": "1:1",
+        "notes": "Nearly identical use."
+      },
+      {
+        "substituteItemID": "blueberry",
+        "ratio": "1:1",
+        "notes": "Sweet small berry."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "elderberry",
+    "name": "elderberry",
+    "category": "Produce",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "sambucus",
+      "elderflower berry"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        3,
+        7
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "mashed",
+          "washed"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "canned",
+          "dried",
+          "fresh",
+          "frozen",
+          "jam"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "preservation",
+        "value": "fresh"
+      }
+    ],
+    "gramsPerCup": 150,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "blackberry",
+        "ratio": "1:1",
+        "notes": "Cook before use; similar dark berry."
+      },
+      {
+        "substituteItemID": "cranberry",
+        "ratio": "1:1",
+        "notes": "Tart; for syrups/jams."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "lingonberry",
+    "name": "lingonberry",
+    "category": "Produce",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "cowberry",
+      "mountain cranberry"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        7,
+        14
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "mashed",
+          "washed"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "canned",
+          "dried",
+          "fresh",
+          "frozen",
+          "jam"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "preservation",
+        "value": "fresh"
+      }
+    ],
+    "gramsPerCup": 150,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "cranberry",
+        "ratio": "1:1",
+        "notes": "Tart cousin; nearly identical use."
+      },
+      {
+        "substituteItemID": "currant",
+        "ratio": "1:1",
+        "notes": "Tart small berry."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "salak",
+    "name": "salak",
+    "category": "Produce",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "snake fruit"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        7,
+        14
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "puree",
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "diced",
+          "halved",
+          "peeled",
+          "pitted",
+          "sliced"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "canned",
+          "dried",
+          "fresh",
+          "frozen"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "gramsPerCup": 150,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "pineapple",
+        "ratio": "1:1",
+        "notes": "Crisp, tart-sweet flesh."
+      },
+      {
+        "substituteItemID": "apple",
+        "ratio": "1:1",
+        "notes": "Crunchy, tart."
+      }
+    ],
+    "isUserDefined": false,
+    "gramsPerPiece": 60.0
+  },
+  {
+    "id": "pawpaw",
+    "name": "pawpaw",
+    "category": "Produce",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "custard banana",
+      "Asimina"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        2,
+        4
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "puree",
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "diced",
+          "halved",
+          "peeled",
+          "pitted",
+          "sliced"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "canned",
+          "dried",
+          "fresh",
+          "frozen"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "gramsPerCup": 150,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "banana",
+        "ratio": "1:1",
+        "notes": "Custardy, sweet tropical flavor."
+      },
+      {
+        "substituteItemID": "mango",
+        "ratio": "1:1",
+        "notes": "Soft sweet tropical flesh."
+      }
+    ],
+    "isUserDefined": false,
+    "gramsPerPiece": 200.0
+  },
+  {
+    "id": "ackee",
+    "name": "ackee",
+    "category": "Produce",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "achee",
+      "ankye"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        2,
+        4
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "puree",
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "diced",
+          "halved",
+          "peeled",
+          "pitted",
+          "sliced"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "canned",
+          "dried",
+          "fresh",
+          "frozen"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "gramsPerCup": 150,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "egg",
+        "ratio": "1:1",
+        "notes": "Scrambled eggs mimic the soft texture in Jamaican dishes."
+      },
+      {
+        "substituteItemID": "heart-of-palm",
+        "ratio": "1:1",
+        "notes": "Mild, soft; for a plant-based texture swap."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "cardoon",
+    "name": "cardoon",
+    "category": "Produce",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "cardone",
+      "cardo"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        7,
+        14
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "stalk",
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "chopped",
+          "sliced",
+          "trimmed",
+          "peeled"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "fresh"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "stalk"
+      }
+    ],
+    "gramsPerCup": 150,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "artichoke",
+        "ratio": "1:1",
+        "notes": "Same family; artichoke flavor."
+      },
+      {
+        "substituteItemID": "celery",
+        "ratio": "1:1",
+        "notes": "For the stalk texture."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "samphire",
+    "name": "samphire",
+    "category": "Produce",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "sea bean",
+      "glasswort",
+      "sea asparagus",
+      "salicornia"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        3,
+        6
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "whole",
+          "sprigs"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "trimmed",
+          "washed"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "fresh",
+          "pickled"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "gramsPerCup": 150,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "asparagus",
+        "ratio": "1:1",
+        "notes": "For a green, briny-ish crunch."
+      },
+      {
+        "substituteItemID": "green-bean",
+        "ratio": "1:1",
+        "notes": "Snappy green swap."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "fiddlehead-fern",
+    "name": "fiddlehead fern",
+    "category": "Produce",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "fiddleheads",
+      "ostrich fern",
+      "warabi"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        2,
+        4
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "trimmed",
+          "washed"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "fresh",
+          "frozen"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "gramsPerCup": 150,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "asparagus",
+        "ratio": "1:1",
+        "notes": "Grassy green; similar use (cook well)."
+      },
+      {
+        "substituteItemID": "green-bean",
+        "ratio": "1:1",
+        "notes": "Snappy green swap."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "stinging-nettle",
+    "name": "stinging nettle",
+    "category": "Produce",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "nettle",
+      "ortie"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        3,
+        5
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "leaves",
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "chopped",
+          "pre-cut",
+          "shredded",
+          "sliced",
+          "trimmed",
+          "washed"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "fresh",
+          "frozen"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "gramsPerCup": 150,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "spinach",
+        "ratio": "1:1",
+        "notes": "Same family as leafy greens."
+      },
+      {
+        "substituteItemID": "kale",
+        "ratio": "1:1",
+        "notes": "Same family as leafy greens."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "king-oyster-mushroom",
+    "name": "king oyster mushroom",
+    "category": "Produce",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "king trumpet",
+      "eryngii",
+      "royal trumpet"
+    ],
+    "parentIds": [
+      "mushroom"
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        7,
+        14
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "diced",
+          "quartered",
+          "sliced",
+          "trimmed"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "canned",
+          "dried",
+          "fresh",
+          "frozen"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "gramsPerCup": 150,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "oyster-mushroom",
+        "ratio": "1:1",
+        "notes": "Same family as mushroom."
+      },
+      {
+        "substituteItemID": "shiitake",
+        "ratio": "1:1",
+        "notes": "Same family as mushroom."
+      },
+      {
+        "substituteItemID": "cremini",
+        "ratio": "1:1",
+        "notes": "Same family as mushroom."
+      },
+      {
+        "substituteItemID": "portobello",
+        "ratio": "1:1",
+        "notes": "Same family as mushroom."
+      }
+    ],
+    "isUserDefined": false,
+    "gramsPerPiece": 18.0
+  },
+  {
+    "id": "straw-mushroom",
+    "name": "straw mushroom",
+    "category": "Produce",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "paddy straw mushroom"
+    ],
+    "parentIds": [
+      "mushroom"
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        2,
+        4
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "diced",
+          "quartered",
+          "sliced",
+          "trimmed"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "canned",
+          "dried",
+          "fresh",
+          "frozen"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "gramsPerCup": 150,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "oyster-mushroom",
+        "ratio": "1:1",
+        "notes": "Same family as mushroom."
+      },
+      {
+        "substituteItemID": "shiitake",
+        "ratio": "1:1",
+        "notes": "Same family as mushroom."
+      },
+      {
+        "substituteItemID": "cremini",
+        "ratio": "1:1",
+        "notes": "Same family as mushroom."
+      },
+      {
+        "substituteItemID": "portobello",
+        "ratio": "1:1",
+        "notes": "Same family as mushroom."
+      }
+    ],
+    "isUserDefined": false,
+    "gramsPerPiece": 18.0
+  },
+  {
+    "id": "matsutake",
+    "name": "matsutake",
+    "category": "Produce",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "pine mushroom"
+    ],
+    "parentIds": [
+      "mushroom"
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        3,
+        7
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "diced",
+          "quartered",
+          "sliced",
+          "trimmed"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "canned",
+          "dried",
+          "fresh",
+          "frozen"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "gramsPerCup": 150,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "oyster-mushroom",
+        "ratio": "1:1",
+        "notes": "Same family as mushroom."
+      },
+      {
+        "substituteItemID": "shiitake",
+        "ratio": "1:1",
+        "notes": "Same family as mushroom."
+      },
+      {
+        "substituteItemID": "cremini",
+        "ratio": "1:1",
+        "notes": "Same family as mushroom."
+      },
+      {
+        "substituteItemID": "portobello",
+        "ratio": "1:1",
+        "notes": "Same family as mushroom."
+      }
+    ],
+    "isUserDefined": false,
+    "gramsPerPiece": 18.0
+  },
+  {
+    "id": "malabar-spinach",
+    "name": "malabar spinach",
+    "category": "Produce",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "basella",
+      "poi saag",
+      "ceylon spinach",
+      "vine spinach"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        3,
+        6
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "leaves",
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "chopped",
+          "pre-cut",
+          "shredded",
+          "sliced",
+          "trimmed",
+          "washed"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "fresh",
+          "frozen"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "gramsPerCup": 150,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "spinach",
+        "ratio": "1:1",
+        "notes": "Same family as leafy greens."
+      },
+      {
+        "substituteItemID": "amaranth",
+        "ratio": "1:1",
+        "notes": "Same family as leafy greens."
+      },
+      {
+        "substituteItemID": "water-spinach",
+        "ratio": "1:1",
+        "notes": "Same family as leafy greens."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "baby-corn",
+    "name": "baby corn",
+    "category": "Produce",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "candle corn",
+      "young corn"
+    ],
+    "parentIds": [
+      "corn"
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        5,
+        10
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "halved",
+          "sliced",
+          "trimmed"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "canned",
+          "fresh",
+          "frozen",
+          "pickled"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "gramsPerCup": 150,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "corn",
+        "ratio": "1:1",
+        "notes": "Mature kernels; different texture."
+      },
+      {
+        "substituteItemID": "asparagus",
+        "ratio": "1:1",
+        "notes": "For a tender crunch in stir-fries."
+      }
+    ],
+    "isUserDefined": false,
+    "gramsPerPiece": 10.0
+  },
+  {
+    "id": "arrowroot",
+    "name": "arrowroot",
+    "category": "Produce",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "arrowroot tuber",
+      "ararut"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        7,
+        14
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "chunks",
+          "paste",
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "chopped",
+          "grated",
+          "julienned",
+          "minced",
+          "peeled",
+          "pre-cut",
+          "sliced",
+          "trimmed",
+          "unpeeled",
+          "washed"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "dried",
+          "fresh",
+          "frozen"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "gramsPerCup": 150,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "cassava",
+        "ratio": "1:1",
+        "notes": "Starchy tropical root."
+      },
+      {
+        "substituteItemID": "potato",
+        "ratio": "1:1",
+        "notes": "Starchy swap."
+      }
+    ],
+    "isUserDefined": false
+  }
+]

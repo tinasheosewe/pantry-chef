@@ -1,0 +1,7566 @@
+[
+  {
+    "id": "potato-chip",
+    "name": "potato chip",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "potato chips",
+      "crisps",
+      "potato crisp",
+      "kettle chip",
+      "kettle cooked chip",
+      "salt and vinegar chip",
+      "sour cream and onion chip",
+      "bbq potato chip",
+      "ruffles",
+      "lays",
+      "ridged potato chip",
+      "wavy potato chip"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        30,
+        180
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "whole",
+          "crumb"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "crunchy",
+          "crispy"
+        ]
+      },
+      {
+        "key": "grade",
+        "options": [
+          "salted",
+          "unsalted",
+          "spicy"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      },
+      {
+        "key": "texture",
+        "value": "crispy"
+      }
+    ],
+    "gramsPerCup": 30.0,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "tortilla-chip",
+        "ratio": "1:1",
+        "notes": "Same crunchy salty snack role."
+      },
+      {
+        "substituteItemID": "potato-stick",
+        "ratio": "1:1",
+        "notes": "Both fried potato snacks."
+      },
+      {
+        "substituteItemID": "popped-chip",
+        "ratio": "1:1",
+        "notes": "Lower-fat popped alternative."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "corn-chip",
+    "name": "corn chip",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "corn chips",
+      "fritos",
+      "fritos corn chip",
+      "elotitos"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        30,
+        180
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "whole",
+          "crumb"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "crunchy",
+          "crispy"
+        ]
+      },
+      {
+        "key": "grade",
+        "options": [
+          "salted",
+          "unsalted",
+          "spicy"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      },
+      {
+        "key": "texture",
+        "value": "crispy"
+      }
+    ],
+    "gramsPerCup": 35.0,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "tortilla-chip",
+        "ratio": "1:1",
+        "notes": "Both corn-based; very similar."
+      },
+      {
+        "substituteItemID": "potato-chip",
+        "ratio": "1:1",
+        "notes": "Same snacking role."
+      },
+      {
+        "substituteItemID": "puffed-corn-snack",
+        "ratio": "1:1",
+        "notes": "Both corn snacks."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "cheese-puff",
+    "name": "cheese puff",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "cheese puffs",
+      "cheese curls",
+      "cheese balls",
+      "cheetos",
+      "puffed cheese snack",
+      "crunchy cheese snack",
+      "wotsits"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        30,
+        150
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "whole",
+          "crumb"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "crunchy",
+          "crispy"
+        ]
+      },
+      {
+        "key": "grade",
+        "options": [
+          "salted",
+          "unsalted",
+          "spicy"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      },
+      {
+        "key": "texture",
+        "value": "crispy"
+      }
+    ],
+    "gramsPerCup": 18.0,
+    "allergens": [
+      "dairy"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "puffed-corn-snack",
+        "ratio": "1:1",
+        "notes": "Same puffed corn base."
+      },
+      {
+        "substituteItemID": "corn-chip",
+        "ratio": "1:1",
+        "notes": "Both corn snacks."
+      },
+      {
+        "substituteItemID": "cheese-crisp-snack",
+        "ratio": "1:1",
+        "notes": "Cheesier, crunchier alternative."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "puffed-corn-snack",
+    "name": "puffed corn snack",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "corn puff",
+      "corn puffs",
+      "puffed corn",
+      "baked corn puff"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        30,
+        150
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "whole",
+          "crumb"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "crunchy",
+          "crispy"
+        ]
+      },
+      {
+        "key": "grade",
+        "options": [
+          "salted",
+          "unsalted",
+          "spicy"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      },
+      {
+        "key": "texture",
+        "value": "crispy"
+      }
+    ],
+    "gramsPerCup": 16.0,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "cheese-puff",
+        "ratio": "1:1",
+        "notes": "Same puffed shape."
+      },
+      {
+        "substituteItemID": "corn-chip",
+        "ratio": "1:1",
+        "notes": "Both corn snacks."
+      },
+      {
+        "substituteItemID": "popcorn-snack",
+        "ratio": "1:1",
+        "notes": "Both light corn snacks."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "vegetable-chip",
+    "name": "vegetable chip",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "veggie chips",
+      "veggie straws",
+      "vegetable crisps",
+      "beet chip",
+      "carrot chip",
+      "sweet potato chip",
+      "kale chip"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        30,
+        180
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "whole",
+          "crumb"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "crunchy",
+          "crispy"
+        ]
+      },
+      {
+        "key": "grade",
+        "options": [
+          "salted",
+          "unsalted",
+          "spicy"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      },
+      {
+        "key": "texture",
+        "value": "crispy"
+      }
+    ],
+    "gramsPerCup": 28.0,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "potato-chip",
+        "ratio": "1:1",
+        "notes": "Same crunchy chip role."
+      },
+      {
+        "substituteItemID": "veggie-straw",
+        "ratio": "1:1",
+        "notes": "Same veggie-snack family."
+      },
+      {
+        "substituteItemID": "plantain-chip",
+        "ratio": "1:1",
+        "notes": "Both root/veg chips."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "plantain-chip",
+    "name": "plantain chip",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "plantain chips",
+      "platanitos",
+      "tostones chips",
+      "banana chips"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        30,
+        180
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "whole",
+          "crumb"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "crunchy",
+          "crispy"
+        ]
+      },
+      {
+        "key": "grade",
+        "options": [
+          "salted",
+          "unsalted",
+          "spicy"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      },
+      {
+        "key": "texture",
+        "value": "crispy"
+      }
+    ],
+    "gramsPerCup": 40.0,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "tapioca-chip",
+        "ratio": "1:1",
+        "notes": "Both starchy fried chips."
+      },
+      {
+        "substituteItemID": "vegetable-chip",
+        "ratio": "1:1",
+        "notes": "Same chip role."
+      },
+      {
+        "substituteItemID": "potato-chip",
+        "ratio": "1:1",
+        "notes": "Same crunchy snack."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "pita-chip",
+    "name": "pita chip",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "pita chips",
+      "baked pita chip",
+      "pita crisp"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        30,
+        180
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "whole",
+          "crumb"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "crunchy",
+          "crispy"
+        ]
+      },
+      {
+        "key": "grade",
+        "options": [
+          "salted",
+          "unsalted",
+          "spicy"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      },
+      {
+        "key": "texture",
+        "value": "crispy"
+      }
+    ],
+    "gramsPerCup": 30.0,
+    "allergens": [
+      "gluten"
+    ],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "bagel-chip",
+        "ratio": "1:1",
+        "notes": "Both baked bread chips."
+      },
+      {
+        "substituteItemID": "cracker",
+        "ratio": "1:1",
+        "notes": "Same scoop/dip role."
+      },
+      {
+        "substituteItemID": "tortilla-chip",
+        "ratio": "1:1",
+        "notes": "Same dipping chip."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "bagel-chip",
+    "name": "bagel chip",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "bagel chips",
+      "bagel crisp",
+      "bagel crisps"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        30,
+        180
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "whole",
+          "crumb"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "crunchy",
+          "crispy"
+        ]
+      },
+      {
+        "key": "grade",
+        "options": [
+          "salted",
+          "unsalted",
+          "spicy"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      },
+      {
+        "key": "texture",
+        "value": "crispy"
+      }
+    ],
+    "gramsPerCup": 32.0,
+    "allergens": [
+      "gluten"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "pita-chip",
+        "ratio": "1:1",
+        "notes": "Both baked bread chips."
+      },
+      {
+        "substituteItemID": "melba-toast",
+        "ratio": "1:1",
+        "notes": "Both crisp toasted bread snacks."
+      },
+      {
+        "substituteItemID": "cracker",
+        "ratio": "1:1",
+        "notes": "Same crunchy base."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "prawn-cracker",
+    "name": "prawn cracker",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "prawn crackers",
+      "shrimp chip",
+      "shrimp crackers",
+      "krupuk",
+      "kerupuk udang"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        30,
+        180
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "whole",
+          "crumb"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "crunchy",
+          "crispy"
+        ]
+      },
+      {
+        "key": "grade",
+        "options": [
+          "salted",
+          "unsalted",
+          "spicy"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      },
+      {
+        "key": "texture",
+        "value": "crispy"
+      }
+    ],
+    "gramsPerCup": 14.0,
+    "allergens": [
+      "shellfish"
+    ],
+    "dietaryTags": [
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "rice-cracker",
+        "ratio": "1:1",
+        "notes": "Both light Asian crackers."
+      },
+      {
+        "substituteItemID": "tapioca-chip",
+        "ratio": "1:1",
+        "notes": "Both starch-based crisps."
+      },
+      {
+        "substituteItemID": "potato-chip",
+        "ratio": "1:1",
+        "notes": "Same airy crunchy snack."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "rice-cracker",
+    "name": "rice cracker",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "rice crackers",
+      "senbei",
+      "japanese rice cracker",
+      "arare",
+      "rice snack",
+      "savory rice cracker"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        30,
+        240
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "whole",
+          "crumb"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "crunchy",
+          "crispy"
+        ]
+      },
+      {
+        "key": "grade",
+        "options": [
+          "salted",
+          "unsalted",
+          "spicy"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      },
+      {
+        "key": "texture",
+        "value": "crispy"
+      }
+    ],
+    "gramsPerCup": 35.0,
+    "allergens": [
+      "soy"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "rice-cake",
+        "ratio": "1:1",
+        "notes": "Both puffed-rice snacks."
+      },
+      {
+        "substituteItemID": "crispbread",
+        "ratio": "1:1",
+        "notes": "Both crisp grain crackers."
+      },
+      {
+        "substituteItemID": "cracker",
+        "ratio": "1:1",
+        "notes": "Same cracker role."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "crispbread",
+    "name": "crispbread",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "crisp bread",
+      "rye crispbread",
+      "wasa",
+      "knackebrod",
+      "ryvita",
+      "crisp rye"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        60,
+        365
+      ]
+    },
+    "facets": [
+      {
+        "key": "variant",
+        "options": [
+          "rye",
+          "wheat",
+          "multigrain"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "whole",
+          "crumb"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "crisp",
+          "crunchy"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "gramsPerCup": 40.0,
+    "allergens": [
+      "gluten"
+    ],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "water-cracker",
+        "ratio": "1:1",
+        "notes": "Both plain crisp crackers."
+      },
+      {
+        "substituteItemID": "cracker",
+        "ratio": "1:1",
+        "notes": "Same cracker role."
+      },
+      {
+        "substituteItemID": "melba-toast",
+        "ratio": "1:1",
+        "notes": "Both dry crisp breads."
+      }
+    ],
+    "isUserDefined": false,
+    "gramsPerPiece": 10.0
+  },
+  {
+    "id": "water-cracker",
+    "name": "water cracker",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "water crackers",
+      "table water cracker",
+      "carr's cracker"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        60,
+        365
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "whole",
+          "crumb"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "crisp",
+          "crunchy"
+        ]
+      },
+      {
+        "key": "grade",
+        "options": [
+          "salted",
+          "unsalted"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "gramsPerCup": 60.0,
+    "allergens": [
+      "gluten"
+    ],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "cracker",
+        "ratio": "1:1",
+        "notes": "Same plain cracker role."
+      },
+      {
+        "substituteItemID": "crispbread",
+        "ratio": "1:1",
+        "notes": "Both crisp crackers."
+      },
+      {
+        "substituteItemID": "rice-cracker",
+        "ratio": "1:1",
+        "notes": "Both light crackers."
+      }
+    ],
+    "isUserDefined": false,
+    "gramsPerPiece": 4.0
+  },
+  {
+    "id": "cheese-cracker",
+    "name": "cheese cracker",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "cheese crackers",
+      "cheez-it",
+      "cheez its",
+      "baked cheese cracker",
+      "cheese sandwich cracker",
+      "cheddar cracker"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        30,
+        240
+      ]
+    },
+    "facets": [
+      {
+        "key": "variant",
+        "options": [
+          "cheddar"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "whole",
+          "crumb"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "crunchy",
+          "crispy"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "gramsPerCup": 60.0,
+    "allergens": [
+      "dairy",
+      "gluten"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "cracker",
+        "ratio": "1:1",
+        "notes": "Same cracker base."
+      },
+      {
+        "substituteItemID": "cheese-crisp-snack",
+        "ratio": "1:1",
+        "notes": "Both cheese-flavored crisps."
+      },
+      {
+        "substituteItemID": "cheese-straw",
+        "ratio": "1:1",
+        "notes": "Both savory cheese snacks."
+      }
+    ],
+    "isUserDefined": false,
+    "gramsPerPiece": 1.0
+  },
+  {
+    "id": "peanut-butter-cracker",
+    "name": "peanut butter cracker",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "peanut butter crackers",
+      "toast cracker with peanut butter",
+      "cracker sandwich"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        30,
+        180
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "whole"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "crunchy",
+          "crispy"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "gramsPerCup": 70.0,
+    "allergens": [
+      "gluten",
+      "peanut"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Dairy-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "cracker",
+        "ratio": "1:1",
+        "notes": "Same cracker base."
+      },
+      {
+        "substituteItemID": "cracker-sandwich-snack-pack",
+        "ratio": "1:1",
+        "notes": "Both filled cracker snacks."
+      },
+      {
+        "substituteItemID": "crispbread",
+        "ratio": "1:1",
+        "notes": "Both crisp cracker bases."
+      }
+    ],
+    "isUserDefined": false,
+    "gramsPerPiece": 7.0
+  },
+  {
+    "id": "matzo",
+    "name": "matzo",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "matza",
+      "matzah",
+      "matzos",
+      "matzot",
+      "unleavened bread",
+      "passover bread",
+      "matzo cracker"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        365
+      ],
+      "Frozen": [
+        365,
+        730
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "whole",
+          "crumb"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "crisp",
+          "crunchy"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "gramsPerCup": 110.0,
+    "allergens": [
+      "gluten"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "water-cracker",
+        "ratio": "1:1",
+        "notes": "Both plain unleavened crackers."
+      },
+      {
+        "substituteItemID": "cracker",
+        "ratio": "1:1",
+        "notes": "Same cracker role."
+      },
+      {
+        "substituteItemID": "crispbread",
+        "ratio": "1:1",
+        "notes": "Both crisp flatbreads."
+      }
+    ],
+    "isUserDefined": false,
+    "gramsPerPiece": 30.0
+  },
+  {
+    "id": "pretzel-crisp",
+    "name": "pretzel crisp",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "pretzel crisps",
+      "flat pretzel",
+      "pretzel thin",
+      "pretzel chip"
+    ],
+    "parentIds": [
+      "pretzel"
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        30,
+        240
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "whole",
+          "crumb"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "crunchy",
+          "crisp"
+        ]
+      },
+      {
+        "key": "grade",
+        "options": [
+          "salted",
+          "unsalted"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "gramsPerCup": 40.0,
+    "allergens": [
+      "gluten"
+    ],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "cracker",
+        "ratio": "1:1",
+        "notes": "Both flat crisp snacks."
+      },
+      {
+        "substituteItemID": "breadstick-snack",
+        "ratio": "1:1",
+        "notes": "Both baked wheat snacks."
+      },
+      {
+        "substituteItemID": "potato-chip",
+        "ratio": "1:1",
+        "notes": "Same crunchy snack role."
+      }
+    ],
+    "isUserDefined": false,
+    "gramsPerPiece": 3.0
+  },
+  {
+    "id": "filled-pretzel",
+    "name": "filled pretzel",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "peanut butter filled pretzel",
+      "cheese filled pretzel",
+      "pretzel nuggets",
+      "stuffed pretzel"
+    ],
+    "parentIds": [
+      "pretzel"
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        30,
+        180
+      ]
+    },
+    "facets": [
+      {
+        "key": "variant",
+        "options": [
+          "peanut butter",
+          "cheese"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "crunchy"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 100.0,
+    "allergens": [
+      "gluten"
+    ],
+    "dietaryTags": [
+      "Vegetarian"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "pretzel-crisp",
+        "ratio": "1:1",
+        "notes": "Same pretzel base, unfilled."
+      },
+      {
+        "substituteItemID": "peanut-butter-cracker",
+        "ratio": "1:1",
+        "notes": "Both filled savory snacks."
+      },
+      {
+        "substituteItemID": "cracker-sandwich-snack-pack",
+        "ratio": "1:1",
+        "notes": "Both filled snack bites."
+      }
+    ],
+    "isUserDefined": false,
+    "gramsPerPiece": 4.0
+  },
+  {
+    "id": "microwave-popcorn",
+    "name": "microwave popcorn",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "microwave popcorn bag",
+      "butter popcorn",
+      "movie theater popcorn",
+      "orville redenbacher"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        90,
+        365
+      ]
+    },
+    "facets": [
+      {
+        "key": "variant",
+        "options": [
+          "butter"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "fluffy",
+          "crunchy"
+        ]
+      },
+      {
+        "key": "grade",
+        "options": [
+          "salted",
+          "unsalted"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 8.0,
+    "allergens": [
+      "dairy"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "popcorn-snack",
+        "ratio": "1:1",
+        "notes": "Both popped-corn snacks."
+      },
+      {
+        "substituteItemID": "popcorn",
+        "ratio": "1:1",
+        "notes": "Pop your own kernels."
+      },
+      {
+        "substituteItemID": "caramel-corn",
+        "ratio": "1:1",
+        "notes": "Sweet popcorn alternative."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "popcorn-snack",
+    "name": "popcorn snack",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "bagged popcorn",
+      "kettle corn",
+      "caramel popcorn",
+      "cheese popcorn",
+      "white cheddar popcorn",
+      "skinny pop",
+      "smartfood"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        30,
+        150
+      ]
+    },
+    "facets": [
+      {
+        "key": "variant",
+        "options": [
+          "butter",
+          "cheese",
+          "caramel"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "fluffy",
+          "crunchy"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 8.0,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegetarian",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "microwave-popcorn",
+        "ratio": "1:1",
+        "notes": "Same popped corn."
+      },
+      {
+        "substituteItemID": "popcorn",
+        "ratio": "1:1",
+        "notes": "Pop your own kernels."
+      },
+      {
+        "substituteItemID": "puffed-corn-snack",
+        "ratio": "1:1",
+        "notes": "Both light corn snacks."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "caramel-corn",
+    "name": "caramel corn",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "caramel popcorn",
+      "cracker jack",
+      "caramel coated popcorn",
+      "popcorn and peanuts"
+    ],
+    "parentIds": [
+      "popcorn-snack"
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        30,
+        180
+      ]
+    },
+    "facets": [
+      {
+        "key": "variant",
+        "options": [
+          "caramel"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "crunchy",
+          "crispy"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "variant",
+        "value": "caramel"
+      }
+    ],
+    "gramsPerCup": 60.0,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegetarian"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "popcorn-snack",
+        "ratio": "1:1",
+        "notes": "Same popcorn base."
+      },
+      {
+        "substituteItemID": "candied-nut",
+        "ratio": "1:1",
+        "notes": "Both sweet-glazed snacks."
+      },
+      {
+        "substituteItemID": "snack-mix",
+        "ratio": "1:1",
+        "notes": "Both sweet-savory mixes."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "granola-bar",
+    "name": "granola bar",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "granola bars",
+      "oat bar",
+      "chewy granola bar",
+      "crunchy granola bar",
+      "nature valley bar",
+      "quaker chewy"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        60,
+        270
+      ]
+    },
+    "facets": [
+      {
+        "key": "texture",
+        "options": [
+          "chewy",
+          "crunchy"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "whole"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 110.0,
+    "allergens": [
+      "gluten"
+    ],
+    "dietaryTags": [
+      "Vegetarian"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "muesli-bar",
+        "ratio": "1:1",
+        "notes": "Same oat-bar style."
+      },
+      {
+        "substituteItemID": "cereal-bar",
+        "ratio": "1:1",
+        "notes": "Both grain snack bars."
+      },
+      {
+        "substituteItemID": "fruit-and-nut-bar",
+        "ratio": "1:1",
+        "notes": "Both portable snack bars."
+      }
+    ],
+    "isUserDefined": false,
+    "gramsPerPiece": 28.0
+  },
+  {
+    "id": "protein-bar",
+    "name": "protein bar",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "protein bars",
+      "energy bar",
+      "meal replacement bar",
+      "clif bar",
+      "quest bar",
+      "rxbar",
+      "power bar"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        60,
+        365
+      ]
+    },
+    "facets": [
+      {
+        "key": "texture",
+        "options": [
+          "chewy",
+          "crunchy"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "whole"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 120.0,
+    "allergens": [
+      "dairy",
+      "soy"
+    ],
+    "dietaryTags": [
+      "Vegetarian"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "fruit-and-nut-bar",
+        "ratio": "1:1",
+        "notes": "Both dense snack bars."
+      },
+      {
+        "substituteItemID": "granola-bar",
+        "ratio": "1:1",
+        "notes": "Both grab-and-go bars."
+      },
+      {
+        "substituteItemID": "energy-ball",
+        "ratio": "1:1",
+        "notes": "Both high-protein snack bites."
+      }
+    ],
+    "isUserDefined": false,
+    "gramsPerPiece": 60.0
+  },
+  {
+    "id": "cereal-bar",
+    "name": "cereal bar",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "cereal bars",
+      "breakfast bar",
+      "rice krispies treat",
+      "rice crispy treat",
+      "marshmallow cereal bar",
+      "nutri-grain bar"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        60,
+        270
+      ]
+    },
+    "facets": [
+      {
+        "key": "texture",
+        "options": [
+          "chewy",
+          "crunchy"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "whole"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 100.0,
+    "allergens": [
+      "gluten"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "granola-bar",
+        "ratio": "1:1",
+        "notes": "Both grain bars."
+      },
+      {
+        "substituteItemID": "muesli-bar",
+        "ratio": "1:1",
+        "notes": "Same style."
+      },
+      {
+        "substituteItemID": "fig-bar",
+        "ratio": "1:1",
+        "notes": "Both soft snack bars."
+      }
+    ],
+    "isUserDefined": false,
+    "gramsPerPiece": 25.0
+  },
+  {
+    "id": "fruit-and-nut-bar",
+    "name": "fruit and nut bar",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "fruit nut bar",
+      "larabar",
+      "kind bar",
+      "date bar",
+      "fruit bar",
+      "nut bar"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        60,
+        365
+      ]
+    },
+    "facets": [
+      {
+        "key": "texture",
+        "options": [
+          "chewy",
+          "crunchy"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "whole"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 130.0,
+    "allergens": [
+      "tree-nut"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Dairy-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "granola-bar",
+        "ratio": "1:1",
+        "notes": "Both snack bars."
+      },
+      {
+        "substituteItemID": "energy-ball",
+        "ratio": "1:1",
+        "notes": "Both date/nut snacks."
+      },
+      {
+        "substituteItemID": "trail-mix",
+        "ratio": "1:1",
+        "notes": "Same fruit-and-nut profile."
+      }
+    ],
+    "isUserDefined": false,
+    "gramsPerPiece": 45.0
+  },
+  {
+    "id": "muesli-bar",
+    "name": "muesli bar",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "muesli bars",
+      "fruit muesli bar",
+      "oat muesli bar"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        60,
+        270
+      ]
+    },
+    "facets": [
+      {
+        "key": "texture",
+        "options": [
+          "chewy",
+          "crunchy"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "whole"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 110.0,
+    "allergens": [
+      "gluten"
+    ],
+    "dietaryTags": [
+      "Vegetarian"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "granola-bar",
+        "ratio": "1:1",
+        "notes": "Same oat-bar style."
+      },
+      {
+        "substituteItemID": "cereal-bar",
+        "ratio": "1:1",
+        "notes": "Both grain bars."
+      },
+      {
+        "substituteItemID": "fruit-and-nut-bar",
+        "ratio": "1:1",
+        "notes": "Both portable bars."
+      }
+    ],
+    "isUserDefined": false,
+    "gramsPerPiece": 30.0
+  },
+  {
+    "id": "rice-cake",
+    "name": "rice cake",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "puffed rice cake",
+      "brown rice cake",
+      "salted rice cake",
+      "caramel rice cake",
+      "rice snack cake"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        60,
+        270
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "whole"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "crunchy",
+          "crisp"
+        ]
+      },
+      {
+        "key": "grade",
+        "options": [
+          "salted",
+          "unsalted"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "gramsPerCup": 30.0,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "corn-cake",
+        "ratio": "1:1",
+        "notes": "Same puffed-grain cake."
+      },
+      {
+        "substituteItemID": "rice-cracker",
+        "ratio": "1:1",
+        "notes": "Both rice snacks."
+      },
+      {
+        "substituteItemID": "crispbread",
+        "ratio": "1:1",
+        "notes": "Both light crisp bases."
+      }
+    ],
+    "isUserDefined": false,
+    "gramsPerPiece": 9.0
+  },
+  {
+    "id": "corn-cake",
+    "name": "corn cake",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "corn cakes",
+      "puffed corn cake",
+      "popped corn cake"
+    ],
+    "parentIds": [
+      "rice-cake"
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        60,
+        270
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "whole"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "crunchy",
+          "crisp"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "gramsPerCup": 28.0,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "rice-cake",
+        "ratio": "1:1",
+        "notes": "Same puffed cake style."
+      },
+      {
+        "substituteItemID": "rice-cracker",
+        "ratio": "1:1",
+        "notes": "Both light grain snacks."
+      },
+      {
+        "substituteItemID": "crispbread",
+        "ratio": "1:1",
+        "notes": "Both crisp bases."
+      }
+    ],
+    "isUserDefined": false,
+    "gramsPerPiece": 8.0
+  },
+  {
+    "id": "sandwich-cookie",
+    "name": "sandwich cookie",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "sandwich cookies",
+      "cream filled cookie",
+      "oreo",
+      "oreos",
+      "chocolate sandwich cookie",
+      "creme filled cookie"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        60,
+        270
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "whole",
+          "crumb"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "crunchy",
+          "crisp",
+          "chewy"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "gramsPerCup": 100.0,
+    "allergens": [
+      "gluten"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "chocolate-chip-cookie-snack",
+        "ratio": "1:1",
+        "notes": "Both packaged cookies."
+      },
+      {
+        "substituteItemID": "wafer-roll",
+        "ratio": "1:1",
+        "notes": "Both cream-filled treats."
+      },
+      {
+        "substituteItemID": "digestive-biscuit",
+        "ratio": "1:1",
+        "notes": "Same biscuit role."
+      }
+    ],
+    "isUserDefined": false,
+    "gramsPerPiece": 11.0
+  },
+  {
+    "id": "digestive-biscuit",
+    "name": "digestive biscuit",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "digestive biscuits",
+      "digestives",
+      "wheat biscuit",
+      "mcvities digestive",
+      "graham-style biscuit"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        60,
+        270
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "whole",
+          "crumb"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "crunchy",
+          "crisp",
+          "chewy"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "gramsPerCup": 90.0,
+    "allergens": [
+      "gluten"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "marie-biscuit",
+        "ratio": "1:1",
+        "notes": "Both plain wheat biscuits."
+      },
+      {
+        "substituteItemID": "shortbread-biscuit",
+        "ratio": "1:1",
+        "notes": "Both tea biscuits."
+      },
+      {
+        "substituteItemID": "cracker",
+        "ratio": "1:1",
+        "notes": "Similar crisp base."
+      }
+    ],
+    "isUserDefined": false,
+    "gramsPerPiece": 15.0
+  },
+  {
+    "id": "shortbread-biscuit",
+    "name": "shortbread biscuit",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "shortbread biscuits",
+      "butter biscuit",
+      "walkers shortbread"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        60,
+        270
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "whole",
+          "crumb"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "crunchy",
+          "crisp",
+          "chewy"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "gramsPerCup": 95.0,
+    "allergens": [
+      "dairy",
+      "gluten"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "digestive-biscuit",
+        "ratio": "1:1",
+        "notes": "Both buttery biscuits."
+      },
+      {
+        "substituteItemID": "marie-biscuit",
+        "ratio": "1:1",
+        "notes": "Both tea biscuits."
+      },
+      {
+        "substituteItemID": "chocolate-chip-cookie-snack",
+        "ratio": "1:1",
+        "notes": "Both sweet cookies."
+      }
+    ],
+    "isUserDefined": false,
+    "gramsPerPiece": 12.0
+  },
+  {
+    "id": "biscotti",
+    "name": "biscotti",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "biscotti cookie",
+      "cantucci",
+      "almond biscotti",
+      "italian biscotti"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        60,
+        365
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "whole",
+          "crumb"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "crunchy",
+          "crisp",
+          "chewy"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "gramsPerCup": 90.0,
+    "allergens": [
+      "egg",
+      "gluten",
+      "tree-nut"
+    ],
+    "dietaryTags": [
+      "Vegetarian"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "shortbread-biscuit",
+        "ratio": "1:1",
+        "notes": "Both crisp cookies."
+      },
+      {
+        "substituteItemID": "digestive-biscuit",
+        "ratio": "1:1",
+        "notes": "Both dunking biscuits."
+      },
+      {
+        "substituteItemID": "wafer-roll",
+        "ratio": "1:1",
+        "notes": "Both crunchy treats."
+      }
+    ],
+    "isUserDefined": false,
+    "gramsPerPiece": 20.0
+  },
+  {
+    "id": "wafer-roll",
+    "name": "wafer roll",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "wafer rolls",
+      "rolled wafer",
+      "pirouette",
+      "cream wafer",
+      "wafer biscuit",
+      "loacker wafer"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        60,
+        270
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "whole",
+          "crumb"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "crunchy",
+          "crisp",
+          "chewy"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "gramsPerCup": 70.0,
+    "allergens": [
+      "dairy",
+      "gluten"
+    ],
+    "dietaryTags": [
+      "Vegetarian"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "pocky",
+        "ratio": "1:1",
+        "notes": "Both crunchy biscuit sticks."
+      },
+      {
+        "substituteItemID": "sandwich-cookie",
+        "ratio": "1:1",
+        "notes": "Both cream-filled treats."
+      },
+      {
+        "substituteItemID": "biscotti",
+        "ratio": "1:1",
+        "notes": "Both crisp cookies."
+      }
+    ],
+    "isUserDefined": false,
+    "gramsPerPiece": 6.0
+  },
+  {
+    "id": "fig-bar",
+    "name": "fig bar",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "fig bars",
+      "fig newton",
+      "fig newtons",
+      "fig roll",
+      "fruit filled cookie"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        60,
+        270
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "whole",
+          "crumb"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "crunchy",
+          "crisp",
+          "chewy"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "gramsPerCup": 110.0,
+    "allergens": [
+      "gluten"
+    ],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "cereal-bar",
+        "ratio": "1:1",
+        "notes": "Both soft fruit-filled snacks."
+      },
+      {
+        "substituteItemID": "digestive-biscuit",
+        "ratio": "1:1",
+        "notes": "Same biscuit role."
+      },
+      {
+        "substituteItemID": "dried-fig",
+        "ratio": "1:1",
+        "notes": "Fig-forward alternative."
+      }
+    ],
+    "isUserDefined": false,
+    "gramsPerPiece": 16.0
+  },
+  {
+    "id": "animal-cracker",
+    "name": "animal cracker",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "animal crackers",
+      "animal biscuit",
+      "animal cookie",
+      "barnum's animals"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        60,
+        270
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "whole",
+          "crumb"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "crunchy",
+          "crisp",
+          "chewy"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "gramsPerCup": 80.0,
+    "allergens": [
+      "gluten"
+    ],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "marie-biscuit",
+        "ratio": "1:1",
+        "notes": "Both plain sweet biscuits."
+      },
+      {
+        "substituteItemID": "cracker",
+        "ratio": "1:1",
+        "notes": "Similar crisp base."
+      },
+      {
+        "substituteItemID": "digestive-biscuit",
+        "ratio": "1:1",
+        "notes": "Same biscuit role."
+      }
+    ],
+    "isUserDefined": false,
+    "gramsPerPiece": 2.0
+  },
+  {
+    "id": "chocolate-chip-cookie-snack",
+    "name": "chocolate chip cookie snack",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "packaged chocolate chip cookie",
+      "chips ahoy",
+      "store bought chocolate chip cookie",
+      "cookie snack pack"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        60,
+        240
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "whole",
+          "crumb"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "crunchy",
+          "crisp",
+          "chewy"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "gramsPerCup": 100.0,
+    "allergens": [
+      "dairy",
+      "egg",
+      "gluten"
+    ],
+    "dietaryTags": [
+      "Vegetarian"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "sandwich-cookie",
+        "ratio": "1:1",
+        "notes": "Both packaged cookies."
+      },
+      {
+        "substituteItemID": "digestive-biscuit",
+        "ratio": "1:1",
+        "notes": "Same biscuit role."
+      },
+      {
+        "substituteItemID": "shortbread-biscuit",
+        "ratio": "1:1",
+        "notes": "Both sweet biscuits."
+      }
+    ],
+    "isUserDefined": false,
+    "gramsPerPiece": 10.0
+  },
+  {
+    "id": "marie-biscuit",
+    "name": "marie biscuit",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "marie biscuits",
+      "arrowroot biscuit"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        90,
+        365
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "whole",
+          "crumb"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "crunchy",
+          "crisp",
+          "chewy"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "gramsPerCup": 85.0,
+    "allergens": [
+      "gluten"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "animal-cracker",
+        "ratio": "1:1",
+        "notes": "Both plain sweet biscuits."
+      },
+      {
+        "substituteItemID": "digestive-biscuit",
+        "ratio": "1:1",
+        "notes": "Both tea biscuits."
+      },
+      {
+        "substituteItemID": "shortbread-biscuit",
+        "ratio": "1:1",
+        "notes": "Same biscuit role."
+      }
+    ],
+    "isUserDefined": false,
+    "gramsPerPiece": 7.0
+  },
+  {
+    "id": "milk-chocolate-bar",
+    "name": "milk chocolate bar",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "chocolate bar",
+      "candy bar",
+      "hershey bar",
+      "cadbury",
+      "chocolate candy bar"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        365
+      ]
+    },
+    "facets": [
+      {
+        "key": "variant",
+        "options": [
+          "milk",
+          "dark",
+          "white"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "whole"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "smooth",
+          "crunchy"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "variant",
+        "value": "milk"
+      }
+    ],
+    "gramsPerCup": 170.0,
+    "allergens": [
+      "dairy",
+      "soy"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "dark-chocolate-bar",
+        "ratio": "1:1",
+        "notes": "Same bar, darker."
+      },
+      {
+        "substituteItemID": "white-chocolate-bar",
+        "ratio": "1:1",
+        "notes": "Same bar, white."
+      },
+      {
+        "substituteItemID": "filled-chocolate-bar",
+        "ratio": "1:1",
+        "notes": "Filled bar alternative."
+      }
+    ],
+    "isUserDefined": false,
+    "gramsPerPiece": 43.0
+  },
+  {
+    "id": "dark-chocolate-bar",
+    "name": "dark chocolate bar",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "bittersweet chocolate bar",
+      "semisweet chocolate bar"
+    ],
+    "parentIds": [
+      "milk-chocolate-bar"
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        730
+      ]
+    },
+    "facets": [
+      {
+        "key": "variant",
+        "options": [
+          "milk",
+          "dark",
+          "white"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "whole"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "smooth",
+          "crunchy"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "variant",
+        "value": "dark"
+      }
+    ],
+    "gramsPerCup": 170.0,
+    "allergens": [
+      "soy"
+    ],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "milk-chocolate-bar",
+        "ratio": "1:1",
+        "notes": "Same bar, milk."
+      },
+      {
+        "substituteItemID": "chocolate-truffle",
+        "ratio": "1:1",
+        "notes": "Both rich chocolate treats."
+      },
+      {
+        "substituteItemID": "white-chocolate-bar",
+        "ratio": "1:1",
+        "notes": "Same bar, white."
+      }
+    ],
+    "isUserDefined": false,
+    "gramsPerPiece": 43.0
+  },
+  {
+    "id": "white-chocolate-bar",
+    "name": "white chocolate bar",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "white chocolate candy"
+    ],
+    "parentIds": [
+      "milk-chocolate-bar"
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        365
+      ]
+    },
+    "facets": [
+      {
+        "key": "variant",
+        "options": [
+          "milk",
+          "dark",
+          "white"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "whole"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "smooth",
+          "crunchy"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "variant",
+        "value": "white"
+      }
+    ],
+    "gramsPerCup": 170.0,
+    "allergens": [
+      "dairy",
+      "soy"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "milk-chocolate-bar",
+        "ratio": "1:1",
+        "notes": "Same bar, milk."
+      },
+      {
+        "substituteItemID": "dark-chocolate-bar",
+        "ratio": "1:1",
+        "notes": "Same bar, dark."
+      },
+      {
+        "substituteItemID": "filled-chocolate-bar",
+        "ratio": "1:1",
+        "notes": "Filled bar alternative."
+      }
+    ],
+    "isUserDefined": false,
+    "gramsPerPiece": 43.0
+  },
+  {
+    "id": "filled-chocolate-bar",
+    "name": "filled chocolate bar",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "caramel chocolate bar",
+      "nougat bar",
+      "snickers",
+      "twix",
+      "kit kat",
+      "mars bar",
+      "milky way",
+      "wafer chocolate bar"
+    ],
+    "parentIds": [
+      "milk-chocolate-bar"
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        120,
+        365
+      ]
+    },
+    "facets": [
+      {
+        "key": "variant",
+        "options": [
+          "caramel",
+          "nougat",
+          "wafer"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "chewy",
+          "crunchy"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 180.0,
+    "allergens": [
+      "dairy",
+      "gluten",
+      "peanut",
+      "soy"
+    ],
+    "dietaryTags": [
+      "Vegetarian"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "milk-chocolate-bar",
+        "ratio": "1:1",
+        "notes": "Plain chocolate bar."
+      },
+      {
+        "substituteItemID": "peanut-butter-cup",
+        "ratio": "1:1",
+        "notes": "Both filled chocolate candies."
+      },
+      {
+        "substituteItemID": "chocolate-truffle",
+        "ratio": "1:1",
+        "notes": "Both rich chocolate treats."
+      }
+    ],
+    "isUserDefined": false,
+    "gramsPerPiece": 50.0
+  },
+  {
+    "id": "chocolate-truffle",
+    "name": "chocolate truffle",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "chocolate truffles",
+      "filled chocolate",
+      "bonbon",
+      "praline chocolate"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        30,
+        180
+      ]
+    },
+    "facets": [
+      {
+        "key": "texture",
+        "options": [
+          "smooth",
+          "creamy"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "whole"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 200.0,
+    "allergens": [
+      "dairy",
+      "soy"
+    ],
+    "dietaryTags": [
+      "Vegetarian"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "milk-chocolate-bar",
+        "ratio": "1:1",
+        "notes": "Both chocolate confections."
+      },
+      {
+        "substituteItemID": "peanut-butter-cup",
+        "ratio": "1:1",
+        "notes": "Both filled chocolates."
+      },
+      {
+        "substituteItemID": "chocolate-coated-candy",
+        "ratio": "1:1",
+        "notes": "Both bite chocolates."
+      }
+    ],
+    "isUserDefined": false,
+    "gramsPerPiece": 12.0
+  },
+  {
+    "id": "gummy-candy",
+    "name": "gummy candy",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "gummies",
+      "gummy bears",
+      "gummy bear",
+      "gummy worms",
+      "haribo",
+      "fruit gummies",
+      "wine gums",
+      "jelly babies"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        365
+      ]
+    },
+    "facets": [
+      {
+        "key": "texture",
+        "options": [
+          "chewy"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "whole"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "texture",
+        "value": "chewy"
+      }
+    ],
+    "gramsPerCup": 180.0,
+    "allergens": [],
+    "dietaryTags": [
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "gum-drop",
+        "ratio": "1:1",
+        "notes": "Both chewy jelly candies."
+      },
+      {
+        "substituteItemID": "fruit-snack",
+        "ratio": "1:1",
+        "notes": "Both fruity gummies."
+      },
+      {
+        "substituteItemID": "hard-candy",
+        "ratio": "1:1",
+        "notes": "Same candy role."
+      }
+    ],
+    "isUserDefined": false,
+    "gramsPerPiece": 2.0
+  },
+  {
+    "id": "hard-candy",
+    "name": "hard candy",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "hard candies",
+      "boiled sweets",
+      "lollipop",
+      "lollipops",
+      "butterscotch candy",
+      "lemon drops",
+      "jolly rancher"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        365,
+        730
+      ]
+    },
+    "facets": [
+      {
+        "key": "texture",
+        "options": [
+          "hard"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "whole"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 200.0,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "mint-candy",
+        "ratio": "1:1",
+        "notes": "Both hard candies."
+      },
+      {
+        "substituteItemID": "gum-drop",
+        "ratio": "1:1",
+        "notes": "Same sweet role."
+      },
+      {
+        "substituteItemID": "caramel-candy",
+        "ratio": "1:1",
+        "notes": "Both wrapped candies."
+      }
+    ],
+    "isUserDefined": false,
+    "gramsPerPiece": 5.0
+  },
+  {
+    "id": "gum-drop",
+    "name": "gum drop",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "gumdrops",
+      "jelly candy",
+      "jelly beans",
+      "jelly bean",
+      "fruit jellies",
+      "spice drops"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        365
+      ]
+    },
+    "facets": [
+      {
+        "key": "texture",
+        "options": [
+          "chewy"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "whole"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "texture",
+        "value": "chewy"
+      }
+    ],
+    "gramsPerCup": 190.0,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "gummy-candy",
+        "ratio": "1:1",
+        "notes": "Both chewy jelly candies."
+      },
+      {
+        "substituteItemID": "hard-candy",
+        "ratio": "1:1",
+        "notes": "Same candy role."
+      },
+      {
+        "substituteItemID": "fruit-snack",
+        "ratio": "1:1",
+        "notes": "Both jelly fruit candies."
+      }
+    ],
+    "isUserDefined": false,
+    "gramsPerPiece": 3.0
+  },
+  {
+    "id": "caramel-candy",
+    "name": "caramel candy",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "toffee",
+      "soft caramel",
+      "werther's"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        120,
+        365
+      ]
+    },
+    "facets": [
+      {
+        "key": "texture",
+        "options": [
+          "chewy",
+          "soft"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "whole"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "texture",
+        "value": "chewy"
+      }
+    ],
+    "gramsPerCup": 200.0,
+    "allergens": [
+      "dairy"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Gluten-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "hard-candy",
+        "ratio": "1:1",
+        "notes": "Both wrapped candies."
+      },
+      {
+        "substituteItemID": "chocolate-truffle",
+        "ratio": "1:1",
+        "notes": "Both soft confections."
+      },
+      {
+        "substituteItemID": "turkish-delight",
+        "ratio": "1:1",
+        "notes": "Both chewy sweets."
+      }
+    ],
+    "isUserDefined": false,
+    "gramsPerPiece": 8.0
+  },
+  {
+    "id": "marshmallow",
+    "name": "marshmallow",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "mallow",
+      "marshmallows"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        30,
+        180
+      ],
+      "Refrigerated": [
+        60,
+        180
+      ]
+    },
+    "facets": [
+      {
+        "key": "texture",
+        "options": [
+          "soft",
+          "fluffy"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "whole",
+          "mini"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "gramsPerCup": 50.0,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "gummy-candy",
+        "ratio": "1:1",
+        "notes": "Both soft chewy candies."
+      },
+      {
+        "substituteItemID": "turkish-delight",
+        "ratio": "1:1",
+        "notes": "Both soft gel sweets."
+      },
+      {
+        "substituteItemID": "hard-candy",
+        "ratio": "1:1",
+        "notes": "Same candy role."
+      }
+    ],
+    "isUserDefined": false,
+    "gramsPerPiece": 7.0
+  },
+  {
+    "id": "licorice",
+    "name": "licorice",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "liquorice",
+      "red licorice",
+      "black licorice",
+      "twizzlers",
+      "licorice candy",
+      "licorice twist"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        120,
+        365
+      ]
+    },
+    "facets": [
+      {
+        "key": "variant",
+        "options": [
+          "red",
+          "black"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "chewy"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 150.0,
+    "allergens": [
+      "gluten"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "gummy-candy",
+        "ratio": "1:1",
+        "notes": "Both chewy candies."
+      },
+      {
+        "substituteItemID": "gum-drop",
+        "ratio": "1:1",
+        "notes": "Same sweet role."
+      },
+      {
+        "substituteItemID": "caramel-candy",
+        "ratio": "1:1",
+        "notes": "Both chewy candies."
+      }
+    ],
+    "isUserDefined": false,
+    "gramsPerPiece": 9.0
+  },
+  {
+    "id": "chocolate-coated-candy",
+    "name": "chocolate coated candy",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "m&ms",
+      "chocolate candies",
+      "smarties",
+      "chocolate coated peanuts",
+      "peanut m&ms",
+      "candy coated chocolate"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        365
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "whole"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "crunchy",
+          "smooth"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 200.0,
+    "allergens": [
+      "dairy",
+      "peanut",
+      "soy"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Gluten-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "peanut-butter-cup",
+        "ratio": "1:1",
+        "notes": "Both chocolate candies."
+      },
+      {
+        "substituteItemID": "chocolate-truffle",
+        "ratio": "1:1",
+        "notes": "Both bite chocolates."
+      },
+      {
+        "substituteItemID": "chocolate-covered-nut",
+        "ratio": "1:1",
+        "notes": "Both chocolate-coated bites."
+      }
+    ],
+    "isUserDefined": false,
+    "gramsPerPiece": 1.0
+  },
+  {
+    "id": "peanut-butter-cup",
+    "name": "peanut butter cup",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "peanut butter cups",
+      "reeses",
+      "reese's",
+      "chocolate peanut butter cup"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        120,
+        365
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "whole"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "smooth"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 190.0,
+    "allergens": [
+      "dairy",
+      "peanut",
+      "soy"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Gluten-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "chocolate-coated-candy",
+        "ratio": "1:1",
+        "notes": "Both chocolate candies."
+      },
+      {
+        "substituteItemID": "filled-chocolate-bar",
+        "ratio": "1:1",
+        "notes": "Both filled chocolates."
+      },
+      {
+        "substituteItemID": "chocolate-truffle",
+        "ratio": "1:1",
+        "notes": "Both rich chocolates."
+      }
+    ],
+    "isUserDefined": false,
+    "gramsPerPiece": 17.0
+  },
+  {
+    "id": "mint-candy",
+    "name": "mint candy",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "mints",
+      "peppermint candy",
+      "after dinner mint",
+      "altoids",
+      "breath mint",
+      "polo mint"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        365,
+        730
+      ]
+    },
+    "facets": [
+      {
+        "key": "texture",
+        "options": [
+          "hard"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "whole"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 200.0,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "hard-candy",
+        "ratio": "1:1",
+        "notes": "Both hard candies."
+      },
+      {
+        "substituteItemID": "chewing-gum",
+        "ratio": "1:1",
+        "notes": "Both breath-fresheners."
+      },
+      {
+        "substituteItemID": "gum-drop",
+        "ratio": "1:1",
+        "notes": "Same sweet role."
+      }
+    ],
+    "isUserDefined": false,
+    "gramsPerPiece": 1.0
+  },
+  {
+    "id": "chewing-gum",
+    "name": "chewing gum",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "gum",
+      "bubble gum",
+      "stick gum",
+      "chewing gums",
+      "sugarfree gum"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        365,
+        730
+      ]
+    },
+    "facets": [
+      {
+        "key": "texture",
+        "options": [
+          "chewy"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "stick"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 140.0,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "mint-candy",
+        "ratio": "1:1",
+        "notes": "Both breath-fresheners."
+      },
+      {
+        "substituteItemID": "hard-candy",
+        "ratio": "1:1",
+        "notes": "Similar long-lasting sweet."
+      },
+      {
+        "substituteItemID": "gummy-candy",
+        "ratio": "1:1",
+        "notes": "Both chewy treats."
+      }
+    ],
+    "isUserDefined": false,
+    "gramsPerPiece": 3.0
+  },
+  {
+    "id": "fruit-snack",
+    "name": "fruit snack",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "fruit snacks",
+      "fruit gummy snack",
+      "welch's fruit snacks"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        120,
+        365
+      ]
+    },
+    "facets": [
+      {
+        "key": "texture",
+        "options": [
+          "chewy"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "whole"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "texture",
+        "value": "chewy"
+      }
+    ],
+    "gramsPerCup": 180.0,
+    "allergens": [],
+    "dietaryTags": [
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "gummy-candy",
+        "ratio": "1:1",
+        "notes": "Both fruity gummies."
+      },
+      {
+        "substituteItemID": "fruit-leather",
+        "ratio": "1:1",
+        "notes": "Both fruit-based snacks."
+      },
+      {
+        "substituteItemID": "dried-fruit",
+        "ratio": "1:1",
+        "notes": "Whole-fruit alternative."
+      }
+    ],
+    "isUserDefined": false,
+    "gramsPerPiece": 1.0
+  },
+  {
+    "id": "fruit-leather",
+    "name": "fruit leather",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "fruit leathers",
+      "fruit roll",
+      "dried fruit roll",
+      "fruit strip"
+    ],
+    "parentIds": [
+      "fruit-snack"
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        120,
+        270
+      ]
+    },
+    "facets": [
+      {
+        "key": "texture",
+        "options": [
+          "chewy"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "whole"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "texture",
+        "value": "chewy"
+      }
+    ],
+    "gramsPerCup": 120.0,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "fruit-snack",
+        "ratio": "1:1",
+        "notes": "Both fruit candies."
+      },
+      {
+        "substituteItemID": "dried-mango",
+        "ratio": "1:1",
+        "notes": "Both chewy dried fruit."
+      },
+      {
+        "substituteItemID": "dried-fruit",
+        "ratio": "1:1",
+        "notes": "Whole dried-fruit version."
+      }
+    ],
+    "isUserDefined": false,
+    "gramsPerPiece": 13.0
+  },
+  {
+    "id": "dried-fruit",
+    "name": "dried fruit",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "dried fruits",
+      "mixed dried fruit",
+      "dried fruit mix"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        365
+      ]
+    },
+    "facets": [
+      {
+        "key": "preservation",
+        "options": [
+          "dried"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "chewy"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "preservation",
+        "value": "dried"
+      }
+    ],
+    "gramsPerCup": 150.0,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "trail-mix",
+        "ratio": "1:1",
+        "notes": "Dried fruit in a mix."
+      },
+      {
+        "substituteItemID": "raisin",
+        "ratio": "1:1",
+        "notes": "Common dried fruit."
+      },
+      {
+        "substituteItemID": "fruit-leather",
+        "ratio": "1:1",
+        "notes": "Processed fruit snack."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "dried-apricot",
+    "name": "dried apricot",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "dried apricots",
+      "apricot dried"
+    ],
+    "parentIds": [
+      "dried-fruit"
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        365
+      ]
+    },
+    "facets": [
+      {
+        "key": "preservation",
+        "options": [
+          "dried"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "chewy"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "preservation",
+        "value": "dried"
+      }
+    ],
+    "gramsPerCup": 130.0,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "apricot",
+        "ratio": "1:1",
+        "notes": "Fresh form of same fruit."
+      },
+      {
+        "substituteItemID": "dried-fig",
+        "ratio": "1:1",
+        "notes": "Both chewy dried fruit."
+      },
+      {
+        "substituteItemID": "prune",
+        "ratio": "1:1",
+        "notes": "Both soft dried fruit."
+      }
+    ],
+    "isUserDefined": false,
+    "gramsPerPiece": 8.0
+  },
+  {
+    "id": "dried-mango",
+    "name": "dried mango",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "dried mangoes",
+      "mango dried",
+      "dried mango strips"
+    ],
+    "parentIds": [
+      "dried-fruit"
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        365
+      ]
+    },
+    "facets": [
+      {
+        "key": "preservation",
+        "options": [
+          "dried"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "chewy"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "preservation",
+        "value": "dried"
+      }
+    ],
+    "gramsPerCup": 130.0,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "mango",
+        "ratio": "1:1",
+        "notes": "Fresh form of same fruit."
+      },
+      {
+        "substituteItemID": "dried-pineapple",
+        "ratio": "1:1",
+        "notes": "Both tropical dried fruit."
+      },
+      {
+        "substituteItemID": "fruit-leather",
+        "ratio": "1:1",
+        "notes": "Both chewy fruit snacks."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "dried-cranberry",
+    "name": "dried cranberry",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "dried cranberries",
+      "craisins",
+      "sweetened dried cranberry"
+    ],
+    "parentIds": [
+      "dried-fruit"
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        365
+      ]
+    },
+    "facets": [
+      {
+        "key": "preservation",
+        "options": [
+          "dried"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "chewy"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "preservation",
+        "value": "dried"
+      }
+    ],
+    "gramsPerCup": 140.0,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "raisin",
+        "ratio": "1:1",
+        "notes": "Both small dried fruit."
+      },
+      {
+        "substituteItemID": "cranberry",
+        "ratio": "1:1",
+        "notes": "Fresh form of same fruit."
+      },
+      {
+        "substituteItemID": "dried-apricot",
+        "ratio": "1:1",
+        "notes": "Both dried fruit."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "dried-banana-chip",
+    "name": "dried banana chip",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "banana chips",
+      "dried banana",
+      "banana chip snack"
+    ],
+    "parentIds": [
+      "dried-fruit"
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        120,
+        365
+      ]
+    },
+    "facets": [
+      {
+        "key": "preservation",
+        "options": [
+          "dried"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "crunchy",
+          "crisp"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "preservation",
+        "value": "dried"
+      }
+    ],
+    "gramsPerCup": 100.0,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "plantain-chip",
+        "ratio": "1:1",
+        "notes": "Both crisp banana/plantain chips."
+      },
+      {
+        "substituteItemID": "dried-apple",
+        "ratio": "1:1",
+        "notes": "Both crisp dried fruit."
+      },
+      {
+        "substituteItemID": "dried-mango",
+        "ratio": "1:1",
+        "notes": "Both tropical dried fruit."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "dried-apple",
+    "name": "dried apple",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "dried apples",
+      "apple chips",
+      "dried apple rings"
+    ],
+    "parentIds": [
+      "dried-fruit"
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        120,
+        365
+      ]
+    },
+    "facets": [
+      {
+        "key": "preservation",
+        "options": [
+          "dried"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "chewy",
+          "crisp"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "preservation",
+        "value": "dried"
+      }
+    ],
+    "gramsPerCup": 60.0,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "dried-banana-chip",
+        "ratio": "1:1",
+        "notes": "Both crisp dried fruit."
+      },
+      {
+        "substituteItemID": "dried-apricot",
+        "ratio": "1:1",
+        "notes": "Both dried fruit."
+      },
+      {
+        "substituteItemID": "dried-pineapple",
+        "ratio": "1:1",
+        "notes": "Both dried fruit."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "dried-pineapple",
+    "name": "dried pineapple",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "dried pineapples",
+      "pineapple dried",
+      "dried pineapple chunks"
+    ],
+    "parentIds": [
+      "dried-fruit"
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        365
+      ]
+    },
+    "facets": [
+      {
+        "key": "preservation",
+        "options": [
+          "dried"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "chewy"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "preservation",
+        "value": "dried"
+      }
+    ],
+    "gramsPerCup": 130.0,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "dried-mango",
+        "ratio": "1:1",
+        "notes": "Both tropical dried fruit."
+      },
+      {
+        "substituteItemID": "dried-apricot",
+        "ratio": "1:1",
+        "notes": "Both dried fruit."
+      },
+      {
+        "substituteItemID": "dried-fruit",
+        "ratio": "1:1",
+        "notes": "General dried fruit."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "prune",
+    "name": "prune",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "prunes",
+      "dried prune",
+      "dried prunes"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        30,
+        365
+      ]
+    },
+    "facets": [
+      {
+        "key": "preservation",
+        "options": [
+          "dried"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "chewy",
+          "soft"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "preservation",
+        "value": "dried"
+      }
+    ],
+    "gramsPerCup": 170.0,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "dried-date",
+        "ratio": "1:1",
+        "notes": "Both soft dark dried fruit."
+      },
+      {
+        "substituteItemID": "dried-fig",
+        "ratio": "1:1",
+        "notes": "Both soft dried fruit."
+      },
+      {
+        "substituteItemID": "dried-apricot",
+        "ratio": "1:1",
+        "notes": "Both dried stone fruit."
+      }
+    ],
+    "isUserDefined": false,
+    "gramsPerPiece": 9.5
+  },
+  {
+    "id": "dried-fig",
+    "name": "dried fig",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "dried figs",
+      "fig dried",
+      "turkish dried fig"
+    ],
+    "parentIds": [
+      "dried-fruit"
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        365
+      ]
+    },
+    "facets": [
+      {
+        "key": "preservation",
+        "options": [
+          "dried"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "chewy"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "preservation",
+        "value": "dried"
+      }
+    ],
+    "gramsPerCup": 150.0,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "fig",
+        "ratio": "1:1",
+        "notes": "Fresh form of same fruit."
+      },
+      {
+        "substituteItemID": "dried-date",
+        "ratio": "1:1",
+        "notes": "Both soft sweet dried fruit."
+      },
+      {
+        "substituteItemID": "prune",
+        "ratio": "1:1",
+        "notes": "Both soft dried fruit."
+      }
+    ],
+    "isUserDefined": false,
+    "gramsPerPiece": 8.0
+  },
+  {
+    "id": "dried-date",
+    "name": "dried date",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "dried dates",
+      "pitted dates",
+      "medjool date snack"
+    ],
+    "parentIds": [
+      "dried-fruit"
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        365
+      ]
+    },
+    "facets": [
+      {
+        "key": "preservation",
+        "options": [
+          "dried"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "chewy",
+          "soft"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "preservation",
+        "value": "dried"
+      }
+    ],
+    "gramsPerCup": 150.0,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "date",
+        "ratio": "1:1",
+        "notes": "Same fruit."
+      },
+      {
+        "substituteItemID": "dried-fig",
+        "ratio": "1:1",
+        "notes": "Both soft sweet dried fruit."
+      },
+      {
+        "substituteItemID": "prune",
+        "ratio": "1:1",
+        "notes": "Both soft dried fruit."
+      }
+    ],
+    "isUserDefined": false,
+    "gramsPerPiece": 7.0
+  },
+  {
+    "id": "trail-mix",
+    "name": "trail mix",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "trailmix",
+      "studentenfutter",
+      "gorp",
+      "snack mix nuts and fruit",
+      "hiking mix"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        90,
+        270
+      ]
+    },
+    "facets": [
+      {
+        "key": "texture",
+        "options": [
+          "crunchy",
+          "chewy"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "whole"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 150.0,
+    "allergens": [
+      "peanut",
+      "tree-nut"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Dairy-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "snack-mix",
+        "ratio": "1:1",
+        "notes": "Both snack mixes."
+      },
+      {
+        "substituteItemID": "fruit-and-nut-bar",
+        "ratio": "1:1",
+        "notes": "Same fruit-and-nut profile."
+      },
+      {
+        "substituteItemID": "roasted-nut-snack-pack",
+        "ratio": "1:1",
+        "notes": "Both nut-forward snacks."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "snack-mix",
+    "name": "snack mix",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "party mix",
+      "chex mix",
+      "savory snack mix",
+      "bombay mix",
+      "cracker snack mix"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        60,
+        240
+      ]
+    },
+    "facets": [
+      {
+        "key": "texture",
+        "options": [
+          "crunchy"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "whole"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 90.0,
+    "allergens": [
+      "gluten",
+      "soy"
+    ],
+    "dietaryTags": [
+      "Vegetarian"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "trail-mix",
+        "ratio": "1:1",
+        "notes": "Both snack mixes."
+      },
+      {
+        "substituteItemID": "namkeen",
+        "ratio": "1:1",
+        "notes": "Both savory snack mixes."
+      },
+      {
+        "substituteItemID": "cracker",
+        "ratio": "1:1",
+        "notes": "Cracker-based snack."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "beef-jerky",
+    "name": "beef jerky",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "jerky",
+      "beef jerky snack",
+      "jerky pack",
+      "peppered beef jerky",
+      "teriyaki jerky"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        365
+      ]
+    },
+    "facets": [
+      {
+        "key": "preservation",
+        "options": [
+          "dried",
+          "cured"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "smoked",
+          "seasoned"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "chewy"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "preservation",
+        "value": "dried"
+      }
+    ],
+    "gramsPerCup": 130.0,
+    "allergens": [
+      "soy"
+    ],
+    "dietaryTags": [
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "jerky",
+        "ratio": "1:1",
+        "notes": "Generic dried-meat jerky."
+      },
+      {
+        "substituteItemID": "meat-snack-stick",
+        "ratio": "1:1",
+        "notes": "Both cured meat snacks."
+      },
+      {
+        "substituteItemID": "biltong",
+        "ratio": "1:1",
+        "notes": "Air-dried beef alternative."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "turkey-jerky",
+    "name": "turkey jerky",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "turkey jerky snack",
+      "poultry jerky"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        365
+      ]
+    },
+    "facets": [
+      {
+        "key": "preservation",
+        "options": [
+          "dried",
+          "cured"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "smoked",
+          "seasoned"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "chewy"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "preservation",
+        "value": "dried"
+      }
+    ],
+    "gramsPerCup": 130.0,
+    "allergens": [
+      "soy"
+    ],
+    "dietaryTags": [
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "meat-snack-stick",
+        "ratio": "1:1",
+        "notes": "Both lean cured meat snacks."
+      },
+      {
+        "substituteItemID": "biltong",
+        "ratio": "1:1",
+        "notes": "Both dried meat snacks."
+      },
+      {
+        "substituteItemID": "jerky",
+        "ratio": "1:1",
+        "notes": "Generic jerky."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "meat-snack-stick",
+    "name": "meat snack stick",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "beef stick",
+      "snack stick",
+      "slim jim",
+      "pepperoni stick",
+      "landjaeger"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        120,
+        365
+      ]
+    },
+    "facets": [
+      {
+        "key": "preservation",
+        "options": [
+          "cured",
+          "dried"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "smoked",
+          "seasoned"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "chewy"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "preservation",
+        "value": "cured"
+      }
+    ],
+    "gramsPerCup": 110.0,
+    "allergens": [
+      "soy"
+    ],
+    "dietaryTags": [
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "jerky",
+        "ratio": "1:1",
+        "notes": "Both cured meat snacks."
+      },
+      {
+        "substituteItemID": "biltong",
+        "ratio": "1:1",
+        "notes": "Both dried meat snacks."
+      },
+      {
+        "substituteItemID": "pork-rind",
+        "ratio": "1:1",
+        "notes": "Both savory meat snacks."
+      }
+    ],
+    "isUserDefined": false,
+    "gramsPerPiece": 28.0
+  },
+  {
+    "id": "biltong",
+    "name": "biltong",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "droewors",
+      "dried meat (s. african)"
+    ],
+    "parentIds": [
+      "cured-meat"
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        30,
+        180
+      ],
+      "Refrigerated": [
+        60,
+        180
+      ]
+    },
+    "facets": [
+      {
+        "key": "preservation",
+        "options": [
+          "dried",
+          "cured"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "chewy"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "preservation",
+        "value": "dried"
+      }
+    ],
+    "gramsPerCup": 130.0,
+    "allergens": [],
+    "dietaryTags": [
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "jerky",
+        "ratio": "1:1",
+        "notes": "Both dried meat snacks."
+      },
+      {
+        "substituteItemID": "meat-snack-stick",
+        "ratio": "1:1",
+        "notes": "Both cured meat snacks."
+      },
+      {
+        "substituteItemID": "cured-meat",
+        "ratio": "1:1",
+        "notes": "Same cured-meat family."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "pork-rind",
+    "name": "pork rind",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "chicharron",
+      "pork cracklings",
+      "rinds"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        30,
+        90
+      ],
+      "Refrigerated": [
+        30,
+        90
+      ]
+    },
+    "facets": [
+      {
+        "key": "processing",
+        "options": [
+          "fried"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "crunchy",
+          "crispy"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "texture",
+        "value": "crunchy"
+      }
+    ],
+    "gramsPerCup": 30.0,
+    "allergens": [],
+    "dietaryTags": [
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "potato-chip",
+        "ratio": "1:1",
+        "notes": "Same crunchy snack role."
+      },
+      {
+        "substituteItemID": "meat-snack-stick",
+        "ratio": "1:1",
+        "notes": "Both savory meat snacks."
+      },
+      {
+        "substituteItemID": "corn-nut-snack",
+        "ratio": "1:1",
+        "notes": "Both crunchy savory snacks."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "roasted-seaweed-snack",
+    "name": "roasted seaweed snack",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "seaweed snack",
+      "roasted seaweed",
+      "seasoned seaweed",
+      "nori snack",
+      "gim",
+      "kim",
+      "seaweed sheets snack"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        120,
+        365
+      ]
+    },
+    "facets": [
+      {
+        "key": "processing",
+        "options": [
+          "roasted",
+          "seasoned"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "crisp",
+          "crunchy"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "processing",
+        "value": "roasted"
+      }
+    ],
+    "gramsPerCup": 15.0,
+    "allergens": [
+      "sesame"
+    ],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "seaweed-chip",
+        "ratio": "1:1",
+        "notes": "Same seaweed snack, thicker."
+      },
+      {
+        "substituteItemID": "nori",
+        "ratio": "1:1",
+        "notes": "Plain seaweed sheets."
+      },
+      {
+        "substituteItemID": "seaweed",
+        "ratio": "1:1",
+        "notes": "General seaweed."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "seaweed-chip",
+    "name": "seaweed chip",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "seaweed chips",
+      "seaweed crisps",
+      "seaweed thins"
+    ],
+    "parentIds": [
+      "roasted-seaweed-snack"
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        90,
+        270
+      ]
+    },
+    "facets": [
+      {
+        "key": "processing",
+        "options": [
+          "roasted",
+          "seasoned"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "crunchy",
+          "crispy"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "texture",
+        "value": "crunchy"
+      }
+    ],
+    "gramsPerCup": 25.0,
+    "allergens": [
+      "sesame"
+    ],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "roasted-seaweed-snack",
+        "ratio": "1:1",
+        "notes": "Same seaweed snack, thinner."
+      },
+      {
+        "substituteItemID": "vegetable-chip",
+        "ratio": "1:1",
+        "notes": "Both veg-based crisps."
+      },
+      {
+        "substituteItemID": "rice-cracker",
+        "ratio": "1:1",
+        "notes": "Both light savory snacks."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "roasted-chickpea-snack",
+    "name": "roasted chickpea snack",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "roasted chickpeas",
+      "crunchy chickpeas",
+      "chickpea snack",
+      "biena"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        90,
+        270
+      ]
+    },
+    "facets": [
+      {
+        "key": "processing",
+        "options": [
+          "roasted",
+          "seasoned"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "crunchy"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "processing",
+        "value": "roasted"
+      }
+    ],
+    "gramsPerCup": 160.0,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "roasted-edamame",
+        "ratio": "1:1",
+        "notes": "Both roasted legume snacks."
+      },
+      {
+        "substituteItemID": "chickpea",
+        "ratio": "1:1",
+        "notes": "Same legume, uncooked."
+      },
+      {
+        "substituteItemID": "corn-nut-snack",
+        "ratio": "1:1",
+        "notes": "Both crunchy roasted snacks."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "roasted-edamame",
+    "name": "roasted edamame",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "dry roasted edamame",
+      "edamame snack",
+      "crunchy edamame"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        90,
+        270
+      ]
+    },
+    "facets": [
+      {
+        "key": "processing",
+        "options": [
+          "roasted",
+          "seasoned"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "crunchy"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "processing",
+        "value": "roasted"
+      }
+    ],
+    "gramsPerCup": 130.0,
+    "allergens": [
+      "soy"
+    ],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "roasted-chickpea-snack",
+        "ratio": "1:1",
+        "notes": "Both roasted legume snacks."
+      },
+      {
+        "substituteItemID": "wasabi-pea",
+        "ratio": "1:1",
+        "notes": "Both crunchy pea snacks."
+      },
+      {
+        "substituteItemID": "corn-nut-snack",
+        "ratio": "1:1",
+        "notes": "Both crunchy snacks."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "wasabi-pea",
+    "name": "wasabi pea",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "wasabi peas",
+      "wasabi coated peas",
+      "crunchy wasabi peas"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        90,
+        270
+      ]
+    },
+    "facets": [
+      {
+        "key": "processing",
+        "options": [
+          "roasted",
+          "seasoned"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "crunchy"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "processing",
+        "value": "seasoned"
+      }
+    ],
+    "gramsPerCup": 150.0,
+    "allergens": [
+      "gluten"
+    ],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "roasted-edamame",
+        "ratio": "1:1",
+        "notes": "Both crunchy pea snacks."
+      },
+      {
+        "substituteItemID": "roasted-chickpea-snack",
+        "ratio": "1:1",
+        "notes": "Both roasted legume snacks."
+      },
+      {
+        "substituteItemID": "corn-nut-snack",
+        "ratio": "1:1",
+        "notes": "Both crunchy savory snacks."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "corn-nut-snack",
+    "name": "corn nut snack",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "quicos",
+      "roasted corn snack"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        90,
+        270
+      ]
+    },
+    "facets": [
+      {
+        "key": "processing",
+        "options": [
+          "roasted",
+          "fried"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "crunchy"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "texture",
+        "value": "crunchy"
+      }
+    ],
+    "gramsPerCup": 150.0,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "roasted-chickpea-snack",
+        "ratio": "1:1",
+        "notes": "Both crunchy roasted snacks."
+      },
+      {
+        "substituteItemID": "corn-chip",
+        "ratio": "1:1",
+        "notes": "Both corn snacks."
+      },
+      {
+        "substituteItemID": "roasted-edamame",
+        "ratio": "1:1",
+        "notes": "Both crunchy snacks."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "roasted-nut-snack-pack",
+    "name": "roasted nut snack pack",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "roasted peanuts pack",
+      "honey roasted peanuts",
+      "salted nuts snack",
+      "mixed nuts snack pack",
+      "planters"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        90,
+        270
+      ]
+    },
+    "facets": [
+      {
+        "key": "processing",
+        "options": [
+          "roasted",
+          "seasoned"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "crunchy"
+        ]
+      },
+      {
+        "key": "grade",
+        "options": [
+          "salted",
+          "unsalted"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "processing",
+        "value": "roasted"
+      }
+    ],
+    "gramsPerCup": 140.0,
+    "allergens": [
+      "peanut",
+      "tree-nut"
+    ],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "trail-mix",
+        "ratio": "1:1",
+        "notes": "Both nut-forward snacks."
+      },
+      {
+        "substituteItemID": "candied-nut",
+        "ratio": "1:1",
+        "notes": "Sweet-glazed nut version."
+      },
+      {
+        "substituteItemID": "peanut",
+        "ratio": "1:1",
+        "notes": "Plain nut form."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "snack-cake",
+    "name": "snack cake",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "snack cakes",
+      "twinkie",
+      "twinkies",
+      "swiss roll",
+      "snowball cake",
+      "cupcake snack"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        14,
+        60
+      ]
+    },
+    "facets": [
+      {
+        "key": "texture",
+        "options": [
+          "soft"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "whole"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 90.0,
+    "allergens": [
+      "dairy",
+      "egg",
+      "gluten"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "toaster-pastry",
+        "ratio": "1:1",
+        "notes": "Both sweet packaged pastries."
+      },
+      {
+        "substituteItemID": "chocolate-chip-cookie-snack",
+        "ratio": "1:1",
+        "notes": "Both sweet baked snacks."
+      },
+      {
+        "substituteItemID": "fig-bar",
+        "ratio": "1:1",
+        "notes": "Both soft snack cakes/bars."
+      }
+    ],
+    "isUserDefined": false,
+    "gramsPerPiece": 40.0
+  },
+  {
+    "id": "toaster-pastry",
+    "name": "toaster pastry",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "toaster pastries",
+      "pop tart",
+      "pop-tarts",
+      "breakfast pastry",
+      "frosted pastry"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        90,
+        270
+      ]
+    },
+    "facets": [
+      {
+        "key": "texture",
+        "options": [
+          "flaky",
+          "soft"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "whole"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 100.0,
+    "allergens": [
+      "gluten"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "snack-cake",
+        "ratio": "1:1",
+        "notes": "Both sweet packaged pastries."
+      },
+      {
+        "substituteItemID": "fig-bar",
+        "ratio": "1:1",
+        "notes": "Both filled sweet snacks."
+      },
+      {
+        "substituteItemID": "cereal-bar",
+        "ratio": "1:1",
+        "notes": "Both breakfast snacks."
+      }
+    ],
+    "isUserDefined": false,
+    "gramsPerPiece": 52.0
+  },
+  {
+    "id": "cracker-sandwich-snack-pack",
+    "name": "cracker sandwich snack pack",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "cheese and crackers snack",
+      "lunchables crackers",
+      "cracker dip snack pack",
+      "ritz bits"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        60,
+        180
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "whole"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "crunchy"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 100.0,
+    "allergens": [
+      "dairy",
+      "gluten"
+    ],
+    "dietaryTags": [
+      "Vegetarian"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "peanut-butter-cracker",
+        "ratio": "1:1",
+        "notes": "Both filled cracker snacks."
+      },
+      {
+        "substituteItemID": "cracker",
+        "ratio": "1:1",
+        "notes": "The cracker component."
+      },
+      {
+        "substituteItemID": "cheese-crisp-snack",
+        "ratio": "1:1",
+        "notes": "Both cheese-and-cracker snacks."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "breadstick-snack",
+    "name": "breadstick snack",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "breadsticks",
+      "snack breadsticks",
+      "sesame breadstick"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        60,
+        240
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "stick",
+          "whole"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "crunchy",
+          "crisp"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "stick"
+      }
+    ],
+    "gramsPerCup": 80.0,
+    "allergens": [
+      "gluten"
+    ],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "pretzel-crisp",
+        "ratio": "1:1",
+        "notes": "Both crunchy wheat snacks."
+      },
+      {
+        "substituteItemID": "melba-toast",
+        "ratio": "1:1",
+        "notes": "Both dry crisp bread snacks."
+      },
+      {
+        "substituteItemID": "cracker",
+        "ratio": "1:1",
+        "notes": "Same crunchy base."
+      }
+    ],
+    "isUserDefined": false,
+    "gramsPerPiece": 5.0
+  },
+  {
+    "id": "melba-toast",
+    "name": "melba toast",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "melba toasts",
+      "rusk",
+      "zwieback",
+      "dry toast",
+      "toast crackers"
+    ],
+    "parentIds": [
+      "bread"
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        60,
+        180
+      ],
+      "Refrigerated": [
+        60,
+        180
+      ],
+      "Frozen": [
+        180,
+        365
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "whole",
+          "crumb"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "crisp",
+          "crunchy"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "gramsPerCup": 60.0,
+    "allergens": [
+      "gluten"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "crispbread",
+        "ratio": "1:1",
+        "notes": "Both dry crisp breads."
+      },
+      {
+        "substituteItemID": "water-cracker",
+        "ratio": "1:1",
+        "notes": "Both plain crisp crackers."
+      },
+      {
+        "substituteItemID": "bagel-chip",
+        "ratio": "1:1",
+        "notes": "Both toasted bread snacks."
+      }
+    ],
+    "isUserDefined": false,
+    "gramsPerPiece": 5.0
+  },
+  {
+    "id": "papadum",
+    "name": "papadum",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "papad",
+      "poppadom",
+      "poppadum",
+      "lentil cracker",
+      "appalam"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        120,
+        365
+      ]
+    },
+    "facets": [
+      {
+        "key": "processing",
+        "options": [
+          "fried",
+          "roasted"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "crisp",
+          "crunchy"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "texture",
+        "value": "crisp"
+      }
+    ],
+    "gramsPerCup": 40.0,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "lentil-chip",
+        "ratio": "1:1",
+        "notes": "Both lentil-based crisps."
+      },
+      {
+        "substituteItemID": "rice-cracker",
+        "ratio": "1:1",
+        "notes": "Both thin crisp crackers."
+      },
+      {
+        "substituteItemID": "tapioca-chip",
+        "ratio": "1:1",
+        "notes": "Both starch crisps."
+      }
+    ],
+    "isUserDefined": false,
+    "gramsPerPiece": 13.0
+  },
+  {
+    "id": "puffed-rice-snack",
+    "name": "puffed rice snack",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "puffed rice",
+      "rice puffs",
+      "murukku",
+      "bhel",
+      "indian rice snack"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        60,
+        180
+      ]
+    },
+    "facets": [
+      {
+        "key": "texture",
+        "options": [
+          "crunchy",
+          "crisp"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "whole"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 20.0,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "rice-snack-ball",
+        "ratio": "1:1",
+        "notes": "Both puffed-rice snacks."
+      },
+      {
+        "substituteItemID": "namkeen",
+        "ratio": "1:1",
+        "notes": "Both Indian savory snacks."
+      },
+      {
+        "substituteItemID": "rice-cake",
+        "ratio": "1:1",
+        "notes": "Both puffed-rice snacks."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "namkeen",
+    "name": "namkeen",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "namkeen mix",
+      "indian savory snack",
+      "sev",
+      "mixture snack",
+      "chivda"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        60,
+        180
+      ]
+    },
+    "facets": [
+      {
+        "key": "processing",
+        "options": [
+          "fried"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "crunchy"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "texture",
+        "value": "crunchy"
+      }
+    ],
+    "gramsPerCup": 90.0,
+    "allergens": [
+      "gluten"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "snack-mix",
+        "ratio": "1:1",
+        "notes": "Both savory snack mixes."
+      },
+      {
+        "substituteItemID": "puffed-rice-snack",
+        "ratio": "1:1",
+        "notes": "Both Indian snacks."
+      },
+      {
+        "substituteItemID": "papadum",
+        "ratio": "1:1",
+        "notes": "Both Indian savory snacks."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "rice-snack-ball",
+    "name": "rice snack ball",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "puffed rice ball",
+      "rice crisp ball",
+      "rice snack balls"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        60,
+        180
+      ]
+    },
+    "facets": [
+      {
+        "key": "texture",
+        "options": [
+          "crunchy",
+          "crisp"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "whole"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 25.0,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "puffed-rice-snack",
+        "ratio": "1:1",
+        "notes": "Both puffed-rice snacks."
+      },
+      {
+        "substituteItemID": "rice-cake",
+        "ratio": "1:1",
+        "notes": "Both puffed-rice snacks."
+      },
+      {
+        "substituteItemID": "popcorn-snack",
+        "ratio": "1:1",
+        "notes": "Both light puffed snacks."
+      }
+    ],
+    "isUserDefined": false,
+    "gramsPerPiece": 3.0
+  },
+  {
+    "id": "potato-stick",
+    "name": "potato stick",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "potato sticks",
+      "shoestring potato",
+      "shoestring potatoes",
+      "potato straws"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        60,
+        240
+      ]
+    },
+    "facets": [
+      {
+        "key": "processing",
+        "options": [
+          "fried"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "crunchy",
+          "crispy"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "stick"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "stick"
+      }
+    ],
+    "gramsPerCup": 40.0,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "potato-chip",
+        "ratio": "1:1",
+        "notes": "Same fried potato snack."
+      },
+      {
+        "substituteItemID": "onion-ring-snack",
+        "ratio": "1:1",
+        "notes": "Both fried savory snacks."
+      },
+      {
+        "substituteItemID": "corn-nut-snack",
+        "ratio": "1:1",
+        "notes": "Both crunchy savory snacks."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "onion-ring-snack",
+    "name": "onion ring snack",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "onion rings snack",
+      "funyuns",
+      "onion flavored snack"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        60,
+        180
+      ]
+    },
+    "facets": [
+      {
+        "key": "texture",
+        "options": [
+          "crunchy",
+          "crispy"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "whole"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 25.0,
+    "allergens": [
+      "gluten"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "cheese-puff",
+        "ratio": "1:1",
+        "notes": "Both puffed savory snacks."
+      },
+      {
+        "substituteItemID": "potato-stick",
+        "ratio": "1:1",
+        "notes": "Both fried savory snacks."
+      },
+      {
+        "substituteItemID": "corn-chip",
+        "ratio": "1:1",
+        "notes": "Both corn-based snacks."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "tortilla-rolled-chip",
+    "name": "tortilla rolled chip",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "rolled tortilla chip",
+      "takis",
+      "rolled taco chip",
+      "flautas chips"
+    ],
+    "parentIds": [
+      "tortilla-chip"
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        60,
+        180
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "whole",
+          "crumb"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "crunchy",
+          "crispy"
+        ]
+      },
+      {
+        "key": "grade",
+        "options": [
+          "salted",
+          "unsalted",
+          "spicy"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      },
+      {
+        "key": "texture",
+        "value": "crispy"
+      }
+    ],
+    "gramsPerCup": 35.0,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegetarian",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "tortilla-chip",
+        "ratio": "1:1",
+        "notes": "Same corn tortilla chip."
+      },
+      {
+        "substituteItemID": "corn-chip",
+        "ratio": "1:1",
+        "notes": "Both corn snacks."
+      },
+      {
+        "substituteItemID": "potato-chip",
+        "ratio": "1:1",
+        "notes": "Same crunchy snack."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "lentil-chip",
+    "name": "lentil chip",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "lentil chips",
+      "lentil crisps",
+      "bean chip",
+      "bean crisps"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        60,
+        240
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "whole",
+          "crumb"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "crunchy",
+          "crispy"
+        ]
+      },
+      {
+        "key": "grade",
+        "options": [
+          "salted",
+          "unsalted",
+          "spicy"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      },
+      {
+        "key": "texture",
+        "value": "crispy"
+      }
+    ],
+    "gramsPerCup": 28.0,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "vegetable-chip",
+        "ratio": "1:1",
+        "notes": "Both veg/legume crisps."
+      },
+      {
+        "substituteItemID": "tapioca-chip",
+        "ratio": "1:1",
+        "notes": "Both alt-flour chips."
+      },
+      {
+        "substituteItemID": "papadum",
+        "ratio": "1:1",
+        "notes": "Both lentil-based crisps."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "tapioca-chip",
+    "name": "tapioca chip",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "tapioca chips",
+      "cassava chips",
+      "yuca chips",
+      "kerupuk singkong"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        60,
+        180
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "whole",
+          "crumb"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "crunchy",
+          "crispy"
+        ]
+      },
+      {
+        "key": "grade",
+        "options": [
+          "salted",
+          "unsalted",
+          "spicy"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      },
+      {
+        "key": "texture",
+        "value": "crispy"
+      }
+    ],
+    "gramsPerCup": 30.0,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "plantain-chip",
+        "ratio": "1:1",
+        "notes": "Both starchy fried chips."
+      },
+      {
+        "substituteItemID": "potato-chip",
+        "ratio": "1:1",
+        "notes": "Same crunchy snack."
+      },
+      {
+        "substituteItemID": "lentil-chip",
+        "ratio": "1:1",
+        "notes": "Both alt-flour chips."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "chocolate-covered-pretzel",
+    "name": "chocolate covered pretzel",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "chocolate pretzels",
+      "chocolate dipped pretzel",
+      "yogurt covered pretzel"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        60,
+        180
+      ]
+    },
+    "facets": [
+      {
+        "key": "texture",
+        "options": [
+          "crunchy",
+          "smooth"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "whole"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 130.0,
+    "allergens": [
+      "dairy",
+      "gluten",
+      "soy"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "chocolate-covered-nut",
+        "ratio": "1:1",
+        "notes": "Both chocolate-coated snacks."
+      },
+      {
+        "substituteItemID": "pretzel-crisp",
+        "ratio": "1:1",
+        "notes": "The pretzel base."
+      },
+      {
+        "substituteItemID": "yogurt-covered-raisin",
+        "ratio": "1:1",
+        "notes": "Both coated treats."
+      }
+    ],
+    "isUserDefined": false,
+    "gramsPerPiece": 8.0
+  },
+  {
+    "id": "yogurt-covered-raisin",
+    "name": "yogurt covered raisin",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "yogurt raisins",
+      "yogurt covered raisins",
+      "yogurt coated fruit"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        90,
+        270
+      ]
+    },
+    "facets": [
+      {
+        "key": "texture",
+        "options": [
+          "smooth",
+          "chewy"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "whole"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 170.0,
+    "allergens": [
+      "dairy"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Gluten-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "chocolate-covered-nut",
+        "ratio": "1:1",
+        "notes": "Both coated bites."
+      },
+      {
+        "substituteItemID": "raisin",
+        "ratio": "1:1",
+        "notes": "Uncoated form."
+      },
+      {
+        "substituteItemID": "chocolate-coated-candy",
+        "ratio": "1:1",
+        "notes": "Both coated candies."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "chocolate-covered-nut",
+    "name": "chocolate covered nut",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "chocolate covered almonds",
+      "chocolate covered peanuts",
+      "chocolate almonds",
+      "chocolate covered raisins"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        90,
+        270
+      ]
+    },
+    "facets": [
+      {
+        "key": "texture",
+        "options": [
+          "crunchy",
+          "smooth"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "whole"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 170.0,
+    "allergens": [
+      "dairy",
+      "peanut",
+      "soy",
+      "tree-nut"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Gluten-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "chocolate-coated-candy",
+        "ratio": "1:1",
+        "notes": "Both chocolate-coated bites."
+      },
+      {
+        "substituteItemID": "candied-nut",
+        "ratio": "1:1",
+        "notes": "Sweet-glazed nut version."
+      },
+      {
+        "substituteItemID": "chocolate-covered-pretzel",
+        "ratio": "1:1",
+        "notes": "Both chocolate-coated snacks."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "candied-nut",
+    "name": "candied nut",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "candied nuts",
+      "honey roasted nuts",
+      "praline nuts",
+      "glazed nuts",
+      "candied pecans"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        90,
+        270
+      ]
+    },
+    "facets": [
+      {
+        "key": "processing",
+        "options": [
+          "roasted"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "crunchy"
+        ]
+      },
+      {
+        "key": "variant",
+        "options": [
+          "honey",
+          "praline"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 150.0,
+    "allergens": [
+      "peanut",
+      "tree-nut"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "roasted-nut-snack-pack",
+        "ratio": "1:1",
+        "notes": "Plain roasted nut version."
+      },
+      {
+        "substituteItemID": "chocolate-covered-nut",
+        "ratio": "1:1",
+        "notes": "Both coated nut snacks."
+      },
+      {
+        "substituteItemID": "caramel-corn",
+        "ratio": "1:1",
+        "notes": "Both sweet-glazed snacks."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "energy-ball",
+    "name": "energy ball",
+    "category": "Snacks",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "energy balls",
+      "protein ball",
+      "bliss ball",
+      "date ball",
+      "snack bite"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        7,
+        30
+      ]
+    },
+    "facets": [
+      {
+        "key": "texture",
+        "options": [
+          "chewy",
+          "soft"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "whole"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 200.0,
+    "allergens": [
+      "tree-nut"
+    ],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "fruit-and-nut-bar",
+        "ratio": "1:1",
+        "notes": "Same date/nut profile."
+      },
+      {
+        "substituteItemID": "protein-bar",
+        "ratio": "1:1",
+        "notes": "Both protein snacks."
+      },
+      {
+        "substituteItemID": "dried-date",
+        "ratio": "1:1",
+        "notes": "Date-forward alternative."
+      }
+    ],
+    "isUserDefined": false,
+    "gramsPerPiece": 17.0
+  },
+  {
+    "id": "veggie-straw",
+    "name": "veggie straw",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "veggie straws",
+      "vegetable straw",
+      "potato vegetable straw"
+    ],
+    "parentIds": [
+      "vegetable-chip"
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        60,
+        180
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "whole",
+          "crumb"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "crunchy",
+          "crispy"
+        ]
+      },
+      {
+        "key": "grade",
+        "options": [
+          "salted",
+          "unsalted",
+          "spicy"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      },
+      {
+        "key": "texture",
+        "value": "crispy"
+      }
+    ],
+    "gramsPerCup": 25.0,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "vegetable-chip",
+        "ratio": "1:1",
+        "notes": "Same veggie-snack family."
+      },
+      {
+        "substituteItemID": "potato-stick",
+        "ratio": "1:1",
+        "notes": "Both light fried snacks."
+      },
+      {
+        "substituteItemID": "cheese-puff",
+        "ratio": "1:1",
+        "notes": "Both airy snacks."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "cheese-straw",
+    "name": "cheese straw",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "cheese straws",
+      "cheese twist",
+      "cheese sticks snack"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        60,
+        180
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "stick",
+          "whole"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "crunchy",
+          "crisp"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "stick"
+      }
+    ],
+    "gramsPerCup": 60.0,
+    "allergens": [
+      "dairy",
+      "gluten"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "cheese-crisp-snack",
+        "ratio": "1:1",
+        "notes": "Both cheese snacks."
+      },
+      {
+        "substituteItemID": "cracker",
+        "ratio": "1:1",
+        "notes": "Savory cracker base."
+      },
+      {
+        "substituteItemID": "breadstick-snack",
+        "ratio": "1:1",
+        "notes": "Both baked stick snacks."
+      }
+    ],
+    "isUserDefined": false,
+    "gramsPerPiece": 6.0
+  },
+  {
+    "id": "popped-chip",
+    "name": "popped chip",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "popped chips",
+      "popchips",
+      "popped potato chip"
+    ],
+    "parentIds": [
+      "potato-chip"
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        60,
+        180
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "whole",
+          "crumb"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "crunchy",
+          "crispy"
+        ]
+      },
+      {
+        "key": "grade",
+        "options": [
+          "salted",
+          "unsalted",
+          "spicy"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      },
+      {
+        "key": "texture",
+        "value": "crispy"
+      }
+    ],
+    "gramsPerCup": 25.0,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegetarian",
+      "Gluten-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "potato-chip",
+        "ratio": "1:1",
+        "notes": "Same potato base, popped."
+      },
+      {
+        "substituteItemID": "vegetable-chip",
+        "ratio": "1:1",
+        "notes": "Both light chips."
+      },
+      {
+        "substituteItemID": "rice-cake",
+        "ratio": "1:1",
+        "notes": "Both light popped snacks."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "multigrain-chip",
+    "name": "multigrain chip",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "multigrain chips",
+      "sun chips",
+      "harvest chip",
+      "grain chips"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        60,
+        180
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "whole",
+          "crumb"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "crunchy",
+          "crispy"
+        ]
+      },
+      {
+        "key": "grade",
+        "options": [
+          "salted",
+          "unsalted",
+          "spicy"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      },
+      {
+        "key": "texture",
+        "value": "crispy"
+      }
+    ],
+    "gramsPerCup": 30.0,
+    "allergens": [
+      "gluten"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "tortilla-chip",
+        "ratio": "1:1",
+        "notes": "Both grain chips."
+      },
+      {
+        "substituteItemID": "vegetable-chip",
+        "ratio": "1:1",
+        "notes": "Both wholesome chips."
+      },
+      {
+        "substituteItemID": "lentil-chip",
+        "ratio": "1:1",
+        "notes": "Both alt-grain chips."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "fruit-cup-snack",
+    "name": "fruit cup snack",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "fruit cup",
+      "fruit snack cup",
+      "diced fruit cup",
+      "mandarin orange cup",
+      "applesauce cup"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        540
+      ]
+    },
+    "facets": [
+      {
+        "key": "preservation",
+        "options": [
+          "canned"
+        ]
+      },
+      {
+        "key": "medium",
+        "options": [
+          "in juice",
+          "in syrup"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "soft"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "preservation",
+        "value": "canned"
+      }
+    ],
+    "gramsPerCup": 200.0,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "pudding-cup",
+        "ratio": "1:1",
+        "notes": "Both single-serve cup snacks."
+      },
+      {
+        "substituteItemID": "dried-fruit",
+        "ratio": "1:1",
+        "notes": "Dried fruit alternative."
+      },
+      {
+        "substituteItemID": "fruit-snack",
+        "ratio": "1:1",
+        "notes": "Both fruit snacks."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "pudding-cup",
+    "name": "pudding cup",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "pudding cups",
+      "snack pudding",
+      "chocolate pudding cup",
+      "shelf stable pudding"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        120,
+        365
+      ]
+    },
+    "facets": [
+      {
+        "key": "texture",
+        "options": [
+          "smooth",
+          "creamy"
+        ]
+      },
+      {
+        "key": "variant",
+        "options": [
+          "chocolate",
+          "vanilla"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 250.0,
+    "allergens": [
+      "dairy"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Gluten-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "fruit-cup-snack",
+        "ratio": "1:1",
+        "notes": "Both single-serve cup snacks."
+      },
+      {
+        "substituteItemID": "marshmallow",
+        "ratio": "1:1",
+        "notes": "Both soft sweet snacks."
+      },
+      {
+        "substituteItemID": "chocolate-truffle",
+        "ratio": "1:1",
+        "notes": "Both chocolate treats."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "cracker-bread",
+    "name": "cracker bread",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "lavash cracker",
+      "cracker flatbread",
+      "armenian cracker bread"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        60,
+        240
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "whole",
+          "crumb"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "crisp",
+          "crunchy"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "gramsPerCup": 50.0,
+    "allergens": [
+      "gluten"
+    ],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "crispbread",
+        "ratio": "1:1",
+        "notes": "Both crisp flatbreads."
+      },
+      {
+        "substituteItemID": "water-cracker",
+        "ratio": "1:1",
+        "notes": "Both plain crackers."
+      },
+      {
+        "substituteItemID": "melba-toast",
+        "ratio": "1:1",
+        "notes": "Both dry crisp breads."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "cheese-crisp-snack",
+    "name": "cheese crisp snack",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "cheese crisps",
+      "parmesan crisp",
+      "whisps",
+      "baked cheese crisp"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        60,
+        180
+      ]
+    },
+    "facets": [
+      {
+        "key": "processing",
+        "options": [
+          "baked"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "crunchy",
+          "crisp"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "texture",
+        "value": "crunchy"
+      }
+    ],
+    "gramsPerCup": 50.0,
+    "allergens": [
+      "dairy"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Gluten-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "cheese-straw",
+        "ratio": "1:1",
+        "notes": "Both savory cheese snacks."
+      },
+      {
+        "substituteItemID": "cracker",
+        "ratio": "1:1",
+        "notes": "Savory cracker base."
+      },
+      {
+        "substituteItemID": "cheese-puff",
+        "ratio": "1:1",
+        "notes": "Both cheese snacks."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "halva",
+    "name": "halva",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "halvah",
+      "halwa",
+      "sesame halva",
+      "tahini halva"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        120,
+        365
+      ]
+    },
+    "facets": [
+      {
+        "key": "texture",
+        "options": [
+          "crumbly",
+          "dense"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "whole"
+        ]
+      },
+      {
+        "key": "variant",
+        "options": [
+          "sesame",
+          "tahini"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 200.0,
+    "allergens": [
+      "sesame"
+    ],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "turkish-delight",
+        "ratio": "1:1",
+        "notes": "Both Middle Eastern sweets."
+      },
+      {
+        "substituteItemID": "tahini",
+        "ratio": "1:1",
+        "notes": "Sesame-paste base."
+      },
+      {
+        "substituteItemID": "caramel-candy",
+        "ratio": "1:1",
+        "notes": "Both dense sweets."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "turkish-delight",
+    "name": "turkish delight",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "lokum",
+      "rahat lokum",
+      "turkish delights"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        120,
+        365
+      ]
+    },
+    "facets": [
+      {
+        "key": "texture",
+        "options": [
+          "chewy",
+          "soft"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "whole"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 200.0,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "gum-drop",
+        "ratio": "1:1",
+        "notes": "Both gel-set sweets."
+      },
+      {
+        "substituteItemID": "halva",
+        "ratio": "1:1",
+        "notes": "Both Middle Eastern sweets."
+      },
+      {
+        "substituteItemID": "marshmallow",
+        "ratio": "1:1",
+        "notes": "Both soft gel sweets."
+      }
+    ],
+    "isUserDefined": false,
+    "gramsPerPiece": 9.0
+  },
+  {
+    "id": "mochi-snack",
+    "name": "mochi snack",
+    "category": "Snacks",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "mochi",
+      "daifuku",
+      "rice cake mochi",
+      "mochi treat"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        3,
+        14
+      ]
+    },
+    "facets": [
+      {
+        "key": "texture",
+        "options": [
+          "chewy",
+          "soft"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "whole"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 200.0,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "marshmallow",
+        "ratio": "1:1",
+        "notes": "Both soft chewy treats."
+      },
+      {
+        "substituteItemID": "gummy-candy",
+        "ratio": "1:1",
+        "notes": "Both chewy treats."
+      },
+      {
+        "substituteItemID": "turkish-delight",
+        "ratio": "1:1",
+        "notes": "Both chewy gel sweets."
+      }
+    ],
+    "isUserDefined": false,
+    "gramsPerPiece": 40.0
+  },
+  {
+    "id": "pocky",
+    "name": "pocky",
+    "category": "Snacks",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "pocky sticks",
+      "biscuit stick",
+      "chocolate biscuit stick",
+      "mikado"
+    ],
+    "parentIds": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        90,
+        270
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "stick"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "crunchy",
+          "crisp"
+        ]
+      },
+      {
+        "key": "variant",
+        "options": [
+          "chocolate",
+          "strawberry"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "stick"
+      }
+    ],
+    "gramsPerCup": 80.0,
+    "allergens": [
+      "dairy",
+      "gluten",
+      "soy"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "wafer-roll",
+        "ratio": "1:1",
+        "notes": "Both crunchy biscuit treats."
+      },
+      {
+        "substituteItemID": "breadstick-snack",
+        "ratio": "1:1",
+        "notes": "Both stick snacks."
+      },
+      {
+        "substituteItemID": "biscotti",
+        "ratio": "1:1",
+        "notes": "Both crisp biscuit snacks."
+      }
+    ],
+    "isUserDefined": false,
+    "gramsPerPiece": 4.0
+  }
+]

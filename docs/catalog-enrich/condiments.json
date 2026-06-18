@@ -1,0 +1,4995 @@
+[
+  {
+    "id": "sambal-oelek",
+    "name": "sambal oelek",
+    "category": "Condiments & Sauces",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "sambal ulek",
+      "ground fresh chili paste",
+      "indonesian chili paste"
+    ],
+    "parentIds": [
+      "chili-paste"
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        180,
+        365
+      ]
+    },
+    "facets": [
+      {
+        "key": "variant",
+        "options": [
+          "fresh",
+          "ground"
+        ]
+      },
+      {
+        "key": "grade",
+        "options": [
+          "extra hot",
+          "hot",
+          "mild",
+          "regular"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "chunky",
+          "coarse",
+          "smooth",
+          "thick",
+          "thin"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 255,
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "chili-paste",
+        "ratio": "1:1",
+        "notes": null
+      },
+      {
+        "substituteItemID": "sriracha",
+        "ratio": "1:1",
+        "notes": null
+      },
+      {
+        "substituteItemID": "chili-garlic-sauce",
+        "ratio": "1:1",
+        "notes": null
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "sambal-badjak",
+    "name": "sambal badjak",
+    "category": "Condiments & Sauces",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "sambal bajak",
+      "sweet chili sambal"
+    ],
+    "parentIds": [
+      "chili-paste"
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        180,
+        365
+      ]
+    },
+    "facets": [
+      {
+        "key": "variant",
+        "options": [
+          "fried",
+          "sweet"
+        ]
+      },
+      {
+        "key": "grade",
+        "options": [
+          "extra hot",
+          "hot",
+          "mild",
+          "regular"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "chunky",
+          "coarse",
+          "smooth",
+          "thick",
+          "thin"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 255,
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "sambal-oelek",
+        "ratio": "1:1",
+        "notes": null
+      },
+      {
+        "substituteItemID": "chili-paste",
+        "ratio": "1:1",
+        "notes": null
+      },
+      {
+        "substituteItemID": "sriracha",
+        "ratio": "1:1",
+        "notes": null
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "ssamjang",
+    "name": "ssamjang",
+    "category": "Condiments & Sauces",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "korean dipping sauce",
+      "ssam jang",
+      "korean bbq dipping paste"
+    ],
+    "parentIds": [
+      "bean-paste"
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        180,
+        365
+      ]
+    },
+    "facets": [
+      {
+        "key": "variant",
+        "options": [
+          "doenjang based",
+          "gochujang based"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "chunky",
+          "smooth",
+          "thick"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 255,
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "doenjang",
+        "ratio": "1:1",
+        "notes": null
+      },
+      {
+        "substituteItemID": "gochujang",
+        "ratio": "1:1",
+        "notes": null
+      },
+      {
+        "substituteItemID": "doubanjiang",
+        "ratio": "1:1",
+        "notes": null
+      }
+    ],
+    "isUserDefined": false,
+    "allergens": [
+      "soy"
+    ]
+  },
+  {
+    "id": "doenjang",
+    "name": "doenjang",
+    "category": "Condiments & Sauces",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "korean soybean paste",
+      "dwenjang",
+      "fermented soybean paste"
+    ],
+    "parentIds": [
+      "bean-paste"
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        180,
+        730
+      ]
+    },
+    "facets": [
+      {
+        "key": "variant",
+        "options": [
+          "aged"
+        ]
+      },
+      {
+        "key": "grade",
+        "options": [
+          "reduced sodium",
+          "regular"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "chunky",
+          "coarse",
+          "smooth"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 255,
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "miso",
+        "ratio": "1:1",
+        "notes": null
+      },
+      {
+        "substituteItemID": "doubanjiang",
+        "ratio": "1:1",
+        "notes": null
+      },
+      {
+        "substituteItemID": "black-bean",
+        "ratio": "1:1",
+        "notes": null
+      }
+    ],
+    "isUserDefined": false,
+    "allergens": [
+      "soy"
+    ]
+  },
+  {
+    "id": "xo-sauce",
+    "name": "xo sauce",
+    "category": "Condiments & Sauces",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "x.o. sauce",
+      "luxury seafood sauce"
+    ],
+    "parentIds": [
+      "sauce"
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        60,
+        180
+      ]
+    },
+    "facets": [
+      {
+        "key": "variant",
+        "options": [
+          "extra spicy",
+          "scallop"
+        ]
+      },
+      {
+        "key": "grade",
+        "options": [
+          "extra hot",
+          "hot",
+          "mild",
+          "regular"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "chunky",
+          "coarse",
+          "thick"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 240,
+    "dietaryTags": [
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "oyster-sauce",
+        "ratio": "1:1",
+        "notes": null
+      },
+      {
+        "substituteItemID": "hoisin-sauce",
+        "ratio": "1:1",
+        "notes": null
+      }
+    ],
+    "isUserDefined": false,
+    "allergens": [
+      "fish",
+      "shellfish",
+      "soy"
+    ]
+  },
+  {
+    "id": "chili-crisp",
+    "name": "chili crisp",
+    "category": "Condiments & Sauces",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "chili crunch",
+      "chilli crisp",
+      "crispy chili oil",
+      "chili oil with crunch",
+      "lao gan ma"
+    ],
+    "parentIds": [
+      "chili-oil"
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        180,
+        365
+      ]
+    },
+    "facets": [
+      {
+        "key": "variant",
+        "options": [
+          "extra spicy",
+          "garlic",
+          "mushroom"
+        ]
+      },
+      {
+        "key": "grade",
+        "options": [
+          "extra hot",
+          "hot",
+          "mild",
+          "regular"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "chunky",
+          "coarse",
+          "crunchy"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 210,
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "chili-oil",
+        "ratio": "1:1",
+        "notes": null
+      },
+      {
+        "substituteItemID": "chili-garlic-sauce",
+        "ratio": "1:1",
+        "notes": null
+      }
+    ],
+    "isUserDefined": false,
+    "allergens": [
+      "soy"
+    ]
+  },
+  {
+    "id": "harissa",
+    "name": "harissa",
+    "category": "Condiments & Sauces",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "harissa paste",
+      "rose harissa",
+      "tunisian chili paste",
+      "hrous"
+    ],
+    "parentIds": [
+      "chili-paste"
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        60,
+        180
+      ]
+    },
+    "facets": [
+      {
+        "key": "variant",
+        "options": [
+          "rose",
+          "smoked"
+        ]
+      },
+      {
+        "key": "grade",
+        "options": [
+          "extra hot",
+          "hot",
+          "mild",
+          "regular"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "chunky",
+          "coarse",
+          "smooth",
+          "thick",
+          "thin"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 255,
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "chili-paste",
+        "ratio": "1:1",
+        "notes": null
+      },
+      {
+        "substituteItemID": "sriracha",
+        "ratio": "1:1",
+        "notes": null
+      },
+      {
+        "substituteItemID": "gochujang",
+        "ratio": "1:1",
+        "notes": null
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "zhug",
+    "name": "zhug",
+    "category": "Condiments & Sauces",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "zhoug",
+      "schug",
+      "skhug",
+      "yemenite hot sauce",
+      "green zhug"
+    ],
+    "parentIds": [
+      "hot-sauce"
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        14,
+        60
+      ]
+    },
+    "facets": [
+      {
+        "key": "color",
+        "options": [
+          "green",
+          "red"
+        ]
+      },
+      {
+        "key": "grade",
+        "options": [
+          "extra hot",
+          "hot",
+          "mild",
+          "regular"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "chunky",
+          "coarse",
+          "smooth"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 240,
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "hot-sauce",
+        "ratio": "1:1",
+        "notes": null
+      },
+      {
+        "substituteItemID": "chimichurri",
+        "ratio": "1:1",
+        "notes": null
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "chermoula",
+    "name": "chermoula",
+    "category": "Condiments & Sauces",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "charmoula",
+      "moroccan marinade"
+    ],
+    "parentIds": [
+      "sauce"
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        7,
+        21
+      ]
+    },
+    "facets": [
+      {
+        "key": "variant",
+        "options": [
+          "green",
+          "red"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "chunky",
+          "coarse",
+          "smooth"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 240,
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "pesto",
+        "ratio": "1:1",
+        "notes": null
+      },
+      {
+        "substituteItemID": "salsa-verde",
+        "ratio": "1:1",
+        "notes": null
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "ajvar",
+    "name": "ajvar",
+    "category": "Condiments & Sauces",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "aivar",
+      "red pepper relish",
+      "balkan pepper spread"
+    ],
+    "parentIds": [
+      "sauce"
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        60,
+        180
+      ]
+    },
+    "facets": [
+      {
+        "key": "variant",
+        "options": [
+          "hot",
+          "mild"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "chunky",
+          "smooth"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 245,
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "romesco",
+        "ratio": "1:1",
+        "notes": null
+      },
+      {
+        "substituteItemID": "muhammara",
+        "ratio": "1:1",
+        "notes": null
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "muhammara",
+    "name": "muhammara",
+    "category": "Condiments & Sauces",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "mhammara",
+      "red pepper walnut dip"
+    ],
+    "parentIds": [
+      "sauce"
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        7,
+        14
+      ]
+    },
+    "facets": [
+      {
+        "key": "variant",
+        "options": [
+          "hot",
+          "mild"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "chunky",
+          "coarse",
+          "smooth"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 245,
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "romesco",
+        "ratio": "1:1",
+        "notes": null
+      },
+      {
+        "substituteItemID": "ajvar",
+        "ratio": "1:1",
+        "notes": null
+      }
+    ],
+    "isUserDefined": false,
+    "allergens": [
+      "tree nut"
+    ]
+  },
+  {
+    "id": "romesco",
+    "name": "romesco",
+    "category": "Condiments & Sauces",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "romesco sauce",
+      "salsa romesco"
+    ],
+    "parentIds": [
+      "sauce"
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        7,
+        14
+      ]
+    },
+    "facets": [
+      {
+        "key": "variant",
+        "options": [
+          "almond",
+          "hazelnut"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "chunky",
+          "coarse",
+          "smooth"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 245,
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "muhammara",
+        "ratio": "1:1",
+        "notes": null
+      },
+      {
+        "substituteItemID": "ajvar",
+        "ratio": "1:1",
+        "notes": null
+      },
+      {
+        "substituteItemID": "pesto",
+        "ratio": "1:1",
+        "notes": null
+      }
+    ],
+    "isUserDefined": false,
+    "allergens": [
+      "tree nut"
+    ]
+  },
+  {
+    "id": "aioli",
+    "name": "aioli",
+    "category": "Condiments & Sauces",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "aïoli",
+      "garlic aioli",
+      "allioli",
+      "garlic mayonnaise"
+    ],
+    "parentIds": [
+      "mayonnaise"
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        7,
+        14
+      ]
+    },
+    "facets": [
+      {
+        "key": "variant",
+        "options": [
+          "roasted garlic",
+          "saffron"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "creamy",
+          "smooth",
+          "thick"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 220,
+    "dietaryTags": [
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "mayonnaise",
+        "ratio": "1:1",
+        "notes": null
+      },
+      {
+        "substituteItemID": "kewpie-mayonnaise",
+        "ratio": "1:1",
+        "notes": null
+      }
+    ],
+    "isUserDefined": false,
+    "allergens": [
+      "egg"
+    ]
+  },
+  {
+    "id": "mojo-sauce",
+    "name": "mojo sauce",
+    "category": "Condiments & Sauces",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "mojo",
+      "mojo criollo",
+      "mojo verde",
+      "cuban garlic citrus sauce"
+    ],
+    "parentIds": [
+      "sauce"
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        14,
+        30
+      ]
+    },
+    "facets": [
+      {
+        "key": "color",
+        "options": [
+          "green",
+          "red"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "smooth",
+          "thin"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 235,
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "chimichurri",
+        "ratio": "1:1",
+        "notes": null
+      },
+      {
+        "substituteItemID": "salsa-verde",
+        "ratio": "1:1",
+        "notes": null
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "salsa-verde",
+    "name": "salsa verde",
+    "category": "Condiments & Sauces",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "green salsa",
+      "salsa verde mexicana",
+      "tomatillo salsa"
+    ],
+    "parentIds": [
+      "salsa"
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        7,
+        14
+      ]
+    },
+    "facets": [
+      {
+        "key": "variant",
+        "options": [
+          "roasted"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "fresh",
+          "jarred"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "chunky",
+          "smooth"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 240,
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "tomatillo-sauce",
+        "ratio": "1:1",
+        "notes": null
+      },
+      {
+        "substituteItemID": "salsa",
+        "ratio": "1:1",
+        "notes": null
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "salsa-roja",
+    "name": "salsa roja",
+    "category": "Condiments & Sauces",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "red salsa",
+      "table salsa",
+      "salsa de chile rojo"
+    ],
+    "parentIds": [
+      "salsa"
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        7,
+        14
+      ]
+    },
+    "facets": [
+      {
+        "key": "variant",
+        "options": [
+          "roasted"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "fresh",
+          "jarred"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "chunky",
+          "smooth"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 240,
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "salsa",
+        "ratio": "1:1",
+        "notes": null
+      },
+      {
+        "substituteItemID": "tomatillo-sauce",
+        "ratio": "1:1",
+        "notes": null
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "salsa-macha",
+    "name": "salsa macha",
+    "category": "Condiments & Sauces",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "macha",
+      "mexican chili oil"
+    ],
+    "parentIds": [
+      "chili-oil"
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        90,
+        180
+      ]
+    },
+    "facets": [
+      {
+        "key": "variant",
+        "options": [
+          "nut",
+          "seed"
+        ]
+      },
+      {
+        "key": "grade",
+        "options": [
+          "extra hot",
+          "hot",
+          "mild",
+          "regular"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "chunky",
+          "coarse",
+          "crunchy"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 210,
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "chili-oil",
+        "ratio": "1:1",
+        "notes": null
+      },
+      {
+        "substituteItemID": "chili-crisp",
+        "ratio": "1:1",
+        "notes": null
+      }
+    ],
+    "isUserDefined": false,
+    "allergens": [
+      "sesame",
+      "tree nut"
+    ]
+  },
+  {
+    "id": "mole",
+    "name": "mole",
+    "category": "Condiments & Sauces",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "mole poblano",
+      "mole sauce",
+      "mole negro",
+      "mole paste"
+    ],
+    "parentIds": [
+      "sauce"
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        14,
+        60
+      ]
+    },
+    "facets": [
+      {
+        "key": "color",
+        "options": [
+          "black",
+          "red"
+        ]
+      },
+      {
+        "key": "variant",
+        "options": [
+          "poblano"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "smooth",
+          "thick"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 255,
+    "dietaryTags": [
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "enchilada-sauce",
+        "ratio": "1:1",
+        "notes": null
+      },
+      {
+        "substituteItemID": "salsa-roja",
+        "ratio": "1:1",
+        "notes": null
+      }
+    ],
+    "isUserDefined": false,
+    "allergens": [
+      "sesame",
+      "tree nut"
+    ]
+  },
+  {
+    "id": "tomatillo-sauce",
+    "name": "tomatillo sauce",
+    "category": "Condiments & Sauces",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "green enchilada sauce",
+      "salsa de tomatillo"
+    ],
+    "parentIds": [
+      "sauce"
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        10,
+        21
+      ]
+    },
+    "facets": [
+      {
+        "key": "variant",
+        "options": [
+          "roasted"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "chunky",
+          "smooth"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 240,
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "salsa-verde",
+        "ratio": "1:1",
+        "notes": null
+      },
+      {
+        "substituteItemID": "enchilada-sauce",
+        "ratio": "1:1",
+        "notes": null
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "queso-sauce",
+    "name": "queso sauce",
+    "category": "Condiments & Sauces",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "queso dip",
+      "queso",
+      "cheese sauce",
+      "nacho cheese sauce"
+    ],
+    "parentIds": [
+      "sauce"
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        7,
+        14
+      ]
+    },
+    "facets": [
+      {
+        "key": "variant",
+        "options": [
+          "spicy"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "creamy",
+          "smooth",
+          "thick"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 245,
+    "dietaryTags": [
+      "Vegetarian",
+      "Gluten-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "cheese-sauce",
+        "ratio": "1:1",
+        "notes": null
+      },
+      {
+        "substituteItemID": "alfredo-sauce",
+        "ratio": "1:1",
+        "notes": null
+      }
+    ],
+    "isUserDefined": false,
+    "allergens": [
+      "dairy"
+    ]
+  },
+  {
+    "id": "alfredo-sauce",
+    "name": "alfredo sauce",
+    "category": "Condiments & Sauces",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "alfredo",
+      "fettuccine alfredo sauce",
+      "white pasta sauce"
+    ],
+    "parentIds": [
+      "sauce"
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        7,
+        14
+      ]
+    },
+    "facets": [
+      {
+        "key": "variant",
+        "options": [
+          "garlic",
+          "parmesan"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "creamy",
+          "smooth",
+          "thick"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 245,
+    "dietaryTags": [
+      "Vegetarian",
+      "Gluten-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "cheese-sauce",
+        "ratio": "1:1",
+        "notes": null
+      },
+      {
+        "substituteItemID": "vodka-sauce",
+        "ratio": "1:1",
+        "notes": null
+      }
+    ],
+    "isUserDefined": false,
+    "allergens": [
+      "dairy"
+    ]
+  },
+  {
+    "id": "vodka-sauce",
+    "name": "vodka sauce",
+    "category": "Condiments & Sauces",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "penne alla vodka sauce",
+      "tomato cream sauce"
+    ],
+    "parentIds": [
+      "sauce"
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        7,
+        14
+      ]
+    },
+    "facets": [
+      {
+        "key": "variant",
+        "options": [
+          "spicy"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "creamy",
+          "smooth",
+          "thick"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 245,
+    "dietaryTags": [
+      "Vegetarian",
+      "Gluten-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "marinara",
+        "ratio": "1:1",
+        "notes": null
+      },
+      {
+        "substituteItemID": "arrabbiata-sauce",
+        "ratio": "1:1",
+        "notes": null
+      }
+    ],
+    "isUserDefined": false,
+    "allergens": [
+      "dairy"
+    ]
+  },
+  {
+    "id": "arrabbiata-sauce",
+    "name": "arrabbiata sauce",
+    "category": "Condiments & Sauces",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "arrabiata",
+      "spicy tomato sauce",
+      "sugo all'arrabbiata"
+    ],
+    "parentIds": [
+      "marinara"
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        7,
+        14
+      ]
+    },
+    "facets": [
+      {
+        "key": "grade",
+        "options": [
+          "extra hot",
+          "hot",
+          "mild",
+          "regular"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "chunky",
+          "smooth",
+          "thick"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 245,
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "marinara",
+        "ratio": "1:1",
+        "notes": null
+      },
+      {
+        "substituteItemID": "tomato-sauce",
+        "ratio": "1:1",
+        "notes": null
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "tomato-passata",
+    "name": "tomato passata",
+    "category": "Condiments & Sauces",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "passata",
+      "strained tomatoes",
+      "tomato puree sauce",
+      "sugo"
+    ],
+    "parentIds": [
+      "sauce"
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        5,
+        10
+      ]
+    },
+    "facets": [
+      {
+        "key": "variant",
+        "options": [
+          "sieved"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "smooth",
+          "thin"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 245,
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "tomato-sauce",
+        "ratio": "1:1",
+        "notes": null
+      },
+      {
+        "substituteItemID": "marinara",
+        "ratio": "1:1",
+        "notes": null
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "nuoc-cham",
+    "name": "nuoc cham",
+    "category": "Condiments & Sauces",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "nuoc mam cham",
+      "vietnamese dipping sauce",
+      "nuoc mam pha"
+    ],
+    "parentIds": [
+      "fish-sauce"
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        14,
+        30
+      ]
+    },
+    "facets": [
+      {
+        "key": "variant",
+        "options": [
+          "anchovy based",
+          "vietnamese"
+        ]
+      },
+      {
+        "key": "grade",
+        "options": [
+          "light",
+          "regular"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "smooth",
+          "thin"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 240,
+    "dietaryTags": [
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "fish-sauce",
+        "ratio": "1:1",
+        "notes": null
+      }
+    ],
+    "isUserDefined": false,
+    "allergens": [
+      "fish"
+    ]
+  },
+  {
+    "id": "kecap-manis",
+    "name": "kecap manis",
+    "category": "Condiments & Sauces",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "ketjap manis",
+      "indonesian sweet soy sauce",
+      "sweet soy sauce"
+    ],
+    "parentIds": [
+      "soy-sauce"
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        365,
+        730
+      ]
+    },
+    "facets": [
+      {
+        "key": "variant",
+        "options": [
+          "sweet"
+        ]
+      },
+      {
+        "key": "grade",
+        "options": [
+          "regular"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "smooth",
+          "thick"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 255,
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "soy-sauce",
+        "ratio": "1:1",
+        "notes": null
+      },
+      {
+        "substituteItemID": "hoisin-sauce",
+        "ratio": "1:1",
+        "notes": null
+      }
+    ],
+    "isUserDefined": false,
+    "allergens": [
+      "gluten",
+      "soy"
+    ]
+  },
+  {
+    "id": "tonkatsu-sauce",
+    "name": "tonkatsu sauce",
+    "category": "Condiments & Sauces",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "katsu sauce",
+      "japanese brown sauce",
+      "bulldog sauce"
+    ],
+    "parentIds": [
+      "brown-sauce"
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        180,
+        365
+      ]
+    },
+    "facets": [
+      {
+        "key": "variant",
+        "options": [
+          "fruity"
+        ]
+      },
+      {
+        "key": "grade",
+        "options": [
+          "regular"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "smooth",
+          "thick"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 255,
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "okonomiyaki-sauce",
+        "ratio": "1:1",
+        "notes": null
+      },
+      {
+        "substituteItemID": "brown-sauce",
+        "ratio": "1:1",
+        "notes": null
+      }
+    ],
+    "isUserDefined": false,
+    "allergens": [
+      "gluten",
+      "soy"
+    ]
+  },
+  {
+    "id": "okonomiyaki-sauce",
+    "name": "okonomiyaki sauce",
+    "category": "Condiments & Sauces",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "okonomi sauce",
+      "otafuku sauce"
+    ],
+    "parentIds": [
+      "brown-sauce"
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        180,
+        365
+      ]
+    },
+    "facets": [
+      {
+        "key": "variant",
+        "options": [
+          "sweet"
+        ]
+      },
+      {
+        "key": "grade",
+        "options": [
+          "regular"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "smooth",
+          "thick"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 255,
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "tonkatsu-sauce",
+        "ratio": "1:1",
+        "notes": null
+      },
+      {
+        "substituteItemID": "brown-sauce",
+        "ratio": "1:1",
+        "notes": null
+      }
+    ],
+    "isUserDefined": false,
+    "allergens": [
+      "gluten",
+      "soy"
+    ]
+  },
+  {
+    "id": "unagi-sauce",
+    "name": "unagi sauce",
+    "category": "Condiments & Sauces",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "eel sauce",
+      "nitsume",
+      "kabayaki sauce"
+    ],
+    "parentIds": [
+      "soy-sauce"
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        90,
+        180
+      ]
+    },
+    "facets": [
+      {
+        "key": "variant",
+        "options": [
+          "kabayaki"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "smooth",
+          "thick"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 255,
+    "dietaryTags": [
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "teriyaki-sauce",
+        "ratio": "1:1",
+        "notes": null
+      },
+      {
+        "substituteItemID": "soy-sauce",
+        "ratio": "1:1",
+        "notes": null
+      }
+    ],
+    "isUserDefined": false,
+    "allergens": [
+      "fish",
+      "gluten",
+      "soy"
+    ]
+  },
+  {
+    "id": "yuzu-kosho",
+    "name": "yuzu kosho",
+    "category": "Condiments & Sauces",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "yuzukosho",
+      "yuzu pepper paste"
+    ],
+    "parentIds": [
+      "chili-paste"
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        180,
+        365
+      ]
+    },
+    "facets": [
+      {
+        "key": "color",
+        "options": [
+          "green",
+          "red"
+        ]
+      },
+      {
+        "key": "grade",
+        "options": [
+          "extra hot",
+          "hot",
+          "mild",
+          "regular"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "chunky",
+          "coarse",
+          "smooth",
+          "thick",
+          "thin"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 255,
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "chili-paste",
+        "ratio": "1:1",
+        "notes": null
+      },
+      {
+        "substituteItemID": "sriracha",
+        "ratio": "1:1",
+        "notes": null
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "wasabi-paste",
+    "name": "wasabi paste",
+    "category": "Condiments & Sauces",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "namida",
+      "wasabi",
+      "japanese horseradish"
+    ],
+    "parentIds": [
+      "horseradish"
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        180,
+        365
+      ]
+    },
+    "facets": [
+      {
+        "key": "variant",
+        "options": [
+          "real wasabi"
+        ]
+      },
+      {
+        "key": "grade",
+        "options": [
+          "extra hot",
+          "hot",
+          "mild",
+          "regular"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "smooth",
+          "thick"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 250,
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "horseradish",
+        "ratio": "1:1",
+        "notes": null
+      },
+      {
+        "substituteItemID": "karashi",
+        "ratio": "1:1",
+        "notes": null
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "karashi",
+    "name": "karashi",
+    "category": "Condiments & Sauces",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "japanese hot mustard",
+      "karashi mustard"
+    ],
+    "parentIds": [
+      "mustard"
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        180,
+        365
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "paste",
+          "powder"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "jarred"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "smooth",
+          "thick"
+        ]
+      },
+      {
+        "key": "variant",
+        "options": [
+          "hot"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 249,
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "english-mustard",
+        "ratio": "1:1",
+        "notes": null
+      },
+      {
+        "substituteItemID": "mustard",
+        "ratio": "1:1",
+        "notes": null
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "kewpie-mayonnaise",
+    "name": "kewpie mayonnaise",
+    "category": "Condiments & Sauces",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "kewpie",
+      "japanese mayonnaise",
+      "japanese mayo"
+    ],
+    "parentIds": [
+      "mayonnaise"
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        60,
+        180
+      ]
+    },
+    "facets": [
+      {
+        "key": "variant",
+        "options": [
+          "spicy"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "creamy",
+          "smooth",
+          "thick"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 220,
+    "dietaryTags": [
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "mayonnaise",
+        "ratio": "1:1",
+        "notes": null
+      },
+      {
+        "substituteItemID": "aioli",
+        "ratio": "1:1",
+        "notes": null
+      }
+    ],
+    "isUserDefined": false,
+    "allergens": [
+      "egg"
+    ]
+  },
+  {
+    "id": "calamansi",
+    "name": "calamansi",
+    "category": "Condiments & Sauces",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "calamansi juice",
+      "kalamansi",
+      "philippine lime",
+      "calamondin"
+    ],
+    "parentIds": [
+      "lime-juice"
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        7,
+        14
+      ]
+    },
+    "facets": [
+      {
+        "key": "variant",
+        "options": [
+          "concentrate"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "smooth",
+          "thin"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 242,
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "lime-juice",
+        "ratio": "1:1",
+        "notes": null
+      },
+      {
+        "substituteItemID": "lime",
+        "ratio": "1:1",
+        "notes": null
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "umeboshi-paste",
+    "name": "umeboshi paste",
+    "category": "Condiments & Sauces",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "ume paste",
+      "pickled plum paste",
+      "bainiku"
+    ],
+    "parentIds": [
+      "paste"
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        180,
+        365
+      ]
+    },
+    "facets": [
+      {
+        "key": "variant",
+        "options": [
+          "bainiku"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "smooth",
+          "thick"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 255,
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "paste",
+        "ratio": "1:1",
+        "notes": null
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "ranch-dressing",
+    "name": "ranch dressing",
+    "category": "Condiments & Sauces",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "buttermilk ranch",
+      "ranch dip",
+      "ranch"
+    ],
+    "parentIds": [
+      "dressing"
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        30,
+        90
+      ]
+    },
+    "facets": [
+      {
+        "key": "variant",
+        "options": [
+          "spicy"
+        ]
+      },
+      {
+        "key": "grade",
+        "options": [
+          "lite",
+          "regular"
+        ]
+      },
+      {
+        "key": "fat",
+        "options": [
+          "full fat",
+          "low fat"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "creamy",
+          "smooth",
+          "thick"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 240,
+    "dietaryTags": [
+      "Vegetarian",
+      "Gluten-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "blue-cheese-dressing",
+        "ratio": "1:1",
+        "notes": null
+      },
+      {
+        "substituteItemID": "green-goddess-dressing",
+        "ratio": "1:1",
+        "notes": null
+      }
+    ],
+    "isUserDefined": false,
+    "allergens": [
+      "dairy",
+      "egg"
+    ]
+  },
+  {
+    "id": "thousand-island-dressing",
+    "name": "thousand island dressing",
+    "category": "Condiments & Sauces",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "thousand island",
+      "1000 island dressing",
+      "russian dressing"
+    ],
+    "parentIds": [
+      "dressing"
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        30,
+        90
+      ]
+    },
+    "facets": [
+      {
+        "key": "variant",
+        "options": [
+          "russian"
+        ]
+      },
+      {
+        "key": "grade",
+        "options": [
+          "lite",
+          "regular"
+        ]
+      },
+      {
+        "key": "fat",
+        "options": [
+          "full fat",
+          "low fat"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "chunky",
+          "creamy",
+          "smooth"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 240,
+    "dietaryTags": [
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "ranch-dressing",
+        "ratio": "1:1",
+        "notes": null
+      },
+      {
+        "substituteItemID": "dressing",
+        "ratio": "1:1",
+        "notes": null
+      }
+    ],
+    "isUserDefined": false,
+    "allergens": [
+      "egg"
+    ]
+  },
+  {
+    "id": "blue-cheese-dressing",
+    "name": "blue cheese dressing",
+    "category": "Condiments & Sauces",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "bleu cheese dressing",
+      "blue cheese dip"
+    ],
+    "parentIds": [
+      "dressing"
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        30,
+        60
+      ]
+    },
+    "facets": [
+      {
+        "key": "variant",
+        "options": [
+          "chunky"
+        ]
+      },
+      {
+        "key": "grade",
+        "options": [
+          "lite",
+          "regular"
+        ]
+      },
+      {
+        "key": "fat",
+        "options": [
+          "full fat",
+          "low fat"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "chunky",
+          "creamy",
+          "thick"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 240,
+    "dietaryTags": [
+      "Vegetarian",
+      "Gluten-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "ranch-dressing",
+        "ratio": "1:1",
+        "notes": null
+      },
+      {
+        "substituteItemID": "caesar-dressing",
+        "ratio": "1:1",
+        "notes": null
+      }
+    ],
+    "isUserDefined": false,
+    "allergens": [
+      "dairy",
+      "egg"
+    ]
+  },
+  {
+    "id": "caesar-dressing",
+    "name": "caesar dressing",
+    "category": "Condiments & Sauces",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "cesar dressing",
+      "caesar salad dressing"
+    ],
+    "parentIds": [
+      "dressing"
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        30,
+        60
+      ]
+    },
+    "facets": [
+      {
+        "key": "variant",
+        "options": [
+          "creamy"
+        ]
+      },
+      {
+        "key": "grade",
+        "options": [
+          "lite",
+          "regular"
+        ]
+      },
+      {
+        "key": "fat",
+        "options": [
+          "full fat",
+          "low fat"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "creamy",
+          "smooth",
+          "thick"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 240,
+    "dietaryTags": [
+      "Gluten-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "green-goddess-dressing",
+        "ratio": "1:1",
+        "notes": null
+      },
+      {
+        "substituteItemID": "ranch-dressing",
+        "ratio": "1:1",
+        "notes": null
+      }
+    ],
+    "isUserDefined": false,
+    "allergens": [
+      "dairy",
+      "egg",
+      "fish"
+    ]
+  },
+  {
+    "id": "italian-dressing",
+    "name": "italian dressing",
+    "category": "Condiments & Sauces",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "italian salad dressing",
+      "zesty italian",
+      "vinaigrette"
+    ],
+    "parentIds": [
+      "dressing"
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        60,
+        180
+      ]
+    },
+    "facets": [
+      {
+        "key": "variant",
+        "options": [
+          "zesty"
+        ]
+      },
+      {
+        "key": "grade",
+        "options": [
+          "lite",
+          "regular"
+        ]
+      },
+      {
+        "key": "fat",
+        "options": [
+          "full fat",
+          "low fat"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "smooth",
+          "thin"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 240,
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "dressing",
+        "ratio": "1:1",
+        "notes": null
+      },
+      {
+        "substituteItemID": "balsamic-vinegar",
+        "ratio": "1:1",
+        "notes": null
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "green-goddess-dressing",
+    "name": "green goddess dressing",
+    "category": "Condiments & Sauces",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "green goddess",
+      "green goddess dip"
+    ],
+    "parentIds": [
+      "dressing"
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        10,
+        21
+      ]
+    },
+    "facets": [
+      {
+        "key": "variant",
+        "options": [
+          "herb"
+        ]
+      },
+      {
+        "key": "grade",
+        "options": [
+          "lite",
+          "regular"
+        ]
+      },
+      {
+        "key": "fat",
+        "options": [
+          "full fat",
+          "low fat"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "creamy",
+          "smooth",
+          "thick"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 240,
+    "dietaryTags": [
+      "Gluten-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "ranch-dressing",
+        "ratio": "1:1",
+        "notes": null
+      },
+      {
+        "substituteItemID": "caesar-dressing",
+        "ratio": "1:1",
+        "notes": null
+      }
+    ],
+    "isUserDefined": false,
+    "allergens": [
+      "dairy",
+      "egg",
+      "fish"
+    ]
+  },
+  {
+    "id": "honey-mustard",
+    "name": "honey mustard",
+    "category": "Condiments & Sauces",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "honey mustard sauce",
+      "honey mustard dressing"
+    ],
+    "parentIds": [
+      "mustard"
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        90,
+        180
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "paste"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "jarred"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "creamy",
+          "smooth"
+        ]
+      },
+      {
+        "key": "variant",
+        "options": [
+          "spicy"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 249,
+    "dietaryTags": [
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "dijon-mustard",
+        "ratio": "1:1",
+        "notes": null
+      },
+      {
+        "substituteItemID": "mustard",
+        "ratio": "1:1",
+        "notes": null
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "whole-grain-mustard",
+    "name": "whole grain mustard",
+    "category": "Condiments & Sauces",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "stone ground mustard",
+      "wholegrain mustard",
+      "grainy mustard",
+      "moutarde a l'ancienne"
+    ],
+    "parentIds": [
+      "mustard"
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        180,
+        365
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "seed"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "jarred"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "chunky",
+          "coarse"
+        ]
+      },
+      {
+        "key": "variant",
+        "options": [
+          "dijon"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 249,
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "dijon-mustard",
+        "ratio": "1:1",
+        "notes": null
+      },
+      {
+        "substituteItemID": "mustard",
+        "ratio": "1:1",
+        "notes": null
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "yellow-mustard",
+    "name": "yellow mustard",
+    "category": "Condiments & Sauces",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "american mustard",
+      "ballpark mustard",
+      "prepared yellow mustard"
+    ],
+    "parentIds": [
+      "mustard"
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        180,
+        365
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "paste"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "jarred"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "creamy",
+          "smooth"
+        ]
+      },
+      {
+        "key": "variant",
+        "options": [
+          "mild"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 249,
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "mustard",
+        "ratio": "1:1",
+        "notes": null
+      },
+      {
+        "substituteItemID": "dijon-mustard",
+        "ratio": "1:1",
+        "notes": null
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "english-mustard",
+    "name": "english mustard",
+    "category": "Condiments & Sauces",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "hot english mustard",
+      "colmans mustard"
+    ],
+    "parentIds": [
+      "mustard"
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        180,
+        365
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "paste",
+          "powder"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "jarred"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "smooth",
+          "thick"
+        ]
+      },
+      {
+        "key": "variant",
+        "options": [
+          "hot"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 249,
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "karashi",
+        "ratio": "1:1",
+        "notes": null
+      },
+      {
+        "substituteItemID": "mustard",
+        "ratio": "1:1",
+        "notes": null
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "spicy-brown-mustard",
+    "name": "spicy brown mustard",
+    "category": "Condiments & Sauces",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "deli mustard",
+      "brown mustard"
+    ],
+    "parentIds": [
+      "mustard"
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        180,
+        365
+      ]
+    },
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "paste",
+          "seed"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "jarred"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "coarse",
+          "smooth"
+        ]
+      },
+      {
+        "key": "variant",
+        "options": [
+          "deli"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 249,
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "dijon-mustard",
+        "ratio": "1:1",
+        "notes": null
+      },
+      {
+        "substituteItemID": "mustard",
+        "ratio": "1:1",
+        "notes": null
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "chili-garlic-sauce",
+    "name": "chili garlic sauce",
+    "category": "Condiments & Sauces",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "chili garlic",
+      "garlic chili sauce",
+      "tuong ot toi"
+    ],
+    "parentIds": [
+      "chili-sauce"
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        180,
+        365
+      ]
+    },
+    "facets": [
+      {
+        "key": "variant",
+        "options": [
+          "garlic"
+        ]
+      },
+      {
+        "key": "grade",
+        "options": [
+          "extra hot",
+          "hot",
+          "mild",
+          "regular"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "chunky",
+          "coarse",
+          "thick"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 255,
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "sambal-oelek",
+        "ratio": "1:1",
+        "notes": null
+      },
+      {
+        "substituteItemID": "sriracha",
+        "ratio": "1:1",
+        "notes": null
+      },
+      {
+        "substituteItemID": "chili-sauce",
+        "ratio": "1:1",
+        "notes": null
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "sambal-terasi",
+    "name": "sambal terasi",
+    "category": "Condiments & Sauces",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "sambal belacan",
+      "shrimp paste sambal"
+    ],
+    "parentIds": [
+      "chili-paste"
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        30,
+        90
+      ]
+    },
+    "facets": [
+      {
+        "key": "variant",
+        "options": [
+          "belacan"
+        ]
+      },
+      {
+        "key": "grade",
+        "options": [
+          "extra hot",
+          "hot",
+          "mild",
+          "regular"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "chunky",
+          "coarse",
+          "smooth",
+          "thick",
+          "thin"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 255,
+    "dietaryTags": [
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "sambal-oelek",
+        "ratio": "1:1",
+        "notes": null
+      },
+      {
+        "substituteItemID": "chili-paste",
+        "ratio": "1:1",
+        "notes": null
+      }
+    ],
+    "isUserDefined": false,
+    "allergens": [
+      "fish"
+    ]
+  },
+  {
+    "id": "buffalo-sauce",
+    "name": "buffalo sauce",
+    "category": "Condiments & Sauces",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "buffalo wing sauce",
+      "frank's hot sauce",
+      "wing sauce"
+    ],
+    "parentIds": [
+      "hot-sauce"
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        180,
+        365
+      ]
+    },
+    "facets": [
+      {
+        "key": "variant",
+        "options": [
+          "extra hot",
+          "garlic"
+        ]
+      },
+      {
+        "key": "grade",
+        "options": [
+          "extra hot",
+          "hot",
+          "mild",
+          "regular"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "smooth",
+          "thin"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 245,
+    "dietaryTags": [
+      "Vegetarian",
+      "Gluten-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "hot-sauce",
+        "ratio": "1:1",
+        "notes": null
+      },
+      {
+        "substituteItemID": "tabasco-sauce",
+        "ratio": "1:1",
+        "notes": null
+      }
+    ],
+    "isUserDefined": false,
+    "allergens": [
+      "dairy"
+    ]
+  },
+  {
+    "id": "tabasco-sauce",
+    "name": "tabasco sauce",
+    "category": "Condiments & Sauces",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "tabasco",
+      "louisiana hot sauce",
+      "pepper vinegar sauce"
+    ],
+    "parentIds": [
+      "hot-sauce"
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        1095,
+        1825
+      ]
+    },
+    "facets": [
+      {
+        "key": "variant",
+        "options": [
+          "chipotle",
+          "garlic",
+          "green",
+          "habanero"
+        ]
+      },
+      {
+        "key": "grade",
+        "options": [
+          "extra hot",
+          "hot",
+          "mild",
+          "regular"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "smooth",
+          "thin"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 245,
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "hot-sauce",
+        "ratio": "1:1",
+        "notes": null
+      },
+      {
+        "substituteItemID": "sriracha",
+        "ratio": "1:1",
+        "notes": null
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "scotch-bonnet-pepper-sauce",
+    "name": "scotch bonnet pepper sauce",
+    "category": "Condiments & Sauces",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "caribbean hot sauce",
+      "scotch bonnet sauce",
+      "pepper sauce"
+    ],
+    "parentIds": [
+      "hot-sauce"
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        180,
+        365
+      ]
+    },
+    "facets": [
+      {
+        "key": "variant",
+        "options": [
+          "yellow"
+        ]
+      },
+      {
+        "key": "grade",
+        "options": [
+          "extra hot",
+          "hot",
+          "mild",
+          "regular"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "smooth",
+          "thin"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 245,
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "hot-sauce",
+        "ratio": "1:1",
+        "notes": null
+      },
+      {
+        "substituteItemID": "piri-piri-sauce",
+        "ratio": "1:1",
+        "notes": null
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "piri-piri-sauce",
+    "name": "piri piri sauce",
+    "category": "Condiments & Sauces",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "peri peri sauce",
+      "piripiri",
+      "pili pili"
+    ],
+    "parentIds": [
+      "hot-sauce"
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        90,
+        180
+      ]
+    },
+    "facets": [
+      {
+        "key": "variant",
+        "options": [
+          "lemon"
+        ]
+      },
+      {
+        "key": "grade",
+        "options": [
+          "extra hot",
+          "hot",
+          "mild",
+          "regular"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "smooth",
+          "thin"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 245,
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "hot-sauce",
+        "ratio": "1:1",
+        "notes": null
+      },
+      {
+        "substituteItemID": "tabasco-sauce",
+        "ratio": "1:1",
+        "notes": null
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "berbere-paste",
+    "name": "berbere paste",
+    "category": "Condiments & Sauces",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "ethiopian spice paste",
+      "awaze",
+      "berbere"
+    ],
+    "parentIds": [
+      "chili-paste"
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        90,
+        180
+      ]
+    },
+    "facets": [
+      {
+        "key": "variant",
+        "options": [
+          "awaze"
+        ]
+      },
+      {
+        "key": "grade",
+        "options": [
+          "extra hot",
+          "hot",
+          "mild",
+          "regular"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "chunky",
+          "coarse",
+          "smooth",
+          "thick",
+          "thin"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 255,
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "harissa",
+        "ratio": "1:1",
+        "notes": null
+      },
+      {
+        "substituteItemID": "chili-paste",
+        "ratio": "1:1",
+        "notes": null
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "tkemali",
+    "name": "tkemali",
+    "category": "Condiments & Sauces",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "tkemali sauce",
+      "georgian plum sauce",
+      "sour plum sauce"
+    ],
+    "parentIds": [
+      "plum-sauce"
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        60,
+        180
+      ]
+    },
+    "facets": [
+      {
+        "key": "color",
+        "options": [
+          "green",
+          "red"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "smooth",
+          "thin"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 245,
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "plum-sauce",
+        "ratio": "1:1",
+        "notes": null
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "adjika",
+    "name": "adjika",
+    "category": "Condiments & Sauces",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "ajika",
+      "abkhazian pepper paste",
+      "georgian chili paste"
+    ],
+    "parentIds": [
+      "chili-paste"
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        90,
+        180
+      ]
+    },
+    "facets": [
+      {
+        "key": "variant",
+        "options": [
+          "dry",
+          "wet"
+        ]
+      },
+      {
+        "key": "grade",
+        "options": [
+          "extra hot",
+          "hot",
+          "mild",
+          "regular"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "chunky",
+          "coarse",
+          "smooth",
+          "thick",
+          "thin"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 255,
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "harissa",
+        "ratio": "1:1",
+        "notes": null
+      },
+      {
+        "substituteItemID": "chili-paste",
+        "ratio": "1:1",
+        "notes": null
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "satay-sauce",
+    "name": "satay sauce",
+    "category": "Condiments & Sauces",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "sate sauce",
+      "indonesian peanut sauce"
+    ],
+    "parentIds": [
+      "peanut-sauce"
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        7,
+        14
+      ]
+    },
+    "facets": [
+      {
+        "key": "variant",
+        "options": [
+          "spicy"
+        ]
+      },
+      {
+        "key": "grade",
+        "options": [
+          "regular"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "creamy",
+          "smooth",
+          "thick"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 245,
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "peanut-sauce",
+        "ratio": "1:1",
+        "notes": null
+      }
+    ],
+    "isUserDefined": false,
+    "allergens": [
+      "peanut"
+    ]
+  },
+  {
+    "id": "tamari",
+    "name": "tamari",
+    "category": "Condiments & Sauces",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "gluten-free soy sauce",
+      "wheat-free soy sauce"
+    ],
+    "parentIds": [
+      "soy-sauce"
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        365,
+        1095
+      ]
+    },
+    "facets": [
+      {
+        "key": "variant",
+        "options": [
+          "wheat free"
+        ]
+      },
+      {
+        "key": "grade",
+        "options": [
+          "reduced sodium",
+          "regular"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "smooth",
+          "thin"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 255,
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "soy-sauce",
+        "ratio": "1:1",
+        "notes": null
+      },
+      {
+        "substituteItemID": "coconut-aminos",
+        "ratio": "1:1",
+        "notes": null
+      }
+    ],
+    "isUserDefined": false,
+    "allergens": [
+      "soy"
+    ]
+  },
+  {
+    "id": "coconut-aminos",
+    "name": "coconut aminos",
+    "category": "Condiments & Sauces",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "coconut amino sauce",
+      "soy-free seasoning sauce"
+    ],
+    "parentIds": [
+      "soy-sauce"
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        180,
+        365
+      ]
+    },
+    "facets": [
+      {
+        "key": "variant",
+        "options": [
+          "garlic"
+        ]
+      },
+      {
+        "key": "grade",
+        "options": [
+          "reduced sodium",
+          "regular"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "smooth",
+          "thin"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 255,
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "soy-sauce",
+        "ratio": "1:1",
+        "notes": null
+      },
+      {
+        "substituteItemID": "tamari",
+        "ratio": "1:1",
+        "notes": null
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "maggi-seasoning-sauce",
+    "name": "maggi seasoning sauce",
+    "category": "Condiments & Sauces",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "maggi sauce",
+      "maggi",
+      "liquid seasoning"
+    ],
+    "parentIds": [
+      "sauce"
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        365,
+        1095
+      ]
+    },
+    "facets": [
+      {
+        "key": "variant",
+        "options": [
+          "chili",
+          "hot"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "smooth",
+          "thin"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 255,
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "soy-sauce",
+        "ratio": "1:1",
+        "notes": null
+      },
+      {
+        "substituteItemID": "worcestershire-sauce",
+        "ratio": "1:1",
+        "notes": null
+      }
+    ],
+    "isUserDefined": false,
+    "allergens": [
+      "gluten",
+      "soy"
+    ]
+  },
+  {
+    "id": "fermented-bean-curd",
+    "name": "fermented bean curd",
+    "category": "Condiments & Sauces",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "furu",
+      "tofu cheese",
+      "preserved tofu",
+      "doufuru",
+      "red bean curd"
+    ],
+    "parentIds": [
+      "bean-paste"
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        180,
+        365
+      ]
+    },
+    "facets": [
+      {
+        "key": "color",
+        "options": [
+          "red",
+          "white"
+        ]
+      },
+      {
+        "key": "variant",
+        "options": [
+          "chili",
+          "plain"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "smooth",
+          "soft"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 240,
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "miso",
+        "ratio": "1:1",
+        "notes": null
+      },
+      {
+        "substituteItemID": "doenjang",
+        "ratio": "1:1",
+        "notes": null
+      }
+    ],
+    "isUserDefined": false,
+    "allergens": [
+      "soy"
+    ]
+  },
+  {
+    "id": "sweet-bean-sauce",
+    "name": "sweet bean sauce",
+    "category": "Condiments & Sauces",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "tianmianjiang",
+      "sweet flour paste",
+      "sweet wheat paste"
+    ],
+    "parentIds": [
+      "bean-paste"
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        180,
+        365
+      ]
+    },
+    "facets": [
+      {
+        "key": "variant",
+        "options": [
+          "tianmianjiang"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "smooth",
+          "thick"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 255,
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "hoisin-sauce",
+        "ratio": "1:1",
+        "notes": null
+      },
+      {
+        "substituteItemID": "doubanjiang",
+        "ratio": "1:1",
+        "notes": null
+      }
+    ],
+    "isUserDefined": false,
+    "allergens": [
+      "gluten",
+      "soy"
+    ]
+  },
+  {
+    "id": "sesame-paste",
+    "name": "sesame paste",
+    "category": "Condiments & Sauces",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "chinese sesame paste",
+      "zhi ma jiang",
+      "toasted sesame paste"
+    ],
+    "parentIds": [
+      "tahini"
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        180,
+        365
+      ]
+    },
+    "facets": [
+      {
+        "key": "variant",
+        "options": [
+          "unhulled"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "roasted"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "creamy",
+          "smooth",
+          "thick"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 250,
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "tahini",
+        "ratio": "1:1",
+        "notes": null
+      }
+    ],
+    "isUserDefined": false,
+    "allergens": [
+      "sesame"
+    ]
+  },
+  {
+    "id": "garum-masala-paste",
+    "name": "garum masala paste",
+    "category": "Condiments & Sauces",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "ginger garlic paste",
+      "ginger-garlic paste",
+      "adrak lehsun paste"
+    ],
+    "parentIds": [
+      "paste"
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        30,
+        90
+      ]
+    },
+    "facets": [
+      {
+        "key": "variant",
+        "options": [
+          "ginger garlic"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "coarse",
+          "smooth"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 250,
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "paste",
+        "ratio": "1:1",
+        "notes": null
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "sherry-vinegar",
+    "name": "sherry vinegar",
+    "category": "Condiments & Sauces",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "vinagre de jerez"
+    ],
+    "parentIds": [
+      "vinegar"
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        730,
+        1460
+      ]
+    },
+    "facets": [
+      {
+        "key": "variant",
+        "options": [
+          "aged",
+          "reserva"
+        ]
+      },
+      {
+        "key": "grade",
+        "options": [
+          "regular"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "smooth",
+          "thin"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 239,
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "red-wine",
+        "ratio": "1:1",
+        "notes": null
+      },
+      {
+        "substituteItemID": "balsamic-vinegar",
+        "ratio": "1:1",
+        "notes": null
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "malt-vinegar",
+    "name": "malt vinegar",
+    "category": "Condiments & Sauces",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "barley malt vinegar",
+      "chip shop vinegar"
+    ],
+    "parentIds": [
+      "vinegar"
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        730,
+        1460
+      ]
+    },
+    "facets": [
+      {
+        "key": "variant",
+        "options": [
+          "dark"
+        ]
+      },
+      {
+        "key": "grade",
+        "options": [
+          "regular"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "smooth",
+          "thin"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 239,
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "apple-cider-vinegar",
+        "ratio": "1:1",
+        "notes": null
+      },
+      {
+        "substituteItemID": "distilled-white-vinegar",
+        "ratio": "1:1",
+        "notes": null
+      }
+    ],
+    "isUserDefined": false,
+    "allergens": [
+      "gluten"
+    ]
+  },
+  {
+    "id": "distilled-white-vinegar",
+    "name": "distilled white vinegar",
+    "category": "Condiments & Sauces",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "white vinegar",
+      "spirit vinegar",
+      "distilled vinegar"
+    ],
+    "parentIds": [
+      "vinegar"
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        1460,
+        2920
+      ]
+    },
+    "facets": [
+      {
+        "key": "variant",
+        "options": [
+          "spirit"
+        ]
+      },
+      {
+        "key": "grade",
+        "options": [
+          "double strength",
+          "regular"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "smooth",
+          "thin"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 239,
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "apple-cider-vinegar",
+        "ratio": "1:1",
+        "notes": null
+      },
+      {
+        "substituteItemID": "rice-vinegar",
+        "ratio": "1:1",
+        "notes": null
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "black-vinegar",
+    "name": "black vinegar",
+    "category": "Condiments & Sauces",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "chinkiang vinegar",
+      "chinese black vinegar",
+      "zhenjiang vinegar"
+    ],
+    "parentIds": [
+      "vinegar"
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        730,
+        1460
+      ]
+    },
+    "facets": [
+      {
+        "key": "variant",
+        "options": [
+          "aged",
+          "chinkiang"
+        ]
+      },
+      {
+        "key": "grade",
+        "options": [
+          "regular"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "smooth",
+          "thin"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 239,
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "rice-vinegar",
+        "ratio": "1:1",
+        "notes": null
+      },
+      {
+        "substituteItemID": "balsamic-vinegar",
+        "ratio": "1:1",
+        "notes": null
+      }
+    ],
+    "isUserDefined": false,
+    "allergens": [
+      "gluten"
+    ]
+  },
+  {
+    "id": "champagne-vinegar",
+    "name": "champagne vinegar",
+    "category": "Condiments & Sauces",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "champagne wine vinegar"
+    ],
+    "parentIds": [
+      "wine-vinegar"
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        730,
+        1460
+      ]
+    },
+    "facets": [
+      {
+        "key": "color",
+        "options": [
+          "white"
+        ]
+      },
+      {
+        "key": "grade",
+        "options": [
+          "regular"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "smooth",
+          "thin"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 239,
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "white-wine-vinegar",
+        "ratio": "1:1",
+        "notes": null
+      },
+      {
+        "substituteItemID": "rice-vinegar",
+        "ratio": "1:1",
+        "notes": null
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "white-wine-vinegar",
+    "name": "white wine vinegar",
+    "category": "Condiments & Sauces",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "white-wine vinegar"
+    ],
+    "parentIds": [
+      "wine-vinegar"
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        730,
+        1460
+      ]
+    },
+    "facets": [
+      {
+        "key": "color",
+        "options": [
+          "white"
+        ]
+      },
+      {
+        "key": "grade",
+        "options": [
+          "regular"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "smooth",
+          "thin"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 239,
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "champagne-vinegar",
+        "ratio": "1:1",
+        "notes": null
+      },
+      {
+        "substituteItemID": "rice-vinegar",
+        "ratio": "1:1",
+        "notes": null
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "ume-plum-vinegar",
+    "name": "ume plum vinegar",
+    "category": "Condiments & Sauces",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "umeboshi vinegar",
+      "pickled plum vinegar",
+      "ume su"
+    ],
+    "parentIds": [
+      "vinegar"
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        365,
+        730
+      ]
+    },
+    "facets": [
+      {
+        "key": "variant",
+        "options": [
+          "umeboshi"
+        ]
+      },
+      {
+        "key": "grade",
+        "options": [
+          "regular"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "smooth",
+          "thin"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 239,
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "rice-vinegar",
+        "ratio": "1:1",
+        "notes": null
+      },
+      {
+        "substituteItemID": "apple-cider-vinegar",
+        "ratio": "1:1",
+        "notes": null
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "giardiniera",
+    "name": "giardiniera",
+    "category": "Condiments & Sauces",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "italian pickled vegetables",
+      "chicago giardiniera",
+      "sottaceti"
+    ],
+    "parentIds": [
+      "pickle-relish"
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        60,
+        180
+      ]
+    },
+    "facets": [
+      {
+        "key": "variant",
+        "options": [
+          "hot",
+          "mild"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "chunky",
+          "coarse"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 160,
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "pickle-relish",
+        "ratio": "1:1",
+        "notes": null
+      },
+      {
+        "substituteItemID": "branston-pickle",
+        "ratio": "1:1",
+        "notes": null
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "branston-pickle",
+    "name": "branston pickle",
+    "category": "Condiments & Sauces",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "sweet pickle relish",
+      "ploughman's pickle",
+      "brown pickle"
+    ],
+    "parentIds": [
+      "pickle-relish"
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        60,
+        180
+      ]
+    },
+    "facets": [
+      {
+        "key": "variant",
+        "options": [
+          "small chunk"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "chunky",
+          "coarse"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 255,
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "pickle-relish",
+        "ratio": "1:1",
+        "notes": null
+      },
+      {
+        "substituteItemID": "giardiniera",
+        "ratio": "1:1",
+        "notes": null
+      }
+    ],
+    "isUserDefined": false,
+    "allergens": [
+      "gluten"
+    ]
+  },
+  {
+    "id": "mint-sauce",
+    "name": "mint sauce",
+    "category": "Condiments & Sauces",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "mint jelly",
+      "british mint sauce"
+    ],
+    "parentIds": [
+      "sauce"
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        180,
+        365
+      ]
+    },
+    "facets": [
+      {
+        "key": "variant",
+        "options": [
+          "jelly"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "chunky",
+          "smooth",
+          "thin"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 240,
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "sauce",
+        "ratio": "1:1",
+        "notes": null
+      },
+      {
+        "substituteItemID": "sauce",
+        "ratio": "1:1",
+        "notes": null
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "hollandaise-sauce",
+    "name": "hollandaise sauce",
+    "category": "Condiments & Sauces",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "hollandaise",
+      "egg butter sauce"
+    ],
+    "parentIds": [
+      "sauce"
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        2,
+        5
+      ]
+    },
+    "facets": [
+      {
+        "key": "variant",
+        "options": [
+          "bearnaise"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "creamy",
+          "smooth",
+          "thick"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 240,
+    "dietaryTags": [
+      "Vegetarian",
+      "Gluten-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "mayonnaise",
+        "ratio": "1:1",
+        "notes": null
+      },
+      {
+        "substituteItemID": "aioli",
+        "ratio": "1:1",
+        "notes": null
+      }
+    ],
+    "isUserDefined": false,
+    "allergens": [
+      "dairy",
+      "egg"
+    ]
+  },
+  {
+    "id": "gravy-granules",
+    "name": "gravy granules",
+    "category": "Condiments & Sauces",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "instant gravy",
+      "gravy mix",
+      "gravy powder",
+      "bisto"
+    ],
+    "parentIds": [
+      "gravy"
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        365,
+        730
+      ]
+    },
+    "facets": [
+      {
+        "key": "variant",
+        "options": [
+          "beef",
+          "chicken",
+          "onion"
+        ]
+      },
+      {
+        "key": "grade",
+        "options": [
+          "regular"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "smooth"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 180,
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "brown-gravy",
+        "ratio": "1:1",
+        "notes": null
+      },
+      {
+        "substituteItemID": "gravy",
+        "ratio": "1:1",
+        "notes": null
+      }
+    ],
+    "isUserDefined": false,
+    "allergens": [
+      "gluten"
+    ]
+  },
+  {
+    "id": "sausage-gravy",
+    "name": "sausage gravy",
+    "category": "Condiments & Sauces",
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "country gravy",
+      "white sausage gravy"
+    ],
+    "parentIds": [
+      "gravy"
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        2,
+        4
+      ]
+    },
+    "facets": [
+      {
+        "key": "variant",
+        "options": [
+          "country"
+        ]
+      },
+      {
+        "key": "grade",
+        "options": [
+          "regular"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "chunky",
+          "creamy",
+          "thick"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 245,
+    "dietaryTags": [
+      "Gluten-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "gravy",
+        "ratio": "1:1",
+        "notes": null
+      },
+      {
+        "substituteItemID": "brown-gravy",
+        "ratio": "1:1",
+        "notes": null
+      }
+    ],
+    "isUserDefined": false,
+    "allergens": [
+      "dairy"
+    ]
+  },
+  {
+    "id": "vegetable-bouillon",
+    "name": "vegetable bouillon",
+    "category": "Condiments & Sauces",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "vegetable stock cube",
+      "veggie bouillon",
+      "vegetable broth cube"
+    ],
+    "parentIds": [
+      "bouillon"
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        365,
+        730
+      ]
+    },
+    "facets": [
+      {
+        "key": "variant",
+        "options": [
+          "low sodium"
+        ]
+      },
+      {
+        "key": "grade",
+        "options": [
+          "reduced sodium",
+          "regular"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "cube",
+          "granule",
+          "paste"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "gramsPerCup": 245,
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "vegetable-stock",
+        "ratio": "1:1",
+        "notes": null
+      },
+      {
+        "substituteItemID": "mushroom-bouillon",
+        "ratio": "1:1",
+        "notes": null
+      }
+    ],
+    "isUserDefined": false
+  }
+]

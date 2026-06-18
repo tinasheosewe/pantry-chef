@@ -1,0 +1,6821 @@
+[
+  {
+    "id": "skim-milk",
+    "name": "skim milk",
+    "category": "Dairy & Eggs",
+    "defaultUnit": "cup",
+    "defaultQuantity": 4.0,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "fat-free milk",
+      "nonfat milk",
+      "0% milk",
+      "skimmed milk"
+    ],
+    "facets": [
+      {
+        "key": "fat",
+        "options": [
+          "skim"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "liquid",
+          "powder"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "fresh"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "homogenized",
+          "instant",
+          "pasteurized",
+          "raw",
+          "spray-dried",
+          "ultra-pasteurized"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "liquid"
+      }
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        7,
+        14
+      ],
+      "Frozen": [
+        60,
+        90
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "skim milk",
+        "facets": [
+          {
+            "key": "fat",
+            "value": "skim"
+          }
+        ]
+      },
+      {
+        "text": "skim",
+        "facets": [
+          {
+            "key": "fat",
+            "value": "skim"
+          }
+        ]
+      },
+      {
+        "text": "raw milk",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "raw"
+          }
+        ]
+      },
+      {
+        "text": "raw",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "raw"
+          }
+        ]
+      }
+    ],
+    "parentIds": [
+      "milk"
+    ],
+    "gramsPerCup": 245.0,
+    "allergens": [
+      "dairy"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Gluten-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "milk-2",
+        "ratio": "1:1",
+        "notes": "Same family as milk."
+      },
+      {
+        "substituteItemID": "milk",
+        "ratio": "1:1",
+        "notes": "Add a splash of water; whole milk is richer."
+      },
+      {
+        "substituteItemID": "non-dairy-milk",
+        "ratio": "1:1",
+        "notes": "Unsweetened plant milk for a dairy-free swap."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "a2-milk",
+    "name": "a2 milk",
+    "category": "Dairy & Eggs",
+    "defaultUnit": "cup",
+    "defaultQuantity": 4.0,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "a2 milk",
+      "a2 protein milk",
+      "a2 cow milk"
+    ],
+    "facets": [
+      {
+        "key": "fat",
+        "options": [
+          "skim"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "liquid",
+          "powder"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "fresh"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "homogenized",
+          "instant",
+          "pasteurized",
+          "raw",
+          "spray-dried",
+          "ultra-pasteurized"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "liquid"
+      }
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        7,
+        14
+      ],
+      "Frozen": [
+        60,
+        90
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "skim milk",
+        "facets": [
+          {
+            "key": "fat",
+            "value": "skim"
+          }
+        ]
+      },
+      {
+        "text": "skim",
+        "facets": [
+          {
+            "key": "fat",
+            "value": "skim"
+          }
+        ]
+      },
+      {
+        "text": "raw milk",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "raw"
+          }
+        ]
+      },
+      {
+        "text": "raw",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "raw"
+          }
+        ]
+      }
+    ],
+    "parentIds": [
+      "milk"
+    ],
+    "gramsPerCup": 240.0,
+    "allergens": [
+      "dairy"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Gluten-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "milk",
+        "ratio": "1:1",
+        "notes": "Same family as milk."
+      },
+      {
+        "substituteItemID": "non-dairy-milk",
+        "ratio": "1:1",
+        "notes": "Plant milk if avoiding all cow's milk."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "raw-milk",
+    "name": "raw milk",
+    "category": "Dairy & Eggs",
+    "defaultUnit": "cup",
+    "defaultQuantity": 4.0,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "unpasteurized milk",
+      "fresh raw milk",
+      "farm milk"
+    ],
+    "facets": [
+      {
+        "key": "fat",
+        "options": [
+          "skim"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "liquid",
+          "powder"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "fresh"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "homogenized",
+          "instant",
+          "pasteurized",
+          "raw",
+          "spray-dried",
+          "ultra-pasteurized"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "liquid"
+      }
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        5,
+        10
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "skim milk",
+        "facets": [
+          {
+            "key": "fat",
+            "value": "skim"
+          }
+        ]
+      },
+      {
+        "text": "skim",
+        "facets": [
+          {
+            "key": "fat",
+            "value": "skim"
+          }
+        ]
+      },
+      {
+        "text": "raw milk",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "raw"
+          }
+        ]
+      },
+      {
+        "text": "raw",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "raw"
+          }
+        ]
+      }
+    ],
+    "parentIds": [
+      "milk"
+    ],
+    "gramsPerCup": 240.0,
+    "allergens": [
+      "dairy"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Gluten-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "milk",
+        "ratio": "1:1",
+        "notes": "Same family as milk."
+      },
+      {
+        "substituteItemID": "whole-milk",
+        "ratio": "1:1",
+        "notes": "Pasteurized whole milk if raw is unavailable."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "uht-milk",
+    "name": "uht milk",
+    "category": "Dairy & Eggs",
+    "defaultUnit": "cup",
+    "defaultQuantity": 4.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "shelf-stable milk",
+      "long-life milk",
+      "ultra-pasteurized milk",
+      "boxed milk",
+      "aseptic milk"
+    ],
+    "facets": [
+      {
+        "key": "fat",
+        "options": [
+          "skim"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "liquid",
+          "powder"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "fresh"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "homogenized",
+          "instant",
+          "pasteurized",
+          "raw",
+          "spray-dried",
+          "ultra-pasteurized"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "liquid"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        120,
+        270
+      ],
+      "Refrigerated": [
+        7,
+        14
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "skim milk",
+        "facets": [
+          {
+            "key": "fat",
+            "value": "skim"
+          }
+        ]
+      },
+      {
+        "text": "skim",
+        "facets": [
+          {
+            "key": "fat",
+            "value": "skim"
+          }
+        ]
+      },
+      {
+        "text": "raw milk",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "raw"
+          }
+        ]
+      },
+      {
+        "text": "raw",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "raw"
+          }
+        ]
+      }
+    ],
+    "parentIds": [
+      "milk"
+    ],
+    "gramsPerCup": 240.0,
+    "allergens": [
+      "dairy"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Gluten-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "milk",
+        "ratio": "1:1",
+        "notes": "Same family as milk."
+      },
+      {
+        "substituteItemID": "evaporated-milk",
+        "ratio": "1:1",
+        "notes": "Dilute evaporated milk with equal water in a pinch."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "chocolate-milk",
+    "name": "chocolate milk",
+    "category": "Dairy & Eggs",
+    "defaultUnit": "cup",
+    "defaultQuantity": 2.0,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "choc milk",
+      "flavored milk",
+      "strawberry milk",
+      "chocolate dairy milk"
+    ],
+    "facets": [
+      {
+        "key": "fat",
+        "options": [
+          "skim"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "liquid",
+          "powder"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "fresh"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "homogenized",
+          "instant",
+          "pasteurized",
+          "raw",
+          "spray-dried",
+          "ultra-pasteurized"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "liquid"
+      }
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        7,
+        14
+      ],
+      "Frozen": [
+        30,
+        90
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "skim milk",
+        "facets": [
+          {
+            "key": "fat",
+            "value": "skim"
+          }
+        ]
+      },
+      {
+        "text": "skim",
+        "facets": [
+          {
+            "key": "fat",
+            "value": "skim"
+          }
+        ]
+      },
+      {
+        "text": "raw milk",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "raw"
+          }
+        ]
+      },
+      {
+        "text": "raw",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "raw"
+          }
+        ]
+      }
+    ],
+    "parentIds": [
+      "milk"
+    ],
+    "gramsPerCup": 240.0,
+    "allergens": [
+      "dairy"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Gluten-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "milk",
+        "ratio": "1:1",
+        "notes": "Plain milk plus cocoa and sugar."
+      },
+      {
+        "substituteItemID": "non-dairy-milk",
+        "ratio": "1:1",
+        "notes": "Flavored plant milk for a dairy-free swap."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "sheeps-milk",
+    "name": "sheep's milk",
+    "category": "Dairy & Eggs",
+    "defaultUnit": "cup",
+    "defaultQuantity": 4.0,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "sheep milk",
+      "ewe's milk",
+      "ewe milk"
+    ],
+    "facets": [
+      {
+        "key": "fat",
+        "options": [
+          "skim"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "liquid",
+          "powder"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "fresh"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "homogenized",
+          "instant",
+          "pasteurized",
+          "raw",
+          "spray-dried",
+          "ultra-pasteurized"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "liquid"
+      }
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        5,
+        10
+      ],
+      "Frozen": [
+        60,
+        90
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "skim milk",
+        "facets": [
+          {
+            "key": "fat",
+            "value": "skim"
+          }
+        ]
+      },
+      {
+        "text": "skim",
+        "facets": [
+          {
+            "key": "fat",
+            "value": "skim"
+          }
+        ]
+      },
+      {
+        "text": "raw milk",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "raw"
+          }
+        ]
+      },
+      {
+        "text": "raw",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "raw"
+          }
+        ]
+      }
+    ],
+    "parentIds": [
+      "milk"
+    ],
+    "gramsPerCup": 245.0,
+    "allergens": [
+      "dairy"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Gluten-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "milk",
+        "ratio": "1:1",
+        "notes": "Same family as milk."
+      },
+      {
+        "substituteItemID": "goat-milk",
+        "ratio": "1:1",
+        "notes": "Goat's milk is a closer match than cow for richness."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "camel-milk",
+    "name": "camel milk",
+    "category": "Dairy & Eggs",
+    "defaultUnit": "cup",
+    "defaultQuantity": 4.0,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "camel's milk"
+    ],
+    "facets": [
+      {
+        "key": "fat",
+        "options": [
+          "skim"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "liquid",
+          "powder"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "fresh"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "homogenized",
+          "instant",
+          "pasteurized",
+          "raw",
+          "spray-dried",
+          "ultra-pasteurized"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "liquid"
+      }
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        5,
+        10
+      ],
+      "Frozen": [
+        60,
+        90
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "skim milk",
+        "facets": [
+          {
+            "key": "fat",
+            "value": "skim"
+          }
+        ]
+      },
+      {
+        "text": "skim",
+        "facets": [
+          {
+            "key": "fat",
+            "value": "skim"
+          }
+        ]
+      },
+      {
+        "text": "raw milk",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "raw"
+          }
+        ]
+      },
+      {
+        "text": "raw",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "raw"
+          }
+        ]
+      }
+    ],
+    "parentIds": [
+      "milk"
+    ],
+    "gramsPerCup": 240.0,
+    "allergens": [
+      "dairy"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Gluten-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "milk",
+        "ratio": "1:1",
+        "notes": "Same family as milk."
+      },
+      {
+        "substituteItemID": "goat-milk",
+        "ratio": "1:1",
+        "notes": "Goat's milk for a similar lighter profile."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "buffalo-milk-drinking",
+    "name": "buffalo milk",
+    "category": "Dairy & Eggs",
+    "defaultUnit": "cup",
+    "defaultQuantity": 4.0,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "water buffalo milk",
+      "buffalo's milk",
+      "drinking buffalo milk"
+    ],
+    "facets": [
+      {
+        "key": "fat",
+        "options": [
+          "skim"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "liquid",
+          "powder"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "fresh"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "homogenized",
+          "instant",
+          "pasteurized",
+          "raw",
+          "spray-dried",
+          "ultra-pasteurized"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "liquid"
+      }
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        5,
+        10
+      ],
+      "Frozen": [
+        60,
+        90
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "skim milk",
+        "facets": [
+          {
+            "key": "fat",
+            "value": "skim"
+          }
+        ]
+      },
+      {
+        "text": "skim",
+        "facets": [
+          {
+            "key": "fat",
+            "value": "skim"
+          }
+        ]
+      },
+      {
+        "text": "raw milk",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "raw"
+          }
+        ]
+      },
+      {
+        "text": "raw",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "raw"
+          }
+        ]
+      }
+    ],
+    "parentIds": [
+      "milk"
+    ],
+    "gramsPerCup": 250.0,
+    "allergens": [
+      "dairy"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Gluten-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "whole-milk",
+        "ratio": "1:1",
+        "notes": "Whole milk plus a little cream approximates its richness."
+      },
+      {
+        "substituteItemID": "milk",
+        "ratio": "1:1",
+        "notes": "Same family as milk."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "half-and-half",
+    "name": "half-and-half",
+    "category": "Dairy & Eggs",
+    "defaultUnit": "cup",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "half and half",
+      "half cream",
+      "single cream us",
+      "coffee cream"
+    ],
+    "facets": [
+      {
+        "key": "grade",
+        "options": [
+          "condensed"
+        ]
+      },
+      {
+        "key": "fat",
+        "options": [
+          "half and half"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "cup",
+          "liquid",
+          "whipped"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "fresh"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "pasteurized",
+          "ultra-pasteurized"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "creamy",
+          "thick"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "liquid"
+      }
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        7,
+        14
+      ],
+      "Frozen": [
+        60,
+        90
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "half-and-half",
+        "facets": [
+          {
+            "key": "fat",
+            "value": "half and half"
+          }
+        ]
+      },
+      {
+        "text": "condensed cream",
+        "facets": [
+          {
+            "key": "grade",
+            "value": "condensed"
+          }
+        ]
+      },
+      {
+        "text": "condensed",
+        "facets": [
+          {
+            "key": "grade",
+            "value": "condensed"
+          }
+        ]
+      }
+    ],
+    "parentIds": [
+      "cream"
+    ],
+    "gramsPerCup": 242.0,
+    "allergens": [
+      "dairy"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Gluten-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "cream",
+        "ratio": "1:1",
+        "notes": "Same family as cream."
+      },
+      {
+        "substituteItemID": "heavy",
+        "ratio": "1:1",
+        "notes": "Heavy cream cut with equal milk."
+      },
+      {
+        "substituteItemID": "light-cream",
+        "ratio": "1:1",
+        "notes": "Light cream is a near match."
+      },
+      {
+        "substituteItemID": "milk",
+        "ratio": "1:1",
+        "notes": "Whole milk for a leaner result."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "smetana",
+    "name": "smetana",
+    "category": "Dairy & Eggs",
+    "defaultUnit": "oz",
+    "defaultQuantity": 16.0,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "smetana cream",
+      "russian sour cream",
+      "smitane"
+    ],
+    "facets": [
+      {
+        "key": "fat",
+        "options": [
+          "reduced fat"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "cup"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "cultured",
+          "pasteurized"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "creamy",
+          "smooth",
+          "thick"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "cup"
+      }
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        10,
+        21
+      ],
+      "Frozen": [
+        60,
+        90
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "reduced fat smetana",
+        "facets": [
+          {
+            "key": "fat",
+            "value": "reduced fat"
+          }
+        ]
+      },
+      {
+        "text": "cultured smetana",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "cultured"
+          }
+        ]
+      }
+    ],
+    "parentIds": [
+      "sour-cream"
+    ],
+    "gramsPerCup": 240.0,
+    "allergens": [
+      "dairy"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Gluten-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "sour-cream",
+        "ratio": "1:1",
+        "notes": "Same family as sour cream."
+      },
+      {
+        "substituteItemID": "crème-fraîche",
+        "ratio": "1:1",
+        "notes": "Crème fraîche is the closest high-fat cultured match."
+      },
+      {
+        "substituteItemID": "greek-yogurt",
+        "ratio": "1:1",
+        "notes": "Full-fat Greek yogurt for a tangy lower-fat swap."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "labneh",
+    "name": "labneh",
+    "category": "Dairy & Eggs",
+    "defaultUnit": "oz",
+    "defaultQuantity": 16.0,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "lebneh",
+      "labne",
+      "yogurt cheese",
+      "strained yogurt cheese",
+      "kefir cheese"
+    ],
+    "facets": [
+      {
+        "key": "variant",
+        "options": [
+          "sheep milk"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "cup",
+          "spreadable"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "ready-to-eat"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "fresh"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "cultured",
+          "pasteurized",
+          "plain"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "creamy",
+          "smooth",
+          "thick"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "spreadable"
+      }
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        10,
+        21
+      ],
+      "Frozen": [
+        60,
+        90
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "yogurt plain",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "plain"
+          }
+        ]
+      },
+      {
+        "text": "plain",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "plain"
+          }
+        ]
+      },
+      {
+        "text": "cultured",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "cultured"
+          }
+        ]
+      }
+    ],
+    "parentIds": [
+      "yogurt"
+    ],
+    "gramsPerCup": 240.0,
+    "allergens": [
+      "dairy"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Gluten-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "greek-yogurt",
+        "ratio": "1:1",
+        "notes": "Strain full-fat Greek yogurt overnight to thicken."
+      },
+      {
+        "substituteItemID": "yogurt",
+        "ratio": "1:1",
+        "notes": "Same family as yogurt."
+      },
+      {
+        "substituteItemID": "cream-cheese",
+        "ratio": "1:1",
+        "notes": "Cream cheese for a spreadable substitute."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "ayran",
+    "name": "ayran",
+    "category": "Dairy & Eggs",
+    "defaultUnit": "cup",
+    "defaultQuantity": 2.0,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "doogh",
+      "tan",
+      "salted yogurt drink"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "drinkable",
+          "liquid"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "fresh"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "cultured",
+          "pasteurized",
+          "plain"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "smooth"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "drinkable"
+      }
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        7,
+        14
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "cultured",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "cultured"
+          }
+        ]
+      },
+      {
+        "text": "plain",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "plain"
+          }
+        ]
+      }
+    ],
+    "parentIds": [
+      "yogurt"
+    ],
+    "gramsPerCup": 245.0,
+    "allergens": [
+      "dairy"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Gluten-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "yogurt",
+        "ratio": "1:1",
+        "notes": "Thin plain yogurt with water and salt."
+      },
+      {
+        "substituteItemID": "lassi",
+        "ratio": "1:1",
+        "notes": "Salted lassi (chaas) is the South-Asian cousin."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "lassi",
+    "name": "lassi",
+    "category": "Dairy & Eggs",
+    "defaultUnit": "cup",
+    "defaultQuantity": 2.0,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "sweet lassi",
+      "salt lassi",
+      "mango lassi",
+      "chaas",
+      "buttermilk drink"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "drinkable",
+          "liquid"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "fresh"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "cultured",
+          "pasteurized",
+          "plain"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "creamy",
+          "smooth"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "drinkable"
+      }
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        5,
+        10
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "cultured",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "cultured"
+          }
+        ]
+      },
+      {
+        "text": "plain",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "plain"
+          }
+        ]
+      }
+    ],
+    "parentIds": [
+      "yogurt"
+    ],
+    "gramsPerCup": 245.0,
+    "allergens": [
+      "dairy"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Gluten-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "yogurt",
+        "ratio": "1:1",
+        "notes": "Blend plain yogurt with water and sugar or salt."
+      },
+      {
+        "substituteItemID": "dahi",
+        "ratio": "1:1",
+        "notes": "Whisk dahi (curd) with water."
+      },
+      {
+        "substituteItemID": "ayran",
+        "ratio": "1:1",
+        "notes": "Ayran for the savory salted version."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "dahi",
+    "name": "dahi",
+    "category": "Dairy & Eggs",
+    "defaultUnit": "oz",
+    "defaultQuantity": 16.0,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "curd",
+      "indian curd",
+      "set curd",
+      "homemade yogurt",
+      "thayir"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "cup"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "ready-to-eat"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "fresh"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "cultured",
+          "pasteurized",
+          "plain"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "creamy",
+          "smooth",
+          "thick"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "cup"
+      }
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        5,
+        10
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "yogurt plain",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "plain"
+          }
+        ]
+      },
+      {
+        "text": "plain",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "plain"
+          }
+        ]
+      },
+      {
+        "text": "cultured",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "cultured"
+          }
+        ]
+      }
+    ],
+    "parentIds": [
+      "yogurt"
+    ],
+    "gramsPerCup": 245.0,
+    "allergens": [
+      "dairy"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Gluten-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "yogurt",
+        "ratio": "1:1",
+        "notes": "Same family as yogurt."
+      },
+      {
+        "substituteItemID": "greek-yogurt",
+        "ratio": "1:1",
+        "notes": "Greek yogurt thinned slightly for set curd."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "filmj-lk",
+    "name": "filmjölk",
+    "category": "Dairy & Eggs",
+    "defaultUnit": "cup",
+    "defaultQuantity": 2.0,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "filmjolk",
+      "fil",
+      "swedish soured milk",
+      "viili",
+      "scandinavian soured milk"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "cup",
+          "drinkable",
+          "liquid"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "fresh"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "cultured",
+          "pasteurized",
+          "plain"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "creamy",
+          "smooth"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "cup"
+      }
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        7,
+        14
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "yogurt plain",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "plain"
+          }
+        ]
+      },
+      {
+        "text": "plain",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "plain"
+          }
+        ]
+      },
+      {
+        "text": "cultured",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "cultured"
+          }
+        ]
+      }
+    ],
+    "parentIds": [
+      "yogurt"
+    ],
+    "gramsPerCup": 245.0,
+    "allergens": [
+      "dairy"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Gluten-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "yogurt",
+        "ratio": "1:1",
+        "notes": "Mild plain yogurt, slightly thinned."
+      },
+      {
+        "substituteItemID": "kefir",
+        "ratio": "1:1",
+        "notes": "Kefir for a comparable cultured pour."
+      },
+      {
+        "substituteItemID": "buttermilk",
+        "ratio": "1:1",
+        "notes": "Buttermilk for a tangy soured-milk note."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "amasi",
+    "name": "amasi",
+    "category": "Dairy & Eggs",
+    "defaultUnit": "cup",
+    "defaultQuantity": 2.0,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "maas",
+      "amasi sour milk",
+      "soured milk",
+      "leben",
+      "laban"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "cup",
+          "drinkable",
+          "liquid"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "fresh"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "cultured",
+          "pasteurized",
+          "plain"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "creamy",
+          "smooth",
+          "thick"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "cup"
+      }
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        7,
+        14
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "yogurt plain",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "plain"
+          }
+        ]
+      },
+      {
+        "text": "plain",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "plain"
+          }
+        ]
+      },
+      {
+        "text": "cultured",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "cultured"
+          }
+        ]
+      }
+    ],
+    "parentIds": [
+      "yogurt"
+    ],
+    "gramsPerCup": 245.0,
+    "allergens": [
+      "dairy"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Gluten-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "buttermilk",
+        "ratio": "1:1",
+        "notes": "Cultured buttermilk is the closest soured-milk match."
+      },
+      {
+        "substituteItemID": "yogurt",
+        "ratio": "1:1",
+        "notes": "Same family as yogurt."
+      },
+      {
+        "substituteItemID": "kefir",
+        "ratio": "1:1",
+        "notes": "Kefir for a drinkable cultured swap."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "liquid-egg-whites",
+    "name": "liquid egg whites",
+    "category": "Dairy & Eggs",
+    "defaultUnit": "oz",
+    "defaultQuantity": 16.0,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "egg whites",
+      "carton egg whites",
+      "liquid whites",
+      "pasteurized egg whites"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "cup",
+          "liquid"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "pasteurized",
+          "raw"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "liquid"
+      }
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        7,
+        14
+      ],
+      "Frozen": [
+        180,
+        365
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "pasteurized egg whites",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "pasteurized"
+          }
+        ]
+      }
+    ],
+    "parentIds": [
+      "egg"
+    ],
+    "gramsPerCup": 243.0,
+    "gramsPerPiece": 33.0,
+    "allergens": [
+      "egg"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "egg",
+        "ratio": "1:2",
+        "notes": "Two large egg whites ≈ one whole egg in volume."
+      },
+      {
+        "substituteItemID": "powdered-eggs",
+        "ratio": "1:1",
+        "notes": "Reconstituted egg-white powder."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "liquid-whole-eggs",
+    "name": "liquid whole eggs",
+    "category": "Dairy & Eggs",
+    "defaultUnit": "oz",
+    "defaultQuantity": 16.0,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "carton eggs",
+      "liquid eggs",
+      "pourable eggs",
+      "pasteurized whole eggs"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "cup",
+          "liquid"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "pasteurized",
+          "raw"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "liquid"
+      }
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        7,
+        14
+      ],
+      "Frozen": [
+        120,
+        365
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "pasteurized whole eggs",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "pasteurized"
+          }
+        ]
+      }
+    ],
+    "parentIds": [
+      "egg"
+    ],
+    "gramsPerCup": 243.0,
+    "gramsPerPiece": 50.0,
+    "allergens": [
+      "egg"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "egg",
+        "ratio": "1:1",
+        "notes": "About 3 tbsp liquid egg per large shell egg."
+      },
+      {
+        "substituteItemID": "liquid-egg-whites",
+        "ratio": "1:1",
+        "notes": "Egg whites only if cutting yolks."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "powdered-eggs",
+    "name": "powdered eggs",
+    "category": "Dairy & Eggs",
+    "defaultUnit": "oz",
+    "defaultQuantity": 8.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "dried eggs",
+      "egg powder",
+      "dehydrated egg",
+      "whole egg powder"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "powder"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "pasteurized",
+          "spray-dried"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "powder"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        365,
+        1825
+      ],
+      "Refrigerated": [
+        365,
+        1825
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "spray-dried egg",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "spray-dried"
+          }
+        ]
+      }
+    ],
+    "parentIds": [
+      "egg"
+    ],
+    "gramsPerCup": 110.0,
+    "gramsPerPiece": 10.0,
+    "allergens": [
+      "egg"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "egg",
+        "ratio": "1:1",
+        "notes": "2 tbsp powder + 2 tbsp water ≈ one egg."
+      },
+      {
+        "substituteItemID": "liquid-whole-eggs",
+        "ratio": "1:1",
+        "notes": "Reconstitute, or use liquid whole eggs."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "century-egg",
+    "name": "century egg",
+    "category": "Dairy & Eggs",
+    "defaultUnit": "piece",
+    "defaultQuantity": 6.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "preserved egg",
+      "thousand-year egg",
+      "pidan",
+      "hundred-year egg"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "whole",
+          "yolk"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "cured",
+          "raw"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        60,
+        180
+      ],
+      "Refrigerated": [
+        120,
+        365
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "cured egg",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "cured"
+          }
+        ]
+      }
+    ],
+    "parentIds": [
+      "egg"
+    ],
+    "gramsPerCup": 230,
+    "gramsPerPiece": 60.0,
+    "allergens": [
+      "egg"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "salted-duck-egg",
+        "ratio": "1:1",
+        "notes": "Salted duck egg for another preserved-egg note."
+      },
+      {
+        "substituteItemID": "duck-egg",
+        "ratio": "1:1",
+        "notes": "Duck egg, hard-cooked, as a fresh substitute."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "salted-duck-egg",
+    "name": "salted duck egg",
+    "category": "Dairy & Eggs",
+    "defaultUnit": "piece",
+    "defaultQuantity": 6.0,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "salted egg",
+      "itlog na maalat",
+      "salted egg yolk"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "whole",
+          "yolk"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "cooked",
+          "cured",
+          "raw"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        30,
+        60
+      ],
+      "Pantry": [
+        14,
+        30
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "cured egg",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "cured"
+          }
+        ]
+      }
+    ],
+    "parentIds": [
+      "egg"
+    ],
+    "gramsPerCup": 230,
+    "gramsPerPiece": 60.0,
+    "allergens": [
+      "egg"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "duck-egg",
+        "ratio": "1:1",
+        "notes": "Fresh duck egg lacks the cure but matches richness."
+      },
+      {
+        "substituteItemID": "century-egg",
+        "ratio": "1:1",
+        "notes": "Century egg for another preserved profile."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "ostrich-egg",
+    "name": "ostrich egg",
+    "category": "Dairy & Eggs",
+    "defaultUnit": "piece",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "ostrich eggs"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "whole",
+          "yolk"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "cooked",
+          "raw"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        21,
+        42
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "cooked egg",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "cooked"
+          }
+        ]
+      }
+    ],
+    "parentIds": [
+      "egg"
+    ],
+    "gramsPerCup": 230,
+    "gramsPerPiece": 1400.0,
+    "allergens": [
+      "egg"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "egg",
+        "ratio": "1:24",
+        "notes": "One ostrich egg ≈ 24 large chicken eggs."
+      },
+      {
+        "substituteItemID": "goose-egg",
+        "ratio": "1:6",
+        "notes": "Goose egg ≈ 6 chicken eggs."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "burrata",
+    "name": "burrata",
+    "category": "Dairy & Eggs",
+    "defaultUnit": "oz",
+    "defaultQuantity": 8.0,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "burrata cheese",
+      "burratina"
+    ],
+    "facets": [
+      {
+        "key": "grade",
+        "options": [
+          "mild"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "ball",
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "torn",
+          "ready-to-eat"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "fresh"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "pasteurized"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "creamy",
+          "soft"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "ball"
+      }
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        3,
+        7
+      ],
+      "Frozen": [
+        30,
+        60
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "mild cheese",
+        "facets": [
+          {
+            "key": "grade",
+            "value": "mild"
+          }
+        ]
+      },
+      {
+        "text": "creamy burrata",
+        "facets": [
+          {
+            "key": "texture",
+            "value": "creamy"
+          }
+        ]
+      }
+    ],
+    "parentIds": [
+      "cheese"
+    ],
+    "gramsPerCup": 224,
+    "allergens": [
+      "dairy"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Gluten-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "mozzarella",
+        "ratio": "1:1",
+        "notes": "Same family as cheese."
+      },
+      {
+        "substituteItemID": "ricotta",
+        "ratio": "1:1",
+        "notes": "Fresh ricotta mimics the soft center."
+      },
+      {
+        "substituteItemID": "mascarpone",
+        "ratio": "1:1",
+        "notes": "Mascarpone for the creamy filling."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "queso-fresco",
+    "name": "queso fresco",
+    "category": "Dairy & Eggs",
+    "defaultUnit": "oz",
+    "defaultQuantity": 8.0,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "fresh cheese",
+      "queso blanco",
+      "cheese fresco"
+    ],
+    "facets": [
+      {
+        "key": "grade",
+        "options": [
+          "mild"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "block",
+          "round"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "crumbled",
+          "cubed",
+          "sliced"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "fresh"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "pasteurized"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "crumbly",
+          "soft"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "block"
+      }
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        7,
+        14
+      ],
+      "Frozen": [
+        60,
+        90
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "mild cheese",
+        "facets": [
+          {
+            "key": "grade",
+            "value": "mild"
+          }
+        ]
+      },
+      {
+        "text": "crumbled queso fresco",
+        "facets": [
+          {
+            "key": "preparation",
+            "value": "crumbled"
+          }
+        ]
+      }
+    ],
+    "parentIds": [
+      "cheese"
+    ],
+    "gramsPerCup": 120,
+    "allergens": [
+      "dairy"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Gluten-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "feta",
+        "ratio": "1:1",
+        "notes": "Feta is saltier but crumbles similarly."
+      },
+      {
+        "substituteItemID": "cotija",
+        "ratio": "1:1",
+        "notes": "Cotija for a saltier crumble."
+      },
+      {
+        "substituteItemID": "cheese",
+        "ratio": "1:1",
+        "notes": "Same family as cheese."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "queso-oaxaca",
+    "name": "queso oaxaca",
+    "category": "Dairy & Eggs",
+    "defaultUnit": "oz",
+    "defaultQuantity": 8.0,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "oaxaca cheese",
+      "quesillo",
+      "mexican string cheese"
+    ],
+    "facets": [
+      {
+        "key": "grade",
+        "options": [
+          "mild"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "ball",
+          "string"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "shredded",
+          "pulled",
+          "sliced"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "fresh"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "pasteurized"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "creamy",
+          "smooth"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "ball"
+      }
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        14,
+        30
+      ],
+      "Frozen": [
+        60,
+        120
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "mild cheese",
+        "facets": [
+          {
+            "key": "grade",
+            "value": "mild"
+          }
+        ]
+      },
+      {
+        "text": "shredded oaxaca",
+        "facets": [
+          {
+            "key": "preparation",
+            "value": "shredded"
+          }
+        ]
+      }
+    ],
+    "parentIds": [
+      "cheese"
+    ],
+    "gramsPerCup": 132,
+    "allergens": [
+      "dairy"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Gluten-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "mozzarella",
+        "ratio": "1:1",
+        "notes": "Low-moisture mozzarella melts almost identically."
+      },
+      {
+        "substituteItemID": "monterey-jack",
+        "ratio": "1:1",
+        "notes": "Monterey Jack for melting."
+      },
+      {
+        "substituteItemID": "cheese",
+        "ratio": "1:1",
+        "notes": "Same family as cheese."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "panela-cheese",
+    "name": "panela cheese",
+    "category": "Dairy & Eggs",
+    "defaultUnit": "oz",
+    "defaultQuantity": 8.0,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "queso panela",
+      "queso de canasta"
+    ],
+    "facets": [
+      {
+        "key": "grade",
+        "options": [
+          "mild"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "block",
+          "round"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "cubed",
+          "sliced",
+          "crumbled"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "fresh"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "pasteurized"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "firm",
+          "soft"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "block"
+      }
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        10,
+        21
+      ],
+      "Frozen": [
+        60,
+        90
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "mild cheese",
+        "facets": [
+          {
+            "key": "grade",
+            "value": "mild"
+          }
+        ]
+      },
+      {
+        "text": "cubed panela",
+        "facets": [
+          {
+            "key": "preparation",
+            "value": "cubed"
+          }
+        ]
+      }
+    ],
+    "parentIds": [
+      "cheese"
+    ],
+    "gramsPerCup": 120,
+    "allergens": [
+      "dairy"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Gluten-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "queso-fresco",
+        "ratio": "1:1",
+        "notes": "Queso fresco for a similar fresh cow's-milk cheese."
+      },
+      {
+        "substituteItemID": "paneer",
+        "ratio": "1:1",
+        "notes": "Paneer holds shape when heated, like panela."
+      },
+      {
+        "substituteItemID": "halloumi",
+        "ratio": "1:1",
+        "notes": "Halloumi for a grillable option."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "halloumi",
+    "name": "halloumi",
+    "category": "Dairy & Eggs",
+    "defaultUnit": "oz",
+    "defaultQuantity": 8.0,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "haloumi",
+      "halloumi cheese",
+      "grilling cheese",
+      "hellim"
+    ],
+    "facets": [
+      {
+        "key": "grade",
+        "options": [
+          "mild"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "block",
+          "slab"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "sliced",
+          "cubed"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "brined",
+          "fresh"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "pasteurized"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "firm",
+          "springy"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "block"
+      }
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        14,
+        60
+      ],
+      "Frozen": [
+        90,
+        180
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "mild cheese",
+        "facets": [
+          {
+            "key": "grade",
+            "value": "mild"
+          }
+        ]
+      },
+      {
+        "text": "sliced halloumi",
+        "facets": [
+          {
+            "key": "preparation",
+            "value": "sliced"
+          }
+        ]
+      }
+    ],
+    "parentIds": [
+      "cheese"
+    ],
+    "gramsPerCup": 150,
+    "allergens": [
+      "dairy"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Gluten-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "paneer",
+        "ratio": "1:1",
+        "notes": "Paneer also fries without melting."
+      },
+      {
+        "substituteItemID": "queso-fresco",
+        "ratio": "1:1",
+        "notes": "Queso fresco, pan-seared."
+      },
+      {
+        "substituteItemID": "cheese",
+        "ratio": "1:1",
+        "notes": "Same family as cheese."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "camembert",
+    "name": "camembert",
+    "category": "Dairy & Eggs",
+    "defaultUnit": "oz",
+    "defaultQuantity": 8.0,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "camembert cheese",
+      "camembert de normandie"
+    ],
+    "facets": [
+      {
+        "key": "grade",
+        "options": [
+          "mild"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "round",
+          "wedge",
+          "wheel"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "sliced",
+          "wedge",
+          "ready-to-eat"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "fresh"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "aged",
+          "pasteurized"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "creamy",
+          "soft"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "wheel"
+      }
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        14,
+        35
+      ],
+      "Frozen": [
+        60,
+        120
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "mild cheese",
+        "facets": [
+          {
+            "key": "grade",
+            "value": "mild"
+          }
+        ]
+      },
+      {
+        "text": "aged",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "aged"
+          }
+        ]
+      },
+      {
+        "text": "creamy camembert",
+        "facets": [
+          {
+            "key": "texture",
+            "value": "creamy"
+          }
+        ]
+      }
+    ],
+    "parentIds": [
+      "cheese"
+    ],
+    "gramsPerCup": 144,
+    "allergens": [
+      "dairy"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Gluten-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "brie",
+        "ratio": "1:1",
+        "notes": "Same family as cheese."
+      },
+      {
+        "substituteItemID": "cheese",
+        "ratio": "1:1",
+        "notes": "Same family as cheese."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "taleggio",
+    "name": "taleggio",
+    "category": "Dairy & Eggs",
+    "defaultUnit": "oz",
+    "defaultQuantity": 8.0,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "taleggio cheese"
+    ],
+    "facets": [
+      {
+        "key": "grade",
+        "options": [
+          "mild",
+          "sharp"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "block",
+          "wedge"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "sliced",
+          "cubed",
+          "ready-to-eat"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "fresh"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "aged",
+          "washed-rind"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "creamy",
+          "soft"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "wedge"
+      }
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        14,
+        35
+      ],
+      "Frozen": [
+        60,
+        120
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "mild cheese",
+        "facets": [
+          {
+            "key": "grade",
+            "value": "mild"
+          }
+        ]
+      },
+      {
+        "text": "sharp cheese",
+        "facets": [
+          {
+            "key": "grade",
+            "value": "sharp"
+          }
+        ]
+      },
+      {
+        "text": "aged",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "aged"
+          }
+        ]
+      }
+    ],
+    "parentIds": [
+      "cheese"
+    ],
+    "gramsPerCup": 144,
+    "allergens": [
+      "dairy"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Gluten-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "brie",
+        "ratio": "1:1",
+        "notes": "Brie for a milder soft melter."
+      },
+      {
+        "substituteItemID": "fontina",
+        "ratio": "1:1",
+        "notes": "Fontina for a comparable washed-rind melt."
+      },
+      {
+        "substituteItemID": "cheese",
+        "ratio": "1:1",
+        "notes": "Same family as cheese."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "limburger",
+    "name": "limburger",
+    "category": "Dairy & Eggs",
+    "defaultUnit": "oz",
+    "defaultQuantity": 8.0,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "limburger cheese"
+    ],
+    "facets": [
+      {
+        "key": "grade",
+        "options": [
+          "sharp"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "block",
+          "brick"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "sliced",
+          "spread"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "fresh"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "aged",
+          "washed-rind"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "creamy",
+          "soft"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "brick"
+      }
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        14,
+        42
+      ],
+      "Frozen": [
+        90,
+        180
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "sharp cheese",
+        "facets": [
+          {
+            "key": "grade",
+            "value": "sharp"
+          }
+        ]
+      },
+      {
+        "text": "aged",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "aged"
+          }
+        ]
+      }
+    ],
+    "parentIds": [
+      "cheese"
+    ],
+    "gramsPerCup": 144,
+    "allergens": [
+      "dairy"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Gluten-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "taleggio",
+        "ratio": "1:1",
+        "notes": "Taleggio for a milder washed-rind option."
+      },
+      {
+        "substituteItemID": "cheese",
+        "ratio": "1:1",
+        "notes": "Same family as cheese."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "comt",
+    "name": "comté",
+    "category": "Dairy & Eggs",
+    "defaultUnit": "oz",
+    "defaultQuantity": 8.0,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "comte",
+      "comté cheese",
+      "gruyère de comté"
+    ],
+    "facets": [
+      {
+        "key": "grade",
+        "options": [
+          "mild",
+          "sharp"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "block",
+          "wedge",
+          "wheel"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "grated",
+          "shredded",
+          "sliced",
+          "cubed",
+          "wedge"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "fresh"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "aged"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "wedge"
+      }
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        21,
+        90
+      ],
+      "Frozen": [
+        120,
+        180
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "mild cheese",
+        "facets": [
+          {
+            "key": "grade",
+            "value": "mild"
+          }
+        ]
+      },
+      {
+        "text": "sharp cheese",
+        "facets": [
+          {
+            "key": "grade",
+            "value": "sharp"
+          }
+        ]
+      },
+      {
+        "text": "aged",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "aged"
+          }
+        ]
+      },
+      {
+        "text": "grated",
+        "facets": [
+          {
+            "key": "preparation",
+            "value": "grated"
+          }
+        ]
+      }
+    ],
+    "parentIds": [
+      "cheese"
+    ],
+    "gramsPerCup": 108,
+    "allergens": [
+      "dairy"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Gluten-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "gruyere",
+        "ratio": "1:1",
+        "notes": "Same family as cheese."
+      },
+      {
+        "substituteItemID": "emmental",
+        "ratio": "1:1",
+        "notes": "Emmental for melting."
+      },
+      {
+        "substituteItemID": "cheese",
+        "ratio": "1:1",
+        "notes": "Same family as cheese."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "edam",
+    "name": "edam",
+    "category": "Dairy & Eggs",
+    "defaultUnit": "oz",
+    "defaultQuantity": 8.0,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "edam cheese",
+      "edammer"
+    ],
+    "facets": [
+      {
+        "key": "grade",
+        "options": [
+          "mild",
+          "sharp"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "block",
+          "wedge",
+          "wheel"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "grated",
+          "shredded",
+          "sliced",
+          "cubed",
+          "wedge"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "fresh"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "aged"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "wedge"
+      }
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        21,
+        60
+      ],
+      "Frozen": [
+        120,
+        180
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "mild cheese",
+        "facets": [
+          {
+            "key": "grade",
+            "value": "mild"
+          }
+        ]
+      },
+      {
+        "text": "sharp cheese",
+        "facets": [
+          {
+            "key": "grade",
+            "value": "sharp"
+          }
+        ]
+      },
+      {
+        "text": "aged",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "aged"
+          }
+        ]
+      },
+      {
+        "text": "grated",
+        "facets": [
+          {
+            "key": "preparation",
+            "value": "grated"
+          }
+        ]
+      }
+    ],
+    "parentIds": [
+      "cheese"
+    ],
+    "gramsPerCup": 110,
+    "allergens": [
+      "dairy"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Gluten-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "gouda",
+        "ratio": "1:1",
+        "notes": "Gouda is the closest Dutch sibling."
+      },
+      {
+        "substituteItemID": "cheese",
+        "ratio": "1:1",
+        "notes": "Same family as cheese."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "jarlsberg",
+    "name": "jarlsberg",
+    "category": "Dairy & Eggs",
+    "defaultUnit": "oz",
+    "defaultQuantity": 8.0,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "jarlsberg cheese",
+      "norwegian swiss"
+    ],
+    "facets": [
+      {
+        "key": "grade",
+        "options": [
+          "mild",
+          "sharp"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "block",
+          "wedge",
+          "wheel"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "grated",
+          "shredded",
+          "sliced",
+          "cubed",
+          "wedge"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "fresh"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "aged"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "wedge"
+      }
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        21,
+        60
+      ],
+      "Frozen": [
+        120,
+        180
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "mild cheese",
+        "facets": [
+          {
+            "key": "grade",
+            "value": "mild"
+          }
+        ]
+      },
+      {
+        "text": "sharp cheese",
+        "facets": [
+          {
+            "key": "grade",
+            "value": "sharp"
+          }
+        ]
+      },
+      {
+        "text": "aged",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "aged"
+          }
+        ]
+      },
+      {
+        "text": "grated",
+        "facets": [
+          {
+            "key": "preparation",
+            "value": "grated"
+          }
+        ]
+      }
+    ],
+    "parentIds": [
+      "cheese"
+    ],
+    "gramsPerCup": 108,
+    "allergens": [
+      "dairy"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Gluten-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "emmental",
+        "ratio": "1:1",
+        "notes": "Emmental, the Swiss original."
+      },
+      {
+        "substituteItemID": "gruyere",
+        "ratio": "1:1",
+        "notes": "Gruyère for nuttier depth."
+      },
+      {
+        "substituteItemID": "cheese",
+        "ratio": "1:1",
+        "notes": "Same family as cheese."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "raclette",
+    "name": "raclette",
+    "category": "Dairy & Eggs",
+    "defaultUnit": "oz",
+    "defaultQuantity": 8.0,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "raclette cheese"
+    ],
+    "facets": [
+      {
+        "key": "grade",
+        "options": [
+          "mild",
+          "sharp"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "block",
+          "wedge",
+          "wheel"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "grated",
+          "shredded",
+          "sliced",
+          "cubed",
+          "wedge"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "fresh"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "aged"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "wedge"
+      }
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        14,
+        42
+      ],
+      "Frozen": [
+        120,
+        180
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "mild cheese",
+        "facets": [
+          {
+            "key": "grade",
+            "value": "mild"
+          }
+        ]
+      },
+      {
+        "text": "sharp cheese",
+        "facets": [
+          {
+            "key": "grade",
+            "value": "sharp"
+          }
+        ]
+      },
+      {
+        "text": "aged",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "aged"
+          }
+        ]
+      },
+      {
+        "text": "grated",
+        "facets": [
+          {
+            "key": "preparation",
+            "value": "grated"
+          }
+        ]
+      }
+    ],
+    "parentIds": [
+      "cheese"
+    ],
+    "gramsPerCup": 120,
+    "allergens": [
+      "dairy"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Gluten-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "gruyere",
+        "ratio": "1:1",
+        "notes": "Gruyère melts comparably."
+      },
+      {
+        "substituteItemID": "fontina",
+        "ratio": "1:1",
+        "notes": "Fontina for a smooth melt."
+      },
+      {
+        "substituteItemID": "cheese",
+        "ratio": "1:1",
+        "notes": "Same family as cheese."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "kashkaval",
+    "name": "kashkaval",
+    "category": "Dairy & Eggs",
+    "defaultUnit": "oz",
+    "defaultQuantity": 8.0,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "kashkaval cheese",
+      "kasseri",
+      "kackavalj",
+      "balkan yellow cheese"
+    ],
+    "facets": [
+      {
+        "key": "grade",
+        "options": [
+          "mild",
+          "sharp"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "block",
+          "wedge",
+          "wheel"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "grated",
+          "shredded",
+          "sliced",
+          "cubed",
+          "wedge"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "fresh"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "aged"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "wedge"
+      }
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        21,
+        60
+      ],
+      "Frozen": [
+        120,
+        180
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "mild cheese",
+        "facets": [
+          {
+            "key": "grade",
+            "value": "mild"
+          }
+        ]
+      },
+      {
+        "text": "sharp cheese",
+        "facets": [
+          {
+            "key": "grade",
+            "value": "sharp"
+          }
+        ]
+      },
+      {
+        "text": "aged",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "aged"
+          }
+        ]
+      },
+      {
+        "text": "grated",
+        "facets": [
+          {
+            "key": "preparation",
+            "value": "grated"
+          }
+        ]
+      }
+    ],
+    "parentIds": [
+      "cheese"
+    ],
+    "gramsPerCup": 110,
+    "allergens": [
+      "dairy"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Gluten-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "provolone",
+        "ratio": "1:1",
+        "notes": "Provolone, a comparable pasta-filata."
+      },
+      {
+        "substituteItemID": "mozzarella",
+        "ratio": "1:1",
+        "notes": "Low-moisture mozzarella for melting."
+      },
+      {
+        "substituteItemID": "cheese",
+        "ratio": "1:1",
+        "notes": "Same family as cheese."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "queso-de-bola",
+    "name": "queso de bola",
+    "category": "Dairy & Eggs",
+    "defaultUnit": "oz",
+    "defaultQuantity": 8.0,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "edam ball",
+      "filipino edam",
+      "bola cheese"
+    ],
+    "facets": [
+      {
+        "key": "grade",
+        "options": [
+          "mild",
+          "sharp"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "block",
+          "wedge",
+          "wheel"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "grated",
+          "shredded",
+          "sliced",
+          "cubed",
+          "wedge"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "fresh"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "aged"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "wedge"
+      }
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        21,
+        90
+      ],
+      "Frozen": [
+        120,
+        180
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "mild cheese",
+        "facets": [
+          {
+            "key": "grade",
+            "value": "mild"
+          }
+        ]
+      },
+      {
+        "text": "sharp cheese",
+        "facets": [
+          {
+            "key": "grade",
+            "value": "sharp"
+          }
+        ]
+      },
+      {
+        "text": "aged",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "aged"
+          }
+        ]
+      },
+      {
+        "text": "grated",
+        "facets": [
+          {
+            "key": "preparation",
+            "value": "grated"
+          }
+        ]
+      }
+    ],
+    "parentIds": [
+      "cheese"
+    ],
+    "gramsPerCup": 110,
+    "allergens": [
+      "dairy"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Gluten-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "edam",
+        "ratio": "1:1",
+        "notes": "It is essentially Edam."
+      },
+      {
+        "substituteItemID": "gouda",
+        "ratio": "1:1",
+        "notes": "Gouda as a close stand-in."
+      },
+      {
+        "substituteItemID": "cheese",
+        "ratio": "1:1",
+        "notes": "Same family as cheese."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "grana-padano",
+    "name": "grana padano",
+    "category": "Dairy & Eggs",
+    "defaultUnit": "oz",
+    "defaultQuantity": 8.0,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "grana padano cheese",
+      "grana"
+    ],
+    "facets": [
+      {
+        "key": "grade",
+        "options": [
+          "mild",
+          "sharp"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "block",
+          "wedge",
+          "wheel"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "grated",
+          "shredded",
+          "sliced",
+          "cubed",
+          "wedge"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "fresh"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "aged"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "wedge"
+      }
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        30,
+        120
+      ],
+      "Frozen": [
+        120,
+        180
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "mild cheese",
+        "facets": [
+          {
+            "key": "grade",
+            "value": "mild"
+          }
+        ]
+      },
+      {
+        "text": "sharp cheese",
+        "facets": [
+          {
+            "key": "grade",
+            "value": "sharp"
+          }
+        ]
+      },
+      {
+        "text": "aged",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "aged"
+          }
+        ]
+      },
+      {
+        "text": "grated",
+        "facets": [
+          {
+            "key": "preparation",
+            "value": "grated"
+          }
+        ]
+      }
+    ],
+    "parentIds": [
+      "cheese"
+    ],
+    "gramsPerCup": 100,
+    "allergens": [
+      "dairy"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Gluten-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "parmesan",
+        "ratio": "1:1",
+        "notes": "Parmigiano-Reggiano is interchangeable."
+      },
+      {
+        "substituteItemID": "asiago",
+        "ratio": "1:1",
+        "notes": "Aged asiago for grating."
+      },
+      {
+        "substituteItemID": "cheese",
+        "ratio": "1:1",
+        "notes": "Same family as cheese."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "wensleydale",
+    "name": "wensleydale",
+    "category": "Dairy & Eggs",
+    "defaultUnit": "oz",
+    "defaultQuantity": 8.0,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "wensleydale cheese",
+      "yorkshire wensleydale"
+    ],
+    "facets": [
+      {
+        "key": "grade",
+        "options": [
+          "mild",
+          "sharp"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "block",
+          "wedge",
+          "wheel"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "grated",
+          "shredded",
+          "sliced",
+          "cubed",
+          "wedge"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "fresh"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "aged"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "wedge"
+      }
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        14,
+        42
+      ],
+      "Frozen": [
+        90,
+        180
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "mild cheese",
+        "facets": [
+          {
+            "key": "grade",
+            "value": "mild"
+          }
+        ]
+      },
+      {
+        "text": "sharp cheese",
+        "facets": [
+          {
+            "key": "grade",
+            "value": "sharp"
+          }
+        ]
+      },
+      {
+        "text": "aged",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "aged"
+          }
+        ]
+      },
+      {
+        "text": "grated",
+        "facets": [
+          {
+            "key": "preparation",
+            "value": "grated"
+          }
+        ]
+      }
+    ],
+    "parentIds": [
+      "cheese"
+    ],
+    "gramsPerCup": 110,
+    "allergens": [
+      "dairy"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Gluten-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "cheddar",
+        "ratio": "1:1",
+        "notes": "Young cheddar for a similar crumble."
+      },
+      {
+        "substituteItemID": "feta",
+        "ratio": "1:1",
+        "notes": "Feta for a tangy crumbly note."
+      },
+      {
+        "substituteItemID": "cheese",
+        "ratio": "1:1",
+        "notes": "Same family as cheese."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "red-leicester",
+    "name": "red leicester",
+    "category": "Dairy & Eggs",
+    "defaultUnit": "oz",
+    "defaultQuantity": 8.0,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "leicester cheese",
+      "red leicester cheese"
+    ],
+    "facets": [
+      {
+        "key": "grade",
+        "options": [
+          "mild",
+          "sharp"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "block",
+          "wedge",
+          "wheel"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "grated",
+          "shredded",
+          "sliced",
+          "cubed",
+          "wedge"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "fresh"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "aged"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "wedge"
+      }
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        21,
+        60
+      ],
+      "Frozen": [
+        120,
+        180
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "mild cheese",
+        "facets": [
+          {
+            "key": "grade",
+            "value": "mild"
+          }
+        ]
+      },
+      {
+        "text": "sharp cheese",
+        "facets": [
+          {
+            "key": "grade",
+            "value": "sharp"
+          }
+        ]
+      },
+      {
+        "text": "aged",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "aged"
+          }
+        ]
+      },
+      {
+        "text": "grated",
+        "facets": [
+          {
+            "key": "preparation",
+            "value": "grated"
+          }
+        ]
+      }
+    ],
+    "parentIds": [
+      "cheese"
+    ],
+    "gramsPerCup": 120,
+    "allergens": [
+      "dairy"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Gluten-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "cheddar",
+        "ratio": "1:1",
+        "notes": "Cheddar is the closest match."
+      },
+      {
+        "substituteItemID": "double-gloucester",
+        "ratio": "1:1",
+        "notes": "Double Gloucester for a similar English style."
+      },
+      {
+        "substituteItemID": "cheese",
+        "ratio": "1:1",
+        "notes": "Same family as cheese."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "double-gloucester",
+    "name": "double gloucester",
+    "category": "Dairy & Eggs",
+    "defaultUnit": "oz",
+    "defaultQuantity": 8.0,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "gloucester cheese",
+      "double gloucester cheese"
+    ],
+    "facets": [
+      {
+        "key": "grade",
+        "options": [
+          "mild",
+          "sharp"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "block",
+          "wedge",
+          "wheel"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "grated",
+          "shredded",
+          "sliced",
+          "cubed",
+          "wedge"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "fresh"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "aged"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "wedge"
+      }
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        21,
+        60
+      ],
+      "Frozen": [
+        120,
+        180
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "mild cheese",
+        "facets": [
+          {
+            "key": "grade",
+            "value": "mild"
+          }
+        ]
+      },
+      {
+        "text": "sharp cheese",
+        "facets": [
+          {
+            "key": "grade",
+            "value": "sharp"
+          }
+        ]
+      },
+      {
+        "text": "aged",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "aged"
+          }
+        ]
+      },
+      {
+        "text": "grated",
+        "facets": [
+          {
+            "key": "preparation",
+            "value": "grated"
+          }
+        ]
+      }
+    ],
+    "parentIds": [
+      "cheese"
+    ],
+    "gramsPerCup": 120,
+    "allergens": [
+      "dairy"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Gluten-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "cheddar",
+        "ratio": "1:1",
+        "notes": "Cheddar for a similar firm cow's-milk cheese."
+      },
+      {
+        "substituteItemID": "red-leicester",
+        "ratio": "1:1",
+        "notes": "Red Leicester, a close English cousin."
+      },
+      {
+        "substituteItemID": "cheese",
+        "ratio": "1:1",
+        "notes": "Same family as cheese."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "ricotta-salata",
+    "name": "ricotta salata",
+    "category": "Dairy & Eggs",
+    "defaultUnit": "oz",
+    "defaultQuantity": 8.0,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "ricotta salata cheese",
+      "salted ricotta"
+    ],
+    "facets": [
+      {
+        "key": "grade",
+        "options": [
+          "mild",
+          "sharp"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "block",
+          "wedge",
+          "wheel"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "grated",
+          "shredded",
+          "sliced",
+          "cubed",
+          "wedge"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "fresh"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "aged"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "wedge"
+      }
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        14,
+        30
+      ],
+      "Frozen": [
+        60,
+        120
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "mild cheese",
+        "facets": [
+          {
+            "key": "grade",
+            "value": "mild"
+          }
+        ]
+      },
+      {
+        "text": "sharp cheese",
+        "facets": [
+          {
+            "key": "grade",
+            "value": "sharp"
+          }
+        ]
+      },
+      {
+        "text": "aged",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "aged"
+          }
+        ]
+      },
+      {
+        "text": "grated",
+        "facets": [
+          {
+            "key": "preparation",
+            "value": "grated"
+          }
+        ]
+      }
+    ],
+    "parentIds": [
+      "cheese"
+    ],
+    "gramsPerCup": 120,
+    "allergens": [
+      "dairy"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Gluten-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "feta",
+        "ratio": "1:1",
+        "notes": "Feta for a saltier crumble."
+      },
+      {
+        "substituteItemID": "cotija",
+        "ratio": "1:1",
+        "notes": "Cotija for a firm salted grate."
+      },
+      {
+        "substituteItemID": "cheese",
+        "ratio": "1:1",
+        "notes": "Same family as cheese."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "mizithra",
+    "name": "mizithra",
+    "category": "Dairy & Eggs",
+    "defaultUnit": "oz",
+    "defaultQuantity": 8.0,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "myzithra",
+      "mizithra cheese",
+      "anthotyro"
+    ],
+    "facets": [
+      {
+        "key": "grade",
+        "options": [
+          "mild",
+          "sharp"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "block",
+          "wedge",
+          "wheel"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "grated",
+          "shredded",
+          "sliced",
+          "cubed",
+          "wedge"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "fresh"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "aged"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "wedge"
+      }
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        14,
+        30
+      ],
+      "Frozen": [
+        60,
+        90
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "mild cheese",
+        "facets": [
+          {
+            "key": "grade",
+            "value": "mild"
+          }
+        ]
+      },
+      {
+        "text": "sharp cheese",
+        "facets": [
+          {
+            "key": "grade",
+            "value": "sharp"
+          }
+        ]
+      },
+      {
+        "text": "aged",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "aged"
+          }
+        ]
+      },
+      {
+        "text": "grated",
+        "facets": [
+          {
+            "key": "preparation",
+            "value": "grated"
+          }
+        ]
+      }
+    ],
+    "parentIds": [
+      "cheese"
+    ],
+    "gramsPerCup": 110,
+    "allergens": [
+      "dairy"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Gluten-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "ricotta-salata",
+        "ratio": "1:1",
+        "notes": "Aged ricotta salata is the closest."
+      },
+      {
+        "substituteItemID": "parmesan",
+        "ratio": "1:1",
+        "notes": "Parmesan for grating."
+      },
+      {
+        "substituteItemID": "cheese",
+        "ratio": "1:1",
+        "notes": "Same family as cheese."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "cheese-curds",
+    "name": "cheese curds",
+    "category": "Dairy & Eggs",
+    "defaultUnit": "oz",
+    "defaultQuantity": 8.0,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "squeaky cheese",
+      "fresh cheese curds",
+      "poutine curds"
+    ],
+    "facets": [
+      {
+        "key": "grade",
+        "options": [
+          "mild",
+          "sharp"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "block",
+          "wedge",
+          "wheel"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "grated",
+          "shredded",
+          "sliced",
+          "cubed",
+          "wedge"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "fresh"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "pasteurized"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "wedge"
+      }
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        7,
+        14
+      ],
+      "Frozen": [
+        60,
+        90
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "mild cheese",
+        "facets": [
+          {
+            "key": "grade",
+            "value": "mild"
+          }
+        ]
+      },
+      {
+        "text": "mild",
+        "facets": [
+          {
+            "key": "grade",
+            "value": "mild"
+          }
+        ]
+      },
+      {
+        "text": "sharp cheese",
+        "facets": [
+          {
+            "key": "grade",
+            "value": "sharp"
+          }
+        ]
+      },
+      {
+        "text": "sharp",
+        "facets": [
+          {
+            "key": "grade",
+            "value": "sharp"
+          }
+        ]
+      },
+      {
+        "text": "grated curds",
+        "facets": [
+          {
+            "key": "preparation",
+            "value": "grated"
+          }
+        ]
+      }
+    ],
+    "parentIds": [
+      "cheese"
+    ],
+    "gramsPerCup": 132,
+    "allergens": [
+      "dairy"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Gluten-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "cheddar",
+        "ratio": "1:1",
+        "notes": "Cubed young cheddar is the closest."
+      },
+      {
+        "substituteItemID": "mozzarella",
+        "ratio": "1:1",
+        "notes": "Fresh mozzarella pieces for melting."
+      },
+      {
+        "substituteItemID": "cheese",
+        "ratio": "1:1",
+        "notes": "Same family as cheese."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "processed-cheese-slices",
+    "name": "processed cheese slices",
+    "category": "Dairy & Eggs",
+    "defaultUnit": "oz",
+    "defaultQuantity": 8.0,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "cheese slices",
+      "singles",
+      "process cheese",
+      "processed cheese food",
+      "burger cheese"
+    ],
+    "facets": [
+      {
+        "key": "grade",
+        "options": [
+          "mild"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "sliced",
+          "slice"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "sliced",
+          "ready-to-eat"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "fresh"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "processed"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "smooth"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "sliced"
+      }
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        60,
+        120
+      ],
+      "Frozen": [
+        120,
+        180
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "mild cheese",
+        "facets": [
+          {
+            "key": "grade",
+            "value": "mild"
+          }
+        ]
+      },
+      {
+        "text": "processed",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "processed"
+          }
+        ]
+      },
+      {
+        "text": "sliced",
+        "facets": [
+          {
+            "key": "preparation",
+            "value": "sliced"
+          }
+        ]
+      }
+    ],
+    "parentIds": [
+      "cheese"
+    ],
+    "gramsPerCup": 230,
+    "allergens": [
+      "dairy"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Gluten-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "american",
+        "ratio": "1:1",
+        "notes": "Block American cheese, sliced."
+      },
+      {
+        "substituteItemID": "cheddar",
+        "ratio": "1:1",
+        "notes": "Sliced mild cheddar."
+      },
+      {
+        "substituteItemID": "cheese",
+        "ratio": "1:1",
+        "notes": "Same family as cheese."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "stilton",
+    "name": "stilton",
+    "category": "Dairy & Eggs",
+    "defaultUnit": "oz",
+    "defaultQuantity": 8.0,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "stilton cheese",
+      "blue stilton",
+      "white stilton"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "block",
+          "wedge",
+          "crumbled"
+        ]
+      },
+      {
+        "key": "grade",
+        "options": [
+          "mild",
+          "sharp"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "crumbled",
+          "cubed",
+          "sliced",
+          "wedge"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "fresh"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "aged",
+          "pasteurized"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "creamy",
+          "crumbly"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "wedge"
+      }
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        14,
+        42
+      ],
+      "Frozen": [
+        90,
+        180
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "mild cheese",
+        "facets": [
+          {
+            "key": "grade",
+            "value": "mild"
+          }
+        ]
+      },
+      {
+        "text": "sharp cheese",
+        "facets": [
+          {
+            "key": "grade",
+            "value": "sharp"
+          }
+        ]
+      },
+      {
+        "text": "aged",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "aged"
+          }
+        ]
+      },
+      {
+        "text": "crumbled",
+        "facets": [
+          {
+            "key": "preparation",
+            "value": "crumbled"
+          }
+        ]
+      }
+    ],
+    "parentIds": [
+      "blue-cheese"
+    ],
+    "gramsPerCup": 135,
+    "allergens": [
+      "dairy"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Gluten-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "blue-cheese",
+        "ratio": "1:1",
+        "notes": "Same family as blue cheese."
+      },
+      {
+        "substituteItemID": "gorgonzola",
+        "ratio": "1:1",
+        "notes": "Gorgonzola for a creamier blue."
+      },
+      {
+        "substituteItemID": "roquefort",
+        "ratio": "1:1",
+        "notes": "Roquefort for a sharper blue."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "roquefort",
+    "name": "roquefort",
+    "category": "Dairy & Eggs",
+    "defaultUnit": "oz",
+    "defaultQuantity": 8.0,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "roquefort cheese",
+      "french blue cheese"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "block",
+          "wedge",
+          "crumbled"
+        ]
+      },
+      {
+        "key": "grade",
+        "options": [
+          "mild",
+          "sharp"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "crumbled",
+          "cubed",
+          "sliced",
+          "wedge"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "fresh"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "aged",
+          "pasteurized"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "creamy",
+          "crumbly"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "wedge"
+      }
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        14,
+        42
+      ],
+      "Frozen": [
+        90,
+        180
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "mild cheese",
+        "facets": [
+          {
+            "key": "grade",
+            "value": "mild"
+          }
+        ]
+      },
+      {
+        "text": "sharp cheese",
+        "facets": [
+          {
+            "key": "grade",
+            "value": "sharp"
+          }
+        ]
+      },
+      {
+        "text": "aged",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "aged"
+          }
+        ]
+      },
+      {
+        "text": "crumbled",
+        "facets": [
+          {
+            "key": "preparation",
+            "value": "crumbled"
+          }
+        ]
+      }
+    ],
+    "parentIds": [
+      "blue-cheese"
+    ],
+    "gramsPerCup": 135,
+    "allergens": [
+      "dairy"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Gluten-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "blue-cheese",
+        "ratio": "1:1",
+        "notes": "Same family as blue cheese."
+      },
+      {
+        "substituteItemID": "gorgonzola",
+        "ratio": "1:1",
+        "notes": "Gorgonzola piccante for a comparable sharp blue."
+      },
+      {
+        "substituteItemID": "stilton",
+        "ratio": "1:1",
+        "notes": "Stilton for an English blue."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "boursin",
+    "name": "boursin",
+    "category": "Dairy & Eggs",
+    "defaultUnit": "oz",
+    "defaultQuantity": 8.0,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "boursin cheese",
+      "garlic herb cheese",
+      "gournay cheese"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "block",
+          "cup",
+          "spread"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "cultured",
+          "flavored",
+          "pasteurized"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "spread"
+      }
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        14,
+        30
+      ],
+      "Frozen": [
+        60,
+        90
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "flavored",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "flavored"
+          }
+        ]
+      },
+      {
+        "text": "cultured",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "cultured"
+          }
+        ]
+      }
+    ],
+    "parentIds": [
+      "cream-cheese"
+    ],
+    "gramsPerCup": 232.0,
+    "allergens": [
+      "dairy"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Gluten-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "cream-cheese",
+        "ratio": "1:1",
+        "notes": "Cream cheese mixed with garlic and herbs."
+      },
+      {
+        "substituteItemID": "goat-cheese",
+        "ratio": "1:1",
+        "notes": "Herbed goat cheese for a tangier spread."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "queso-de-cabra",
+    "name": "queso de cabra",
+    "category": "Dairy & Eggs",
+    "defaultUnit": "oz",
+    "defaultQuantity": 8.0,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "spanish goat cheese",
+      "cabra"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "block",
+          "wedge"
+        ]
+      },
+      {
+        "key": "grade",
+        "options": [
+          "mild",
+          "sharp"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "crumbled",
+          "sliced",
+          "grated"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "fresh"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "aged",
+          "pasteurized"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "wedge"
+      }
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        14,
+        30
+      ],
+      "Frozen": [
+        60,
+        90
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "mild cheese",
+        "facets": [
+          {
+            "key": "grade",
+            "value": "mild"
+          }
+        ]
+      },
+      {
+        "text": "sharp cheese",
+        "facets": [
+          {
+            "key": "grade",
+            "value": "sharp"
+          }
+        ]
+      },
+      {
+        "text": "aged",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "aged"
+          }
+        ]
+      }
+    ],
+    "parentIds": [
+      "goat-cheese"
+    ],
+    "gramsPerCup": 130,
+    "allergens": [
+      "dairy"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Gluten-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "goat-cheese",
+        "ratio": "1:1",
+        "notes": "Same family as goat cheese."
+      },
+      {
+        "substituteItemID": "manchego",
+        "ratio": "1:1",
+        "notes": "Manchego for an aged Spanish profile."
+      },
+      {
+        "substituteItemID": "feta",
+        "ratio": "1:1",
+        "notes": "Feta for a tangy crumble."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "fromage-blanc",
+    "name": "fromage blanc",
+    "category": "Dairy & Eggs",
+    "defaultUnit": "oz",
+    "defaultQuantity": 8.0,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "fromage frais",
+      "white cheese spread",
+      "petit suisse"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "cup",
+          "spreadable"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "cultured",
+          "pasteurized"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "cup"
+      }
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        7,
+        14
+      ],
+      "Frozen": [
+        60,
+        90
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "cultured",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "cultured"
+          }
+        ]
+      }
+    ],
+    "parentIds": [
+      "quark"
+    ],
+    "gramsPerCup": 232,
+    "allergens": [
+      "dairy"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Gluten-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "quark",
+        "ratio": "1:1",
+        "notes": "Same family as quark."
+      },
+      {
+        "substituteItemID": "greek-yogurt",
+        "ratio": "1:1",
+        "notes": "Strained Greek yogurt for a tangy soft cheese."
+      },
+      {
+        "substituteItemID": "ricotta",
+        "ratio": "1:1",
+        "notes": "Whipped ricotta for a similar texture."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "farmer-cheese",
+    "name": "farmer cheese",
+    "category": "Dairy & Eggs",
+    "defaultUnit": "oz",
+    "defaultQuantity": 8.0,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "farmers cheese",
+      "pot cheese",
+      "tvorog",
+      "tvarog",
+      "dry curd cheese",
+      "baker's cheese"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "block",
+          "cup",
+          "crumbled"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "cultured",
+          "pasteurized",
+          "plain"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "block"
+      }
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        7,
+        14
+      ],
+      "Frozen": [
+        60,
+        90
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "cultured",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "cultured"
+          }
+        ]
+      },
+      {
+        "text": "plain",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "plain"
+          }
+        ]
+      }
+    ],
+    "parentIds": [
+      "quark"
+    ],
+    "gramsPerCup": 200,
+    "allergens": [
+      "dairy"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Gluten-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "quark",
+        "ratio": "1:1",
+        "notes": "Same family as quark."
+      },
+      {
+        "substituteItemID": "cottage-cheese",
+        "ratio": "1:1",
+        "notes": "Pressed dry-curd cottage cheese."
+      },
+      {
+        "substituteItemID": "ricotta",
+        "ratio": "1:1",
+        "notes": "Drained ricotta for baking fills."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "kashk",
+    "name": "kashk",
+    "category": "Dairy & Eggs",
+    "defaultUnit": "oz",
+    "defaultQuantity": 8.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "qurut",
+      "kurut",
+      "dried yogurt",
+      "whey balls"
+    ],
+    "facets": [
+      {
+        "key": "grade",
+        "options": [
+          "sweet"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "liquid",
+          "paste",
+          "powder"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "dried",
+          "fermented",
+          "pasteurized"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "paste"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        365
+      ],
+      "Refrigerated": [
+        30,
+        90
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "dried whey",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "dried"
+          }
+        ]
+      },
+      {
+        "text": "fermented",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "fermented"
+          }
+        ]
+      }
+    ],
+    "parentIds": [
+      "whey"
+    ],
+    "gramsPerCup": 250,
+    "allergens": [
+      "dairy"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Gluten-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "whey",
+        "ratio": "1:1",
+        "notes": "Same family as whey."
+      },
+      {
+        "substituteItemID": "sour-cream",
+        "ratio": "1:1",
+        "notes": "Thinned sour cream approximates liquid kashk."
+      },
+      {
+        "substituteItemID": "greek-yogurt",
+        "ratio": "1:1",
+        "notes": "Salted strained yogurt as a fresh stand-in."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "clabber-milk",
+    "name": "clabber milk",
+    "category": "Dairy & Eggs",
+    "defaultUnit": "cup",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "clabbered milk",
+      "bonny clabber",
+      "soured raw milk"
+    ],
+    "facets": [
+      {
+        "key": "variant",
+        "options": [
+          "traditional"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "liquid"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "cultured",
+          "raw"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "liquid"
+      }
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        5,
+        10
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "traditional",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "traditional"
+          }
+        ]
+      },
+      {
+        "text": "cultured",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "cultured"
+          }
+        ]
+      },
+      {
+        "text": "raw",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "raw"
+          }
+        ]
+      }
+    ],
+    "parentIds": [
+      "buttermilk"
+    ],
+    "gramsPerCup": 240.0,
+    "allergens": [
+      "dairy"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Gluten-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "buttermilk",
+        "ratio": "1:1",
+        "notes": "Same family as buttermilk."
+      },
+      {
+        "substituteItemID": "kefir",
+        "ratio": "1:1",
+        "notes": "Kefir for a comparable cultured-milk tang."
+      },
+      {
+        "substituteItemID": "yogurt",
+        "ratio": "1:1",
+        "notes": "Thinned plain yogurt."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "sweetened-condensed-milk",
+    "name": "sweetened condensed milk",
+    "category": "Dairy & Eggs",
+    "defaultUnit": "oz",
+    "defaultQuantity": 14.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "condensed milk",
+      "sweet condensed milk",
+      "tinned condensed milk",
+      "leche condensada"
+    ],
+    "facets": [
+      {
+        "key": "fat",
+        "options": [
+          "fat-free",
+          "low-fat"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "liquid"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "sweetened"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "thick"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "liquid"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        365,
+        730
+      ],
+      "Refrigerated": [
+        7,
+        14
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "fat-free condensed milk",
+        "facets": [
+          {
+            "key": "fat",
+            "value": "fat-free"
+          }
+        ]
+      },
+      {
+        "text": "low-fat condensed milk",
+        "facets": [
+          {
+            "key": "fat",
+            "value": "low-fat"
+          }
+        ]
+      },
+      {
+        "text": "sweetened",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "sweetened"
+          }
+        ]
+      }
+    ],
+    "gramsPerCup": 306.0,
+    "allergens": [
+      "dairy"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Gluten-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "evaporated-milk",
+        "ratio": "1:1",
+        "notes": "Evaporated milk plus sugar (simmer to thicken)."
+      },
+      {
+        "substituteItemID": "milk",
+        "ratio": "1:1",
+        "notes": "Reduce milk with sugar to a thick syrup."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "eggnog",
+    "name": "eggnog",
+    "category": "Dairy & Eggs",
+    "defaultUnit": "cup",
+    "defaultQuantity": 2.0,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "egg nog",
+      "nog",
+      "holiday nog"
+    ],
+    "facets": [
+      {
+        "key": "fat",
+        "options": [
+          "light"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "liquid"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "pasteurized",
+          "spiced"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "creamy",
+          "thick"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "liquid"
+      }
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        5,
+        7
+      ],
+      "Frozen": [
+        120,
+        180
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "light eggnog",
+        "facets": [
+          {
+            "key": "fat",
+            "value": "light"
+          }
+        ]
+      },
+      {
+        "text": "spiced eggnog",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "spiced"
+          }
+        ]
+      }
+    ],
+    "gramsPerCup": 254.0,
+    "allergens": [
+      "dairy",
+      "egg"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Gluten-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "rompope",
+        "ratio": "1:1",
+        "notes": "Rompope is the Latin egg-and-milk equivalent."
+      },
+      {
+        "substituteItemID": "milk",
+        "ratio": "1:1",
+        "notes": "Sweeten and spice milk as a lighter base."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "rompope",
+    "name": "rompope",
+    "category": "Dairy & Eggs",
+    "defaultUnit": "cup",
+    "defaultQuantity": 2.0,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "coquito",
+      "ponche crema",
+      "latin eggnog"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "liquid"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "pasteurized",
+          "spiced"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "creamy",
+          "thick"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "liquid"
+      }
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        14,
+        30
+      ],
+      "Pantry": [
+        180,
+        365
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "spiced rompope",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "spiced"
+          }
+        ]
+      }
+    ],
+    "gramsPerCup": 254.0,
+    "allergens": [
+      "dairy",
+      "egg"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Gluten-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "eggnog",
+        "ratio": "1:1",
+        "notes": "Eggnog is the closest commercial equivalent."
+      },
+      {
+        "substituteItemID": "milk",
+        "ratio": "1:1",
+        "notes": "Sweeten and spice milk as a base."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "vegan-butter",
+    "name": "vegan butter",
+    "category": "Dairy & Eggs",
+    "defaultUnit": "lb",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "plant butter",
+      "dairy-free butter",
+      "margarine spread",
+      "plant-based butter"
+    ],
+    "facets": [
+      {
+        "key": "grade",
+        "options": [
+          "salted",
+          "unsalted"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "block",
+          "spread",
+          "stick"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "cultured",
+          "flavored",
+          "plain"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "thick"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "stick"
+      }
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        60,
+        120
+      ],
+      "Frozen": [
+        180,
+        365
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "salted vegan butter",
+        "facets": [
+          {
+            "key": "grade",
+            "value": "salted"
+          }
+        ]
+      },
+      {
+        "text": "unsalted vegan butter",
+        "facets": [
+          {
+            "key": "grade",
+            "value": "unsalted"
+          }
+        ]
+      },
+      {
+        "text": "cultured",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "cultured"
+          }
+        ]
+      }
+    ],
+    "parentIds": [
+      "butter"
+    ],
+    "gramsPerCup": 227.0,
+    "allergens": null,
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "butter",
+        "ratio": "1:1",
+        "notes": "Dairy butter if vegan is not required."
+      },
+      {
+        "substituteItemID": "coconut-oil",
+        "ratio": "1:1",
+        "notes": "Coconut oil for baking solidity."
+      },
+      {
+        "substituteItemID": "margarine",
+        "ratio": "1:1",
+        "notes": "Margarine as a like-for-like spread."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "vegan-cheese",
+    "name": "vegan cheese",
+    "category": "Dairy & Eggs",
+    "defaultUnit": "oz",
+    "defaultQuantity": 8.0,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "plant-based cheese",
+      "dairy-free cheese",
+      "soy cheese",
+      "vegan cheese shreds"
+    ],
+    "facets": [
+      {
+        "key": "grade",
+        "options": [
+          "mild",
+          "sharp"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "block",
+          "sliced"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "shredded",
+          "sliced",
+          "grated"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "fresh"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "cultured",
+          "processed"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "block"
+      }
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        21,
+        42
+      ],
+      "Frozen": [
+        120,
+        180
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "mild cheese",
+        "facets": [
+          {
+            "key": "grade",
+            "value": "mild"
+          }
+        ]
+      },
+      {
+        "text": "sharp cheese",
+        "facets": [
+          {
+            "key": "grade",
+            "value": "sharp"
+          }
+        ]
+      },
+      {
+        "text": "shredded vegan cheese",
+        "facets": [
+          {
+            "key": "preparation",
+            "value": "shredded"
+          }
+        ]
+      }
+    ],
+    "parentIds": [
+      "cheese"
+    ],
+    "gramsPerCup": 110,
+    "allergens": null,
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "cheese",
+        "ratio": "1:1",
+        "notes": "Dairy cheese if vegan is not required."
+      },
+      {
+        "substituteItemID": "nutritional-yeast",
+        "ratio": "1:1",
+        "notes": "Nutritional yeast for a cheesy flavor note."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "pea-non-dairy-creamer",
+    "name": "pea non dairy creamer",
+    "category": "Dairy & Eggs",
+    "defaultUnit": "tbsp",
+    "defaultQuantity": 16.0,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "plant-based creamer",
+      "oat creamer",
+      "soy creamer",
+      "vegan creamer"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "liquid",
+          "powder"
+        ]
+      },
+      {
+        "key": "medium",
+        "options": [
+          "in oil",
+          "in water"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "liquid"
+      }
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        7,
+        14
+      ],
+      "Pantry": [
+        180,
+        365
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "liquid creamer",
+        "facets": [
+          {
+            "key": "form",
+            "value": "liquid"
+          }
+        ]
+      },
+      {
+        "text": "powdered creamer",
+        "facets": [
+          {
+            "key": "form",
+            "value": "powder"
+          }
+        ]
+      }
+    ],
+    "parentIds": [
+      "non-dairy-creamer"
+    ],
+    "gramsPerCup": 240,
+    "allergens": null,
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "non-dairy-creamer",
+        "ratio": "1:1",
+        "notes": "Shelf-stable non-dairy creamer."
+      },
+      {
+        "substituteItemID": "non-dairy-milk",
+        "ratio": "1:1",
+        "notes": "Barista-style plant milk in coffee."
+      },
+      {
+        "substituteItemID": "half-and-half",
+        "ratio": "1:1",
+        "notes": "Dairy half-and-half if not avoiding dairy."
+      }
+    ],
+    "isUserDefined": false
+  }
+]

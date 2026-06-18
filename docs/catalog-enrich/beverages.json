@@ -1,0 +1,1430 @@
+[
+  {
+    "id": "orange-juice",
+    "name": "orange juice",
+    "category": "Beverages",
+    "defaultUnit": "oz",
+    "defaultQuantity": 32.0,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "oj",
+      "orange juices",
+      "fresh orange juice",
+      "no pulp orange juice",
+      "pulp free orange juice",
+      "freshly squeezed orange juice"
+    ],
+    "parentIds": [
+      "fruit-juice"
+    ],
+    "facets": [
+      {
+        "key": "variant",
+        "options": [
+          "with pulp",
+          "no pulp"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "concentrate",
+          "ready-to-drink"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "bottled",
+          "fresh"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "ready-to-drink"
+      }
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        7,
+        10
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "with pulp orange juice",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "with pulp"
+          }
+        ]
+      },
+      {
+        "text": "no pulp orange juice",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "no pulp"
+          }
+        ]
+      },
+      {
+        "text": "fresh orange juice",
+        "facets": [
+          {
+            "key": "preservation",
+            "value": "fresh"
+          }
+        ]
+      }
+    ],
+    "gramsPerCup": 240.0,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "fruit-juice",
+        "ratio": "1:1",
+        "notes": "Generic fruit juice in a pinch; flavor shifts away from citrus."
+      },
+      {
+        "substituteItemID": "pineapple-juice",
+        "ratio": "1:1",
+        "notes": "Another sweet, acidic juice for glazes and marinades."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "apple-juice",
+    "name": "apple juice",
+    "category": "Beverages",
+    "defaultUnit": "oz",
+    "defaultQuantity": 32.0,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "apple juices",
+      "cloudy apple juice",
+      "clear apple juice",
+      "pressed apple juice"
+    ],
+    "parentIds": [
+      "fruit-juice"
+    ],
+    "facets": [
+      {
+        "key": "variant",
+        "options": [
+          "cloudy",
+          "clear"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "concentrate",
+          "ready-to-drink"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "bottled",
+          "fresh"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "ready-to-drink"
+      }
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        7,
+        10
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "cloudy apple juice",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "cloudy"
+          }
+        ]
+      },
+      {
+        "text": "clear apple juice",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "clear"
+          }
+        ]
+      }
+    ],
+    "gramsPerCup": 240.0,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "cider",
+        "ratio": "1:1",
+        "notes": "Apple cider gives a similar, slightly more robust apple flavor."
+      },
+      {
+        "substituteItemID": "grape-juice",
+        "ratio": "1:1",
+        "notes": "White grape juice is a comparable sweet braising liquid."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "cranberry-juice",
+    "name": "cranberry juice",
+    "category": "Beverages",
+    "defaultUnit": "oz",
+    "defaultQuantity": 32.0,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "cranberry juices",
+      "cranberry cocktail",
+      "cranberry juice cocktail",
+      "unsweetened cranberry juice"
+    ],
+    "parentIds": [
+      "fruit-juice"
+    ],
+    "facets": [
+      {
+        "key": "variant",
+        "options": [
+          "cocktail",
+          "unsweetened"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "concentrate",
+          "ready-to-drink"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "bottled"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "ready-to-drink"
+      }
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        7,
+        10
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "cranberry cocktail",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "cocktail"
+          }
+        ]
+      },
+      {
+        "text": "unsweetened cranberry juice",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "unsweetened"
+          }
+        ]
+      }
+    ],
+    "gramsPerCup": 240.0,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "pomegranate-juice",
+        "ratio": "1:1",
+        "notes": "Similar tart red juice for sauces, glazes and cocktails."
+      },
+      {
+        "substituteItemID": "grape-juice",
+        "ratio": "1:1",
+        "notes": "Red grape juice substitutes when less tartness is acceptable."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "pomegranate-juice",
+    "name": "pomegranate juice",
+    "category": "Beverages",
+    "defaultUnit": "oz",
+    "defaultQuantity": 32.0,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "pomegranate juices",
+      "pom juice",
+      "pomegranate"
+    ],
+    "parentIds": [
+      "fruit-juice"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "concentrate",
+          "ready-to-drink"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "bottled"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "ready-to-drink"
+      }
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        7,
+        10
+      ]
+    },
+    "facetAliases": [],
+    "gramsPerCup": 240.0,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "cranberry-juice",
+        "ratio": "1:1",
+        "notes": "Comparable tart red juice for reductions and dressings."
+      },
+      {
+        "substituteItemID": "grape-juice",
+        "ratio": "1:1",
+        "notes": "Red grape juice for a milder, sweeter result."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "grape-juice",
+    "name": "grape juice",
+    "category": "Beverages",
+    "defaultUnit": "oz",
+    "defaultQuantity": 32.0,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "grape juices",
+      "white grape juice",
+      "red grape juice",
+      "concord grape juice"
+    ],
+    "parentIds": [
+      "fruit-juice"
+    ],
+    "facets": [
+      {
+        "key": "color",
+        "options": [
+          "red",
+          "white"
+        ]
+      },
+      {
+        "key": "variant",
+        "options": [
+          "concord"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "concentrate",
+          "ready-to-drink"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "ready-to-drink"
+      }
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        7,
+        10
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "red grape juice",
+        "facets": [
+          {
+            "key": "color",
+            "value": "red"
+          }
+        ]
+      },
+      {
+        "text": "white grape juice",
+        "facets": [
+          {
+            "key": "color",
+            "value": "white"
+          }
+        ]
+      },
+      {
+        "text": "concord grape juice",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "concord"
+          }
+        ]
+      }
+    ],
+    "gramsPerCup": 240.0,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "apple-juice",
+        "ratio": "1:1",
+        "notes": "Apple juice is a comparable sweet, mild substitute in cooking."
+      },
+      {
+        "substituteItemID": "cranberry-juice",
+        "ratio": "1:1",
+        "notes": "Use red varieties when a tarter, deeper color is wanted."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "pineapple-juice",
+    "name": "pineapple juice",
+    "category": "Beverages",
+    "defaultUnit": "oz",
+    "defaultQuantity": 32.0,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "pineapple juices",
+      "ananas juice"
+    ],
+    "parentIds": [
+      "fruit-juice"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "concentrate",
+          "ready-to-drink"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "bottled",
+          "canned"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "ready-to-drink"
+      }
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        7,
+        10
+      ]
+    },
+    "facetAliases": [],
+    "gramsPerCup": 240.0,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "orange-juice",
+        "ratio": "1:1",
+        "notes": "Another sweet, acidic juice for tropical marinades and glazes."
+      },
+      {
+        "substituteItemID": "fruit-juice",
+        "ratio": "1:1",
+        "notes": "Generic fruit juice when a tropical note is not essential."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "espresso",
+    "name": "espresso",
+    "category": "Beverages",
+    "defaultUnit": "oz",
+    "defaultQuantity": 4.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "espresso shot",
+      "brewed espresso",
+      "espresso powder",
+      "instant espresso"
+    ],
+    "parentIds": [
+      "coffee"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "ground",
+          "powder",
+          "ready-to-drink"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "dark roast",
+          "instant"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "ground"
+      }
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        3,
+        5
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "espresso powder",
+        "facets": [
+          {
+            "key": "form",
+            "value": "powder"
+          }
+        ]
+      },
+      {
+        "text": "instant espresso",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "instant"
+          }
+        ]
+      }
+    ],
+    "gramsPerCup": 240.0,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "instant-coffee",
+        "ratio": "1:1",
+        "notes": "Strong instant coffee stands in for espresso powder in baking."
+      },
+      {
+        "substituteItemID": "coffee",
+        "ratio": "1:1",
+        "notes": "Strongly brewed coffee replaces brewed espresso in most recipes."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "instant-coffee",
+    "name": "instant coffee",
+    "category": "Beverages",
+    "defaultUnit": "oz",
+    "defaultQuantity": 8.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "instant coffee granules",
+      "coffee granules",
+      "freeze-dried coffee",
+      "instant coffee powder"
+    ],
+    "parentIds": [
+      "coffee"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "granules",
+          "powder"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "instant",
+          "freeze-dried"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "processing",
+        "value": "instant"
+      }
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        365,
+        730
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "instant coffee granules",
+        "facets": [
+          {
+            "key": "form",
+            "value": "granules"
+          }
+        ]
+      },
+      {
+        "text": "instant coffee powder",
+        "facets": [
+          {
+            "key": "form",
+            "value": "powder"
+          }
+        ]
+      },
+      {
+        "text": "freeze-dried coffee",
+        "facets": [
+          {
+            "key": "processing",
+            "value": "freeze-dried"
+          }
+        ]
+      }
+    ],
+    "gramsPerCup": 240.0,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "espresso",
+        "ratio": "1:1",
+        "notes": "Instant espresso powder dissolves the same way, with a deeper flavor."
+      },
+      {
+        "substituteItemID": "coffee",
+        "ratio": "1:1",
+        "notes": "Strongly brewed coffee replaces dissolved instant in liquid recipes."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "cold-brew-coffee",
+    "name": "cold brew coffee",
+    "category": "Beverages",
+    "defaultUnit": "oz",
+    "defaultQuantity": 32.0,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "cold brew",
+      "cold brew concentrate",
+      "iced coffee concentrate"
+    ],
+    "parentIds": [
+      "coffee"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "concentrate",
+          "ready-to-drink"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "bottled"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "ready-to-drink"
+      }
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        7,
+        14
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "cold brew concentrate",
+        "facets": [
+          {
+            "key": "form",
+            "value": "concentrate"
+          }
+        ]
+      }
+    ],
+    "gramsPerCup": 240.0,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "coffee",
+        "ratio": "1:1",
+        "notes": "Chilled brewed coffee replaces cold brew in drinks and desserts."
+      },
+      {
+        "substituteItemID": "espresso",
+        "ratio": "1:2",
+        "notes": "Diluted espresso approximates cold brew concentrate strength."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "hot-chocolate",
+    "name": "hot chocolate",
+    "category": "Beverages",
+    "defaultUnit": "oz",
+    "defaultQuantity": 12.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "hot cocoa",
+      "drinking chocolate",
+      "cocoa drink",
+      "cocoa mix",
+      "hot chocolate mix"
+    ],
+    "parentIds": [],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "powder",
+          "ready-to-drink"
+        ]
+      },
+      {
+        "key": "variant",
+        "options": [
+          "dark",
+          "milk"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "powder"
+      }
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        365,
+        730
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "dark hot chocolate",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "dark"
+          }
+        ]
+      },
+      {
+        "text": "milk hot chocolate",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "milk"
+          }
+        ]
+      }
+    ],
+    "gramsPerCup": 240.0,
+    "allergens": [
+      "dairy"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Gluten-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "chocolate-milk",
+        "ratio": "1:1",
+        "notes": "Chocolate milk, warmed, gives a similar drink."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "ginger-ale",
+    "name": "ginger ale",
+    "category": "Beverages",
+    "defaultUnit": "oz",
+    "defaultQuantity": 12.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "ginger ales",
+      "ginger soda",
+      "dry ginger ale"
+    ],
+    "parentIds": [
+      "soda"
+    ],
+    "facets": [
+      {
+        "key": "variant",
+        "options": [
+          "dry",
+          "golden"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "ready-to-drink"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "ready-to-drink"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        365,
+        730
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "dry ginger ale",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "dry"
+          }
+        ]
+      },
+      {
+        "text": "golden ginger ale",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "golden"
+          }
+        ]
+      }
+    ],
+    "gramsPerCup": 240.0,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "ginger-beer",
+        "ratio": "1:1",
+        "notes": "Ginger beer is stronger and spicier; use for a bolder ginger note."
+      },
+      {
+        "substituteItemID": "soda",
+        "ratio": "1:1",
+        "notes": "Lemon-lime soda substitutes when only fizz and sweetness are needed."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "cola",
+    "name": "cola",
+    "category": "Beverages",
+    "defaultUnit": "oz",
+    "defaultQuantity": 12.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "colas",
+      "cola soda",
+      "coke",
+      "pepsi"
+    ],
+    "parentIds": [
+      "soda"
+    ],
+    "facets": [
+      {
+        "key": "variant",
+        "options": [
+          "cola"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "ready-to-drink"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "ready-to-drink"
+      }
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        365,
+        730
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "cola soda",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "cola"
+          }
+        ]
+      }
+    ],
+    "gramsPerCup": 240.0,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "soda",
+        "ratio": "1:1",
+        "notes": "Any cola-style soda works for braises, glazes and BBQ sauces."
+      },
+      {
+        "substituteItemID": "root-beer",
+        "ratio": "1:1",
+        "notes": "Root beer braises similarly with a sweeter, spiced profile."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "hibiscus-tea",
+    "name": "hibiscus tea",
+    "category": "Beverages",
+    "defaultUnit": "oz",
+    "defaultQuantity": 8.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "hibiscus",
+      "agua de jamaica",
+      "jamaica",
+      "roselle tea",
+      "sorrel drink"
+    ],
+    "parentIds": [
+      "herbal-tea"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "loose leaf",
+          "ready-to-drink"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "bottled",
+          "dried"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "preservation",
+        "value": "dried"
+      }
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        365,
+        730
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "dried hibiscus tea",
+        "facets": [
+          {
+            "key": "preservation",
+            "value": "dried"
+          }
+        ]
+      },
+      {
+        "text": "bottled hibiscus tea",
+        "facets": [
+          {
+            "key": "preservation",
+            "value": "bottled"
+          }
+        ]
+      }
+    ],
+    "gramsPerCup": 240.0,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "herbal-tea",
+        "ratio": "1:1",
+        "notes": "Other fruity herbal tisanes approximate the tart, floral note."
+      },
+      {
+        "substituteItemID": "rooibos-tea",
+        "ratio": "1:1",
+        "notes": "Caffeine-free alternative for infusions and poaching liquids."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "rooibos-tea",
+    "name": "rooibos tea",
+    "category": "Beverages",
+    "defaultUnit": "oz",
+    "defaultQuantity": 8.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "rooibos",
+      "red tea",
+      "red bush tea",
+      "rooibos teas"
+    ],
+    "parentIds": [
+      "herbal-tea"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "loose leaf",
+          "ready-to-drink"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "bottled",
+          "dried"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "preservation",
+        "value": "dried"
+      }
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        365,
+        730
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "dried rooibos tea",
+        "facets": [
+          {
+            "key": "preservation",
+            "value": "dried"
+          }
+        ]
+      }
+    ],
+    "gramsPerCup": 240.0,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "herbal-tea",
+        "ratio": "1:1",
+        "notes": "Any caffeine-free herbal tisane works for a similar mild infusion."
+      },
+      {
+        "substituteItemID": "hibiscus-tea",
+        "ratio": "1:1",
+        "notes": "Use when a tarter, more floral note is acceptable."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "horchata",
+    "name": "horchata",
+    "category": "Beverages",
+    "defaultUnit": "oz",
+    "defaultQuantity": 16.0,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "agua de horchata",
+      "horchatas"
+    ],
+    "parentIds": [],
+    "facets": [
+      {
+        "key": "variant",
+        "options": [
+          "mexican",
+          "spanish"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "concentrate",
+          "powder",
+          "ready-to-drink"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "ready-to-drink"
+      }
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        5,
+        10
+      ],
+      "Frozen": [
+        30,
+        90
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "mexican horchata",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "mexican"
+          }
+        ]
+      },
+      {
+        "text": "mexican",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "mexican"
+          }
+        ]
+      },
+      {
+        "text": "spanish horchata",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "spanish"
+          }
+        ]
+      },
+      {
+        "text": "spanish",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "spanish"
+          }
+        ]
+      }
+    ],
+    "gramsPerCup": 240.0,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "chocolate-milk",
+        "ratio": "1:1",
+        "notes": "A sweet, creamy drink alternative when horchata is unavailable."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "aloe-vera-drink",
+    "name": "aloe vera drink",
+    "category": "Beverages",
+    "defaultUnit": "oz",
+    "defaultQuantity": 16.0,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "aloe drink",
+      "aloe vera juice",
+      "aloe water",
+      "aloe juice"
+    ],
+    "parentIds": [],
+    "facets": [
+      {
+        "key": "variant",
+        "options": [
+          "original",
+          "with pulp"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "ready-to-drink"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "ready-to-drink"
+      }
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        7,
+        14
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "with pulp aloe vera drink",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "with pulp"
+          }
+        ]
+      },
+      {
+        "text": "original aloe vera drink",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "original"
+          }
+        ]
+      }
+    ],
+    "gramsPerCup": 240.0,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "coconut-water",
+        "ratio": "1:1",
+        "notes": "Light, mildly sweet drink with a similar refreshing profile."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "malta",
+    "name": "malta",
+    "category": "Beverages",
+    "defaultUnit": "oz",
+    "defaultQuantity": 12.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "malt drink",
+      "malta india",
+      "non-alcoholic malt beverage",
+      "malt soda"
+    ],
+    "parentIds": [],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "ready-to-drink"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "ready-to-drink"
+      }
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        365,
+        730
+      ]
+    },
+    "facetAliases": [],
+    "gramsPerCup": 240.0,
+    "allergens": [
+      "gluten"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "root-beer",
+        "ratio": "1:1",
+        "notes": "A dark, sweet carbonated drink stands in when malta is unavailable."
+      }
+    ],
+    "isUserDefined": false
+  }
+]

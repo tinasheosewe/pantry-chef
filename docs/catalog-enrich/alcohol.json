@@ -1,0 +1,2648 @@
+[
+  {
+    "id": "dry-white-wine",
+    "name": "dry white wine",
+    "category": "Alcohol & Spirits",
+    "defaultUnit": "fl oz",
+    "defaultQuantity": 25.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "white wine",
+      "dry white",
+      "white cooking wine",
+      "sauvignon blanc",
+      "pinot grigio",
+      "chardonnay"
+    ],
+    "facets": [
+      {
+        "key": "variant",
+        "options": [
+          "chardonnay",
+          "pinot grigio",
+          "riesling",
+          "sauvignon blanc"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "aged",
+          "blended",
+          "unaged"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "processing",
+        "value": "aged"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        730
+      ],
+      "Refrigerated": [
+        3,
+        7
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "chardonnay wine",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "chardonnay"
+          }
+        ]
+      },
+      {
+        "text": "chardonnay",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "chardonnay"
+          }
+        ]
+      },
+      {
+        "text": "pinot grigio wine",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "pinot grigio"
+          }
+        ]
+      },
+      {
+        "text": "pinot grigio",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "pinot grigio"
+          }
+        ]
+      },
+      {
+        "text": "riesling wine",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "riesling"
+          }
+        ]
+      },
+      {
+        "text": "riesling",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "riesling"
+          }
+        ]
+      },
+      {
+        "text": "sauvignon blanc wine",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "sauvignon blanc"
+          }
+        ]
+      },
+      {
+        "text": "sauvignon blanc",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "sauvignon blanc"
+          }
+        ]
+      }
+    ],
+    "parentIds": [
+      "wine"
+    ],
+    "gramsPerCup": 240.0,
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "dry-vermouth",
+        "ratio": "1:1",
+        "notes": "Dry vermouth stands in for dry white wine in pan sauces and risotto."
+      },
+      {
+        "substituteItemID": "wine",
+        "ratio": "1:1",
+        "notes": "Same family as wine."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "red-wine",
+    "name": "red wine",
+    "category": "Alcohol & Spirits",
+    "defaultUnit": "fl oz",
+    "defaultQuantity": 25.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "dry red wine",
+      "red cooking wine",
+      "red table wine",
+      "cabernet",
+      "merlot",
+      "pinot noir"
+    ],
+    "facets": [
+      {
+        "key": "variant",
+        "options": [
+          "cabernet",
+          "merlot",
+          "pinot noir",
+          "syrah"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "aged",
+          "blended",
+          "unaged"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "processing",
+        "value": "aged"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        730
+      ],
+      "Refrigerated": [
+        3,
+        7
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "cabernet wine",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "cabernet"
+          }
+        ]
+      },
+      {
+        "text": "cabernet",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "cabernet"
+          }
+        ]
+      },
+      {
+        "text": "merlot wine",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "merlot"
+          }
+        ]
+      },
+      {
+        "text": "merlot",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "merlot"
+          }
+        ]
+      },
+      {
+        "text": "pinot noir wine",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "pinot noir"
+          }
+        ]
+      },
+      {
+        "text": "pinot noir",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "pinot noir"
+          }
+        ]
+      },
+      {
+        "text": "syrah wine",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "syrah"
+          }
+        ]
+      },
+      {
+        "text": "syrah",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "syrah"
+          }
+        ]
+      }
+    ],
+    "parentIds": [
+      "wine"
+    ],
+    "gramsPerCup": 240.0,
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "port-wine",
+        "ratio": "1:1",
+        "notes": "Port adds body to braises and reductions in place of red wine."
+      },
+      {
+        "substituteItemID": "wine",
+        "ratio": "1:1",
+        "notes": "Same family as wine."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "cooking-wine",
+    "name": "cooking wine",
+    "category": "Alcohol & Spirits",
+    "defaultUnit": "fl oz",
+    "defaultQuantity": 25.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "salted cooking wine",
+      "cooking sherry"
+    ],
+    "facets": [
+      {
+        "key": "variant",
+        "options": [
+          "red",
+          "white"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "aged",
+          "blended",
+          "unaged"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "processing",
+        "value": "aged"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        365,
+        540
+      ],
+      "Refrigerated": [
+        365,
+        540
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "red cooking wine",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "red"
+          }
+        ]
+      },
+      {
+        "text": "red",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "red"
+          }
+        ]
+      },
+      {
+        "text": "white cooking wine",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "white"
+          }
+        ]
+      },
+      {
+        "text": "white",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "white"
+          }
+        ]
+      }
+    ],
+    "parentIds": [
+      "wine"
+    ],
+    "gramsPerCup": 240.0,
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "dry-white-wine",
+        "ratio": "1:1",
+        "notes": "Use dry white wine and add a pinch of salt to match salted cooking wine."
+      },
+      {
+        "substituteItemID": "wine",
+        "ratio": "1:1",
+        "notes": "Same family as wine."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "marsala-wine",
+    "name": "marsala wine",
+    "category": "Alcohol & Spirits",
+    "defaultUnit": "fl oz",
+    "defaultQuantity": 25.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "marsala",
+      "dry marsala",
+      "sweet marsala",
+      "marsala cooking wine"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "dry"
+        ]
+      },
+      {
+        "key": "grade",
+        "options": [
+          "sweet"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "aged",
+          "blended",
+          "unaged"
+        ]
+      },
+      {
+        "key": "variant",
+        "options": [
+          "dry",
+          "sweet"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "processing",
+        "value": "aged"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        365,
+        1095
+      ],
+      "Refrigerated": [
+        30,
+        120
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "dry marsala",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "dry"
+          }
+        ]
+      },
+      {
+        "text": "dry",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "dry"
+          }
+        ]
+      },
+      {
+        "text": "sweet marsala",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "sweet"
+          }
+        ]
+      },
+      {
+        "text": "sweet",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "sweet"
+          }
+        ]
+      }
+    ],
+    "parentIds": [
+      "fortified-wine"
+    ],
+    "gramsPerCup": 240.0,
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "madeira-wine",
+        "ratio": "1:1",
+        "notes": "Madeira gives a similar nutty fortified note in sauces."
+      },
+      {
+        "substituteItemID": "fortified-wine",
+        "ratio": "1:1",
+        "notes": "Same family as fortified wine."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "sherry",
+    "name": "sherry",
+    "category": "Alcohol & Spirits",
+    "defaultUnit": "fl oz",
+    "defaultQuantity": 25.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "dry sherry",
+      "cream sherry",
+      "fino",
+      "amontillado",
+      "cooking sherry",
+      "jerez"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "dry"
+        ]
+      },
+      {
+        "key": "grade",
+        "options": [
+          "sweet"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "aged",
+          "blended",
+          "unaged"
+        ]
+      },
+      {
+        "key": "variant",
+        "options": [
+          "amontillado",
+          "cream",
+          "fino",
+          "oloroso"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "processing",
+        "value": "aged"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        365,
+        1095
+      ],
+      "Refrigerated": [
+        30,
+        60
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "amontillado sherry",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "amontillado"
+          }
+        ]
+      },
+      {
+        "text": "amontillado",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "amontillado"
+          }
+        ]
+      },
+      {
+        "text": "cream sherry",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "cream"
+          }
+        ]
+      },
+      {
+        "text": "cream",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "cream"
+          }
+        ]
+      },
+      {
+        "text": "fino sherry",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "fino"
+          }
+        ]
+      },
+      {
+        "text": "fino",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "fino"
+          }
+        ]
+      },
+      {
+        "text": "oloroso sherry",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "oloroso"
+          }
+        ]
+      },
+      {
+        "text": "oloroso",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "oloroso"
+          }
+        ]
+      }
+    ],
+    "parentIds": [
+      "fortified-wine"
+    ],
+    "gramsPerCup": 240.0,
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "shaoxing-wine",
+        "ratio": "1:1",
+        "notes": "Dry sherry is the standard Western stand-in for Shaoxing, and vice versa."
+      },
+      {
+        "substituteItemID": "fortified-wine",
+        "ratio": "1:1",
+        "notes": "Same family as fortified wine."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "port-wine",
+    "name": "port wine",
+    "category": "Alcohol & Spirits",
+    "defaultUnit": "fl oz",
+    "defaultQuantity": 25.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "port",
+      "ruby port",
+      "tawny port",
+      "porto"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "dry"
+        ]
+      },
+      {
+        "key": "grade",
+        "options": [
+          "sweet"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "aged",
+          "blended",
+          "unaged"
+        ]
+      },
+      {
+        "key": "variant",
+        "options": [
+          "ruby",
+          "tawny",
+          "white"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "processing",
+        "value": "aged"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        365,
+        1095
+      ],
+      "Refrigerated": [
+        60,
+        365
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "ruby port",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "ruby"
+          }
+        ]
+      },
+      {
+        "text": "ruby",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "ruby"
+          }
+        ]
+      },
+      {
+        "text": "tawny port",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "tawny"
+          }
+        ]
+      },
+      {
+        "text": "tawny",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "tawny"
+          }
+        ]
+      },
+      {
+        "text": "white port",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "white"
+          }
+        ]
+      },
+      {
+        "text": "white",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "white"
+          }
+        ]
+      }
+    ],
+    "parentIds": [
+      "fortified-wine"
+    ],
+    "gramsPerCup": 240.0,
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "madeira-wine",
+        "ratio": "1:1",
+        "notes": "Madeira offers a comparable sweet fortified depth in reductions."
+      },
+      {
+        "substituteItemID": "fortified-wine",
+        "ratio": "1:1",
+        "notes": "Same family as fortified wine."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "madeira-wine",
+    "name": "madeira wine",
+    "category": "Alcohol & Spirits",
+    "defaultUnit": "fl oz",
+    "defaultQuantity": 25.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "madeira",
+      "madeira cooking wine"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "dry"
+        ]
+      },
+      {
+        "key": "grade",
+        "options": [
+          "sweet"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "aged",
+          "blended",
+          "unaged"
+        ]
+      },
+      {
+        "key": "variant",
+        "options": [
+          "bual",
+          "malmsey",
+          "sercial",
+          "verdelho"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "processing",
+        "value": "aged"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        365,
+        1825
+      ],
+      "Refrigerated": [
+        365,
+        365
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "bual madeira",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "bual"
+          }
+        ]
+      },
+      {
+        "text": "bual",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "bual"
+          }
+        ]
+      },
+      {
+        "text": "malmsey madeira",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "malmsey"
+          }
+        ]
+      },
+      {
+        "text": "malmsey",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "malmsey"
+          }
+        ]
+      },
+      {
+        "text": "sercial madeira",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "sercial"
+          }
+        ]
+      },
+      {
+        "text": "sercial",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "sercial"
+          }
+        ]
+      },
+      {
+        "text": "verdelho madeira",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "verdelho"
+          }
+        ]
+      },
+      {
+        "text": "verdelho",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "verdelho"
+          }
+        ]
+      }
+    ],
+    "parentIds": [
+      "fortified-wine"
+    ],
+    "gramsPerCup": 240.0,
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "marsala-wine",
+        "ratio": "1:1",
+        "notes": "Marsala is the closest everyday substitute in pan sauces."
+      },
+      {
+        "substituteItemID": "fortified-wine",
+        "ratio": "1:1",
+        "notes": "Same family as fortified wine."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "dry-vermouth",
+    "name": "dry vermouth",
+    "category": "Alcohol & Spirits",
+    "defaultUnit": "fl oz",
+    "defaultQuantity": 25.0,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "vermouth",
+      "white vermouth",
+      "french vermouth"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "dry"
+        ]
+      },
+      {
+        "key": "grade",
+        "options": [
+          "sweet"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "aged",
+          "blended",
+          "unaged"
+        ]
+      },
+      {
+        "key": "variant",
+        "options": [
+          "extra dry",
+          "french",
+          "white"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "processing",
+        "value": "aged"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        30,
+        60
+      ],
+      "Refrigerated": [
+        60,
+        120
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "extra dry vermouth",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "extra dry"
+          }
+        ]
+      },
+      {
+        "text": "extra dry",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "extra dry"
+          }
+        ]
+      },
+      {
+        "text": "french vermouth",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "french"
+          }
+        ]
+      },
+      {
+        "text": "french",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "french"
+          }
+        ]
+      },
+      {
+        "text": "white vermouth",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "white"
+          }
+        ]
+      },
+      {
+        "text": "white",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "white"
+          }
+        ]
+      }
+    ],
+    "parentIds": [
+      "fortified-wine"
+    ],
+    "gramsPerCup": 240.0,
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "dry-white-wine",
+        "ratio": "1:1",
+        "notes": "Dry white wine is the classic interchange for dry vermouth in savory cooking."
+      },
+      {
+        "substituteItemID": "fortified-wine",
+        "ratio": "1:1",
+        "notes": "Same family as fortified wine."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "sweet-vermouth",
+    "name": "sweet vermouth",
+    "category": "Alcohol & Spirits",
+    "defaultUnit": "fl oz",
+    "defaultQuantity": 25.0,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "red vermouth",
+      "italian vermouth",
+      "rosso vermouth"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "dry"
+        ]
+      },
+      {
+        "key": "grade",
+        "options": [
+          "sweet"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "aged",
+          "blended",
+          "unaged"
+        ]
+      },
+      {
+        "key": "variant",
+        "options": [
+          "italian",
+          "red",
+          "rosso"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "processing",
+        "value": "aged"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        30,
+        60
+      ],
+      "Refrigerated": [
+        60,
+        120
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "italian vermouth",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "italian"
+          }
+        ]
+      },
+      {
+        "text": "italian",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "italian"
+          }
+        ]
+      },
+      {
+        "text": "red vermouth",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "red"
+          }
+        ]
+      },
+      {
+        "text": "red",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "red"
+          }
+        ]
+      },
+      {
+        "text": "rosso vermouth",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "rosso"
+          }
+        ]
+      },
+      {
+        "text": "rosso",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "rosso"
+          }
+        ]
+      }
+    ],
+    "parentIds": [
+      "fortified-wine"
+    ],
+    "gramsPerCup": 240.0,
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "port-wine",
+        "ratio": "1:1",
+        "notes": "Port brings similar sweetness and body to braises and Italian sauces."
+      },
+      {
+        "substituteItemID": "fortified-wine",
+        "ratio": "1:1",
+        "notes": "Same family as fortified wine."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "shaoxing-wine",
+    "name": "shaoxing wine",
+    "category": "Alcohol & Spirits",
+    "defaultUnit": "fl oz",
+    "defaultQuantity": 25.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "shaoxing",
+      "shaohsing",
+      "chinese cooking wine",
+      "shaoxing cooking wine",
+      "shao xing",
+      "huangjiu"
+    ],
+    "facets": [
+      {
+        "key": "variant",
+        "options": [
+          "hua diao",
+          "nu er hong",
+          "salted"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "aged",
+          "filtered",
+          "unaged",
+          "unfiltered"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        365
+      ],
+      "Refrigerated": [
+        180,
+        365
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "hua diao shaoxing",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "hua diao"
+          }
+        ]
+      },
+      {
+        "text": "hua diao",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "hua diao"
+          }
+        ]
+      },
+      {
+        "text": "nu er hong shaoxing",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "nu er hong"
+          }
+        ]
+      },
+      {
+        "text": "nu er hong",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "nu er hong"
+          }
+        ]
+      },
+      {
+        "text": "salted shaoxing",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "salted"
+          }
+        ]
+      },
+      {
+        "text": "salted",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "salted"
+          }
+        ]
+      }
+    ],
+    "parentIds": [
+      "rice-wine"
+    ],
+    "gramsPerCup": 185.0,
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "sherry",
+        "ratio": "1:1",
+        "notes": "Dry sherry is the standard substitute for Shaoxing in stir-fries and marinades."
+      },
+      {
+        "substituteItemID": "rice-wine",
+        "ratio": "1:1",
+        "notes": "Same family as rice wine."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "mirin",
+    "name": "mirin",
+    "category": "Alcohol & Spirits",
+    "defaultUnit": "fl oz",
+    "defaultQuantity": 25.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "sweet rice wine",
+      "hon mirin",
+      "aji mirin",
+      "sweet cooking sake",
+      "mirin seasoning"
+    ],
+    "facets": [
+      {
+        "key": "variant",
+        "options": [
+          "aji",
+          "hon",
+          "shio"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "aged",
+          "filtered",
+          "unaged",
+          "unfiltered"
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        90,
+        180
+      ],
+      "Refrigerated": [
+        90,
+        180
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "aji mirin",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "aji"
+          }
+        ]
+      },
+      {
+        "text": "aji",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "aji"
+          }
+        ]
+      },
+      {
+        "text": "hon mirin",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "hon"
+          }
+        ]
+      },
+      {
+        "text": "hon",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "hon"
+          }
+        ]
+      },
+      {
+        "text": "shio mirin",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "shio"
+          }
+        ]
+      },
+      {
+        "text": "shio",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "shio"
+          }
+        ]
+      }
+    ],
+    "parentIds": [
+      "rice-wine"
+    ],
+    "gramsPerCup": 240.0,
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "sake",
+        "ratio": "1:1",
+        "notes": "Use sake plus a little sugar to mimic mirin's sweetness."
+      },
+      {
+        "substituteItemID": "rice-wine",
+        "ratio": "1:1",
+        "notes": "Same family as rice wine."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "cognac",
+    "name": "cognac",
+    "category": "Alcohol & Spirits",
+    "defaultUnit": "fl oz",
+    "defaultQuantity": 25.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "vsop cognac",
+      "french brandy",
+      "vs cognac"
+    ],
+    "facets": [
+      {
+        "key": "variant",
+        "options": [
+          "napoleon",
+          "vs",
+          "vsop",
+          "xo"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "aged",
+          "blended"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "processing",
+        "value": "aged"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        1825,
+        3650
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "napoleon cognac",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "napoleon"
+          }
+        ]
+      },
+      {
+        "text": "napoleon",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "napoleon"
+          }
+        ]
+      },
+      {
+        "text": "vs cognac",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "vs"
+          }
+        ]
+      },
+      {
+        "text": "vs",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "vs"
+          }
+        ]
+      },
+      {
+        "text": "vsop cognac",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "vsop"
+          }
+        ]
+      },
+      {
+        "text": "vsop",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "vsop"
+          }
+        ]
+      },
+      {
+        "text": "xo cognac",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "xo"
+          }
+        ]
+      },
+      {
+        "text": "xo",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "xo"
+          }
+        ]
+      }
+    ],
+    "parentIds": [
+      "brandy"
+    ],
+    "gramsPerCup": 240.0,
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "calvados",
+        "ratio": "1:1",
+        "notes": "Calvados gives a comparable aged-brandy character with an apple note."
+      },
+      {
+        "substituteItemID": "brandy",
+        "ratio": "1:1",
+        "notes": "Same family as brandy."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "calvados",
+    "name": "calvados",
+    "category": "Alcohol & Spirits",
+    "defaultUnit": "fl oz",
+    "defaultQuantity": 25.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "apple brandy",
+      "applejack"
+    ],
+    "facets": [
+      {
+        "key": "variant",
+        "options": [
+          "apple",
+          "pays d auge",
+          "pear"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "aged",
+          "blended"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "processing",
+        "value": "aged"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        1825,
+        3650
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "apple calvados",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "apple"
+          }
+        ]
+      },
+      {
+        "text": "apple",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "apple"
+          }
+        ]
+      },
+      {
+        "text": "pays d auge calvados",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "pays d auge"
+          }
+        ]
+      },
+      {
+        "text": "pays d auge",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "pays d auge"
+          }
+        ]
+      },
+      {
+        "text": "pear calvados",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "pear"
+          }
+        ]
+      },
+      {
+        "text": "pear",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "pear"
+          }
+        ]
+      }
+    ],
+    "parentIds": [
+      "brandy"
+    ],
+    "gramsPerCup": 240.0,
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "cognac",
+        "ratio": "1:1",
+        "notes": "Cognac substitutes for calvados where the apple note is not essential."
+      },
+      {
+        "substituteItemID": "brandy",
+        "ratio": "1:1",
+        "notes": "Same family as brandy."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "scotch-whisky",
+    "name": "scotch whisky",
+    "category": "Alcohol & Spirits",
+    "defaultUnit": "fl oz",
+    "defaultQuantity": 25.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "scotch",
+      "scotch whiskey",
+      "single malt",
+      "blended scotch"
+    ],
+    "facets": [
+      {
+        "key": "variant",
+        "options": [
+          "blended",
+          "islay",
+          "peated",
+          "single malt"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "aged",
+          "unaged"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "processing",
+        "value": "aged"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        1825,
+        3650
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "blended scotch",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "blended"
+          }
+        ]
+      },
+      {
+        "text": "blended",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "blended"
+          }
+        ]
+      },
+      {
+        "text": "islay scotch",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "islay"
+          }
+        ]
+      },
+      {
+        "text": "islay",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "islay"
+          }
+        ]
+      },
+      {
+        "text": "peated scotch",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "peated"
+          }
+        ]
+      },
+      {
+        "text": "peated",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "peated"
+          }
+        ]
+      },
+      {
+        "text": "single malt scotch",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "single malt"
+          }
+        ]
+      },
+      {
+        "text": "single malt",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "single malt"
+          }
+        ]
+      }
+    ],
+    "parentIds": [
+      "whiskey"
+    ],
+    "gramsPerCup": 240.0,
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "irish-whiskey",
+        "ratio": "1:1",
+        "notes": "Irish whiskey is a milder stand-in for scotch in sauces."
+      },
+      {
+        "substituteItemID": "whiskey",
+        "ratio": "1:1",
+        "notes": "Same family as whiskey."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "irish-whiskey",
+    "name": "irish whiskey",
+    "category": "Alcohol & Spirits",
+    "defaultUnit": "fl oz",
+    "defaultQuantity": 25.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "irish whisky",
+      "irish"
+    ],
+    "facets": [
+      {
+        "key": "variant",
+        "options": [
+          "blended",
+          "pot still",
+          "single malt"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "aged",
+          "unaged"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "processing",
+        "value": "aged"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        1825,
+        3650
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "blended irish whiskey",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "blended"
+          }
+        ]
+      },
+      {
+        "text": "blended",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "blended"
+          }
+        ]
+      },
+      {
+        "text": "pot still irish whiskey",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "pot still"
+          }
+        ]
+      },
+      {
+        "text": "pot still",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "pot still"
+          }
+        ]
+      },
+      {
+        "text": "single malt irish whiskey",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "single malt"
+          }
+        ]
+      },
+      {
+        "text": "single malt",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "single malt"
+          }
+        ]
+      }
+    ],
+    "parentIds": [
+      "whiskey"
+    ],
+    "gramsPerCup": 240.0,
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "bourbon",
+        "ratio": "1:1",
+        "notes": "Bourbon works where a sweeter whiskey note is welcome."
+      },
+      {
+        "substituteItemID": "whiskey",
+        "ratio": "1:1",
+        "notes": "Same family as whiskey."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "stout",
+    "name": "stout",
+    "category": "Alcohol & Spirits",
+    "defaultUnit": "fl oz",
+    "defaultQuantity": 72.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "stout beer",
+      "guinness",
+      "dry stout",
+      "imperial stout"
+    ],
+    "facets": [
+      {
+        "key": "variant",
+        "options": [
+          "dry",
+          "imperial",
+          "milk",
+          "oatmeal"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "aged",
+          "filtered",
+          "triple distilled",
+          "unaged",
+          "unfiltered"
+        ]
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        90,
+        180
+      ],
+      "Refrigerated": [
+        120,
+        240
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "dry stout",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "dry"
+          }
+        ]
+      },
+      {
+        "text": "dry",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "dry"
+          }
+        ]
+      },
+      {
+        "text": "imperial stout",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "imperial"
+          }
+        ]
+      },
+      {
+        "text": "imperial",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "imperial"
+          }
+        ]
+      },
+      {
+        "text": "milk stout",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "milk"
+          }
+        ]
+      },
+      {
+        "text": "milk",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "milk"
+          }
+        ]
+      },
+      {
+        "text": "oatmeal stout",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "oatmeal"
+          }
+        ]
+      },
+      {
+        "text": "oatmeal",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "oatmeal"
+          }
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "parentIds": [
+      "beer"
+    ],
+    "gramsPerCup": 240.0,
+    "allergens": [
+      "gluten"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "ale",
+        "ratio": "1:1",
+        "notes": "A dark ale or porter is the closest swap for stout in braises."
+      },
+      {
+        "substituteItemID": "beer",
+        "ratio": "1:1",
+        "notes": "Same family as beer."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "ale",
+    "name": "ale",
+    "category": "Alcohol & Spirits",
+    "defaultUnit": "fl oz",
+    "defaultQuantity": 72.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "pale ale",
+      "brown ale",
+      "amber ale",
+      "ipa"
+    ],
+    "facets": [
+      {
+        "key": "variant",
+        "options": [
+          "amber",
+          "brown ale",
+          "ipa",
+          "pale ale"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "aged",
+          "filtered",
+          "triple distilled",
+          "unaged",
+          "unfiltered"
+        ]
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        90,
+        180
+      ],
+      "Refrigerated": [
+        120,
+        240
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "amber ale",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "amber"
+          }
+        ]
+      },
+      {
+        "text": "amber",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "amber"
+          }
+        ]
+      },
+      {
+        "text": "brown ale",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "brown ale"
+          }
+        ]
+      },
+      {
+        "text": "brown ale",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "brown ale"
+          }
+        ]
+      },
+      {
+        "text": "ipa ale",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "ipa"
+          }
+        ]
+      },
+      {
+        "text": "ipa",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "ipa"
+          }
+        ]
+      },
+      {
+        "text": "pale ale",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "pale ale"
+          }
+        ]
+      },
+      {
+        "text": "pale ale",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "pale ale"
+          }
+        ]
+      }
+    ],
+    "defaultSelections": [],
+    "parentIds": [
+      "beer"
+    ],
+    "gramsPerCup": 240.0,
+    "allergens": [
+      "gluten"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "stout",
+        "ratio": "1:1",
+        "notes": "Stout swaps in for ale where a darker, maltier flavor suits the dish."
+      },
+      {
+        "substituteItemID": "beer",
+        "ratio": "1:1",
+        "notes": "Same family as beer."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "orange-liqueur",
+    "name": "orange liqueur",
+    "category": "Alcohol & Spirits",
+    "defaultUnit": "fl oz",
+    "defaultQuantity": 25.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "triple sec",
+      "grand marnier",
+      "cointreau",
+      "curacao",
+      "orange curacao"
+    ],
+    "facets": [
+      {
+        "key": "variant",
+        "options": [
+          "citrus"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "variant",
+        "value": "citrus"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        1095,
+        3650
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "citrus liqueur",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "citrus"
+          }
+        ]
+      },
+      {
+        "text": "citrus",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "citrus"
+          }
+        ]
+      }
+    ],
+    "parentIds": [
+      "fruit-liqueur"
+    ],
+    "gramsPerCup": 240.0,
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "fruit-liqueur",
+        "ratio": "1:1",
+        "notes": "Same family as liqueur."
+      },
+      {
+        "substituteItemID": "brandy",
+        "ratio": "1:1",
+        "notes": "Brandy plus a little orange zest approximates orange liqueur in baking."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "coffee-liqueur",
+    "name": "coffee liqueur",
+    "category": "Alcohol & Spirits",
+    "defaultUnit": "fl oz",
+    "defaultQuantity": 25.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "kahlua",
+      "kahlua liqueur",
+      "coffee cordial",
+      "cafe liqueur"
+    ],
+    "facets": [
+      {
+        "key": "variant",
+        "options": [
+          "coffee"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "variant",
+        "value": "coffee"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        1095,
+        1460
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "coffee liqueur",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "coffee"
+          }
+        ]
+      },
+      {
+        "text": "coffee",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "coffee"
+          }
+        ]
+      }
+    ],
+    "parentIds": [
+      "liqueur"
+    ],
+    "gramsPerCup": 240.0,
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "liqueur",
+        "ratio": "1:1",
+        "notes": "Same family as liqueur."
+      },
+      {
+        "substituteItemID": "liqueur-herbal",
+        "ratio": "1:1",
+        "notes": "Another liqueur stands in where coffee flavor is not essential."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "amaretto",
+    "name": "amaretto",
+    "category": "Alcohol & Spirits",
+    "defaultUnit": "fl oz",
+    "defaultQuantity": 25.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "almond liqueur"
+    ],
+    "facets": [
+      {
+        "key": "variant",
+        "options": [
+          "nut"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "variant",
+        "value": "nut"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        1095,
+        3650
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "nut liqueur",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "nut"
+          }
+        ]
+      },
+      {
+        "text": "nut",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "nut"
+          }
+        ]
+      }
+    ],
+    "parentIds": [
+      "fruit-liqueur"
+    ],
+    "gramsPerCup": 240.0,
+    "allergens": [
+      "tree-nut"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "fruit-liqueur",
+        "ratio": "1:1",
+        "notes": "Same family as liqueur."
+      },
+      {
+        "substituteItemID": "brandy",
+        "ratio": "1:1",
+        "notes": "Brandy with a drop of almond extract approximates amaretto in desserts."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "irish-cream-liqueur",
+    "name": "irish cream liqueur",
+    "category": "Alcohol & Spirits",
+    "defaultUnit": "fl oz",
+    "defaultQuantity": 25.0,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "irish cream",
+      "baileys",
+      "cream liqueur"
+    ],
+    "facets": [
+      {
+        "key": "variant",
+        "options": [
+          "cream"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "variant",
+        "value": "cream"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        365,
+        730
+      ],
+      "Refrigerated": [
+        365,
+        730
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "cream liqueur",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "cream"
+          }
+        ]
+      },
+      {
+        "text": "cream",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "cream"
+          }
+        ]
+      }
+    ],
+    "parentIds": [
+      "liqueur"
+    ],
+    "gramsPerCup": 240.0,
+    "allergens": [
+      "dairy"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Gluten-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "coffee-liqueur",
+        "ratio": "1:1",
+        "notes": "Coffee liqueur swaps in where the dairy cream is not required."
+      },
+      {
+        "substituteItemID": "liqueur",
+        "ratio": "1:1",
+        "notes": "Same family as liqueur."
+      }
+    ],
+    "isUserDefined": false
+  }
+]

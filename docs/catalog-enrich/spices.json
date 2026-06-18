@@ -1,0 +1,2780 @@
+[
+  {
+    "id": "smoked-paprika",
+    "name": "smoked paprika",
+    "category": "Spices & Herbs",
+    "defaultUnit": "tsp",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "pimenton",
+      "pimenton de la vera",
+      "spanish smoked paprika",
+      "smoked sweet paprika",
+      "smoked hot paprika"
+    ],
+    "parentIds": [
+      "paprika"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "ground",
+          "whole"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "ground"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        365,
+        730
+      ]
+    },
+    "gramsPerCup": 100,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "paprika",
+        "ratio": "1:1",
+        "notes": "Same family as paprika."
+      },
+      {
+        "substituteItemID": "spanish-paprika",
+        "ratio": "1:1",
+        "notes": "Same family as paprika."
+      },
+      {
+        "substituteItemID": "hungarian",
+        "ratio": "1:1",
+        "notes": "Same family as paprika."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "herbes-de-provence",
+    "name": "herbes de provence",
+    "category": "Spices & Herbs",
+    "defaultUnit": "tsp",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "herbes de provence",
+      "provencal herbs",
+      "french herb blend"
+    ],
+    "parentIds": [],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "blend",
+          "ground"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "blend"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        365
+      ]
+    },
+    "gramsPerCup": 60,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "oregano",
+        "ratio": "1:1",
+        "notes": "Mediterranean dried-herb blend; substitute the dominant herb."
+      },
+      {
+        "substituteItemID": "thyme",
+        "ratio": "1:1",
+        "notes": "Thyme is a core component."
+      },
+      {
+        "substituteItemID": "ras-el-hanout",
+        "ratio": "1:1",
+        "notes": "Another aromatic dried blend."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "baharat",
+    "name": "baharat",
+    "category": "Spices & Herbs",
+    "defaultUnit": "tsp",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "arabic seven spice",
+      "arabic 7 spice",
+      "lebanese seven spice",
+      "middle eastern spice blend"
+    ],
+    "parentIds": [],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "ground"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "ground"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        365
+      ]
+    },
+    "gramsPerCup": 100,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "garam-masala",
+        "ratio": "1:1",
+        "notes": "Warm-spice blend with overlapping notes."
+      },
+      {
+        "substituteItemID": "ras-el-hanout",
+        "ratio": "1:1",
+        "notes": "Comparable Middle Eastern/North African blend."
+      },
+      {
+        "substituteItemID": "shawarma-seasoning",
+        "ratio": "1:1",
+        "notes": "Closely related Levantine blend."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "dukkah",
+    "name": "dukkah",
+    "category": "Spices & Herbs",
+    "defaultUnit": "tsp",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "duqqa",
+      "dukka",
+      "egyptian nut spice blend"
+    ],
+    "parentIds": [],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "ground",
+          "whole"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        90,
+        180
+      ]
+    },
+    "gramsPerCup": 110,
+    "allergens": [
+      "tree-nut",
+      "sesame"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "za'atar",
+        "ratio": "1:1",
+        "notes": "Another seedy/herby Middle Eastern dip blend."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "advieh",
+    "name": "advieh",
+    "category": "Spices & Herbs",
+    "defaultUnit": "tsp",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "persian spice blend",
+      "persian advieh",
+      "advieh-e polo"
+    ],
+    "parentIds": [],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "ground"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "ground"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        365
+      ]
+    },
+    "gramsPerCup": 90,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "garam-masala",
+        "ratio": "1:1",
+        "notes": "Floral warm-spice blend."
+      },
+      {
+        "substituteItemID": "baharat",
+        "ratio": "1:1",
+        "notes": "Comparable Middle Eastern blend."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "hawaij",
+    "name": "hawaij",
+    "category": "Spices & Herbs",
+    "defaultUnit": "tsp",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "hawayej",
+      "yemeni spice blend",
+      "hawaij for soup",
+      "hawaij for coffee"
+    ],
+    "parentIds": [],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "ground"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "ground"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        365
+      ]
+    },
+    "gramsPerCup": 100,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "baharat",
+        "ratio": "1:1",
+        "notes": "Overlapping cumin/pepper/cardamom profile."
+      },
+      {
+        "substituteItemID": "garam-masala",
+        "ratio": "1:1",
+        "notes": "Warm-spice blend."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "panch-phoron",
+    "name": "panch phoron",
+    "category": "Spices & Herbs",
+    "defaultUnit": "tsp",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "panch phoran",
+      "bengali five spice",
+      "panch puran"
+    ],
+    "parentIds": [],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "whole"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        365,
+        730
+      ]
+    },
+    "gramsPerCup": 110,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "fennel-seed",
+        "ratio": "1:1",
+        "notes": "Use the dominant whole seed."
+      },
+      {
+        "substituteItemID": "mustard-seed",
+        "ratio": "1:1",
+        "notes": "Use the dominant whole seed."
+      },
+      {
+        "substituteItemID": "fenugreek",
+        "ratio": "1:1",
+        "notes": "Use the dominant whole seed."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "quatre-epices",
+    "name": "quatre epices",
+    "category": "Spices & Herbs",
+    "defaultUnit": "tsp",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "quatre-epices",
+      "four spice",
+      "french four spice"
+    ],
+    "parentIds": [],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "ground"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "ground"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        365
+      ]
+    },
+    "gramsPerCup": 100,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "allspice",
+        "ratio": "1:1",
+        "notes": "Single-spice approximation of the warm blend."
+      },
+      {
+        "substituteItemID": "garam-masala",
+        "ratio": "1:1",
+        "notes": "Comparable warm-spice blend."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "tandoori-masala",
+    "name": "tandoori masala",
+    "category": "Spices & Herbs",
+    "defaultUnit": "tsp",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "tandoori spice",
+      "tandoori spice mix",
+      "tandoori seasoning"
+    ],
+    "parentIds": [],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "ground"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "ground"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        365
+      ]
+    },
+    "gramsPerCup": 100,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "garam-masala",
+        "ratio": "1:1",
+        "notes": "Shared garam-masala base."
+      },
+      {
+        "substituteItemID": "tikka-masala",
+        "ratio": "1:1",
+        "notes": "Closely related tandoori blend."
+      },
+      {
+        "substituteItemID": "curry-powder",
+        "ratio": "1:1",
+        "notes": "All-purpose Indian spice stand-in."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "tikka-masala",
+    "name": "tikka masala",
+    "category": "Spices & Herbs",
+    "defaultUnit": "tsp",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "tikka spice",
+      "chicken tikka masala spice",
+      "tikka seasoning"
+    ],
+    "parentIds": [],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "ground"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "ground"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        365
+      ]
+    },
+    "gramsPerCup": 100,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "tandoori-masala",
+        "ratio": "1:1",
+        "notes": "Closely related tandoori blend."
+      },
+      {
+        "substituteItemID": "garam-masala",
+        "ratio": "1:1",
+        "notes": "Shared garam-masala base."
+      },
+      {
+        "substituteItemID": "curry-powder",
+        "ratio": "1:1",
+        "notes": "All-purpose Indian spice stand-in."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "sambar-powder",
+    "name": "sambar powder",
+    "category": "Spices & Herbs",
+    "defaultUnit": "tsp",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "sambhar powder",
+      "sambar masala",
+      "sambar podi"
+    ],
+    "parentIds": [],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "ground"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "ground"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        365
+      ]
+    },
+    "gramsPerCup": 90,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "rasam-powder",
+        "ratio": "1:1",
+        "notes": "Related South Indian lentil-dish blend."
+      },
+      {
+        "substituteItemID": "curry-powder",
+        "ratio": "1:1",
+        "notes": "All-purpose Indian spice stand-in."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "rasam-powder",
+    "name": "rasam powder",
+    "category": "Spices & Herbs",
+    "defaultUnit": "tsp",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "rasam masala",
+      "rasam podi"
+    ],
+    "parentIds": [],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "ground"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "ground"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        365
+      ]
+    },
+    "gramsPerCup": 90,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "sambar-powder",
+        "ratio": "1:1",
+        "notes": "Related South Indian blend."
+      },
+      {
+        "substituteItemID": "curry-powder",
+        "ratio": "1:1",
+        "notes": "All-purpose Indian spice stand-in."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "vindaloo-masala",
+    "name": "vindaloo masala",
+    "category": "Spices & Herbs",
+    "defaultUnit": "tsp",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "vindaloo spice",
+      "vindaloo paste mix",
+      "goan vindaloo masala"
+    ],
+    "parentIds": [],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "ground"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "ground"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        365
+      ]
+    },
+    "gramsPerCup": 100,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "garam-masala",
+        "ratio": "1:1",
+        "notes": "Warm-spice base."
+      },
+      {
+        "substituteItemID": "curry-powder",
+        "ratio": "1:1",
+        "notes": "All-purpose Indian spice stand-in."
+      },
+      {
+        "substituteItemID": "kashmiri-chili-powder",
+        "ratio": "1:1",
+        "notes": "Supplies the characteristic red chili heat."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "kasoori-methi",
+    "name": "kasoori methi",
+    "category": "Spices & Herbs",
+    "defaultUnit": "tsp",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "kasuri methi",
+      "dried fenugreek leaves",
+      "dried methi leaves",
+      "qasoori methi"
+    ],
+    "parentIds": [],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "flakes",
+          "ground",
+          "whole"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "dried",
+          "fresh"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "preservation",
+        "value": "dried"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        365,
+        730
+      ],
+      "Refrigerated": [
+        7,
+        14
+      ],
+      "Frozen": [
+        90,
+        180
+      ]
+    },
+    "gramsPerCup": 30,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "fenugreek",
+        "ratio": "1:1",
+        "notes": "Fenugreek seed shares the same aroma; toast and grind sparingly."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "harissa-powder",
+    "name": "harissa powder",
+    "category": "Spices & Herbs",
+    "defaultUnit": "tsp",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "dry harissa",
+      "harissa spice",
+      "harissa seasoning"
+    ],
+    "parentIds": [],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "ground"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "ground"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        365
+      ]
+    },
+    "gramsPerCup": 100,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "berbere",
+        "ratio": "1:1",
+        "notes": "Comparable North African chili blend."
+      },
+      {
+        "substituteItemID": "chili-powder",
+        "ratio": "1:1",
+        "notes": "For the chili heat base."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "pilau-masala",
+    "name": "pilau masala",
+    "category": "Spices & Herbs",
+    "defaultUnit": "tsp",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "pilau masala mix",
+      "kenyan pilau masala",
+      "pilau spice",
+      "swahili pilau masala"
+    ],
+    "parentIds": [],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "ground",
+          "whole"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "ground"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        365
+      ]
+    },
+    "gramsPerCup": 100,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "garam-masala",
+        "ratio": "1:1",
+        "notes": "Warm-spice blend with overlapping notes."
+      },
+      {
+        "substituteItemID": "baharat",
+        "ratio": "1:1",
+        "notes": "Comparable cumin/coriander/cardamom blend."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "suya-spice",
+    "name": "suya spice",
+    "category": "Spices & Herbs",
+    "defaultUnit": "tsp",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "suya pepper",
+      "yaji",
+      "nigerian suya spice",
+      "suya seasoning"
+    ],
+    "parentIds": [],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "ground"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "ground"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        90,
+        180
+      ]
+    },
+    "gramsPerCup": 100,
+    "allergens": [
+      "peanut"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "berbere",
+        "ratio": "1:1",
+        "notes": "Comparable West/East African chili blend (omits peanut)."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "pilipili-spice",
+    "name": "pilipili spice",
+    "category": "Spices & Herbs",
+    "defaultUnit": "tsp",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "peri peri",
+      "piri piri",
+      "peri-peri seasoning",
+      "pili pili powder",
+      "african bird's eye chili powder"
+    ],
+    "parentIds": [],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "ground"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "ground"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        365
+      ]
+    },
+    "gramsPerCup": 90,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "cayenne",
+        "ratio": "1:1",
+        "notes": "African bird's-eye heat substitute."
+      },
+      {
+        "substituteItemID": "chili-powder",
+        "ratio": "1:1",
+        "notes": "General chili-heat stand-in."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "mchuzi-mix",
+    "name": "mchuzi mix",
+    "category": "Spices & Herbs",
+    "defaultUnit": "tsp",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "curry mchuzi mix",
+      "kenyan curry mix",
+      "royco mchuzi"
+    ],
+    "parentIds": [
+      "curry-powder"
+    ],
+    "facets": [
+      {
+        "key": "color",
+        "options": [
+          "yellow"
+        ]
+      },
+      {
+        "key": "grade",
+        "options": [
+          "mild"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "blend",
+          "ground",
+          "powder"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "powder"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        365,
+        730
+      ]
+    },
+    "gramsPerCup": 100,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "curry-powder",
+        "ratio": "1:1",
+        "notes": "Mchuzi mix is a curry-style stew blend."
+      },
+      {
+        "substituteItemID": "madras-curry-powder",
+        "ratio": "1:1",
+        "notes": "Comparable curry blend."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "shawarma-seasoning",
+    "name": "shawarma seasoning",
+    "category": "Spices & Herbs",
+    "defaultUnit": "tsp",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "shawarma spice",
+      "shawarma blend",
+      "shawarma rub"
+    ],
+    "parentIds": [],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "ground"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "ground"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        365
+      ]
+    },
+    "gramsPerCup": 100,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "baharat",
+        "ratio": "1:1",
+        "notes": "Closely related Levantine blend."
+      },
+      {
+        "substituteItemID": "garam-masala",
+        "ratio": "1:1",
+        "notes": "Warm-spice blend."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "adobo-seasoning",
+    "name": "adobo seasoning",
+    "category": "Spices & Herbs",
+    "defaultUnit": "tsp",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "adobo all purpose seasoning",
+      "latin adobo",
+      "dry adobo",
+      "goya adobo"
+    ],
+    "parentIds": [],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "ground"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "ground"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        365,
+        730
+      ]
+    },
+    "gramsPerCup": 120,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "garlic-powder",
+        "ratio": "1:1",
+        "notes": "Garlic is the dominant note."
+      },
+      {
+        "substituteItemID": "sazon-seasoning",
+        "ratio": "1:1",
+        "notes": "Comparable Latin all-purpose seasoning."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "everything-bagel-seasoning",
+    "name": "everything bagel seasoning",
+    "category": "Spices & Herbs",
+    "defaultUnit": "tsp",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "everything seasoning",
+      "everything but the bagel",
+      "ebtb seasoning"
+    ],
+    "parentIds": [],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "whole"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        365
+      ]
+    },
+    "gramsPerCup": 110,
+    "allergens": [
+      "sesame"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "sesame-seed",
+        "ratio": "1:1",
+        "notes": "Sesame is the dominant component."
+      },
+      {
+        "substituteItemID": "gomashio",
+        "ratio": "1:1",
+        "notes": "Comparable sesame-salt blend."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "gomashio",
+    "name": "gomashio",
+    "category": "Spices & Herbs",
+    "defaultUnit": "tsp",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "gomasio",
+      "sesame salt",
+      "japanese sesame salt"
+    ],
+    "parentIds": [],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "whole"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        365
+      ]
+    },
+    "gramsPerCup": 120,
+    "allergens": [
+      "sesame"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "sesame-seed",
+        "ratio": "1:1",
+        "notes": "Toasted sesame is the main component; add salt."
+      },
+      {
+        "substituteItemID": "everything-bagel-seasoning",
+        "ratio": "1:1",
+        "notes": "Comparable sesame-salt blend."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "dashi-powder",
+    "name": "dashi powder",
+    "category": "Spices & Herbs",
+    "defaultUnit": "tsp",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "dashi granules",
+      "hondashi",
+      "instant dashi",
+      "japanese soup stock powder"
+    ],
+    "parentIds": [],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "powder"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "powder"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        365,
+        730
+      ]
+    },
+    "gramsPerCup": 110,
+    "allergens": [
+      "fish"
+    ],
+    "dietaryTags": [
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "bouillon",
+        "ratio": "1:1",
+        "notes": "Substitute soup-stock base."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "ground-ginger",
+    "name": "ground ginger",
+    "category": "Spices & Herbs",
+    "defaultUnit": "tsp",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "ginger powder",
+      "dried ginger",
+      "powdered ginger",
+      "sonth",
+      "saunth"
+    ],
+    "parentIds": [],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "ground"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "ground"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        365,
+        730
+      ]
+    },
+    "gramsPerCup": 90,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "ginger",
+        "ratio": "1:6",
+        "notes": "Use fresh ginger (~1 tbsp grated per 1/4 tsp ground)."
+      },
+      {
+        "substituteItemID": "allspice",
+        "ratio": "1:1",
+        "notes": "Warm-spice approximation in baking."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "kala-namak",
+    "name": "kala namak",
+    "category": "Spices & Herbs",
+    "defaultUnit": "tsp",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "black salt",
+      "indian black salt",
+      "himalayan black salt",
+      "sanchal"
+    ],
+    "parentIds": [
+      "salt"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "crystals",
+          "flakes"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "seasoned",
+          "smoked"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "coarse",
+          "fine",
+          "flaky"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "texture",
+        "value": "coarse"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        1460,
+        4380
+      ]
+    },
+    "gramsPerCup": 273.0,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "salt",
+        "ratio": "1:1",
+        "notes": "Plain salt (loses the sulfurous note)."
+      },
+      {
+        "substituteItemID": "sea",
+        "ratio": "1:1",
+        "notes": "Same family as salt."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "fleur-de-sel",
+    "name": "fleur de sel",
+    "category": "Spices & Herbs",
+    "defaultUnit": "tsp",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "flower of salt",
+      "sel de guerande",
+      "finishing sea salt"
+    ],
+    "parentIds": [
+      "salt"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "crystals",
+          "flakes"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "seasoned",
+          "smoked"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "coarse",
+          "fine",
+          "flaky"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "texture",
+        "value": "coarse"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        1460,
+        4380
+      ]
+    },
+    "gramsPerCup": 273.0,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "flaky-sea-salt",
+        "ratio": "1:1",
+        "notes": "Comparable finishing salt."
+      },
+      {
+        "substituteItemID": "sea",
+        "ratio": "1:1",
+        "notes": "Same family as salt."
+      },
+      {
+        "substituteItemID": "kosher-salt",
+        "ratio": "1:1",
+        "notes": "Same family as salt."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "flaky-sea-salt",
+    "name": "flaky sea salt",
+    "category": "Spices & Herbs",
+    "defaultUnit": "tsp",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "maldon salt",
+      "flaky salt",
+      "maldon sea salt",
+      "flake salt"
+    ],
+    "parentIds": [
+      "salt"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "crystals",
+          "flakes"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "seasoned",
+          "smoked"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "coarse",
+          "fine",
+          "flaky"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "texture",
+        "value": "flaky"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        1460,
+        4380
+      ]
+    },
+    "gramsPerCup": 273.0,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "fleur-de-sel",
+        "ratio": "1:1",
+        "notes": "Comparable finishing salt."
+      },
+      {
+        "substituteItemID": "sea",
+        "ratio": "1:1",
+        "notes": "Same family as salt."
+      },
+      {
+        "substituteItemID": "kosher-salt",
+        "ratio": "1:1",
+        "notes": "Same family as salt."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "mahleb",
+    "name": "mahleb",
+    "category": "Spices & Herbs",
+    "defaultUnit": "tsp",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "mahlab",
+      "mahlepi",
+      "ground cherry kernel spice"
+    ],
+    "parentIds": [],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "ground",
+          "whole"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "ground"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        365
+      ]
+    },
+    "gramsPerCup": 100,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "anise",
+        "ratio": "1:1",
+        "notes": "Aromatic baking-spice approximation."
+      },
+      {
+        "substituteItemID": "cardamom",
+        "ratio": "1:1",
+        "notes": "Aromatic baking-spice approximation."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "dried-barberry",
+    "name": "dried barberry",
+    "category": "Spices & Herbs",
+    "defaultUnit": "tsp",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "zereshk",
+      "barberries",
+      "dried barberries",
+      "persian barberry"
+    ],
+    "parentIds": [],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "whole"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        365
+      ]
+    },
+    "gramsPerCup": 120,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "dried-cranberry",
+        "ratio": "1:1",
+        "notes": "Tart dried berry stand-in."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "dried-rose-petals",
+    "name": "dried rose petals",
+    "category": "Spices & Herbs",
+    "defaultUnit": "tsp",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "dried rose",
+      "rose petals",
+      "culinary rose petals",
+      "gulab pankhuri"
+    ],
+    "parentIds": [],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "ground",
+          "whole"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        365
+      ]
+    },
+    "gramsPerCup": 20,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "rose",
+        "ratio": "1:1",
+        "notes": "Rose water / rose product stand-in."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "dried-lemongrass",
+    "name": "dried lemongrass",
+    "category": "Spices & Herbs",
+    "defaultUnit": "tsp",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "lemongrass powder",
+      "ground lemongrass",
+      "dried lemon grass"
+    ],
+    "parentIds": [],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "ground",
+          "whole"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "ground"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        365,
+        730
+      ]
+    },
+    "gramsPerCup": 40,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "lemongrass",
+        "ratio": "1:3",
+        "notes": "Use fresh lemongrass stalk."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "sansho-pepper",
+    "name": "sansho pepper",
+    "category": "Spices & Herbs",
+    "defaultUnit": "tsp",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "sansho",
+      "japanese pepper",
+      "sancho pepper"
+    ],
+    "parentIds": [],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "ground"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "ground"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        365,
+        730
+      ]
+    },
+    "gramsPerCup": 90,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "szechuan-peppercorn",
+        "ratio": "1:1",
+        "notes": "Same Zanthoxylum family, citrusy-numbing."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "sorrel",
+    "name": "sorrel",
+    "category": "Spices & Herbs",
+    "defaultUnit": "tsp",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "dried sorrel",
+      "sour dock",
+      "garden sorrel",
+      "rumex"
+    ],
+    "parentIds": [],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "flakes",
+          "ground",
+          "whole"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "dried",
+          "fresh"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "preservation",
+        "value": "dried"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        365,
+        730
+      ],
+      "Refrigerated": [
+        7,
+        14
+      ],
+      "Frozen": [
+        90,
+        180
+      ]
+    },
+    "gramsPerCup": 40,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "spinach",
+        "ratio": "1:1",
+        "notes": "Mild leafy stand-in (loses tartness; add lemon)."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "lovage",
+    "name": "lovage",
+    "category": "Spices & Herbs",
+    "defaultUnit": "tsp",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "dried lovage",
+      "love parsley",
+      "maggi herb",
+      "levisticum"
+    ],
+    "parentIds": [],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "flakes",
+          "ground",
+          "whole"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "dried",
+          "fresh"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "preservation",
+        "value": "dried"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        365,
+        730
+      ],
+      "Refrigerated": [
+        7,
+        14
+      ],
+      "Frozen": [
+        90,
+        180
+      ]
+    },
+    "gramsPerCup": 40,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "celery-seed",
+        "ratio": "1:1",
+        "notes": "Celery-like aroma stand-in."
+      },
+      {
+        "substituteItemID": "parsley",
+        "ratio": "1:1",
+        "notes": "Milder herb stand-in."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "hyssop",
+    "name": "hyssop",
+    "category": "Spices & Herbs",
+    "defaultUnit": "tsp",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "dried hyssop",
+      "hyssopus",
+      "garden hyssop"
+    ],
+    "parentIds": [],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "flakes",
+          "ground",
+          "whole"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "dried",
+          "fresh"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "preservation",
+        "value": "dried"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        365,
+        730
+      ],
+      "Refrigerated": [
+        7,
+        14
+      ],
+      "Frozen": [
+        90,
+        180
+      ]
+    },
+    "gramsPerCup": 30,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "mint",
+        "ratio": "1:1",
+        "notes": "Minty herb approximation."
+      },
+      {
+        "substituteItemID": "oregano",
+        "ratio": "1:1",
+        "notes": "Related Mediterranean herb."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "fennel-pollen",
+    "name": "fennel pollen",
+    "category": "Spices & Herbs",
+    "defaultUnit": "tsp",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "wild fennel pollen",
+      "fennel flower pollen"
+    ],
+    "parentIds": [],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "ground"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "ground"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        365
+      ]
+    },
+    "gramsPerCup": 50,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "fennel-seed",
+        "ratio": "1:1",
+        "notes": "Ground fennel seed is the closest substitute (less intense)."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "annatto-powder",
+    "name": "annatto powder",
+    "category": "Spices & Herbs",
+    "defaultUnit": "tsp",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "ground annatto",
+      "achiote powder",
+      "ground achiote",
+      "annatto seed powder"
+    ],
+    "parentIds": [],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "ground"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "ground"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        365,
+        730
+      ]
+    },
+    "gramsPerCup": 100,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "annatto-seed",
+        "ratio": "1:1",
+        "notes": "Whole annatto seed (grind or steep)."
+      },
+      {
+        "substituteItemID": "achiote-paste",
+        "ratio": "1:1",
+        "notes": "Annatto in paste form."
+      },
+      {
+        "substituteItemID": "paprika",
+        "ratio": "1:1",
+        "notes": "For color, milder flavor."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "garlic-granules",
+    "name": "garlic granules",
+    "category": "Spices & Herbs",
+    "defaultUnit": "tsp",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "granulated garlic",
+      "minced dried garlic",
+      "dried garlic flakes"
+    ],
+    "parentIds": [
+      "garlic-powder"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "granulated",
+          "powder"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "granulated"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        365,
+        730
+      ]
+    },
+    "gramsPerCup": 100,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "garlic-powder",
+        "ratio": "1:1",
+        "notes": "Finer dried-garlic form."
+      },
+      {
+        "substituteItemID": "garlic-salt",
+        "ratio": "1:1",
+        "notes": "Garlic + salt blend."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "dried-minced-onion",
+    "name": "dried minced onion",
+    "category": "Spices & Herbs",
+    "defaultUnit": "tsp",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "onion flakes",
+      "dried onion flakes",
+      "minced dried onion",
+      "onion granules"
+    ],
+    "parentIds": [
+      "onion-powder"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "flakes",
+          "granulated"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "flakes"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        365,
+        730
+      ]
+    },
+    "gramsPerCup": 80,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "onion-powder",
+        "ratio": "1:1",
+        "notes": "Finer dried-onion form."
+      },
+      {
+        "substituteItemID": "onion-salt",
+        "ratio": "1:1",
+        "notes": "Onion + salt blend."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "dried-porcini-powder",
+    "name": "dried porcini powder",
+    "category": "Spices & Herbs",
+    "defaultUnit": "tsp",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "porcini powder",
+      "mushroom powder",
+      "dried mushroom powder"
+    ],
+    "parentIds": [],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "powder"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "powder"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        365,
+        730
+      ]
+    },
+    "gramsPerCup": 70,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "monosodium-glutamate",
+        "ratio": "1:1",
+        "notes": "Umami-boosting stand-in."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "chile-de-arbol",
+    "name": "chile de arbol",
+    "category": "Spices & Herbs",
+    "defaultUnit": "tsp",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "arbol chili",
+      "dried arbol chile",
+      "chile de arbol powder",
+      "bird's beak chili"
+    ],
+    "parentIds": [
+      "chili-powder"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "powder"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "powder"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        365,
+        730
+      ]
+    },
+    "gramsPerCup": 100,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "cayenne-chili-powder",
+        "ratio": "1:1",
+        "notes": "Same family as chili powder."
+      },
+      {
+        "substituteItemID": "guajillo-chili-powder",
+        "ratio": "1:1",
+        "notes": "Same family as chili powder."
+      },
+      {
+        "substituteItemID": "chili-powder",
+        "ratio": "1:1",
+        "notes": "Same family as chili powder."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "kashmiri-chili-powder",
+    "name": "kashmiri chili powder",
+    "category": "Spices & Herbs",
+    "defaultUnit": "tsp",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "kashmiri chilli powder",
+      "kashmiri mirch",
+      "kashmiri red chili powder"
+    ],
+    "parentIds": [
+      "chili-powder"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "powder"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "powder"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        365,
+        730
+      ]
+    },
+    "gramsPerCup": 100,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "paprika",
+        "ratio": "1:1",
+        "notes": "Mild, deep-red color stand-in."
+      },
+      {
+        "substituteItemID": "ancho",
+        "ratio": "1:1",
+        "notes": "Same family, mild fruity chili."
+      },
+      {
+        "substituteItemID": "chili-powder",
+        "ratio": "1:1",
+        "notes": "Same family as chili powder."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "tajin",
+    "name": "tajin",
+    "category": "Spices & Herbs",
+    "defaultUnit": "tsp",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "tajin seasoning",
+      "chili lime seasoning",
+      "chile lime salt"
+    ],
+    "parentIds": [],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "powder"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "powder"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        365,
+        730
+      ]
+    },
+    "gramsPerCup": 130,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "chili-powder",
+        "ratio": "1:1",
+        "notes": "Add salt + lime for the chili-lime-salt profile."
+      },
+      {
+        "substituteItemID": "cayenne",
+        "ratio": "1:1",
+        "notes": "For the chili component (add salt + lime)."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "goda-masala",
+    "name": "goda masala",
+    "category": "Spices & Herbs",
+    "defaultUnit": "tsp",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "goda masala blend",
+      "kala masala",
+      "maharashtrian goda masala"
+    ],
+    "parentIds": [],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "ground"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "ground"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        365
+      ]
+    },
+    "gramsPerCup": 100,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "garam-masala",
+        "ratio": "1:1",
+        "notes": "Closest warm-spice blend (goda is sweeter/darker)."
+      },
+      {
+        "substituteItemID": "curry-powder",
+        "ratio": "1:1",
+        "notes": "All-purpose Indian spice stand-in."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "vadouvan",
+    "name": "vadouvan",
+    "category": "Spices & Herbs",
+    "defaultUnit": "tsp",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "vadouvan masala",
+      "french curry blend"
+    ],
+    "parentIds": [
+      "curry-powder"
+    ],
+    "facets": [
+      {
+        "key": "color",
+        "options": [
+          "yellow"
+        ]
+      },
+      {
+        "key": "grade",
+        "options": [
+          "mild"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "blend",
+          "ground",
+          "powder"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "powder"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        365
+      ]
+    },
+    "gramsPerCup": 90,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "curry-powder",
+        "ratio": "1:1",
+        "notes": "Vadouvan is a French-Indian curry blend."
+      },
+      {
+        "substituteItemID": "madras-curry-powder",
+        "ratio": "1:1",
+        "notes": "Comparable curry blend."
+      }
+    ],
+    "isUserDefined": false
+  }
+]

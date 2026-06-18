@@ -1,0 +1,1853 @@
+[
+  {
+    "id": "chana-dal",
+    "name": "chana dal",
+    "category": "Legumes & Beans",
+    "defaultUnit": "cup",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "split chickpea",
+      "split bengal gram",
+      "split chana",
+      "bengal gram dal",
+      "kala chana dal"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "flour",
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "mashed",
+          "split"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "canned",
+          "dried"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "preservation",
+        "value": "dried"
+      },
+      {
+        "key": "preparation",
+        "value": "split"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        365,
+        1095
+      ],
+      "Refrigerated": [
+        3,
+        7
+      ],
+      "Frozen": [
+        180,
+        365
+      ]
+    },
+    "facetAliases": [],
+    "parentIds": [
+      "chickpea"
+    ],
+    "gramsPerCup": 190,
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free",
+      "High Protein"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "toor-dal",
+        "ratio": "1:1",
+        "notes": "Another split dal with a similar cook and texture."
+      },
+      {
+        "substituteItemID": "yellow-lentil",
+        "ratio": "1:1",
+        "notes": "Mild yellow split pulse; cooks down similarly."
+      },
+      {
+        "substituteItemID": "chickpea",
+        "ratio": "1:1",
+        "notes": "Whole form of the same legume."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "kala-chana",
+    "name": "kala chana",
+    "category": "Legumes & Beans",
+    "defaultUnit": "cup",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "black chickpea",
+      "brown chickpea",
+      "desi chana",
+      "black gram chickpea",
+      "bengal gram"
+    ],
+    "facets": [
+      {
+        "key": "color",
+        "options": [
+          "green"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "flour",
+          "paste",
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "mashed",
+          "split"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "canned",
+          "dried",
+          "fresh",
+          "frozen"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "cooked",
+          "raw",
+          "sprouted"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "preservation",
+        "value": "dried"
+      },
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        365,
+        1095
+      ],
+      "Refrigerated": [
+        3,
+        7
+      ],
+      "Frozen": [
+        180,
+        365
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "green chickpea",
+        "facets": [
+          {
+            "key": "color",
+            "value": "green"
+          }
+        ]
+      },
+      {
+        "text": "green split pea",
+        "facets": [
+          {
+            "key": "color",
+            "value": "green"
+          }
+        ]
+      },
+      {
+        "text": "green",
+        "facets": [
+          {
+            "key": "color",
+            "value": "green"
+          }
+        ]
+      }
+    ],
+    "parentIds": [
+      "chickpea"
+    ],
+    "gramsPerCup": 200,
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free",
+      "High Protein"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "desi",
+        "ratio": "1:1",
+        "notes": "Same desi chickpea type."
+      },
+      {
+        "substituteItemID": "chickpea",
+        "ratio": "1:1",
+        "notes": "Same legume; pale kabuli is milder and larger."
+      },
+      {
+        "substituteItemID": "chana-dal",
+        "ratio": "1:1",
+        "notes": "Split form of the same chickpea."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "besan",
+    "name": "besan",
+    "category": "Legumes & Beans",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "gram flour",
+      "chickpea flour",
+      "garbanzo flour",
+      "chana flour",
+      "bengal gram flour"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "flour"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "flour"
+      }
+    ],
+    "parentIds": [
+      "chickpea"
+    ],
+    "facetAliases": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        365
+      ]
+    },
+    "gramsPerCup": 92,
+    "allergens": [],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free",
+      "High Protein"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "chana-dal",
+        "ratio": "1:1",
+        "notes": "Besan is milled from chana dal; grind to make your own."
+      },
+      {
+        "substituteItemID": "chickpea",
+        "ratio": "1:1",
+        "notes": "Dry chickpeas can be milled into gram flour."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "red-lentil",
+    "name": "red lentil",
+    "category": "Legumes & Beans",
+    "defaultUnit": "cup",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "masoor dal",
+      "red split lentil",
+      "red lentils",
+      "split red lentil",
+      "egyptian lentil"
+    ],
+    "facets": [
+      {
+        "key": "color",
+        "options": [
+          "brown",
+          "yellow"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "flour",
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "mashed",
+          "split"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "canned",
+          "dried",
+          "fresh",
+          "frozen"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "cooked",
+          "raw",
+          "sprouted"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "preservation",
+        "value": "dried"
+      },
+      {
+        "key": "color",
+        "value": "yellow"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        365,
+        1095
+      ],
+      "Refrigerated": [
+        3,
+        7
+      ],
+      "Frozen": [
+        180,
+        365
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "brown lentil",
+        "facets": [
+          {
+            "key": "color",
+            "value": "brown"
+          }
+        ]
+      },
+      {
+        "text": "brown",
+        "facets": [
+          {
+            "key": "color",
+            "value": "brown"
+          }
+        ]
+      },
+      {
+        "text": "yellow lentil",
+        "facets": [
+          {
+            "key": "color",
+            "value": "yellow"
+          }
+        ]
+      },
+      {
+        "text": "yellow split pea",
+        "facets": [
+          {
+            "key": "color",
+            "value": "yellow"
+          }
+        ]
+      },
+      {
+        "text": "yellow",
+        "facets": [
+          {
+            "key": "color",
+            "value": "yellow"
+          }
+        ]
+      }
+    ],
+    "parentIds": [
+      "lentil"
+    ],
+    "gramsPerCup": 192,
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free",
+      "High Protein"
+    ],
+    "isUserDefined": false,
+    "swaps": [
+      {
+        "substituteItemID": "yellow-lentil",
+        "ratio": "1:1",
+        "notes": "Both split, fast-cooking; melt into dal/soup."
+      },
+      {
+        "substituteItemID": "mung-dal",
+        "ratio": "1:1",
+        "notes": "Similar soft-cooking split pulse."
+      },
+      {
+        "substituteItemID": "lentil",
+        "ratio": "1:1",
+        "notes": "Generic lentil; red is the quickest-cooking color."
+      }
+    ]
+  },
+  {
+    "id": "green-lentil",
+    "name": "green lentil",
+    "category": "Legumes & Beans",
+    "defaultUnit": "cup",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "green lentils",
+      "continental lentil",
+      "laird lentil"
+    ],
+    "facets": [
+      {
+        "key": "color",
+        "options": [
+          "brown",
+          "yellow"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "flour",
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "mashed",
+          "split"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "canned",
+          "dried",
+          "fresh",
+          "frozen"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "cooked",
+          "raw",
+          "sprouted"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "preservation",
+        "value": "dried"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        365,
+        1095
+      ],
+      "Refrigerated": [
+        3,
+        7
+      ],
+      "Frozen": [
+        180,
+        365
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "brown lentil",
+        "facets": [
+          {
+            "key": "color",
+            "value": "brown"
+          }
+        ]
+      },
+      {
+        "text": "brown",
+        "facets": [
+          {
+            "key": "color",
+            "value": "brown"
+          }
+        ]
+      },
+      {
+        "text": "yellow lentil",
+        "facets": [
+          {
+            "key": "color",
+            "value": "yellow"
+          }
+        ]
+      },
+      {
+        "text": "yellow split pea",
+        "facets": [
+          {
+            "key": "color",
+            "value": "yellow"
+          }
+        ]
+      },
+      {
+        "text": "yellow",
+        "facets": [
+          {
+            "key": "color",
+            "value": "yellow"
+          }
+        ]
+      }
+    ],
+    "parentIds": [
+      "lentil"
+    ],
+    "gramsPerCup": 192,
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free",
+      "High Protein"
+    ],
+    "isUserDefined": false,
+    "swaps": [
+      {
+        "substituteItemID": "puy",
+        "ratio": "1:1",
+        "notes": "Both hold their shape; puy is firmer and slate-green."
+      },
+      {
+        "substituteItemID": "brown-lentil",
+        "ratio": "1:1",
+        "notes": "Similar whole lentil for salads and stews."
+      },
+      {
+        "substituteItemID": "lentil",
+        "ratio": "1:1",
+        "notes": "Same family as lentil."
+      }
+    ]
+  },
+  {
+    "id": "brown-lentil",
+    "name": "brown lentil",
+    "category": "Legumes & Beans",
+    "defaultUnit": "cup",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "brown lentils",
+      "spanish brown lentil",
+      "german lentil"
+    ],
+    "facets": [
+      {
+        "key": "color",
+        "options": [
+          "brown",
+          "yellow"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "flour",
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "mashed",
+          "split"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "canned",
+          "dried",
+          "fresh",
+          "frozen"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "cooked",
+          "raw",
+          "sprouted"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "preservation",
+        "value": "dried"
+      },
+      {
+        "key": "color",
+        "value": "brown"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        365,
+        1095
+      ],
+      "Refrigerated": [
+        3,
+        7
+      ],
+      "Frozen": [
+        180,
+        365
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "brown lentil",
+        "facets": [
+          {
+            "key": "color",
+            "value": "brown"
+          }
+        ]
+      },
+      {
+        "text": "brown",
+        "facets": [
+          {
+            "key": "color",
+            "value": "brown"
+          }
+        ]
+      },
+      {
+        "text": "yellow lentil",
+        "facets": [
+          {
+            "key": "color",
+            "value": "yellow"
+          }
+        ]
+      },
+      {
+        "text": "yellow split pea",
+        "facets": [
+          {
+            "key": "color",
+            "value": "yellow"
+          }
+        ]
+      },
+      {
+        "text": "yellow",
+        "facets": [
+          {
+            "key": "color",
+            "value": "yellow"
+          }
+        ]
+      }
+    ],
+    "parentIds": [
+      "lentil"
+    ],
+    "gramsPerCup": 192,
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free",
+      "High Protein"
+    ],
+    "isUserDefined": false,
+    "swaps": [
+      {
+        "substituteItemID": "green-lentil",
+        "ratio": "1:1",
+        "notes": "Both hold shape for soups and stews."
+      },
+      {
+        "substituteItemID": "lentil",
+        "ratio": "1:1",
+        "notes": "Brown is the default supermarket lentil."
+      },
+      {
+        "substituteItemID": "beluga-lentil",
+        "ratio": "1:1",
+        "notes": "Beluga holds shape even better; darker color."
+      }
+    ]
+  },
+  {
+    "id": "yellow-lentil",
+    "name": "yellow lentil",
+    "category": "Legumes & Beans",
+    "defaultUnit": "cup",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "yellow lentils",
+      "moong dal yellow",
+      "petite yellow lentil"
+    ],
+    "facets": [
+      {
+        "key": "color",
+        "options": [
+          "brown",
+          "yellow"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "flour",
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "mashed",
+          "split"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "canned",
+          "dried",
+          "fresh",
+          "frozen"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "cooked",
+          "raw",
+          "sprouted"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "preservation",
+        "value": "dried"
+      },
+      {
+        "key": "color",
+        "value": "yellow"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        365,
+        1095
+      ],
+      "Refrigerated": [
+        3,
+        7
+      ],
+      "Frozen": [
+        180,
+        365
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "brown lentil",
+        "facets": [
+          {
+            "key": "color",
+            "value": "brown"
+          }
+        ]
+      },
+      {
+        "text": "brown",
+        "facets": [
+          {
+            "key": "color",
+            "value": "brown"
+          }
+        ]
+      },
+      {
+        "text": "yellow lentil",
+        "facets": [
+          {
+            "key": "color",
+            "value": "yellow"
+          }
+        ]
+      },
+      {
+        "text": "yellow split pea",
+        "facets": [
+          {
+            "key": "color",
+            "value": "yellow"
+          }
+        ]
+      },
+      {
+        "text": "yellow",
+        "facets": [
+          {
+            "key": "color",
+            "value": "yellow"
+          }
+        ]
+      }
+    ],
+    "parentIds": [
+      "lentil"
+    ],
+    "gramsPerCup": 192,
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free",
+      "High Protein"
+    ],
+    "isUserDefined": false,
+    "swaps": [
+      {
+        "substituteItemID": "red-lentil",
+        "ratio": "1:1",
+        "notes": "Both split, soft-cooking; cook down into dal."
+      },
+      {
+        "substituteItemID": "mung-dal",
+        "ratio": "1:1",
+        "notes": "Mild yellow split pulse with a similar texture."
+      },
+      {
+        "substituteItemID": "lentil",
+        "ratio": "1:1",
+        "notes": "Same family as lentil."
+      }
+    ]
+  },
+  {
+    "id": "edamame",
+    "name": "edamame",
+    "category": "Legumes & Beans",
+    "defaultUnit": "cup",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Frozen",
+    "aliases": [
+      "edamame beans",
+      "green soybeans",
+      "fresh soybeans",
+      "young soybeans",
+      "mukimame"
+    ],
+    "facets": [
+      {
+        "key": "color",
+        "options": [
+          "green"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "shelled"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "fresh",
+          "frozen"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "cooked",
+          "raw"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "preservation",
+        "value": "frozen"
+      },
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        3,
+        5
+      ],
+      "Frozen": [
+        180,
+        365
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "green soybeans",
+        "facets": [
+          {
+            "key": "color",
+            "value": "green"
+          }
+        ]
+      },
+      {
+        "text": "green",
+        "facets": [
+          {
+            "key": "color",
+            "value": "green"
+          }
+        ]
+      }
+    ],
+    "parentIds": [
+      "soy"
+    ],
+    "gramsPerCup": 155,
+    "allergens": [
+      "soy"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free",
+      "High Protein"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "soy",
+        "ratio": "1:1",
+        "notes": "Same species; mature soybeans are the dried form."
+      },
+      {
+        "substituteItemID": "broad",
+        "ratio": "1:1",
+        "notes": "Fresh broad/fava beans are a close green-bean substitute."
+      },
+      {
+        "substituteItemID": "lima",
+        "ratio": "1:1",
+        "notes": "Similar tender green bean texture."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "dried-green-peas",
+    "name": "dried green peas",
+    "category": "Legumes & Beans",
+    "defaultUnit": "cup",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "whole dried peas",
+      "whole green peas",
+      "dried marrowfat peas",
+      "matar"
+    ],
+    "facets": [
+      {
+        "key": "color",
+        "options": [
+          "green",
+          "yellow"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "flour",
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "mashed",
+          "split"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "canned",
+          "dried"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "cooked",
+          "raw"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "preservation",
+        "value": "dried"
+      },
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        365,
+        1095
+      ],
+      "Refrigerated": [
+        3,
+        7
+      ],
+      "Frozen": [
+        180,
+        365
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "green split pea",
+        "facets": [
+          {
+            "key": "color",
+            "value": "green"
+          }
+        ]
+      },
+      {
+        "text": "green",
+        "facets": [
+          {
+            "key": "color",
+            "value": "green"
+          }
+        ]
+      },
+      {
+        "text": "yellow split pea",
+        "facets": [
+          {
+            "key": "color",
+            "value": "yellow"
+          }
+        ]
+      },
+      {
+        "text": "yellow",
+        "facets": [
+          {
+            "key": "color",
+            "value": "yellow"
+          }
+        ]
+      }
+    ],
+    "parentIds": [],
+    "gramsPerCup": 200,
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free",
+      "High Protein"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "split-pea",
+        "ratio": "1:1",
+        "notes": "Split peas are the decorticated form of these whole dried peas."
+      },
+      {
+        "substituteItemID": "lentil",
+        "ratio": "1:1",
+        "notes": "Similar starchy pulse for soups."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "moth-bean",
+    "name": "moth bean",
+    "category": "Legumes & Beans",
+    "defaultUnit": "cup",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "matki",
+      "moth beans",
+      "matki beans",
+      "turkish gram",
+      "dew bean",
+      "matki sprouts"
+    ],
+    "facets": [
+      {
+        "key": "color",
+        "options": [
+          "black",
+          "white"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "flour",
+          "paste",
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "mashed",
+          "split"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "canned",
+          "dried",
+          "fresh",
+          "frozen"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "cooked",
+          "raw",
+          "sprouted"
+        ]
+      },
+      {
+        "key": "variant",
+        "options": [
+          "butter"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "preservation",
+        "value": "dried"
+      },
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        365,
+        1095
+      ],
+      "Refrigerated": [
+        3,
+        7
+      ],
+      "Frozen": [
+        180,
+        365
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "black beans",
+        "facets": [
+          {
+            "key": "color",
+            "value": "black"
+          }
+        ]
+      },
+      {
+        "text": "black",
+        "facets": [
+          {
+            "key": "color",
+            "value": "black"
+          }
+        ]
+      },
+      {
+        "text": "butter beans",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "butter"
+          }
+        ]
+      },
+      {
+        "text": "white beans",
+        "facets": [
+          {
+            "key": "color",
+            "value": "white"
+          }
+        ]
+      },
+      {
+        "text": "white bean",
+        "facets": [
+          {
+            "key": "color",
+            "value": "white"
+          }
+        ]
+      },
+      {
+        "text": "white",
+        "facets": [
+          {
+            "key": "color",
+            "value": "white"
+          }
+        ]
+      }
+    ],
+    "parentIds": [
+      "beans"
+    ],
+    "gramsPerCup": 190,
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free",
+      "High Protein"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "mung",
+        "ratio": "1:1",
+        "notes": "Same Vigna family; mung sprouts and cooks similarly."
+      },
+      {
+        "substituteItemID": "adzuki",
+        "ratio": "1:1",
+        "notes": "Small Vigna bean with comparable size and cook."
+      },
+      {
+        "substituteItemID": "black-eyed-pea",
+        "ratio": "1:1",
+        "notes": "Another small field bean used the same way."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "gigante-beans",
+    "name": "gigante beans",
+    "category": "Legumes & Beans",
+    "defaultUnit": "cup",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "giant beans",
+      "corona beans",
+      "gigantes",
+      "elephant beans",
+      "judion beans"
+    ],
+    "facets": [
+      {
+        "key": "color",
+        "options": [
+          "black",
+          "white"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "flour",
+          "paste",
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "mashed",
+          "split"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "canned",
+          "dried",
+          "fresh",
+          "frozen"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "cooked",
+          "raw",
+          "sprouted"
+        ]
+      },
+      {
+        "key": "variant",
+        "options": [
+          "butter"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "preservation",
+        "value": "dried"
+      },
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        365,
+        1095
+      ],
+      "Refrigerated": [
+        3,
+        7
+      ],
+      "Frozen": [
+        180,
+        365
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "black beans",
+        "facets": [
+          {
+            "key": "color",
+            "value": "black"
+          }
+        ]
+      },
+      {
+        "text": "black",
+        "facets": [
+          {
+            "key": "color",
+            "value": "black"
+          }
+        ]
+      },
+      {
+        "text": "butter beans",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "butter"
+          }
+        ]
+      },
+      {
+        "text": "white beans",
+        "facets": [
+          {
+            "key": "color",
+            "value": "white"
+          }
+        ]
+      },
+      {
+        "text": "white bean",
+        "facets": [
+          {
+            "key": "color",
+            "value": "white"
+          }
+        ]
+      },
+      {
+        "text": "white",
+        "facets": [
+          {
+            "key": "color",
+            "value": "white"
+          }
+        ]
+      }
+    ],
+    "parentIds": [
+      "beans"
+    ],
+    "gramsPerCup": 180,
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free",
+      "High Protein"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "runner",
+        "ratio": "1:1",
+        "notes": "Gigantes are a large runner-type bean."
+      },
+      {
+        "substituteItemID": "lima",
+        "ratio": "1:1",
+        "notes": "Large, creamy white bean; similar in dishes."
+      },
+      {
+        "substituteItemID": "cannellini",
+        "ratio": "1:1",
+        "notes": "White bean substitute when gigantes are unavailable."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "borlotti-beans",
+    "name": "borlotti beans",
+    "category": "Legumes & Beans",
+    "defaultUnit": "cup",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "borlotti bean",
+      "borlotti",
+      "rosecoco beans",
+      "saluggia bean",
+      "romano beans",
+      "cranberry bean"
+    ],
+    "facets": [
+      {
+        "key": "color",
+        "options": [
+          "black",
+          "white"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "flour",
+          "paste",
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "mashed",
+          "split"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "canned",
+          "dried",
+          "fresh",
+          "frozen"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "cooked",
+          "raw",
+          "sprouted"
+        ]
+      },
+      {
+        "key": "variant",
+        "options": [
+          "butter"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "preservation",
+        "value": "dried"
+      },
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        365,
+        1095
+      ],
+      "Refrigerated": [
+        3,
+        7
+      ],
+      "Frozen": [
+        180,
+        365
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "black beans",
+        "facets": [
+          {
+            "key": "color",
+            "value": "black"
+          }
+        ]
+      },
+      {
+        "text": "black",
+        "facets": [
+          {
+            "key": "color",
+            "value": "black"
+          }
+        ]
+      },
+      {
+        "text": "butter beans",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "butter"
+          }
+        ]
+      },
+      {
+        "text": "white beans",
+        "facets": [
+          {
+            "key": "color",
+            "value": "white"
+          }
+        ]
+      },
+      {
+        "text": "white bean",
+        "facets": [
+          {
+            "key": "color",
+            "value": "white"
+          }
+        ]
+      },
+      {
+        "text": "white",
+        "facets": [
+          {
+            "key": "color",
+            "value": "white"
+          }
+        ]
+      }
+    ],
+    "parentIds": [
+      "beans"
+    ],
+    "gramsPerCup": 185,
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free",
+      "High Protein"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "cranberry-beans",
+        "ratio": "1:1",
+        "notes": "Borlotti is the Italian name for cranberry beans."
+      },
+      {
+        "substituteItemID": "pinto",
+        "ratio": "1:1",
+        "notes": "Similar mottled bean that cooks to a creamy texture."
+      },
+      {
+        "substituteItemID": "kidney",
+        "ratio": "1:1",
+        "notes": "Comparable size and texture in stews."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "tepary-bean",
+    "name": "tepary bean",
+    "category": "Legumes & Beans",
+    "defaultUnit": "cup",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "tepary beans",
+      "pawi",
+      "phaseolus acutifolius"
+    ],
+    "facets": [
+      {
+        "key": "color",
+        "options": [
+          "black",
+          "white"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "flour",
+          "paste",
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "mashed",
+          "split"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "canned",
+          "dried",
+          "fresh",
+          "frozen"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "cooked",
+          "raw",
+          "sprouted"
+        ]
+      },
+      {
+        "key": "variant",
+        "options": [
+          "butter"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "preservation",
+        "value": "dried"
+      },
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        365,
+        1095
+      ],
+      "Refrigerated": [
+        3,
+        7
+      ],
+      "Frozen": [
+        180,
+        365
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "black beans",
+        "facets": [
+          {
+            "key": "color",
+            "value": "black"
+          }
+        ]
+      },
+      {
+        "text": "black",
+        "facets": [
+          {
+            "key": "color",
+            "value": "black"
+          }
+        ]
+      },
+      {
+        "text": "butter beans",
+        "facets": [
+          {
+            "key": "variant",
+            "value": "butter"
+          }
+        ]
+      },
+      {
+        "text": "white beans",
+        "facets": [
+          {
+            "key": "color",
+            "value": "white"
+          }
+        ]
+      },
+      {
+        "text": "white bean",
+        "facets": [
+          {
+            "key": "color",
+            "value": "white"
+          }
+        ]
+      },
+      {
+        "text": "white",
+        "facets": [
+          {
+            "key": "color",
+            "value": "white"
+          }
+        ]
+      }
+    ],
+    "parentIds": [
+      "beans"
+    ],
+    "gramsPerCup": 190,
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free",
+      "High Protein"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "pinto",
+        "ratio": "1:1",
+        "notes": "Southwest bean with a similar earthy flavor."
+      },
+      {
+        "substituteItemID": "navy",
+        "ratio": "1:1",
+        "notes": "Small white bean substitute for the white tepary."
+      },
+      {
+        "substituteItemID": "black-beans",
+        "ratio": "1:1",
+        "notes": "Same family as beans."
+      }
+    ],
+    "isUserDefined": false
+  }
+]

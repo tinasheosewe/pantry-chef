@@ -1,0 +1,2756 @@
+[
+  {
+    "id": "injera",
+    "name": "injera",
+    "category": "Breads & Bakery",
+    "defaultUnit": "piece",
+    "defaultQuantity": 4,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "injera bread",
+      "ethiopian flatbread",
+      "eritrean flatbread",
+      "taita",
+      "budena"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "halved",
+          "quartered"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "fresh",
+          "frozen",
+          "refrigerated"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        2,
+        3
+      ],
+      "Refrigerated": [
+        5,
+        14
+      ],
+      "Frozen": [
+        60,
+        120
+      ]
+    },
+    "parentIds": [
+      "flatbread"
+    ],
+    "gramsPerPiece": 80.0,
+    "allergens": [
+      "gluten"
+    ],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "msemen",
+        "ratio": "1:1",
+        "notes": "Same family as flatbread."
+      },
+      {
+        "substituteItemID": "laffa",
+        "ratio": "1:1",
+        "notes": "Same family as flatbread."
+      },
+      {
+        "substituteItemID": "barbari",
+        "ratio": "1:1",
+        "notes": "Same family as flatbread."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "arepa",
+    "name": "arepa",
+    "category": "Breads & Bakery",
+    "defaultUnit": "piece",
+    "defaultQuantity": 4,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "arepas",
+      "arepa flour cake",
+      "venezuelan arepa",
+      "colombian arepa"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "halved",
+          "quartered"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "fresh",
+          "frozen",
+          "refrigerated"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        1,
+        2
+      ],
+      "Refrigerated": [
+        3,
+        5
+      ],
+      "Frozen": [
+        60,
+        120
+      ]
+    },
+    "parentIds": [
+      "flatbread"
+    ],
+    "gramsPerPiece": 60.0,
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "tortilla",
+        "ratio": "1:1",
+        "notes": "Same family as flatbread."
+      },
+      {
+        "substituteItemID": "bolillo",
+        "ratio": "1:1",
+        "notes": "Same family as flatbread."
+      },
+      {
+        "substituteItemID": "sandwich-bread",
+        "ratio": "1:1",
+        "notes": "Same family as flatbread."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "bao-bun",
+    "name": "bao bun",
+    "category": "Breads & Bakery",
+    "defaultUnit": "piece",
+    "defaultQuantity": 6,
+    "defaultStorage": "Frozen",
+    "aliases": [
+      "bao",
+      "baozi",
+      "steamed bun",
+      "mantou",
+      "gua bao",
+      "pork bun",
+      "char siu bao"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "mini",
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "halved",
+          "sliced",
+          "split"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "day-old",
+          "fresh",
+          "frozen",
+          "refrigerated"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        1,
+        1
+      ],
+      "Refrigerated": [
+        4,
+        5
+      ],
+      "Frozen": [
+        60,
+        90
+      ]
+    },
+    "parentIds": [
+      "bun"
+    ],
+    "gramsPerPiece": 55.0,
+    "allergens": [
+      "gluten"
+    ],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "dinner-roll",
+        "ratio": "1:1",
+        "notes": "Same family as bun."
+      },
+      {
+        "substituteItemID": "ladi-pav",
+        "ratio": "1:1",
+        "notes": "Same family as bun."
+      },
+      {
+        "substituteItemID": "bun",
+        "ratio": "1:1",
+        "notes": "Same family as bun."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "challah",
+    "name": "challah",
+    "category": "Breads & Bakery",
+    "defaultUnit": "loaf",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "challah bread",
+      "challas",
+      "hallah",
+      "egg bread",
+      "challah loaf"
+    ],
+    "facets": [
+      {
+        "key": "color",
+        "options": [
+          "white"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "ball",
+          "croutons",
+          "crumbs",
+          "jumbo",
+          "log",
+          "mini",
+          "mix",
+          "roll",
+          "sandwich",
+          "sheet",
+          "stick",
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "cubed",
+          "halved",
+          "sliced",
+          "split"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "day-old",
+          "dried",
+          "fresh",
+          "frozen",
+          "refrigerated"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "sprouted"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "coarse",
+          "fine"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "preparation",
+        "value": "sliced"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        2,
+        4
+      ],
+      "Refrigerated": [
+        7,
+        10
+      ],
+      "Frozen": [
+        60,
+        180
+      ]
+    },
+    "parentIds": [
+      "bread"
+    ],
+    "gramsPerPiece": 35.0,
+    "allergens": [
+      "gluten",
+      "egg"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "brioche",
+        "ratio": "1:1",
+        "notes": "Same family as bread."
+      },
+      {
+        "substituteItemID": "baguette",
+        "ratio": "1:1",
+        "notes": "Same family as bread."
+      },
+      {
+        "substituteItemID": "sandwich-bread",
+        "ratio": "1:1",
+        "notes": "Same family as bread."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "cornbread",
+    "name": "cornbread",
+    "category": "Breads & Bakery",
+    "defaultUnit": "loaf",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "corn bread",
+      "cornbreads",
+      "southern cornbread",
+      "skillet cornbread",
+      "johnnycake",
+      "corn pone"
+    ],
+    "facets": [
+      {
+        "key": "color",
+        "options": [
+          "white"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "ball",
+          "croutons",
+          "crumbs",
+          "jumbo",
+          "log",
+          "mini",
+          "mix",
+          "roll",
+          "sandwich",
+          "sheet",
+          "stick",
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "cubed",
+          "halved",
+          "sliced",
+          "split"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "day-old",
+          "dried",
+          "fresh",
+          "frozen",
+          "refrigerated"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "sprouted"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "coarse",
+          "fine"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "preparation",
+        "value": "sliced"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        1,
+        2
+      ],
+      "Refrigerated": [
+        5,
+        7
+      ],
+      "Frozen": [
+        60,
+        90
+      ]
+    },
+    "parentIds": [
+      "bread"
+    ],
+    "gramsPerPiece": 45.0,
+    "allergens": [
+      "gluten",
+      "egg",
+      "dairy"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "sandwich-bread",
+        "ratio": "1:1",
+        "notes": "Same family as bread."
+      },
+      {
+        "substituteItemID": "biscuit",
+        "ratio": "1:1",
+        "notes": "Same family as bread."
+      },
+      {
+        "substituteItemID": "bolillo",
+        "ratio": "1:1",
+        "notes": "Same family as bread."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "soft-pretzel",
+    "name": "soft pretzel",
+    "category": "Breads & Bakery",
+    "defaultUnit": "loaf",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "pretzel",
+      "bavarian pretzel",
+      "brezel",
+      "pretzel twist",
+      "laugenbrezel"
+    ],
+    "facets": [
+      {
+        "key": "color",
+        "options": [
+          "white"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "ball",
+          "croutons",
+          "crumbs",
+          "jumbo",
+          "log",
+          "mini",
+          "mix",
+          "roll",
+          "sandwich",
+          "sheet",
+          "stick",
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "cubed",
+          "halved",
+          "sliced",
+          "split"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "day-old",
+          "dried",
+          "fresh",
+          "frozen",
+          "refrigerated"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "sprouted"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "coarse",
+          "fine"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "preparation",
+        "value": "sliced"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        1,
+        2
+      ],
+      "Refrigerated": [
+        3,
+        5
+      ],
+      "Frozen": [
+        60,
+        120
+      ]
+    },
+    "parentIds": [
+      "bread"
+    ],
+    "gramsPerPiece": 80.0,
+    "allergens": [
+      "gluten"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "pretzel",
+        "ratio": "1:1",
+        "notes": "Same family as bread."
+      },
+      {
+        "substituteItemID": "bagel",
+        "ratio": "1:1",
+        "notes": "Same family as bread."
+      },
+      {
+        "substituteItemID": "dinner-roll",
+        "ratio": "1:1",
+        "notes": "Same family as bread."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "puff-pastry",
+    "name": "puff pastry",
+    "category": "Breads & Bakery",
+    "defaultUnit": "piece",
+    "defaultQuantity": 6,
+    "defaultStorage": "Frozen",
+    "aliases": [
+      "puff pastry sheet",
+      "pate feuilletee",
+      "blitz pastry",
+      "rough puff",
+      "frozen puff pastry"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "ball",
+          "filled",
+          "log",
+          "rectangle",
+          "round",
+          "sheet",
+          "square",
+          "triangle",
+          "unfilled",
+          "whole"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "fresh",
+          "frozen",
+          "refrigerated"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "sheet"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        1,
+        1
+      ],
+      "Refrigerated": [
+        2,
+        3
+      ],
+      "Frozen": [
+        180,
+        365
+      ]
+    },
+    "parentIds": [
+      "pastry"
+    ],
+    "gramsPerPiece": 50.0,
+    "allergens": [
+      "gluten"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "filo-pastry",
+        "ratio": "1:1",
+        "notes": "Same family as dough."
+      },
+      {
+        "substituteItemID": "shortcrust-pastry",
+        "ratio": "1:1",
+        "notes": "Same family as dough."
+      },
+      {
+        "substituteItemID": "pastry",
+        "ratio": "1:1",
+        "notes": "Same family as dough."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "filo-pastry",
+    "name": "filo pastry",
+    "category": "Breads & Bakery",
+    "defaultUnit": "piece",
+    "defaultQuantity": 6,
+    "defaultStorage": "Frozen",
+    "aliases": [
+      "filo",
+      "phyllo",
+      "phyllo dough",
+      "filo dough",
+      "filo sheets",
+      "yufka"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "ball",
+          "filled",
+          "log",
+          "rectangle",
+          "round",
+          "sheet",
+          "square",
+          "triangle",
+          "unfilled",
+          "whole"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "fresh",
+          "frozen",
+          "refrigerated"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "sheet"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        1,
+        1
+      ],
+      "Refrigerated": [
+        3,
+        7
+      ],
+      "Frozen": [
+        180,
+        365
+      ]
+    },
+    "parentIds": [
+      "pastry"
+    ],
+    "gramsPerPiece": 50.0,
+    "allergens": [
+      "gluten"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "puff-pastry",
+        "ratio": "1:1",
+        "notes": "Same family as dough."
+      },
+      {
+        "substituteItemID": "phyllo",
+        "ratio": "1:1",
+        "notes": "Same family as dough."
+      },
+      {
+        "substituteItemID": "shortcrust-pastry",
+        "ratio": "1:1",
+        "notes": "Same family as dough."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "shortcrust-pastry",
+    "name": "shortcrust pastry",
+    "category": "Breads & Bakery",
+    "defaultUnit": "piece",
+    "defaultQuantity": 6,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "shortcrust",
+      "pie dough",
+      "pate brisee",
+      "pie pastry",
+      "tart dough",
+      "shortcrust dough"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "ball",
+          "filled",
+          "log",
+          "rectangle",
+          "round",
+          "sheet",
+          "square",
+          "triangle",
+          "unfilled",
+          "whole"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "fresh",
+          "frozen",
+          "refrigerated"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "sheet"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        1,
+        1
+      ],
+      "Refrigerated": [
+        3,
+        3
+      ],
+      "Frozen": [
+        30,
+        60
+      ]
+    },
+    "parentIds": [
+      "pastry"
+    ],
+    "gramsPerPiece": 50.0,
+    "allergens": [
+      "gluten",
+      "dairy"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "puff-pastry",
+        "ratio": "1:1",
+        "notes": "Same family as dough."
+      },
+      {
+        "substituteItemID": "filo-pastry",
+        "ratio": "1:1",
+        "notes": "Same family as dough."
+      },
+      {
+        "substituteItemID": "pie-shell",
+        "ratio": "1:1",
+        "notes": "Same family as dough."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "croutons",
+    "name": "croutons",
+    "category": "Breads & Bakery",
+    "defaultUnit": "cup",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "crouton",
+      "salad croutons",
+      "garlic croutons",
+      "seasoned croutons"
+    ],
+    "facets": [
+      {
+        "key": "color",
+        "options": [
+          "white"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "ball",
+          "croutons",
+          "crumbs",
+          "jumbo",
+          "log",
+          "mini",
+          "mix",
+          "roll",
+          "sandwich",
+          "sheet",
+          "stick",
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "cubed",
+          "halved",
+          "sliced",
+          "split"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "day-old",
+          "dried",
+          "fresh",
+          "frozen",
+          "refrigerated"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "sprouted"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "coarse",
+          "fine"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "croutons"
+      },
+      {
+        "key": "preparation",
+        "value": "cubed"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        90,
+        180
+      ],
+      "Refrigerated": [
+        30,
+        90
+      ],
+      "Frozen": [
+        180,
+        365
+      ]
+    },
+    "parentIds": [
+      "bread"
+    ],
+    "gramsPerCup": 30.0,
+    "allergens": [
+      "gluten"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "breadcrumb",
+        "ratio": "1:1",
+        "notes": "Same family as bread."
+      },
+      {
+        "substituteItemID": "panko",
+        "ratio": "1:1",
+        "notes": "Same family as bread."
+      },
+      {
+        "substituteItemID": "grissini",
+        "ratio": "1:1",
+        "notes": "Same family as bread."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "ladi-pav",
+    "name": "ladi pav",
+    "category": "Breads & Bakery",
+    "defaultUnit": "piece",
+    "defaultQuantity": 6,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "pav",
+      "pao",
+      "ladi pao",
+      "pav bun",
+      "indian dinner roll"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "mini",
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "halved",
+          "sliced",
+          "split"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "day-old",
+          "fresh",
+          "frozen",
+          "refrigerated"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        2,
+        4
+      ],
+      "Refrigerated": [
+        7,
+        10
+      ],
+      "Frozen": [
+        60,
+        120
+      ]
+    },
+    "parentIds": [
+      "bun"
+    ],
+    "gramsPerPiece": 50.0,
+    "allergens": [
+      "gluten"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "dinner-roll",
+        "ratio": "1:1",
+        "notes": "Same family as bun."
+      },
+      {
+        "substituteItemID": "slider-bun",
+        "ratio": "1:1",
+        "notes": "Same family as bun."
+      },
+      {
+        "substituteItemID": "bun",
+        "ratio": "1:1",
+        "notes": "Same family as bun."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "dinner-roll",
+    "name": "dinner roll",
+    "category": "Breads & Bakery",
+    "defaultUnit": "piece",
+    "defaultQuantity": 6,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "dinner rolls",
+      "bread roll",
+      "soft roll",
+      "pull-apart roll",
+      "parker house roll"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "mini",
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "halved",
+          "sliced",
+          "split"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "day-old",
+          "fresh",
+          "frozen",
+          "refrigerated"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        2,
+        4
+      ],
+      "Refrigerated": [
+        7,
+        10
+      ],
+      "Frozen": [
+        60,
+        180
+      ]
+    },
+    "parentIds": [
+      "bun"
+    ],
+    "gramsPerPiece": 40.0,
+    "allergens": [
+      "gluten"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "bun",
+        "ratio": "1:1",
+        "notes": "Same family as bun."
+      },
+      {
+        "substituteItemID": "slider-bun",
+        "ratio": "1:1",
+        "notes": "Same family as bun."
+      },
+      {
+        "substituteItemID": "ladi-pav",
+        "ratio": "1:1",
+        "notes": "Same family as bun."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "ciabatta-roll",
+    "name": "ciabatta roll",
+    "category": "Breads & Bakery",
+    "defaultUnit": "piece",
+    "defaultQuantity": 6,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "ciabatta bun",
+      "panini roll",
+      "italian roll"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "mini",
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "halved",
+          "sliced",
+          "split"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "day-old",
+          "fresh",
+          "frozen",
+          "refrigerated"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        2,
+        4
+      ],
+      "Refrigerated": [
+        5,
+        7
+      ],
+      "Frozen": [
+        60,
+        180
+      ]
+    },
+    "parentIds": [
+      "bun"
+    ],
+    "gramsPerPiece": 70.0,
+    "allergens": [
+      "gluten"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "kaiser-roll",
+        "ratio": "1:1",
+        "notes": "Same family as bun."
+      },
+      {
+        "substituteItemID": "ciabatta",
+        "ratio": "1:1",
+        "notes": "Same family as bun."
+      },
+      {
+        "substituteItemID": "dinner-roll",
+        "ratio": "1:1",
+        "notes": "Same family as bun."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "kaiser-roll",
+    "name": "kaiser roll",
+    "category": "Breads & Bakery",
+    "defaultUnit": "piece",
+    "defaultQuantity": 6,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "kaiser bun",
+      "vienna roll",
+      "hard roll",
+      "bulkie roll"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "mini",
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "halved",
+          "sliced",
+          "split"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "day-old",
+          "fresh",
+          "frozen",
+          "refrigerated"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        2,
+        4
+      ],
+      "Refrigerated": [
+        5,
+        7
+      ],
+      "Frozen": [
+        60,
+        180
+      ]
+    },
+    "parentIds": [
+      "bun"
+    ],
+    "gramsPerPiece": 70.0,
+    "allergens": [
+      "gluten"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "ciabatta-roll",
+        "ratio": "1:1",
+        "notes": "Same family as bun."
+      },
+      {
+        "substituteItemID": "dinner-roll",
+        "ratio": "1:1",
+        "notes": "Same family as bun."
+      },
+      {
+        "substituteItemID": "bun",
+        "ratio": "1:1",
+        "notes": "Same family as bun."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "paratha",
+    "name": "paratha",
+    "category": "Breads & Bakery",
+    "defaultUnit": "piece",
+    "defaultQuantity": 4,
+    "defaultStorage": "Frozen",
+    "aliases": [
+      "parantha",
+      "lachha paratha",
+      "aloo paratha",
+      "malabar paratha",
+      "roti canai"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "halved",
+          "quartered"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "fresh",
+          "frozen",
+          "refrigerated"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        2,
+        3
+      ],
+      "Refrigerated": [
+        5,
+        7
+      ],
+      "Frozen": [
+        90,
+        180
+      ]
+    },
+    "parentIds": [
+      "flatbread"
+    ],
+    "gramsPerPiece": 60.0,
+    "allergens": [
+      "gluten"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "roti",
+        "ratio": "1:1",
+        "notes": "Same family as flatbread."
+      },
+      {
+        "substituteItemID": "chapati",
+        "ratio": "1:1",
+        "notes": "Same family as flatbread."
+      },
+      {
+        "substituteItemID": "naan",
+        "ratio": "1:1",
+        "notes": "Same family as flatbread."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "barbari",
+    "name": "barbari",
+    "category": "Breads & Bakery",
+    "defaultUnit": "piece",
+    "defaultQuantity": 4,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "barbari bread",
+      "nan-e barbari",
+      "persian flatbread"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "halved",
+          "quartered"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "fresh",
+          "frozen",
+          "refrigerated"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        2,
+        3
+      ],
+      "Refrigerated": [
+        5,
+        7
+      ],
+      "Frozen": [
+        60,
+        120
+      ]
+    },
+    "parentIds": [
+      "flatbread"
+    ],
+    "gramsPerPiece": 70.0,
+    "allergens": [
+      "gluten",
+      "sesame"
+    ],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "laffa",
+        "ratio": "1:1",
+        "notes": "Same family as flatbread."
+      },
+      {
+        "substituteItemID": "lavash",
+        "ratio": "1:1",
+        "notes": "Same family as flatbread."
+      },
+      {
+        "substituteItemID": "naan",
+        "ratio": "1:1",
+        "notes": "Same family as flatbread."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "laffa",
+    "name": "laffa",
+    "category": "Breads & Bakery",
+    "defaultUnit": "piece",
+    "defaultQuantity": 4,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "laffa bread",
+      "iraqi pita",
+      "taboon bread",
+      "saj bread"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "halved",
+          "quartered"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "fresh",
+          "frozen",
+          "refrigerated"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        2,
+        4
+      ],
+      "Refrigerated": [
+        7,
+        10
+      ],
+      "Frozen": [
+        60,
+        120
+      ]
+    },
+    "parentIds": [
+      "flatbread"
+    ],
+    "gramsPerPiece": 70.0,
+    "allergens": [
+      "gluten"
+    ],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "pita",
+        "ratio": "1:1",
+        "notes": "Same family as flatbread."
+      },
+      {
+        "substituteItemID": "naan",
+        "ratio": "1:1",
+        "notes": "Same family as flatbread."
+      },
+      {
+        "substituteItemID": "lavash",
+        "ratio": "1:1",
+        "notes": "Same family as flatbread."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "msemen",
+    "name": "msemen",
+    "category": "Breads & Bakery",
+    "defaultUnit": "piece",
+    "defaultQuantity": 4,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "msemmen",
+      "rghaif",
+      "moroccan pancake",
+      "square pancake"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "halved",
+          "quartered"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "fresh",
+          "frozen",
+          "refrigerated"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        1,
+        2
+      ],
+      "Refrigerated": [
+        3,
+        5
+      ],
+      "Frozen": [
+        60,
+        120
+      ]
+    },
+    "parentIds": [
+      "flatbread"
+    ],
+    "gramsPerPiece": 60.0,
+    "allergens": [
+      "gluten"
+    ],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "paratha",
+        "ratio": "1:1",
+        "notes": "Same family as flatbread."
+      },
+      {
+        "substituteItemID": "roti",
+        "ratio": "1:1",
+        "notes": "Same family as flatbread."
+      },
+      {
+        "substituteItemID": "chapati",
+        "ratio": "1:1",
+        "notes": "Same family as flatbread."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "bolillo",
+    "name": "bolillo",
+    "category": "Breads & Bakery",
+    "defaultUnit": "piece",
+    "defaultQuantity": 4,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "bolillos",
+      "telera",
+      "mexican roll",
+      "pan frances"
+    ],
+    "facets": [
+      {
+        "key": "color",
+        "options": [
+          "white"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "ball",
+          "croutons",
+          "crumbs",
+          "jumbo",
+          "log",
+          "mini",
+          "mix",
+          "roll",
+          "sandwich",
+          "sheet",
+          "stick",
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "cubed",
+          "halved",
+          "sliced",
+          "split"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "day-old",
+          "dried",
+          "fresh",
+          "frozen",
+          "refrigerated"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "sprouted"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "coarse",
+          "fine"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "roll"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        1,
+        3
+      ],
+      "Refrigerated": [
+        5,
+        7
+      ],
+      "Frozen": [
+        60,
+        120
+      ]
+    },
+    "parentIds": [
+      "bread"
+    ],
+    "gramsPerPiece": 40.0,
+    "allergens": [
+      "gluten"
+    ],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "baguette",
+        "ratio": "1:1",
+        "notes": "Same family as bread."
+      },
+      {
+        "substituteItemID": "kaiser-roll",
+        "ratio": "1:1",
+        "notes": "Same family as bread."
+      },
+      {
+        "substituteItemID": "ciabatta-roll",
+        "ratio": "1:1",
+        "notes": "Same family as bread."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "pao-de-queijo",
+    "name": "pao de queijo",
+    "category": "Breads & Bakery",
+    "defaultUnit": "piece",
+    "defaultQuantity": 12,
+    "defaultStorage": "Frozen",
+    "aliases": [
+      "pao de queijo",
+      "brazilian cheese bread",
+      "chipa",
+      "cheese puff bread"
+    ],
+    "facets": [
+      {
+        "key": "color",
+        "options": [
+          "white"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "ball",
+          "croutons",
+          "crumbs",
+          "jumbo",
+          "log",
+          "mini",
+          "mix",
+          "roll",
+          "sandwich",
+          "sheet",
+          "stick",
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "cubed",
+          "halved",
+          "sliced",
+          "split"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "day-old",
+          "dried",
+          "fresh",
+          "frozen",
+          "refrigerated"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "sprouted"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "coarse",
+          "fine"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "ball"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        1,
+        1
+      ],
+      "Refrigerated": [
+        3,
+        5
+      ],
+      "Frozen": [
+        90,
+        180
+      ]
+    },
+    "parentIds": [
+      "bread"
+    ],
+    "gramsPerPiece": 25.0,
+    "allergens": [
+      "dairy",
+      "egg"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Gluten-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "dinner-roll",
+        "ratio": "1:1",
+        "notes": "Same family as bread."
+      },
+      {
+        "substituteItemID": "biscuit",
+        "ratio": "1:1",
+        "notes": "Same family as bread."
+      },
+      {
+        "substituteItemID": "cornbread",
+        "ratio": "1:1",
+        "notes": "Same family as bread."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "rye-bread",
+    "name": "rye bread",
+    "category": "Breads & Bakery",
+    "defaultUnit": "loaf",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "rye",
+      "pumpernickel",
+      "marble rye",
+      "dark rye",
+      "seeded rye"
+    ],
+    "facets": [
+      {
+        "key": "color",
+        "options": [
+          "white"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "ball",
+          "croutons",
+          "crumbs",
+          "jumbo",
+          "log",
+          "mini",
+          "mix",
+          "roll",
+          "sandwich",
+          "sheet",
+          "stick",
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "cubed",
+          "halved",
+          "sliced",
+          "split"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "day-old",
+          "dried",
+          "fresh",
+          "frozen",
+          "refrigerated"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "sprouted"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "coarse",
+          "fine"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "preparation",
+        "value": "sliced"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        4,
+        7
+      ],
+      "Refrigerated": [
+        10,
+        14
+      ],
+      "Frozen": [
+        60,
+        180
+      ]
+    },
+    "parentIds": [
+      "bread"
+    ],
+    "gramsPerPiece": 32.0,
+    "allergens": [
+      "gluten"
+    ],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "sandwich-bread",
+        "ratio": "1:1",
+        "notes": "Same family as bread."
+      },
+      {
+        "substituteItemID": "whole-wheat-bread",
+        "ratio": "1:1",
+        "notes": "Same family as bread."
+      },
+      {
+        "substituteItemID": "baguette",
+        "ratio": "1:1",
+        "notes": "Same family as bread."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "sandwich-bread",
+    "name": "sandwich bread",
+    "category": "Breads & Bakery",
+    "defaultUnit": "loaf",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "white bread",
+      "sandwich loaf",
+      "pan bread",
+      "toast bread",
+      "loaf bread",
+      "pullman loaf"
+    ],
+    "facets": [
+      {
+        "key": "color",
+        "options": [
+          "white"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "ball",
+          "croutons",
+          "crumbs",
+          "jumbo",
+          "log",
+          "mini",
+          "mix",
+          "roll",
+          "sandwich",
+          "sheet",
+          "stick",
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "cubed",
+          "halved",
+          "sliced",
+          "split"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "day-old",
+          "dried",
+          "fresh",
+          "frozen",
+          "refrigerated"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "sprouted"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "coarse",
+          "fine"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "preparation",
+        "value": "sliced"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        3,
+        7
+      ],
+      "Refrigerated": [
+        7,
+        14
+      ],
+      "Frozen": [
+        60,
+        180
+      ]
+    },
+    "parentIds": [
+      "bread"
+    ],
+    "gramsPerPiece": 28.0,
+    "allergens": [
+      "gluten"
+    ],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "whole-wheat-bread",
+        "ratio": "1:1",
+        "notes": "Same family as bread."
+      },
+      {
+        "substituteItemID": "rye-bread",
+        "ratio": "1:1",
+        "notes": "Same family as bread."
+      },
+      {
+        "substituteItemID": "baguette",
+        "ratio": "1:1",
+        "notes": "Same family as bread."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "grissini",
+    "name": "grissini",
+    "category": "Breads & Bakery",
+    "defaultUnit": "piece",
+    "defaultQuantity": 12,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "breadsticks",
+      "bread sticks",
+      "torino breadsticks",
+      "italian breadsticks"
+    ],
+    "facets": [
+      {
+        "key": "color",
+        "options": [
+          "white"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "ball",
+          "croutons",
+          "crumbs",
+          "jumbo",
+          "log",
+          "mini",
+          "mix",
+          "roll",
+          "sandwich",
+          "sheet",
+          "stick",
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "cubed",
+          "halved",
+          "sliced",
+          "split"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "day-old",
+          "dried",
+          "fresh",
+          "frozen",
+          "refrigerated"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "sprouted"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "coarse",
+          "fine"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "stick"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        30,
+        90
+      ],
+      "Refrigerated": [
+        30,
+        90
+      ],
+      "Frozen": [
+        90,
+        180
+      ]
+    },
+    "parentIds": [
+      "bread"
+    ],
+    "gramsPerPiece": 5.0,
+    "allergens": [
+      "gluten"
+    ],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "melba-toast",
+        "ratio": "1:1",
+        "notes": "Same family as bread."
+      },
+      {
+        "substituteItemID": "croutons",
+        "ratio": "1:1",
+        "notes": "Same family as bread."
+      },
+      {
+        "substituteItemID": "breadcrumb",
+        "ratio": "1:1",
+        "notes": "Same family as bread."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "melba-toast",
+    "name": "melba toast",
+    "category": "Breads & Bakery",
+    "defaultUnit": "piece",
+    "defaultQuantity": 12,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "melba toasts",
+      "rusk",
+      "zwieback",
+      "dry toast",
+      "toast crackers"
+    ],
+    "facets": [
+      {
+        "key": "color",
+        "options": [
+          "white"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "ball",
+          "croutons",
+          "crumbs",
+          "jumbo",
+          "log",
+          "mini",
+          "mix",
+          "roll",
+          "sandwich",
+          "sheet",
+          "stick",
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "cubed",
+          "halved",
+          "sliced",
+          "split"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "day-old",
+          "dried",
+          "fresh",
+          "frozen",
+          "refrigerated"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "sprouted"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "coarse",
+          "fine"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "preparation",
+        "value": "sliced"
+      },
+      {
+        "key": "preservation",
+        "value": "dried"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        60,
+        180
+      ],
+      "Refrigerated": [
+        60,
+        180
+      ],
+      "Frozen": [
+        180,
+        365
+      ]
+    },
+    "parentIds": [
+      "bread"
+    ],
+    "gramsPerPiece": 5.0,
+    "allergens": [
+      "gluten"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "grissini",
+        "ratio": "1:1",
+        "notes": "Same family as bread."
+      },
+      {
+        "substituteItemID": "croutons",
+        "ratio": "1:1",
+        "notes": "Same family as bread."
+      },
+      {
+        "substituteItemID": "breadcrumb",
+        "ratio": "1:1",
+        "notes": "Same family as bread."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "wonton-wrapper",
+    "name": "wonton wrapper",
+    "category": "Breads & Bakery",
+    "defaultUnit": "pkg",
+    "defaultQuantity": 1,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "wonton skin",
+      "wonton wrappers",
+      "won ton wrapper"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "rectangle",
+          "round",
+          "square",
+          "triangle"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "fresh",
+          "frozen",
+          "refrigerated"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "preservation",
+        "value": "fresh"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        1,
+        1
+      ],
+      "Refrigerated": [
+        7,
+        14
+      ],
+      "Frozen": [
+        90,
+        180
+      ]
+    },
+    "parentIds": [
+      "wrapper"
+    ],
+    "gramsPerPiece": 8.0,
+    "allergens": [
+      "gluten",
+      "egg"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "spring-roll-wrapper",
+        "ratio": "1:1",
+        "notes": "Same family as wrapper."
+      },
+      {
+        "substituteItemID": "wrapper",
+        "ratio": "1:1",
+        "notes": "Same family as wrapper."
+      },
+      {
+        "substituteItemID": "dumpling",
+        "ratio": "1:1",
+        "notes": "Same family as wrapper."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "spring-roll-wrapper",
+    "name": "spring roll wrapper",
+    "category": "Breads & Bakery",
+    "defaultUnit": "pkg",
+    "defaultQuantity": 1,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "spring roll skin",
+      "rice paper wrapper",
+      "rice paper",
+      "banh trang",
+      "lumpia wrapper"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "rectangle",
+          "round",
+          "square",
+          "triangle"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "fresh",
+          "frozen",
+          "refrigerated"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "preservation",
+        "value": "fresh"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        365
+      ],
+      "Refrigerated": [
+        180,
+        365
+      ],
+      "Frozen": [
+        180,
+        365
+      ]
+    },
+    "parentIds": [
+      "wrapper"
+    ],
+    "gramsPerPiece": 8.0,
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "wonton-wrapper",
+        "ratio": "1:1",
+        "notes": "Same family as wrapper."
+      },
+      {
+        "substituteItemID": "wrapper",
+        "ratio": "1:1",
+        "notes": "Same family as wrapper."
+      },
+      {
+        "substituteItemID": "dumpling",
+        "ratio": "1:1",
+        "notes": "Same family as wrapper."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "tortilla-wrap",
+    "name": "tortilla wrap",
+    "category": "Breads & Bakery",
+    "defaultUnit": "piece",
+    "defaultQuantity": 10,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "wrap",
+      "wraps",
+      "spinach wrap",
+      "tomato wrap",
+      "low carb wrap",
+      "flatbread wrap"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "burrito",
+          "fajita",
+          "mini",
+          "taco",
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "halved",
+          "quartered"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "fresh",
+          "frozen"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        7,
+        14
+      ],
+      "Refrigerated": [
+        14,
+        30
+      ],
+      "Frozen": [
+        90,
+        180
+      ]
+    },
+    "parentIds": [
+      "tortilla"
+    ],
+    "gramsPerPiece": 60.0,
+    "allergens": [
+      "gluten"
+    ],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "tortilla",
+        "ratio": "1:1",
+        "notes": "Same family as flatbread."
+      },
+      {
+        "substituteItemID": "lavash",
+        "ratio": "1:1",
+        "notes": "Same family as flatbread."
+      },
+      {
+        "substituteItemID": "chapati",
+        "ratio": "1:1",
+        "notes": "Same family as flatbread."
+      }
+    ],
+    "isUserDefined": false
+  }
+]

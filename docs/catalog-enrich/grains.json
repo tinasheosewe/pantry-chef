@@ -1,0 +1,2280 @@
+[
+  {
+    "id": "red-rice",
+    "name": "red rice",
+    "category": "Grains & Cereals",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "camargue red rice",
+      "bhutanese red rice",
+      "thai red rice",
+      "matta rice",
+      "kerala red rice",
+      "rosematta",
+      "red cargo rice",
+      "himalayan red rice"
+    ],
+    "facets": [
+      {
+        "key": "preservation",
+        "options": [
+          "frozen"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "instant",
+          "parboiled",
+          "popped",
+          "pre-cooked",
+          "raw",
+          "toasted"
+        ]
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        365,
+        730
+      ]
+    },
+    "parentIds": [
+      "rice"
+    ],
+    "gramsPerCup": 185.0,
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "basmati",
+        "ratio": "1:1",
+        "notes": "Same family as rice."
+      },
+      {
+        "substituteItemID": "jasmine",
+        "ratio": "1:1",
+        "notes": "Same family as rice."
+      },
+      {
+        "substituteItemID": "brown-rice",
+        "ratio": "1:1",
+        "notes": "Same family as rice."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "black-rice",
+    "name": "black rice",
+    "category": "Grains & Cereals",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "forbidden rice",
+      "chinese black rice",
+      "purple rice",
+      "emperor's rice",
+      "riso venere",
+      "venus rice"
+    ],
+    "facets": [
+      {
+        "key": "preservation",
+        "options": [
+          "frozen"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "instant",
+          "parboiled",
+          "popped",
+          "pre-cooked",
+          "raw",
+          "toasted"
+        ]
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        365,
+        730
+      ]
+    },
+    "parentIds": [
+      "rice"
+    ],
+    "gramsPerCup": 185.0,
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "basmati",
+        "ratio": "1:1",
+        "notes": "Same family as rice."
+      },
+      {
+        "substituteItemID": "jasmine",
+        "ratio": "1:1",
+        "notes": "Same family as rice."
+      },
+      {
+        "substituteItemID": "brown-rice",
+        "ratio": "1:1",
+        "notes": "Same family as rice."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "glutinous-rice",
+    "name": "glutinous rice",
+    "category": "Grains & Cereals",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "sweet rice",
+      "sticky rice",
+      "mochi rice",
+      "mochigome",
+      "thai sticky rice",
+      "khao niaow",
+      "black sticky rice"
+    ],
+    "facets": [
+      {
+        "key": "preservation",
+        "options": [
+          "frozen"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "instant",
+          "parboiled",
+          "popped",
+          "pre-cooked",
+          "raw",
+          "toasted"
+        ]
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        365,
+        730
+      ]
+    },
+    "parentIds": [
+      "rice"
+    ],
+    "gramsPerCup": 185.0,
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "basmati",
+        "ratio": "1:1",
+        "notes": "Same family as rice."
+      },
+      {
+        "substituteItemID": "jasmine",
+        "ratio": "1:1",
+        "notes": "Same family as rice."
+      },
+      {
+        "substituteItemID": "brown-rice",
+        "ratio": "1:1",
+        "notes": "Same family as rice."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "parboiled-rice",
+    "name": "parboiled rice",
+    "category": "Grains & Cereals",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "converted rice",
+      "easy-cook rice",
+      "sella rice",
+      "golden sella",
+      "uncle ben's style rice"
+    ],
+    "facets": [
+      {
+        "key": "preservation",
+        "options": [
+          "frozen"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "instant",
+          "parboiled",
+          "popped",
+          "pre-cooked",
+          "raw",
+          "toasted"
+        ]
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        365,
+        730
+      ]
+    },
+    "parentIds": [
+      "rice"
+    ],
+    "gramsPerCup": 185.0,
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "basmati",
+        "ratio": "1:1",
+        "notes": "Same family as rice."
+      },
+      {
+        "substituteItemID": "jasmine",
+        "ratio": "1:1",
+        "notes": "Same family as rice."
+      },
+      {
+        "substituteItemID": "brown-rice",
+        "ratio": "1:1",
+        "notes": "Same family as rice."
+      }
+    ],
+    "isUserDefined": false,
+    "defaultSelections": [
+      {
+        "key": "processing",
+        "value": "parboiled"
+      }
+    ]
+  },
+  {
+    "id": "paella-rice",
+    "name": "paella rice",
+    "category": "Grains & Cereals",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "bomba rice",
+      "valencia rice",
+      "calasparra rice",
+      "spanish rice",
+      "arroz bomba"
+    ],
+    "facets": [
+      {
+        "key": "preservation",
+        "options": [
+          "frozen"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "instant",
+          "parboiled",
+          "popped",
+          "pre-cooked",
+          "raw",
+          "toasted"
+        ]
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        365,
+        730
+      ]
+    },
+    "parentIds": [
+      "rice"
+    ],
+    "gramsPerCup": 185.0,
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "basmati",
+        "ratio": "1:1",
+        "notes": "Same family as rice."
+      },
+      {
+        "substituteItemID": "jasmine",
+        "ratio": "1:1",
+        "notes": "Same family as rice."
+      },
+      {
+        "substituteItemID": "brown-rice",
+        "ratio": "1:1",
+        "notes": "Same family as rice."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "carolina-gold-rice",
+    "name": "carolina gold rice",
+    "category": "Grains & Cereals",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "carolina rice",
+      "heirloom long grain rice",
+      "lowcountry rice"
+    ],
+    "facets": [
+      {
+        "key": "preservation",
+        "options": [
+          "frozen"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "instant",
+          "parboiled",
+          "popped",
+          "pre-cooked",
+          "raw",
+          "toasted"
+        ]
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        365,
+        730
+      ]
+    },
+    "parentIds": [
+      "rice"
+    ],
+    "gramsPerCup": 185.0,
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "basmati",
+        "ratio": "1:1",
+        "notes": "Same family as rice."
+      },
+      {
+        "substituteItemID": "jasmine",
+        "ratio": "1:1",
+        "notes": "Same family as rice."
+      },
+      {
+        "substituteItemID": "brown-rice",
+        "ratio": "1:1",
+        "notes": "Same family as rice."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "rice-flakes",
+    "name": "rice flakes",
+    "category": "Grains & Cereals",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "poha",
+      "flattened rice",
+      "beaten rice",
+      "chivda",
+      "aval",
+      "pinipig",
+      "avalakki"
+    ],
+    "facets": [
+      {
+        "key": "preservation",
+        "options": [
+          "frozen"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "instant",
+          "parboiled",
+          "popped",
+          "pre-cooked",
+          "raw",
+          "toasted"
+        ]
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        365
+      ]
+    },
+    "parentIds": [
+      "rice"
+    ],
+    "gramsPerCup": 60.0,
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "basmati",
+        "ratio": "1:1",
+        "notes": "Same family as rice."
+      },
+      {
+        "substituteItemID": "jasmine",
+        "ratio": "1:1",
+        "notes": "Same family as rice."
+      },
+      {
+        "substituteItemID": "brown-rice",
+        "ratio": "1:1",
+        "notes": "Same family as rice."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "broken-rice",
+    "name": "broken rice",
+    "category": "Grains & Cereals",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "com tam",
+      "fragmented rice",
+      "rice fragments",
+      "broken jasmine rice"
+    ],
+    "facets": [
+      {
+        "key": "preservation",
+        "options": [
+          "frozen"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "instant",
+          "parboiled",
+          "popped",
+          "pre-cooked",
+          "raw",
+          "toasted"
+        ]
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        365,
+        730
+      ]
+    },
+    "parentIds": [
+      "rice"
+    ],
+    "gramsPerCup": 185.0,
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "basmati",
+        "ratio": "1:1",
+        "notes": "Same family as rice."
+      },
+      {
+        "substituteItemID": "jasmine",
+        "ratio": "1:1",
+        "notes": "Same family as rice."
+      },
+      {
+        "substituteItemID": "brown-rice",
+        "ratio": "1:1",
+        "notes": "Same family as rice."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "rice-cakes",
+    "name": "rice cakes",
+    "category": "Grains & Cereals",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "puffed rice cakes",
+      "korean rice cakes",
+      "tteok",
+      "mochi cakes",
+      "plain rice cakes"
+    ],
+    "facets": [
+      {
+        "key": "preservation",
+        "options": [
+          "frozen"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "instant",
+          "parboiled",
+          "popped",
+          "pre-cooked",
+          "raw",
+          "toasted"
+        ]
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        120,
+        270
+      ]
+    },
+    "parentIds": [
+      "rice"
+    ],
+    "gramsPerCup": 160.0,
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "basmati",
+        "ratio": "1:1",
+        "notes": "Same family as rice."
+      },
+      {
+        "substituteItemID": "jasmine",
+        "ratio": "1:1",
+        "notes": "Same family as rice."
+      },
+      {
+        "substituteItemID": "brown-rice",
+        "ratio": "1:1",
+        "notes": "Same family as rice."
+      }
+    ],
+    "isUserDefined": false,
+    "defaultUnit": "piece",
+    "gramsPerPiece": 9.0
+  },
+  {
+    "id": "wheat-berries",
+    "name": "wheat berries",
+    "category": "Grains & Cereals",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "wheatberries",
+      "whole wheat kernels",
+      "hard wheat berries",
+      "soft wheat berries",
+      "winter wheat berries"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "berries",
+          "flour",
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "cracked",
+          "milled"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "pre-cooked",
+          "raw",
+          "toasted"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "coarse",
+          "fine"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        365
+      ],
+      "Refrigerated": [
+        365,
+        730
+      ],
+      "Frozen": [
+        365,
+        730
+      ]
+    },
+    "gramsPerCup": 192.0,
+    "allergens": [
+      "gluten"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "spelt",
+        "ratio": "1:1",
+        "notes": "Whole-grain wheat relative."
+      },
+      {
+        "substituteItemID": "farro",
+        "ratio": "1:1",
+        "notes": "Whole-grain wheat relative."
+      },
+      {
+        "substituteItemID": "rye-berries",
+        "ratio": "1:1",
+        "notes": "Whole-grain swap; similar cook."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "cracked-wheat",
+    "name": "cracked wheat",
+    "category": "Grains & Cereals",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "dalia",
+      "broken wheat",
+      "lapsi",
+      "groats wheat",
+      "samba godhumai"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "berries",
+          "flour",
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "cracked",
+          "milled"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "pre-cooked",
+          "raw",
+          "toasted"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "coarse",
+          "fine"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "preparation",
+        "value": "cracked"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        365
+      ],
+      "Refrigerated": [
+        365,
+        730
+      ],
+      "Frozen": [
+        365,
+        730
+      ]
+    },
+    "parentIds": [
+      "wheat-berries"
+    ],
+    "gramsPerCup": 160.0,
+    "allergens": [
+      "gluten"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "bulgur",
+        "ratio": "1:1",
+        "notes": "Similar cracked-wheat product (bulgur is pre-cooked)."
+      },
+      {
+        "substituteItemID": "wheat-berries",
+        "ratio": "1:1",
+        "notes": "Whole form of the same grain."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "triticale",
+    "name": "triticale",
+    "category": "Grains & Cereals",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "triticale berries",
+      "wheat-rye hybrid",
+      "rimpau"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "berries",
+          "flour",
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "cracked",
+          "milled"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "pre-cooked",
+          "raw",
+          "toasted"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "coarse",
+          "fine"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        365
+      ],
+      "Refrigerated": [
+        365,
+        730
+      ],
+      "Frozen": [
+        365,
+        730
+      ]
+    },
+    "gramsPerCup": 192.0,
+    "allergens": [
+      "gluten"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "rye-berries",
+        "ratio": "1:1",
+        "notes": "Rye parent of the hybrid."
+      },
+      {
+        "substituteItemID": "wheat-berries",
+        "ratio": "1:1",
+        "notes": "Wheat parent of the hybrid."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "rye-berries",
+    "name": "rye berries",
+    "category": "Grains & Cereals",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "whole rye kernels",
+      "rye grain",
+      "rye groats"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "flakes",
+          "flour",
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "cracked"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "raw",
+          "toasted"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        365
+      ],
+      "Refrigerated": [
+        365,
+        730
+      ],
+      "Frozen": [
+        365,
+        730
+      ]
+    },
+    "gramsPerCup": 169.0,
+    "allergens": [
+      "gluten"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "rye",
+        "ratio": "1:1",
+        "notes": "Same grain, groat form."
+      },
+      {
+        "substituteItemID": "wheat-berries",
+        "ratio": "1:1",
+        "notes": "Comparable whole-grain berry."
+      },
+      {
+        "substituteItemID": "barley",
+        "ratio": "1:1",
+        "notes": "Comparable whole-grain berry."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "oat-groats",
+    "name": "oat groats",
+    "category": "Grains & Cereals",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "whole oat groats",
+      "hulled oats",
+      "raw oats",
+      "groat oats"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "rolled",
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "cracked",
+          "flaked"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "pre-cooked",
+          "raw",
+          "toasted"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        365
+      ],
+      "Refrigerated": [
+        365,
+        730
+      ],
+      "Frozen": [
+        365,
+        730
+      ]
+    },
+    "parentIds": [
+      "oats"
+    ],
+    "gramsPerCup": 174.0,
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "oats",
+        "ratio": "1:1",
+        "notes": "Same grain; rolled form cooks faster."
+      },
+      {
+        "substituteItemID": "steel-cut",
+        "ratio": "1:1",
+        "notes": "Cut form of the same oat groat."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "pearl-millet",
+    "name": "pearl millet",
+    "category": "Grains & Cereals",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "bajra",
+      "bajri",
+      "kambu",
+      "sajje",
+      "cumbu",
+      "spiked millet"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "flour",
+          "puffed",
+          "whole"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "instant",
+          "pre-cooked",
+          "raw"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "coarse",
+          "fine"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        365
+      ],
+      "Refrigerated": [
+        365,
+        730
+      ],
+      "Frozen": [
+        365,
+        730
+      ]
+    },
+    "parentIds": [
+      "millet"
+    ],
+    "gramsPerCup": 200.0,
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "finger-millet",
+        "ratio": "1:1",
+        "notes": "Same family as millet porridge."
+      },
+      {
+        "substituteItemID": "foxtail",
+        "ratio": "1:1",
+        "notes": "Same family as millet porridge."
+      },
+      {
+        "substituteItemID": "proso",
+        "ratio": "1:1",
+        "notes": "Same family as millet porridge."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "kodo-millet",
+    "name": "kodo millet",
+    "category": "Grains & Cereals",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "kodo",
+      "varagu",
+      "arikelu",
+      "harka",
+      "kodra"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "flour",
+          "puffed",
+          "whole"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "instant",
+          "pre-cooked",
+          "raw"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "coarse",
+          "fine"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        365
+      ],
+      "Refrigerated": [
+        365,
+        730
+      ],
+      "Frozen": [
+        365,
+        730
+      ]
+    },
+    "parentIds": [
+      "millet"
+    ],
+    "gramsPerCup": 200.0,
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "finger-millet",
+        "ratio": "1:1",
+        "notes": "Same family as millet porridge."
+      },
+      {
+        "substituteItemID": "foxtail",
+        "ratio": "1:1",
+        "notes": "Same family as millet porridge."
+      },
+      {
+        "substituteItemID": "proso",
+        "ratio": "1:1",
+        "notes": "Same family as millet porridge."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "little-millet",
+    "name": "little millet",
+    "category": "Grains & Cereals",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "samai",
+      "kutki",
+      "sama",
+      "moraiyo",
+      "little-millet"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "flour",
+          "puffed",
+          "whole"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "instant",
+          "pre-cooked",
+          "raw"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "coarse",
+          "fine"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        365
+      ],
+      "Refrigerated": [
+        365,
+        730
+      ],
+      "Frozen": [
+        365,
+        730
+      ]
+    },
+    "parentIds": [
+      "millet"
+    ],
+    "gramsPerCup": 200.0,
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "finger-millet",
+        "ratio": "1:1",
+        "notes": "Same family as millet porridge."
+      },
+      {
+        "substituteItemID": "foxtail",
+        "ratio": "1:1",
+        "notes": "Same family as millet porridge."
+      },
+      {
+        "substituteItemID": "proso",
+        "ratio": "1:1",
+        "notes": "Same family as millet porridge."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "job-s-tears",
+    "name": "job's tears",
+    "category": "Grains & Cereals",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "coix",
+      "hato mugi",
+      "adlay",
+      "chinese pearl barley",
+      "yi yi ren",
+      "pearl barley (chinese)"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "flour",
+          "whole"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "pre-cooked",
+          "raw",
+          "toasted"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        365
+      ],
+      "Refrigerated": [
+        365,
+        730
+      ],
+      "Frozen": [
+        365,
+        730
+      ]
+    },
+    "gramsPerCup": 185.0,
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "pearl-barley",
+        "ratio": "1:1",
+        "notes": "Similar chewy bead; barley contains gluten."
+      },
+      {
+        "substituteItemID": "sorghum",
+        "ratio": "1:1",
+        "notes": "Comparable gluten-free whole grain."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "masa-harina",
+    "name": "masa harina",
+    "category": "Grains & Cereals",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "masa",
+      "corn masa flour",
+      "nixtamalized corn flour",
+      "maseca",
+      "instant masa"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "flour"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "instant",
+          "pre-cooked",
+          "raw",
+          "toasted"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "coarse",
+          "fine"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "flour"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        365
+      ],
+      "Refrigerated": [
+        365,
+        730
+      ],
+      "Frozen": [
+        365,
+        730
+      ]
+    },
+    "gramsPerCup": 114.0,
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "cornmeal",
+        "ratio": "1:1",
+        "notes": "Both corn-based; texture/flavor differ (masa is nixtamalized)."
+      },
+      {
+        "substituteItemID": "hominy",
+        "ratio": "1:1",
+        "notes": "Hominy is the whole nixtamalized kernel masa is ground from."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "blue-cornmeal",
+    "name": "blue cornmeal",
+    "category": "Grains & Cereals",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "blue corn meal",
+      "harina de maiz azul",
+      "blue corn flour"
+    ],
+    "facets": [
+      {
+        "key": "color",
+        "options": [
+          "blue"
+        ]
+      },
+      {
+        "key": "grade",
+        "options": [
+          "medium"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "instant",
+          "pre-cooked",
+          "raw"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "coarse",
+          "fine"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "color",
+        "value": "blue"
+      },
+      {
+        "key": "grade",
+        "value": "medium"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        365
+      ],
+      "Refrigerated": [
+        365,
+        730
+      ],
+      "Frozen": [
+        365,
+        730
+      ]
+    },
+    "parentIds": [
+      "cornmeal"
+    ],
+    "gramsPerCup": 122.0,
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "yellow-cornmeal",
+        "ratio": "1:1",
+        "notes": "Same family as cornmeal."
+      },
+      {
+        "substituteItemID": "cornmeal-white",
+        "ratio": "1:1",
+        "notes": "Same family as cornmeal."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "popcorn-kernels",
+    "name": "popcorn kernels",
+    "category": "Grains & Cereals",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "popping corn",
+      "popcorn",
+      "corn kernels for popping",
+      "unpopped popcorn"
+    ],
+    "facets": [
+      {
+        "key": "color",
+        "options": [
+          "white",
+          "yellow"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "whole"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "popped",
+          "raw"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      },
+      {
+        "key": "processing",
+        "value": "raw"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        365,
+        730
+      ]
+    },
+    "gramsPerCup": 195.0,
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "hominy",
+        "ratio": "1:1",
+        "notes": "Both whole dried corn; not interchangeable when popping is required."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "maize-meal-porridge",
+    "name": "maize meal porridge",
+    "category": "Grains & Cereals",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "ugali",
+      "sadza",
+      "pap",
+      "nshima",
+      "mealie pap",
+      "sima",
+      "fufu corn"
+    ],
+    "facets": [
+      {
+        "key": "color",
+        "options": [
+          "blue"
+        ]
+      },
+      {
+        "key": "grade",
+        "options": [
+          "medium"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "instant",
+          "pre-cooked",
+          "raw"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "coarse",
+          "fine"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "grade",
+        "value": "medium"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        365
+      ],
+      "Refrigerated": [
+        365,
+        730
+      ],
+      "Frozen": [
+        365,
+        730
+      ]
+    },
+    "parentIds": [
+      "cornmeal"
+    ],
+    "gramsPerCup": 122.0,
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "yellow-cornmeal",
+        "ratio": "1:1",
+        "notes": "Same family as cornmeal."
+      },
+      {
+        "substituteItemID": "cornmeal-white",
+        "ratio": "1:1",
+        "notes": "Same family as cornmeal."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "congee",
+    "name": "congee",
+    "category": "Grains & Cereals",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "jook",
+      "rice porridge",
+      "okayu",
+      "juk",
+      "bubur",
+      "canjee"
+    ],
+    "facets": [
+      {
+        "key": "processing",
+        "options": [
+          "instant",
+          "pre-cooked",
+          "raw"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "coarse",
+          "fine"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "texture",
+        "value": "fine"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        365
+      ],
+      "Refrigerated": [
+        7,
+        14
+      ],
+      "Frozen": [
+        180,
+        365
+      ]
+    },
+    "parentIds": [
+      "porridge"
+    ],
+    "gramsPerCup": 160.0,
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "rice",
+        "ratio": "1:1",
+        "notes": "Congee is rice cooked to a porridge."
+      },
+      {
+        "substituteItemID": "porridge",
+        "ratio": "1:1",
+        "notes": "Same family as porridge."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "tsampa",
+    "name": "tsampa",
+    "category": "Grains & Cereals",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "roasted barley flour",
+      "tibetan tsampa",
+      "pak",
+      "rtsam pa"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "flour"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "instant",
+          "pre-cooked",
+          "raw",
+          "toasted"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "coarse",
+          "fine"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "flour"
+      },
+      {
+        "key": "processing",
+        "value": "toasted"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        365
+      ],
+      "Refrigerated": [
+        365,
+        730
+      ],
+      "Frozen": [
+        365,
+        730
+      ]
+    },
+    "gramsPerCup": 120.0,
+    "allergens": [
+      "gluten"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "barley",
+        "ratio": "1:1",
+        "notes": "Tsampa is roasted, ground barley."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "rice-krispies-cereal",
+    "name": "rice krispies cereal",
+    "category": "Grains & Cereals",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "crisped rice cereal",
+      "rice crispies",
+      "crispy rice cereal",
+      "rice bubbles"
+    ],
+    "facets": [
+      {
+        "key": "texture",
+        "options": [
+          "chewy",
+          "crispy",
+          "crunchy"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "texture",
+        "value": "crispy"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        60,
+        180
+      ],
+      "Refrigerated": [
+        180,
+        365
+      ]
+    },
+    "parentIds": [
+      "cereal"
+    ],
+    "gramsPerCup": 28.0,
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "corn-flakes",
+        "ratio": "1:1",
+        "notes": "Same family as cereal."
+      },
+      {
+        "substituteItemID": "bran-flakes",
+        "ratio": "1:1",
+        "notes": "Same family as cereal."
+      },
+      {
+        "substituteItemID": "granola",
+        "ratio": "1:1",
+        "notes": "Same family as cereal."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "frosted-flakes-cereal",
+    "name": "frosted flakes cereal",
+    "category": "Grains & Cereals",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "sugar frosted flakes",
+      "frosties",
+      "sweetened corn flakes"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "flakes"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "toasted"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "chewy",
+          "crispy",
+          "crunchy"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "flakes"
+      },
+      {
+        "key": "processing",
+        "value": "toasted"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        60,
+        180
+      ],
+      "Refrigerated": [
+        180,
+        365
+      ]
+    },
+    "parentIds": [
+      "corn-flakes"
+    ],
+    "gramsPerCup": 41.0,
+    "allergens": [
+      "gluten"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "corn-flakes",
+        "ratio": "1:1",
+        "notes": "Unsweetened version of the same flake."
+      },
+      {
+        "substituteItemID": "bran-flakes",
+        "ratio": "1:1",
+        "notes": "Same family as cereal."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "oat-ring-cereal",
+    "name": "oat ring cereal",
+    "category": "Grains & Cereals",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "cheerios",
+      "toasted oat cereal",
+      "oat o's",
+      "oat rings"
+    ],
+    "facets": [
+      {
+        "key": "texture",
+        "options": [
+          "chewy",
+          "crispy",
+          "crunchy"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "texture",
+        "value": "crunchy"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        60,
+        180
+      ],
+      "Refrigerated": [
+        180,
+        365
+      ]
+    },
+    "parentIds": [
+      "cereal"
+    ],
+    "gramsPerCup": 28.0,
+    "allergens": [
+      "gluten"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "corn-flakes",
+        "ratio": "1:1",
+        "notes": "Same family as cereal."
+      },
+      {
+        "substituteItemID": "bran-flakes",
+        "ratio": "1:1",
+        "notes": "Same family as cereal."
+      },
+      {
+        "substituteItemID": "granola",
+        "ratio": "1:1",
+        "notes": "Same family as cereal."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "wheat-biscuit-cereal",
+    "name": "wheat biscuit cereal",
+    "category": "Grains & Cereals",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "weetabix",
+      "wheat biscuits",
+      "weet-bix",
+      "shredded wheat biscuits"
+    ],
+    "facets": [
+      {
+        "key": "texture",
+        "options": [
+          "chewy",
+          "crispy",
+          "crunchy"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "texture",
+        "value": "crunchy"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        60,
+        180
+      ],
+      "Refrigerated": [
+        180,
+        365
+      ]
+    },
+    "parentIds": [
+      "cereal"
+    ],
+    "gramsPerCup": 160.0,
+    "gramsPerPiece": 19.0,
+    "allergens": [
+      "gluten"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "shredded-wheat",
+        "ratio": "1:1",
+        "notes": "Same whole-wheat biscuit style."
+      },
+      {
+        "substituteItemID": "bran-flakes",
+        "ratio": "1:1",
+        "notes": "Same family as cereal."
+      },
+      {
+        "substituteItemID": "corn-flakes",
+        "ratio": "1:1",
+        "notes": "Same family as cereal."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "puffed-wheat-cereal",
+    "name": "puffed wheat cereal",
+    "category": "Grains & Cereals",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "puffed wheat",
+      "wheat puffs cereal"
+    ],
+    "facets": [
+      {
+        "key": "texture",
+        "options": [
+          "chewy",
+          "crispy",
+          "crunchy"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "texture",
+        "value": "crispy"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        60,
+        180
+      ],
+      "Refrigerated": [
+        180,
+        365
+      ]
+    },
+    "parentIds": [
+      "cereal"
+    ],
+    "gramsPerCup": 15.0,
+    "allergens": [
+      "gluten"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "rice-puffs",
+        "ratio": "1:1",
+        "notes": "Gluten-free puffed alternative."
+      },
+      {
+        "substituteItemID": "puffed-rice",
+        "ratio": "1:1",
+        "notes": "Gluten-free puffed alternative."
+      },
+      {
+        "substituteItemID": "wheat-squares",
+        "ratio": "1:1",
+        "notes": "Same family as cereal."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "instant-oatmeal-packets",
+    "name": "instant oatmeal packets",
+    "category": "Grains & Cereals",
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "instant oatmeal",
+      "flavored instant oatmeal",
+      "oatmeal sachets",
+      "quick oatmeal cups"
+    ],
+    "facets": [
+      {
+        "key": "texture",
+        "options": [
+          "chewy",
+          "crispy",
+          "crunchy"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "texture",
+        "value": "chewy"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        365
+      ],
+      "Refrigerated": [
+        180,
+        365
+      ]
+    },
+    "parentIds": [
+      "oatmeal"
+    ],
+    "gramsPerCup": 90.0,
+    "gramsPerPiece": 43.0,
+    "allergens": [
+      "gluten"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "oats",
+        "ratio": "1:1",
+        "notes": "Plain oats; instant cooks faster."
+      },
+      {
+        "substituteItemID": "oats-instant",
+        "ratio": "1:1",
+        "notes": "Same quick-cooking oat."
+      },
+      {
+        "substituteItemID": "quick-cooking",
+        "ratio": "1:1",
+        "notes": "Same quick-cooking oat."
+      }
+    ],
+    "isUserDefined": false,
+    "defaultUnit": "packet"
+  }
+]

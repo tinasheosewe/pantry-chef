@@ -1,0 +1,3719 @@
+[
+  {
+    "id": "granulated-sugar",
+    "name": "granulated sugar",
+    "category": "Baking & Sweeteners",
+    "defaultUnit": "cup",
+    "defaultQuantity": 4.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "white granulated sugar",
+      "table sugar",
+      "cane sugar",
+      "regular sugar"
+    ],
+    "facets": [
+      {
+        "key": "color",
+        "options": [
+          "brown"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "cube",
+          "flakes",
+          "gel",
+          "granulated",
+          "liquid",
+          "paste",
+          "powder",
+          "stiff",
+          "syrup"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "strips"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "granulated"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        730,
+        1825
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "brown sugar",
+        "facets": [
+          {
+            "key": "color",
+            "value": "brown"
+          }
+        ]
+      },
+      {
+        "text": "brown",
+        "facets": [
+          {
+            "key": "color",
+            "value": "brown"
+          }
+        ]
+      },
+      {
+        "text": "powdered sugar",
+        "facets": [
+          {
+            "key": "form",
+            "value": "powder"
+          }
+        ]
+      },
+      {
+        "text": "powder",
+        "facets": [
+          {
+            "key": "form",
+            "value": "powder"
+          }
+        ]
+      }
+    ],
+    "parentIds": [
+      "sugar"
+    ],
+    "gramsPerCup": 200.0,
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "caster",
+        "ratio": "1:1",
+        "notes": "Same family as sugar."
+      },
+      {
+        "substituteItemID": "confectioners",
+        "ratio": "1:1",
+        "notes": "Same family as sugar."
+      },
+      {
+        "substituteItemID": "demerara",
+        "ratio": "1:1",
+        "notes": "Same family as sugar."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "dark-brown-sugar",
+    "name": "dark brown sugar",
+    "category": "Baking & Sweeteners",
+    "defaultUnit": "cup",
+    "defaultQuantity": 4.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "dark soft brown sugar",
+      "dark muscovado-style sugar"
+    ],
+    "facets": [
+      {
+        "key": "color",
+        "options": [
+          "brown"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "cube",
+          "flakes",
+          "gel",
+          "granulated",
+          "liquid",
+          "paste",
+          "powder",
+          "stiff",
+          "syrup"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "strips"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "granulated"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        730,
+        1460
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "brown sugar",
+        "facets": [
+          {
+            "key": "color",
+            "value": "brown"
+          }
+        ]
+      },
+      {
+        "text": "brown",
+        "facets": [
+          {
+            "key": "color",
+            "value": "brown"
+          }
+        ]
+      },
+      {
+        "text": "powdered sugar",
+        "facets": [
+          {
+            "key": "form",
+            "value": "powder"
+          }
+        ]
+      },
+      {
+        "text": "powder",
+        "facets": [
+          {
+            "key": "form",
+            "value": "powder"
+          }
+        ]
+      }
+    ],
+    "parentIds": [
+      "sugar"
+    ],
+    "gramsPerCup": 213.0,
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "caster",
+        "ratio": "1:1",
+        "notes": "Same family as sugar."
+      },
+      {
+        "substituteItemID": "confectioners",
+        "ratio": "1:1",
+        "notes": "Same family as sugar."
+      },
+      {
+        "substituteItemID": "demerara",
+        "ratio": "1:1",
+        "notes": "Same family as sugar."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "jaggery",
+    "name": "jaggery",
+    "category": "Baking & Sweeteners",
+    "defaultUnit": "cup",
+    "defaultQuantity": 4.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "gur",
+      "gud",
+      "panela",
+      "piloncillo",
+      "rapadura",
+      "unrefined cane sugar"
+    ],
+    "facets": [
+      {
+        "key": "color",
+        "options": [
+          "brown"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "cube",
+          "flakes",
+          "gel",
+          "granulated",
+          "liquid",
+          "paste",
+          "powder",
+          "stiff",
+          "syrup"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "strips"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "granulated"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        365
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "brown sugar",
+        "facets": [
+          {
+            "key": "color",
+            "value": "brown"
+          }
+        ]
+      },
+      {
+        "text": "brown",
+        "facets": [
+          {
+            "key": "color",
+            "value": "brown"
+          }
+        ]
+      },
+      {
+        "text": "powdered sugar",
+        "facets": [
+          {
+            "key": "form",
+            "value": "powder"
+          }
+        ]
+      },
+      {
+        "text": "powder",
+        "facets": [
+          {
+            "key": "form",
+            "value": "powder"
+          }
+        ]
+      }
+    ],
+    "parentIds": [
+      "sugar"
+    ],
+    "gramsPerCup": 200.0,
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "caster",
+        "ratio": "1:1",
+        "notes": "Same family as sugar."
+      },
+      {
+        "substituteItemID": "confectioners",
+        "ratio": "1:1",
+        "notes": "Same family as sugar."
+      },
+      {
+        "substituteItemID": "demerara",
+        "ratio": "1:1",
+        "notes": "Same family as sugar."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "palm-sugar",
+    "name": "palm sugar",
+    "category": "Baking & Sweeteners",
+    "defaultUnit": "cup",
+    "defaultQuantity": 4.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "gula melaka",
+      "gula jawa",
+      "coconut palm sugar",
+      "malacca sugar",
+      "arenga sugar"
+    ],
+    "facets": [
+      {
+        "key": "color",
+        "options": [
+          "brown"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "cube",
+          "flakes",
+          "gel",
+          "granulated",
+          "liquid",
+          "paste",
+          "powder",
+          "stiff",
+          "syrup"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "strips"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "granulated"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        365
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "brown sugar",
+        "facets": [
+          {
+            "key": "color",
+            "value": "brown"
+          }
+        ]
+      },
+      {
+        "text": "brown",
+        "facets": [
+          {
+            "key": "color",
+            "value": "brown"
+          }
+        ]
+      },
+      {
+        "text": "powdered sugar",
+        "facets": [
+          {
+            "key": "form",
+            "value": "powder"
+          }
+        ]
+      },
+      {
+        "text": "powder",
+        "facets": [
+          {
+            "key": "form",
+            "value": "powder"
+          }
+        ]
+      }
+    ],
+    "parentIds": [
+      "sugar"
+    ],
+    "gramsPerCup": 200.0,
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "caster",
+        "ratio": "1:1",
+        "notes": "Same family as sugar."
+      },
+      {
+        "substituteItemID": "confectioners",
+        "ratio": "1:1",
+        "notes": "Same family as sugar."
+      },
+      {
+        "substituteItemID": "demerara",
+        "ratio": "1:1",
+        "notes": "Same family as sugar."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "coconut-sugar",
+    "name": "coconut sugar",
+    "category": "Baking & Sweeteners",
+    "defaultUnit": "cup",
+    "defaultQuantity": 4.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "coconut palm sugar",
+      "coco sugar",
+      "coconut blossom sugar"
+    ],
+    "facets": [
+      {
+        "key": "color",
+        "options": [
+          "brown"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "cube",
+          "flakes",
+          "gel",
+          "granulated",
+          "liquid",
+          "paste",
+          "powder",
+          "stiff",
+          "syrup"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "strips"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "granulated"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        365,
+        730
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "brown sugar",
+        "facets": [
+          {
+            "key": "color",
+            "value": "brown"
+          }
+        ]
+      },
+      {
+        "text": "brown",
+        "facets": [
+          {
+            "key": "color",
+            "value": "brown"
+          }
+        ]
+      },
+      {
+        "text": "powdered sugar",
+        "facets": [
+          {
+            "key": "form",
+            "value": "powder"
+          }
+        ]
+      },
+      {
+        "text": "powder",
+        "facets": [
+          {
+            "key": "form",
+            "value": "powder"
+          }
+        ]
+      }
+    ],
+    "parentIds": [
+      "sugar"
+    ],
+    "gramsPerCup": 150.0,
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "caster",
+        "ratio": "1:1",
+        "notes": "Same family as sugar."
+      },
+      {
+        "substituteItemID": "confectioners",
+        "ratio": "1:1",
+        "notes": "Same family as sugar."
+      },
+      {
+        "substituteItemID": "demerara",
+        "ratio": "1:1",
+        "notes": "Same family as sugar."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "date-sugar",
+    "name": "date sugar",
+    "category": "Baking & Sweeteners",
+    "defaultUnit": "cup",
+    "defaultQuantity": 4.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "ground date sugar",
+      "date powder"
+    ],
+    "facets": [
+      {
+        "key": "color",
+        "options": [
+          "brown"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "cube",
+          "flakes",
+          "gel",
+          "granulated",
+          "liquid",
+          "paste",
+          "powder",
+          "stiff",
+          "syrup"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "strips"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "granulated"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        365,
+        730
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "brown sugar",
+        "facets": [
+          {
+            "key": "color",
+            "value": "brown"
+          }
+        ]
+      },
+      {
+        "text": "brown",
+        "facets": [
+          {
+            "key": "color",
+            "value": "brown"
+          }
+        ]
+      },
+      {
+        "text": "powdered sugar",
+        "facets": [
+          {
+            "key": "form",
+            "value": "powder"
+          }
+        ]
+      },
+      {
+        "text": "powder",
+        "facets": [
+          {
+            "key": "form",
+            "value": "powder"
+          }
+        ]
+      }
+    ],
+    "parentIds": [
+      "sugar"
+    ],
+    "gramsPerCup": 190.0,
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "caster",
+        "ratio": "1:1",
+        "notes": "Same family as sugar."
+      },
+      {
+        "substituteItemID": "confectioners",
+        "ratio": "1:1",
+        "notes": "Same family as sugar."
+      },
+      {
+        "substituteItemID": "demerara",
+        "ratio": "1:1",
+        "notes": "Same family as sugar."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "rock-sugar",
+    "name": "rock sugar",
+    "category": "Baking & Sweeteners",
+    "defaultUnit": "cup",
+    "defaultQuantity": 4.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "rock candy sugar",
+      "sugar crystals",
+      "misri",
+      "nabat"
+    ],
+    "facets": [
+      {
+        "key": "color",
+        "options": [
+          "brown"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "cube",
+          "flakes",
+          "gel",
+          "granulated",
+          "liquid",
+          "paste",
+          "powder",
+          "stiff",
+          "syrup"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "strips"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "granulated"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        730,
+        1825
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "brown sugar",
+        "facets": [
+          {
+            "key": "color",
+            "value": "brown"
+          }
+        ]
+      },
+      {
+        "text": "brown",
+        "facets": [
+          {
+            "key": "color",
+            "value": "brown"
+          }
+        ]
+      },
+      {
+        "text": "powdered sugar",
+        "facets": [
+          {
+            "key": "form",
+            "value": "powder"
+          }
+        ]
+      },
+      {
+        "text": "powder",
+        "facets": [
+          {
+            "key": "form",
+            "value": "powder"
+          }
+        ]
+      }
+    ],
+    "parentIds": [
+      "sugar"
+    ],
+    "gramsPerCup": 200.0,
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "caster",
+        "ratio": "1:1",
+        "notes": "Same family as sugar."
+      },
+      {
+        "substituteItemID": "confectioners",
+        "ratio": "1:1",
+        "notes": "Same family as sugar."
+      },
+      {
+        "substituteItemID": "demerara",
+        "ratio": "1:1",
+        "notes": "Same family as sugar."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "invert-sugar",
+    "name": "invert sugar",
+    "category": "Baking & Sweeteners",
+    "defaultUnit": "cup",
+    "defaultQuantity": 4.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "invert syrup",
+      "trimoline",
+      "golden syrup substitute"
+    ],
+    "facets": [
+      {
+        "key": "color",
+        "options": [
+          "brown"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "cube",
+          "flakes",
+          "gel",
+          "granulated",
+          "liquid",
+          "paste",
+          "powder",
+          "stiff",
+          "syrup"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "strips"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "syrup"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        365,
+        730
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "brown sugar",
+        "facets": [
+          {
+            "key": "color",
+            "value": "brown"
+          }
+        ]
+      },
+      {
+        "text": "brown",
+        "facets": [
+          {
+            "key": "color",
+            "value": "brown"
+          }
+        ]
+      },
+      {
+        "text": "powdered sugar",
+        "facets": [
+          {
+            "key": "form",
+            "value": "powder"
+          }
+        ]
+      },
+      {
+        "text": "powder",
+        "facets": [
+          {
+            "key": "form",
+            "value": "powder"
+          }
+        ]
+      }
+    ],
+    "parentIds": [
+      "sugar"
+    ],
+    "gramsPerCup": 340.0,
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "caster",
+        "ratio": "1:1",
+        "notes": "Same family as sugar."
+      },
+      {
+        "substituteItemID": "confectioners",
+        "ratio": "1:1",
+        "notes": "Same family as sugar."
+      },
+      {
+        "substituteItemID": "demerara",
+        "ratio": "1:1",
+        "notes": "Same family as sugar."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "simple-syrup",
+    "name": "simple syrup",
+    "category": "Baking & Sweeteners",
+    "defaultUnit": "cup",
+    "defaultQuantity": 4.0,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "stock syrup"
+    ],
+    "facets": [
+      {
+        "key": "color",
+        "options": [
+          "brown"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "cube",
+          "flakes",
+          "gel",
+          "granulated",
+          "liquid",
+          "paste",
+          "powder",
+          "stiff",
+          "syrup"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "strips"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "liquid"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        7,
+        14
+      ],
+      "Refrigerated": [
+        21,
+        30
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "brown sugar",
+        "facets": [
+          {
+            "key": "color",
+            "value": "brown"
+          }
+        ]
+      },
+      {
+        "text": "brown",
+        "facets": [
+          {
+            "key": "color",
+            "value": "brown"
+          }
+        ]
+      },
+      {
+        "text": "powdered sugar",
+        "facets": [
+          {
+            "key": "form",
+            "value": "powder"
+          }
+        ]
+      },
+      {
+        "text": "powder",
+        "facets": [
+          {
+            "key": "form",
+            "value": "powder"
+          }
+        ]
+      }
+    ],
+    "parentIds": [
+      "sugar"
+    ],
+    "gramsPerCup": 260.0,
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "caster",
+        "ratio": "1:1",
+        "notes": "Same family as sugar."
+      },
+      {
+        "substituteItemID": "confectioners",
+        "ratio": "1:1",
+        "notes": "Same family as sugar."
+      },
+      {
+        "substituteItemID": "demerara",
+        "ratio": "1:1",
+        "notes": "Same family as sugar."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "chickpea-flour",
+    "name": "chickpea flour",
+    "category": "Baking & Sweeteners",
+    "defaultUnit": "cup",
+    "defaultQuantity": 5.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "gram flour",
+      "garbanzo flour",
+      "garbanzo bean flour",
+      "chana flour"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "cube",
+          "granulated",
+          "liquid",
+          "powder",
+          "stiff",
+          "thick syrup"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "powder"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        365
+      ],
+      "Refrigerated": [
+        365,
+        547
+      ],
+      "Frozen": [
+        547,
+        730
+      ]
+    },
+    "parentIds": [
+      "flour"
+    ],
+    "gramsPerCup": 92.0,
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "00",
+        "ratio": "1:1",
+        "notes": "Same family as flour."
+      },
+      {
+        "substituteItemID": "all-purpose",
+        "ratio": "1:1",
+        "notes": "Same family as flour."
+      },
+      {
+        "substituteItemID": "almond-flour",
+        "ratio": "1:1",
+        "notes": "Same family as flour."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "buckwheat-flour",
+    "name": "buckwheat flour",
+    "category": "Baking & Sweeteners",
+    "defaultUnit": "cup",
+    "defaultQuantity": 5.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "soba flour",
+      "ground buckwheat",
+      "kasha flour"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "cube",
+          "granulated",
+          "liquid",
+          "powder",
+          "stiff",
+          "thick syrup"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "powder"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        120,
+        365
+      ],
+      "Refrigerated": [
+        365,
+        547
+      ],
+      "Frozen": [
+        547,
+        730
+      ]
+    },
+    "parentIds": [
+      "flour"
+    ],
+    "gramsPerCup": 120.0,
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "00",
+        "ratio": "1:1",
+        "notes": "Same family as flour."
+      },
+      {
+        "substituteItemID": "all-purpose",
+        "ratio": "1:1",
+        "notes": "Same family as flour."
+      },
+      {
+        "substituteItemID": "almond-flour",
+        "ratio": "1:1",
+        "notes": "Same family as flour."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "sorghum-flour",
+    "name": "sorghum flour",
+    "category": "Baking & Sweeteners",
+    "defaultUnit": "cup",
+    "defaultQuantity": 5.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "jowar flour",
+      "milo flour",
+      "great millet flour"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "cube",
+          "granulated",
+          "liquid",
+          "powder",
+          "stiff",
+          "thick syrup"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "powder"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        365
+      ],
+      "Refrigerated": [
+        365,
+        547
+      ],
+      "Frozen": [
+        547,
+        730
+      ]
+    },
+    "parentIds": [
+      "flour"
+    ],
+    "gramsPerCup": 130.0,
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "00",
+        "ratio": "1:1",
+        "notes": "Same family as flour."
+      },
+      {
+        "substituteItemID": "all-purpose",
+        "ratio": "1:1",
+        "notes": "Same family as flour."
+      },
+      {
+        "substituteItemID": "almond-flour",
+        "ratio": "1:1",
+        "notes": "Same family as flour."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "millet-flour",
+    "name": "millet flour",
+    "category": "Baking & Sweeteners",
+    "defaultUnit": "cup",
+    "defaultQuantity": 5.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "bajra flour",
+      "pearl millet flour",
+      "ragi-adjacent flour"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "cube",
+          "granulated",
+          "liquid",
+          "powder",
+          "stiff",
+          "thick syrup"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "powder"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        120,
+        365
+      ],
+      "Refrigerated": [
+        365,
+        547
+      ],
+      "Frozen": [
+        547,
+        730
+      ]
+    },
+    "parentIds": [
+      "flour"
+    ],
+    "gramsPerCup": 120.0,
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "00",
+        "ratio": "1:1",
+        "notes": "Same family as flour."
+      },
+      {
+        "substituteItemID": "all-purpose",
+        "ratio": "1:1",
+        "notes": "Same family as flour."
+      },
+      {
+        "substituteItemID": "almond-flour",
+        "ratio": "1:1",
+        "notes": "Same family as flour."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "teff-flour",
+    "name": "teff flour",
+    "category": "Baking & Sweeteners",
+    "defaultUnit": "cup",
+    "defaultQuantity": 5.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "ground teff",
+      "injera flour"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "cube",
+          "granulated",
+          "liquid",
+          "powder",
+          "stiff",
+          "thick syrup"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "powder"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        365
+      ],
+      "Refrigerated": [
+        365,
+        547
+      ],
+      "Frozen": [
+        547,
+        730
+      ]
+    },
+    "parentIds": [
+      "flour"
+    ],
+    "gramsPerCup": 130.0,
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "00",
+        "ratio": "1:1",
+        "notes": "Same family as flour."
+      },
+      {
+        "substituteItemID": "all-purpose",
+        "ratio": "1:1",
+        "notes": "Same family as flour."
+      },
+      {
+        "substituteItemID": "almond-flour",
+        "ratio": "1:1",
+        "notes": "Same family as flour."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "cassava-flour",
+    "name": "cassava flour",
+    "category": "Baking & Sweeteners",
+    "defaultUnit": "cup",
+    "defaultQuantity": 5.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "manioc flour",
+      "yuca flour"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "cube",
+          "granulated",
+          "liquid",
+          "powder",
+          "stiff",
+          "thick syrup"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "powder"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        365,
+        730
+      ],
+      "Refrigerated": [
+        730,
+        1095
+      ]
+    },
+    "parentIds": [
+      "flour"
+    ],
+    "gramsPerCup": 120.0,
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "00",
+        "ratio": "1:1",
+        "notes": "Same family as flour."
+      },
+      {
+        "substituteItemID": "all-purpose",
+        "ratio": "1:1",
+        "notes": "Same family as flour."
+      },
+      {
+        "substituteItemID": "almond-flour",
+        "ratio": "1:1",
+        "notes": "Same family as flour."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "tapioca-flour",
+    "name": "tapioca flour",
+    "category": "Baking & Sweeteners",
+    "defaultUnit": "cup",
+    "defaultQuantity": 5.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "tapioca starch",
+      "cassava starch (refined)"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "cube",
+          "granulated",
+          "liquid",
+          "powder",
+          "stiff",
+          "thick syrup"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "powder"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        365,
+        730
+      ]
+    },
+    "parentIds": [
+      "flour"
+    ],
+    "gramsPerCup": 120.0,
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "00",
+        "ratio": "1:1",
+        "notes": "Same family as flour."
+      },
+      {
+        "substituteItemID": "all-purpose",
+        "ratio": "1:1",
+        "notes": "Same family as flour."
+      },
+      {
+        "substituteItemID": "almond-flour",
+        "ratio": "1:1",
+        "notes": "Same family as flour."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "arrowroot-flour",
+    "name": "arrowroot flour",
+    "category": "Baking & Sweeteners",
+    "defaultUnit": "cup",
+    "defaultQuantity": 5.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "arrowroot powder",
+      "arrowroot starch"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "cube",
+          "granulated",
+          "liquid",
+          "powder",
+          "stiff",
+          "thick syrup"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "powder"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        730,
+        1460
+      ],
+      "Refrigerated": [
+        1095,
+        1825
+      ]
+    },
+    "parentIds": [
+      "flour"
+    ],
+    "gramsPerCup": 128.0,
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "00",
+        "ratio": "1:1",
+        "notes": "Same family as flour."
+      },
+      {
+        "substituteItemID": "all-purpose",
+        "ratio": "1:1",
+        "notes": "Same family as flour."
+      },
+      {
+        "substituteItemID": "almond-flour",
+        "ratio": "1:1",
+        "notes": "Same family as flour."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "vital-wheat-gluten",
+    "name": "vital wheat gluten",
+    "category": "Baking & Sweeteners",
+    "defaultUnit": "cup",
+    "defaultQuantity": 5.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "gluten flour",
+      "seitan flour",
+      "high-gluten flour additive"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "cube",
+          "granulated",
+          "liquid",
+          "powder",
+          "stiff",
+          "thick syrup"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "powder"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        365,
+        730
+      ],
+      "Refrigerated": [
+        730,
+        1095
+      ],
+      "Frozen": [
+        1095,
+        1460
+      ]
+    },
+    "parentIds": [
+      "flour"
+    ],
+    "gramsPerCup": 150.0,
+    "allergens": [
+      "gluten"
+    ],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "00",
+        "ratio": "1:1",
+        "notes": "Same family as flour."
+      },
+      {
+        "substituteItemID": "all-purpose",
+        "ratio": "1:1",
+        "notes": "Same family as flour."
+      },
+      {
+        "substituteItemID": "almond-flour",
+        "ratio": "1:1",
+        "notes": "Same family as flour."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "high-gluten-flour",
+    "name": "high-gluten flour",
+    "category": "Baking & Sweeteners",
+    "defaultUnit": "cup",
+    "defaultQuantity": 5.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "high gluten flour",
+      "bagel flour",
+      "pizza flour (high protein)"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "cube",
+          "granulated",
+          "liquid",
+          "powder",
+          "stiff",
+          "thick syrup"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "powder"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        365
+      ],
+      "Refrigerated": [
+        365,
+        730
+      ],
+      "Frozen": [
+        730,
+        1460
+      ]
+    },
+    "parentIds": [
+      "flour"
+    ],
+    "gramsPerCup": 130.0,
+    "allergens": [
+      "gluten"
+    ],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "00",
+        "ratio": "1:1",
+        "notes": "Same family as flour."
+      },
+      {
+        "substituteItemID": "all-purpose",
+        "ratio": "1:1",
+        "notes": "Same family as flour."
+      },
+      {
+        "substituteItemID": "almond-flour",
+        "ratio": "1:1",
+        "notes": "Same family as flour."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "semolina-fine-durum",
+    "name": "semolina (fine / durum)",
+    "category": "Baking & Sweeteners",
+    "defaultUnit": "cup",
+    "defaultQuantity": 5.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "fine semolina",
+      "durum flour",
+      "semolina rimacinata",
+      "pasta flour",
+      "sooji",
+      "rava"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "cube",
+          "granulated",
+          "liquid",
+          "powder",
+          "stiff",
+          "thick syrup"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "powder"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        365
+      ],
+      "Refrigerated": [
+        365,
+        730
+      ]
+    },
+    "parentIds": [
+      "flour"
+    ],
+    "gramsPerCup": 167.0,
+    "allergens": [
+      "gluten"
+    ],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "00",
+        "ratio": "1:1",
+        "notes": "Same family as flour."
+      },
+      {
+        "substituteItemID": "all-purpose",
+        "ratio": "1:1",
+        "notes": "Same family as flour."
+      },
+      {
+        "substituteItemID": "almond-flour",
+        "ratio": "1:1",
+        "notes": "Same family as flour."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "barley-flour",
+    "name": "barley flour",
+    "category": "Baking & Sweeteners",
+    "defaultUnit": "cup",
+    "defaultQuantity": 5.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "ground barley",
+      "barley meal"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "cube",
+          "granulated",
+          "liquid",
+          "powder",
+          "stiff",
+          "thick syrup"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "powder"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        120,
+        365
+      ],
+      "Refrigerated": [
+        365,
+        547
+      ],
+      "Frozen": [
+        547,
+        730
+      ]
+    },
+    "parentIds": [
+      "flour"
+    ],
+    "gramsPerCup": 110.0,
+    "allergens": [
+      "gluten"
+    ],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "00",
+        "ratio": "1:1",
+        "notes": "Same family as flour."
+      },
+      {
+        "substituteItemID": "all-purpose",
+        "ratio": "1:1",
+        "notes": "Same family as flour."
+      },
+      {
+        "substituteItemID": "almond-flour",
+        "ratio": "1:1",
+        "notes": "Same family as flour."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "corn-flour-masa-fine-maize",
+    "name": "corn flour (masa / fine maize)",
+    "category": "Baking & Sweeteners",
+    "defaultUnit": "cup",
+    "defaultQuantity": 5.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "maize flour",
+      "fine cornmeal"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "cube",
+          "granulated",
+          "liquid",
+          "powder",
+          "stiff",
+          "thick syrup"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "powder"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        365
+      ],
+      "Refrigerated": [
+        365,
+        547
+      ],
+      "Frozen": [
+        547,
+        730
+      ]
+    },
+    "parentIds": [
+      "flour"
+    ],
+    "gramsPerCup": 114.0,
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "00",
+        "ratio": "1:1",
+        "notes": "Same family as flour."
+      },
+      {
+        "substituteItemID": "all-purpose",
+        "ratio": "1:1",
+        "notes": "Same family as flour."
+      },
+      {
+        "substituteItemID": "almond-flour",
+        "ratio": "1:1",
+        "notes": "Same family as flour."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "hazelnut-flour",
+    "name": "hazelnut flour",
+    "category": "Baking & Sweeteners",
+    "defaultUnit": "cup",
+    "defaultQuantity": 5.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "ground hazelnuts"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "cube",
+          "granulated",
+          "liquid",
+          "powder",
+          "stiff",
+          "thick syrup"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "powder"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        90,
+        180
+      ],
+      "Refrigerated": [
+        180,
+        365
+      ],
+      "Frozen": [
+        365,
+        547
+      ]
+    },
+    "parentIds": [
+      "flour"
+    ],
+    "gramsPerCup": 100.0,
+    "allergens": [
+      "tree-nut"
+    ],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "00",
+        "ratio": "1:1",
+        "notes": "Same family as flour."
+      },
+      {
+        "substituteItemID": "all-purpose",
+        "ratio": "1:1",
+        "notes": "Same family as flour."
+      },
+      {
+        "substituteItemID": "almond-flour",
+        "ratio": "1:1",
+        "notes": "Same family as flour."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "white-chocolate",
+    "name": "white chocolate",
+    "category": "Baking & Sweeteners",
+    "defaultUnit": "oz",
+    "defaultQuantity": 4.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "white baking chocolate",
+      "white couverture",
+      "white chocolate buttons"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "bar",
+          "block",
+          "callets",
+          "chips",
+          "wafers"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "bar"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        365
+      ],
+      "Refrigerated": [
+        365,
+        547
+      ]
+    },
+    "parentIds": [],
+    "gramsPerCup": 180.0,
+    "allergens": [
+      "dairy"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Gluten-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "baking-chocolate",
+        "ratio": "1:1",
+        "notes": "Same family as chocolate."
+      },
+      {
+        "substituteItemID": "chocolate-chips",
+        "ratio": "1:1",
+        "notes": "Same family as chocolate."
+      },
+      {
+        "substituteItemID": "milk-chocolate",
+        "ratio": "1:1",
+        "notes": "Same family as chocolate."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "milk-chocolate",
+    "name": "milk chocolate",
+    "category": "Baking & Sweeteners",
+    "defaultUnit": "oz",
+    "defaultQuantity": 4.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "milk baking chocolate",
+      "milk chocolate chips",
+      "milk couverture"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "bar",
+          "block",
+          "callets",
+          "chips",
+          "wafers"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "bar"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        365
+      ],
+      "Refrigerated": [
+        365,
+        547
+      ]
+    },
+    "parentIds": [],
+    "gramsPerCup": 180.0,
+    "allergens": [
+      "dairy"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Gluten-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "baking-chocolate",
+        "ratio": "1:1",
+        "notes": "Same family as chocolate."
+      },
+      {
+        "substituteItemID": "chocolate-chips",
+        "ratio": "1:1",
+        "notes": "Same family as chocolate."
+      },
+      {
+        "substituteItemID": "white-chocolate",
+        "ratio": "1:1",
+        "notes": "Same family as chocolate."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "dark-chocolate",
+    "name": "dark chocolate",
+    "category": "Baking & Sweeteners",
+    "defaultUnit": "oz",
+    "defaultQuantity": 4.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "bittersweet chocolate",
+      "semisweet chocolate",
+      "plain chocolate",
+      "dark baking chocolate",
+      "70% chocolate"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "bar",
+          "block",
+          "callets",
+          "chips",
+          "wafers"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "bar"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        365,
+        730
+      ],
+      "Refrigerated": [
+        547,
+        1095
+      ]
+    },
+    "parentIds": [],
+    "gramsPerCup": 180.0,
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "baking-chocolate",
+        "ratio": "1:1",
+        "notes": "Same family as chocolate."
+      },
+      {
+        "substituteItemID": "chocolate-chips",
+        "ratio": "1:1",
+        "notes": "Same family as chocolate."
+      },
+      {
+        "substituteItemID": "white-chocolate",
+        "ratio": "1:1",
+        "notes": "Same family as chocolate."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "couverture-chocolate",
+    "name": "couverture chocolate",
+    "category": "Baking & Sweeteners",
+    "defaultUnit": "oz",
+    "defaultQuantity": 4.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "couverture",
+      "tempering chocolate",
+      "high cocoa-butter chocolate"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "bar",
+          "block",
+          "callets",
+          "chips",
+          "wafers"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "bar"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        365,
+        730
+      ],
+      "Refrigerated": [
+        547,
+        1095
+      ]
+    },
+    "parentIds": [],
+    "gramsPerCup": 180.0,
+    "dietaryTags": [
+      "Vegetarian",
+      "Gluten-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "baking-chocolate",
+        "ratio": "1:1",
+        "notes": "Same family as chocolate."
+      },
+      {
+        "substituteItemID": "chocolate-chips",
+        "ratio": "1:1",
+        "notes": "Same family as chocolate."
+      },
+      {
+        "substituteItemID": "white-chocolate",
+        "ratio": "1:1",
+        "notes": "Same family as chocolate."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "cocoa-butter",
+    "name": "cocoa butter",
+    "category": "Baking & Sweeteners",
+    "defaultUnit": "oz",
+    "defaultQuantity": 8.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "cacao butter",
+      "food-grade cocoa butter",
+      "cocoa butter wafers"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "block",
+          "wafers"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "wafers"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        365,
+        730
+      ]
+    },
+    "parentIds": [],
+    "gramsPerCup": 218.0,
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [],
+    "isUserDefined": false
+  },
+  {
+    "id": "cocoa-nibs",
+    "name": "cocoa nibs",
+    "category": "Baking & Sweeteners",
+    "defaultUnit": "cup",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "cacao nibs",
+      "roasted cacao nibs",
+      "raw cacao nibs"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "whole"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        365,
+        730
+      ]
+    },
+    "parentIds": [],
+    "gramsPerCup": 140.0,
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [],
+    "isUserDefined": false
+  },
+  {
+    "id": "cacao-mass",
+    "name": "cacao mass",
+    "category": "Baking & Sweeteners",
+    "defaultUnit": "oz",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "cocoa liquor",
+      "chocolate liquor",
+      "cocoa mass",
+      "100% chocolate"
+    ],
+    "facets": [],
+    "defaultSelections": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        365,
+        730
+      ]
+    },
+    "parentIds": [
+      "baking-chocolate"
+    ],
+    "gramsPerCup": 180.0,
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "baking-chocolate",
+        "ratio": "1:1",
+        "notes": "Same family as baking chocolate."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "chocolate-chunks",
+    "name": "chocolate chunks",
+    "category": "Baking & Sweeteners",
+    "defaultUnit": "cup",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "chocolate chunk",
+      "chopped chocolate",
+      "baking chunks"
+    ],
+    "facets": [],
+    "defaultSelections": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        365
+      ]
+    },
+    "parentIds": [
+      "chocolate-chips"
+    ],
+    "gramsPerCup": 180.0,
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "chocolate-chips",
+        "ratio": "1:1",
+        "notes": "Same family as chocolate chips."
+      },
+      {
+        "substituteItemID": "white-chocolate-chips",
+        "ratio": "1:1",
+        "notes": "Same family as chocolate chips."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "white-chocolate-chips",
+    "name": "white chocolate chips",
+    "category": "Baking & Sweeteners",
+    "defaultUnit": "cup",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "white baking chips",
+      "white morsels"
+    ],
+    "facets": [],
+    "defaultSelections": [],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        365
+      ]
+    },
+    "parentIds": [
+      "chocolate-chips"
+    ],
+    "gramsPerCup": 180.0,
+    "allergens": [
+      "dairy"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Gluten-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "chocolate-chips",
+        "ratio": "1:1",
+        "notes": "Same family as chocolate chips."
+      },
+      {
+        "substituteItemID": "chocolate-chunks",
+        "ratio": "1:1",
+        "notes": "Same family as chocolate chips."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "cacao-powder-raw",
+    "name": "cacao powder (raw)",
+    "category": "Baking & Sweeteners",
+    "defaultUnit": "tbsp",
+    "defaultQuantity": 8.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "raw cacao powder",
+      "cacao",
+      "raw cocoa"
+    ],
+    "facets": [
+      {
+        "key": "color",
+        "options": [
+          "black"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "gel",
+          "liquid",
+          "paste",
+          "powder"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "powder"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        365,
+        730
+      ]
+    },
+    "facetAliases": [
+      {
+        "text": "powder",
+        "facets": [
+          {
+            "key": "form",
+            "value": "powder"
+          }
+        ]
+      }
+    ],
+    "parentIds": [
+      "cocoa-powder"
+    ],
+    "gramsPerCup": 85.0,
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "cocoa-powder",
+        "ratio": "1:1",
+        "notes": "Same family as cocoa powder."
+      },
+      {
+        "substituteItemID": "dutch-process",
+        "ratio": "1:1",
+        "notes": "Same family as cocoa powder."
+      },
+      {
+        "substituteItemID": "natural",
+        "ratio": "1:1",
+        "notes": "Same family as cocoa powder."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "fresh-yeast",
+    "name": "fresh yeast",
+    "category": "Baking & Sweeteners",
+    "defaultUnit": "oz",
+    "defaultQuantity": 2.0,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "compressed yeast",
+      "cake yeast",
+      "block yeast",
+      "wet yeast"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "cake",
+          "flakes",
+          "granulated",
+          "powder"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "dried",
+          "fresh"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "cake"
+      },
+      {
+        "key": "preservation",
+        "value": "fresh"
+      }
+    ],
+    "freshnessByStorage": {
+      "Refrigerated": [
+        10,
+        21
+      ],
+      "Frozen": [
+        60,
+        90
+      ]
+    },
+    "parentIds": [
+      "yeast"
+    ],
+    "gramsPerCup": 180,
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "active-dry",
+        "ratio": "1:1",
+        "notes": "Same family as yeast."
+      },
+      {
+        "substituteItemID": "brewer-s",
+        "ratio": "1:1",
+        "notes": "Same family as yeast."
+      },
+      {
+        "substituteItemID": "nutritional",
+        "ratio": "1:1",
+        "notes": "Same family as yeast."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "instant-yeast",
+    "name": "instant yeast",
+    "category": "Baking & Sweeteners",
+    "defaultUnit": "pkg",
+    "defaultQuantity": 3.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "fast-action yeast",
+      "quick-rise yeast",
+      "bread machine yeast",
+      "easy-bake yeast"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "cake",
+          "flakes",
+          "granulated",
+          "powder"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "dried",
+          "fresh"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "granulated"
+      },
+      {
+        "key": "preservation",
+        "value": "dried"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        365,
+        730
+      ],
+      "Refrigerated": [
+        730,
+        1095
+      ],
+      "Frozen": [
+        1095,
+        1460
+      ]
+    },
+    "parentIds": [
+      "yeast"
+    ],
+    "gramsPerCup": 180,
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "active-dry",
+        "ratio": "1:1",
+        "notes": "Same family as yeast."
+      },
+      {
+        "substituteItemID": "brewer-s",
+        "ratio": "1:1",
+        "notes": "Same family as yeast."
+      },
+      {
+        "substituteItemID": "nutritional",
+        "ratio": "1:1",
+        "notes": "Same family as yeast."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "fondant",
+    "name": "fondant",
+    "category": "Baking & Sweeteners",
+    "defaultUnit": "oz",
+    "defaultQuantity": 7.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "rolled fondant",
+      "sugar paste",
+      "ready-to-roll icing",
+      "rtr icing"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "block",
+          "log",
+          "paste",
+          "sheet"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "paste"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        365
+      ]
+    },
+    "parentIds": [],
+    "gramsPerCup": 340.0,
+    "dietaryTags": [
+      "Vegetarian",
+      "Gluten-Free",
+      "Nut-Free"
+    ],
+    "swaps": [],
+    "isUserDefined": false
+  },
+  {
+    "id": "royal-icing",
+    "name": "royal icing",
+    "category": "Baking & Sweeteners",
+    "defaultUnit": "cup",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "royal icing mix",
+      "royal icing sugar",
+      "egg-white icing"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "paste",
+          "powder",
+          "stiff"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "stiff"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        365
+      ]
+    },
+    "parentIds": [],
+    "gramsPerCup": 200.0,
+    "dietaryTags": [
+      "Vegetarian",
+      "Gluten-Free",
+      "Nut-Free"
+    ],
+    "swaps": [],
+    "isUserDefined": false
+  },
+  {
+    "id": "meringue-powder",
+    "name": "meringue powder",
+    "category": "Baking & Sweeteners",
+    "defaultUnit": "cup",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "dried egg white powder",
+      "powdered egg white",
+      "pavlova powder"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "powder"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "powder"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        365,
+        730
+      ]
+    },
+    "parentIds": [],
+    "gramsPerCup": 130.0,
+    "dietaryTags": [
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [],
+    "isUserDefined": false
+  },
+  {
+    "id": "malt-extract",
+    "name": "malt extract",
+    "category": "Baking & Sweeteners",
+    "defaultUnit": "cup",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "barley malt extract",
+      "malt syrup",
+      "diastatic malt",
+      "non-diastatic malt",
+      "liquid malt"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "liquid",
+          "powder",
+          "thick syrup"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "thick syrup"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        365,
+        730
+      ]
+    },
+    "parentIds": [],
+    "gramsPerCup": 328.0,
+    "allergens": [
+      "gluten"
+    ],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [],
+    "isUserDefined": false
+  },
+  {
+    "id": "brown-rice-syrup",
+    "name": "brown rice syrup",
+    "category": "Baking & Sweeteners",
+    "defaultUnit": "cup",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "rice malt syrup",
+      "brown rice malt syrup",
+      "yinnie syrup"
+    ],
+    "facets": [
+      {
+        "key": "color",
+        "options": [
+          "brown",
+          "white"
+        ]
+      },
+      {
+        "key": "grade",
+        "options": [
+          "lite",
+          "regular"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "liquid",
+          "thick syrup"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "smooth",
+          "thick"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "liquid"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        365,
+        730
+      ]
+    },
+    "parentIds": [
+      "rice-syrup"
+    ],
+    "gramsPerCup": 328.0,
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "rice-syrup",
+        "ratio": "1:1",
+        "notes": "Same family as syrup."
+      },
+      {
+        "substituteItemID": "glucose-syrup",
+        "ratio": "1:1",
+        "notes": "Same family as syrup."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "treacle",
+    "name": "treacle",
+    "category": "Baking & Sweeteners",
+    "defaultUnit": "cup",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "black treacle",
+      "dark treacle"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "liquid",
+          "thick syrup"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "liquid"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        365,
+        730
+      ]
+    },
+    "parentIds": [
+      "molasses"
+    ],
+    "gramsPerCup": 337.0,
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "molasses",
+        "ratio": "1:1",
+        "notes": "Same family as molasses."
+      },
+      {
+        "substituteItemID": "blackstrap",
+        "ratio": "1:1",
+        "notes": "Same family as molasses."
+      },
+      {
+        "substituteItemID": "molasses-dark",
+        "ratio": "1:1",
+        "notes": "Same family as molasses."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "almond-paste",
+    "name": "almond paste",
+    "category": "Baking & Sweeteners",
+    "defaultUnit": "oz",
+    "defaultQuantity": 7.0,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "pure almond paste",
+      "baking almond paste"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "block",
+          "log",
+          "paste",
+          "sheet"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "paste"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        365
+      ],
+      "Refrigerated": [
+        365,
+        547
+      ]
+    },
+    "parentIds": [],
+    "gramsPerCup": 255.0,
+    "allergens": [
+      "tree-nut"
+    ],
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free"
+    ],
+    "swaps": [],
+    "isUserDefined": false
+  },
+  {
+    "id": "carob-powder",
+    "name": "carob powder",
+    "category": "Baking & Sweeteners",
+    "defaultUnit": "tbsp",
+    "defaultQuantity": 8.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "carob flour",
+      "roasted carob powder"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "powder"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "powder"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        365,
+        730
+      ]
+    },
+    "parentIds": [],
+    "gramsPerCup": 103.0,
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [],
+    "isUserDefined": false
+  },
+  {
+    "id": "candied-ginger",
+    "name": "candied ginger",
+    "category": "Baking & Sweeteners",
+    "defaultUnit": "oz",
+    "defaultQuantity": 8.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "crystallized ginger",
+      "glace ginger",
+      "stem ginger in sugar"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "granulated",
+          "powder",
+          "sheet",
+          "slice",
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "diced"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "candied"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "preparation",
+        "value": "diced"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        365
+      ]
+    },
+    "parentIds": [
+      "candied-fruit"
+    ],
+    "gramsPerCup": 180,
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "cherry-candied-fruit",
+        "ratio": "1:1",
+        "notes": "Same family as candied fruit."
+      },
+      {
+        "substituteItemID": "citron",
+        "ratio": "1:1",
+        "notes": "Same family as candied fruit."
+      },
+      {
+        "substituteItemID": "ginger-candied-fruit",
+        "ratio": "1:1",
+        "notes": "Same family as candied fruit."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "mixed-peel",
+    "name": "mixed peel",
+    "category": "Baking & Sweeteners",
+    "defaultUnit": "oz",
+    "defaultQuantity": 8.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "candied mixed peel",
+      "candied citrus peel",
+      "mixed candied peel"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "granulated",
+          "powder",
+          "sheet",
+          "slice",
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "diced"
+        ]
+      },
+      {
+        "key": "preservation",
+        "options": [
+          "candied"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "preparation",
+        "value": "diced"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        365
+      ]
+    },
+    "parentIds": [
+      "candied-fruit"
+    ],
+    "gramsPerCup": 180,
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "cherry-candied-fruit",
+        "ratio": "1:1",
+        "notes": "Same family as candied fruit."
+      },
+      {
+        "substituteItemID": "citron",
+        "ratio": "1:1",
+        "notes": "Same family as candied fruit."
+      },
+      {
+        "substituteItemID": "ginger-candied-fruit",
+        "ratio": "1:1",
+        "notes": "Same family as candied fruit."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "lemon-extract",
+    "name": "lemon extract",
+    "category": "Baking & Sweeteners",
+    "defaultUnit": "tsp",
+    "defaultQuantity": 2.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "lemon essence",
+      "natural lemon flavour",
+      "lemon flavoring"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "gel",
+          "granulated",
+          "liquid",
+          "paste",
+          "powder",
+          "sheet"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "liquid"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        730,
+        1460
+      ]
+    },
+    "parentIds": [
+      "extract"
+    ],
+    "gramsPerCup": 180,
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "coffee-extract",
+        "ratio": "1:1",
+        "notes": "Same family as extract."
+      },
+      {
+        "substituteItemID": "hazelnut-extract",
+        "ratio": "1:1",
+        "notes": "Same family as extract."
+      },
+      {
+        "substituteItemID": "maple-extract",
+        "ratio": "1:1",
+        "notes": "Same family as extract."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "almond-extract",
+    "name": "almond extract",
+    "category": "Baking & Sweeteners",
+    "defaultUnit": "tsp",
+    "defaultQuantity": 2.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "almond essence",
+      "bitter almond extract",
+      "almond flavoring"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "gel",
+          "granulated",
+          "liquid",
+          "paste",
+          "powder",
+          "sheet"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "liquid"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        730,
+        1460
+      ]
+    },
+    "parentIds": [
+      "extract"
+    ],
+    "gramsPerCup": 180,
+    "dietaryTags": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "coffee-extract",
+        "ratio": "1:1",
+        "notes": "Same family as extract."
+      },
+      {
+        "substituteItemID": "hazelnut-extract",
+        "ratio": "1:1",
+        "notes": "Same family as extract."
+      },
+      {
+        "substituteItemID": "maple-extract",
+        "ratio": "1:1",
+        "notes": "Same family as extract."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "rose-water",
+    "name": "rose water",
+    "category": "Baking & Sweeteners",
+    "defaultUnit": "tsp",
+    "defaultQuantity": 2.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "gulab jal",
+      "mawar water",
+      "rose waters",
+      "rosewater"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "gel",
+          "granulated",
+          "liquid",
+          "paste",
+          "powder",
+          "sheet"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "liquid"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        365,
+        1095
+      ],
+      "Refrigerated": [
+        365,
+        1460
+      ]
+    },
+    "parentIds": [
+      "extract"
+    ],
+    "gramsPerCup": 180,
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "coffee-extract",
+        "ratio": "1:1",
+        "notes": "Same family as extract."
+      },
+      {
+        "substituteItemID": "hazelnut-extract",
+        "ratio": "1:1",
+        "notes": "Same family as extract."
+      },
+      {
+        "substituteItemID": "maple-extract",
+        "ratio": "1:1",
+        "notes": "Same family as extract."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "orange-blossom-water",
+    "name": "orange blossom water",
+    "category": "Baking & Sweeteners",
+    "defaultUnit": "tsp",
+    "defaultQuantity": 2.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "neroli water",
+      "orange blossom waters",
+      "orange flower water"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "gel",
+          "granulated",
+          "liquid",
+          "paste",
+          "powder",
+          "sheet"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "liquid"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        365,
+        730
+      ],
+      "Refrigerated": [
+        365,
+        730
+      ]
+    },
+    "parentIds": [
+      "extract"
+    ],
+    "gramsPerCup": 180,
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "coffee-extract",
+        "ratio": "1:1",
+        "notes": "Same family as extract."
+      },
+      {
+        "substituteItemID": "hazelnut-extract",
+        "ratio": "1:1",
+        "notes": "Same family as extract."
+      },
+      {
+        "substituteItemID": "maple-extract",
+        "ratio": "1:1",
+        "notes": "Same family as extract."
+      }
+    ],
+    "isUserDefined": false
+  }
+]

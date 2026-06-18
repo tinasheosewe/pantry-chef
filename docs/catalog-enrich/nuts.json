@@ -1,0 +1,1662 @@
+[
+  {
+    "id": "almond-butter",
+    "name": "almond butter",
+    "category": "Nuts & Seeds",
+    "defaultUnit": "tbsp",
+    "defaultQuantity": 8.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "almond nut butter",
+      "raw almond butter",
+      "roasted almond butter",
+      "smooth almond butter",
+      "crunchy almond butter"
+    ],
+    "facets": [
+      {
+        "key": "grade",
+        "options": [
+          "salted",
+          "unsalted"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "raw",
+          "roasted",
+          "sweetened",
+          "unsweetened"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "chunky",
+          "creamy"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "texture",
+        "value": "creamy"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        90,
+        150
+      ],
+      "Refrigerated": [
+        180,
+        270
+      ]
+    },
+    "parentIds": [
+      "nut-butter"
+    ],
+    "gramsPerCup": 250.0,
+    "allergens": [
+      "tree-nut"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "cashew-butter",
+        "ratio": "1:1",
+        "notes": "Same family as nut butter."
+      },
+      {
+        "substituteItemID": "macadamia-nut-butter",
+        "ratio": "1:1",
+        "notes": "Same family as nut butter."
+      },
+      {
+        "substituteItemID": "nut-butter",
+        "ratio": "1:1",
+        "notes": "Same family as nut butter."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "cashew-butter",
+    "name": "cashew butter",
+    "category": "Nuts & Seeds",
+    "defaultUnit": "tbsp",
+    "defaultQuantity": 8.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "cashew nut butter",
+      "raw cashew butter",
+      "roasted cashew butter"
+    ],
+    "facets": [
+      {
+        "key": "grade",
+        "options": [
+          "salted",
+          "unsalted"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "raw",
+          "roasted",
+          "sweetened",
+          "unsweetened"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "chunky",
+          "creamy"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "texture",
+        "value": "creamy"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        90,
+        150
+      ],
+      "Refrigerated": [
+        180,
+        270
+      ]
+    },
+    "parentIds": [
+      "nut-butter"
+    ],
+    "gramsPerCup": 250.0,
+    "allergens": [
+      "tree-nut"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "almond-butter",
+        "ratio": "1:1",
+        "notes": "Same family as nut butter."
+      },
+      {
+        "substituteItemID": "macadamia-nut-butter",
+        "ratio": "1:1",
+        "notes": "Same family as nut butter."
+      },
+      {
+        "substituteItemID": "nut-butter",
+        "ratio": "1:1",
+        "notes": "Same family as nut butter."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "hazelnut-butter",
+    "name": "hazelnut butter",
+    "category": "Nuts & Seeds",
+    "defaultUnit": "tbsp",
+    "defaultQuantity": 8.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "hazelnut spread",
+      "praline paste",
+      "gianduja base"
+    ],
+    "facets": [
+      {
+        "key": "grade",
+        "options": [
+          "salted",
+          "unsalted"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "raw",
+          "roasted",
+          "sweetened",
+          "unsweetened"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "chunky",
+          "creamy"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "texture",
+        "value": "creamy"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        90,
+        150
+      ],
+      "Refrigerated": [
+        180,
+        270
+      ]
+    },
+    "parentIds": [
+      "nut-butter"
+    ],
+    "gramsPerCup": 250.0,
+    "allergens": [
+      "tree-nut"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "almond-butter",
+        "ratio": "1:1",
+        "notes": "Same family as nut butter."
+      },
+      {
+        "substituteItemID": "cashew-butter",
+        "ratio": "1:1",
+        "notes": "Same family as nut butter."
+      },
+      {
+        "substituteItemID": "nut-butter",
+        "ratio": "1:1",
+        "notes": "Same family as nut butter."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "peanut-butter",
+    "name": "peanut butter",
+    "category": "Nuts & Seeds",
+    "defaultUnit": "tbsp",
+    "defaultQuantity": 8.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "pb",
+      "groundnut butter",
+      "groundnut paste",
+      "natural peanut butter",
+      "creamy peanut butter",
+      "crunchy peanut butter",
+      "peanut paste"
+    ],
+    "facets": [
+      {
+        "key": "grade",
+        "options": [
+          "salted",
+          "unsalted"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "raw",
+          "roasted",
+          "sweetened",
+          "unsweetened"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "chunky",
+          "creamy"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "texture",
+        "value": "creamy"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        90,
+        180
+      ],
+      "Refrigerated": [
+        180,
+        365
+      ]
+    },
+    "parentIds": [
+      "nut-butter"
+    ],
+    "gramsPerCup": 250.0,
+    "allergens": [
+      "peanut"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "almond-butter",
+        "ratio": "1:1",
+        "notes": "Same family as nut butter."
+      },
+      {
+        "substituteItemID": "sunflower-seed-butter",
+        "ratio": "1:1",
+        "notes": "Nut-free seed-butter alternative for allergy households."
+      },
+      {
+        "substituteItemID": "nut-butter",
+        "ratio": "1:1",
+        "notes": "Same family as nut butter."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "tahini",
+    "name": "tahini",
+    "category": "Nuts & Seeds",
+    "defaultUnit": "tbsp",
+    "defaultQuantity": 8.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "sesame paste",
+      "sesame butter",
+      "tahina",
+      "tahin",
+      "ardeh"
+    ],
+    "facets": [
+      {
+        "key": "grade",
+        "options": [
+          "salted",
+          "unsalted"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "raw",
+          "roasted",
+          "sweetened",
+          "unsweetened"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "chunky",
+          "creamy"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "texture",
+        "value": "creamy"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        120,
+        180
+      ],
+      "Refrigerated": [
+        240,
+        365
+      ]
+    },
+    "parentIds": [
+      "nut-butter"
+    ],
+    "gramsPerCup": 250.0,
+    "allergens": [
+      "sesame"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "sunflower-seed-butter",
+        "ratio": "1:1",
+        "notes": "Nut-free seed butter; closest spreadable texture."
+      },
+      {
+        "substituteItemID": "sesame-seed",
+        "ratio": "approx",
+        "notes": "Grind toasted sesame seeds with oil to make tahini."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "sunflower-seed-butter",
+    "name": "sunflower seed butter",
+    "category": "Nuts & Seeds",
+    "defaultUnit": "tbsp",
+    "defaultQuantity": 8.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "sunbutter",
+      "sun butter",
+      "sunflower butter",
+      "sunflower seed spread"
+    ],
+    "facets": [
+      {
+        "key": "grade",
+        "options": [
+          "salted",
+          "unsalted"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "raw",
+          "roasted",
+          "sweetened",
+          "unsweetened"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "chunky",
+          "creamy"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "texture",
+        "value": "creamy"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        60,
+        90
+      ],
+      "Refrigerated": [
+        150,
+        180
+      ]
+    },
+    "parentIds": [
+      "nut-butter"
+    ],
+    "gramsPerCup": 250.0,
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "pumpkin-seed-butter",
+        "ratio": "1:1",
+        "notes": "Other nut-free seed butter."
+      },
+      {
+        "substituteItemID": "tahini",
+        "ratio": "1:1",
+        "notes": "Nut-free seed butter alternative."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "pumpkin-seed-butter",
+    "name": "pumpkin seed butter",
+    "category": "Nuts & Seeds",
+    "defaultUnit": "tbsp",
+    "defaultQuantity": 8.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "pepita butter",
+      "pumpkin butter (seed)",
+      "roasted pumpkin seed butter"
+    ],
+    "facets": [
+      {
+        "key": "grade",
+        "options": [
+          "salted",
+          "unsalted"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "raw",
+          "roasted",
+          "sweetened",
+          "unsweetened"
+        ]
+      },
+      {
+        "key": "texture",
+        "options": [
+          "chunky",
+          "creamy"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "texture",
+        "value": "creamy"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        60,
+        120
+      ],
+      "Refrigerated": [
+        90,
+        180
+      ]
+    },
+    "parentIds": [
+      "nut-butter"
+    ],
+    "gramsPerCup": 250.0,
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "sunflower-seed-butter",
+        "ratio": "1:1",
+        "notes": "Other nut-free seed butter."
+      },
+      {
+        "substituteItemID": "tahini",
+        "ratio": "1:1",
+        "notes": "Nut-free seed butter alternative."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "almond-meal",
+    "name": "almond meal",
+    "category": "Nuts & Seeds",
+    "defaultUnit": "cup",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "ground almond",
+      "ground almonds",
+      "almond flour",
+      "blanched almond flour",
+      "almond powder"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "flour",
+          "ground",
+          "meal"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "blanched",
+          "raw",
+          "roasted",
+          "toasted"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "ground"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        90,
+        180
+      ],
+      "Refrigerated": [
+        180,
+        365
+      ],
+      "Frozen": [
+        365,
+        730
+      ]
+    },
+    "parentIds": [
+      "almond"
+    ],
+    "gramsPerCup": 96.0,
+    "allergens": [
+      "tree-nut"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "hazelnut-meal",
+        "ratio": "1:1",
+        "notes": "Both fine nut flours for gluten-free baking."
+      },
+      {
+        "substituteItemID": "almond",
+        "ratio": "1:1",
+        "notes": "Grind whole almonds to meal."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "hazelnut-meal",
+    "name": "hazelnut meal",
+    "category": "Nuts & Seeds",
+    "defaultUnit": "cup",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "ground hazelnut",
+      "hazelnut flour"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "flour",
+          "ground",
+          "meal"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "blanched",
+          "raw",
+          "roasted",
+          "toasted"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "ground"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        90,
+        180
+      ],
+      "Refrigerated": [
+        180,
+        365
+      ],
+      "Frozen": [
+        365,
+        730
+      ]
+    },
+    "parentIds": [
+      "hazelnut"
+    ],
+    "gramsPerCup": 100.0,
+    "allergens": [
+      "tree-nut"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "almond-meal",
+        "ratio": "1:1",
+        "notes": "Both fine nut flours for gluten-free baking."
+      },
+      {
+        "substituteItemID": "hazelnut",
+        "ratio": "1:1",
+        "notes": "Grind whole hazelnuts to meal."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "peanut-flour",
+    "name": "peanut flour",
+    "category": "Nuts & Seeds",
+    "defaultUnit": "cup",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "defatted peanut flour",
+      "powdered peanut butter",
+      "pb powder",
+      "groundnut flour"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "flour",
+          "ground",
+          "meal"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "blanched",
+          "raw",
+          "roasted",
+          "toasted"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "ground"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        365
+      ],
+      "Refrigerated": [
+        365,
+        540
+      ]
+    },
+    "parentIds": [
+      "peanut"
+    ],
+    "gramsPerCup": 120.0,
+    "allergens": [
+      "peanut"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "almond-meal",
+        "ratio": "1:1",
+        "notes": "Both nut flours, though peanut flour is defatted."
+      },
+      {
+        "substituteItemID": "peanut",
+        "ratio": "1:1",
+        "notes": "Grind/defat peanuts to make flour."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "tigernut",
+    "name": "tigernut",
+    "category": "Nuts & Seeds",
+    "defaultUnit": "cup",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "tiger nut",
+      "tiger nuts",
+      "chufa",
+      "chufas",
+      "earth almond",
+      "yellow nutsedge tuber",
+      "atadwe",
+      "aya"
+    ],
+    "facets": [
+      {
+        "key": "grade",
+        "options": [
+          "salted",
+          "unsalted"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "ground",
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "chopped",
+          "shelled",
+          "unshelled"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "raw",
+          "roasted",
+          "toasted"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      },
+      {
+        "key": "processing",
+        "value": "raw"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        365,
+        730
+      ],
+      "Refrigerated": [
+        540,
+        730
+      ]
+    },
+    "parentIds": [],
+    "gramsPerCup": 140,
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "almond",
+        "ratio": "1:1",
+        "notes": "Earth almond gives a similar mild, sweet, starchy bite (note: almond is a tree nut)."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "pili-nut",
+    "name": "pili nut",
+    "category": "Nuts & Seeds",
+    "defaultUnit": "cup",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "pili nuts",
+      "canarium ovatum",
+      "philippine nut"
+    ],
+    "facets": [
+      {
+        "key": "grade",
+        "options": [
+          "salted",
+          "unsalted"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "ground",
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "chopped",
+          "shelled",
+          "unshelled"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "raw",
+          "roasted",
+          "toasted"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      },
+      {
+        "key": "processing",
+        "value": "roasted"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        60,
+        120
+      ],
+      "Refrigerated": [
+        180,
+        365
+      ],
+      "Frozen": [
+        365,
+        730
+      ]
+    },
+    "parentIds": [
+      "nut"
+    ],
+    "gramsPerCup": 140,
+    "allergens": [
+      "tree-nut"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "macadamia-nut",
+        "ratio": "1:1",
+        "notes": "Closest buttery, high-oil tree nut."
+      },
+      {
+        "substituteItemID": "brazil-nut",
+        "ratio": "1:1",
+        "notes": "Same family as nut."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "candlenut",
+    "name": "candlenut",
+    "category": "Nuts & Seeds",
+    "defaultUnit": "cup",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "candle nut",
+      "kemiri",
+      "kukui",
+      "kukui nut",
+      "buah keras",
+      "aleurites moluccanus"
+    ],
+    "facets": [
+      {
+        "key": "grade",
+        "options": [
+          "salted",
+          "unsalted"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "ground",
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "chopped",
+          "shelled",
+          "unshelled"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "raw",
+          "roasted",
+          "toasted"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      },
+      {
+        "key": "processing",
+        "value": "raw"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        365
+      ],
+      "Refrigerated": [
+        365,
+        540
+      ]
+    },
+    "parentIds": [
+      "nut"
+    ],
+    "gramsPerCup": 140,
+    "allergens": [
+      "tree-nut"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "macadamia-nut",
+        "ratio": "1:1",
+        "notes": "Common substitute as a curry-paste thickener; must be cooked."
+      },
+      {
+        "substituteItemID": "brazil-nut",
+        "ratio": "1:1",
+        "notes": "Used ground to thicken SE-Asian sauces."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "sacha-inchi-seed",
+    "name": "sacha inchi seed",
+    "category": "Nuts & Seeds",
+    "defaultUnit": "cup",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "sacha inchi",
+      "inca nut",
+      "inca peanut",
+      "mountain peanut",
+      "plukenetia volubilis",
+      "sacha peanut"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "ground",
+          "whole"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "raw",
+          "roasted",
+          "toasted"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        365
+      ],
+      "Refrigerated": [
+        365,
+        540
+      ]
+    },
+    "parentIds": [],
+    "gramsPerCup": 150,
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "pumpkin-seed",
+        "ratio": "1:1",
+        "notes": "Other roasted snacking seed, nut-free."
+      },
+      {
+        "substituteItemID": "sunflower-seed",
+        "ratio": "1:1",
+        "notes": "Other roasted snacking seed, nut-free."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "baru-seed",
+    "name": "baru seed",
+    "category": "Nuts & Seeds",
+    "defaultUnit": "cup",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "baru nut",
+      "baru nuts",
+      "baruka",
+      "barukas",
+      "dipteryx alata",
+      "cumaru seed"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "ground",
+          "whole"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "raw",
+          "roasted",
+          "toasted"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      },
+      {
+        "key": "processing",
+        "value": "roasted"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        365,
+        540
+      ],
+      "Refrigerated": [
+        540,
+        730
+      ]
+    },
+    "parentIds": [],
+    "gramsPerCup": 150,
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "pumpkin-seed",
+        "ratio": "1:1",
+        "notes": "Nut-free roasted snack seed."
+      },
+      {
+        "substituteItemID": "sacha-inchi-seed",
+        "ratio": "1:1",
+        "notes": "Nut-free roasted snack seed."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "water-caltrop",
+    "name": "water caltrop",
+    "category": "Nuts & Seeds",
+    "defaultUnit": "cup",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "water chestnut (caltrop)",
+      "singhara",
+      "singhada",
+      "trapa",
+      "buffalo nut",
+      "bat nut",
+      "ling nut"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "flour",
+          "ground",
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "dried",
+          "fresh",
+          "shelled"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "boiled",
+          "raw"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      },
+      {
+        "key": "preparation",
+        "value": "fresh"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        7,
+        14
+      ],
+      "Refrigerated": [
+        30,
+        60
+      ],
+      "Frozen": [
+        180,
+        365
+      ]
+    },
+    "parentIds": [],
+    "gramsPerCup": 150,
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "chestnut",
+        "ratio": "1:1",
+        "notes": "Similar starchy texture when cooked (note: chestnut is a tree nut)."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "white-poppy-seed",
+    "name": "white poppy seed",
+    "category": "Nuts & Seeds",
+    "defaultUnit": "tbsp",
+    "defaultQuantity": 4.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "khus khus",
+      "posto",
+      "safed khus khus",
+      "white maw seed",
+      "indian poppy seed"
+    ],
+    "facets": [
+      {
+        "key": "color",
+        "options": [
+          "white"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "ground",
+          "whole"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        180,
+        365
+      ],
+      "Refrigerated": [
+        365,
+        730
+      ]
+    },
+    "parentIds": [
+      "poppy-seed"
+    ],
+    "gramsPerCup": 140,
+    "facetAliases": [
+      {
+        "text": "white poppy seed",
+        "facets": [
+          {
+            "key": "color",
+            "value": "white"
+          }
+        ]
+      },
+      {
+        "text": "white",
+        "facets": [
+          {
+            "key": "color",
+            "value": "white"
+          }
+        ]
+      }
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free",
+      "Nut-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "poppy-seed",
+        "ratio": "1:1",
+        "notes": "Same seed; blue poppy is the common Western variety."
+      },
+      {
+        "substituteItemID": "sesame-seed",
+        "ratio": "1:1",
+        "notes": "Alternative ground thickener for Indian gravies."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "roasted-salted-peanut",
+    "name": "roasted salted peanut",
+    "category": "Nuts & Seeds",
+    "defaultUnit": "cup",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Pantry",
+    "aliases": [
+      "salted peanuts",
+      "roasted peanuts",
+      "dry roasted peanut",
+      "honey roasted peanut",
+      "cocktail peanut"
+    ],
+    "facets": [
+      {
+        "key": "grade",
+        "options": [
+          "salted",
+          "unsalted"
+        ]
+      },
+      {
+        "key": "form",
+        "options": [
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "shelled",
+          "skin-on",
+          "skinless"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "dry-roasted",
+          "honey-roasted",
+          "roasted"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "grade",
+        "value": "salted"
+      },
+      {
+        "key": "processing",
+        "value": "roasted"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        120,
+        270
+      ],
+      "Refrigerated": [
+        270,
+        365
+      ]
+    },
+    "parentIds": [
+      "peanut"
+    ],
+    "gramsPerCup": 140,
+    "allergens": [
+      "peanut"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "peanut",
+        "ratio": "1:1",
+        "notes": "Plain peanut is the same nut without roast/salt."
+      },
+      {
+        "substituteItemID": "cashew",
+        "ratio": "1:1",
+        "notes": "Other salted snacking nut (tree nut)."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "kola-nut",
+    "name": "kola nut",
+    "category": "Nuts & Seeds",
+    "defaultUnit": "cup",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "cola nut",
+      "kola",
+      "cola acuminata",
+      "cola nitida",
+      "gworo",
+      "bitter kola excluded"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "ground",
+          "whole"
+        ]
+      },
+      {
+        "key": "preparation",
+        "options": [
+          "dried",
+          "fresh",
+          "split"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "whole"
+      },
+      {
+        "key": "preparation",
+        "value": "fresh"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        14,
+        30
+      ],
+      "Refrigerated": [
+        60,
+        120
+      ],
+      "Frozen": [
+        180,
+        365
+      ]
+    },
+    "parentIds": [
+      "nut"
+    ],
+    "gramsPerCup": 140,
+    "allergens": [
+      "tree-nut"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "nut",
+        "ratio": "1:1",
+        "notes": "Generic tree-nut stand-in; kola is used for flavor/ceremony, not as a snack."
+      }
+    ],
+    "isUserDefined": false
+  },
+  {
+    "id": "lsa-seed-mix",
+    "name": "lsa seed mix",
+    "category": "Nuts & Seeds",
+    "defaultUnit": "cup",
+    "defaultQuantity": 1.0,
+    "defaultStorage": "Refrigerated",
+    "aliases": [
+      "lsa",
+      "ground linseed sunflower almond",
+      "linseed almond sunflower meal",
+      "seed meal mix"
+    ],
+    "facets": [
+      {
+        "key": "form",
+        "options": [
+          "flour",
+          "ground",
+          "meal"
+        ]
+      },
+      {
+        "key": "processing",
+        "options": [
+          "blanched",
+          "raw",
+          "roasted",
+          "toasted"
+        ]
+      }
+    ],
+    "defaultSelections": [
+      {
+        "key": "form",
+        "value": "ground"
+      }
+    ],
+    "freshnessByStorage": {
+      "Pantry": [
+        30,
+        60
+      ],
+      "Refrigerated": [
+        90,
+        180
+      ],
+      "Frozen": [
+        180,
+        365
+      ]
+    },
+    "parentIds": [],
+    "gramsPerCup": 150,
+    "allergens": [
+      "tree-nut"
+    ],
+    "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-Free",
+      "Dairy-Free"
+    ],
+    "swaps": [
+      {
+        "substituteItemID": "flax-seed",
+        "ratio": "1:1",
+        "notes": "Ground flax (linseed) is a core LSA component."
+      },
+      {
+        "substituteItemID": "almond-meal",
+        "ratio": "1:1",
+        "notes": "Provides the almond fraction of LSA."
+      }
+    ],
+    "isUserDefined": false
+  }
+]
