@@ -7,119 +7,311 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		00CE9470BBF69B27309867F8 /* japchae.png in Resources */ = {isa = PBXBuildFile; fileRef = DBC8C24FF46E9BAD80F03F89 /* japchae.png */; };
 		00E1153D471A7982E0CA3F86 /* RecipeSeed.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37D2DE4E7AE893634E203960 /* RecipeSeed.swift */; };
 		0248FD5136004BE914474B21 /* ResolutionClassTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4EC84421D4A2864AE180C6D /* ResolutionClassTests.swift */; };
+		03BC4F42AD50499EF7C02481 /* grilled-steak-with-chimichurri.png in Resources */ = {isa = PBXBuildFile; fileRef = 765644201EDB0AF6A297833B /* grilled-steak-with-chimichurri.png */; };
 		04B3B6AA63619905246D9295 /* IntakePipeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = C277A622D0C630B07548A487 /* IntakePipeline.swift */; };
+		06875606EF80ED270332B1B8 /* moroccan-chicken-tagine.png in Resources */ = {isa = PBXBuildFile; fileRef = D17B0ED47E3B08C7662D2AAC /* moroccan-chicken-tagine.png */; };
+		07DC2FF2577CC5D0F00F284A /* savory-chicken-congee.png in Resources */ = {isa = PBXBuildFile; fileRef = 980FD41CAF114AFC139C165A /* savory-chicken-congee.png */; };
+		08AC458171ECF0CEF160029B /* coq-au-vin.png in Resources */ = {isa = PBXBuildFile; fileRef = EB93A04A582E1FC944F4F0CA /* coq-au-vin.png */; };
 		0D574F78BDC28376F33CEA94 /* SeedDishCatalogTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56846FEA588376592A76B680 /* SeedDishCatalogTests.swift */; };
 		0E00CB9878D75F91F1802324 /* Fraunces.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B373F4229381257EA66CDE3C /* Fraunces.ttf */; };
+		0ECF5375D882995FD8AAEB0E /* spaghetti-alla-carbonara.png in Resources */ = {isa = PBXBuildFile; fileRef = 658D27DE4622AFD68D92CB5E /* spaghetti-alla-carbonara.png */; };
 		0F0DFA82B7C463DDB2BE8294 /* RealtimeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FF94D344E15CC2935F5283B /* RealtimeService.swift */; };
 		104B58671438C133ED21624A /* UnitConversionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C93C8FDEB9C5D988F3270738 /* UnitConversionTests.swift */; };
 		107341C52627FC95717EF80E /* PantryAddFrequencyTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F857530EA4DFD2289D8D6E0 /* PantryAddFrequencyTracker.swift */; };
+		10A194C83A89C68DED6A4427 /* three-bean-vegetarian-chili.png in Resources */ = {isa = PBXBuildFile; fileRef = 2FC78155EA7425F67BEE537C /* three-bean-vegetarian-chili.png */; };
 		125C82426544C3A6FA821E3C /* DietaryProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCEDED2CE5A479FB65BC6F69 /* DietaryProfile.swift */; };
+		127EC8A5C2324B0941325358 /* hearty-lentil-soup.png in Resources */ = {isa = PBXBuildFile; fileRef = 36D577F70B693DC5E1824F44 /* hearty-lentil-soup.png */; };
 		13056D1F7FA9F38FF08A1B85 /* StockItemStorageMoveTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4EF7D7D249A9E3B0A95E9C2 /* StockItemStorageMoveTests.swift */; };
+		146DA16635D5C37185C943B5 /* high-protein-cottage-cheese-pancakes.png in Resources */ = {isa = PBXBuildFile; fileRef = 1752D35C18F879CE3D6C56E7 /* high-protein-cottage-cheese-pancakes.png */; };
 		15A438CBFDEF0B1DEEEFDF78 /* ConfidenceEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = B34E27A7BCEE70004A4BDFF3 /* ConfidenceEngine.swift */; };
+		15CDBB20426EB7FAC3BC6633 /* chana-masala.png in Resources */ = {isa = PBXBuildFile; fileRef = 3B99BCD9DB6959A4411DB6CF /* chana-masala.png */; };
+		15FE178FE896F53A462EA0D4 /* beef-vegetable-freezer-stew.png in Resources */ = {isa = PBXBuildFile; fileRef = 52D60B775452879B009D459A /* beef-vegetable-freezer-stew.png */; };
+		1693CF5C708DD55BF34FBF49 /* yogurt-parfait-with-granola.png in Resources */ = {isa = PBXBuildFile; fileRef = 813AF015CDFFC4786F074A51 /* yogurt-parfait-with-granola.png */; };
 		1848D7221ABD09AC3AA2A45A /* LibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 353D73D6645D3DD2DDEC4808 /* LibraryView.swift */; };
+		184A030447B152AD9219A171 /* breakfast-quesadilla.png in Resources */ = {isa = PBXBuildFile; fileRef = 87FE0284BE69A65C4E4F030E /* breakfast-quesadilla.png */; };
 		19A89EA4EF7BDE233C514C52 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 501A15BF9D50C2FA21FDC847 /* SettingsView.swift */; };
 		1A02128F14E66EA369360FDF /* GlassCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1676611A3A7F82D7BAC3B20E /* GlassCard.swift */; };
+		1A64F3555DEA26D5128489D8 /* harira.png in Resources */ = {isa = PBXBuildFile; fileRef = 8FCEC8B8F6798B31E6C80413 /* harira.png */; };
 		1AA2B9C2A703EC39FFBB5F2D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1EF496256762582121574373 /* Assets.xcassets */; };
 		1C7BCAA9BE6690F58BB991BE /* MultiCookSchedulerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 553DC74533E9AC0CDF04F69A /* MultiCookSchedulerTests.swift */; };
 		1CA4005B8A5EF15EDCD61EDE /* FontLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD162BD9EE2D642AD62136A7 /* FontLoader.swift */; };
 		1DEE6BC61EB7DFAD55FD8C7B /* RecipeDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3510AFA34EEE626883353C8 /* RecipeDetailView.swift */; };
+		1E712CC37E59753658BD3370 /* greek-salad.png in Resources */ = {isa = PBXBuildFile; fileRef = 58ACE39280903223C9621CEE /* greek-salad.png */; };
+		1E8968022D95EC81EE4A7CDA /* spinach-and-feta-egg-muffins.png in Resources */ = {isa = PBXBuildFile; fileRef = 7DD7D410899FE657D0627290 /* spinach-and-feta-egg-muffins.png */; };
 		1F5082E6B4C28A73EE0ED54C /* ResolutionClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = E22F264FE9DA944655852EB8 /* ResolutionClass.swift */; };
+		1FF8B34F8CB7B9B773C97AFC /* spanish-chicken-and-chorizo.png in Resources */ = {isa = PBXBuildFile; fileRef = 5CC8812BD7FD1F96AD78D336 /* spanish-chicken-and-chorizo.png */; };
+		20A6E09A695B1AA9A503319B /* tuscan-white-bean-and-kale-soup.png in Resources */ = {isa = PBXBuildFile; fileRef = 8B383E5FF1CA359A721ACCEE /* tuscan-white-bean-and-kale-soup.png */; };
+		20BC57FE9AB4E315F117DD19 /* mediterranean-quinoa-salad-jars.png in Resources */ = {isa = PBXBuildFile; fileRef = 556FF6B10E3B5CC75CCA71CF /* mediterranean-quinoa-salad-jars.png */; };
+		214B8E491EE7CB734001345D /* japanese-miso-ramen.png in Resources */ = {isa = PBXBuildFile; fileRef = D95005797CD33653260333DB /* japanese-miso-ramen.png */; };
 		21B7981CE120D87498E97DC6 /* CatalogInvariantTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0542E87669B0EB9F0ACAA24E /* CatalogInvariantTests.swift */; };
 		21E4C0F31FBACAB46C8694D8 /* ConfidenceEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD7711492A1BF81C0A45710C /* ConfidenceEngineTests.swift */; };
 		23B34ADC20C74E827D92EE06 /* Motion.swift in Sources */ = {isa = PBXBuildFile; fileRef = C591E29EB0703DFFDC5DE962 /* Motion.swift */; };
+		2400CEDFBEFBBDD1C9B77D58 /* chia-pudding-with-mango.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C81F9D2B5787AE5B177FFD0 /* chia-pudding-with-mango.png */; };
 		2523FCED3370ADF37878A022 /* Dock.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4072447FA67C19158B37322 /* Dock.swift */; };
 		26C1EAB9DEDD1361250914B3 /* CatalogSwapsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53ADC570802BEDF30A7FEAE1 /* CatalogSwapsTests.swift */; };
+		2820D9705D606CF2064E3ECA /* gambas-al-ajillo-with-rice.png in Resources */ = {isa = PBXBuildFile; fileRef = 34B5FE77EAD2C411FA48AF08 /* gambas-al-ajillo-with-rice.png */; };
+		2846CDAB53C08343EC4AF1E6 /* eggs-benedict.png in Resources */ = {isa = PBXBuildFile; fileRef = 82608B4151E82DF78FFBA7CC /* eggs-benedict.png */; };
+		28E5D7F98AD387494191D7F4 /* crunchy-asian-slaw.png in Resources */ = {isa = PBXBuildFile; fileRef = F37DCE7E6762A550A5565A2E /* crunchy-asian-slaw.png */; };
+		2931C955B0E550197F818A10 /* warm-lentil-and-feta-salad.png in Resources */ = {isa = PBXBuildFile; fileRef = 5985405FEB96EA08E27DF3A7 /* warm-lentil-and-feta-salad.png */; };
+		29671422BF7500F177814A0D /* buffalo-cauliflower-wraps.png in Resources */ = {isa = PBXBuildFile; fileRef = CA3705EAE3F05B8418E7F52C /* buffalo-cauliflower-wraps.png */; };
+		2AECCCF4817DD8BE380C4231 /* red-lentil-dal.png in Resources */ = {isa = PBXBuildFile; fileRef = AFBD85378CDDC12692F78A74 /* red-lentil-dal.png */; };
+		2AFDB1152C900E38B394F5A6 /* chicken-tikka-masala.png in Resources */ = {isa = PBXBuildFile; fileRef = C7397781D69431FE6D5A83E2 /* chicken-tikka-masala.png */; };
+		2C7DB6C316F3A418AC2F5988 /* mujadara.png in Resources */ = {isa = PBXBuildFile; fileRef = A3D1F30E6AFF3904D74D6C10 /* mujadara.png */; };
+		2D853BF30AB363DCD033747C /* peanut-butter-banana-smoothie.png in Resources */ = {isa = PBXBuildFile; fileRef = 6C7081CD8815F70C34855F7F /* peanut-butter-banana-smoothie.png */; };
+		2EABE1E9E6A0C9A1576DA4C0 /* mushroom-and-herb-frittata.png in Resources */ = {isa = PBXBuildFile; fileRef = E1AAC04D968112B78E9D54E2 /* mushroom-and-herb-frittata.png */; };
 		30536BC0C62621CE2CB4B15C /* input_audio_transcription_completed_sparse_usage.json in Resources */ = {isa = PBXBuildFile; fileRef = 62F4E42A0869501AB92F81F2 /* input_audio_transcription_completed_sparse_usage.json */; };
+		309F71D90F0D2DAAF5413AB3 /* black-bean-soup.png in Resources */ = {isa = PBXBuildFile; fileRef = 85159B3304F8D88A08B014B1 /* black-bean-soup.png */; };
+		3108890699B0A46F4C0084DF /* vegetable-couscous-tagine.png in Resources */ = {isa = PBXBuildFile; fileRef = 0FEA952467D85FC0633C1A53 /* vegetable-couscous-tagine.png */; };
+		313494900652FCC81F93F415 /* sweet-potato-breakfast-hash.png in Resources */ = {isa = PBXBuildFile; fileRef = 41E44344B0C63F664589FB15 /* sweet-potato-breakfast-hash.png */; };
 		3332458EBD6A9C0A2D19A38B /* KitchenStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAB9028C434D2045ADDB09A5 /* KitchenStore.swift */; };
 		33450CC448B136BE9029DD6B /* ExpiryEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 822D5F908F780A317F9B37C1 /* ExpiryEngine.swift */; };
+		3363C1BEDDB96C9459D47B24 /* roast-chicken-with-lemon-herbs.png in Resources */ = {isa = PBXBuildFile; fileRef = F7B7800B61224EE68615677C /* roast-chicken-with-lemon-herbs.png */; };
+		33E471BC8790B1A6B5C28B0B /* sweet-potato-black-bean-freezer-burritos.png in Resources */ = {isa = PBXBuildFile; fileRef = BFC129C27AAB92A7D9E6A094 /* sweet-potato-black-bean-freezer-burritos.png */; };
 		33E785251DCE416DBD76BC9A /* TelemetryReporterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C72DB3A2FD92EEFEF85F27C4 /* TelemetryReporterTests.swift */; };
 		3482D13CD7F684FE88499D3D /* TimelineComposer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B787E014C9195434E932C7E /* TimelineComposer.swift */; };
 		36338DBD21E24BFD8E128018 /* RealtimeServiceProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF4ACDEB952F0E92FF5A2FF7 /* RealtimeServiceProtocol.swift */; };
+		36BF17DE57C80832F7F82F58 /* stuffed-bell-peppers.png in Resources */ = {isa = PBXBuildFile; fileRef = 0B1C036C5BD4CD41F1060C93 /* stuffed-bell-peppers.png */; };
 		3722DDC8F506F6FAC057A855 /* PlateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17625D9532976239EB8932D8 /* PlateView.swift */; };
 		384BBCD0526D4E1C72B78481 /* RealtimeAPI in Frameworks */ = {isa = PBXBuildFile; productRef = 4A6232C1ECDD3D484F41AF09 /* RealtimeAPI */; };
+		38E09D701A202B1094D81F8A /* fluffy-buttermilk-pancakes.png in Resources */ = {isa = PBXBuildFile; fileRef = F42018C081DCCD416B555108 /* fluffy-buttermilk-pancakes.png */; };
+		3AC6BAC333C9BAFF1C947F00 /* baked-falafel-bowl.png in Resources */ = {isa = PBXBuildFile; fileRef = 11832F25E4EDE858376EF759 /* baked-falafel-bowl.png */; };
+		3B5981226B6CFD32E226F0A2 /* peanut-butter-no-bake-bars.png in Resources */ = {isa = PBXBuildFile; fileRef = C7D94C0A07FAA72C22764A34 /* peanut-butter-no-bake-bars.png */; };
+		3C2654E77DFDB03800602A00 /* vegan-dan-dan-noodles.png in Resources */ = {isa = PBXBuildFile; fileRef = E669061379CB425F819A9BE7 /* vegan-dan-dan-noodles.png */; };
+		3C34E35FD8F998087B5D5963 /* stuffed-portobello-mushrooms.png in Resources */ = {isa = PBXBuildFile; fileRef = B9FF8C2650A90D2DB08A4AB1 /* stuffed-portobello-mushrooms.png */; };
+		3CB69004E69A2CB2DE9928E8 /* huevos-rancheros.png in Resources */ = {isa = PBXBuildFile; fileRef = 478BB1BA3080E78590817D21 /* huevos-rancheros.png */; };
+		3D18EEB6BB7EE4259F9118FF /* masala-omelette.png in Resources */ = {isa = PBXBuildFile; fileRef = FFCDD18C9F6282530EF2B82B /* masala-omelette.png */; };
+		3DA875E20CAF526A6EE5B194 /* margherita-pizza.png in Resources */ = {isa = PBXBuildFile; fileRef = 7AA50DABAB865D8ED25C90C9 /* margherita-pizza.png */; };
+		3E671F7407B8D5A66CC44047 /* breakfast-burrito.png in Resources */ = {isa = PBXBuildFile; fileRef = 79EF0FD96955E2F196335A05 /* breakfast-burrito.png */; };
 		40B4302ABEBDCF927D16D2B3 /* NowModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9697622A6D46C228E5379556 /* NowModule.swift */; };
+		40BC6FD4A231898D0D1184CA /* big-batch-minestrone-soup.png in Resources */ = {isa = PBXBuildFile; fileRef = 16C428F9B16DD16EDFDBBEE4 /* big-batch-minestrone-soup.png */; };
 		414F51CECCAB337BD90276A4 /* TimelineComposerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C47829257708E02A5B21FA6D /* TimelineComposerTests.swift */; };
 		4209855AE41E88CABEC911CD /* AppError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EAF4BBB6D4452027050DF1E /* AppError.swift */; };
+		44BFDC19CE8AC3D86746B051 /* steel-cut-oats-with-apple.png in Resources */ = {isa = PBXBuildFile; fileRef = 49E1CC21EC8D7282353CB950 /* steel-cut-oats-with-apple.png */; };
 		44F4D56B2FC32BBD2D8208BB /* DishInsights.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A2E455A1F865ADE8DDEF145 /* DishInsights.swift */; };
+		451444A78CDC52F76E4BB010 /* smoked-salmon-bagel.png in Resources */ = {isa = PBXBuildFile; fileRef = EED293D7F6F5A6B20E6ACC50 /* smoked-salmon-bagel.png */; };
+		485950E293963142C51DD248 /* sheet-pan-fajitas.png in Resources */ = {isa = PBXBuildFile; fileRef = 95C9519844097DC56EE0E2AA /* sheet-pan-fajitas.png */; };
+		4962D76399BFCA00634913A7 /* quinoa-tabbouleh.png in Resources */ = {isa = PBXBuildFile; fileRef = 8FBFC564EA27F3946F11716C /* quinoa-tabbouleh.png */; };
 		4C4264D61939374CCF134900 /* AmountField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A08A7BBDF492A235BA75E82 /* AmountField.swift */; };
 		4CA332DA2C92C1ED2A30D846 /* StepTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA7710DAEA864CA8E70D8332 /* StepTask.swift */; };
+		4CFCEA836C4A80D9889B688E /* butternut-squash-soup.png in Resources */ = {isa = PBXBuildFile; fileRef = 7BBBD397EC06270A6418A321 /* butternut-squash-soup.png */; };
 		4EE220109F2FDCAA2FFB63E6 /* StockView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45E7B9238FFCA86D187E2420 /* StockView.swift */; };
 		500CF21AC8F3E7493C6F0DA1 /* ShoppingChecklistView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7091D990752C6197CCF02458 /* ShoppingChecklistView.swift */; };
+		51CF84BA05DF578F3EE56EC0 /* lentil-shepherd-s-pie.png in Resources */ = {isa = PBXBuildFile; fileRef = E80D0B656D67EAC31F4A110A /* lentil-shepherd-s-pie.png */; };
+		52DA0436D9382E6A62A4A473 /* maple-roasted-root-vegetables.png in Resources */ = {isa = PBXBuildFile; fileRef = 05629F5F5A7393838E0D6B7D /* maple-roasted-root-vegetables.png */; };
+		56F8E1B13E82533C21647E7B /* tuscan-white-bean-and-kale-stew.png in Resources */ = {isa = PBXBuildFile; fileRef = 245A7F093281E82BEB82C82A /* tuscan-white-bean-and-kale-stew.png */; };
+		58C95D93F8DC9BF267EE54F5 /* moussaka.png in Resources */ = {isa = PBXBuildFile; fileRef = C33D4743FD418720AB703AFC /* moussaka.png */; };
+		5966B841C1F476E956FC0F9E /* hearty-beef-stew.png in Resources */ = {isa = PBXBuildFile; fileRef = 00BA4CD9CAFB39284932DA3A /* hearty-beef-stew.png */; };
 		5A71CB0FBFDF5EDA80BD964A /* MultiCookScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8241073BA3C1CE75DE6558C5 /* MultiCookScheduler.swift */; };
+		5B5D14F361B1CECAF39AA534 /* greek-style-baked-cod-with-chickpeas.png in Resources */ = {isa = PBXBuildFile; fileRef = C83773423D3A2F57ACBDD0F4 /* greek-style-baked-cod-with-chickpeas.png */; };
+		5BBA9935454E039A0D29A40E /* spinach-ricotta-egg-muffins.png in Resources */ = {isa = PBXBuildFile; fileRef = 8ECC769840573024FB7A5743 /* spinach-ricotta-egg-muffins.png */; };
 		5BF2AF91CDFFE66AD222B691 /* ItemCertainty.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34FBDF3045F807228F2ED54C /* ItemCertainty.swift */; };
+		5BFAE325A4EA8135DC9889EC /* risotto-ai-funghi.png in Resources */ = {isa = PBXBuildFile; fileRef = 7A3874DAADBD748D091BB73D /* risotto-ai-funghi.png */; };
+		5CFE380F10006A42D43E9055 /* lamb-rogan-josh.png in Resources */ = {isa = PBXBuildFile; fileRef = 19EEBBD2F6F185D8E9A6DE51 /* lamb-rogan-josh.png */; };
+		5E297DCC054F863487FB83A1 /* black-bean-and-sweet-potato-enchiladas.png in Resources */ = {isa = PBXBuildFile; fileRef = F708538CBEE0F3594D1F0F65 /* black-bean-and-sweet-potato-enchiladas.png */; };
+		5E8C66C5C923989EC863CBD0 /* mixed-berry-crumble.png in Resources */ = {isa = PBXBuildFile; fileRef = 0B8AD386EA1A6097072295C0 /* mixed-berry-crumble.png */; };
+		5E9B28599BE1B1F5F248130A /* tofu-pad-thai.png in Resources */ = {isa = PBXBuildFile; fileRef = AB6DD50550DB7463DCE4BDE6 /* tofu-pad-thai.png */; };
 		5FD555B05267C452E7F433A8 /* CustomIngredientForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0BD5F8F5E89DEF2F5F52E23 /* CustomIngredientForm.swift */; };
 		60C79905591F4E0C201A9A62 /* Fraunces-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C2CAE194CB15CCC78F5F22C6 /* Fraunces-Italic.ttf */; };
 		60D0EE313FC98666DD3F7BA5 /* AIDishMappingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99EDB3A919F342036B1A4A1A /* AIDishMappingTests.swift */; };
 		62E0F6FCD8C0B8E58B18A185 /* CookFlowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52C9664BC03D8B5DE7127A5D /* CookFlowView.swift */; };
+		644BFC91D022448F97553433 /* thai-basil-chicken.png in Resources */ = {isa = PBXBuildFile; fileRef = 73D92DF9174E120B75A334AA /* thai-basil-chicken.png */; };
 		64F2B5992FF1EB74F106E85D /* TelemetryReporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A16DF6ABA8E8C73E7BB93F32 /* TelemetryReporter.swift */; };
+		6549EBA56ADD23E3886C4F93 /* korean-braised-short-ribs.png in Resources */ = {isa = PBXBuildFile; fileRef = 8AF51EB1621E970C815A5281 /* korean-braised-short-ribs.png */; };
+		65C2776D81C1E59BCFCE90F3 /* palak-paneer.png in Resources */ = {isa = PBXBuildFile; fileRef = 50D7242190AE8211ED6244AC /* palak-paneer.png */; };
+		6628A8A4336DFBE20336FBAB /* roasted-tomato-basil-soup.png in Resources */ = {isa = PBXBuildFile; fileRef = D23C3650EF7D5C190BA79D8C /* roasted-tomato-basil-soup.png */; };
+		6766D2D8D603460C7DA696CD /* black-bean-tacos.png in Resources */ = {isa = PBXBuildFile; fileRef = F8EA596D363F0CCC8D5D19DC /* black-bean-tacos.png */; };
+		681BDB39E54AB02CA3ACEE76 /* margherita-flatbread.png in Resources */ = {isa = PBXBuildFile; fileRef = F769E827534D1DE33E44020C /* margherita-flatbread.png */; };
 		698DDDF144F1C71CCD08E448 /* TimelineRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F29F5EA69B2D7B7044AB0B9 /* TimelineRow.swift */; };
+		69DED516EAF1A0CE982E2720 /* greek-yogurt-chicken-salad.png in Resources */ = {isa = PBXBuildFile; fileRef = 1E819DC7FC0CEAB0CE5F6213 /* greek-yogurt-chicken-salad.png */; };
 		69F60B663B95A83DCECBB89D /* AppConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFBB7D0A309C7FD4311B669D /* AppConfig.swift */; };
+		6A2CF95D44767575233F519E /* caprese-style-panzanella.png in Resources */ = {isa = PBXBuildFile; fileRef = 9A8ADAEB2A83AE3718062E35 /* caprese-style-panzanella.png */; };
+		6B703CAD1BAE6BF91AC61FCA /* smoky-bbq-pulled-pork.png in Resources */ = {isa = PBXBuildFile; fileRef = 1383024CEFB446FE515EAD80 /* smoky-bbq-pulled-pork.png */; };
+		6B7CE4F5035D4272F2EC1F9E /* cheesy-broccoli-rice-bake.png in Resources */ = {isa = PBXBuildFile; fileRef = 35558682CE6D0E96E0706FC1 /* cheesy-broccoli-rice-bake.png */; };
 		6C6D1EB4465F98F5AC4C06CB /* IngredientLexicon.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEDA55B940AC70BF502704BE /* IngredientLexicon.swift */; };
+		6DDE478A118B8EF00EABFB50 /* lemon-herb-cod-with-couscous.png in Resources */ = {isa = PBXBuildFile; fileRef = A06F01787C72A974EF829652 /* lemon-herb-cod-with-couscous.png */; };
+		6E61ADB85AEF2E5F418BD28D /* creamy-tuscan-salmon.png in Resources */ = {isa = PBXBuildFile; fileRef = F11C72F79E1C367A9D2B74F9 /* creamy-tuscan-salmon.png */; };
+		6FB0FAD3FB417B8E77873387 /* lentil-vegetable-cottage-pie.png in Resources */ = {isa = PBXBuildFile; fileRef = 540AB459CCD86A314CC99AE5 /* lentil-vegetable-cottage-pie.png */; };
+		6FF2BA20464B1B3E68599D95 /* moroccan-chickpea-vegetable-tagine.png in Resources */ = {isa = PBXBuildFile; fileRef = 4AC4CB1E3DC9CA06BF12081E /* moroccan-chickpea-vegetable-tagine.png */; };
 		71D7C5ADA6DF7F74486CDE1B /* CatalogSwaps.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65E7AA5F88E00CB3D846329B /* CatalogSwaps.swift */; };
+		71F8601578AA5D882083602D /* creamy-roasted-carrot-soup.png in Resources */ = {isa = PBXBuildFile; fileRef = 0977B13CC5AFDE6BE97627B2 /* creamy-roasted-carrot-soup.png */; };
+		7562EA2E6548FDB7D96B22F8 /* sausage-root-vegetable-traybake.png in Resources */ = {isa = PBXBuildFile; fileRef = C358CD1E9BDA67D5CC184587 /* sausage-root-vegetable-traybake.png */; };
+		76A5315593A323E659640432 /* mapo-tofu.png in Resources */ = {isa = PBXBuildFile; fileRef = 497BD66BA898AE6AC905B95F /* mapo-tofu.png */; };
+		77C92B0D29665BF4E31C260E /* sticky-toffee-pudding.png in Resources */ = {isa = PBXBuildFile; fileRef = 2D849621A3183111CF28407C /* sticky-toffee-pudding.png */; };
+		77D7E42109AF1BEB48BB454A /* baked-ziti-with-sausage.png in Resources */ = {isa = PBXBuildFile; fileRef = 0E2EDF0206FC005D0ADED33A /* baked-ziti-with-sausage.png */; };
+		78C24EEA02124C02F86BC1AF /* fish-pie-with-cheddar-mash.png in Resources */ = {isa = PBXBuildFile; fileRef = C43F40E7173F3A3A242A61A2 /* fish-pie-with-cheddar-mash.png */; };
 		7A6DC2A6BFD6CD5A6C24A629 /* input_audio_transcription_completed_multilingual.json in Resources */ = {isa = PBXBuildFile; fileRef = 877E52465510E708BA84311A /* input_audio_transcription_completed_multilingual.json */; };
+		7C43C1C75BD29E833DABDCAC /* lentil-and-lemon-soup.png in Resources */ = {isa = PBXBuildFile; fileRef = 34E2D7A92D8DBDADEE7255A4 /* lentil-and-lemon-soup.png */; };
+		7C45F52CE30083B95DFBDAFD /* tuna-noodle-casserole.png in Resources */ = {isa = PBXBuildFile; fileRef = 3643051113F5FA12AC9EE141 /* tuna-noodle-casserole.png */; };
+		7CDCFA97462C0FE8A3A59820 /* baked-oatmeal-squares.png in Resources */ = {isa = PBXBuildFile; fileRef = 8802BCE3E36AF8C9E356CC0B /* baked-oatmeal-squares.png */; };
+		7CEA0A85A0795936BA053BBE /* miso-butter-udon.png in Resources */ = {isa = PBXBuildFile; fileRef = 0E18074B26503B469E9775FC /* miso-butter-udon.png */; };
 		7D544902270DFDB5E477AACC /* CatalogSearchEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 177EB0A8E95D3FAE1B5CF7E4 /* CatalogSearchEngine.swift */; };
+		7DF12257D490753A78D74C96 /* red-lentil-dahl.png in Resources */ = {isa = PBXBuildFile; fileRef = 4D818D2F715F07A51E954F9F /* red-lentil-dahl.png */; };
+		7F55B862B3237BD65AF51AC2 /* chicken-tacos-al-pastor.png in Resources */ = {isa = PBXBuildFile; fileRef = 2403DEDB0ACDD46970E44C8C /* chicken-tacos-al-pastor.png */; };
 		7FBE65DAD5654BF06FD33353 /* FanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 429A404308616F18132F9767 /* FanView.swift */; };
+		823C41CCEED5CEC800828FA4 /* coconut-chickpea-curry.png in Resources */ = {isa = PBXBuildFile; fileRef = 3EC5D21BC90DF8750D325F88 /* coconut-chickpea-curry.png */; };
+		8292344231C0B22DD4E547CC /* beef-and-broccoli-stir-fry.png in Resources */ = {isa = PBXBuildFile; fileRef = 64054228C89F17D1B2E2BE53 /* beef-and-broccoli-stir-fry.png */; };
 		8305E12ADD7F026A2AD68195 /* SpineGutter.swift in Sources */ = {isa = PBXBuildFile; fileRef = C37F9246B13C7CD8DB8F157E /* SpineGutter.swift */; };
+		839DB0CB166B04579245FD26 /* banana-bread.png in Resources */ = {isa = PBXBuildFile; fileRef = F8905232EACFE17246B7FF9F /* banana-bread.png */; };
+		83EACAAE587C4D199BB41D8A /* thai-red-curry-with-vegetables.png in Resources */ = {isa = PBXBuildFile; fileRef = 0ECBCD9CD1772C61D677ED05 /* thai-red-curry-with-vegetables.png */; };
+		8478C7AFF876D186ACB1049D /* mediterranean-baked-cod.png in Resources */ = {isa = PBXBuildFile; fileRef = 50895451A36467648D44D15D /* mediterranean-baked-cod.png */; };
+		85E8D29279612925D4B95781 /* minestrone.png in Resources */ = {isa = PBXBuildFile; fileRef = 1B31AA3FF5BBCBAF365A505C /* minestrone.png */; };
 		87019D52E2D0DC17CCF1E0C4 /* ExpiryEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFBF0909FB0DCCC8F82C8915 /* ExpiryEngineTests.swift */; };
+		87C9FDD2FA7EEED7A562F3A2 /* vegetable-barley-stew.png in Resources */ = {isa = PBXBuildFile; fileRef = F709276D3BA2BFCE9D371910 /* vegetable-barley-stew.png */; };
 		87F526236C65466C6A727AE1 /* IntakePipelineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3403E0E0CEC4D7B9F57BC6A /* IntakePipelineTests.swift */; };
+		8871063419B4D1C0FC3F1D5E /* vegan-corn-chowder.png in Resources */ = {isa = PBXBuildFile; fileRef = 8301E23753E7F9097EFF7403 /* vegan-corn-chowder.png */; };
 		8872C4EFF24154417172E066 /* IngredientMatching.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F4550D5ECA525ED872882D3 /* IngredientMatching.swift */; };
+		88AEFBFBA316B138DCA36C16 /* lemon-herb-baked-chicken-breast.png in Resources */ = {isa = PBXBuildFile; fileRef = F4644CA5E60ABD26CABDC2F1 /* lemon-herb-baked-chicken-breast.png */; };
 		8940817B4ECB43E57B1E9436 /* AudioPipelineHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = A583969D363695B85BA85C0A /* AudioPipelineHelper.swift */; };
+		8953A8894E5029E70DF4DCB7 /* spiced-carrot-and-chickpea-salad.png in Resources */ = {isa = PBXBuildFile; fileRef = E78FAC124CA100B026C1A8EE /* spiced-carrot-and-chickpea-salad.png */; };
+		89DA42B53F1823A8F9D6A1BE /* white-bean-and-kale-soup.png in Resources */ = {isa = PBXBuildFile; fileRef = A7FD1278E54BE5A9FD729154 /* white-bean-and-kale-soup.png */; };
 		8A83DC607C8342D82632581C /* AIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9D6320911E5D93399FD4833 /* AIService.swift */; };
 		8AFDCDEBEAD82A3660770516 /* FieldNotes.swift in Sources */ = {isa = PBXBuildFile; fileRef = D33DD04E5E06C3BFAD057736 /* FieldNotes.swift */; };
+		8B1AC19DE7D022DA11EC521B /* shrimp-pad-krapow.png in Resources */ = {isa = PBXBuildFile; fileRef = 5E09405EA594122D7F8C18D5 /* shrimp-pad-krapow.png */; };
 		8D96E85E9FC95BBD66485E3D /* RealtimeServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19A32D7F1BF7F07193B5D135 /* RealtimeServiceTests.swift */; };
+		8F40BFFE23868C75635F54C8 /* vegetarian-lasagna.png in Resources */ = {isa = PBXBuildFile; fileRef = D378A8A9DDA30DB7478AE3B5 /* vegetarian-lasagna.png */; };
+		8FDC47E92BB9F80D2CD2E373 /* kung-pao-chicken.png in Resources */ = {isa = PBXBuildFile; fileRef = 7C00F2B0628ED4BD03F1D53A /* kung-pao-chicken.png */; };
 		91A5BFABB50C47C670FB37F7 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28C5AD9227107BB812ED3728 /* Extensions.swift */; };
 		91EA1E2C22DF8B809919B728 /* SentryCrashReporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B4D57647D30ABDB98AC89E0 /* SentryCrashReporter.swift */; };
+		92249C4C0AFF33AB8C47164E /* lemon-herb-rice-pilaf.png in Resources */ = {isa = PBXBuildFile; fileRef = 578555C79D6DDE486547158D /* lemon-herb-rice-pilaf.png */; };
+		9368E161A93677357634F403 /* smoky-tempeh-tacos.png in Resources */ = {isa = PBXBuildFile; fileRef = F17CF6118209C6B1636DFA35 /* smoky-tempeh-tacos.png */; };
+		94A12E5AB8FAFC800AC85BD3 /* greek-chicken-bowl.png in Resources */ = {isa = PBXBuildFile; fileRef = AB2A2F58881751A6DC0ACD1C /* greek-chicken-bowl.png */; };
 		94A15C8DA60B29DCBCBCA9B4 /* Sentry in Frameworks */ = {isa = PBXBuildFile; productRef = 89A23A09254EE6E4E5510F16 /* Sentry */; };
 		985C92B3D17DA6D0C3EE23F0 /* NowModuleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED6332873D469B3DAEC6B4B2 /* NowModuleView.swift */; };
+		993BD04166C2C11356C46EBA /* sheet-pan-chicken-broccoli-meal-prep.png in Resources */ = {isa = PBXBuildFile; fileRef = 6407A24BA5F97A109307C0BA /* sheet-pan-chicken-broccoli-meal-prep.png */; };
+		99538A9C204B8CBE3C073DBB /* butter-chicken.png in Resources */ = {isa = PBXBuildFile; fileRef = 77352A1B8FA7F6959E86ED68 /* butter-chicken.png */; };
+		99B946001258FBACE38A278C /* kale-caesar-with-crispy-chickpeas.png in Resources */ = {isa = PBXBuildFile; fileRef = 46A7A04ED52319A52CC1A465 /* kale-caesar-with-crispy-chickpeas.png */; };
 		9A124B1DA41417E6559A52A7 /* spinach-feta-orzo.png in Resources */ = {isa = PBXBuildFile; fileRef = 8F74F8E43FACC12115B59545 /* spinach-feta-orzo.png */; };
 		9A7B80CB49163E59D70F1219 /* ComposerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DA1BF81A96A4A7C8DEDFB4E /* ComposerView.swift */; };
 		9AD09898E5C888D5DD3CB7BD /* IngredientMatchingLineageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1164E8B1FE358D08AE6BFF7 /* IngredientMatchingLineageTests.swift */; };
+		9D44473635B4FD689A9A48F6 /* vegan-chocolate-avocado-mousse.png in Resources */ = {isa = PBXBuildFile; fileRef = D6226CFA926E8FA150CA6EB2 /* vegan-chocolate-avocado-mousse.png */; };
 		9DA1F30C0BD3CA620392E7C9 /* lamb-ragu.png in Resources */ = {isa = PBXBuildFile; fileRef = C8F8447FD64B783B5D19DCE0 /* lamb-ragu.png */; };
+		A6B1C9CBC6BEA16BC486281E /* pasta-alla-norma.png in Resources */ = {isa = PBXBuildFile; fileRef = BCFDEB61A7361C6E603ABE8A /* pasta-alla-norma.png */; };
 		A6CAE03956F89C0F006554BF /* TimelineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DDC82E2714A8DFE77408CE9 /* TimelineView.swift */; };
 		A6FC1CD87ABE4C6FCF2FB7E6 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BD5873FFB9C1243801AD033 /* Theme.swift */; };
+		A70F2E0519BEFA2EEE126472 /* baked-teriyaki-salmon-meal-prep.png in Resources */ = {isa = PBXBuildFile; fileRef = 54C8E19E22BBD89053DFAB64 /* baked-teriyaki-salmon-meal-prep.png */; };
 		A7653075B5F5A2AFC3EDBDB2 /* RankedTextSearchEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8101D29E78E38A0C3D0477A /* RankedTextSearchEngine.swift */; };
+		A9034EE5478AF8522DE09606 /* french-onion-soup.png in Resources */ = {isa = PBXBuildFile; fileRef = 1A6821D523B0FD03562680C2 /* french-onion-soup.png */; };
+		A9704C49EC47A85A582883E4 /* caprese-salad.png in Resources */ = {isa = PBXBuildFile; fileRef = 52E6BD9C201ACC04B9D2C7E5 /* caprese-salad.png */; };
+		AA1F705C79C35770C8953084 /* sesame-soba-noodle-salad.png in Resources */ = {isa = PBXBuildFile; fileRef = 4103820317EC37AB05DD0DC6 /* sesame-soba-noodle-salad.png */; };
+		AAC8DD01BB46AB4B003D35C5 /* dutch-baby-pancake.png in Resources */ = {isa = PBXBuildFile; fileRef = 6055ECBB02926A6EDABBDA64 /* dutch-baby-pancake.png */; };
 		AACC56B00F6BECBD683E04A1 /* seed_recipes.json in Resources */ = {isa = PBXBuildFile; fileRef = ECEFEB3FB5265EBF48F4495C /* seed_recipes.json */; };
+		AAE0BD6A08ED713193ED3BD7 /* teriyaki-salmon.png in Resources */ = {isa = PBXBuildFile; fileRef = F1FF3E51B196D4D8DFAE88E0 /* teriyaki-salmon.png */; };
+		AB86150E276DB131E340A718 /* falafel-plate.png in Resources */ = {isa = PBXBuildFile; fileRef = A89E9EB9AAB565018CB553BE /* falafel-plate.png */; };
 		AC3F3FE37252F45CF2339622 /* ReadinessServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0124F380C6BD9B6E97C4A3E5 /* ReadinessServiceTests.swift */; };
+		AF61FA9761C1DA32B5EE2882 /* bacon-egg-and-cheese-sandwich.png in Resources */ = {isa = PBXBuildFile; fileRef = 1CB7590083D22303E3B3B8C6 /* bacon-egg-and-cheese-sandwich.png */; };
 		AF6A41AADEA8600D801CC70E /* PantryCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9B0EE388F85446F2B6D4442 /* PantryCatalog.swift */; };
+		AF9F7AA9E58FCC100AB391A5 /* classic-coleslaw.png in Resources */ = {isa = PBXBuildFile; fileRef = BB3902BA3B301F9C934D46FF /* classic-coleslaw.png */; };
+		B00C0CF6FDFE7B6ED3E051F1 /* garlic-butter-shrimp-pasta.png in Resources */ = {isa = PBXBuildFile; fileRef = 8D0B6C85CD5DEF22E3A54091 /* garlic-butter-shrimp-pasta.png */; };
+		B08B050947655650A7EB0E62 /* mushroom-risotto.png in Resources */ = {isa = PBXBuildFile; fileRef = A48491304193857705CC6FAC /* mushroom-risotto.png */; };
+		B1528226A3F478C9F2B23101 /* creamy-chicken-mushroom-pot-pie.png in Resources */ = {isa = PBXBuildFile; fileRef = 4B38CBA4ACBF3BBB2D550F46 /* creamy-chicken-mushroom-pot-pie.png */; };
+		B15F5472259CBD2A64CF71C6 /* shrimp-broccoli-garlic-stir-fry.png in Resources */ = {isa = PBXBuildFile; fileRef = 21CB24A7C07BC7D0F671E39B /* shrimp-broccoli-garlic-stir-fry.png */; };
+		B24AC8EC74E80BC9CB0DB5BF /* bun-cha.png in Resources */ = {isa = PBXBuildFile; fileRef = B92718BDCE1D03AA6C9B73B7 /* bun-cha.png */; };
+		B2D01E8465EF1F7E38CA1380 /* miso-glazed-eggplant.png in Resources */ = {isa = PBXBuildFile; fileRef = D054B89672BBCCAB589917C4 /* miso-glazed-eggplant.png */; };
+		B41AE5205FF4CF3B056E12B1 /* carrot-cake.png in Resources */ = {isa = PBXBuildFile; fileRef = 7144F7D47271C9BE1D639422 /* carrot-cake.png */; };
 		B43DD17764354F6D314C7C00 /* PantryChefUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD6E44F08B08E0C299DB08E1 /* PantryChefUITests.swift */; };
+		B5273768CF88DD3F71F88757 /* roasted-beet-and-goat-cheese-salad.png in Resources */ = {isa = PBXBuildFile; fileRef = F53D980BFCDC48E0A7F61C5C /* roasted-beet-and-goat-cheese-salad.png */; };
+		B60670D7EBB4585A3C5B5428 /* poached-pears-in-spiced-wine.png in Resources */ = {isa = PBXBuildFile; fileRef = 5BC133CEB20A417DB810291D /* poached-pears-in-spiced-wine.png */; };
+		B6BBCE67ADEFE2A8DFDD7F4C /* protein-packed-white-bean-tuna-salad.png in Resources */ = {isa = PBXBuildFile; fileRef = BD7D584D60944F8FC4B0909D /* protein-packed-white-bean-tuna-salad.png */; };
+		B7B98B852A01A38532BDB9E5 /* roasted-vegetable-feta-grain-bowl-base.png in Resources */ = {isa = PBXBuildFile; fileRef = EB5BCB7FE435D5641A1D72C3 /* roasted-vegetable-feta-grain-bowl-base.png */; };
 		B7BB7022389EF56649883E6E /* UnitConversion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46C98542EA16A5B83748C0D7 /* UnitConversion.swift */; };
+		B7BDB8A4DA98D7DE30546B67 /* chickpea-spinach-curry.png in Resources */ = {isa = PBXBuildFile; fileRef = 02F4815CD48EEADA55F6F7F3 /* chickpea-spinach-curry.png */; };
 		B828C43E58C1179E91238DBE /* StockItemCertaintyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04185334BFA1AB8D3A984C73 /* StockItemCertaintyTests.swift */; };
+		B83811D1F586046A8487FF73 /* chicken-stir-fry-with-broccoli.png in Resources */ = {isa = PBXBuildFile; fileRef = E5460D4F9597EE052328D7DC /* chicken-stir-fry-with-broccoli.png */; };
+		B98499806F8A37618CED8820 /* pesto-gnocchi-with-cherry-tomatoes.png in Resources */ = {isa = PBXBuildFile; fileRef = 5AE6653E248BFA4C1B2A05B0 /* pesto-gnocchi-with-cherry-tomatoes.png */; };
+		B99588571839B501D2CDF640 /* black-bean-tostadas.png in Resources */ = {isa = PBXBuildFile; fileRef = 3F7E88FDD8344A76D6EF473B /* black-bean-tostadas.png */; };
+		BA2DDC630BB749394312C20B /* thai-green-curry.png in Resources */ = {isa = PBXBuildFile; fileRef = C3AB948F1277F6E717681AD6 /* thai-green-curry.png */; };
+		BA8BD3E73D25A8BAED17F519 /* paella-valenciana.png in Resources */ = {isa = PBXBuildFile; fileRef = C42278132B84E4183EA1585F /* paella-valenciana.png */; };
+		BA9B9097733E2E24DA0B493E /* lamb-kofta.png in Resources */ = {isa = PBXBuildFile; fileRef = 3ED257A83236611D20CB4A1D /* lamb-kofta.png */; };
 		BB3222AB0F9E2AD2C8B79CA4 /* shakshuka.png in Resources */ = {isa = PBXBuildFile; fileRef = EC346DA4AE07E775F03E0537 /* shakshuka.png */; };
+		BCCFAE2BFB33D7665EB5A4EF /* spaghetti-aglio-e-olio.png in Resources */ = {isa = PBXBuildFile; fileRef = FCC886E5FD14408F10A8673A /* spaghetti-aglio-e-olio.png */; };
 		BDBA1948B2D3D3CF2E1FD874 /* QuantityFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = A610EE799CFFD2C16B573063 /* QuantityFormat.swift */; };
+		BDE1FD299C48AC7BC32C4548 /* farro-and-roasted-squash-salad.png in Resources */ = {isa = PBXBuildFile; fileRef = DC43CA292780BD5A224676C1 /* farro-and-roasted-squash-salad.png */; };
+		BF4ECEA63065F89A58E420B8 /* chicken-katsu-curry.png in Resources */ = {isa = PBXBuildFile; fileRef = 7A6273A9090D3F7CC6B660FC /* chicken-katsu-curry.png */; };
 		C0B7BD86B91332DB8490DF6E /* RecipeEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51353A5BB5F36DCA4DAA0FFC /* RecipeEditorView.swift */; };
+		C289B0AA552D1A501B42E979 /* mushroom-and-white-bean-ragout.png in Resources */ = {isa = PBXBuildFile; fileRef = CE617E98FF967068CA18F101 /* mushroom-and-white-bean-ragout.png */; };
 		C2C444DEFFD9288E344ABFA0 /* TodayFeed.swift in Sources */ = {isa = PBXBuildFile; fileRef = 039DE23286DA5BF1F840B8EF /* TodayFeed.swift */; };
+		C42E77B0F85E06C5C54EB415 /* thai-coconut-soup.png in Resources */ = {isa = PBXBuildFile; fileRef = 1C641BE4C674A4F7F17ED1B8 /* thai-coconut-soup.png */; };
+		C4D6A1F93C4ACB3EBB44967F /* sheet-pan-sausage-and-vegetables.png in Resources */ = {isa = PBXBuildFile; fileRef = 4636D2D3D22BC76447DFC1AA /* sheet-pan-sausage-and-vegetables.png */; };
+		C4EE27A169BFA3B35EA3B727 /* saag-paneer.png in Resources */ = {isa = PBXBuildFile; fileRef = F7D337E96E09132BE2A81041 /* saag-paneer.png */; };
 		C51CF5B24EFE5ADF522D187E /* IntakeParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97F769A09EF6DC426A57DC8B /* IntakeParserTests.swift */; };
 		C652D63FF853AC0B3617B793 /* Enums.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A3FFC7DAF8A7D9B0FE8D2E4 /* Enums.swift */; };
+		C6C689EC0AFA147AEE168770 /* pork-apple-traybake.png in Resources */ = {isa = PBXBuildFile; fileRef = 0B76FED7A3D176AF217A80B7 /* pork-apple-traybake.png */; };
+		C71FA334920ED384F693EE52 /* slow-cooker-pulled-pork.png in Resources */ = {isa = PBXBuildFile; fileRef = 3061BDAC945C7C112863CAE4 /* slow-cooker-pulled-pork.png */; };
+		CA099EE14AD1764DEC72BB9B /* ratatouille.png in Resources */ = {isa = PBXBuildFile; fileRef = BBEE65570A8387FF9401C16F /* ratatouille.png */; };
+		CCD2B3E41BB762FA568AA088 /* lentil-egg-protein-breakfast-bowl.png in Resources */ = {isa = PBXBuildFile; fileRef = 1B188D0DB67B902525150DF2 /* lentil-egg-protein-breakfast-bowl.png */; };
 		CEB6C5BAC6DF90ED425F2AF0 /* output_audio_buffer_cleared.json in Resources */ = {isa = PBXBuildFile; fileRef = 59485E1388AA5B4BFC221609 /* output_audio_buffer_cleared.json */; };
 		CF53CA2884D03557C946CC52 /* herb-frittata.png in Resources */ = {isa = PBXBuildFile; fileRef = D0CB7639C4987CCE9021E15B /* herb-frittata.png */; };
+		CFBD9FAF02E3873DAE93826E /* beef-chili-con-carne.png in Resources */ = {isa = PBXBuildFile; fileRef = 5C024C4F227073403F20CA1B /* beef-chili-con-carne.png */; };
+		D194F4275AD57ACFC307E3A8 /* carnitas.png in Resources */ = {isa = PBXBuildFile; fileRef = C58E19E1FD2073E3DBD75051 /* carnitas.png */; };
 		D195E317C250808E4C5C4BD2 /* ReadinessService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2182BF9EFCF19CC499891FD /* ReadinessService.swift */; };
 		D19B371756FC7C577D7F7F27 /* MealPrepLevel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B05969CE27E52A93C925402 /* MealPrepLevel.swift */; };
+		D28D3838BF2B0184158F201F /* flourless-chocolate-cake.png in Resources */ = {isa = PBXBuildFile; fileRef = 06D10522CB301DBE5762AC65 /* flourless-chocolate-cake.png */; };
+		D33A303F4B97F0D891EFF140 /* black-bean-turkey-high-protein-chili.png in Resources */ = {isa = PBXBuildFile; fileRef = 275E528DB2861EA3A5716C41 /* black-bean-turkey-high-protein-chili.png */; };
 		D4F415C066A8B8BCA54D49F9 /* IngredientPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDBDB5E663ABC72EBDE1FAE6 /* IngredientPicker.swift */; };
+		D62198DA1D638E14B7A3C074 /* chickpea-shawarma-bowls.png in Resources */ = {isa = PBXBuildFile; fileRef = 4773465B925FC2FB3C6322FE /* chickpea-shawarma-bowls.png */; };
+		D8BB960690B8FCCE1E4AB972 /* croque-madame.png in Resources */ = {isa = PBXBuildFile; fileRef = A9FA54A922A61928EBE6E98A /* croque-madame.png */; };
 		D930D3DAFDEE0478D843F263 /* AIDishMapping.swift in Sources */ = {isa = PBXBuildFile; fileRef = C353618F4B7100DD25102763 /* AIDishMapping.swift */; };
+		D96A4B2645E57C6DEB6A6684 /* macaroni-cheese-bake.png in Resources */ = {isa = PBXBuildFile; fileRef = 6B28B8AECC9CF967B173DB75 /* macaroni-cheese-bake.png */; };
 		D9C5FEB0C9081A69D915BE27 /* IntakeParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = C66E3CD688A4E06B59D5056F /* IntakeParser.swift */; };
 		DA390A2FB998A6A3E41320AD /* MealPlanningTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DA54DA4B3280DFCD6C1A52C /* MealPlanningTests.swift */; };
 		DAE7AC11853DB1499F672B24 /* catalog.source.json in Resources */ = {isa = PBXBuildFile; fileRef = C76C028AE39F0001065ABA30 /* catalog.source.json */; };
 		DCDC61BAB6E9A4507EAD3C0B /* PlateRenderLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 420C676E86193CE0F9F81388 /* PlateRenderLibrary.swift */; };
+		DE1BBCA57D9126BF3E3DBAF9 /* freezer-breakfast-burritos.png in Resources */ = {isa = PBXBuildFile; fileRef = 7245F09CB8E7CEC31511AA39 /* freezer-breakfast-burritos.png */; };
 		DF8741FF3971AC8DA9A07FCE /* TimelineModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4535B6D4E920E2F41ECD6F29 /* TimelineModels.swift */; };
+		DFD8BF44FE291DD6EF69051F /* green-power-smoothie.png in Resources */ = {isa = PBXBuildFile; fileRef = 2FBCEA4BA0C9A6D0ED8A7FA2 /* green-power-smoothie.png */; };
+		E0AB5D60E582FA331A7EA85B /* chicken-shawarma.png in Resources */ = {isa = PBXBuildFile; fileRef = 838737C3617A161CDC50FCD7 /* chicken-shawarma.png */; };
 		E170BE5955170F8412479C16 /* catalog.json in Resources */ = {isa = PBXBuildFile; fileRef = 67106B750F48353E27DE5B0D /* catalog.json */; };
+		E17D766D77781681A5C155B0 /* coconut-chickpea-sweet-potato-stew.png in Resources */ = {isa = PBXBuildFile; fileRef = 53B69EC70B22628331199DA5 /* coconut-chickpea-sweet-potato-stew.png */; };
 		E1A038734763DF08DEB18204 /* IngredientMatchingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F934FEC93B55B49EFD729047 /* IngredientMatchingTests.swift */; };
+		E1CB291C159F065434031558 /* salmon-egg-power-bowl.png in Resources */ = {isa = PBXBuildFile; fileRef = 6D8E6A87A383A93B895C8971 /* salmon-egg-power-bowl.png */; };
+		E1F6EC2F42FA407BCE63EFBB /* turkey-taco-skillet.png in Resources */ = {isa = PBXBuildFile; fileRef = 576235467375848CBE69D074 /* turkey-taco-skillet.png */; };
+		E20F37FFE8B5478AC465B246 /* maple-cinnamon-granola.png in Resources */ = {isa = PBXBuildFile; fileRef = D3E45EC790841C9F0B4C2735 /* maple-cinnamon-granola.png */; };
+		E2246AB0E0035F712A3485B4 /* chiles-rellenos.png in Resources */ = {isa = PBXBuildFile; fileRef = 08EDD65CE72C7FF5BA7B3C1D /* chiles-rellenos.png */; };
 		E2969078C5F1A750D6A88589 /* AppLaunchOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0C49A659EE21F5019A9DF94 /* AppLaunchOptions.swift */; };
+		E328CC634FD899F31143CF1E /* classic-beef-burgers.png in Resources */ = {isa = PBXBuildFile; fileRef = 8CE53F3EDCD798784949E1CA /* classic-beef-burgers.png */; };
+		E350C19883BA16B735DD02AB /* overnight-oats-with-berries.png in Resources */ = {isa = PBXBuildFile; fileRef = 79259A0511B75D57B49CD19C /* overnight-oats-with-berries.png */; };
+		E35CE357D48AF449A60B5CDF /* lemon-bars.png in Resources */ = {isa = PBXBuildFile; fileRef = 42527C4957DD82A0B1F1A396 /* lemon-bars.png */; };
+		E36815076458BDD1E7A6C4F9 /* classic-beef-vegetable-shepherd-s-pie.png in Resources */ = {isa = PBXBuildFile; fileRef = 2E5B4D128439F9E3422A9419 /* classic-beef-vegetable-shepherd-s-pie.png */; };
 		E3AFF6C877BB2E079E5B8E1C /* EmojiPlate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA385527E6C8A3110BCDB2AE /* EmojiPlate.swift */; };
+		E480ADBAE1FEFEDB0BE35E44 /* chocolate-chip-cookies.png in Resources */ = {isa = PBXBuildFile; fileRef = 253B2E8B98B1B95F667AB722 /* chocolate-chip-cookies.png */; };
 		E4A47532EC51423D4671C67E /* RedesignRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3D02E10BC15ED0ADCDC7D1B /* RedesignRootView.swift */; };
 		E52507A4D72052AD926758D7 /* DishScalingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49A307088691737D623FD503 /* DishScalingTests.swift */; };
+		E5BD85D3E6011AE25D9EB350 /* banana-walnut-baked-oatmeal.png in Resources */ = {isa = PBXBuildFile; fileRef = 770CCED2339842C3B8D3B4E5 /* banana-walnut-baked-oatmeal.png */; };
 		E6D1C6F2E112C1FFAA70FC2F /* LLMBatchSchedule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FA305DB5D5B9FBE02C276BD /* LLMBatchSchedule.swift */; };
+		E75CFC1AA3DD8FE67760BAEA /* tofu-vegetable-stir-fry.png in Resources */ = {isa = PBXBuildFile; fileRef = 5F4314990AF1D8DB0CF016C6 /* tofu-vegetable-stir-fry.png */; };
 		E7F294344D02F2889C525C87 /* KitchenConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1C329655335AFFA3C9D8582 /* KitchenConfig.swift */; };
 		E8B0B35D245ECCEFF9939A78 /* Dish.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7FDE2746EBCA7890C1F77F8 /* Dish.swift */; };
+		ECC719FFDDEB50C03706D5C7 /* apple-crumble.png in Resources */ = {isa = PBXBuildFile; fileRef = 35A35FC77D0D1FCB36B97CE4 /* apple-crumble.png */; };
+		EDF0064F8F36D3C9F4163B3D /* beef-and-broccoli.png in Resources */ = {isa = PBXBuildFile; fileRef = 5EC95E8EAD20FDA6C9C84042 /* beef-and-broccoli.png */; };
+		EE342E43947C6BA8264FD261 /* chicken-rice-casserole.png in Resources */ = {isa = PBXBuildFile; fileRef = 7A9A55706621F897C3C8D7BB /* chicken-rice-casserole.png */; };
 		EE5B1986AA5D383E04D6A526 /* FuzzyMatchFloorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AD5C2A696139DA1CB982D72 /* FuzzyMatchFloorTests.swift */; };
+		EE773DF72720311A6D40DA30 /* halloumi-and-chickpea-salad.png in Resources */ = {isa = PBXBuildFile; fileRef = E1FBB22771468B1EE7A17CE0 /* halloumi-and-chickpea-salad.png */; };
+		EE8D47583DD2EAD486CBA4DE /* tofu-scramble.png in Resources */ = {isa = PBXBuildFile; fileRef = 2C02D9581F0DEC680BF8BCD6 /* tofu-scramble.png */; };
 		EF677C4E3DFC7815C380CEC3 /* PantryChefApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CF034777B5CF54E8747C51B /* PantryChefApp.swift */; };
 		EFEB0C08C15F9D81C152BC1F /* AIModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4311CDDF67AA34C2F223237 /* AIModels.swift */; };
+		F156304049747D746A5A81EA /* beef-bourguignon.png in Resources */ = {isa = PBXBuildFile; fileRef = D1F00AF2A133AF37A385D1C6 /* beef-bourguignon.png */; };
 		F3383FF48144D37F217B76BC /* PantryIntake.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EB9699BE6FCAA589DEAB869 /* PantryIntake.swift */; };
 		F43413C883726950D0CF284A /* BitapSearcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = C531F7524B3712D8330EE2CF /* BitapSearcher.swift */; };
 		F5E7B24EBB863A621EACD3C3 /* RealtimeConversationFunctionCallEventTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB4028F2212A34CB27DE289 /* RealtimeConversationFunctionCallEventTests.swift */; };
+		F60E0086DE07A0320CAFCCE2 /* pad-thai.png in Resources */ = {isa = PBXBuildFile; fileRef = CFBFB6E8EFE8707323970518 /* pad-thai.png */; };
 		F617888FA9C9D0D7DDC094DB /* PlateSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A2B23B0FAE873A13EFA9B3 /* PlateSpec.swift */; };
+		F6960A6E708D281025595B53 /* watermelon-and-feta-salad.png in Resources */ = {isa = PBXBuildFile; fileRef = 6439A9286F16CD31E2F84E47 /* watermelon-and-feta-salad.png */; };
+		F6D34D7DCF9A35D11F135C7A /* greek-chicken-souvlaki.png in Resources */ = {isa = PBXBuildFile; fileRef = 60CA823C29FDDFBC7C9DC8D7 /* greek-chicken-souvlaki.png */; };
+		F6EFD6DE57F1C01991BC4451 /* crispy-sesame-tofu-with-broccoli.png in Resources */ = {isa = PBXBuildFile; fileRef = A9E7303CC2B9FFCCC4C0F8BE /* crispy-sesame-tofu-with-broccoli.png */; };
+		F75E75A849C59CE3FEB06E95 /* lasagna-bolognese.png in Resources */ = {isa = PBXBuildFile; fileRef = 2A9360F0170B68E2C6023166 /* lasagna-bolognese.png */; };
 		F79FF17869FC709D84B93BC8 /* UserCatalogStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E8B2D4D276D1DB31BFD0269 /* UserCatalogStore.swift */; };
+		F8248E391F0035F2AFDE46A8 /* honey-garlic-chicken-thighs-batch.png in Resources */ = {isa = PBXBuildFile; fileRef = 791D95A687D6C7F3DE82B7D3 /* honey-garlic-chicken-thighs-batch.png */; };
+		F8A97267CC0636958DE193A3 /* spanakopita.png in Resources */ = {isa = PBXBuildFile; fileRef = 242B017E7A8BD91ADAE609D9 /* spanakopita.png */; };
+		FA4AC2FF342EE2B74A8EB8A6 /* big-batch-bolognese-sauce.png in Resources */ = {isa = PBXBuildFile; fileRef = 4A277C674E2D9C022A258A86 /* big-batch-bolognese-sauce.png */; };
+		FB7A5A16F98C393C692C9027 /* batch-turkey-quinoa-meatballs.png in Resources */ = {isa = PBXBuildFile; fileRef = 495AAD3A1F4689F38D809334 /* batch-turkey-quinoa-meatballs.png */; };
+		FC987DF13EFD83895E7CB7E0 /* avocado-toast-with-chili-and-lime.png in Resources */ = {isa = PBXBuildFile; fileRef = 340E65F21E8AA6281D74B00D /* avocado-toast-with-chili-and-lime.png */; };
+		FD78B54015F1E12529DB6DB8 /* teriyaki-salmon-bowl.png in Resources */ = {isa = PBXBuildFile; fileRef = 8CE32C9EB2AD58BAC7D5BEDE /* teriyaki-salmon-bowl.png */; };
+		FE2B99A2D29D4E5737B8ECB7 /* split-pea-soup.png in Resources */ = {isa = PBXBuildFile; fileRef = 0D0F2D0F7962ED1AADC2579C /* split-pea-soup.png */; };
+		FE4A1843BFDCEF80409DF983 /* pulled-bbq-jackfruit.png in Resources */ = {isa = PBXBuildFile; fileRef = 592A6DFFE83518947BDC4098 /* pulled-bbq-jackfruit.png */; };
+		FE8EFEB7D4E2C8BD2FCBE3D6 /* bibimbap.png in Resources */ = {isa = PBXBuildFile; fileRef = 73E6F6D08E188BBB992C340F /* bibimbap.png */; };
 		FEE2ABF449DFE3A45649467E /* SearchEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CA6FC524D07D4BD4347B74B /* SearchEngineTests.swift */; };
 		FF03EB398C6216AE0D6BC39D /* miso-butter-salmon.png in Resources */ = {isa = PBXBuildFile; fileRef = 8B39024CB6A7E1370C24075B /* miso-butter-salmon.png */; };
 /* End PBXBuildFile section */
@@ -142,125 +334,317 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		00BA4CD9CAFB39284932DA3A /* hearty-beef-stew.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "hearty-beef-stew.png"; sourceTree = "<group>"; };
 		0124F380C6BD9B6E97C4A3E5 /* ReadinessServiceTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ReadinessServiceTests.swift; sourceTree = "<group>"; };
+		02F4815CD48EEADA55F6F7F3 /* chickpea-spinach-curry.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "chickpea-spinach-curry.png"; sourceTree = "<group>"; };
 		039DE23286DA5BF1F840B8EF /* TodayFeed.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TodayFeed.swift; sourceTree = "<group>"; };
 		03A2B23B0FAE873A13EFA9B3 /* PlateSpec.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PlateSpec.swift; sourceTree = "<group>"; };
 		04185334BFA1AB8D3A984C73 /* StockItemCertaintyTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StockItemCertaintyTests.swift; sourceTree = "<group>"; };
 		0542E87669B0EB9F0ACAA24E /* CatalogInvariantTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CatalogInvariantTests.swift; sourceTree = "<group>"; };
+		05629F5F5A7393838E0D6B7D /* maple-roasted-root-vegetables.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "maple-roasted-root-vegetables.png"; sourceTree = "<group>"; };
+		06D10522CB301DBE5762AC65 /* flourless-chocolate-cake.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "flourless-chocolate-cake.png"; sourceTree = "<group>"; };
+		08EDD65CE72C7FF5BA7B3C1D /* chiles-rellenos.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "chiles-rellenos.png"; sourceTree = "<group>"; };
+		0977B13CC5AFDE6BE97627B2 /* creamy-roasted-carrot-soup.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "creamy-roasted-carrot-soup.png"; sourceTree = "<group>"; };
 		0A08A7BBDF492A235BA75E82 /* AmountField.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AmountField.swift; sourceTree = "<group>"; };
 		0B05969CE27E52A93C925402 /* MealPrepLevel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MealPrepLevel.swift; sourceTree = "<group>"; };
+		0B1C036C5BD4CD41F1060C93 /* stuffed-bell-peppers.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "stuffed-bell-peppers.png"; sourceTree = "<group>"; };
+		0B76FED7A3D176AF217A80B7 /* pork-apple-traybake.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "pork-apple-traybake.png"; sourceTree = "<group>"; };
+		0B8AD386EA1A6097072295C0 /* mixed-berry-crumble.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "mixed-berry-crumble.png"; sourceTree = "<group>"; };
+		0D0F2D0F7962ED1AADC2579C /* split-pea-soup.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "split-pea-soup.png"; sourceTree = "<group>"; };
+		0E18074B26503B469E9775FC /* miso-butter-udon.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "miso-butter-udon.png"; sourceTree = "<group>"; };
+		0E2EDF0206FC005D0ADED33A /* baked-ziti-with-sausage.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "baked-ziti-with-sausage.png"; sourceTree = "<group>"; };
 		0EB9699BE6FCAA589DEAB869 /* PantryIntake.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PantryIntake.swift; sourceTree = "<group>"; };
+		0ECBCD9CD1772C61D677ED05 /* thai-red-curry-with-vegetables.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "thai-red-curry-with-vegetables.png"; sourceTree = "<group>"; };
 		0F4550D5ECA525ED872882D3 /* IngredientMatching.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = IngredientMatching.swift; sourceTree = "<group>"; };
+		0FEA952467D85FC0633C1A53 /* vegetable-couscous-tagine.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "vegetable-couscous-tagine.png"; sourceTree = "<group>"; };
+		11832F25E4EDE858376EF759 /* baked-falafel-bowl.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "baked-falafel-bowl.png"; sourceTree = "<group>"; };
+		1383024CEFB446FE515EAD80 /* smoky-bbq-pulled-pork.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "smoky-bbq-pulled-pork.png"; sourceTree = "<group>"; };
 		1676611A3A7F82D7BAC3B20E /* GlassCard.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GlassCard.swift; sourceTree = "<group>"; };
+		16C428F9B16DD16EDFDBBEE4 /* big-batch-minestrone-soup.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "big-batch-minestrone-soup.png"; sourceTree = "<group>"; };
+		1752D35C18F879CE3D6C56E7 /* high-protein-cottage-cheese-pancakes.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "high-protein-cottage-cheese-pancakes.png"; sourceTree = "<group>"; };
 		17625D9532976239EB8932D8 /* PlateView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PlateView.swift; sourceTree = "<group>"; };
 		177EB0A8E95D3FAE1B5CF7E4 /* CatalogSearchEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CatalogSearchEngine.swift; sourceTree = "<group>"; };
 		19A32D7F1BF7F07193B5D135 /* RealtimeServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealtimeServiceTests.swift; sourceTree = "<group>"; };
+		19EEBBD2F6F185D8E9A6DE51 /* lamb-rogan-josh.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "lamb-rogan-josh.png"; sourceTree = "<group>"; };
 		1A3FFC7DAF8A7D9B0FE8D2E4 /* Enums.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Enums.swift; sourceTree = "<group>"; };
+		1A6821D523B0FD03562680C2 /* french-onion-soup.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "french-onion-soup.png"; sourceTree = "<group>"; };
+		1B188D0DB67B902525150DF2 /* lentil-egg-protein-breakfast-bowl.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "lentil-egg-protein-breakfast-bowl.png"; sourceTree = "<group>"; };
+		1B31AA3FF5BBCBAF365A505C /* minestrone.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = minestrone.png; sourceTree = "<group>"; };
+		1C641BE4C674A4F7F17ED1B8 /* thai-coconut-soup.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "thai-coconut-soup.png"; sourceTree = "<group>"; };
+		1CB7590083D22303E3B3B8C6 /* bacon-egg-and-cheese-sandwich.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "bacon-egg-and-cheese-sandwich.png"; sourceTree = "<group>"; };
 		1CF034777B5CF54E8747C51B /* PantryChefApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PantryChefApp.swift; sourceTree = "<group>"; };
 		1DDC82E2714A8DFE77408CE9 /* TimelineView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TimelineView.swift; sourceTree = "<group>"; };
+		1E819DC7FC0CEAB0CE5F6213 /* greek-yogurt-chicken-salad.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "greek-yogurt-chicken-salad.png"; sourceTree = "<group>"; };
 		1EF496256762582121574373 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		21CB24A7C07BC7D0F671E39B /* shrimp-broccoli-garlic-stir-fry.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "shrimp-broccoli-garlic-stir-fry.png"; sourceTree = "<group>"; };
+		2403DEDB0ACDD46970E44C8C /* chicken-tacos-al-pastor.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "chicken-tacos-al-pastor.png"; sourceTree = "<group>"; };
+		242B017E7A8BD91ADAE609D9 /* spanakopita.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = spanakopita.png; sourceTree = "<group>"; };
+		245A7F093281E82BEB82C82A /* tuscan-white-bean-and-kale-stew.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "tuscan-white-bean-and-kale-stew.png"; sourceTree = "<group>"; };
+		253B2E8B98B1B95F667AB722 /* chocolate-chip-cookies.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "chocolate-chip-cookies.png"; sourceTree = "<group>"; };
+		275E528DB2861EA3A5716C41 /* black-bean-turkey-high-protein-chili.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "black-bean-turkey-high-protein-chili.png"; sourceTree = "<group>"; };
 		28C5AD9227107BB812ED3728 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
+		2A9360F0170B68E2C6023166 /* lasagna-bolognese.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "lasagna-bolognese.png"; sourceTree = "<group>"; };
+		2C02D9581F0DEC680BF8BCD6 /* tofu-scramble.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "tofu-scramble.png"; sourceTree = "<group>"; };
+		2D849621A3183111CF28407C /* sticky-toffee-pudding.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "sticky-toffee-pudding.png"; sourceTree = "<group>"; };
+		2E5B4D128439F9E3422A9419 /* classic-beef-vegetable-shepherd-s-pie.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "classic-beef-vegetable-shepherd-s-pie.png"; sourceTree = "<group>"; };
 		2EAF4BBB6D4452027050DF1E /* AppError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppError.swift; sourceTree = "<group>"; };
+		2FBCEA4BA0C9A6D0ED8A7FA2 /* green-power-smoothie.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "green-power-smoothie.png"; sourceTree = "<group>"; };
+		2FC78155EA7425F67BEE537C /* three-bean-vegetarian-chili.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "three-bean-vegetarian-chili.png"; sourceTree = "<group>"; };
+		3061BDAC945C7C112863CAE4 /* slow-cooker-pulled-pork.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "slow-cooker-pulled-pork.png"; sourceTree = "<group>"; };
+		340E65F21E8AA6281D74B00D /* avocado-toast-with-chili-and-lime.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "avocado-toast-with-chili-and-lime.png"; sourceTree = "<group>"; };
+		34B5FE77EAD2C411FA48AF08 /* gambas-al-ajillo-with-rice.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "gambas-al-ajillo-with-rice.png"; sourceTree = "<group>"; };
+		34E2D7A92D8DBDADEE7255A4 /* lentil-and-lemon-soup.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "lentil-and-lemon-soup.png"; sourceTree = "<group>"; };
 		34FBDF3045F807228F2ED54C /* ItemCertainty.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ItemCertainty.swift; sourceTree = "<group>"; };
 		353D73D6645D3DD2DDEC4808 /* LibraryView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LibraryView.swift; sourceTree = "<group>"; };
+		35558682CE6D0E96E0706FC1 /* cheesy-broccoli-rice-bake.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "cheesy-broccoli-rice-bake.png"; sourceTree = "<group>"; };
+		35A35FC77D0D1FCB36B97CE4 /* apple-crumble.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "apple-crumble.png"; sourceTree = "<group>"; };
+		3643051113F5FA12AC9EE141 /* tuna-noodle-casserole.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "tuna-noodle-casserole.png"; sourceTree = "<group>"; };
+		36D577F70B693DC5E1824F44 /* hearty-lentil-soup.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "hearty-lentil-soup.png"; sourceTree = "<group>"; };
 		37D2DE4E7AE893634E203960 /* RecipeSeed.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RecipeSeed.swift; sourceTree = "<group>"; };
+		3B99BCD9DB6959A4411DB6CF /* chana-masala.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "chana-masala.png"; sourceTree = "<group>"; };
 		3E8B2D4D276D1DB31BFD0269 /* UserCatalogStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserCatalogStore.swift; sourceTree = "<group>"; };
+		3EC5D21BC90DF8750D325F88 /* coconut-chickpea-curry.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "coconut-chickpea-curry.png"; sourceTree = "<group>"; };
+		3ED257A83236611D20CB4A1D /* lamb-kofta.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "lamb-kofta.png"; sourceTree = "<group>"; };
+		3F7E88FDD8344A76D6EF473B /* black-bean-tostadas.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "black-bean-tostadas.png"; sourceTree = "<group>"; };
+		4103820317EC37AB05DD0DC6 /* sesame-soba-noodle-salad.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "sesame-soba-noodle-salad.png"; sourceTree = "<group>"; };
+		41E44344B0C63F664589FB15 /* sweet-potato-breakfast-hash.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "sweet-potato-breakfast-hash.png"; sourceTree = "<group>"; };
 		420C676E86193CE0F9F81388 /* PlateRenderLibrary.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PlateRenderLibrary.swift; sourceTree = "<group>"; };
+		42527C4957DD82A0B1F1A396 /* lemon-bars.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "lemon-bars.png"; sourceTree = "<group>"; };
 		429A404308616F18132F9767 /* FanView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FanView.swift; sourceTree = "<group>"; };
 		4535B6D4E920E2F41ECD6F29 /* TimelineModels.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TimelineModels.swift; sourceTree = "<group>"; };
 		45E7B9238FFCA86D187E2420 /* StockView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StockView.swift; sourceTree = "<group>"; };
+		4636D2D3D22BC76447DFC1AA /* sheet-pan-sausage-and-vegetables.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "sheet-pan-sausage-and-vegetables.png"; sourceTree = "<group>"; };
+		46A7A04ED52319A52CC1A465 /* kale-caesar-with-crispy-chickpeas.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "kale-caesar-with-crispy-chickpeas.png"; sourceTree = "<group>"; };
 		46C98542EA16A5B83748C0D7 /* UnitConversion.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = UnitConversion.swift; sourceTree = "<group>"; };
+		4773465B925FC2FB3C6322FE /* chickpea-shawarma-bowls.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "chickpea-shawarma-bowls.png"; sourceTree = "<group>"; };
+		478BB1BA3080E78590817D21 /* huevos-rancheros.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "huevos-rancheros.png"; sourceTree = "<group>"; };
+		495AAD3A1F4689F38D809334 /* batch-turkey-quinoa-meatballs.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "batch-turkey-quinoa-meatballs.png"; sourceTree = "<group>"; };
+		497BD66BA898AE6AC905B95F /* mapo-tofu.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "mapo-tofu.png"; sourceTree = "<group>"; };
 		49A307088691737D623FD503 /* DishScalingTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DishScalingTests.swift; sourceTree = "<group>"; };
+		49E1CC21EC8D7282353CB950 /* steel-cut-oats-with-apple.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "steel-cut-oats-with-apple.png"; sourceTree = "<group>"; };
+		4A277C674E2D9C022A258A86 /* big-batch-bolognese-sauce.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "big-batch-bolognese-sauce.png"; sourceTree = "<group>"; };
+		4AC4CB1E3DC9CA06BF12081E /* moroccan-chickpea-vegetable-tagine.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "moroccan-chickpea-vegetable-tagine.png"; sourceTree = "<group>"; };
+		4B38CBA4ACBF3BBB2D550F46 /* creamy-chicken-mushroom-pot-pie.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "creamy-chicken-mushroom-pot-pie.png"; sourceTree = "<group>"; };
+		4C81F9D2B5787AE5B177FFD0 /* chia-pudding-with-mango.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "chia-pudding-with-mango.png"; sourceTree = "<group>"; };
 		4CA6FC524D07D4BD4347B74B /* SearchEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchEngineTests.swift; sourceTree = "<group>"; };
+		4D818D2F715F07A51E954F9F /* red-lentil-dahl.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "red-lentil-dahl.png"; sourceTree = "<group>"; };
 		501A15BF9D50C2FA21FDC847 /* SettingsView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		50895451A36467648D44D15D /* mediterranean-baked-cod.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "mediterranean-baked-cod.png"; sourceTree = "<group>"; };
+		50D7242190AE8211ED6244AC /* palak-paneer.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "palak-paneer.png"; sourceTree = "<group>"; };
 		51353A5BB5F36DCA4DAA0FFC /* RecipeEditorView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RecipeEditorView.swift; sourceTree = "<group>"; };
 		52C9664BC03D8B5DE7127A5D /* CookFlowView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CookFlowView.swift; sourceTree = "<group>"; };
+		52D60B775452879B009D459A /* beef-vegetable-freezer-stew.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "beef-vegetable-freezer-stew.png"; sourceTree = "<group>"; };
+		52E6BD9C201ACC04B9D2C7E5 /* caprese-salad.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "caprese-salad.png"; sourceTree = "<group>"; };
 		53ADC570802BEDF30A7FEAE1 /* CatalogSwapsTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CatalogSwapsTests.swift; sourceTree = "<group>"; };
+		53B69EC70B22628331199DA5 /* coconut-chickpea-sweet-potato-stew.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "coconut-chickpea-sweet-potato-stew.png"; sourceTree = "<group>"; };
+		540AB459CCD86A314CC99AE5 /* lentil-vegetable-cottage-pie.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "lentil-vegetable-cottage-pie.png"; sourceTree = "<group>"; };
+		54C8E19E22BBD89053DFAB64 /* baked-teriyaki-salmon-meal-prep.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "baked-teriyaki-salmon-meal-prep.png"; sourceTree = "<group>"; };
 		553DC74533E9AC0CDF04F69A /* MultiCookSchedulerTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MultiCookSchedulerTests.swift; sourceTree = "<group>"; };
+		556FF6B10E3B5CC75CCA71CF /* mediterranean-quinoa-salad-jars.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "mediterranean-quinoa-salad-jars.png"; sourceTree = "<group>"; };
 		56846FEA588376592A76B680 /* SeedDishCatalogTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SeedDishCatalogTests.swift; sourceTree = "<group>"; };
+		576235467375848CBE69D074 /* turkey-taco-skillet.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "turkey-taco-skillet.png"; sourceTree = "<group>"; };
+		578555C79D6DDE486547158D /* lemon-herb-rice-pilaf.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "lemon-herb-rice-pilaf.png"; sourceTree = "<group>"; };
+		58ACE39280903223C9621CEE /* greek-salad.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "greek-salad.png"; sourceTree = "<group>"; };
+		592A6DFFE83518947BDC4098 /* pulled-bbq-jackfruit.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "pulled-bbq-jackfruit.png"; sourceTree = "<group>"; };
 		59485E1388AA5B4BFC221609 /* output_audio_buffer_cleared.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = output_audio_buffer_cleared.json; sourceTree = "<group>"; };
+		5985405FEB96EA08E27DF3A7 /* warm-lentil-and-feta-salad.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "warm-lentil-and-feta-salad.png"; sourceTree = "<group>"; };
+		5AE6653E248BFA4C1B2A05B0 /* pesto-gnocchi-with-cherry-tomatoes.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "pesto-gnocchi-with-cherry-tomatoes.png"; sourceTree = "<group>"; };
+		5BC133CEB20A417DB810291D /* poached-pears-in-spiced-wine.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "poached-pears-in-spiced-wine.png"; sourceTree = "<group>"; };
+		5C024C4F227073403F20CA1B /* beef-chili-con-carne.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "beef-chili-con-carne.png"; sourceTree = "<group>"; };
+		5CC8812BD7FD1F96AD78D336 /* spanish-chicken-and-chorizo.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "spanish-chicken-and-chorizo.png"; sourceTree = "<group>"; };
+		5E09405EA594122D7F8C18D5 /* shrimp-pad-krapow.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "shrimp-pad-krapow.png"; sourceTree = "<group>"; };
+		5EC95E8EAD20FDA6C9C84042 /* beef-and-broccoli.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "beef-and-broccoli.png"; sourceTree = "<group>"; };
+		5F4314990AF1D8DB0CF016C6 /* tofu-vegetable-stir-fry.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "tofu-vegetable-stir-fry.png"; sourceTree = "<group>"; };
 		5FF94D344E15CC2935F5283B /* RealtimeService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealtimeService.swift; sourceTree = "<group>"; };
+		6055ECBB02926A6EDABBDA64 /* dutch-baby-pancake.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "dutch-baby-pancake.png"; sourceTree = "<group>"; };
+		60CA823C29FDDFBC7C9DC8D7 /* greek-chicken-souvlaki.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "greek-chicken-souvlaki.png"; sourceTree = "<group>"; };
 		62F4E42A0869501AB92F81F2 /* input_audio_transcription_completed_sparse_usage.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_audio_transcription_completed_sparse_usage.json; sourceTree = "<group>"; };
+		64054228C89F17D1B2E2BE53 /* beef-and-broccoli-stir-fry.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "beef-and-broccoli-stir-fry.png"; sourceTree = "<group>"; };
+		6407A24BA5F97A109307C0BA /* sheet-pan-chicken-broccoli-meal-prep.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "sheet-pan-chicken-broccoli-meal-prep.png"; sourceTree = "<group>"; };
+		6439A9286F16CD31E2F84E47 /* watermelon-and-feta-salad.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "watermelon-and-feta-salad.png"; sourceTree = "<group>"; };
+		658D27DE4622AFD68D92CB5E /* spaghetti-alla-carbonara.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "spaghetti-alla-carbonara.png"; sourceTree = "<group>"; };
 		65E7AA5F88E00CB3D846329B /* CatalogSwaps.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CatalogSwaps.swift; sourceTree = "<group>"; };
 		67106B750F48353E27DE5B0D /* catalog.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = catalog.json; sourceTree = "<group>"; };
+		6B28B8AECC9CF967B173DB75 /* macaroni-cheese-bake.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "macaroni-cheese-bake.png"; sourceTree = "<group>"; };
+		6C7081CD8815F70C34855F7F /* peanut-butter-banana-smoothie.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "peanut-butter-banana-smoothie.png"; sourceTree = "<group>"; };
+		6D8E6A87A383A93B895C8971 /* salmon-egg-power-bowl.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "salmon-egg-power-bowl.png"; sourceTree = "<group>"; };
 		6DA54DA4B3280DFCD6C1A52C /* MealPlanningTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MealPlanningTests.swift; sourceTree = "<group>"; };
 		6FA305DB5D5B9FBE02C276BD /* LLMBatchSchedule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMBatchSchedule.swift; sourceTree = "<group>"; };
 		7091D990752C6197CCF02458 /* ShoppingChecklistView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ShoppingChecklistView.swift; sourceTree = "<group>"; };
+		7144F7D47271C9BE1D639422 /* carrot-cake.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "carrot-cake.png"; sourceTree = "<group>"; };
+		7245F09CB8E7CEC31511AA39 /* freezer-breakfast-burritos.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "freezer-breakfast-burritos.png"; sourceTree = "<group>"; };
+		73D92DF9174E120B75A334AA /* thai-basil-chicken.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "thai-basil-chicken.png"; sourceTree = "<group>"; };
+		73E6F6D08E188BBB992C340F /* bibimbap.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = bibimbap.png; sourceTree = "<group>"; };
+		765644201EDB0AF6A297833B /* grilled-steak-with-chimichurri.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "grilled-steak-with-chimichurri.png"; sourceTree = "<group>"; };
+		770CCED2339842C3B8D3B4E5 /* banana-walnut-baked-oatmeal.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "banana-walnut-baked-oatmeal.png"; sourceTree = "<group>"; };
+		77352A1B8FA7F6959E86ED68 /* butter-chicken.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "butter-chicken.png"; sourceTree = "<group>"; };
+		791D95A687D6C7F3DE82B7D3 /* honey-garlic-chicken-thighs-batch.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "honey-garlic-chicken-thighs-batch.png"; sourceTree = "<group>"; };
+		79259A0511B75D57B49CD19C /* overnight-oats-with-berries.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "overnight-oats-with-berries.png"; sourceTree = "<group>"; };
+		79EF0FD96955E2F196335A05 /* breakfast-burrito.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "breakfast-burrito.png"; sourceTree = "<group>"; };
 		7A2E455A1F865ADE8DDEF145 /* DishInsights.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DishInsights.swift; sourceTree = "<group>"; };
+		7A3874DAADBD748D091BB73D /* risotto-ai-funghi.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "risotto-ai-funghi.png"; sourceTree = "<group>"; };
+		7A6273A9090D3F7CC6B660FC /* chicken-katsu-curry.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "chicken-katsu-curry.png"; sourceTree = "<group>"; };
+		7A9A55706621F897C3C8D7BB /* chicken-rice-casserole.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "chicken-rice-casserole.png"; sourceTree = "<group>"; };
+		7AA50DABAB865D8ED25C90C9 /* margherita-pizza.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "margherita-pizza.png"; sourceTree = "<group>"; };
 		7AD5C2A696139DA1CB982D72 /* FuzzyMatchFloorTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FuzzyMatchFloorTests.swift; sourceTree = "<group>"; };
 		7AE84D32C57047603E654F4E /* Secrets.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Secrets.xcconfig; sourceTree = "<group>"; };
 		7B787E014C9195434E932C7E /* TimelineComposer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TimelineComposer.swift; sourceTree = "<group>"; };
+		7BBBD397EC06270A6418A321 /* butternut-squash-soup.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "butternut-squash-soup.png"; sourceTree = "<group>"; };
+		7C00F2B0628ED4BD03F1D53A /* kung-pao-chicken.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "kung-pao-chicken.png"; sourceTree = "<group>"; };
 		7DA1BF81A96A4A7C8DEDFB4E /* ComposerView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ComposerView.swift; sourceTree = "<group>"; };
+		7DD7D410899FE657D0627290 /* spinach-and-feta-egg-muffins.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "spinach-and-feta-egg-muffins.png"; sourceTree = "<group>"; };
 		7F29F5EA69B2D7B7044AB0B9 /* TimelineRow.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TimelineRow.swift; sourceTree = "<group>"; };
+		813AF015CDFFC4786F074A51 /* yogurt-parfait-with-granola.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "yogurt-parfait-with-granola.png"; sourceTree = "<group>"; };
 		822D5F908F780A317F9B37C1 /* ExpiryEngine.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ExpiryEngine.swift; sourceTree = "<group>"; };
 		8241073BA3C1CE75DE6558C5 /* MultiCookScheduler.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MultiCookScheduler.swift; sourceTree = "<group>"; };
+		82608B4151E82DF78FFBA7CC /* eggs-benedict.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "eggs-benedict.png"; sourceTree = "<group>"; };
+		8301E23753E7F9097EFF7403 /* vegan-corn-chowder.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "vegan-corn-chowder.png"; sourceTree = "<group>"; };
+		838737C3617A161CDC50FCD7 /* chicken-shawarma.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "chicken-shawarma.png"; sourceTree = "<group>"; };
+		85159B3304F8D88A08B014B1 /* black-bean-soup.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "black-bean-soup.png"; sourceTree = "<group>"; };
 		877E52465510E708BA84311A /* input_audio_transcription_completed_multilingual.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_audio_transcription_completed_multilingual.json; sourceTree = "<group>"; };
+		87FE0284BE69A65C4E4F030E /* breakfast-quesadilla.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "breakfast-quesadilla.png"; sourceTree = "<group>"; };
+		8802BCE3E36AF8C9E356CC0B /* baked-oatmeal-squares.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "baked-oatmeal-squares.png"; sourceTree = "<group>"; };
+		8AF51EB1621E970C815A5281 /* korean-braised-short-ribs.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "korean-braised-short-ribs.png"; sourceTree = "<group>"; };
+		8B383E5FF1CA359A721ACCEE /* tuscan-white-bean-and-kale-soup.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "tuscan-white-bean-and-kale-soup.png"; sourceTree = "<group>"; };
 		8B39024CB6A7E1370C24075B /* miso-butter-salmon.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "miso-butter-salmon.png"; sourceTree = "<group>"; };
 		8B4D57647D30ABDB98AC89E0 /* SentryCrashReporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SentryCrashReporter.swift; sourceTree = "<group>"; };
 		8BD5873FFB9C1243801AD033 /* Theme.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
+		8CE32C9EB2AD58BAC7D5BEDE /* teriyaki-salmon-bowl.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "teriyaki-salmon-bowl.png"; sourceTree = "<group>"; };
+		8CE53F3EDCD798784949E1CA /* classic-beef-burgers.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "classic-beef-burgers.png"; sourceTree = "<group>"; };
+		8D0B6C85CD5DEF22E3A54091 /* garlic-butter-shrimp-pasta.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "garlic-butter-shrimp-pasta.png"; sourceTree = "<group>"; };
+		8ECC769840573024FB7A5743 /* spinach-ricotta-egg-muffins.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "spinach-ricotta-egg-muffins.png"; sourceTree = "<group>"; };
 		8F74F8E43FACC12115B59545 /* spinach-feta-orzo.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "spinach-feta-orzo.png"; sourceTree = "<group>"; };
+		8FBFC564EA27F3946F11716C /* quinoa-tabbouleh.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "quinoa-tabbouleh.png"; sourceTree = "<group>"; };
+		8FCEC8B8F6798B31E6C80413 /* harira.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = harira.png; sourceTree = "<group>"; };
+		95C9519844097DC56EE0E2AA /* sheet-pan-fajitas.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "sheet-pan-fajitas.png"; sourceTree = "<group>"; };
 		9697622A6D46C228E5379556 /* NowModule.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NowModule.swift; sourceTree = "<group>"; };
 		97F769A09EF6DC426A57DC8B /* IntakeParserTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = IntakeParserTests.swift; sourceTree = "<group>"; };
+		980FD41CAF114AFC139C165A /* savory-chicken-congee.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "savory-chicken-congee.png"; sourceTree = "<group>"; };
 		99EDB3A919F342036B1A4A1A /* AIDishMappingTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AIDishMappingTests.swift; sourceTree = "<group>"; };
+		9A8ADAEB2A83AE3718062E35 /* caprese-style-panzanella.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "caprese-style-panzanella.png"; sourceTree = "<group>"; };
 		9F857530EA4DFD2289D8D6E0 /* PantryAddFrequencyTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PantryAddFrequencyTracker.swift; sourceTree = "<group>"; };
+		A06F01787C72A974EF829652 /* lemon-herb-cod-with-couscous.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "lemon-herb-cod-with-couscous.png"; sourceTree = "<group>"; };
 		A078E82E845BCC2B8C09E291 /* PantryChefTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = PantryChefTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A1164E8B1FE358D08AE6BFF7 /* IngredientMatchingLineageTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = IngredientMatchingLineageTests.swift; sourceTree = "<group>"; };
 		A16DF6ABA8E8C73E7BB93F32 /* TelemetryReporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TelemetryReporter.swift; sourceTree = "<group>"; };
 		A1C329655335AFFA3C9D8582 /* KitchenConfig.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = KitchenConfig.swift; sourceTree = "<group>"; };
 		A2182BF9EFCF19CC499891FD /* ReadinessService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ReadinessService.swift; sourceTree = "<group>"; };
+		A3D1F30E6AFF3904D74D6C10 /* mujadara.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = mujadara.png; sourceTree = "<group>"; };
+		A48491304193857705CC6FAC /* mushroom-risotto.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "mushroom-risotto.png"; sourceTree = "<group>"; };
 		A4EF7D7D249A9E3B0A95E9C2 /* StockItemStorageMoveTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StockItemStorageMoveTests.swift; sourceTree = "<group>"; };
 		A583969D363695B85BA85C0A /* AudioPipelineHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPipelineHelper.swift; sourceTree = "<group>"; };
 		A610EE799CFFD2C16B573063 /* QuantityFormat.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = QuantityFormat.swift; sourceTree = "<group>"; };
+		A7FD1278E54BE5A9FD729154 /* white-bean-and-kale-soup.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "white-bean-and-kale-soup.png"; sourceTree = "<group>"; };
+		A89E9EB9AAB565018CB553BE /* falafel-plate.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "falafel-plate.png"; sourceTree = "<group>"; };
+		A9E7303CC2B9FFCCC4C0F8BE /* crispy-sesame-tofu-with-broccoli.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "crispy-sesame-tofu-with-broccoli.png"; sourceTree = "<group>"; };
+		A9FA54A922A61928EBE6E98A /* croque-madame.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "croque-madame.png"; sourceTree = "<group>"; };
+		AB2A2F58881751A6DC0ACD1C /* greek-chicken-bowl.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "greek-chicken-bowl.png"; sourceTree = "<group>"; };
+		AB6DD50550DB7463DCE4BDE6 /* tofu-pad-thai.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "tofu-pad-thai.png"; sourceTree = "<group>"; };
 		AD162BD9EE2D642AD62136A7 /* FontLoader.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FontLoader.swift; sourceTree = "<group>"; };
 		AD6E44F08B08E0C299DB08E1 /* PantryChefUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PantryChefUITests.swift; sourceTree = "<group>"; };
+		AFBD85378CDDC12692F78A74 /* red-lentil-dal.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "red-lentil-dal.png"; sourceTree = "<group>"; };
 		B34E27A7BCEE70004A4BDFF3 /* ConfidenceEngine.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ConfidenceEngine.swift; sourceTree = "<group>"; };
 		B373F4229381257EA66CDE3C /* Fraunces.ttf */ = {isa = PBXFileReference; includeInIndex = 1; path = Fraunces.ttf; sourceTree = "<group>"; };
 		B3D02E10BC15ED0ADCDC7D1B /* RedesignRootView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RedesignRootView.swift; sourceTree = "<group>"; };
 		B4311CDDF67AA34C2F223237 /* AIModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIModels.swift; sourceTree = "<group>"; };
+		B92718BDCE1D03AA6C9B73B7 /* bun-cha.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "bun-cha.png"; sourceTree = "<group>"; };
+		B9FF8C2650A90D2DB08A4AB1 /* stuffed-portobello-mushrooms.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "stuffed-portobello-mushrooms.png"; sourceTree = "<group>"; };
 		BAB9028C434D2045ADDB09A5 /* KitchenStore.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = KitchenStore.swift; sourceTree = "<group>"; };
+		BB3902BA3B301F9C934D46FF /* classic-coleslaw.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "classic-coleslaw.png"; sourceTree = "<group>"; };
+		BBEE65570A8387FF9401C16F /* ratatouille.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = ratatouille.png; sourceTree = "<group>"; };
+		BCFDEB61A7361C6E603ABE8A /* pasta-alla-norma.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "pasta-alla-norma.png"; sourceTree = "<group>"; };
+		BD7D584D60944F8FC4B0909D /* protein-packed-white-bean-tuna-salad.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "protein-packed-white-bean-tuna-salad.png"; sourceTree = "<group>"; };
 		BDBDB5E663ABC72EBDE1FAE6 /* IngredientPicker.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = IngredientPicker.swift; sourceTree = "<group>"; };
 		BF4ACDEB952F0E92FF5A2FF7 /* RealtimeServiceProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealtimeServiceProtocol.swift; sourceTree = "<group>"; };
+		BFC129C27AAB92A7D9E6A094 /* sweet-potato-black-bean-freezer-burritos.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "sweet-potato-black-bean-freezer-burritos.png"; sourceTree = "<group>"; };
 		C0C49A659EE21F5019A9DF94 /* AppLaunchOptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLaunchOptions.swift; sourceTree = "<group>"; };
 		C277A622D0C630B07548A487 /* IntakePipeline.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = IntakePipeline.swift; sourceTree = "<group>"; };
 		C2CAE194CB15CCC78F5F22C6 /* Fraunces-Italic.ttf */ = {isa = PBXFileReference; includeInIndex = 1; path = "Fraunces-Italic.ttf"; sourceTree = "<group>"; };
+		C33D4743FD418720AB703AFC /* moussaka.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = moussaka.png; sourceTree = "<group>"; };
 		C353618F4B7100DD25102763 /* AIDishMapping.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AIDishMapping.swift; sourceTree = "<group>"; };
+		C358CD1E9BDA67D5CC184587 /* sausage-root-vegetable-traybake.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "sausage-root-vegetable-traybake.png"; sourceTree = "<group>"; };
 		C37F9246B13C7CD8DB8F157E /* SpineGutter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SpineGutter.swift; sourceTree = "<group>"; };
+		C3AB948F1277F6E717681AD6 /* thai-green-curry.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "thai-green-curry.png"; sourceTree = "<group>"; };
 		C4072447FA67C19158B37322 /* Dock.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Dock.swift; sourceTree = "<group>"; };
+		C42278132B84E4183EA1585F /* paella-valenciana.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "paella-valenciana.png"; sourceTree = "<group>"; };
+		C43F40E7173F3A3A242A61A2 /* fish-pie-with-cheddar-mash.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "fish-pie-with-cheddar-mash.png"; sourceTree = "<group>"; };
 		C47829257708E02A5B21FA6D /* TimelineComposerTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TimelineComposerTests.swift; sourceTree = "<group>"; };
 		C531F7524B3712D8330EE2CF /* BitapSearcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitapSearcher.swift; sourceTree = "<group>"; };
+		C58E19E1FD2073E3DBD75051 /* carnitas.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = carnitas.png; sourceTree = "<group>"; };
 		C591E29EB0703DFFDC5DE962 /* Motion.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Motion.swift; sourceTree = "<group>"; };
 		C66E3CD688A4E06B59D5056F /* IntakeParser.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = IntakeParser.swift; sourceTree = "<group>"; };
 		C72DB3A2FD92EEFEF85F27C4 /* TelemetryReporterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TelemetryReporterTests.swift; sourceTree = "<group>"; };
+		C7397781D69431FE6D5A83E2 /* chicken-tikka-masala.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "chicken-tikka-masala.png"; sourceTree = "<group>"; };
 		C76C028AE39F0001065ABA30 /* catalog.source.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = catalog.source.json; sourceTree = "<group>"; };
+		C7D94C0A07FAA72C22764A34 /* peanut-butter-no-bake-bars.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "peanut-butter-no-bake-bars.png"; sourceTree = "<group>"; };
+		C83773423D3A2F57ACBDD0F4 /* greek-style-baked-cod-with-chickpeas.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "greek-style-baked-cod-with-chickpeas.png"; sourceTree = "<group>"; };
 		C8F8447FD64B783B5D19DCE0 /* lamb-ragu.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "lamb-ragu.png"; sourceTree = "<group>"; };
 		C93C8FDEB9C5D988F3270738 /* UnitConversionTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = UnitConversionTests.swift; sourceTree = "<group>"; };
 		C9B0EE388F85446F2B6D4442 /* PantryCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PantryCatalog.swift; sourceTree = "<group>"; };
+		CA3705EAE3F05B8418E7F52C /* buffalo-cauliflower-wraps.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "buffalo-cauliflower-wraps.png"; sourceTree = "<group>"; };
 		CA385527E6C8A3110BCDB2AE /* EmojiPlate.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EmojiPlate.swift; sourceTree = "<group>"; };
 		CA7710DAEA864CA8E70D8332 /* StepTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StepTask.swift; sourceTree = "<group>"; };
 		CC7D29C483E721AD3542AB81 /* PantryChef.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = PantryChef.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CCEDED2CE5A479FB65BC6F69 /* DietaryProfile.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DietaryProfile.swift; sourceTree = "<group>"; };
+		CE617E98FF967068CA18F101 /* mushroom-and-white-bean-ragout.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "mushroom-and-white-bean-ragout.png"; sourceTree = "<group>"; };
 		CEB4028F2212A34CB27DE289 /* RealtimeConversationFunctionCallEventTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealtimeConversationFunctionCallEventTests.swift; sourceTree = "<group>"; };
+		CFBFB6E8EFE8707323970518 /* pad-thai.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "pad-thai.png"; sourceTree = "<group>"; };
+		D054B89672BBCCAB589917C4 /* miso-glazed-eggplant.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "miso-glazed-eggplant.png"; sourceTree = "<group>"; };
 		D0BD5F8F5E89DEF2F5F52E23 /* CustomIngredientForm.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CustomIngredientForm.swift; sourceTree = "<group>"; };
 		D0CB7639C4987CCE9021E15B /* herb-frittata.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "herb-frittata.png"; sourceTree = "<group>"; };
+		D17B0ED47E3B08C7662D2AAC /* moroccan-chicken-tagine.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "moroccan-chicken-tagine.png"; sourceTree = "<group>"; };
+		D1F00AF2A133AF37A385D1C6 /* beef-bourguignon.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "beef-bourguignon.png"; sourceTree = "<group>"; };
+		D23C3650EF7D5C190BA79D8C /* roasted-tomato-basil-soup.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "roasted-tomato-basil-soup.png"; sourceTree = "<group>"; };
 		D33DD04E5E06C3BFAD057736 /* FieldNotes.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FieldNotes.swift; sourceTree = "<group>"; };
+		D378A8A9DDA30DB7478AE3B5 /* vegetarian-lasagna.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "vegetarian-lasagna.png"; sourceTree = "<group>"; };
+		D3E45EC790841C9F0B4C2735 /* maple-cinnamon-granola.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "maple-cinnamon-granola.png"; sourceTree = "<group>"; };
+		D6226CFA926E8FA150CA6EB2 /* vegan-chocolate-avocado-mousse.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "vegan-chocolate-avocado-mousse.png"; sourceTree = "<group>"; };
+		D95005797CD33653260333DB /* japanese-miso-ramen.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "japanese-miso-ramen.png"; sourceTree = "<group>"; };
+		DBC8C24FF46E9BAD80F03F89 /* japchae.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = japchae.png; sourceTree = "<group>"; };
+		DC43CA292780BD5A224676C1 /* farro-and-roasted-squash-salad.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "farro-and-roasted-squash-salad.png"; sourceTree = "<group>"; };
 		DD7711492A1BF81C0A45710C /* ConfidenceEngineTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ConfidenceEngineTests.swift; sourceTree = "<group>"; };
 		DF1F65D77EABC51B56B50C75 /* PantryChefUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = PantryChefUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		E1AAC04D968112B78E9D54E2 /* mushroom-and-herb-frittata.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "mushroom-and-herb-frittata.png"; sourceTree = "<group>"; };
+		E1FBB22771468B1EE7A17CE0 /* halloumi-and-chickpea-salad.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "halloumi-and-chickpea-salad.png"; sourceTree = "<group>"; };
 		E22F264FE9DA944655852EB8 /* ResolutionClass.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ResolutionClass.swift; sourceTree = "<group>"; };
 		E3403E0E0CEC4D7B9F57BC6A /* IntakePipelineTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = IntakePipelineTests.swift; sourceTree = "<group>"; };
 		E3510AFA34EEE626883353C8 /* RecipeDetailView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RecipeDetailView.swift; sourceTree = "<group>"; };
+		E5460D4F9597EE052328D7DC /* chicken-stir-fry-with-broccoli.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "chicken-stir-fry-with-broccoli.png"; sourceTree = "<group>"; };
+		E669061379CB425F819A9BE7 /* vegan-dan-dan-noodles.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "vegan-dan-dan-noodles.png"; sourceTree = "<group>"; };
+		E78FAC124CA100B026C1A8EE /* spiced-carrot-and-chickpea-salad.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "spiced-carrot-and-chickpea-salad.png"; sourceTree = "<group>"; };
+		E80D0B656D67EAC31F4A110A /* lentil-shepherd-s-pie.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "lentil-shepherd-s-pie.png"; sourceTree = "<group>"; };
+		EB5BCB7FE435D5641A1D72C3 /* roasted-vegetable-feta-grain-bowl-base.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "roasted-vegetable-feta-grain-bowl-base.png"; sourceTree = "<group>"; };
+		EB93A04A582E1FC944F4F0CA /* coq-au-vin.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "coq-au-vin.png"; sourceTree = "<group>"; };
 		EC346DA4AE07E775F03E0537 /* shakshuka.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = shakshuka.png; sourceTree = "<group>"; };
 		ECEFEB3FB5265EBF48F4495C /* seed_recipes.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = seed_recipes.json; sourceTree = "<group>"; };
 		ED6332873D469B3DAEC6B4B2 /* NowModuleView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NowModuleView.swift; sourceTree = "<group>"; };
+		EED293D7F6F5A6B20E6ACC50 /* smoked-salmon-bagel.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "smoked-salmon-bagel.png"; sourceTree = "<group>"; };
 		EEDA55B940AC70BF502704BE /* IngredientLexicon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IngredientLexicon.swift; sourceTree = "<group>"; };
+		F11C72F79E1C367A9D2B74F9 /* creamy-tuscan-salmon.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "creamy-tuscan-salmon.png"; sourceTree = "<group>"; };
+		F17CF6118209C6B1636DFA35 /* smoky-tempeh-tacos.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "smoky-tempeh-tacos.png"; sourceTree = "<group>"; };
+		F1FF3E51B196D4D8DFAE88E0 /* teriyaki-salmon.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "teriyaki-salmon.png"; sourceTree = "<group>"; };
+		F37DCE7E6762A550A5565A2E /* crunchy-asian-slaw.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "crunchy-asian-slaw.png"; sourceTree = "<group>"; };
+		F42018C081DCCD416B555108 /* fluffy-buttermilk-pancakes.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "fluffy-buttermilk-pancakes.png"; sourceTree = "<group>"; };
+		F4644CA5E60ABD26CABDC2F1 /* lemon-herb-baked-chicken-breast.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "lemon-herb-baked-chicken-breast.png"; sourceTree = "<group>"; };
 		F4EC84421D4A2864AE180C6D /* ResolutionClassTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ResolutionClassTests.swift; sourceTree = "<group>"; };
+		F53D980BFCDC48E0A7F61C5C /* roasted-beet-and-goat-cheese-salad.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "roasted-beet-and-goat-cheese-salad.png"; sourceTree = "<group>"; };
+		F708538CBEE0F3594D1F0F65 /* black-bean-and-sweet-potato-enchiladas.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "black-bean-and-sweet-potato-enchiladas.png"; sourceTree = "<group>"; };
+		F709276D3BA2BFCE9D371910 /* vegetable-barley-stew.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "vegetable-barley-stew.png"; sourceTree = "<group>"; };
+		F769E827534D1DE33E44020C /* margherita-flatbread.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "margherita-flatbread.png"; sourceTree = "<group>"; };
+		F7B7800B61224EE68615677C /* roast-chicken-with-lemon-herbs.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "roast-chicken-with-lemon-herbs.png"; sourceTree = "<group>"; };
+		F7D337E96E09132BE2A81041 /* saag-paneer.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "saag-paneer.png"; sourceTree = "<group>"; };
 		F7FDE2746EBCA7890C1F77F8 /* Dish.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Dish.swift; sourceTree = "<group>"; };
 		F8101D29E78E38A0C3D0477A /* RankedTextSearchEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RankedTextSearchEngine.swift; sourceTree = "<group>"; };
+		F8905232EACFE17246B7FF9F /* banana-bread.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "banana-bread.png"; sourceTree = "<group>"; };
+		F8EA596D363F0CCC8D5D19DC /* black-bean-tacos.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "black-bean-tacos.png"; sourceTree = "<group>"; };
 		F934FEC93B55B49EFD729047 /* IngredientMatchingTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = IngredientMatchingTests.swift; sourceTree = "<group>"; };
 		F9D6320911E5D93399FD4833 /* AIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIService.swift; sourceTree = "<group>"; };
 		FCBA40607E7081618BC69A02 /* swift-realtime-openai */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "swift-realtime-openai"; path = "Vendor/swift-realtime-openai"; sourceTree = SOURCE_ROOT; };
+		FCC886E5FD14408F10A8673A /* spaghetti-aglio-e-olio.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "spaghetti-aglio-e-olio.png"; sourceTree = "<group>"; };
 		FCEFE7A32E20977BC8B61F99 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		FFBB7D0A309C7FD4311B669D /* AppConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConfig.swift; sourceTree = "<group>"; };
 		FFBF0909FB0DCCC8F82C8915 /* ExpiryEngineTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ExpiryEngineTests.swift; sourceTree = "<group>"; };
+		FFCDD18C9F6282530EF2B82B /* masala-omelette.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "masala-omelette.png"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -367,6 +751,198 @@
 				8B39024CB6A7E1370C24075B /* miso-butter-salmon.png */,
 				EC346DA4AE07E775F03E0537 /* shakshuka.png */,
 				C8F8447FD64B783B5D19DCE0 /* lamb-ragu.png */,
+				35A35FC77D0D1FCB36B97CE4 /* apple-crumble.png */,
+				340E65F21E8AA6281D74B00D /* avocado-toast-with-chili-and-lime.png */,
+				1CB7590083D22303E3B3B8C6 /* bacon-egg-and-cheese-sandwich.png */,
+				11832F25E4EDE858376EF759 /* baked-falafel-bowl.png */,
+				8802BCE3E36AF8C9E356CC0B /* baked-oatmeal-squares.png */,
+				54C8E19E22BBD89053DFAB64 /* baked-teriyaki-salmon-meal-prep.png */,
+				0E2EDF0206FC005D0ADED33A /* baked-ziti-with-sausage.png */,
+				F8905232EACFE17246B7FF9F /* banana-bread.png */,
+				770CCED2339842C3B8D3B4E5 /* banana-walnut-baked-oatmeal.png */,
+				495AAD3A1F4689F38D809334 /* batch-turkey-quinoa-meatballs.png */,
+				64054228C89F17D1B2E2BE53 /* beef-and-broccoli-stir-fry.png */,
+				5EC95E8EAD20FDA6C9C84042 /* beef-and-broccoli.png */,
+				D1F00AF2A133AF37A385D1C6 /* beef-bourguignon.png */,
+				5C024C4F227073403F20CA1B /* beef-chili-con-carne.png */,
+				52D60B775452879B009D459A /* beef-vegetable-freezer-stew.png */,
+				73E6F6D08E188BBB992C340F /* bibimbap.png */,
+				4A277C674E2D9C022A258A86 /* big-batch-bolognese-sauce.png */,
+				16C428F9B16DD16EDFDBBEE4 /* big-batch-minestrone-soup.png */,
+				F708538CBEE0F3594D1F0F65 /* black-bean-and-sweet-potato-enchiladas.png */,
+				85159B3304F8D88A08B014B1 /* black-bean-soup.png */,
+				F8EA596D363F0CCC8D5D19DC /* black-bean-tacos.png */,
+				3F7E88FDD8344A76D6EF473B /* black-bean-tostadas.png */,
+				275E528DB2861EA3A5716C41 /* black-bean-turkey-high-protein-chili.png */,
+				79EF0FD96955E2F196335A05 /* breakfast-burrito.png */,
+				87FE0284BE69A65C4E4F030E /* breakfast-quesadilla.png */,
+				CA3705EAE3F05B8418E7F52C /* buffalo-cauliflower-wraps.png */,
+				B92718BDCE1D03AA6C9B73B7 /* bun-cha.png */,
+				77352A1B8FA7F6959E86ED68 /* butter-chicken.png */,
+				7BBBD397EC06270A6418A321 /* butternut-squash-soup.png */,
+				52E6BD9C201ACC04B9D2C7E5 /* caprese-salad.png */,
+				9A8ADAEB2A83AE3718062E35 /* caprese-style-panzanella.png */,
+				C58E19E1FD2073E3DBD75051 /* carnitas.png */,
+				7144F7D47271C9BE1D639422 /* carrot-cake.png */,
+				3B99BCD9DB6959A4411DB6CF /* chana-masala.png */,
+				35558682CE6D0E96E0706FC1 /* cheesy-broccoli-rice-bake.png */,
+				4C81F9D2B5787AE5B177FFD0 /* chia-pudding-with-mango.png */,
+				7A6273A9090D3F7CC6B660FC /* chicken-katsu-curry.png */,
+				7A9A55706621F897C3C8D7BB /* chicken-rice-casserole.png */,
+				838737C3617A161CDC50FCD7 /* chicken-shawarma.png */,
+				E5460D4F9597EE052328D7DC /* chicken-stir-fry-with-broccoli.png */,
+				2403DEDB0ACDD46970E44C8C /* chicken-tacos-al-pastor.png */,
+				C7397781D69431FE6D5A83E2 /* chicken-tikka-masala.png */,
+				4773465B925FC2FB3C6322FE /* chickpea-shawarma-bowls.png */,
+				02F4815CD48EEADA55F6F7F3 /* chickpea-spinach-curry.png */,
+				08EDD65CE72C7FF5BA7B3C1D /* chiles-rellenos.png */,
+				253B2E8B98B1B95F667AB722 /* chocolate-chip-cookies.png */,
+				8CE53F3EDCD798784949E1CA /* classic-beef-burgers.png */,
+				2E5B4D128439F9E3422A9419 /* classic-beef-vegetable-shepherd-s-pie.png */,
+				BB3902BA3B301F9C934D46FF /* classic-coleslaw.png */,
+				3EC5D21BC90DF8750D325F88 /* coconut-chickpea-curry.png */,
+				53B69EC70B22628331199DA5 /* coconut-chickpea-sweet-potato-stew.png */,
+				EB93A04A582E1FC944F4F0CA /* coq-au-vin.png */,
+				4B38CBA4ACBF3BBB2D550F46 /* creamy-chicken-mushroom-pot-pie.png */,
+				0977B13CC5AFDE6BE97627B2 /* creamy-roasted-carrot-soup.png */,
+				F11C72F79E1C367A9D2B74F9 /* creamy-tuscan-salmon.png */,
+				A9E7303CC2B9FFCCC4C0F8BE /* crispy-sesame-tofu-with-broccoli.png */,
+				A9FA54A922A61928EBE6E98A /* croque-madame.png */,
+				F37DCE7E6762A550A5565A2E /* crunchy-asian-slaw.png */,
+				6055ECBB02926A6EDABBDA64 /* dutch-baby-pancake.png */,
+				82608B4151E82DF78FFBA7CC /* eggs-benedict.png */,
+				A89E9EB9AAB565018CB553BE /* falafel-plate.png */,
+				DC43CA292780BD5A224676C1 /* farro-and-roasted-squash-salad.png */,
+				C43F40E7173F3A3A242A61A2 /* fish-pie-with-cheddar-mash.png */,
+				06D10522CB301DBE5762AC65 /* flourless-chocolate-cake.png */,
+				F42018C081DCCD416B555108 /* fluffy-buttermilk-pancakes.png */,
+				7245F09CB8E7CEC31511AA39 /* freezer-breakfast-burritos.png */,
+				1A6821D523B0FD03562680C2 /* french-onion-soup.png */,
+				34B5FE77EAD2C411FA48AF08 /* gambas-al-ajillo-with-rice.png */,
+				8D0B6C85CD5DEF22E3A54091 /* garlic-butter-shrimp-pasta.png */,
+				AB2A2F58881751A6DC0ACD1C /* greek-chicken-bowl.png */,
+				60CA823C29FDDFBC7C9DC8D7 /* greek-chicken-souvlaki.png */,
+				58ACE39280903223C9621CEE /* greek-salad.png */,
+				C83773423D3A2F57ACBDD0F4 /* greek-style-baked-cod-with-chickpeas.png */,
+				1E819DC7FC0CEAB0CE5F6213 /* greek-yogurt-chicken-salad.png */,
+				2FBCEA4BA0C9A6D0ED8A7FA2 /* green-power-smoothie.png */,
+				765644201EDB0AF6A297833B /* grilled-steak-with-chimichurri.png */,
+				E1FBB22771468B1EE7A17CE0 /* halloumi-and-chickpea-salad.png */,
+				8FCEC8B8F6798B31E6C80413 /* harira.png */,
+				00BA4CD9CAFB39284932DA3A /* hearty-beef-stew.png */,
+				36D577F70B693DC5E1824F44 /* hearty-lentil-soup.png */,
+				1752D35C18F879CE3D6C56E7 /* high-protein-cottage-cheese-pancakes.png */,
+				791D95A687D6C7F3DE82B7D3 /* honey-garlic-chicken-thighs-batch.png */,
+				478BB1BA3080E78590817D21 /* huevos-rancheros.png */,
+				D95005797CD33653260333DB /* japanese-miso-ramen.png */,
+				DBC8C24FF46E9BAD80F03F89 /* japchae.png */,
+				46A7A04ED52319A52CC1A465 /* kale-caesar-with-crispy-chickpeas.png */,
+				8AF51EB1621E970C815A5281 /* korean-braised-short-ribs.png */,
+				7C00F2B0628ED4BD03F1D53A /* kung-pao-chicken.png */,
+				3ED257A83236611D20CB4A1D /* lamb-kofta.png */,
+				19EEBBD2F6F185D8E9A6DE51 /* lamb-rogan-josh.png */,
+				2A9360F0170B68E2C6023166 /* lasagna-bolognese.png */,
+				42527C4957DD82A0B1F1A396 /* lemon-bars.png */,
+				F4644CA5E60ABD26CABDC2F1 /* lemon-herb-baked-chicken-breast.png */,
+				A06F01787C72A974EF829652 /* lemon-herb-cod-with-couscous.png */,
+				578555C79D6DDE486547158D /* lemon-herb-rice-pilaf.png */,
+				34E2D7A92D8DBDADEE7255A4 /* lentil-and-lemon-soup.png */,
+				1B188D0DB67B902525150DF2 /* lentil-egg-protein-breakfast-bowl.png */,
+				E80D0B656D67EAC31F4A110A /* lentil-shepherd-s-pie.png */,
+				540AB459CCD86A314CC99AE5 /* lentil-vegetable-cottage-pie.png */,
+				6B28B8AECC9CF967B173DB75 /* macaroni-cheese-bake.png */,
+				D3E45EC790841C9F0B4C2735 /* maple-cinnamon-granola.png */,
+				05629F5F5A7393838E0D6B7D /* maple-roasted-root-vegetables.png */,
+				497BD66BA898AE6AC905B95F /* mapo-tofu.png */,
+				F769E827534D1DE33E44020C /* margherita-flatbread.png */,
+				7AA50DABAB865D8ED25C90C9 /* margherita-pizza.png */,
+				FFCDD18C9F6282530EF2B82B /* masala-omelette.png */,
+				50895451A36467648D44D15D /* mediterranean-baked-cod.png */,
+				556FF6B10E3B5CC75CCA71CF /* mediterranean-quinoa-salad-jars.png */,
+				1B31AA3FF5BBCBAF365A505C /* minestrone.png */,
+				0E18074B26503B469E9775FC /* miso-butter-udon.png */,
+				D054B89672BBCCAB589917C4 /* miso-glazed-eggplant.png */,
+				0B8AD386EA1A6097072295C0 /* mixed-berry-crumble.png */,
+				D17B0ED47E3B08C7662D2AAC /* moroccan-chicken-tagine.png */,
+				4AC4CB1E3DC9CA06BF12081E /* moroccan-chickpea-vegetable-tagine.png */,
+				C33D4743FD418720AB703AFC /* moussaka.png */,
+				A3D1F30E6AFF3904D74D6C10 /* mujadara.png */,
+				E1AAC04D968112B78E9D54E2 /* mushroom-and-herb-frittata.png */,
+				CE617E98FF967068CA18F101 /* mushroom-and-white-bean-ragout.png */,
+				A48491304193857705CC6FAC /* mushroom-risotto.png */,
+				79259A0511B75D57B49CD19C /* overnight-oats-with-berries.png */,
+				CFBFB6E8EFE8707323970518 /* pad-thai.png */,
+				C42278132B84E4183EA1585F /* paella-valenciana.png */,
+				50D7242190AE8211ED6244AC /* palak-paneer.png */,
+				BCFDEB61A7361C6E603ABE8A /* pasta-alla-norma.png */,
+				6C7081CD8815F70C34855F7F /* peanut-butter-banana-smoothie.png */,
+				C7D94C0A07FAA72C22764A34 /* peanut-butter-no-bake-bars.png */,
+				5AE6653E248BFA4C1B2A05B0 /* pesto-gnocchi-with-cherry-tomatoes.png */,
+				5BC133CEB20A417DB810291D /* poached-pears-in-spiced-wine.png */,
+				0B76FED7A3D176AF217A80B7 /* pork-apple-traybake.png */,
+				BD7D584D60944F8FC4B0909D /* protein-packed-white-bean-tuna-salad.png */,
+				592A6DFFE83518947BDC4098 /* pulled-bbq-jackfruit.png */,
+				8FBFC564EA27F3946F11716C /* quinoa-tabbouleh.png */,
+				BBEE65570A8387FF9401C16F /* ratatouille.png */,
+				4D818D2F715F07A51E954F9F /* red-lentil-dahl.png */,
+				AFBD85378CDDC12692F78A74 /* red-lentil-dal.png */,
+				7A3874DAADBD748D091BB73D /* risotto-ai-funghi.png */,
+				F7B7800B61224EE68615677C /* roast-chicken-with-lemon-herbs.png */,
+				F53D980BFCDC48E0A7F61C5C /* roasted-beet-and-goat-cheese-salad.png */,
+				D23C3650EF7D5C190BA79D8C /* roasted-tomato-basil-soup.png */,
+				EB5BCB7FE435D5641A1D72C3 /* roasted-vegetable-feta-grain-bowl-base.png */,
+				F7D337E96E09132BE2A81041 /* saag-paneer.png */,
+				6D8E6A87A383A93B895C8971 /* salmon-egg-power-bowl.png */,
+				C358CD1E9BDA67D5CC184587 /* sausage-root-vegetable-traybake.png */,
+				980FD41CAF114AFC139C165A /* savory-chicken-congee.png */,
+				4103820317EC37AB05DD0DC6 /* sesame-soba-noodle-salad.png */,
+				6407A24BA5F97A109307C0BA /* sheet-pan-chicken-broccoli-meal-prep.png */,
+				95C9519844097DC56EE0E2AA /* sheet-pan-fajitas.png */,
+				4636D2D3D22BC76447DFC1AA /* sheet-pan-sausage-and-vegetables.png */,
+				21CB24A7C07BC7D0F671E39B /* shrimp-broccoli-garlic-stir-fry.png */,
+				5E09405EA594122D7F8C18D5 /* shrimp-pad-krapow.png */,
+				3061BDAC945C7C112863CAE4 /* slow-cooker-pulled-pork.png */,
+				EED293D7F6F5A6B20E6ACC50 /* smoked-salmon-bagel.png */,
+				1383024CEFB446FE515EAD80 /* smoky-bbq-pulled-pork.png */,
+				F17CF6118209C6B1636DFA35 /* smoky-tempeh-tacos.png */,
+				FCC886E5FD14408F10A8673A /* spaghetti-aglio-e-olio.png */,
+				658D27DE4622AFD68D92CB5E /* spaghetti-alla-carbonara.png */,
+				242B017E7A8BD91ADAE609D9 /* spanakopita.png */,
+				5CC8812BD7FD1F96AD78D336 /* spanish-chicken-and-chorizo.png */,
+				E78FAC124CA100B026C1A8EE /* spiced-carrot-and-chickpea-salad.png */,
+				7DD7D410899FE657D0627290 /* spinach-and-feta-egg-muffins.png */,
+				8ECC769840573024FB7A5743 /* spinach-ricotta-egg-muffins.png */,
+				0D0F2D0F7962ED1AADC2579C /* split-pea-soup.png */,
+				49E1CC21EC8D7282353CB950 /* steel-cut-oats-with-apple.png */,
+				2D849621A3183111CF28407C /* sticky-toffee-pudding.png */,
+				0B1C036C5BD4CD41F1060C93 /* stuffed-bell-peppers.png */,
+				B9FF8C2650A90D2DB08A4AB1 /* stuffed-portobello-mushrooms.png */,
+				BFC129C27AAB92A7D9E6A094 /* sweet-potato-black-bean-freezer-burritos.png */,
+				41E44344B0C63F664589FB15 /* sweet-potato-breakfast-hash.png */,
+				8CE32C9EB2AD58BAC7D5BEDE /* teriyaki-salmon-bowl.png */,
+				F1FF3E51B196D4D8DFAE88E0 /* teriyaki-salmon.png */,
+				73D92DF9174E120B75A334AA /* thai-basil-chicken.png */,
+				1C641BE4C674A4F7F17ED1B8 /* thai-coconut-soup.png */,
+				C3AB948F1277F6E717681AD6 /* thai-green-curry.png */,
+				0ECBCD9CD1772C61D677ED05 /* thai-red-curry-with-vegetables.png */,
+				2FC78155EA7425F67BEE537C /* three-bean-vegetarian-chili.png */,
+				AB6DD50550DB7463DCE4BDE6 /* tofu-pad-thai.png */,
+				2C02D9581F0DEC680BF8BCD6 /* tofu-scramble.png */,
+				5F4314990AF1D8DB0CF016C6 /* tofu-vegetable-stir-fry.png */,
+				3643051113F5FA12AC9EE141 /* tuna-noodle-casserole.png */,
+				576235467375848CBE69D074 /* turkey-taco-skillet.png */,
+				8B383E5FF1CA359A721ACCEE /* tuscan-white-bean-and-kale-soup.png */,
+				245A7F093281E82BEB82C82A /* tuscan-white-bean-and-kale-stew.png */,
+				D6226CFA926E8FA150CA6EB2 /* vegan-chocolate-avocado-mousse.png */,
+				8301E23753E7F9097EFF7403 /* vegan-corn-chowder.png */,
+				E669061379CB425F819A9BE7 /* vegan-dan-dan-noodles.png */,
+				F709276D3BA2BFCE9D371910 /* vegetable-barley-stew.png */,
+				0FEA952467D85FC0633C1A53 /* vegetable-couscous-tagine.png */,
+				D378A8A9DDA30DB7478AE3B5 /* vegetarian-lasagna.png */,
+				5985405FEB96EA08E27DF3A7 /* warm-lentil-and-feta-salad.png */,
+				6439A9286F16CD31E2F84E47 /* watermelon-and-feta-salad.png */,
+				A7FD1278E54BE5A9FD729154 /* white-bean-and-kale-soup.png */,
+				813AF015CDFFC4786F074A51 /* yogurt-parfait-with-granola.png */,
 			);
 			name = PlateArt;
 			path = PlateArt;
@@ -783,6 +1359,198 @@
 				FF03EB398C6216AE0D6BC39D /* miso-butter-salmon.png in Resources */,
 				BB3222AB0F9E2AD2C8B79CA4 /* shakshuka.png in Resources */,
 				9DA1F30C0BD3CA620392E7C9 /* lamb-ragu.png in Resources */,
+				ECC719FFDDEB50C03706D5C7 /* apple-crumble.png in Resources */,
+				FC987DF13EFD83895E7CB7E0 /* avocado-toast-with-chili-and-lime.png in Resources */,
+				AF61FA9761C1DA32B5EE2882 /* bacon-egg-and-cheese-sandwich.png in Resources */,
+				3AC6BAC333C9BAFF1C947F00 /* baked-falafel-bowl.png in Resources */,
+				7CDCFA97462C0FE8A3A59820 /* baked-oatmeal-squares.png in Resources */,
+				A70F2E0519BEFA2EEE126472 /* baked-teriyaki-salmon-meal-prep.png in Resources */,
+				77D7E42109AF1BEB48BB454A /* baked-ziti-with-sausage.png in Resources */,
+				839DB0CB166B04579245FD26 /* banana-bread.png in Resources */,
+				E5BD85D3E6011AE25D9EB350 /* banana-walnut-baked-oatmeal.png in Resources */,
+				FB7A5A16F98C393C692C9027 /* batch-turkey-quinoa-meatballs.png in Resources */,
+				8292344231C0B22DD4E547CC /* beef-and-broccoli-stir-fry.png in Resources */,
+				EDF0064F8F36D3C9F4163B3D /* beef-and-broccoli.png in Resources */,
+				F156304049747D746A5A81EA /* beef-bourguignon.png in Resources */,
+				CFBD9FAF02E3873DAE93826E /* beef-chili-con-carne.png in Resources */,
+				15FE178FE896F53A462EA0D4 /* beef-vegetable-freezer-stew.png in Resources */,
+				FE8EFEB7D4E2C8BD2FCBE3D6 /* bibimbap.png in Resources */,
+				FA4AC2FF342EE2B74A8EB8A6 /* big-batch-bolognese-sauce.png in Resources */,
+				40BC6FD4A231898D0D1184CA /* big-batch-minestrone-soup.png in Resources */,
+				5E297DCC054F863487FB83A1 /* black-bean-and-sweet-potato-enchiladas.png in Resources */,
+				309F71D90F0D2DAAF5413AB3 /* black-bean-soup.png in Resources */,
+				6766D2D8D603460C7DA696CD /* black-bean-tacos.png in Resources */,
+				B99588571839B501D2CDF640 /* black-bean-tostadas.png in Resources */,
+				D33A303F4B97F0D891EFF140 /* black-bean-turkey-high-protein-chili.png in Resources */,
+				3E671F7407B8D5A66CC44047 /* breakfast-burrito.png in Resources */,
+				184A030447B152AD9219A171 /* breakfast-quesadilla.png in Resources */,
+				29671422BF7500F177814A0D /* buffalo-cauliflower-wraps.png in Resources */,
+				B24AC8EC74E80BC9CB0DB5BF /* bun-cha.png in Resources */,
+				99538A9C204B8CBE3C073DBB /* butter-chicken.png in Resources */,
+				4CFCEA836C4A80D9889B688E /* butternut-squash-soup.png in Resources */,
+				A9704C49EC47A85A582883E4 /* caprese-salad.png in Resources */,
+				6A2CF95D44767575233F519E /* caprese-style-panzanella.png in Resources */,
+				D194F4275AD57ACFC307E3A8 /* carnitas.png in Resources */,
+				B41AE5205FF4CF3B056E12B1 /* carrot-cake.png in Resources */,
+				15CDBB20426EB7FAC3BC6633 /* chana-masala.png in Resources */,
+				6B7CE4F5035D4272F2EC1F9E /* cheesy-broccoli-rice-bake.png in Resources */,
+				2400CEDFBEFBBDD1C9B77D58 /* chia-pudding-with-mango.png in Resources */,
+				BF4ECEA63065F89A58E420B8 /* chicken-katsu-curry.png in Resources */,
+				EE342E43947C6BA8264FD261 /* chicken-rice-casserole.png in Resources */,
+				E0AB5D60E582FA331A7EA85B /* chicken-shawarma.png in Resources */,
+				B83811D1F586046A8487FF73 /* chicken-stir-fry-with-broccoli.png in Resources */,
+				7F55B862B3237BD65AF51AC2 /* chicken-tacos-al-pastor.png in Resources */,
+				2AFDB1152C900E38B394F5A6 /* chicken-tikka-masala.png in Resources */,
+				D62198DA1D638E14B7A3C074 /* chickpea-shawarma-bowls.png in Resources */,
+				B7BDB8A4DA98D7DE30546B67 /* chickpea-spinach-curry.png in Resources */,
+				E2246AB0E0035F712A3485B4 /* chiles-rellenos.png in Resources */,
+				E480ADBAE1FEFEDB0BE35E44 /* chocolate-chip-cookies.png in Resources */,
+				E328CC634FD899F31143CF1E /* classic-beef-burgers.png in Resources */,
+				E36815076458BDD1E7A6C4F9 /* classic-beef-vegetable-shepherd-s-pie.png in Resources */,
+				AF9F7AA9E58FCC100AB391A5 /* classic-coleslaw.png in Resources */,
+				823C41CCEED5CEC800828FA4 /* coconut-chickpea-curry.png in Resources */,
+				E17D766D77781681A5C155B0 /* coconut-chickpea-sweet-potato-stew.png in Resources */,
+				08AC458171ECF0CEF160029B /* coq-au-vin.png in Resources */,
+				B1528226A3F478C9F2B23101 /* creamy-chicken-mushroom-pot-pie.png in Resources */,
+				71F8601578AA5D882083602D /* creamy-roasted-carrot-soup.png in Resources */,
+				6E61ADB85AEF2E5F418BD28D /* creamy-tuscan-salmon.png in Resources */,
+				F6EFD6DE57F1C01991BC4451 /* crispy-sesame-tofu-with-broccoli.png in Resources */,
+				D8BB960690B8FCCE1E4AB972 /* croque-madame.png in Resources */,
+				28E5D7F98AD387494191D7F4 /* crunchy-asian-slaw.png in Resources */,
+				AAC8DD01BB46AB4B003D35C5 /* dutch-baby-pancake.png in Resources */,
+				2846CDAB53C08343EC4AF1E6 /* eggs-benedict.png in Resources */,
+				AB86150E276DB131E340A718 /* falafel-plate.png in Resources */,
+				BDE1FD299C48AC7BC32C4548 /* farro-and-roasted-squash-salad.png in Resources */,
+				78C24EEA02124C02F86BC1AF /* fish-pie-with-cheddar-mash.png in Resources */,
+				D28D3838BF2B0184158F201F /* flourless-chocolate-cake.png in Resources */,
+				38E09D701A202B1094D81F8A /* fluffy-buttermilk-pancakes.png in Resources */,
+				DE1BBCA57D9126BF3E3DBAF9 /* freezer-breakfast-burritos.png in Resources */,
+				A9034EE5478AF8522DE09606 /* french-onion-soup.png in Resources */,
+				2820D9705D606CF2064E3ECA /* gambas-al-ajillo-with-rice.png in Resources */,
+				B00C0CF6FDFE7B6ED3E051F1 /* garlic-butter-shrimp-pasta.png in Resources */,
+				94A12E5AB8FAFC800AC85BD3 /* greek-chicken-bowl.png in Resources */,
+				F6D34D7DCF9A35D11F135C7A /* greek-chicken-souvlaki.png in Resources */,
+				1E712CC37E59753658BD3370 /* greek-salad.png in Resources */,
+				5B5D14F361B1CECAF39AA534 /* greek-style-baked-cod-with-chickpeas.png in Resources */,
+				69DED516EAF1A0CE982E2720 /* greek-yogurt-chicken-salad.png in Resources */,
+				DFD8BF44FE291DD6EF69051F /* green-power-smoothie.png in Resources */,
+				03BC4F42AD50499EF7C02481 /* grilled-steak-with-chimichurri.png in Resources */,
+				EE773DF72720311A6D40DA30 /* halloumi-and-chickpea-salad.png in Resources */,
+				1A64F3555DEA26D5128489D8 /* harira.png in Resources */,
+				5966B841C1F476E956FC0F9E /* hearty-beef-stew.png in Resources */,
+				127EC8A5C2324B0941325358 /* hearty-lentil-soup.png in Resources */,
+				146DA16635D5C37185C943B5 /* high-protein-cottage-cheese-pancakes.png in Resources */,
+				F8248E391F0035F2AFDE46A8 /* honey-garlic-chicken-thighs-batch.png in Resources */,
+				3CB69004E69A2CB2DE9928E8 /* huevos-rancheros.png in Resources */,
+				214B8E491EE7CB734001345D /* japanese-miso-ramen.png in Resources */,
+				00CE9470BBF69B27309867F8 /* japchae.png in Resources */,
+				99B946001258FBACE38A278C /* kale-caesar-with-crispy-chickpeas.png in Resources */,
+				6549EBA56ADD23E3886C4F93 /* korean-braised-short-ribs.png in Resources */,
+				8FDC47E92BB9F80D2CD2E373 /* kung-pao-chicken.png in Resources */,
+				BA9B9097733E2E24DA0B493E /* lamb-kofta.png in Resources */,
+				5CFE380F10006A42D43E9055 /* lamb-rogan-josh.png in Resources */,
+				F75E75A849C59CE3FEB06E95 /* lasagna-bolognese.png in Resources */,
+				E35CE357D48AF449A60B5CDF /* lemon-bars.png in Resources */,
+				88AEFBFBA316B138DCA36C16 /* lemon-herb-baked-chicken-breast.png in Resources */,
+				6DDE478A118B8EF00EABFB50 /* lemon-herb-cod-with-couscous.png in Resources */,
+				92249C4C0AFF33AB8C47164E /* lemon-herb-rice-pilaf.png in Resources */,
+				7C43C1C75BD29E833DABDCAC /* lentil-and-lemon-soup.png in Resources */,
+				CCD2B3E41BB762FA568AA088 /* lentil-egg-protein-breakfast-bowl.png in Resources */,
+				51CF84BA05DF578F3EE56EC0 /* lentil-shepherd-s-pie.png in Resources */,
+				6FB0FAD3FB417B8E77873387 /* lentil-vegetable-cottage-pie.png in Resources */,
+				D96A4B2645E57C6DEB6A6684 /* macaroni-cheese-bake.png in Resources */,
+				E20F37FFE8B5478AC465B246 /* maple-cinnamon-granola.png in Resources */,
+				52DA0436D9382E6A62A4A473 /* maple-roasted-root-vegetables.png in Resources */,
+				76A5315593A323E659640432 /* mapo-tofu.png in Resources */,
+				681BDB39E54AB02CA3ACEE76 /* margherita-flatbread.png in Resources */,
+				3DA875E20CAF526A6EE5B194 /* margherita-pizza.png in Resources */,
+				3D18EEB6BB7EE4259F9118FF /* masala-omelette.png in Resources */,
+				8478C7AFF876D186ACB1049D /* mediterranean-baked-cod.png in Resources */,
+				20BC57FE9AB4E315F117DD19 /* mediterranean-quinoa-salad-jars.png in Resources */,
+				85E8D29279612925D4B95781 /* minestrone.png in Resources */,
+				7CEA0A85A0795936BA053BBE /* miso-butter-udon.png in Resources */,
+				B2D01E8465EF1F7E38CA1380 /* miso-glazed-eggplant.png in Resources */,
+				5E8C66C5C923989EC863CBD0 /* mixed-berry-crumble.png in Resources */,
+				06875606EF80ED270332B1B8 /* moroccan-chicken-tagine.png in Resources */,
+				6FF2BA20464B1B3E68599D95 /* moroccan-chickpea-vegetable-tagine.png in Resources */,
+				58C95D93F8DC9BF267EE54F5 /* moussaka.png in Resources */,
+				2C7DB6C316F3A418AC2F5988 /* mujadara.png in Resources */,
+				2EABE1E9E6A0C9A1576DA4C0 /* mushroom-and-herb-frittata.png in Resources */,
+				C289B0AA552D1A501B42E979 /* mushroom-and-white-bean-ragout.png in Resources */,
+				B08B050947655650A7EB0E62 /* mushroom-risotto.png in Resources */,
+				E350C19883BA16B735DD02AB /* overnight-oats-with-berries.png in Resources */,
+				F60E0086DE07A0320CAFCCE2 /* pad-thai.png in Resources */,
+				BA8BD3E73D25A8BAED17F519 /* paella-valenciana.png in Resources */,
+				65C2776D81C1E59BCFCE90F3 /* palak-paneer.png in Resources */,
+				A6B1C9CBC6BEA16BC486281E /* pasta-alla-norma.png in Resources */,
+				2D853BF30AB363DCD033747C /* peanut-butter-banana-smoothie.png in Resources */,
+				3B5981226B6CFD32E226F0A2 /* peanut-butter-no-bake-bars.png in Resources */,
+				B98499806F8A37618CED8820 /* pesto-gnocchi-with-cherry-tomatoes.png in Resources */,
+				B60670D7EBB4585A3C5B5428 /* poached-pears-in-spiced-wine.png in Resources */,
+				C6C689EC0AFA147AEE168770 /* pork-apple-traybake.png in Resources */,
+				B6BBCE67ADEFE2A8DFDD7F4C /* protein-packed-white-bean-tuna-salad.png in Resources */,
+				FE4A1843BFDCEF80409DF983 /* pulled-bbq-jackfruit.png in Resources */,
+				4962D76399BFCA00634913A7 /* quinoa-tabbouleh.png in Resources */,
+				CA099EE14AD1764DEC72BB9B /* ratatouille.png in Resources */,
+				7DF12257D490753A78D74C96 /* red-lentil-dahl.png in Resources */,
+				2AECCCF4817DD8BE380C4231 /* red-lentil-dal.png in Resources */,
+				5BFAE325A4EA8135DC9889EC /* risotto-ai-funghi.png in Resources */,
+				3363C1BEDDB96C9459D47B24 /* roast-chicken-with-lemon-herbs.png in Resources */,
+				B5273768CF88DD3F71F88757 /* roasted-beet-and-goat-cheese-salad.png in Resources */,
+				6628A8A4336DFBE20336FBAB /* roasted-tomato-basil-soup.png in Resources */,
+				B7B98B852A01A38532BDB9E5 /* roasted-vegetable-feta-grain-bowl-base.png in Resources */,
+				C4EE27A169BFA3B35EA3B727 /* saag-paneer.png in Resources */,
+				E1CB291C159F065434031558 /* salmon-egg-power-bowl.png in Resources */,
+				7562EA2E6548FDB7D96B22F8 /* sausage-root-vegetable-traybake.png in Resources */,
+				07DC2FF2577CC5D0F00F284A /* savory-chicken-congee.png in Resources */,
+				AA1F705C79C35770C8953084 /* sesame-soba-noodle-salad.png in Resources */,
+				993BD04166C2C11356C46EBA /* sheet-pan-chicken-broccoli-meal-prep.png in Resources */,
+				485950E293963142C51DD248 /* sheet-pan-fajitas.png in Resources */,
+				C4D6A1F93C4ACB3EBB44967F /* sheet-pan-sausage-and-vegetables.png in Resources */,
+				B15F5472259CBD2A64CF71C6 /* shrimp-broccoli-garlic-stir-fry.png in Resources */,
+				8B1AC19DE7D022DA11EC521B /* shrimp-pad-krapow.png in Resources */,
+				C71FA334920ED384F693EE52 /* slow-cooker-pulled-pork.png in Resources */,
+				451444A78CDC52F76E4BB010 /* smoked-salmon-bagel.png in Resources */,
+				6B703CAD1BAE6BF91AC61FCA /* smoky-bbq-pulled-pork.png in Resources */,
+				9368E161A93677357634F403 /* smoky-tempeh-tacos.png in Resources */,
+				BCCFAE2BFB33D7665EB5A4EF /* spaghetti-aglio-e-olio.png in Resources */,
+				0ECF5375D882995FD8AAEB0E /* spaghetti-alla-carbonara.png in Resources */,
+				F8A97267CC0636958DE193A3 /* spanakopita.png in Resources */,
+				1FF8B34F8CB7B9B773C97AFC /* spanish-chicken-and-chorizo.png in Resources */,
+				8953A8894E5029E70DF4DCB7 /* spiced-carrot-and-chickpea-salad.png in Resources */,
+				1E8968022D95EC81EE4A7CDA /* spinach-and-feta-egg-muffins.png in Resources */,
+				5BBA9935454E039A0D29A40E /* spinach-ricotta-egg-muffins.png in Resources */,
+				FE2B99A2D29D4E5737B8ECB7 /* split-pea-soup.png in Resources */,
+				44BFDC19CE8AC3D86746B051 /* steel-cut-oats-with-apple.png in Resources */,
+				77C92B0D29665BF4E31C260E /* sticky-toffee-pudding.png in Resources */,
+				36BF17DE57C80832F7F82F58 /* stuffed-bell-peppers.png in Resources */,
+				3C34E35FD8F998087B5D5963 /* stuffed-portobello-mushrooms.png in Resources */,
+				33E471BC8790B1A6B5C28B0B /* sweet-potato-black-bean-freezer-burritos.png in Resources */,
+				313494900652FCC81F93F415 /* sweet-potato-breakfast-hash.png in Resources */,
+				FD78B54015F1E12529DB6DB8 /* teriyaki-salmon-bowl.png in Resources */,
+				AAE0BD6A08ED713193ED3BD7 /* teriyaki-salmon.png in Resources */,
+				644BFC91D022448F97553433 /* thai-basil-chicken.png in Resources */,
+				C42E77B0F85E06C5C54EB415 /* thai-coconut-soup.png in Resources */,
+				BA2DDC630BB749394312C20B /* thai-green-curry.png in Resources */,
+				83EACAAE587C4D199BB41D8A /* thai-red-curry-with-vegetables.png in Resources */,
+				10A194C83A89C68DED6A4427 /* three-bean-vegetarian-chili.png in Resources */,
+				5E9B28599BE1B1F5F248130A /* tofu-pad-thai.png in Resources */,
+				EE8D47583DD2EAD486CBA4DE /* tofu-scramble.png in Resources */,
+				E75CFC1AA3DD8FE67760BAEA /* tofu-vegetable-stir-fry.png in Resources */,
+				7C45F52CE30083B95DFBDAFD /* tuna-noodle-casserole.png in Resources */,
+				E1F6EC2F42FA407BCE63EFBB /* turkey-taco-skillet.png in Resources */,
+				20A6E09A695B1AA9A503319B /* tuscan-white-bean-and-kale-soup.png in Resources */,
+				56F8E1B13E82533C21647E7B /* tuscan-white-bean-and-kale-stew.png in Resources */,
+				9D44473635B4FD689A9A48F6 /* vegan-chocolate-avocado-mousse.png in Resources */,
+				8871063419B4D1C0FC3F1D5E /* vegan-corn-chowder.png in Resources */,
+				3C2654E77DFDB03800602A00 /* vegan-dan-dan-noodles.png in Resources */,
+				87C9FDD2FA7EEED7A562F3A2 /* vegetable-barley-stew.png in Resources */,
+				3108890699B0A46F4C0084DF /* vegetable-couscous-tagine.png in Resources */,
+				8F40BFFE23868C75635F54C8 /* vegetarian-lasagna.png in Resources */,
+				2931C955B0E550197F818A10 /* warm-lentil-and-feta-salad.png in Resources */,
+				F6960A6E708D281025595B53 /* watermelon-and-feta-salad.png in Resources */,
+				89DA42B53F1823A8F9D6A1BE /* white-bean-and-kale-soup.png in Resources */,
+				1693CF5C708DD55BF34FBF49 /* yogurt-parfait-with-granola.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
