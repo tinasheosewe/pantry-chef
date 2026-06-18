@@ -9,6 +9,9 @@ struct StockView: View {
 
     @State private var editing: StockItem?
     @State private var shopping = false
+    /// The category tile currently opened to its items — tap a tile to expand it,
+    /// tap again to close. nil = the grid sits collapsed.
+    @State private var openCategory: FoodCategory?
 
     private var allPerishable: [StockItem] {
         store.stock
@@ -18,28 +21,38 @@ struct StockView: View {
     /// The expiry *warning* — perishables inside the tight "use it or lose it"
     /// window. Lifted out of the calm sort into a band at the top (and the tab badge).
     private var urgent: [StockItem] { store.expiringSoon() }
-    /// Distinct sections, not one long sorted list: coming-up-soon (but not yet a
-    /// warning) vs. the rest of the fridge.
-    private var perishingFirst: [StockItem] {
-        allPerishable.filter {
-            let d = days($0) ?? .max
-            return d > KitchenConfig.Stores.expiryWarningDays && d <= KitchenConfig.Stores.perishingSoonDays
-        }
-    }
-    private var inStock: [StockItem] {
-        allPerishable.filter { (days($0) ?? .max) > KitchenConfig.Stores.perishingSoonDays }
-    }
-    // Group by the item's *measure*, the single source of truth, so an item can
-    // never disagree with itself and vanish (reactivity audit P1/P2). Perishables
-    // split by urgency (days), staples and leftovers by kind.
+    private var urgentIDs: Set<UUID> { Set(urgent.map(\.id)) }
+    /// For the header sentence only.
     private var staples: [StockItem] {
         store.stock.filter { if case .staple = $0.measure { return true } else { return false } }
+    }
+
+    /// A kitchen-sensible tile order (what you reach for first), not the enum's
+    /// alphabetical raw order. Empty categories are dropped.
+    private static let categoryOrder: [FoodCategory] = [
+        .produce, .protein, .dairy, .breads, .pasta, .grains, .legumes, .canned,
+        .frozenFoods, .condiments, .oils, .spices, .bakingSupplies, .nuts,
+        .beverages, .alcohol, .snacks, .other
+    ]
+    /// The pantry grouped into category tiles, each sorted by urgency within.
+    private var groups: [(FoodCategory, [StockItem])] {
+        let byCat = Dictionary(grouping: store.stock, by: \.category)
+        return Self.categoryOrder.compactMap { cat in
+            guard let items = byCat[cat], !items.isEmpty else { return nil }
+            return (cat, items.sorted { (days($0) ?? .max) < (days($1) ?? .max) })
+        }
     }
 
     /// Live days-left: the stored estimate counts down from its anchor, so the
     /// ledger (and its urgency sort) reflect today, not the day it was logged.
     private func days(_ item: StockItem) -> Int? {
         item.daysLeft(now: store.today)
+    }
+
+    /// Category tiles laid out two-per-row, so we can slot an expanded panel between rows.
+    private var tileRows: [[(FoodCategory, [StockItem])]] {
+        let g = groups
+        return stride(from: 0, to: g.count, by: 2).map { Array(g[$0..<min($0 + 2, g.count)]) }
     }
 
     var body: some View {
@@ -55,14 +68,19 @@ struct StockView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 0) {
                     if !urgent.isEmpty { warningBand }
-                    if !perishingFirst.isEmpty {
-                        section("Perishing soon", perishingFirst, tone: .urgent)
-                    }
-                    if !inStock.isEmpty {
-                        section("In stock", inStock)
-                    }
-                    if !staples.isEmpty {
-                        section("Staples", staples)
+                    Eyebrow(text: "By category").padding(.top, 16).padding(.bottom, 10)
+                    // Rows of two tiles; an opened category's items unfold full-width
+                    // directly beneath its own row, never at the bottom of the grid.
+                    ForEach(Array(tileRows.enumerated()), id: \.offset) { _, pair in
+                        HStack(alignment: .top, spacing: 10) {
+                            ForEach(pair, id: \.0) { cat, items in categoryTile(cat, items) }
+                            if pair.count == 1 { Color.clear.frame(maxWidth: .infinity) }
+                        }
+                        .padding(.bottom, 10)
+                        if let cat = openCategory, pair.contains(where: { $0.0 == cat }),
+                           let items = groups.first(where: { $0.0 == cat })?.1 {
+                            expandedPanel(cat, items)
+                        }
                     }
                     // Cooked/leftover dishes live in Dishes (and the now-module's
                     // ready-made fan), not here — Stores is ingredients & staples.
@@ -87,16 +105,71 @@ struct StockView: View {
         }
     }
 
-    /// One labelled ledger block, divided from the next by a rule.
-    @ViewBuilder private func section(_ title: String, _ items: [StockItem],
-                                     tone: Eyebrow.Tone = .quiet) -> some View {
-        Eyebrow(text: title, tone: tone).padding(.top, 14)
-        ForEach(items) { item in row(item) }
-        DashedRule().padding(.top, 11)
+    // MARK: - Category tiles
+
+    /// One pantry category as a tile: its emoji, name, item count, and a paprika
+    /// hint when something inside is expiring. Tap to open its items below the grid.
+    private func categoryTile(_ cat: FoodCategory, _ items: [StockItem]) -> some View {
+        let urgentCount = items.filter { urgentIDs.contains($0.id) }.count
+        let isOpen = openCategory == cat
+        return Button {
+            withAnimation(.snappy(duration: 0.22)) { openCategory = isOpen ? nil : cat }
+        } label: {
+            VStack(alignment: .leading, spacing: 5) {
+                HStack(alignment: .top) {
+                    Text(EmojiPlate.categoryFace(cat)).font(.system(size: 26))
+                    Spacer(minLength: 2)
+                    if urgentCount > 0 {
+                        Text("\(urgentCount) SOON")
+                            .font(.system(size: 8.5, weight: .semibold)).tracking(0.6)
+                            .foregroundStyle(Theme.Palette.paprika)
+                    }
+                }
+                Text(cat.rawValue).font(Theme.Typography.dish(13))
+                    .foregroundStyle(Theme.Palette.ink).lineLimit(1).minimumScaleFactor(0.8)
+                Text("\(items.count) \(items.count == 1 ? "item" : "items")")
+                    .font(Theme.Typography.note(10.5)).foregroundStyle(Theme.Palette.warmGray)
+            }
+            .frame(maxWidth: .infinity, minHeight: 86, alignment: .topLeading)
+            .padding(12)
+            .background(Rectangle().fill(Theme.Palette.creamRaised))
+            .overlay(Rectangle().fill(cat.color.opacity(isOpen ? 0.07 : 0)))
+            .overlay(alignment: .leading) {
+                Rectangle().fill(cat.color).frame(width: 3) // a slim category spine
+            }
+            .overlay(Rectangle().strokeBorder(
+                isOpen ? cat.color : Theme.Palette.ink.opacity(0.18), lineWidth: isOpen ? 1.5 : 1))
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+    }
+
+    /// The opened category's items, full-width beneath the grid — the familiar
+    /// ledger rows (tap → editor; expiring/low lines carry a one-tap "+ list").
+    private func expandedPanel(_ cat: FoodCategory, _ items: [StockItem]) -> some View {
+        VStack(alignment: .leading, spacing: 0) {
+            HStack(spacing: 6) {
+                Text(EmojiPlate.categoryFace(cat)).font(.system(size: 15))
+                Eyebrow(text: cat.rawValue)
+                Spacer()
+                Button { withAnimation(.snappy(duration: 0.2)) { openCategory = nil } } label: {
+                    Image(systemName: "xmark").font(.system(size: 11, weight: .semibold))
+                        .foregroundStyle(Theme.Palette.warmGray).frame(minWidth: 30, minHeight: 30)
+                }.buttonStyle(.plain)
+            }
+            ForEach(items) { item in row(item) }
+        }
+        .padding(.horizontal, 12).padding(.top, 10).padding(.bottom, 6)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Rectangle().fill(Theme.Palette.creamRaised.opacity(0.5)))
+        .overlay(Rectangle().strokeBorder(cat.color.opacity(0.5), lineWidth: 1))
+        .padding(.top, 10)
+        .transition(.opacity)
     }
 
     /// The expiry warning: a tomato-bordered band at the very top, so spoilage reads
-    /// as "act on this", not a quietly-sorted row you scroll past. Tap a line to edit.
+    /// as "act on this", not a quietly-sorted row you scroll past. Tap a line to edit;
+    /// the "+ list" sends the about-to-turn item straight to the shopping list.
     private var warningBand: some View {
         VStack(alignment: .leading, spacing: 7) {
             HStack(spacing: 6) {
@@ -111,14 +184,15 @@ struct StockView: View {
                         Text("\(emoji(item))\u{2002}\(item.name)")
                             .font(Theme.Typography.fact(13)).foregroundStyle(Theme.Palette.ink).lineLimit(1)
                     } trailing: {
-                        if case .perishable(let detail, _) = item.measure {
-                            HStack(spacing: 8) {
+                        HStack(spacing: 8) {
+                            if case .perishable(let detail, _) = item.measure, !detail.isEmpty {
                                 Text(detail.uppercased()).font(.system(size: 10)).tracking(0.8)
                                     .foregroundStyle(Theme.Palette.warmGraySoft)
-                                Text(daysLabel(item))
-                                    .font(Theme.Typography.dish(11, weight: .semibold))
-                                    .foregroundStyle(Theme.Palette.paprika)
                             }
+                            Text(daysLabel(item))
+                                .font(Theme.Typography.dish(11, weight: .semibold))
+                                .foregroundStyle(Theme.Palette.paprika)
+                            listAffordance(item.name)
                         }
                     }
                     .padding(.vertical, 3)
@@ -132,6 +206,24 @@ struct StockView: View {
         .background(Rectangle().fill(Theme.Palette.paprika.opacity(0.08)))
         .overlay(Rectangle().strokeBorder(Theme.Palette.paprika.opacity(0.55), lineWidth: 1))
         .padding(.top, 14)
+    }
+
+    /// One-tap "send to shopping list" for an expiring or running-low item — or a
+    /// quiet "listed" once it's there (spec: low/expiring → easy add to list).
+    @ViewBuilder private func listAffordance(_ name: String) -> some View {
+        if store.isOnList(name) {
+            Text("LISTED").font(.system(size: 9, weight: .medium)).tracking(1.0)
+                .foregroundStyle(Theme.Palette.sage)
+        } else {
+            Button { withAnimation { store.addToList(name: name) } } label: {
+                Text("+ LIST").font(.system(size: 9, weight: .semibold)).tracking(0.8)
+                    .foregroundStyle(Theme.Palette.paprika)
+                    .padding(.horizontal, 7).frame(minHeight: 30)
+                    .overlay(Rectangle().strokeBorder(Theme.Palette.paprika.opacity(0.6), lineWidth: 1))
+                    .contentShape(Rectangle())
+            }
+            .buttonStyle(.pressable)
+        }
     }
 
     /// "TODAY" for anything at or past its date, else "N DAY(S)".
@@ -213,7 +305,8 @@ struct StockView: View {
     }
 
     private func emoji(_ item: StockItem) -> String {
-        EmojiPlate.face(for: item.name, categories: item.plate.weights.map(\.category))
+        // Specific ingredient emoji where one exists, else its category's face.
+        EmojiPlate.icon(for: item.name, category: item.category)
     }
 
     @ViewBuilder private func trailing(_ item: StockItem) -> some View {
@@ -228,12 +321,16 @@ struct StockView: View {
                         .font(Theme.Typography.dish(11, weight: .semibold))
                         .foregroundStyle(d <= 3 ? Theme.Palette.paprika : Theme.Palette.warmGray)
                 }
+                // About to turn? Offer the list right where you see it.
+                if urgentIDs.contains(item.id) { listAffordance(item.name) }
             }
         case .staple(let level):
             switch level {
             case .inStock: OutlineTag(text: "In")
-            case .runningLow: OutlineTag(text: "Low — listed", tone: .urgent)
-            case .out: OutlineTag(text: "Out", tone: .urgent)
+            case .runningLow:
+                HStack(spacing: 8) { OutlineTag(text: "Low", tone: .urgent); listAffordance(item.name) }
+            case .out:
+                HStack(spacing: 8) { OutlineTag(text: "Out", tone: .urgent); listAffordance(item.name) }
             }
         case .made(let detail, let portions):
             Text((portions.map { "\($0) \($0 == 1 ? "portion" : "portions")" } ?? detail).uppercased())

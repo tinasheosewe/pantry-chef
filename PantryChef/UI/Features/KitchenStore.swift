@@ -505,6 +505,13 @@ final class KitchenStore {
                                           amount: (cleanAmount?.isEmpty == false) ? cleanAmount : nil))
     }
 
+    /// Is a name already on the shopping list? Drives the one-tap "add to list"
+    /// affordance on expiring/low items so it can show "listed" instead of re-adding.
+    func isOnList(_ name: String) -> Bool {
+        let key = name.trimmingCharacters(in: .whitespaces).lowercased()
+        return shoppingList.contains { $0.name.lowercased() == key }
+    }
+
     /// Free-text amount from a parsed phrase ("500 g", "2"), or nil.
     static func amountText(_ intake: ParsedIntake) -> String? {
         let text = [intake.quantity.map { QuantityFormat.short($0) },
