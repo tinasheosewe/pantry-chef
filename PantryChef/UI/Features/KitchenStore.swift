@@ -490,26 +490,66 @@ final class KitchenStore {
     }
 
     /// Add to the list, carrying a *desired* amount ("2 L", "12") when we know it.
-    /// Adding something already listed updates its desired amount rather than
-    /// duplicating.
+    /// One line per item (dedup by name); adding more of something already listed is
+    /// **additive** — the quantities sum (see `combinedAmount`) rather than overwrite.
     func addToList(name: String, amount: String? = nil) {
         let trimmed = name.trimmingCharacters(in: .whitespaces)
         guard !trimmed.isEmpty else { return }
         let display = trimmed.prefix(1).capitalized + trimmed.dropFirst()
         let cleanAmount = amount?.trimmingCharacters(in: .whitespaces)
         if let i = shoppingList.firstIndex(where: { $0.name.lowercased() == display.lowercased() }) {
-            if let cleanAmount, !cleanAmount.isEmpty { shoppingList[i].amount = cleanAmount }
+            shoppingList[i].amount = Self.combinedAmount(shoppingList[i].amount, cleanAmount)
             return
         }
         shoppingList.append(ShoppingEntry(name: display,
                                           amount: (cleanAmount?.isEmpty == false) ? cleanAmount : nil))
     }
 
-    /// Is a name already on the shopping list? Drives the one-tap "add to list"
-    /// affordance on expiring/low items so it can show "listed" instead of re-adding.
+    /// Combine two desired amounts additively: same unit (or both unit-less) → sum the
+    /// quantities ("2 L" + "2 L" → "4 L", "12" + "6" → "18"); otherwise keep both
+    /// explicitly ("2 L + 500 ml"). A blank side leaves the other untouched.
+    static func combinedAmount(_ existing: String?, _ added: String?) -> String? {
+        let a = existing?.trimmingCharacters(in: .whitespaces)
+        let b = added?.trimmingCharacters(in: .whitespaces)
+        guard let b, !b.isEmpty else { return (a?.isEmpty == false) ? a : nil }
+        guard let a, !a.isEmpty else { return b }
+        if AmountText.unit(a)?.rawValue == AmountText.unit(b)?.rawValue,
+           let qa = Double(AmountText.qty(a)), let qb = Double(AmountText.qty(b)) {
+            let sum = qa + qb
+            let qty = sum == sum.rounded() ? String(Int(sum)) : String(sum)
+            return AmountText.compose(qty: qty, unit: AmountText.unit(a))
+        }
+        return "\(a) + \(b)"
+    }
+
+    /// Is a name already on the shopping list? Drives the "add to list" affordance
+    /// (shows "+ more" instead of "+ list" once it's there — adding stays additive).
     func isOnList(_ name: String) -> Bool {
         let key = name.trimmingCharacters(in: .whitespaces).lowercased()
         return shoppingList.contains { $0.name.lowercased() == key }
+    }
+
+    /// The FoodCategory a shopping-list line belongs to (for grouping the list by
+    /// aisle), resolved through the catalog and cached. Defaults to `.other`.
+    func listCategory(forName name: String) -> FoodCategory {
+        let key = name.trimmingCharacters(in: .whitespaces).lowercased()
+        if let c = listCategoryCache[key] { return c }
+        let cat = IntakePipeline.bestCatalogID(for: name)
+            .flatMap { PantryCatalog.itemsByID[$0]?.category } ?? .other
+        listCategoryCache[key] = cat
+        return cat
+    }
+    @ObservationIgnored private var listCategoryCache: [String: FoodCategory] = [:]
+
+    /// Shopping entries grouped by category, in display order (empty groups dropped) —
+    /// the one place the list's aisle grouping is derived, shared by the pantry preview
+    /// and the shopping run.
+    func shoppingByCategory(_ entries: [ShoppingEntry]) -> [(FoodCategory, [ShoppingEntry])] {
+        let byCat = Dictionary(grouping: entries, by: { listCategory(forName: $0.name) })
+        return FoodCategory.displayOrder.compactMap { cat in
+            guard let items = byCat[cat], !items.isEmpty else { return nil }
+            return (cat, items)
+        }
     }
 
     /// Free-text amount from a parsed phrase ("500 g", "2"), or nil.

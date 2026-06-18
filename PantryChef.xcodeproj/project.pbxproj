@@ -294,6 +294,7 @@
 		EF677C4E3DFC7815C380CEC3 /* PantryChefApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CF034777B5CF54E8747C51B /* PantryChefApp.swift */; };
 		EFEB0C08C15F9D81C152BC1F /* AIModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4311CDDF67AA34C2F223237 /* AIModels.swift */; };
 		F156304049747D746A5A81EA /* beef-bourguignon.png in Resources */ = {isa = PBXBuildFile; fileRef = D1F00AF2A133AF37A385D1C6 /* beef-bourguignon.png */; };
+		F1BB126F88067F5A719EAB45 /* ShoppingListTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A528909975A22DD6DCF57DD /* ShoppingListTests.swift */; };
 		F3383FF48144D37F217B76BC /* PantryIntake.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EB9699BE6FCAA589DEAB869 /* PantryIntake.swift */; };
 		F43413C883726950D0CF284A /* BitapSearcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = C531F7524B3712D8330EE2CF /* BitapSearcher.swift */; };
 		F5E7B24EBB863A621EACD3C3 /* RealtimeConversationFunctionCallEventTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB4028F2212A34CB27DE289 /* RealtimeConversationFunctionCallEventTests.swift */; };
@@ -505,6 +506,7 @@
 		877E52465510E708BA84311A /* input_audio_transcription_completed_multilingual.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_audio_transcription_completed_multilingual.json; sourceTree = "<group>"; };
 		87FE0284BE69A65C4E4F030E /* breakfast-quesadilla.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "breakfast-quesadilla.png"; sourceTree = "<group>"; };
 		8802BCE3E36AF8C9E356CC0B /* baked-oatmeal-squares.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "baked-oatmeal-squares.png"; sourceTree = "<group>"; };
+		8A528909975A22DD6DCF57DD /* ShoppingListTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ShoppingListTests.swift; sourceTree = "<group>"; };
 		8AF51EB1621E970C815A5281 /* korean-braised-short-ribs.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "korean-braised-short-ribs.png"; sourceTree = "<group>"; };
 		8B383E5FF1CA359A721ACCEE /* tuscan-white-bean-and-kale-soup.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "tuscan-white-bean-and-kale-soup.png"; sourceTree = "<group>"; };
 		8B39024CB6A7E1370C24075B /* miso-butter-salmon.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "miso-butter-salmon.png"; sourceTree = "<group>"; };
@@ -992,6 +994,7 @@
 				53ADC570802BEDF30A7FEAE1 /* CatalogSwapsTests.swift */,
 				6DA54DA4B3280DFCD6C1A52C /* MealPlanningTests.swift */,
 				21A5B7B1913DAF532EDDC8EF /* PlateArtCoverageTests.swift */,
+				8A528909975A22DD6DCF57DD /* ShoppingListTests.swift */,
 			);
 			path = PantryChefTests;
 			sourceTree = "<group>";
@@ -1695,6 +1698,7 @@
 				26C1EAB9DEDD1361250914B3 /* CatalogSwapsTests.swift in Sources */,
 				DA390A2FB998A6A3E41320AD /* MealPlanningTests.swift in Sources */,
 				37A16F31FD256CC9DFE357C9 /* PlateArtCoverageTests.swift in Sources */,
+				F1BB126F88067F5A719EAB45 /* ShoppingListTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

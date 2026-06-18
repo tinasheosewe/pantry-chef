@@ -37,17 +37,11 @@ struct StockView: View {
         store.stock.filter { if case .staple = $0.measure { return true } else { return false } }
     }
 
-    /// A kitchen-sensible tile order (what you reach for first), not the enum's
-    /// alphabetical raw order. Empty categories are dropped.
-    private static let categoryOrder: [FoodCategory] = [
-        .produce, .protein, .dairy, .breads, .pasta, .grains, .legumes, .canned,
-        .frozenFoods, .condiments, .oils, .spices, .bakingSupplies, .nuts,
-        .beverages, .alcohol, .snacks, .other
-    ]
-    /// The pantry grouped into category tiles, each sorted by urgency within.
+    /// The pantry grouped by category in display order (empty categories dropped),
+    /// each sorted by urgency within.
     private var groups: [(FoodCategory, [StockItem])] {
         let byCat = Dictionary(grouping: store.stock, by: \.category)
-        return Self.categoryOrder.compactMap { cat in
+        return FoodCategory.displayOrder.compactMap { cat in
             guard let items = byCat[cat], !items.isEmpty else { return nil }
             return (cat, items.sorted { (days($0) ?? .max) < (days($1) ?? .max) })
         }
@@ -215,23 +209,20 @@ struct StockView: View {
         .padding(.top, 14)
     }
 
-    /// "Send to shopping list" for an expiring or running-low item — but ask *how much*
-    /// to buy first (a quantity prompt), rather than guessing an amount. Shows a quiet
-    /// "listed" once it's there.
-    @ViewBuilder private func listAffordance(_ item: StockItem) -> some View {
-        if store.isOnList(item.name) {
-            Text("LISTED").font(.system(size: 9, weight: .medium)).tracking(1.0)
-                .foregroundStyle(Theme.Palette.sage)
-        } else {
-            Button { listing = ListPrompt(name: item.name, plate: item.plate, suggested: suggestedAmount(item)) } label: {
-                Text("+ LIST").font(.system(size: 9, weight: .semibold)).tracking(0.8)
-                    .foregroundStyle(Theme.Palette.paprika)
-                    .padding(.horizontal, 7).frame(minHeight: 30)
-                    .overlay(Rectangle().strokeBorder(Theme.Palette.paprika.opacity(0.6), lineWidth: 1))
-                    .contentShape(Rectangle())
-            }
-            .buttonStyle(.pressable)
+    /// "Send to shopping list" for an expiring or running-low item — always asks *how
+    /// much* (a quantity prompt) rather than guessing. Already on the list? It stays
+    /// tappable as "+ MORE" and the quantity adds to what's there (additive), so a
+    /// second tap because something's low tops up the line instead of being blocked.
+    private func listAffordance(_ item: StockItem) -> some View {
+        let listed = store.isOnList(item.name)
+        return Button { listing = ListPrompt(name: item.name, plate: item.plate, suggested: suggestedAmount(item)) } label: {
+            Text(listed ? "+ MORE" : "+ LIST").font(.system(size: 9, weight: .semibold)).tracking(0.8)
+                .foregroundStyle(listed ? Theme.Palette.sage : Theme.Palette.paprika)
+                .padding(.horizontal, 7).frame(minHeight: 30)
+                .overlay(Rectangle().strokeBorder((listed ? Theme.Palette.sage : Theme.Palette.paprika).opacity(0.6), lineWidth: 1))
+                .contentShape(Rectangle())
         }
+        .buttonStyle(.pressable)
     }
 
     /// A starting amount for the prompt — the size you currently keep, when we know it
@@ -356,8 +347,8 @@ struct StockView: View {
     }
 
     /// A read-only preview — managing the list (amounts, bought, removal) happens in
-    /// the Shop run, so there's one place to keep it in sync. The whole section taps
-    /// through to Shop.
+    /// the Shop run, so there's one place to keep it in sync. Grouped by category
+    /// (same aisle order as the inventory). The whole section taps through to Shop.
     private var listSection: some View {
         Button { shopping = true } label: {
             VStack(alignment: .leading, spacing: 0) {
@@ -368,17 +359,19 @@ struct StockView: View {
                         .foregroundStyle(Theme.Palette.paprika)
                 }
                 .padding(.top, 14)
-                ForEach(store.shoppingList) { entry in
-                    HStack(spacing: 9) {
-                        PlateView(name: entry.name, composition: store.plate(forName: entry.name), size: 26)
-                        Text(entry.name).font(Theme.Typography.fact(13.5)).foregroundStyle(Theme.Palette.ink)
-                        if let amount = entry.amount {
-                            Text(amount).font(Theme.Typography.fact(11.5)).foregroundStyle(Theme.Palette.warmGraySoft)
+                ForEach(store.shoppingByCategory(store.shoppingList), id: \.0) { cat, items in
+                    sectionHeader(cat, items.count)
+                    ForEach(items) { entry in
+                        HStack(spacing: 9) {
+                            PlateView(name: entry.name, composition: store.plate(forName: entry.name), size: 26)
+                            Text(entry.name).font(Theme.Typography.fact(13.5)).foregroundStyle(Theme.Palette.ink)
+                            if let amount = entry.amount {
+                                Text(amount).font(Theme.Typography.fact(11.5)).foregroundStyle(Theme.Palette.warmGraySoft)
+                            }
+                            Spacer(minLength: 4)
                         }
-                        Spacer(minLength: 4)
+                        .padding(.vertical, 5)
                     }
-                    .padding(.vertical, 5)
-                    if entry.id != store.shoppingList.last?.id { DashedRule(opacity: 0.5) }
                 }
             }
             .contentShape(Rectangle())

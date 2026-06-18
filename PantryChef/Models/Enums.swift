@@ -76,6 +76,15 @@ enum FoodCategory: String, Codable, CaseIterable, Identifiable {
         default: return false
         }
     }
+
+    /// A kitchen-sensible display order (what you reach for first / shop by aisle),
+    /// not the enum's alphabetical raw order. Shared by the Pantry inventory and the
+    /// shopping list so both group categories the same way.
+    static let displayOrder: [FoodCategory] = [
+        .produce, .protein, .dairy, .breads, .pasta, .grains, .legumes, .canned,
+        .frozenFoods, .condiments, .oils, .spices, .bakingSupplies, .nuts,
+        .beverages, .alcohol, .snacks, .other
+    ]
 }
 
 // MARK: - Measurement Unit

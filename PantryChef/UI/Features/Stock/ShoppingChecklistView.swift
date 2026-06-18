@@ -42,27 +42,35 @@ struct ShoppingChecklistView: View {
             // A List so removal is the native swipe gesture (no ✕): swipe a row to
             // remove it. Marking bought is a tap on the check — distinct gesture, no
             // conflict. Separators tinted to ink to fit the printed look.
+            // Grouped by category (aisle order), the same grouping the Pantry uses, so
+            // you shop section by section.
             List {
-                ForEach(entries) { entry in
-                    row(entry)
-                        .listRowInsets(EdgeInsets(top: 5, leading: 20, bottom: 5, trailing: 20))
-                        .listRowBackground(Color.clear)
-                        .listRowSeparatorTint(Theme.Palette.ink.opacity(0.18))
-                        // Swipe right (leading) to mark bought, swipe left (trailing)
-                        // to remove — each swipe performs its action on a full swipe.
-                        // Tapping the check still toggles bought too.
-                        .swipeActions(edge: .leading, allowsFullSwipe: true) {
-                            Button { toggle(entry.name) } label: {
-                                Label(checked.contains(entry.name) ? "Un-cart" : "Bought",
-                                      systemImage: checked.contains(entry.name) ? "arrow.uturn.left" : "checkmark")
-                            }
-                            .tint(Theme.Palette.sage)
+                ForEach(store.shoppingByCategory(entries), id: \.0) { cat, items in
+                    Section {
+                        ForEach(items) { entry in
+                            row(entry)
+                                .listRowInsets(EdgeInsets(top: 5, leading: 20, bottom: 5, trailing: 20))
+                                .listRowBackground(Color.clear)
+                                .listRowSeparatorTint(Theme.Palette.ink.opacity(0.18))
+                                // Swipe right (leading) to mark bought, swipe left
+                                // (trailing) to remove — full-swipe performs the action.
+                                // Tapping the check still toggles bought too.
+                                .swipeActions(edge: .leading, allowsFullSwipe: true) {
+                                    Button { toggle(entry.name) } label: {
+                                        Label(checked.contains(entry.name) ? "Un-cart" : "Bought",
+                                              systemImage: checked.contains(entry.name) ? "arrow.uturn.left" : "checkmark")
+                                    }
+                                    .tint(Theme.Palette.sage)
+                                }
+                                .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                                    Button(role: .destructive) { remove(entry) } label: {
+                                        Label("Remove", systemImage: "trash")
+                                    }
+                                }
                         }
-                        .swipeActions(edge: .trailing, allowsFullSwipe: true) {
-                            Button(role: .destructive) { remove(entry) } label: {
-                                Label("Remove", systemImage: "trash")
-                            }
-                        }
+                    } header: {
+                        sectionHeader(cat)
+                    }
                 }
                 addRow
                     .listRowInsets(EdgeInsets(top: 12, leading: 20, bottom: 5, trailing: 20))
@@ -128,6 +136,19 @@ struct ShoppingChecklistView: View {
             .buttonStyle(.plain)
         }
         .padding(.horizontal, 20).padding(.top, 18)
+    }
+
+    /// A category band between aisles — emoji + name + a slim color spine, matching the
+    /// Pantry's section headers.
+    private func sectionHeader(_ cat: FoodCategory) -> some View {
+        HStack(spacing: 7) {
+            Rectangle().fill(cat.color).frame(width: 3, height: 12)
+            Text(EmojiPlate.categoryFace(cat)).font(.system(size: 12))
+            Text(cat.rawValue).font(.system(size: 10, weight: .semibold)).tracking(1.2)
+                .foregroundStyle(Theme.Palette.ink.opacity(0.6))
+        }
+        .textCase(nil)
+        .padding(.leading, 20)
     }
 
     private func row(_ entry: ShoppingEntry) -> some View {
