@@ -38,8 +38,14 @@ struct RedesignRootView: View {
     /// Secondary "More filters" (cuisine/diet/meal type/time) layered on the lens.
     @State private var feedFilters = FeedFilters()
     @State private var showFilters = false
-    /// Full dish library, opened from the feed's "browse all" / now-module "see all".
-    @State private var showAllDishes = false
+    /// "Browse all" mode: the .all lens shown as a flat grid (not the curated rails) —
+    /// the in-page replacement for the old bottom-sheet library.
+    @State private var browseAll = false
+    /// Name search, shown in any grid view (every lens except the "For you" landing).
+    @State private var feedSearch = ""
+    /// "Cook together" multi-select over the grid.
+    @State private var selecting = false
+    @State private var selectedIDs: Set<UUID> = []
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
@@ -128,14 +134,6 @@ struct RedesignRootView: View {
             .fullScreenCover(item: $multiSession) { session in
                 CookFlowScreen(store: store, session: session, onClose: { multiSession = nil })
             }
-            .sheet(isPresented: $showAllDishes) {
-                LibraryView(
-                    store: store,
-                    onCook: { dish in showAllDishes = false; DispatchQueue.main.async { detailDish = dish } },
-                    onCookTogether: { dishes in showAllDishes = false; DispatchQueue.main.async { multiSession = CookSession(dishes: dishes) } }
-                )
-                .presentationDetents([.large])
-            }
     }
 
     /// One true line per page (the mock's "№ 163 · sunset 21:43").
@@ -206,7 +204,10 @@ struct RedesignRootView: View {
     private var todayFeed: some View {
         // The curated "For you" rails show only on the default lens with no extra
         // filters; any lens or filter turns the feed into a filtered grid.
-        let curatedView = feedLens == .all && feedFilters.isEmpty
+        // "For you" with no filters/browse = the curated landing. Any lens, filter, or
+        // "browse all" turns the feed into an in-page grid (the old bottom-sheet library
+        // is gone — browsing lives right here).
+        let curatedView = feedLens == .all && feedFilters.isEmpty && !browseAll
         return VStack(spacing: 0) {
             todayHeader
             ScrollView {
@@ -219,12 +220,13 @@ struct RedesignRootView: View {
                                 .padding(.top, 12)
                         }
                     }
-                    IntentPills(selected: $feedLens, filterCount: feedFilters.activeCount,
+                    IntentPills(selected: lensBinding, filterCount: feedFilters.activeCount,
                                 onOpenFilters: { showFilters = true })
                         .padding(.top, curatedView ? 16 : 12)
                     if curatedView {
                         forYouFeed
                     } else {
+                        gridControls.padding(.horizontal, Theme.Metric.lg).padding(.top, 12)
                         filteredGrid
                     }
                 }
@@ -232,6 +234,9 @@ struct RedesignRootView: View {
             }
         }
         .background(Theme.Palette.cream.ignoresSafeArea())
+        .safeAreaInset(edge: .bottom) {
+            if selecting && !selectedIDs.isEmpty { cookTogetherBar }
+        }
         .sheet(isPresented: $showFilters) {
             FeedFiltersSheet(
                 filters: $feedFilters,
@@ -364,23 +369,93 @@ struct RedesignRootView: View {
     @ViewBuilder private var filteredGrid: some View {
         let dishes = filteredDishes
         if dishes.isEmpty {
-            Text("Nothing matches those filters.")
+            Text("Nothing matches — clear a filter or your search.")
                 .font(Theme.Typography.note(13)).foregroundStyle(Theme.Palette.warmGray)
                 .frame(maxWidth: .infinity).padding(.top, 40)
         } else {
             LazyVGrid(columns: [GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12)],
                       alignment: .leading, spacing: 16) {
-                ForEach(dishes) { dish in
-                    RecipeTile(item: feedItem(dish), onOpen: { detailDish = $0 })
-                }
+                ForEach(dishes) { dish in gridTile(dish) }
             }
             .padding(.horizontal, Theme.Metric.lg).padding(.top, 14)
         }
     }
 
-    /// Dishes matching the active lens AND the secondary filters.
+    /// One grid tile — opens the recipe, or toggles selection in "cook together" mode.
+    @ViewBuilder private func gridTile(_ dish: Dish) -> some View {
+        let isSel = selectedIDs.contains(dish.id)
+        RecipeTile(item: feedItem(dish)) { tapped in
+            if selecting {
+                if isSel { selectedIDs.remove(dish.id) } else { selectedIDs.insert(dish.id) }
+            } else { detailDish = tapped }
+        }
+        .overlay(alignment: .topTrailing) {
+            if selecting {
+                Image(systemName: isSel ? "checkmark.circle.fill" : "circle")
+                    .font(.system(size: 18))
+                    .foregroundStyle(isSel ? Theme.Palette.paprika : Theme.Palette.ink.opacity(0.35))
+                    .padding(8)
+            }
+        }
+        .opacity(selecting && !isSel ? 0.6 : 1)
+    }
+
+    /// Chips bind through here so picking a lens exits "browse all" + any selection.
+    private var lensBinding: Binding<FeedLens> {
+        Binding(get: { feedLens },
+                set: { feedLens = $0; browseAll = false; selecting = false; selectedIDs = []; feedSearch = "" })
+    }
+
+    /// Search + "cook together" — sits above the grid in every non-curated view.
+    private var gridControls: some View {
+        HStack(spacing: 10) {
+            HStack(spacing: 7) {
+                Image(systemName: "magnifyingglass").font(.system(size: 11))
+                    .foregroundStyle(Theme.Palette.ink.opacity(0.45))
+                TextField("Search dishes", text: $feedSearch)
+                    .font(Theme.Typography.fact(13)).foregroundStyle(Theme.Palette.ink)
+                if !feedSearch.isEmpty {
+                    Button { feedSearch = "" } label: {
+                        Image(systemName: "xmark").font(.system(size: 11)).foregroundStyle(Theme.Palette.ink.opacity(0.45))
+                    }.buttonStyle(.plain)
+                }
+            }
+            .padding(.horizontal, 10).padding(.vertical, 7)
+            .overlay(Rectangle().strokeBorder(Theme.Palette.ink.opacity(0.25), lineWidth: 1))
+            Button { withAnimation { selecting.toggle(); selectedIDs = [] } } label: {
+                Text(selecting ? "CANCEL" : "COOK TOGETHER")
+                    .font(.system(size: 9, weight: .medium)).tracking(1.2)
+                    .foregroundStyle(Theme.Palette.paprika).fixedSize().contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+        }
+    }
+
+    /// The "cook N together" action bar, pinned while you're selecting.
+    private var cookTogetherBar: some View {
+        VStack(spacing: 0) {
+            SolidRule()
+            HStack {
+                Text("\(selectedIDs.count) SELECTED")
+                    .font(.system(size: 9)).tracking(1.8).foregroundStyle(Theme.Palette.ink.opacity(0.55))
+                Spacer()
+                BlockButton(title: "Cook \(selectedIDs.count) together") {
+                    let chosen = store.library.filter { selectedIDs.contains($0.id) }
+                    selecting = false; selectedIDs = []
+                    multiSession = CookSession(dishes: chosen)
+                }
+            }
+            .padding(.horizontal, Theme.Metric.lg).padding(.vertical, 10)
+        }
+        .background(Theme.Palette.cream)
+    }
+
+    /// Dishes matching the active lens AND the secondary filters AND the search.
     private var filteredDishes: [Dish] {
-        store.library.filter { matches($0, feedLens) && feedFilters.accepts($0) }
+        let q = feedSearch.trimmingCharacters(in: .whitespaces).lowercased()
+        return store.library.filter {
+            matches($0, feedLens) && feedFilters.accepts($0) && (q.isEmpty || $0.name.lowercased().contains(q))
+        }
     }
 
     /// Distinct, sorted values of a string tag across the library (for the filter sheet).
@@ -401,7 +476,7 @@ struct RedesignRootView: View {
     }
 
     private var browseAllFooter: some View {
-        Button { showAllDishes = true } label: {
+        Button { withAnimation { browseAll = true } } label: {
             Text("BROWSE ALL DISHES →")
                 .font(.system(size: 11, weight: .medium)).tracking(1.4)
                 .foregroundStyle(Theme.Palette.paprika)
@@ -494,7 +569,7 @@ struct RedesignRootView: View {
                         store.logEaten(option)
                     }
                 },
-                onSeeAll: { showAllDishes = true },
+                onSeeAll: { withAnimation { browseAll = true } },
                 onChange: { store.resetNow() },
                 onResume: {
                     if case .cooking(let p) = store.nowState, let dish = p.dish {

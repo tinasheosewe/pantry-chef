@@ -30,7 +30,6 @@
 		15CDBB20426EB7FAC3BC6633 /* chana-masala.png in Resources */ = {isa = PBXBuildFile; fileRef = 3B99BCD9DB6959A4411DB6CF /* chana-masala.png */; };
 		15FE178FE896F53A462EA0D4 /* beef-vegetable-freezer-stew.png in Resources */ = {isa = PBXBuildFile; fileRef = 52D60B775452879B009D459A /* beef-vegetable-freezer-stew.png */; };
 		1693CF5C708DD55BF34FBF49 /* yogurt-parfait-with-granola.png in Resources */ = {isa = PBXBuildFile; fileRef = 813AF015CDFFC4786F074A51 /* yogurt-parfait-with-granola.png */; };
-		1848D7221ABD09AC3AA2A45A /* LibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 353D73D6645D3DD2DDEC4808 /* LibraryView.swift */; };
 		184A030447B152AD9219A171 /* breakfast-quesadilla.png in Resources */ = {isa = PBXBuildFile; fileRef = 87FE0284BE69A65C4E4F030E /* breakfast-quesadilla.png */; };
 		19A89EA4EF7BDE233C514C52 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 501A15BF9D50C2FA21FDC847 /* SettingsView.swift */; };
 		1A02128F14E66EA369360FDF /* GlassCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1676611A3A7F82D7BAC3B20E /* GlassCard.swift */; };
@@ -397,7 +396,6 @@
 		34B5FE77EAD2C411FA48AF08 /* gambas-al-ajillo-with-rice.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "gambas-al-ajillo-with-rice.png"; sourceTree = "<group>"; };
 		34E2D7A92D8DBDADEE7255A4 /* lentil-and-lemon-soup.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "lentil-and-lemon-soup.png"; sourceTree = "<group>"; };
 		34FBDF3045F807228F2ED54C /* ItemCertainty.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ItemCertainty.swift; sourceTree = "<group>"; };
-		353D73D6645D3DD2DDEC4808 /* LibraryView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LibraryView.swift; sourceTree = "<group>"; };
 		35558682CE6D0E96E0706FC1 /* cheesy-broccoli-rice-bake.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "cheesy-broccoli-rice-bake.png"; sourceTree = "<group>"; };
 		35A35FC77D0D1FCB36B97CE4 /* apple-crumble.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "apple-crumble.png"; sourceTree = "<group>"; };
 		3643051113F5FA12AC9EE141 /* tuna-noodle-casserole.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "tuna-noodle-casserole.png"; sourceTree = "<group>"; };
@@ -1023,7 +1021,6 @@
 		5348E05E521FD989D961448C /* Library */ = {
 			isa = PBXGroup;
 			children = (
-				353D73D6645D3DD2DDEC4808 /* LibraryView.swift */,
 			);
 			name = Library;
 			path = Library;
@@ -1628,7 +1625,6 @@
 				E4A47532EC51423D4671C67E /* RedesignRootView.swift in Sources */,
 				9A7B80CB49163E59D70F1219 /* ComposerView.swift in Sources */,
 				4EE220109F2FDCAA2FFB63E6 /* StockView.swift in Sources */,
-				1848D7221ABD09AC3AA2A45A /* LibraryView.swift in Sources */,
 				E8B0B35D245ECCEFF9939A78 /* Dish.swift in Sources */,
 				62E0F6FCD8C0B8E58B18A185 /* CookFlowView.swift in Sources */,
 				125C82426544C3A6FA821E3C /* DietaryProfile.swift in Sources */,
