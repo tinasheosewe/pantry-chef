@@ -7238,7 +7238,7 @@
      "amount": "1",
      "category": "produce",
      "staple": false,
-     "catalogId": "pear",
+     "catalogId": "pear-tomato",
      "optional": true
     },
     {
@@ -9077,7 +9077,7 @@
      "amount": "400 g",
      "category": "pasta",
      "staple": false,
-     "catalogId": "wheat",
+     "catalogId": "wheat-bran",
      "optional": false
     },
     {
@@ -19151,7 +19151,7 @@
      "amount": "4 cups cubed",
      "category": "produce",
      "staple": false,
-     "catalogId": "watermelon",
+     "catalogId": "watermelon-radish",
      "optional": false
     },
     {
@@ -21838,7 +21838,7 @@
      "amount": "4 firm",
      "category": "produce",
      "staple": false,
-     "catalogId": "pear",
+     "catalogId": "pear-tomato",
      "optional": false
     },
     {

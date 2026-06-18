@@ -1,0 +1,439 @@
+{
+  "category": "Protein",
+  "structural": [
+    {
+      "op": "merge",
+      "from": "goat-meat",
+      "into": "goat",
+      "note": "true duplicate: 'goat meat' is a redundant child of the canonical root 'goat' (no children, same diet). Folds aliases (chevon/cabrito/mutton variants) up; resolves chevon/cabrito collision."
+    },
+    {
+      "op": "merge",
+      "from": "rabbit-whole-parts",
+      "into": "rabbit",
+      "note": "true duplicate: 'rabbit (whole/parts)' duplicates root 'rabbit' (no children). Resolves hare/lapin/coney/conejo alias collisions between the two."
+    },
+    {
+      "op": "merge",
+      "from": "turkey-ground",
+      "into": "ground-turkey",
+      "note": "true duplicate: 'turkey ground' and 'ground turkey' are the same item, both parented to turkey. ground-turkey has the natural name + richer aliases (minced turkey/turkey mince); fold the older bare-suffix node into it."
+    }
+  ],
+  "cleanups": [
+    {
+      "op": "removeAlias",
+      "id": "tuna",
+      "alias": "anchovies",
+      "note": "mis-resolution: 'anchovies' is a different fish (anchovy item exists). Querying anchovies must not land on tuna."
+    },
+    {
+      "op": "removeAlias",
+      "id": "tuna",
+      "alias": "lox",
+      "note": "mis-resolution: lox is cured salmon, now owned by smoked-salmon, not tuna."
+    },
+    {
+      "op": "removeAlias",
+      "id": "tuna",
+      "alias": "nova lox",
+      "note": "mis-resolution: nova lox is cured salmon, not tuna."
+    },
+    {
+      "op": "removeAlias",
+      "id": "tuna",
+      "alias": "gravlax",
+      "note": "mis-resolution: gravlax is cured salmon (smoked-salmon owns it), not tuna."
+    },
+    {
+      "op": "removeAlias",
+      "id": "tuna",
+      "alias": "pilchards",
+      "note": "mis-resolution: pilchards are sardines (canned-sardines owns it), not tuna."
+    },
+    {
+      "op": "removeAlias",
+      "id": "tuna",
+      "alias": "canned tuna",
+      "note": "duplicate of dedicated canned-tuna item; let the canned item own the canned query."
+    },
+    {
+      "op": "removeAlias",
+      "id": "tuna",
+      "alias": "canned tunas",
+      "note": "duplicate of dedicated canned-tuna item."
+    },
+    {
+      "op": "removeAlias",
+      "id": "tuna",
+      "alias": "tinned tuna",
+      "note": "collides with dedicated canned-tuna item; canned-tuna should own it."
+    },
+    {
+      "op": "removeAlias",
+      "id": "tuna",
+      "alias": "tuna in oil",
+      "note": "collides with dedicated canned-tuna item."
+    },
+    {
+      "op": "removeAlias",
+      "id": "tuna",
+      "alias": "tuna in water",
+      "note": "collides with dedicated canned-tuna item."
+    },
+    {
+      "op": "removeAlias",
+      "id": "salmon-oily-fish",
+      "alias": "canned salmon",
+      "note": "collides with dedicated canned-salmon item; the fresh-salmon node should not also claim the canned query."
+    },
+    {
+      "op": "removeAlias",
+      "id": "salmon-oily-fish",
+      "alias": "canned salmons",
+      "note": "collides with dedicated canned-salmon item."
+    },
+    {
+      "op": "removeAlias",
+      "id": "salmon-oily-fish",
+      "alias": "tinned salmon",
+      "note": "collides with dedicated canned-salmon item."
+    },
+    {
+      "op": "removeAlias",
+      "id": "salmon-oily-fish",
+      "alias": "smoked salmon",
+      "note": "collides with dedicated smoked-salmon item."
+    },
+    {
+      "op": "removeAlias",
+      "id": "salmon-oily-fish",
+      "alias": "cold smoked salmon",
+      "note": "collides with dedicated smoked-salmon item."
+    },
+    {
+      "op": "removeAlias",
+      "id": "salmon-oily-fish",
+      "alias": "hot smoked salmon",
+      "note": "collides with dedicated smoked-salmon item."
+    },
+    {
+      "op": "removeAlias",
+      "id": "sardine",
+      "alias": "canned sardine",
+      "note": "collides with dedicated canned-sardines item (parented to sardine)."
+    },
+    {
+      "op": "removeAlias",
+      "id": "sardine",
+      "alias": "canned sardines",
+      "note": "collides with dedicated canned-sardines item."
+    },
+    {
+      "op": "removeAlias",
+      "id": "tofu",
+      "alias": "firm tofu",
+      "note": "collides with dedicated firm-tofu item; the texture-specific node should win the firm-tofu query."
+    },
+    {
+      "op": "removeAlias",
+      "id": "tofu",
+      "alias": "extra firm tofu",
+      "note": "belongs to the dedicated firm-tofu node, not the generic tofu base."
+    },
+    {
+      "op": "removeAlias",
+      "id": "tofu",
+      "alias": "silken tofu",
+      "note": "collides with dedicated silken-tofu item."
+    },
+    {
+      "op": "removeAlias",
+      "id": "tofu",
+      "alias": "soft tofu",
+      "note": "collides with dedicated silken-tofu item (soft tofu == silken)."
+    },
+    {
+      "op": "removeAlias",
+      "id": "elk-roast",
+      "alias": "roast beef",
+      "note": "mis-resolution: 'roast beef' must not resolve to elk. Whole roast-beef alias pile was wrongly attached to elk-roast."
+    },
+    {
+      "op": "removeAlias",
+      "id": "elk-roast",
+      "alias": "roast beef slices",
+      "note": "mis-resolution: beef term wrongly on elk-roast."
+    },
+    {
+      "op": "removeAlias",
+      "id": "elk-roast",
+      "alias": "roast beefs",
+      "note": "mis-resolution: beef term wrongly on elk-roast."
+    },
+    {
+      "op": "removeAlias",
+      "id": "elk-roast",
+      "alias": "roastbeef",
+      "note": "mis-resolution: beef term wrongly on elk-roast."
+    },
+    {
+      "op": "removeAlias",
+      "id": "elk-roast",
+      "alias": "cold roast beef",
+      "note": "mis-resolution: beef term wrongly on elk-roast."
+    },
+    {
+      "op": "removeAlias",
+      "id": "elk-roast",
+      "alias": "deli roast beef",
+      "note": "mis-resolution: beef term wrongly on elk-roast."
+    },
+    {
+      "op": "removeAlias",
+      "id": "elk-roast",
+      "alias": "beef roast",
+      "note": "mis-resolution: beef term wrongly on elk-roast."
+    },
+    {
+      "op": "removeAlias",
+      "id": "elk-roast",
+      "alias": "beef pot roast",
+      "note": "mis-resolution: beef term wrongly on elk-roast."
+    },
+    {
+      "op": "removeAlias",
+      "id": "elk-roast",
+      "alias": "beef rump roast",
+      "note": "mis-resolution: beef term wrongly on elk-roast."
+    },
+    {
+      "op": "removeAlias",
+      "id": "elk-ground",
+      "alias": "ground hamburger",
+      "note": "mis-resolution: 'ground hamburger' is beef; collides with beef-ground and wrongly routes hamburger to elk."
+    },
+    {
+      "op": "removeAlias",
+      "id": "ostrich-fillet",
+      "alias": "mahi mahi fillet",
+      "note": "mis-resolution: querying mahi-mahi fillet must not resolve to ostrich (mahi-mahi item exists)."
+    },
+    {
+      "op": "removeAlias",
+      "id": "chicken-neck",
+      "alias": "poultry",
+      "note": "mis-resolution: generic 'poultry' resolving to a chicken NECK is wrong; belongs (if anywhere) on chicken-meat."
+    },
+    {
+      "op": "removeAlias",
+      "id": "chicken-neck",
+      "alias": "chickens",
+      "note": "mis-resolution: plural of chicken should resolve to chicken-meat, not the neck cut."
+    },
+    {
+      "op": "removeAlias",
+      "id": "chicken-neck",
+      "alias": "hen",
+      "note": "mis-resolution: 'hen' is a whole bird, not a neck cut."
+    },
+    {
+      "op": "removeAlias",
+      "id": "chicken-neck",
+      "alias": "broiler",
+      "note": "mis-resolution: 'broiler' is a whole chicken type, not a neck cut."
+    },
+    {
+      "op": "removeAlias",
+      "id": "bacon",
+      "alias": "baloney",
+      "note": "over-broad: bologna, not bacon (bologna item exists)."
+    },
+    {
+      "op": "removeAlias",
+      "id": "bacon",
+      "alias": "banger",
+      "note": "over-broad: banger is a sausage, not bacon."
+    },
+    {
+      "op": "removeAlias",
+      "id": "bacon",
+      "alias": "brats",
+      "note": "over-broad: bratwurst, not bacon (bratwurst item exists)."
+    },
+    {
+      "op": "removeAlias",
+      "id": "bacon",
+      "alias": "frank",
+      "note": "over-broad: frankfurter/hot dog, not bacon (hot-dog item exists)."
+    },
+    {
+      "op": "removeAlias",
+      "id": "bacon",
+      "alias": "frankfurter",
+      "note": "over-broad: hot dog, not bacon (hot-dog item exists)."
+    },
+    {
+      "op": "removeAlias",
+      "id": "bacon",
+      "alias": "corn dogs",
+      "note": "over-broad: corn dog is a battered hot dog, not bacon (hot-dog owns 'corn dog')."
+    },
+    {
+      "op": "removeAlias",
+      "id": "bacon",
+      "alias": "corndog",
+      "note": "over-broad: corn dog, not bacon."
+    },
+    {
+      "op": "removeAlias",
+      "id": "bacon",
+      "alias": "corndogs",
+      "note": "over-broad: corn dog, not bacon."
+    },
+    {
+      "op": "removeAlias",
+      "id": "bacon",
+      "alias": "wiener",
+      "note": "over-broad: wiener is a hot dog/frankfurter, not bacon."
+    },
+    {
+      "op": "removeAlias",
+      "id": "bacon",
+      "alias": "wieners",
+      "note": "over-broad: hot dog, not bacon."
+    },
+    {
+      "op": "removeAlias",
+      "id": "bacon",
+      "alias": "kielbasy",
+      "note": "over-broad: kielbasa, not bacon (kielbasa item exists)."
+    },
+    {
+      "op": "removeAlias",
+      "id": "bacon",
+      "alias": "salame",
+      "note": "over-broad: salami, not bacon (salami item exists)."
+    },
+    {
+      "op": "removeAlias",
+      "id": "bacon",
+      "alias": "beef jerkies",
+      "note": "over-broad: jerky, not bacon (jerky item exists)."
+    },
+    {
+      "op": "removeAlias",
+      "id": "bacon",
+      "alias": "jerkies",
+      "note": "over-broad: jerky, not bacon."
+    },
+    {
+      "op": "removeAlias",
+      "id": "bacon",
+      "alias": "cold cut",
+      "note": "over-broad: generic deli meat, not bacon (cured-meat owns deli cut terms)."
+    },
+    {
+      "op": "removeAlias",
+      "id": "bacon",
+      "alias": "cold cuts",
+      "note": "over-broad: generic deli meat, not bacon."
+    },
+    {
+      "op": "removeAlias",
+      "id": "bacon",
+      "alias": "lunchmeat",
+      "note": "over-broad: generic luncheon meat, not bacon (luncheon-meat / cured-meat own it)."
+    },
+    {
+      "op": "removeAlias",
+      "id": "bacon",
+      "alias": "smoked beef",
+      "note": "over-broad: smoked beef is not bacon (bacon is pork)."
+    },
+    {
+      "op": "removeAlias",
+      "id": "white-fish",
+      "alias": "tilapia",
+      "note": "over-broad: tilapia is now a dedicated item; the generic white-fish bucket should not swallow the tilapia query."
+    },
+    {
+      "op": "removeAlias",
+      "id": "white-fish",
+      "alias": "haddock",
+      "note": "over-broad: dedicated haddock item exists."
+    },
+    {
+      "op": "removeAlias",
+      "id": "white-fish",
+      "alias": "sole",
+      "note": "over-broad: dedicated sole item exists."
+    },
+    {
+      "op": "removeAlias",
+      "id": "white-fish",
+      "alias": "flounder",
+      "note": "over-broad: dedicated flounder item exists."
+    },
+    {
+      "op": "removeAlias",
+      "id": "white-fish",
+      "alias": "sea bass",
+      "note": "over-broad: dedicated sea-bass item exists."
+    },
+    {
+      "op": "removeAlias",
+      "id": "beef-style",
+      "alias": "vegetarian meat",
+      "note": "over-broad: 'vegetarian meat' could be any meat analog; should not pin to beef-style seitan specifically."
+    },
+    {
+      "op": "removeAlias",
+      "id": "salt-cod",
+      "alias": "stockfish",
+      "note": "collides with salted-dried-fish (also aliased 'stockfish'); stockfish is unsalted air-dried, distinct from salt cod. Keep it on salted-dried-fish only."
+    },
+    {
+      "op": "removeAlias",
+      "id": "salt-cod",
+      "alias": "salted fish",
+      "note": "over-broad: generic 'salted fish' belongs to salted-dried-fish, not specifically salt cod."
+    },
+    {
+      "op": "removeAlias",
+      "id": "corned-beef-brisket",
+      "alias": "brisket beef",
+      "note": "collides with bison-brisket (same aliases); 'brisket beef' is plain beef, owned by beef-brisket. Remove from corned-beef-brisket."
+    },
+    {
+      "op": "removeAlias",
+      "id": "corned-beef-brisket",
+      "alias": "briskets",
+      "note": "over-broad: bare 'briskets' should resolve to beef-brisket, not the corned (cured) variant; also collides with bison-brisket."
+    },
+    {
+      "op": "removeAlias",
+      "id": "corned-beef-brisket",
+      "alias": "whole brisket",
+      "note": "over-broad/collides with bison-brisket; plain whole brisket is beef-brisket, not corned."
+    },
+    {
+      "op": "removeAlias",
+      "id": "bison-brisket",
+      "alias": "brisket beef",
+      "note": "wrong: 'brisket beef' is beef, not bison; collides with corned-beef-brisket. beef-brisket owns 'brisket'."
+    },
+    {
+      "op": "removeAlias",
+      "id": "bison-brisket",
+      "alias": "briskets",
+      "note": "over-broad: bare 'briskets' should resolve to beef-brisket, not bison."
+    },
+    {
+      "op": "removeAlias",
+      "id": "bison-brisket",
+      "alias": "whole brisket",
+      "note": "over-broad: plain whole brisket is beef, not bison."
+    }
+  ]
+}

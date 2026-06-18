@@ -1,0 +1,157 @@
+{
+  "category": "Baking & Sweeteners",
+  "structural": [
+    {
+      "op": "reid",
+      "from": "chocolate",
+      "to": "chocolate-cake-mix",
+      "note": "bare id 'chocolate' (name 'chocolate cake mix') exact-matches the generic 'chocolate' query and would shadow real chocolate items; sibling cake mixes already use the -cake-mix suffix (lemon-cake-mix, yellow-cake-mix)."
+    },
+    {
+      "op": "reid",
+      "from": "spice",
+      "to": "spice-cake-mix",
+      "note": "bare id 'spice' (name 'spice cake mix') exact-matches the generic 'spice' query; align with sibling -cake-mix ids."
+    },
+    {
+      "op": "reid",
+      "from": "00",
+      "to": "00-flour",
+      "note": "bare numeric id '00'; name '00 flour' is fine. Make the id match the name to avoid a bare exact-match token."
+    },
+    {
+      "op": "merge",
+      "from": "nutritional",
+      "into": "nutritional-yeast",
+      "note": "true cross-category duplicate: both named 'nutritional yeast'. Keep the Spices & Herbs item (id nutritional-yeast) which carries proper aliases (nooch, savory yeast flakes); fold the bare Baking clone in. No children/swaps depend on 'nutritional'."
+    },
+    {
+      "op": "merge",
+      "from": "apple-butter-classic",
+      "into": "apple-butter",
+      "note": "redundant '-classic' clone of its parent; identical aliases (apple butters, apple spread) and dietary tags. No dependents."
+    },
+    {
+      "op": "merge",
+      "from": "caramel-classic",
+      "into": "caramel",
+      "note": "redundant '-classic' clone of parent 'caramel'; identical alias (caramels). No dependents."
+    },
+    {
+      "op": "merge",
+      "from": "date-syrup-classic",
+      "into": "date-syrup",
+      "note": "redundant '-classic' clone of parent 'date syrup'; no distinguishing data. No dependents."
+    },
+    {
+      "op": "merge",
+      "from": "marzipan-classic",
+      "into": "marzipan",
+      "note": "redundant '-classic' clone of parent 'marzipan'; no distinguishing data. No dependents."
+    },
+    {
+      "op": "merge",
+      "from": "pumpkin-butter-classic",
+      "into": "pumpkin-butter",
+      "note": "redundant '-classic' clone of parent 'pumpkin butter'; no distinguishing data. No dependents."
+    },
+    {
+      "op": "merge",
+      "from": "white-sugar",
+      "into": "granulated-sugar",
+      "note": "true duplicate: US 'white sugar' == 'granulated sugar'. Keep granulated-sugar (standard recipe term, non-bare id). Both are leaf items with no children/swaps. FLAG: judgment call — if these are intentionally distinct grades, drop this op and instead just dedupe the overlapping generic aliases below."
+    }
+  ],
+  "cleanups": [
+    {
+      "op": "removeAlias",
+      "id": "molasses",
+      "alias": "treacle",
+      "note": "'treacle' is now its own item (id treacle, parented to molasses); the generic alias on molasses collides with it. Let 'treacle' resolve to the treacle item."
+    },
+    {
+      "op": "removeAlias",
+      "id": "molasses",
+      "alias": "black treacle",
+      "note": "owned by the dedicated 'treacle' item; remove the duplicate from molasses to avoid an ambiguous two-item match."
+    },
+    {
+      "op": "removeAlias",
+      "id": "molasses",
+      "alias": "dark treacle",
+      "note": "owned by the dedicated 'treacle' item; remove the duplicate from molasses."
+    },
+    {
+      "op": "removeAlias",
+      "id": "chocolate-chips",
+      "alias": "semisweet chocolate",
+      "note": "bare 'semisweet chocolate' also aliased on dark-chocolate; a bar of semisweet chocolate is not chips. chocolate-chips keeps the specific 'semisweet chocolate chips'. Let dark-chocolate own 'semisweet chocolate'."
+    },
+    {
+      "op": "removeAlias",
+      "id": "golden-syrup",
+      "alias": "golden",
+      "note": "bare modifier 'golden' over-broad — exact-matches unrelated queries (golden raisin, golden syrup, etc.). Keep 'golden syrups' / 'lyle's golden syrup'."
+    },
+    {
+      "op": "removeAlias",
+      "id": "sourdough-starter",
+      "alias": "starter",
+      "note": "bare 'starter' over-broad (matches starter course / starter culture / engine starter etc.). Keep 'sourdough starter(s)', 'levain', 'sourdough culture'."
+    },
+    {
+      "op": "removeAlias",
+      "id": "sourdough-starter-gluten-free",
+      "alias": "starter",
+      "note": "GF child copied all of parent's aliases; drop the over-broad bare 'starter'."
+    },
+    {
+      "op": "removeAlias",
+      "id": "sourdough-starter-gluten-free",
+      "alias": "levain",
+      "note": "generic alias belongs on the parent sourdough-starter; the GF variant should not claim plain 'levain' (collides with parent)."
+    },
+    {
+      "op": "removeAlias",
+      "id": "sourdough-starter-gluten-free",
+      "alias": "sourdough culture",
+      "note": "parent's generic alias duplicated on GF child; remove so a generic query resolves to the parent."
+    },
+    {
+      "op": "removeAlias",
+      "id": "sourdough-starter-gluten-free",
+      "alias": "sourdough starters",
+      "note": "parent's generic alias duplicated on GF child; remove."
+    },
+    {
+      "op": "removeAlias",
+      "id": "corn-syrup-dark",
+      "alias": "corn syrups",
+      "note": "dark variant copied the generic parent alias; 'corn syrups' should resolve to corn-syrup, not the dark grade."
+    },
+    {
+      "op": "removeAlias",
+      "id": "corn-syrup-dark",
+      "alias": "karo syrup",
+      "note": "generic brand alias duplicated from parent corn-syrup; remove from the dark grade."
+    },
+    {
+      "op": "removeAlias",
+      "id": "shredded-coconut-unsweetened",
+      "alias": "shredded coconuts",
+      "note": "child copied the parent's generic plural; 'shredded coconuts' should resolve to the parent shredded-coconut."
+    },
+    {
+      "op": "removeAlias",
+      "id": "caster",
+      "alias": "superfine sugar",
+      "note": "'superfine sugar' is the NAME of the dedicated 'superfine' item; remove this collision from caster (caster keeps castor sugar / berry sugar / baker's sugar)."
+    },
+    {
+      "op": "removeAlias",
+      "id": "granulated-sugar",
+      "alias": "table sugar",
+      "note": "'table sugar' is owned by the generic root 'sugar'; remove from granulated to avoid a multi-item match (sugar also still carries it)."
+    }
+  ]
+}

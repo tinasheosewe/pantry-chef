@@ -1,0 +1,187 @@
+{
+  "category": "Condiments & Sauces",
+  "structural": [
+    {
+      "op": "reparent",
+      "id": "barbecue-sauce",
+      "parentIds": ["sauce"],
+      "note": "Was parented to 'barbecue' = 'barbecue baked beans' (Legumes & Beans). BBQ sauce is not a baked bean. Reparent to the sauce root only."
+    },
+    {
+      "op": "reparent",
+      "id": "fish-sauce",
+      "parentIds": ["sauce"],
+      "note": "Was parented to 'fish' = 'fish bouillon'. Fish sauce is a sauce, not a bouillon. Keep 'sauce' only (drop the bouillon parent)."
+    },
+    {
+      "op": "reid",
+      "from": "fish",
+      "to": "fish-bouillon",
+      "note": "Bare id 'fish' (name 'fish bouillon') is a mis-resolution magnet: a 'fish' query/parent ref resolves to a bouillon cube. Make the id specific; applier repoints bouillon swaps."
+    },
+    {
+      "op": "reid",
+      "from": "black-bean",
+      "to": "black-bean-paste",
+      "note": "Bare id 'black-bean' (name 'black bean paste') collides with the legume 'black bean'. Make id match the actual product; applier repoints doubanjiang/miso/doenjang swaps + black-bean-sauce parent."
+    },
+    {
+      "op": "reid",
+      "from": "italian",
+      "to": "italian-anchovy-paste",
+      "note": "Bare id 'italian' for 'italian anchovy paste' would resolve any 'italian' reference here. Make id specific."
+    },
+    {
+      "op": "reid",
+      "from": "spanish",
+      "to": "spanish-adobo-sauce",
+      "note": "Bare id 'spanish' for 'spanish adobo sauce'. Make id specific; applier repoints chipotle-adobo-sauce swap."
+    },
+    {
+      "op": "reid",
+      "from": "malt",
+      "to": "malt-brown-sauce",
+      "note": "Bare id 'malt' (name 'malt brown sauce') collides with malt/malt-vinegar. Make id specific; applier repoints reduced-sugar swap."
+    },
+    {
+      "op": "reid",
+      "from": "reduced-sugar",
+      "to": "reduced-sugar-brown-sauce",
+      "note": "Bare id 'reduced-sugar' (name 'reduced sugar brown sauce') would catch generic 'reduced sugar' refs. Make id specific; applier repoints malt-brown-sauce swap."
+    },
+    {
+      "op": "merge",
+      "from": "tomato-passata",
+      "into": "tomato-puree",
+      "note": "Near-duplicate of tomato-puree (Canned & Jarred), which is the better-aliased canonical 'passata / strained tomatoes'. Two items both exact-matching 'passata'/'strained tomatoes' is the canned-tomatoes mis-resolution family. Fold the Condiments duplicate into tomato-puree."
+    },
+    {
+      "op": "merge",
+      "from": "maggi-seasoning",
+      "into": "maggi-seasoning-sauce",
+      "note": "Same product (Maggi liquid seasoning) duplicated in Spices & Herbs and Condiments. Both claim 'maggi'/'maggi sauce'/'maggi seasoning sauce'. Keep the Condiments item (correctly parented to 'sauce') as canonical; fold the Spices duplicate in. Flag: confirm Spices agent is not also editing maggi-seasoning."
+    }
+  ],
+  "cleanups": [
+    {
+      "op": "removeAlias",
+      "id": "duck-sauce",
+      "alias": "plum",
+      "note": "'plum' (a fruit) is an over-broad alias on duck sauce; a 'plum' query would resolve to a sauce."
+    },
+    {
+      "op": "removeAlias",
+      "id": "italian-anchovy-paste",
+      "alias": "anchovy paste tube",
+      "note": "Duplicates parent anchovy-paste's aliases verbatim; a child shouldn't steal the parent's generic anchovy-paste matches."
+    },
+    {
+      "op": "removeAlias",
+      "id": "italian-anchovy-paste",
+      "alias": "anchovy pastes",
+      "note": "Duplicate of parent anchovy-paste alias."
+    },
+    {
+      "op": "removeAlias",
+      "id": "italian-anchovy-paste",
+      "alias": "anchovy purée",
+      "note": "Duplicate of parent anchovy-paste alias."
+    },
+    {
+      "op": "removeAlias",
+      "id": "mango-chutney",
+      "alias": "chutneys",
+      "note": "Duplicates parent chutney's generic aliases; would steal generic 'chutney' queries into mango."
+    },
+    {
+      "op": "removeAlias",
+      "id": "mango-chutney",
+      "alias": "fruit chutney",
+      "note": "Duplicate of parent chutney alias; over-broad on a mango-specific item."
+    },
+    {
+      "op": "removeAlias",
+      "id": "mango-chutney",
+      "alias": "indian chutney",
+      "note": "Duplicate of parent chutney alias; over-broad on a mango-specific item."
+    },
+    {
+      "op": "removeAlias",
+      "id": "brown-gravy",
+      "alias": "gravies",
+      "note": "Plural of generic 'gravy' duplicated on the brown-gravy child; let it resolve to the gravy root. brown-gravy keeps 'pan sauce'."
+    },
+    {
+      "op": "removeAlias",
+      "id": "mayonnaise-vegan",
+      "alias": "mayo",
+      "note": "Duplicates parent mayonnaise; 'mayo' must resolve to plain mayonnaise, not the vegan variant."
+    },
+    {
+      "op": "removeAlias",
+      "id": "mayonnaise-vegan",
+      "alias": "mayonnaises",
+      "note": "Duplicate of parent mayonnaise alias."
+    },
+    {
+      "op": "removeAlias",
+      "id": "pesto-vegan",
+      "alias": "pestos",
+      "note": "Duplicates parent pesto; generic 'pesto' should not resolve to the vegan variant."
+    },
+    {
+      "op": "removeAlias",
+      "id": "thousand-island-dressing",
+      "alias": "russian dressing",
+      "note": "Russian dressing is a distinct dressing, not Thousand Island; over-broad alias."
+    },
+    {
+      "op": "removeAlias",
+      "id": "tabasco-sauce",
+      "alias": "louisiana hot sauce",
+      "note": "Louisiana-style hot sauce is a broad style, not specifically Tabasco; over-broad alias steals a generic style query."
+    },
+    {
+      "op": "removeAlias",
+      "id": "scotch-bonnet-pepper-sauce",
+      "alias": "pepper sauce",
+      "note": "Collides with hot-sauce's 'pepper sauce' alias. Keep generic 'pepper sauce' on the hot-sauce root; scotch-bonnet keeps its specific aliases."
+    },
+    {
+      "op": "removeAlias",
+      "id": "peanut-sauce",
+      "alias": "satay sauce",
+      "note": "Dedicated satay-sauce item exists (a child of peanut-sauce). 'satay sauce' should resolve to it, not the generic peanut-sauce parent."
+    },
+    {
+      "op": "removeAlias",
+      "id": "peanut-sauce",
+      "alias": "sate sauce",
+      "note": "Same collision as 'satay sauce'; belongs to the dedicated satay-sauce item."
+    },
+    {
+      "op": "removeAlias",
+      "id": "tahini",
+      "alias": "sesame paste",
+      "note": "Dedicated sesame-paste item exists (child of tahini). 'sesame paste' should resolve to it; tahini keeps 'sesame seed paste'."
+    },
+    {
+      "op": "removeAlias",
+      "id": "doenjang",
+      "alias": "fermented soybean paste",
+      "note": "Ambiguous alias shared with miso. doenjang keeps the specific 'korean soybean paste'; miso keeps 'soybean paste'."
+    },
+    {
+      "op": "removeAlias",
+      "id": "miso",
+      "alias": "fermented soybean paste",
+      "note": "Ambiguous alias shared with doenjang; both are fermented soybean pastes. Drop the ambiguous form from both; miso retains 'soybean paste' + 'misos'."
+    },
+    {
+      "op": "removeAlias",
+      "id": "syrup",
+      "alias": "cane syrup",
+      "note": "Collides with golden-syrup (Baking & Sweeteners), which owns 'cane syrup'. Remove from the generic syrup grab-bag."
+    }
+  ]
+}

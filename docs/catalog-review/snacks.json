@@ -1,0 +1,11 @@
+{
+  "category": "Snacks",
+  "structural": [],
+  "cleanups": [
+    {"op": "removeAlias", "id": "plantain-chip", "alias": "banana chips", "note": "Duplicate alias collision: 'banana chips' is also an alias of dried-banana-chip. 'banana chips' means dried banana crisps, NOT plantain chips (which own platanitos/tostones). Drop from plantain-chip so the query routes to dried-banana-chip (correct owner); plantain-chip keeps plantain chips/platanitos/tostones."},
+    {"op": "removeAlias", "id": "popcorn-snack", "alias": "caramel popcorn", "note": "Duplicate alias: 'caramel popcorn' also lives on caramel-corn, the dedicated child (parentIds=['popcorn-snack']). The specific child should own it; keeping it on the parent splits the match."},
+    {"op": "removeAlias", "id": "vegetable-chip", "alias": "veggie straws", "note": "Duplicate alias: 'veggie straws' also lives on veggie-straw, the dedicated child (parentIds=['vegetable-chip']). Let the specific child own it; vegetable-chip keeps 'veggie chips'/'vegetable crisps'."},
+    {"op": "removeAlias", "id": "cracker", "alias": "cheez-it", "note": "Brand collision: 'cheez-it' also lives on cheese-cracker. Cheez-It IS a cheese cracker, so the specific cheese-cracker item (which also has 'cheez its', 'cheddar cracker') should own it, not the generic 'cracker' umbrella."},
+    {"op": "removeAlias", "id": "cheese", "alias": "cheese cracker", "note": "Cross-category alias leak (target is the Dairy & Eggs base 'cheese'): a 'cheese cracker' query exact-matches base cheese instead of the Snacks cheese-cracker item. Removing this leak lets 'cheese cracker' resolve to cheese-cracker (NAME match) in Snacks."}
+  ]
+}

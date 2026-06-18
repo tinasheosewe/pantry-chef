@@ -36,7 +36,9 @@ OP_ORDER = {'reid':0,'merge':1,'drop':2,'recategorize':3,'reparent':4,'rename':5
 
 def main():
     phase = sys.argv[1] if len(sys.argv) > 1 else 'structural'
-    assert phase in ('structural','cleanups'), "phase must be structural|cleanups"
+    assert phase in ('structural','cleanups','all'), "phase must be structural|cleanups|all"
+    phases = ['structural','cleanups'] if phase == 'all' else [phase]
+    ops_dir = os.path.join(ROOT, sys.argv[2]) if len(sys.argv) > 2 else OPS_DIR
 
     items = json.load(open(CAT))
     order = [it['id'] for it in items]
@@ -64,15 +66,16 @@ def main():
 
     # gather ops for this phase, tagged with file for conflict messages
     ops = []
-    for f in sorted(__import__('glob').glob(os.path.join(OPS_DIR, "*.json"))):
+    for f in sorted(__import__('glob').glob(os.path.join(ops_dir, "*.json"))):
         if os.path.basename(f) == "OPS_SPEC.md":
             continue
         try:
             d = json.load(open(f))
         except Exception as e:
             warn.append(f"parse fail {os.path.basename(f)}: {e}"); continue
-        for op in d.get(phase, []) or []:
-            ops.append((os.path.basename(f), op))
+        for ph in phases:
+            for op in d.get(ph, []) or []:
+                ops.append((os.path.basename(f), op))
     ops.sort(key=lambda fo: OP_ORDER.get(fo[1].get('op'), 99))
 
     def get(i):

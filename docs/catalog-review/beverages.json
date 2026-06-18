@@ -1,0 +1,24 @@
+{
+  "category": "Beverages",
+  "structural": [],
+  "cleanups": [
+    {
+      "op": "removeAlias",
+      "id": "fruit-juice",
+      "alias": "juice",
+      "note": "Bare generic token 'juice' on the catch-all fruit-juice drink. It pollutes search and risks shadowing the far-more-common recipe ingredients lemon-juice and lime-juice (Condiments & Sauces) plus every specific *-juice item. Specific juices keep their own names; the generic drink should not own the bare token."
+    },
+    {
+      "op": "removeAlias",
+      "id": "fruit-juice",
+      "alias": "juices",
+      "note": "Plural of the bare 'juice' token, same problem — over-broad fragment on the generic fruit-juice drink that intercepts queries meant for lemon/lime juice and the specific *-juice items. 'fruit juices', 'mixed fruit juice', 'fruit punch', 'juice blend' remain and keep this item findable as a drink."
+    },
+    {
+      "op": "rename",
+      "id": "root-beer",
+      "name": "root beer",
+      "note": "Name was 'root beer soda' — the 'soda' suffix is redundant (parent is already soda) and prevents a clean exact-match on the natural query 'root beer'. Rename to 'root beer'; aliases (root beers, sarsaparilla) are unaffected."
+    }
+  ]
+}

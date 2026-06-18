@@ -1,0 +1,37 @@
+{
+  "category": "Legumes & Beans",
+  "structural": [
+    {
+      "op": "merge",
+      "from": "besan",
+      "into": "chickpea-flour",
+      "note": "True cross-category duplicate. 'besan' (Legumes & Beans) and 'chickpea-flour' (Baking & Sweeteners) are the same thing — chickpea/gram flour, same gramsPerCup (92), and they share the aliases 'gram flour'/'garbanzo flour'/'chana flour'. A recipe calling 'gram flour' could resolve to either, the exact mis-resolution this review targets. Fold besan into 'chickpea-flour' (the canonical flour: correctly categorized under Baking, parented to 'flour', richer flour-family data); 'besan' + 'bengal gram flour' survive as aliases on chickpea-flour. besan has no incoming parentIds/swaps references, so the merge is clean."
+    }
+  ],
+  "cleanups": [
+    {
+      "op": "removeAlias",
+      "id": "kala-chana",
+      "alias": "bengal gram",
+      "note": "Ambiguous duplicate alias: 'bengal gram' is on BOTH 'chickpea' and 'kala-chana', so the query collides. Keep it on the broader canonical 'chickpea' (its standard English synonym) and drop it here; kala-chana keeps the specific 'black chickpea'/'brown chickpea'/'desi chana' that unambiguously point to it."
+    },
+    {
+      "op": "removeAlias",
+      "id": "soy",
+      "alias": "edamame beans",
+      "note": "Duplicate alias across two items: 'edamame beans' is on both 'soy' and the dedicated 'edamame' item. Edamame is the green/immature soybean and now its own child of soy; keep 'edamame beans' on 'edamame' only and strip it from the mature-soybean 'soy' so the query lands on the specific item."
+    },
+    {
+      "op": "removeAlias",
+      "id": "adzuki",
+      "alias": "red bean",
+      "note": "Over-broad alias. Bare 'red bean' is commonly used for red kidney beans (and generic red beans), so exact-matching it to adzuki mis-resolves the more common ingredient. adzuki keeps 'aduki beans'/'azuki beans' which are unambiguous."
+    },
+    {
+      "op": "removeAlias",
+      "id": "adzuki",
+      "alias": "red mung bean",
+      "note": "Botanically misleading alias. Adzuki (Vigna angularis) is not a mung bean; 'red mung bean' would mis-route mung-related queries to adzuki. Remove."
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "category": "Pasta & Noodles",
+  "structural": [
+    {
+      "op": "rename",
+      "id": "rigatoni-rotelle",
+      "name": "rotelle",
+      "note": "Name 'rigatoni rotelle' conflates two unrelated shapes (rigatoni = ridged tubes vs rotelle = wagon wheels). All four aliases are rotelle/wheel terms, so the item IS rotelle. The 'rigatoni' token risks a 'rigatoni' query surfacing this wheel pasta (and vice versa) when the distinct 'rigatoni' item already exists."
+    },
+    {
+      "op": "reid",
+      "from": "rigatoni-rotelle",
+      "to": "rotelle",
+      "note": "Id matches the corrected name. 'rotelle' id is free and the item has no children, so the reid repoints cleanly."
+    }
+  ],
+  "cleanups": [
+    {
+      "op": "removeAlias",
+      "id": "lasagna",
+      "alias": "frozen lasagna",
+      "note": "'lasagna' is dried lasagna sheets/noodles (Pantry storage; aliases 'lasagna noodles', 'lasagne sheets', 'oven-ready lasagna'). 'frozen lasagna' is a prepared heat-and-eat meal, a different ingredient -> alias leak."
+    },
+    {
+      "op": "removeAlias",
+      "id": "lasagna",
+      "alias": "frozen lasagnas",
+      "note": "Prepared frozen-meal alias leaking onto the dried-sheet item."
+    },
+    {
+      "op": "removeAlias",
+      "id": "lasagna",
+      "alias": "frozen meat lasagna",
+      "note": "Prepared frozen-meal alias; a 'frozen meat lasagna' query mis-resolves to dried lasagna sheets."
+    },
+    {
+      "op": "removeAlias",
+      "id": "lasagna",
+      "alias": "frozen vegetable lasagna",
+      "note": "Prepared frozen-meal alias leaking onto the dried-sheet item."
+    }
+  ]
+}

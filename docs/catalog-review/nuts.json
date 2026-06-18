@@ -1,0 +1,103 @@
+{
+  "category": "Nuts & Seeds",
+  "structural": [
+    {
+      "op": "merge",
+      "from": "watermelon-melon-seed",
+      "into": "watermelon-seed",
+      "note": "True duplicate: 'watermelon melon seed' (id watermelon-melon-seed, child of melon-seed, no aliases) and 'watermelon seed' (id watermelon-seed, root, real aliases 'watermelon seeds'/'citrullus seed') are the same edible seed. Keep the canonical watermelon-seed; fold the empty melon-seed child in. (Distinct from egusi-seed, the gourd-seed stew base, which is left untouched.)"
+    },
+    {
+      "op": "reid",
+      "from": "bbq",
+      "to": "bbq-corn-nut",
+      "note": "Bare-token id: 'bbq' is a generic flavor modifier that pollutes id-space and risks mis-resolution; the item is specifically the BBQ corn-nut flavor (name already 'bbq corn nut', parent corn-nut)."
+    },
+    {
+      "op": "reid",
+      "from": "ranch",
+      "to": "ranch-corn-nut",
+      "note": "Bare-token id: 'ranch' is a generic flavor word that collides conceptually with ranch dressing (ranch-dressing already aliases 'ranch'). The item is the ranch corn-nut flavor (name 'ranch corn nut', parent corn-nut)."
+    },
+    {
+      "op": "reid",
+      "from": "striped",
+      "to": "striped-sunflower-seed",
+      "note": "Bare-token id: 'striped' is a generic modifier; the item is specifically the striped (snacking) sunflower-seed variety (name 'striped sunflower seed', parent sunflower-seed)."
+    },
+    {
+      "op": "reid",
+      "from": "honeydew",
+      "to": "honeydew-melon-seed",
+      "note": "Bare-token id: 'honeydew' is the melon name and collides with honeydew-melon (Produce, which aliases 'honeydew'). This item is only the honeydew melon SEED (name 'honeydew melon seed', parent melon-seed); give it a non-colliding id."
+    },
+    {
+      "op": "reid",
+      "from": "unhulled",
+      "to": "unhulled-sesame-seed",
+      "note": "Bare-token id: 'unhulled' is a generic processing modifier; the item is specifically unhulled sesame seed (name 'unhulled sesame seed', parent sesame-seed)."
+    }
+  ],
+  "cleanups": [
+    {
+      "op": "removeAlias",
+      "id": "unhulled-sesame-seed",
+      "alias": "sesame seeds",
+      "note": "Child 'unhulled sesame seed' wrongly carried the parent's generic aliases verbatim, so a query for 'sesame seeds' matched both canonical sesame-seed AND this varietal child — ambiguous mis-resolution. Drop the generic alias from the child (parent sesame-seed keeps it). [id is post-reid unhulled -> unhulled-sesame-seed]"
+    },
+    {
+      "op": "removeAlias",
+      "id": "unhulled-sesame-seed",
+      "alias": "til",
+      "note": "Same parent-collision: 'til' (Hindi for sesame) belongs to canonical sesame-seed, not the unhulled child. Remove to stop the varietal hijacking generic sesame queries."
+    },
+    {
+      "op": "removeAlias",
+      "id": "unhulled-sesame-seed",
+      "alias": "benne seed",
+      "note": "Same parent-collision: 'benne seed' is the generic sesame name (kept on sesame-seed); drop from the unhulled child."
+    },
+    {
+      "op": "removeAlias",
+      "id": "unhulled-sesame-seed",
+      "alias": "gingelly seed",
+      "note": "Same parent-collision: 'gingelly seed' is the generic sesame name (kept on sesame-seed); drop from the unhulled child."
+    },
+    {
+      "op": "removeAlias",
+      "id": "mixed-nuts",
+      "alias": "mixed",
+      "note": "Over-broad bare alias: 'mixed' exact-matches any 'mixed ...' query and hijacks it to mixed-nuts. Generic modifier, not a name for this product."
+    },
+    {
+      "op": "removeAlias",
+      "id": "mixed-nuts",
+      "alias": "nuts",
+      "note": "Over-broad alias: bare 'nuts' is the generic plural of the 'nut' parent, not specifically mixed nuts; it captures generic nut queries into the trail-mix item."
+    },
+    {
+      "op": "removeAlias",
+      "id": "mixed-nuts",
+      "alias": "nut mix",
+      "note": "Over-broad/duplicative: 'nut mix' is a bare generic; mixed-nuts already keeps the specific 'nuts mix'/'assorted nuts'. Removing the bare form reduces generic-query capture."
+    },
+    {
+      "op": "removeAlias",
+      "id": "almond",
+      "alias": "almond flavor",
+      "note": "Wrong-product alias: 'almond flavor' is almond extract/flavoring (a Baking & Sweeteners liquid), not the almond nut. A recipe calling for almond flavor would mis-resolve to the whole nut."
+    },
+    {
+      "op": "removeAlias",
+      "id": "chestnut",
+      "alias": "water chestnut excluded",
+      "note": "Junk pseudo-alias: 'water chestnut excluded' is an authoring note, not a real alias — it would literally match a query containing those words and pull water-chestnut searches into chestnut. (water-chestnut is a distinct Produce item.)"
+    },
+    {
+      "op": "removeAlias",
+      "id": "kola-nut",
+      "alias": "bitter kola excluded",
+      "note": "Junk pseudo-alias: 'bitter kola excluded' is an authoring exclusion note, not an alias; remove so it can't match 'bitter kola' queries and mis-resolve them to kola-nut."
+    }
+  ]
+}

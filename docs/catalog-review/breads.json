@@ -1,0 +1,97 @@
+{
+  "category": "Breads & Bakery",
+  "structural": [
+    {
+      "op": "reid",
+      "from": "protein",
+      "to": "protein-pancake",
+      "note": "Bare generic id 'protein' is a high-collision token (matches the 'High Protein' dietary concept and the Protein category). Name is 'protein pancake'; id should match the specific product. No name change needed."
+    },
+    {
+      "op": "merge",
+      "from": "tortilla-wrap",
+      "into": "tortilla",
+      "note": "Functional duplicate of the base. 'tortilla wrap' is parented to 'tortilla' and both claim 'wrap'/'wraps'; a soft wrap IS a tortilla. Folding the variant's distinct aliases (spinach/tomato/low carb/flatbread wrap) into the canonical 'tortilla' avoids two items competing for the same 'wrap' query. No external items reference tortilla-wrap as a parent."
+    }
+  ],
+  "cleanups": [
+    {
+      "op": "removeAlias",
+      "id": "panko",
+      "alias": "bread crumbs",
+      "note": "Generic breadcrumb token on a specific variant; steals the query from the 'breadcrumb' base. Panko keeps its panko-specific aliases."
+    },
+    {
+      "op": "removeAlias",
+      "id": "panko",
+      "alias": "breadcrumbs",
+      "note": "Plural generic; belongs to 'breadcrumb' base, not panko."
+    },
+    {
+      "op": "removeAlias",
+      "id": "panko",
+      "alias": "crumbs",
+      "note": "Over-broad bare token 'crumbs' mis-resolves arbitrary crumb queries to panko."
+    },
+    {
+      "op": "removeAlias",
+      "id": "english-muffin-sourdough",
+      "alias": "english muffins",
+      "note": "Verbatim copy of the base 'english-muffin' aliases; a generic 'english muffins' query should resolve to the base, not the sourdough variant."
+    },
+    {
+      "op": "removeAlias",
+      "id": "english-muffin-sourdough",
+      "alias": "muffin split",
+      "note": "Duplicates base 'english-muffin' alias."
+    },
+    {
+      "op": "removeAlias",
+      "id": "english-muffin-sourdough",
+      "alias": "thomas' muffin",
+      "note": "Duplicates base 'english-muffin' alias."
+    },
+    {
+      "op": "removeAlias",
+      "id": "dinner-roll",
+      "alias": "bread roll",
+      "note": "Generic roll alias also held by the 'bun' base; 'bread roll' should resolve to the generic 'bun', not specifically a dinner roll. dinner-roll keeps 'dinner rolls', 'parker house roll', 'pull-apart roll'."
+    },
+    {
+      "op": "removeAlias",
+      "id": "dinner-roll",
+      "alias": "soft roll",
+      "note": "Generic roll alias also held by the 'bun' base; belongs to the generic 'bun'."
+    },
+    {
+      "op": "removeAlias",
+      "id": "tortilla",
+      "alias": "flatbreads",
+      "note": "Plural of tortilla's own parent base 'flatbread'; a 'flatbreads' query should hit the generic 'flatbread', not be pinned to tortilla."
+    },
+    {
+      "op": "removeAlias",
+      "id": "garlic-bagel",
+      "alias": "garlic texas toast",
+      "note": "Wrong product: garlic texas toast is garlic bread on thick sliced bread, not a bagel. This alias mis-resolves garlic-bread/texas-toast queries to a bagel. Removing it leaves garlic-bagel with no aliases, which is fine."
+    },
+    {
+      "op": "removeAlias",
+      "id": "buttermilk-biscuit",
+      "alias": "frozen buttermilk pancake",
+      "note": "Wrong product entirely: a frozen pancake aliased onto a biscuit. Mis-resolves pancake queries to a biscuit. The biscuit needs no alias."
+    },
+    {
+      "op": "removeAlias",
+      "id": "grissini",
+      "alias": "breadsticks",
+      "note": "Bare 'breadsticks' collides with the Snacks item 'breadstick-snack' (which also aliases 'breadsticks'). grissini keeps 'bread sticks', 'torino breadsticks', 'italian breadsticks'."
+    },
+    {
+      "op": "removeAlias",
+      "id": "pao-de-queijo",
+      "alias": "pao de queijo",
+      "note": "Alias is a verbatim copy of the item's own name; pure redundancy/pollution. Keeps brazilian cheese bread / chipa / cheese puff bread."
+    }
+  ]
+}

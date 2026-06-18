@@ -1,0 +1,156 @@
+{
+  "category": "Oils & Fats",
+  "structural": [],
+  "cleanups": [
+    {
+      "op": "removeAlias",
+      "id": "coconut-oil-refined",
+      "alias": "coconut oils",
+      "note": "Duplicate alias collision: 'coconut oils' is held by the base 'coconut-oil', the child 'coconut-oil-refined', AND 'coconut-oil-spray'. A bare 'coconut oil' query should resolve to the base, not the refined child. Keep on base only."
+    },
+    {
+      "op": "removeAlias",
+      "id": "coconut-oil-refined",
+      "alias": "huile de coco",
+      "note": "Same triple-collision as above ('huile de coco' = generic French 'coconut oil'); belongs on the base 'coconut-oil', not the refined child."
+    },
+    {
+      "op": "removeAlias",
+      "id": "coconut-oil-spray",
+      "alias": "coconut oils",
+      "note": "Generic 'coconut oils' on the cooking SPRAY would steal a liquid-oil query. Spray is named 'coconut oil cooking spray'; keep generic coconut-oil aliases on the base."
+    },
+    {
+      "op": "removeAlias",
+      "id": "coconut-oil-spray",
+      "alias": "huile de coco",
+      "note": "Generic French 'coconut oil' on the spray; belongs on the base 'coconut-oil'."
+    },
+    {
+      "op": "removeAlias",
+      "id": "coconut-oil",
+      "alias": "virgin coconut oil",
+      "note": "Collides with the distinct child 'extra-virgin-coconut-oil' (which also aliases 'virgin coconut oil'). Virgin/unrefined coconut oil is specifically the extra-virgin child; the base is the generic/refined-default. Keep on child."
+    },
+    {
+      "op": "removeAlias",
+      "id": "coconut-oil",
+      "alias": "cold-pressed coconut oil",
+      "note": "Cold-pressed = unrefined = the 'extra-virgin-coconut-oil' child (which carries this alias). Remove from the generic base to avoid the parent/child tie."
+    },
+    {
+      "op": "removeAlias",
+      "id": "avocado-oil-spray",
+      "alias": "avocado oils",
+      "note": "Generic 'avocado oils' on the cooking SPRAY collides with the liquid base 'avocado-oil'. Spray is named 'avocado oil cooking spray'; keep generic aliases on the base."
+    },
+    {
+      "op": "removeAlias",
+      "id": "avocado-oil-spray",
+      "alias": "huile d'avocat",
+      "note": "Generic French 'avocado oil' on the spray; belongs on the liquid base 'avocado-oil'."
+    },
+    {
+      "op": "removeAlias",
+      "id": "olive-oil",
+      "alias": "extra virgin olive oil",
+      "note": "This alias on the base is the EXACT NAME of the distinct child 'extra-virgin-olive-oil'. A recipe asking for 'extra virgin olive oil' must resolve to the child, not the generic base. Remove the alias from the base."
+    },
+    {
+      "op": "removeAlias",
+      "id": "olive-oil",
+      "alias": "evoo",
+      "note": "'evoo' specifically means extra-virgin olive oil and is also held by the child 'extra-virgin-olive-oil'. Remove from the generic base so EVOO resolves to the child."
+    },
+    {
+      "op": "removeAlias",
+      "id": "sunflower-oil",
+      "alias": "high oleic sunflower oil",
+      "note": "Duplicates the distinct child 'high-oleic-sunflower-oil' (which carries this exact alias). High-oleic is a specific frying-grade variant; keep on the child, not the generic base."
+    },
+    {
+      "op": "removeAlias",
+      "id": "sunflower-oil",
+      "alias": "high-oleic sunflower",
+      "note": "Same high-oleic collision with the child 'high-oleic-sunflower-oil' (whose name is 'high-oleic sunflower oil'). Remove from base."
+    },
+    {
+      "op": "removeAlias",
+      "id": "toasted-sesame-oil",
+      "alias": "hu ma you",
+      "note": "'hu ma you' (胡麻油) is the generic Chinese term for sesame oil and is also on the base 'sesame-oil'. Toasted/dark sesame oil has its own terms (goma abura, dark sesame oil); keep the generic term on the base only."
+    },
+    {
+      "op": "removeAlias",
+      "id": "palm-oil",
+      "alias": "dende oil",
+      "note": "Dende/dendê is specifically the unrefined RED palm oil (the distinct child 'red-palm-oil' carries the same alias). A 'dende oil' query should resolve to red-palm-oil, not generic refined palm oil. Keep on child."
+    },
+    {
+      "op": "removeAlias",
+      "id": "palm-oil",
+      "alias": "dendê",
+      "note": "Same as above — dendê denotes red palm oil; collides with the 'red-palm-oil' child. Keep on child."
+    },
+    {
+      "op": "removeAlias",
+      "id": "palm-oil",
+      "alias": "epo pupa",
+      "note": "'epo pupa' is Yoruba for RED palm oil specifically; also held by the 'red-palm-oil' child. Remove from the generic base."
+    },
+    {
+      "op": "removeAlias",
+      "id": "palm-oil",
+      "alias": "palm",
+      "note": "Bare token 'palm' pollutes search (hearts of palm, palm sugar, palm heart). Item is named 'palm oil' and keeps 'palm oils'/'palm fruit oil'; the bare word should not exact-match the oil."
+    },
+    {
+      "op": "removeAlias",
+      "id": "vegetable-oil",
+      "alias": "blended vegetable oil",
+      "note": "This alias is the EXACT NAME of the distinct child 'blended-vegetable-oil'. A 'blended vegetable oil' query must resolve to the child, not the generic parent. Remove from parent."
+    },
+    {
+      "op": "removeAlias",
+      "id": "vegetable-oil",
+      "alias": "vegetable",
+      "note": "Bare token 'vegetable' is a massive search-pollution risk (matches generic produce intent). Item is named 'vegetable oil' and keeps 'veg oil'/'vegetable oils'; drop the bare modifier."
+    },
+    {
+      "op": "removeAlias",
+      "id": "lemon-olive-oil",
+      "alias": "infused olive oil",
+      "note": "Over-broad: 'infused olive oil' matches garlic-, basil-, chili-infused oils, not specifically the lemon variant. Keep the lemon-specific aliases (citrus olive oil, agrumato lemon oil)."
+    },
+    {
+      "op": "removeAlias",
+      "id": "margarine",
+      "alias": "spread",
+      "note": "Over-broad bare token: 'spread' matches sandwich spreads, cheese spread, chocolate spread, etc. Margarine keeps 'butter substitute'/'oleo'/'marg'; drop the generic 'spread'."
+    },
+    {
+      "op": "removeAlias",
+      "id": "soybean-oil",
+      "alias": "soybean",
+      "note": "Cross-category collision: 'soybean' is also an alias of 'soy' (soy beans, Legumes & Beans). A bare 'soybean' query overwhelmingly means the bean, not the oil. Oil keeps 'soy oil'/'soya oil'/'soybean oil'."
+    },
+    {
+      "op": "removeAlias",
+      "id": "hemp-oil",
+      "alias": "hemp",
+      "note": "Bare token 'hemp' overwhelmingly means hemp seeds/hearts (edible 'hemp-seed' in Nuts & Seeds), not the oil. Oil keeps 'hemp seed oil'/'hempseed oil'/'hemp oils'."
+    },
+    {
+      "op": "removeAlias",
+      "id": "pork-fatback",
+      "alias": "lardo (cured)",
+      "note": "Wrong/duplicate: 'lardo' is its own distinct item (cured Italian pork fat). Raw 'pork-fatback' should not claim the cured-lardo term. Keep 'fatback'/'back fat'."
+    },
+    {
+      "op": "removeAlias",
+      "id": "pork-fatback",
+      "alias": "tocino",
+      "note": "Cross-category collision: 'tocino' is also an alias of 'bacon' (Protein). Tocino is a cured/sweet-cured pork product closer to bacon than to raw fatback; keep it on bacon only."
+    }
+  ]
+}

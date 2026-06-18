@@ -1,0 +1,12 @@
+{
+  "category": "Other",
+  "structural": [],
+  "cleanups": [
+    {
+      "op": "removeAlias",
+      "id": "soy-protein-powder",
+      "alias": "soy protein",
+      "note": "Over-broad alias: 'soy protein' also lives on textured-vegetable-protein (Protein) and in recipe text overwhelmingly means TVP / a soy food ingredient, not a supplement scoop. Removing it prevents a recipe's 'soy protein' from mis-resolving to the powder. The item keeps the supplement-specific 'soy protein isolate'."
+    }
+  ]
+}

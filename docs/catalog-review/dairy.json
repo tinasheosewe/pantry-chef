@@ -1,0 +1,169 @@
+{
+  "category": "Dairy & Eggs",
+  "structural": [
+    {
+      "op": "rename",
+      "id": "omega-3",
+      "name": "omega-3 egg",
+      "note": "Bare name 'omega-3' exact-matches fish-oil/supplement queries though the item is an egg variety (parent: egg). Make the name self-describing."
+    },
+    {
+      "op": "reid",
+      "from": "omega-3",
+      "to": "omega-3-egg",
+      "note": "Id 'omega-3' is as bare as the old name and reads like a supplement; no parentIds/swaps reference it, so the reid is clean."
+    }
+  ],
+  "cleanups": [
+    {
+      "op": "removeAlias",
+      "id": "cheese",
+      "alias": "refrigerated cheese tortellini",
+      "note": "Pasta, not cheese. Dedicated item 'tortellini' (Pasta & Noodles) already carries 'cheese tortellini'. Generic 'cheese' should not steal this."
+    },
+    {
+      "op": "removeAlias",
+      "id": "cheese",
+      "alias": "cheese cracker",
+      "note": "Snack, not cheese. Dedicated 'cheese-cracker' (Snacks) owns this term."
+    },
+    {
+      "op": "removeAlias",
+      "id": "cheese",
+      "alias": "nacho cheese",
+      "note": "Collides with the more specific 'nacho' (nacho cheese sauce), which already has alias 'nacho cheese'."
+    },
+    {
+      "op": "removeAlias",
+      "id": "cheese",
+      "alias": "nacho cheese soup",
+      "note": "Nacho cheese sauce, belongs with 'nacho' not generic cheese."
+    },
+    {
+      "op": "removeAlias",
+      "id": "cheese",
+      "alias": "nacho cheese dorito",
+      "note": "Snack flavoring descriptor, not a cheese; pollutes generic cheese search."
+    },
+    {
+      "op": "removeAlias",
+      "id": "cheese",
+      "alias": "nacho cheese flavor",
+      "note": "Flavoring descriptor, not a cheese; pollutes generic cheese search."
+    },
+    {
+      "op": "removeAlias",
+      "id": "cheese",
+      "alias": "pecorino cheese",
+      "note": "Should resolve to 'romano' (pecorino romano), which already carries 'pecorino cheese'."
+    },
+    {
+      "op": "removeAlias",
+      "id": "cheese",
+      "alias": "freshly pecorino cheese",
+      "note": "Pecorino, belongs with 'romano' not generic cheese."
+    },
+    {
+      "op": "removeAlias",
+      "id": "cheese",
+      "alias": "parmesean cheese",
+      "note": "Misspelling of parmesan; should resolve to dedicated 'parmesan'."
+    },
+    {
+      "op": "removeAlias",
+      "id": "cheese",
+      "alias": "parmesian cheese",
+      "note": "Misspelling of parmesan; should resolve to dedicated 'parmesan'."
+    },
+    {
+      "op": "removeAlias",
+      "id": "cheese",
+      "alias": "parmigiano cheese",
+      "note": "Parmesan; should resolve to dedicated 'parmesan' (has 'parmigiano')."
+    },
+    {
+      "op": "removeAlias",
+      "id": "cheese",
+      "alias": "parmigiano reggiano cheese",
+      "note": "Parmesan; should resolve to dedicated 'parmesan' (has 'parmigiano reggiano')."
+    },
+    {
+      "op": "removeAlias",
+      "id": "cheese",
+      "alias": "freshly parmigiano-reggiano cheese",
+      "note": "Parmesan; should resolve to dedicated 'parmesan' (has 'parmigiano-reggiano')."
+    },
+    {
+      "op": "removeAlias",
+      "id": "cheese",
+      "alias": "mozarella cheese",
+      "note": "Misspelling of mozzarella; should resolve to dedicated 'mozzarella'."
+    },
+    {
+      "op": "removeAlias",
+      "id": "cheese",
+      "alias": "mozzerella cheese",
+      "note": "Misspelling of mozzarella; should resolve to dedicated 'mozzarella'."
+    },
+    {
+      "op": "removeAlias",
+      "id": "cheese",
+      "alias": "pepperjack cheese",
+      "note": "Should resolve to dedicated 'pepper-jack'."
+    },
+    {
+      "op": "removeAlias",
+      "id": "cheese",
+      "alias": "yogurt cheese",
+      "note": "Yogurt cheese is labneh; collides with dedicated 'labneh' which already carries 'yogurt cheese'."
+    },
+    {
+      "op": "removeAlias",
+      "id": "cheese-sauce",
+      "alias": "queso",
+      "note": "Collides with dedicated 'queso-sauce' (Condiments & Sauces) which already carries 'queso' and 'queso dip' — the canonical home for the term."
+    },
+    {
+      "op": "removeAlias",
+      "id": "whey",
+      "alias": "whey protein",
+      "note": "'whey protein' is the supplement powder ('whey-protein-powder' in Other, which already aliases 'whey protein'), not raw liquid whey."
+    },
+    {
+      "op": "removeAlias",
+      "id": "powdered-milk-skim",
+      "alias": "skim milk",
+      "note": "'skim milk' is liquid milk; collides with the dedicated liquid 'skim-milk'. This item is powdered (parent: powdered-milk), so the unqualified term mis-resolves."
+    },
+    {
+      "op": "removeAlias",
+      "id": "sheep-s-milk",
+      "alias": "sheep's milk",
+      "note": "This item is sheep's-milk RICOTTA (parent: ricotta). Bare \"sheep's milk\" collides with the actual milk 'sheeps-milk' (parent: milk), which already carries 'sheep milk'/'ewe milk'."
+    },
+    {
+      "op": "removeAlias",
+      "id": "crème-fraîche",
+      "alias": "fresh cream",
+      "note": "Over-broad: crème fraîche is cultured, not fresh cream. 'fresh cream' should resolve toward plain 'cream', not pull recipes to crème fraîche."
+    },
+    {
+      "op": "removeAlias",
+      "id": "quark",
+      "alias": "fresh cheese",
+      "note": "'fresh cheese' collides with 'queso-fresco' (literally 'fresh cheese'), the canonical fresh cheese. Quark keeps 'quark cheese'/'quarg'."
+    },
+    {
+      "op": "removeAlias",
+      "id": "colby-jack",
+      "alias": "cheese stick",
+      "note": "Duplicate generic alias also on parent 'string-cheese'. Generic 'cheese stick' belongs on the parent; colby-jack is a specific variety."
+    },
+    {
+      "op": "removeAlias",
+      "id": "colby-jack",
+      "alias": "string cheeses",
+      "note": "Duplicate generic alias also on parent 'string-cheese'; belongs on the parent, not this specific variety."
+    }
+  ]
+}

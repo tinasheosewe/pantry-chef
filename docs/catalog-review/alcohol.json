@@ -1,0 +1,67 @@
+{
+  "category": "Alcohol & Spirits",
+  "structural": [
+    {
+      "op": "reparent",
+      "id": "amaretto",
+      "parentIds": ["liqueur"],
+      "note": "amaretto is an almond (nut) liqueur, not a fruit liqueur; its own alias is 'almond liqueur'. fruit-liqueur is the wrong base — reparent to the generic liqueur."
+    },
+    {
+      "op": "reid",
+      "from": "aromatic",
+      "to": "aromatic-bitters",
+      "note": "id 'aromatic' is a bare modifier that mis-reads as a generic token; name is already 'aromatic bitters'. No items reference 'aromatic' as a parent, so reid is safe."
+    },
+    {
+      "op": "reid",
+      "from": "gold",
+      "to": "gold-cachaça",
+      "note": "id 'gold' is extremely bare (color word) for an item named 'gold cachaça'. No items reference 'gold' as a parent, so reid is safe."
+    }
+  ],
+  "cleanups": [
+    {
+      "op": "removeAlias",
+      "id": "beer",
+      "alias": "pale ale",
+      "note": "'pale ale' is duplicated on beer and on its child 'ale' (where pale/brown/amber ale + ipa live). A pale-ale query should resolve to the specific child, not the generic beer parent."
+    },
+    {
+      "op": "removeAlias",
+      "id": "cooking-wine",
+      "alias": "cooking sherry",
+      "note": "'cooking sherry' is duplicated on cooking-wine and on 'sherry'. Cooking sherry is genuinely sherry; it should resolve to the sherry item, not generic salted cooking wine."
+    },
+    {
+      "op": "removeAlias",
+      "id": "liqueur",
+      "alias": "creme",
+      "note": "bare 'creme' is over-broad — it exact-matches the common dairy query path for 'cream'/'crème fraîche' (Dairy & Eggs) rather than meaning liqueur. 'creme liqueur' (kept) is the unambiguous form."
+    },
+    {
+      "op": "rename",
+      "id": "aquavit-herbal",
+      "name": "herbal aquavit",
+      "note": "word order fix: 'aquavit herbal' is an awkward generated form; 'herbal aquavit' matches natural query order (cf. sibling 'aromatic bitters')."
+    },
+    {
+      "op": "rename",
+      "id": "bitters-herbal",
+      "name": "herbal bitters",
+      "note": "word order fix: 'bitters herbal' -> 'herbal bitters' so a 'herbal bitters' query resolves; consistent with 'aromatic bitters', 'orange bitters'."
+    },
+    {
+      "op": "rename",
+      "id": "liqueur-herbal",
+      "name": "herbal liqueur",
+      "note": "word order fix: 'liqueur herbal' -> 'herbal liqueur'."
+    },
+    {
+      "op": "rename",
+      "id": "schnapps-herbal",
+      "name": "herbal schnapps",
+      "note": "word order fix: 'schnapps herbal' -> 'herbal schnapps'."
+    }
+  ]
+}

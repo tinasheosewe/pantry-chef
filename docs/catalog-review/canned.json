@@ -1,0 +1,55 @@
+{
+  "category": "Canned & Jarred",
+  "structural": [
+    {
+      "op": "reparent",
+      "id": "chicken-broth",
+      "parentIds": ["broth"],
+      "note": "chicken-broth was parented to broth AND chicken-meatball (a Protein item). A broth is not a child of a meatball; the protein parent is a defect that pollutes meatball/protein resolution. Keep only the broth parent."
+    },
+    {
+      "op": "reparent",
+      "id": "fire-roasted",
+      "parentIds": ["canned-diced-tomatoes"],
+      "note": "Named 'fire roasted tomatoes' and aliased 'fire roasted diced tomatoes' — it is canned diced tomatoes, not a tomato sauce. Was parented to tomato-sauce; re-home under canned-diced-tomatoes alongside the other canned-tomato variants."
+    },
+    {
+      "op": "rename",
+      "id": "fire-roasted",
+      "name": "fire roasted canned tomatoes",
+      "note": "Bare/ambiguous id 'fire-roasted'; give it a fully-specific name so it cannot exact-match a non-tomato 'fire roasted' query. Aliases already cover 'fire roasted tomatoes' / 'fire roasted diced tomatoes'."
+    },
+    {
+      "op": "merge",
+      "from": "pie-mix",
+      "into": "pumpkin-pie-mix",
+      "note": "True duplicate: both named 'pumpkin pie mix'. Keep pumpkin-pie-mix (clearer id, has aliases + richer swaps, correctly parented to pumpkin-pie-filling). pie-mix was wrongly parented to pumpkin-puree (pie mix is sweetened/spiced, not plain puree). The swap from pumpkin-puree-organic -> pie-mix is repointed by the applier."
+    }
+  ],
+  "cleanups": [
+    {
+      "op": "rename",
+      "id": "roasted-garlic-tomato-sauce",
+      "name": "roasted garlic tomato sauce",
+      "note": "Name was the bare modifier 'roasted garlic', which exact-matches a 'roasted garlic' query meant for the Produce garlic / a roasted-garlic ingredient. Make the name match the (already specific) id."
+    },
+    {
+      "op": "rename",
+      "id": "italian-herb",
+      "name": "italian herb tomato sauce",
+      "note": "Name was the bare modifier 'italian herb', which can intercept a herb/seasoning query (e.g. near 'italian seasoning'). It is a tomato-sauce variant (parent tomato-sauce); give it the full specific name."
+    },
+    {
+      "op": "rename",
+      "id": "no-salt-added",
+      "name": "no salt added tomato sauce",
+      "note": "Name was the pure bare modifier 'no salt added'. It is a tomato-sauce variant (parent tomato-sauce); give it the full specific name so it stops being a generic exact-match token."
+    },
+    {
+      "op": "removeAlias",
+      "id": "coconut-milk",
+      "alias": "light coconut milk",
+      "note": "'light coconut milk' is owned by the dedicated canned-coconut-milk-light item; it was duplicated as an over-broad alias on the general coconut-milk, splitting resolution. Remove from coconut-milk."
+    }
+  ]
+}

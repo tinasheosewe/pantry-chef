@@ -1,0 +1,85 @@
+{
+  "category": "Spices & Herbs",
+  "structural": [
+    {
+      "op": "merge",
+      "from": "nutritional",
+      "into": "nutritional-yeast",
+      "note": "True cross-category duplicate. 'nutritional' (Baking & Sweeteners, name 'nutritional yeast', parented to 'yeast') and 'nutritional-yeast' (Spices & Herbs, name 'nutritional yeast') are the same product. A 'nutritional yeast' query collides between them. Keep 'nutritional-yeast' as canonical: it has the correct id, the right category for a savory seasoning, and the real aliases ('nooch', 'savory yeast flakes'). The 'nutritional' id is bare/mangled and mis-categorized under Baking. It has no incoming parentIds/swaps references, so the merge is clean. Flagged because the better half spans into Baking & Sweeteners (out of this category), but the duplicate resolution belongs here."
+    },
+    {
+      "op": "merge",
+      "from": "chipotle-chili-powder",
+      "into": "chipotle-powder",
+      "note": "True duplicate. 'chipotle powder' and 'chipotle chili powder' are the same spice. 'chipotle-powder' is the canonical to keep: it owns the meco/morita children and carries aliases ('chipotle chile powder'). 'chipotle-chili-powder' is a childless, alias-less leaf parented to 'chili-powder' with no incoming references, so a 'chipotle chili powder' query splits off the family for no reason. Fold it into 'chipotle-powder' (its name survives as an alias). Note: this loses the chili-powder parentage; 'chipotle-powder' is currently a root — keeping the consolidated, alias-rich item is the better trade than two competing entries."
+    }
+  ],
+  "cleanups": [
+    {
+      "op": "removeAlias",
+      "id": "clove",
+      "alias": "long",
+      "note": "Over-broad / corrupt alias. Bare 'long' is a generic modifier token (long grain, long beans, long pepper) and is in no sense a name for clove; it looks like a stray/mangled token. As an exact-match alias it pollutes search and would hijack a bare 'long' query. clove keeps the real synonyms ('laung', 'lavanga', 'whole clove')."
+    },
+    {
+      "op": "removeAlias",
+      "id": "wasabi",
+      "alias": "japanese horseradish",
+      "note": "Leaked alias on a furikake. 'wasabi' here is name 'wasabi furikake' (a rice seasoning, child of 'furikake'), not wasabi itself. 'japanese horseradish' is the standard synonym for actual wasabi and is correctly owned by 'wasabi-paste' (Condiments & Sauces). A recipe calling for 'japanese horseradish'/'wasabi' must resolve to the paste, not a furikake. Remove the leak here."
+    },
+    {
+      "op": "removeAlias",
+      "id": "wasabi",
+      "alias": "wasabis",
+      "note": "Same leak: the bare-'wasabi' plural belongs to the wasabi condiment ('wasabi-paste'), not to this 'wasabi furikake' rice seasoning. Removing it keeps generic 'wasabi' queries off the furikake."
+    },
+    {
+      "op": "removeAlias",
+      "id": "garlic-powder",
+      "alias": "garlic granules",
+      "note": "Duplicate alias colliding with a dedicated child. 'garlic-granules' is its own item (parented to 'garlic-powder') and is the precise match for 'garlic granules'/'granulated garlic'. The parent 'garlic-powder' redundantly carries 'garlic granules' as an alias, so the query collides. Keep it on the specific child only; garlic-powder retains 'garlic powders'/'powdered garlic'."
+    },
+    {
+      "op": "removeAlias",
+      "id": "mint",
+      "alias": "fresh mint",
+      "note": "Cross-item duplicate alias. 'fresh mint' is the name of the Produce item 'fresh-mint'; the generic/dried Spices 'mint' should not also exact-match 'fresh mint'. Remove so a 'fresh mint' query lands on the produce item. mint keeps 'mint leaves'/'mentha'."
+    },
+    {
+      "op": "removeAlias",
+      "id": "thyme",
+      "alias": "fresh thyme",
+      "note": "Cross-item duplicate alias. 'fresh thyme' is the name of the Produce item 'fresh-thyme'; the dried/generic Spices 'thyme' should not also claim it. Remove so 'fresh thyme' resolves to produce. thyme keeps 'dried thyme'/'thyme leaves'."
+    },
+    {
+      "op": "removeAlias",
+      "id": "thyme",
+      "alias": "thymus",
+      "note": "Over-broad/ambiguous alias. 'thymus' (the thyme genus) collides with 'sweetbreads' (Protein), which carries 'thymus' for the anatomical gland. Low-value Latin-genus alias with a real cross-category collision; remove it. thyme keeps 'thymes'/'thyme leaves'/'dried thyme'."
+    },
+    {
+      "op": "removeAlias",
+      "id": "turmeric",
+      "alias": "fresh turmeric",
+      "note": "Cross-item duplicate alias. 'fresh turmeric' is the name of the Produce item 'fresh-turmeric'; the ground/generic Spices 'turmeric' should not also exact-match it. Remove so 'fresh turmeric' resolves to the produce root. turmeric keeps 'ground turmeric'/'haldi'/'curcuma'."
+    },
+    {
+      "op": "removeAlias",
+      "id": "maggi-seasoning",
+      "alias": "maggi sauce",
+      "note": "Leaked liquid-sauce alias. 'maggi-seasoning' (dry seasoning, Spices) carries aliases that name the liquid product, which is the separate canonical item 'maggi-seasoning-sauce' (Condiments & Sauces, parented to 'sauce', also aliased 'maggi sauce'). 'maggi sauce' should resolve to the liquid; remove from the dry-seasoning entry."
+    },
+    {
+      "op": "removeAlias",
+      "id": "maggi-seasoning",
+      "alias": "maggi liquid",
+      "note": "Same liquid leak: 'maggi liquid' describes the bottled Maggi liquid seasoning ('maggi-seasoning-sauce', Condiments), not a dry seasoning. Remove so liquid queries route to the sauce."
+    },
+    {
+      "op": "removeAlias",
+      "id": "maggi-seasoning",
+      "alias": "maggi seasoning sauce",
+      "note": "Same liquid leak: 'maggi seasoning sauce' is the exact name of the Condiments item 'maggi-seasoning-sauce'. Drop it from the Spices dry-seasoning item so the query lands on the canonical sauce."
+    }
+  ]
+}

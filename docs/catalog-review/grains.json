@@ -1,0 +1,61 @@
+{
+  "category": "Grains & Cereals",
+  "structural": [
+    {
+      "op": "merge",
+      "from": "sticky",
+      "into": "glutinous-rice",
+      "note": "True duplicate: 'sticky rice' and 'glutinous rice' are the same ingredient and carry identical aliases (sweet rice, mochi rice, mochigome, thai sticky rice, khao niaow). glutinous-rice has the richer alias set (+black sticky rice) and the more canonical name, so it is the survivor. No item parents to or swaps 'sticky', so the merge dangles nothing."
+    },
+    {
+      "op": "reid",
+      "from": "wheat",
+      "to": "wheat-bran",
+      "note": "Item is named 'wheat bran' and parented to 'bran', but its id is the bare, misleading 'wheat'. No item references the id 'wheat' as a parent/swap, so re-id is safe; gives it an id that matches the thing it is and removes the trap of a generic 'wheat' id pointing at bran."
+    }
+  ],
+  "cleanups": [
+    {
+      "op": "removeAlias",
+      "id": "wheat-bran",
+      "alias": "wheats",
+      "note": "'wheats' is a bare plural of generic 'wheat'. There is no generic wheat-grain item, so a 'wheat'/'wheats' query would mis-resolve to wheat BRAN. Over-broad alias on a specific (bran) item -> remove. (Targets the re-id'd id; reid runs in the structural pass first.)"
+    },
+    {
+      "op": "removeAlias",
+      "id": "rice",
+      "alias": "white rice",
+      "note": "Over-broad alias on the generic 'rice' base. A dedicated child 'rice-white' (name 'rice white') already covers white rice; carrying 'white rice' on the parent makes a 'white rice' query resolve to generic rice instead of the specific item."
+    },
+    {
+      "op": "removeAlias",
+      "id": "rice",
+      "alias": "long-grain rice",
+      "note": "Over-broad alias on the generic 'rice' base. 'long-grain rice' is a specific type; pinning it as an exact alias of generic rice short-circuits resolution to dedicated long-grain items (brown-rice/carolina-gold-rice carry the long-grain aliases). Generic 'rice' should stay generic."
+    },
+    {
+      "op": "removeAlias",
+      "id": "porridge",
+      "alias": "congee",
+      "note": "'congee' is its own child item of 'porridge'. The alias on the parent shadows the dedicated child, so a 'congee' query competes between parent and child. Remove from parent; the congee item owns the name."
+    },
+    {
+      "op": "removeAlias",
+      "id": "cream-of-rice",
+      "alias": "rice porridge",
+      "note": "'rice porridge' is shared with 'congee'. Congee IS rice porridge; cream-of-rice is a ground-rice hot cereal (farina-style), not porridge. Keep 'rice porridge' on congee, remove the leaked alias here."
+    },
+    {
+      "op": "removeAlias",
+      "id": "rye-berries",
+      "alias": "rye grain",
+      "note": "'rye grain' is shared with 'rye' (name 'rye groats'), the more generic rye entry that should own the bare 'rye grain' term. rye-berries keeps its specific aliases (whole rye kernels). Removes the duplicate alias collision."
+    },
+    {
+      "op": "removeAlias",
+      "id": "millet",
+      "alias": "bajra",
+      "note": "'bajra' specifically denotes pearl millet, not generic millet, and is already (correctly) an alias of 'pearl-millet'. Carrying it on the generic 'millet' base is an over-broad leak; remove so 'bajra' resolves to pearl-millet."
+    }
+  ]
+}
