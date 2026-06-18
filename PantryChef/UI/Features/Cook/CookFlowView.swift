@@ -21,6 +21,7 @@ struct CookFlowView: View {
     @State private var timerRunning = false
     @State private var startedAt: Date?
     @State private var doneSignal = 0
+    @State private var swapsExpanded = false
     private let tick = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
 
     private var isMulti: Bool { dishes.count > 1 }
@@ -197,12 +198,37 @@ struct CookFlowView: View {
     private var swappedLines: [RecipeLine] { allLines.filter { $0.swapNote != nil } }
 
     @ViewBuilder private var swapsStrip: some View {
-        if !swappedLines.isEmpty {
-            VStack(alignment: .leading, spacing: 3) {
-                ForEach(swappedLines) { line in
-                    Text("↻ \(line.name)\(line.swapNote.map { " — \($0)" } ?? "")")
-                        .font(Theme.Typography.fact(11)).foregroundStyle(Theme.Palette.sage)
-                        .fixedSize(horizontal: false, vertical: true)
+        let swaps = swappedLines
+        if !swaps.isEmpty {
+            VStack(alignment: .leading, spacing: 6) {
+                if swaps.count == 1 {
+                    // One swap is never clutter — show it inline, no chrome.
+                    swapLine(swaps[0])
+                } else {
+                    // Many swaps would dominate the step screen, so collapse to a
+                    // count and let the cook expand into a height-capped scroll.
+                    Button {
+                        withAnimation(.easeOut(duration: 0.18)) { swapsExpanded.toggle() }
+                    } label: {
+                        HStack(spacing: 6) {
+                            Text("↻ \(swaps.count) substitutions")
+                                .font(.system(size: 11, weight: .semibold)).tracking(0.4)
+                            Image(systemName: swapsExpanded ? "chevron.up" : "chevron.down")
+                                .font(.system(size: 9, weight: .bold))
+                            Spacer(minLength: 0)
+                        }
+                        .foregroundStyle(Theme.Palette.sage)
+                        .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
+                    if swapsExpanded {
+                        ScrollView {
+                            VStack(alignment: .leading, spacing: 4) {
+                                ForEach(swaps) { swapLine($0) }
+                            }
+                        }
+                        .frame(maxHeight: 108)   // bounded — even a dozen swaps stay tidy
+                    }
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -210,6 +236,13 @@ struct CookFlowView: View {
             .background(Rectangle().fill(Theme.Palette.sage.opacity(0.10)))
             .padding(.top, 10)
         }
+    }
+
+    private func swapLine(_ line: RecipeLine) -> some View {
+        Text("↻ \(line.name)\(line.swapNote.map { " — \($0)" } ?? "")")
+            .font(Theme.Typography.fact(11)).foregroundStyle(Theme.Palette.sage)
+            .fixedSize(horizontal: false, vertical: true)
+            .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     private func advance(_ direction: Int) {
