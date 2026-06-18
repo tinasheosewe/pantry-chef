@@ -15,10 +15,16 @@ struct StockView: View {
             .filter { if case .perishable = $0.measure { return true } else { return false } }
             .sorted { (days($0) ?? .max) < (days($1) ?? .max) }
     }
-    /// Distinct sections, not one long sorted list: things to use NOW vs. the
-    /// rest of the fridge.
+    /// The expiry *warning* — perishables inside the tight "use it or lose it"
+    /// window. Lifted out of the calm sort into a band at the top (and the tab badge).
+    private var urgent: [StockItem] { store.expiringSoon() }
+    /// Distinct sections, not one long sorted list: coming-up-soon (but not yet a
+    /// warning) vs. the rest of the fridge.
     private var perishingFirst: [StockItem] {
-        allPerishable.filter { (days($0) ?? .max) <= KitchenConfig.Stores.perishingSoonDays }
+        allPerishable.filter {
+            let d = days($0) ?? .max
+            return d > KitchenConfig.Stores.expiryWarningDays && d <= KitchenConfig.Stores.perishingSoonDays
+        }
     }
     private var inStock: [StockItem] {
         allPerishable.filter { (days($0) ?? .max) > KitchenConfig.Stores.perishingSoonDays }
@@ -39,7 +45,7 @@ struct StockView: View {
     var body: some View {
         VStack(spacing: 0) {
             VStack(alignment: .leading, spacing: 4) {
-                Text("Stores").font(Theme.Typography.dish(22)).foregroundStyle(Theme.Palette.ink)
+                Text("Pantry").font(Theme.Typography.dish(22)).foregroundStyle(Theme.Palette.ink)
                 Text(summary)
                     .font(Theme.Typography.note(11.5)).foregroundStyle(Theme.Palette.warmGray)
                     .fixedSize(horizontal: false, vertical: true)
@@ -48,8 +54,9 @@ struct StockView: View {
             .padding(.horizontal, 20).padding(.top, 6)
             ScrollView {
                 VStack(alignment: .leading, spacing: 0) {
+                    if !urgent.isEmpty { warningBand }
                     if !perishingFirst.isEmpty {
-                        section("Perishing first", perishingFirst, tone: .urgent)
+                        section("Perishing soon", perishingFirst, tone: .urgent)
                     }
                     if !inStock.isEmpty {
                         section("In stock", inStock)
@@ -85,6 +92,52 @@ struct StockView: View {
         Eyebrow(text: title, tone: tone).padding(.top, 14)
         ForEach(items) { item in row(item) }
         DashedRule().padding(.top, 11)
+    }
+
+    /// The expiry warning: a tomato-bordered band at the very top, so spoilage reads
+    /// as "act on this", not a quietly-sorted row you scroll past. Tap a line to edit.
+    private var warningBand: some View {
+        VStack(alignment: .leading, spacing: 7) {
+            HStack(spacing: 6) {
+                Image(systemName: "exclamationmark.triangle.fill").font(.system(size: 11))
+                Text("USE SOON — \(urgent.count)")
+                    .font(.system(size: 11, weight: .semibold)).tracking(1.4)
+            }
+            .foregroundStyle(Theme.Palette.paprika)
+            ForEach(urgent) { item in
+                Button { editing = item } label: {
+                    LeaderRow {
+                        Text("\(emoji(item))\u{2002}\(item.name)")
+                            .font(Theme.Typography.fact(13)).foregroundStyle(Theme.Palette.ink).lineLimit(1)
+                    } trailing: {
+                        if case .perishable(let detail, _) = item.measure {
+                            HStack(spacing: 8) {
+                                Text(detail.uppercased()).font(.system(size: 10)).tracking(0.8)
+                                    .foregroundStyle(Theme.Palette.warmGraySoft)
+                                Text(daysLabel(item))
+                                    .font(Theme.Typography.dish(11, weight: .semibold))
+                                    .foregroundStyle(Theme.Palette.paprika)
+                            }
+                        }
+                    }
+                    .padding(.vertical, 3)
+                    .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+            }
+        }
+        .padding(.horizontal, 12).padding(.vertical, 11)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Rectangle().fill(Theme.Palette.paprika.opacity(0.08)))
+        .overlay(Rectangle().strokeBorder(Theme.Palette.paprika.opacity(0.55), lineWidth: 1))
+        .padding(.top, 14)
+    }
+
+    /// "TODAY" for anything at or past its date, else "N DAY(S)".
+    private func daysLabel(_ item: StockItem) -> String {
+        guard let d = item.daysLeft(now: store.today) else { return "" }
+        if d <= 0 { return "TODAY" }
+        return d == 1 ? "1 DAY" : "\(d) DAYS"
     }
 
     /// "7 things in. The spinach wants using; staples are solid; 5 wait on the list."

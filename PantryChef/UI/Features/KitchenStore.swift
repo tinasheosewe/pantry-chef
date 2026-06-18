@@ -543,6 +543,20 @@ final class KitchenStore {
             plate: plate, summary: "Logged — \(names.count) item\(names.count == 1 ? "" : "s") from your kitchen."))
     }
 
+    /// Perishables turning within the warning window — surfaced on Pantry as a
+    /// warning band and counted on the Pantry tab badge, so spoilage is a warning
+    /// the user sees from anywhere, not buried decoration.
+    func expiringSoon(within days: Int = KitchenConfig.Stores.expiryWarningDays) -> [StockItem] {
+        stock
+            .compactMap { item -> (StockItem, Int)? in
+                guard case .perishable = item.measure,
+                      let d = item.daysLeft(now: today), d <= days else { return nil }
+                return (item, d)
+            }
+            .sorted { $0.1 < $1.1 }
+            .map(\.0)
+    }
+
     /// Live readiness for a dish — the single ReadinessService over current stock,
     /// matched through the one catalog-aware IngredientMatching path.
     func readiness(for dish: Dish) -> Readiness {

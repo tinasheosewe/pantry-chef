@@ -17,12 +17,17 @@ enum KitchenConfig {
         static let stapleMinShelfLifeDays = 120
     }
 
-    /// Tuning for the Stores ledger.
+    /// Tuning for the Pantry ledger.
     enum Stores {
         /// A perishable with this many days left or fewer is "perishing first";
         /// longer-dated perishables sit under "in stock" (a clearer divide than one
         /// long sorted list).
         static let perishingSoonDays = 5
+        /// The tighter "use it or lose it" window: perishables within this many days
+        /// surface as an expiry *warning* (a band atop Pantry + the Pantry tab badge),
+        /// not just a calmly-sorted section. Testers wanted spoilage treated as a
+        /// surfaced warning, not decoration.
+        static let expiryWarningDays = 3
     }
 
     /// Knowledge-certainty decay (spec §7 trust layer): how fast the app stops

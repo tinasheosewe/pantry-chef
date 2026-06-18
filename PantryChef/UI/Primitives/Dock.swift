@@ -27,6 +27,9 @@ struct Dock: View {
     var onAdd: () -> Void
     /// The page's one true closing line; varies by space.
     var tailpiece: String = ""
+    /// Per-space warning counts (e.g. expiry on Pantry) — a small tomato block on the
+    /// label, so a warning is visible from any space, not only when you're standing in it.
+    var badges: [RootSpace: Int] = [:]
 
     var body: some View {
         VStack(spacing: 0) {
@@ -55,6 +58,7 @@ struct Dock: View {
 
     private func spaceButton(_ space: RootSpace) -> some View {
         let isActive = selection == space
+        let badge = badges[space] ?? 0
         return Button {
             withAnimation(.spring(response: 0.32, dampingFraction: 0.82)) { selection = space }
         } label: {
@@ -63,6 +67,9 @@ struct Dock: View {
                     .font(.system(size: 11, weight: isActive ? .semibold : .regular))
                     .tracking(Theme.Metric.eyebrowTracking)
                     .foregroundStyle(isActive ? Theme.Palette.ink : Theme.Palette.ink.opacity(0.5))
+                    .overlay(alignment: .topTrailing) {
+                        if badge > 0 { badgeBlock(badge).offset(x: 13, y: -6) }
+                    }
                 Rectangle()
                     .fill(isActive ? Theme.Palette.paprika : .clear)
                     .frame(width: 22, height: 2)
@@ -72,7 +79,18 @@ struct Dock: View {
         }
         .buttonStyle(.pressable)
         .accessibilityLabel(space.title)
+        .accessibilityValue(badge > 0 ? "\(badge) expiring" : "")
         .accessibilityAddTraits(isActive ? [.isSelected] : [])
+    }
+
+    /// The squared tomato count block — printed furniture, not a round iOS pill.
+    private func badgeBlock(_ count: Int) -> some View {
+        Text("\(count)")
+            .font(.system(size: 9, weight: .bold))
+            .foregroundStyle(Theme.Palette.cream)
+            .frame(minWidth: 14, minHeight: 14)
+            .padding(.horizontal, 2)
+            .background(Rectangle().fill(Theme.Palette.paprika))
     }
 }
 

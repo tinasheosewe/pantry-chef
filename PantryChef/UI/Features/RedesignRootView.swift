@@ -48,7 +48,8 @@ struct RedesignRootView: View {
                 Dock(
                     selection: Binding(get: { store.space }, set: { store.space = $0 }),
                     onAdd: { showComposer = true },
-                    tailpiece: tailpiece
+                    tailpiece: tailpiece,
+                    badges: [.pantry: store.expiringSoon().count]
                 )
             }
             .background(KitchenBackground())
