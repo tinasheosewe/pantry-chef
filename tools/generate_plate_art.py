@@ -69,7 +69,22 @@ def gen_one(name, key):
     open(out, "wb").write(png)
     subprocess.run(["sips", "-Z", str(MAXSIDE), out], check=True,
                    stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    normalize_transparency(out)
     return (s, "ok")
+
+def normalize_transparency(path):
+    """gpt-image-1 occasionally paints an opaque background square despite
+    background=transparent; flood-fill it away from the corners so every plate sits
+    transparently on the page. (PlateArtCoverageTests guards this too.)"""
+    from PIL import Image, ImageDraw
+    im = Image.open(path).convert("RGBA")
+    w, h = im.size
+    corners = [(0, 0), (w - 1, 0), (0, h - 1), (w - 1, h - 1)]
+    if all(im.getpixel(c)[3] <= 40 for c in corners):
+        return
+    for c in corners:
+        ImageDraw.floodfill(im, c, (0, 0, 0, 0), thresh=80)
+    im.save(path)
 
 def main():
     limit = workers = None

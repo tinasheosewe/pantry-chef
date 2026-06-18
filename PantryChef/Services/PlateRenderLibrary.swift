@@ -171,6 +171,25 @@ final class PlateRenderLibrary {
     /// never fall back to the emoji plate or a live paint in production.
     nonisolated static func hasBundledArt(for name: String) -> Bool { loadBundled(slug(name)) != nil }
 
+    /// The greatest alpha across a bundled plate's four corners — used by the test that
+    /// guards against an opaque background square (plates must sit transparently on the
+    /// page). Nil when there's no bundled art.
+    nonisolated static func bundledArtMaxCornerAlpha(for name: String) -> Int? {
+        guard let cg = loadBundled(slug(name))?.cgImage else { return nil }
+        let w = cg.width, h = cg.height
+        guard w > 2, h > 2 else { return nil }
+        var maxA = 0
+        for (x, y) in [(1, 1), (w - 2, 1), (1, h - 2), (w - 2, h - 2)] {
+            var px: [UInt8] = [0, 0, 0, 0]
+            let ctx = CGContext(data: &px, width: 1, height: 1, bitsPerComponent: 8, bytesPerRow: 4,
+                                space: CGColorSpaceCreateDeviceRGB(),
+                                bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue)
+            ctx?.draw(cg, in: CGRect(x: -x, y: -y, width: w, height: h))
+            maxA = max(maxA, Int(px[3]))
+        }
+        return maxA
+    }
+
     private nonisolated static var cacheDirectory: URL {
         let base = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
         return base.appendingPathComponent("PlateRenders", isDirectory: true)

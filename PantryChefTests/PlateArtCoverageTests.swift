@@ -20,4 +20,16 @@ final class PlateArtCoverageTests: XCTestCase {
                       "\(missing.count) seed dish(es) ship without bundled plate art:\n  "
                         + missing.joined(separator: "\n  "))
     }
+
+    /// Every plate must sit transparently on the page — no opaque background square
+    /// (a generation glitch we hit on a few). Corners should be effectively clear.
+    func testPlateArtHasTransparentBackground() {
+        let opaque = RecipeSeed.all.compactMap { dish -> String? in
+            guard let a = PlateRenderLibrary.bundledArtMaxCornerAlpha(for: dish.name), a > 40 else { return nil }
+            return "\(dish.name) (corner alpha \(a))"
+        }
+        XCTAssertTrue(opaque.isEmpty,
+                      "\(opaque.count) plate(s) have an opaque background square:\n  "
+                        + opaque.joined(separator: "\n  "))
+    }
 }
