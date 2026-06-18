@@ -28,6 +28,9 @@ enum RecipeSeed {
             let amount: String?
             let category: String?
             let staple: Bool?
+            /// Explicit load-bearing override. When absent, essentiality is derived
+            /// from the name/amount (garnishes & "to taste" finishes are optional).
+            let optional: Bool?
             /// Pre-baked catalog id (offline-resolved). When present the loader skips
             /// the expensive runtime resolution — keeps launch a pure decode.
             let catalogId: String?
@@ -82,6 +85,7 @@ enum RecipeSeed {
                        amount: ing.amount,
                        name: ing.name.capitalizedFirst,
                        isStaple: ing.staple ?? false,
+                       essential: !(ing.optional ?? RecipeLine.isLikelyOptional(name: ing.name, amount: ing.amount)),
                        catalogItemID: ing.catalogId ?? resolve(ing.name))
         }
         return Dish(

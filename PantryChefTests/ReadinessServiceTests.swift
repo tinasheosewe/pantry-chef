@@ -20,8 +20,9 @@ final class ReadinessServiceTests: XCTestCase {
         func swapTargets(for requirement: IngredientRequirement) -> [SwapTarget] { map[requirement.key] ?? [] }
     }
 
-    private func req(_ key: String, _ name: String, staple: Bool = false) -> IngredientRequirement {
-        .init(key: key, displayName: name, isStaple: staple)
+    private func req(_ key: String, _ name: String, staple: Bool = false,
+                     essential: Bool = true) -> IngredientRequirement {
+        .init(key: key, displayName: name, isStaple: staple, essential: essential)
     }
     private func swap(_ key: String, _ name: String) -> SwapTarget {
         SwapTarget(key: key, name: name, catalogItemID: nil)
@@ -62,6 +63,33 @@ final class ReadinessServiceTests: XCTestCase {
         let s = service(onHand: ["spinach"])
         XCTAssertEqual(s.evaluate([req("spinach", "Spinach"), req("salmon", "Salmon")]),
                        .needs(items: ["Salmon"]))
+    }
+
+    /// Load-bearing: a missing *optional* line (a garnish, a "to taste" finish) never
+    /// makes a dish unmakeable — you can cook it tonight without the parsley.
+    func testMissingOptionalLineDoesNotBlock() {
+        let s = service(onHand: ["spinach"])
+        XCTAssertEqual(s.evaluate([req("spinach", "Spinach"),
+                                   req("parsley", "Parsley", essential: false)]),
+                       .ready)
+    }
+
+    /// Only the essential miss is surfaced; the optional miss is silent.
+    func testEssentialMissDominatesOptionalMiss() {
+        let s = service(onHand: [])
+        XCTAssertEqual(s.evaluate([req("salmon", "Salmon"),
+                                   req("dill", "Dill", essential: false)]),
+                       .needs(items: ["Salmon"]))
+    }
+
+    /// Optional non-staples don't inflate the swap-cap denominator: a dish whose only
+    /// essential ingredient is met via a swap stays makeable even with optional misses.
+    func testOptionalLinesDoNotAffectSwapCap() {
+        let s = service(onHand: ["yogurt"], swaps: ["sour-cream": [swap("yogurt", "Yogurt")]])
+        XCTAssertEqual(s.evaluate([req("sour-cream", "Sour cream"),
+                                   req("chives", "Chives", essential: false),
+                                   req("paprika", "Paprika", essential: false)]),
+                       .readyWithSwaps([SwapOption(fromName: "Sour cream", toName: "Yogurt")]))
     }
 
     func testMissingWithSwapOnHandIsReadyWithSwaps() {

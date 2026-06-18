@@ -9,6 +9,12 @@ struct RecipeLine: Identifiable, Equatable, Sendable {
     let amount: String?     // "300 g", "2", nil for "to taste"
     let name: String
     let isStaple: Bool
+    /// Whether this line is *load-bearing* — i.e. the dish genuinely needs it. A
+    /// non-essential line (a garnish, a "to taste"/"to serve" finish, an optional
+    /// extra) is droppable: missing it never makes the dish unmakeable, it's just
+    /// surfaced as an optional add. Staples are a separate axis (assumed present);
+    /// a line can be essential and non-staple (the common case), or optional.
+    let essential: Bool
     /// The catalog item this line *is*, when known (seed + editor-resolved recipes).
     /// Readiness/swaps match on this directly — no fuzzy name mapping. Nil only for
     /// genuinely freeform lines, which fall back to name matching.
@@ -19,13 +25,28 @@ struct RecipeLine: Identifiable, Equatable, Sendable {
     let swapNote: String?
 
     init(id: UUID = UUID(), key: String, amount: String? = nil, name: String,
-         isStaple: Bool = false, catalogItemID: String? = nil, swapNote: String? = nil) {
+         isStaple: Bool = false, essential: Bool = true,
+         catalogItemID: String? = nil, swapNote: String? = nil) {
         self.id = id; self.key = key; self.amount = amount; self.name = name
-        self.isStaple = isStaple; self.catalogItemID = catalogItemID; self.swapNote = swapNote
+        self.isStaple = isStaple; self.essential = essential
+        self.catalogItemID = catalogItemID; self.swapNote = swapNote
     }
 
     var requirement: IngredientRequirement {
-        IngredientRequirement(key: key, displayName: name, isStaple: isStaple, catalogItemID: catalogItemID)
+        IngredientRequirement(key: key, displayName: name, isStaple: isStaple,
+                              essential: essential, catalogItemID: catalogItemID)
+    }
+
+    /// Heuristic load-bearing classification for lines that don't carry an explicit
+    /// flag (seed dataset, AI ingestion): a line is *optional* when its amount or name
+    /// signals a garnish / finishing touch / to-taste extra. Conservative — only clear
+    /// signals demote a line, so the default stays essential.
+    static func isLikelyOptional(name: String, amount: String?) -> Bool {
+        let hay = "\(name) \(amount ?? "")".lowercased()
+        let signals = ["to taste", "to serve", "for serving", "to garnish", "for garnish",
+                       "as garnish", "to finish", "for the garnish", "optional", "if desired",
+                       "garnish", "to drizzle", "for dusting", "to dust"]
+        return signals.contains(where: hay.contains)
     }
 
     /// "300 g · Baby spinach"
@@ -37,7 +58,8 @@ struct RecipeLine: Identifiable, Equatable, Sendable {
         let q = qty.trimmingCharacters(in: .whitespaces)
         let amount: String? = q.isEmpty ? nil : (unit.map { "\(q) \($0.rawValue)" } ?? q)
         return RecipeLine(id: id, key: key, amount: amount, name: name,
-                          isStaple: isStaple, catalogItemID: catalogItemID, swapNote: swapNote)
+                          isStaple: isStaple, essential: essential,
+                          catalogItemID: catalogItemID, swapNote: swapNote)
     }
 }
 
@@ -173,7 +195,7 @@ struct Dish: Identifiable, Equatable, Sendable {
             guard let amount = line.amount,
                   let scaled = Self.scaledAmount(amount, by: factor) else { return line }
             return RecipeLine(id: line.id, key: line.key, amount: scaled,
-                              name: line.name, isStaple: line.isStaple,
+                              name: line.name, isStaple: line.isStaple, essential: line.essential,
                               catalogItemID: line.catalogItemID, swapNote: line.swapNote)
         }
         return copy
@@ -199,7 +221,7 @@ struct Dish: Identifiable, Equatable, Sendable {
             // note (ratio / quantity guidance) rides along to the cook.
             let resolved = catalogItemID ?? PantryCatalog.resolveExact(name: newName)?.id
             copy.ingredients[i] = RecipeLine(id: old.id, key: key, amount: old.amount,
-                                             name: newName, isStaple: old.isStaple,
+                                             name: newName, isStaple: old.isStaple, essential: old.essential,
                                              catalogItemID: resolved, swapNote: note)
         }
         return copy

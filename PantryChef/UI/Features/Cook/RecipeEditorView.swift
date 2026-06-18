@@ -154,7 +154,7 @@ struct RecipeEditorView: View {
             let old = dish.ingredients[i]
             dish.ingredients[i] = RecipeLine(id: old.id, key: key, amount: old.amount,
                                              name: display, isStaple: old.isStaple,
-                                             catalogItemID: catalogItemID)
+                                             essential: old.essential, catalogItemID: catalogItemID)
         } else {
             dish.ingredients.append(RecipeLine(key: key, amount: nil, name: display,
                                                catalogItemID: catalogItemID))

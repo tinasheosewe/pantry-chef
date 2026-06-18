@@ -8,13 +8,18 @@ struct IngredientRequirement: Equatable, Sendable {
     /// Staples (flour, oil, salt) are assumed present unless explicitly flagged out
     /// (spec §7 resolution classes) — they never make a dish "unmakeable".
     let isStaple: Bool
+    /// Whether this requirement is load-bearing. An optional line (garnish/finish/
+    /// "to taste") never makes a dish unmakeable — its absence is ignored by readiness
+    /// and surfaced elsewhere as an optional add. Defaults to essential.
+    let essential: Bool
     /// The catalog item this requirement *is*, when known — matched directly, no
     /// fuzzy name mapping. Nil falls back to name matching.
     let catalogItemID: String?
 
-    init(key: String, displayName: String, isStaple: Bool, catalogItemID: String? = nil) {
+    init(key: String, displayName: String, isStaple: Bool, essential: Bool = true,
+         catalogItemID: String? = nil) {
         self.key = key; self.displayName = displayName
-        self.isStaple = isStaple; self.catalogItemID = catalogItemID
+        self.isStaple = isStaple; self.essential = essential; self.catalogItemID = catalogItemID
     }
 }
 
@@ -93,6 +98,9 @@ struct ReadinessService {
         for req in requirements {
             if presence.hasOnHand(key: req.key, catalogItemID: req.catalogItemID) { continue }
             if req.isStaple && !presence.isKnownOut(key: req.key, catalogItemID: req.catalogItemID) { continue }
+            // Optional (non-load-bearing) lines never block: a missing garnish or
+            // "to taste" finish doesn't stop you cooking the dish tonight.
+            if !req.essential { continue }
 
             if let target = swaps.swapTargets(for: req)
                 .first(where: { presence.hasOnHand(key: $0.key, catalogItemID: $0.catalogItemID) }) {
@@ -104,9 +112,9 @@ struct ReadinessService {
 
         if !missing.isEmpty { return .needs(items: missing) }
         // A dish that leans on too many substitutes isn't really that dish. Past the
-        // cap (~a third of its non-staple ingredients), stop calling it makeable and
-        // surface the swapped-out ingredients as what it needs.
-        if usedSwaps.count > Self.swapCap(forNonStaple: requirements.lazy.filter { !$0.isStaple }.count) {
+        // cap (~a third of its essential non-staple ingredients), stop calling it
+        // makeable and surface the swapped-out ingredients as what it needs.
+        if usedSwaps.count > Self.swapCap(forNonStaple: requirements.lazy.filter { !$0.isStaple && $0.essential }.count) {
             return .needs(items: usedSwaps.map(\.fromName))
         }
         if !usedSwaps.isEmpty { return .readyWithSwaps(usedSwaps) }

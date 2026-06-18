@@ -89,7 +89,7 @@ struct RecipeDetailView: View {
 
     private var missingLines: [RecipeLine] {
         effectiveDish.ingredients
-            .filter { !isOnHand($0) && !$0.isStaple && appliedSwaps[$0.id] == nil }
+            .filter { !isOnHand($0) && !$0.isStaple && $0.essential && appliedSwaps[$0.id] == nil }
     }
     private var missingNames: [String] { missingLines.map(\.name) }
 
@@ -340,19 +340,26 @@ struct RecipeDetailView: View {
         // confident check; ask the cook to verify (spec §7).
         let uncertain = onHand && applied == nil && !line.isStaple
             && (certaintyForKey(line.key) ?? .confirmed) <= .uncertain
+        // Optional (non-load-bearing) lines — garnishes, "to taste" finishes — never
+        // read as a blocker: dimmed, tagged OPTIONAL, and not pushed a swap.
+        let optional = !line.essential
         return VStack(alignment: .leading, spacing: 4) {
             HStack(spacing: 10) {
                 Text(onHand ? (uncertain ? "?" : "✓") : "○")
                     .font(Theme.Typography.fact(13, weight: .medium))
                     .foregroundStyle(uncertain ? Theme.Palette.paprika
-                                     : onHand ? Theme.Palette.sage : Theme.Palette.paprika)
+                                     : onHand ? Theme.Palette.sage
+                                     : optional ? Theme.Palette.warmGraySoft : Theme.Palette.paprika)
                     .frame(width: 16)
-                Text(line.display).font(Theme.Typography.fact(13.5)).foregroundStyle(Theme.Palette.ink)
+                Text(line.display).font(Theme.Typography.fact(13.5))
+                    .foregroundStyle(optional && !onHand ? Theme.Palette.warmGray : Theme.Palette.ink)
                 if let grams = UnitConversion.gramHint(for: line) {
                     Text("≈\(grams)").font(Theme.Typography.fact(11)).foregroundStyle(Theme.Palette.warmGraySoft)
                 }
                 Spacer()
-                if !onHand && !line.isStaple {
+                if optional {
+                    Text("OPTIONAL").font(.system(size: 9)).tracking(1.6).foregroundStyle(Theme.Palette.warmGraySoft)
+                } else if !onHand && !line.isStaple {
                     Text("NEED").font(.system(size: 9)).tracking(1.6).foregroundStyle(Theme.Palette.paprika)
                 } else if uncertain {
                     Text("CHECK?").font(.system(size: 9)).tracking(1.6).foregroundStyle(Theme.Palette.paprika)
@@ -365,9 +372,10 @@ struct RecipeDetailView: View {
                         .fixedSize(horizontal: false, vertical: true)
                 }
                 .buttonStyle(.plain)
-            } else if !onHand && !line.isStaple {
+            } else if !onHand && !line.isStaple && !optional {
                 // Surface every substitute and let the cook choose — the ones already
                 // on hand lead and read in sage, the rest are dimmed alternatives.
+                // (Optional garnishes don't nag for a swap — they're droppable.)
                 let ranked = rankedSwaps(for: line)
                 VStack(alignment: .leading, spacing: 3) {
                     ForEach(ranked.prefix(3)) { entry in swapCandidate(line: line, entry: entry) }

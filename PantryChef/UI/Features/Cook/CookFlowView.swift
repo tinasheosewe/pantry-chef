@@ -138,16 +138,20 @@ struct CookFlowView: View {
     private func gatherRow(_ line: RecipeLine) -> some View {
         let isGathered = gathered.contains(line.id)
         let onHand = isOnHand(line)
+        let optional = !line.essential   // droppable garnish/finish — gather if you like
         return Button {
             if isGathered { gathered.remove(line.id) } else { gathered.insert(line.id) }
         } label: {
             VStack(alignment: .leading, spacing: 3) {
                 HStack(spacing: 12) {
                     InkCheck(on: isGathered, size: 22)
-                    Text(line.display).font(Theme.Typography.fact(14)).foregroundStyle(Theme.Palette.ink)
+                    Text(line.display).font(Theme.Typography.fact(14))
+                        .foregroundStyle(optional ? Theme.Palette.warmGray : Theme.Palette.ink)
                         .strikethrough(isGathered, color: Theme.Palette.warmGraySoft)
                     Spacer()
-                    if !onHand && !line.isStaple {
+                    if optional {
+                        Text("OPTIONAL").font(.system(size: 9)).tracking(1.4).foregroundStyle(Theme.Palette.warmGraySoft)
+                    } else if !onHand && !line.isStaple {
                         Text("NOT IN STOCK").font(.system(size: 9)).tracking(1.4).foregroundStyle(Theme.Palette.paprika)
                     }
                 }
