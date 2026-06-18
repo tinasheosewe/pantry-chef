@@ -75,6 +75,7 @@
 		36338DBD21E24BFD8E128018 /* RealtimeServiceProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF4ACDEB952F0E92FF5A2FF7 /* RealtimeServiceProtocol.swift */; };
 		36BF17DE57C80832F7F82F58 /* stuffed-bell-peppers.png in Resources */ = {isa = PBXBuildFile; fileRef = 0B1C036C5BD4CD41F1060C93 /* stuffed-bell-peppers.png */; };
 		3722DDC8F506F6FAC057A855 /* PlateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17625D9532976239EB8932D8 /* PlateView.swift */; };
+		37A16F31FD256CC9DFE357C9 /* PlateArtCoverageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21A5B7B1913DAF532EDDC8EF /* PlateArtCoverageTests.swift */; };
 		384BBCD0526D4E1C72B78481 /* RealtimeAPI in Frameworks */ = {isa = PBXBuildFile; productRef = 4A6232C1ECDD3D484F41AF09 /* RealtimeAPI */; };
 		38E09D701A202B1094D81F8A /* fluffy-buttermilk-pancakes.png in Resources */ = {isa = PBXBuildFile; fileRef = F42018C081DCCD416B555108 /* fluffy-buttermilk-pancakes.png */; };
 		3AC6BAC333C9BAFF1C947F00 /* baked-falafel-bowl.png in Resources */ = {isa = PBXBuildFile; fileRef = 11832F25E4EDE858376EF759 /* baked-falafel-bowl.png */; };
@@ -376,6 +377,7 @@
 		1DDC82E2714A8DFE77408CE9 /* TimelineView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TimelineView.swift; sourceTree = "<group>"; };
 		1E819DC7FC0CEAB0CE5F6213 /* greek-yogurt-chicken-salad.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "greek-yogurt-chicken-salad.png"; sourceTree = "<group>"; };
 		1EF496256762582121574373 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		21A5B7B1913DAF532EDDC8EF /* PlateArtCoverageTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PlateArtCoverageTests.swift; sourceTree = "<group>"; };
 		21CB24A7C07BC7D0F671E39B /* shrimp-broccoli-garlic-stir-fry.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "shrimp-broccoli-garlic-stir-fry.png"; sourceTree = "<group>"; };
 		2403DEDB0ACDD46970E44C8C /* chicken-tacos-al-pastor.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "chicken-tacos-al-pastor.png"; sourceTree = "<group>"; };
 		242B017E7A8BD91ADAE609D9 /* spanakopita.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = spanakopita.png; sourceTree = "<group>"; };
@@ -988,6 +990,7 @@
 				A1164E8B1FE358D08AE6BFF7 /* IngredientMatchingLineageTests.swift */,
 				53ADC570802BEDF30A7FEAE1 /* CatalogSwapsTests.swift */,
 				6DA54DA4B3280DFCD6C1A52C /* MealPlanningTests.swift */,
+				21A5B7B1913DAF532EDDC8EF /* PlateArtCoverageTests.swift */,
 			);
 			path = PantryChefTests;
 			sourceTree = "<group>";
@@ -1691,6 +1694,7 @@
 				9AD09898E5C888D5DD3CB7BD /* IngredientMatchingLineageTests.swift in Sources */,
 				26C1EAB9DEDD1361250914B3 /* CatalogSwapsTests.swift in Sources */,
 				DA390A2FB998A6A3E41320AD /* MealPlanningTests.swift in Sources */,
+				37A16F31FD256CC9DFE357C9 /* PlateArtCoverageTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

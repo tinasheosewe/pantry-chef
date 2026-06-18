@@ -373,14 +373,17 @@ struct RecipeDetailView: View {
                 }
                 .buttonStyle(.plain)
             } else if !onHand && !line.isStaple && !optional {
-                // Surface every substitute and let the cook choose — the ones already
-                // on hand lead and read in sage, the rest are dimmed alternatives.
-                // (Optional garnishes don't nag for a swap — they're droppable.)
-                let ranked = rankedSwaps(for: line)
-                VStack(alignment: .leading, spacing: 3) {
-                    ForEach(ranked.prefix(3)) { entry in swapCandidate(line: line, entry: entry) }
+                // Only surface substitutes you actually have on hand — listing every
+                // possible swap for every missing line buries the page. If nothing on
+                // hand subs in, the line just reads NEED (no swap clutter). Optional
+                // garnishes don't nag for a swap either — they're droppable.
+                let onHandSwaps = rankedSwaps(for: line).filter(\.onHand)
+                if !onHandSwaps.isEmpty {
+                    VStack(alignment: .leading, spacing: 3) {
+                        ForEach(onHandSwaps.prefix(3)) { entry in swapCandidate(line: line, entry: entry) }
+                    }
+                    .padding(.leading, 26)
                 }
-                .padding(.leading, 26)
             }
         }
         .padding(.vertical, 9)

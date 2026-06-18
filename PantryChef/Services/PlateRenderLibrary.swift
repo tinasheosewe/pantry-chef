@@ -166,6 +166,11 @@ final class PlateRenderLibrary {
         return UIImage(data: data)
     }
 
+    /// Whether a dish name has bundled plate art (the same lookup `fulfil` uses).
+    /// Seed dishes must all ship art — `PlateArtCoverageTests` enforces it — so they
+    /// never fall back to the emoji plate or a live paint in production.
+    nonisolated static func hasBundledArt(for name: String) -> Bool { loadBundled(slug(name)) != nil }
+
     private nonisolated static var cacheDirectory: URL {
         let base = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
         return base.appendingPathComponent("PlateRenders", isDirectory: true)
