@@ -267,7 +267,9 @@ struct RedesignRootView: View {
     @ViewBuilder private var forYouFeed: some View {
         leftoversRail
         if store.readinessReady {
-            tierRail("Make it now", "Everything's already on hand", .makeNow)
+            // Use-it-up leads when something's turning — a full rail now, not one card.
+            tierRail("Use it up", "Cook these before they turn", .useItUp)
+            tierRail("Make it now", "Everything's already on hand", .makeNow, excludingName: featureDish?.name)
             if let feature = featureItem {
                 FeatureCard(item: feature, eyebrow: featureEyebrow, subtitle: featureSubtitle,
                             onOpen: { detailDish = $0 })
@@ -286,8 +288,9 @@ struct RedesignRootView: View {
     /// One pantry-tier rail — only shown if it has dishes; header taps through to the
     /// full grid for that lens.
     private func tierRail(_ title: String, _ subtitle: String, _ lens: FeedLens,
-                          sortByMissing: Bool = false) -> some View {
+                          sortByMissing: Bool = false, excludingName: String? = nil) -> some View {
         var dishes = feedLibrary.filter { matches($0, lens) }
+        if let ex = excludingName?.lowercased() { dishes.removeAll { $0.name.lowercased() == ex } }
         if sortByMissing {
             dishes.sort { store.readiness(for: $0).missingCount < store.readiness(for: $1).missingCount }
         }
@@ -502,23 +505,16 @@ struct RedesignRootView: View {
         return nil
     }
 
-    /// The editorial feature — lead with a "use it up" dish when something's expiring,
-    /// else the strongest ready-now pick. Never the dish the hero is already showing.
+    /// The editorial feature — a ready-now spotlight (use-it-up now has its own rail).
+    /// Never the dish the hero is already showing.
     private var featureDish: Dish? {
-        let heroName = heroDishName?.lowercased()
-        if let d = feedLibrary.first(where: { usesExpiring($0) && $0.name.lowercased() != heroName }) { return d }
         guard store.readinessReady else { return nil }
+        let heroName = heroDishName?.lowercased()
         return feedLibrary.first { store.readiness(for: $0).isMakeableNow && $0.name.lowercased() != heroName }
     }
     private var featureItem: FeedItem? { featureDish.map(feedItem) }
-    private var featureEyebrow: String { (featureDish.map(usesExpiring) ?? false) ? "Use it up" : "Ready now" }
-    private var featureSubtitle: String {
-        if (featureDish.map(usesExpiring) ?? false), let soon = store.expiringSoon().first,
-           let d = soon.daysLeft(now: store.today) {
-            return "Your \(soon.name.lowercased()) won't keep — \(d <= 0 ? "use it today" : "\(d) day\(d == 1 ? "" : "s") left")."
-        }
-        return "Ready right now with what's on hand."
-    }
+    private var featureEyebrow: String { "Tonight's pick" }
+    private var featureSubtitle: String { "Ready right now with what's on hand." }
 
     /// Date + settings, a single quiet line over the hero.
     private var todayHeader: some View {
