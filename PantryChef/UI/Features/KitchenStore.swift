@@ -230,8 +230,22 @@ final class KitchenStore {
     let pastDays = 10
 
     var timelineEntries: [TimelineEntry] {
-        composer.compose(KitchenSnapshot(today: today, horizonDays: horizonDays, pastDays: pastDays,
-                                         journal: journal, events: events, whispers: whispers))
+        // Expiry diamonds and leftover whispers are derived from LIVE stock (not seeded),
+        // so the Plan timeline always agrees with Pantry/Feed — eat a leftover or use up
+        // a perishable and the timeline updates with everything else.
+        let cal = Calendar.current
+        let liveExpiry = expiringSoon(within: 7).compactMap { item -> DatedEvent? in
+            guard let d = item.daysLeft(now: today),
+                  let date = cal.date(byAdding: .day, value: max(0, d), to: today) else { return nil }
+            return DatedEvent(kind: .expiry(ExpiryMilestone(date: date, itemName: item.name)))
+        }
+        let liveWhispers = leftovers.compactMap { item -> DatedWhisper? in
+            guard let p = item.madePortions, p > 0 else { return nil }
+            return DatedWhisper(date: today, text: "\(item.name.lowercased()) waiting · \(p) \(p == 1 ? "portion" : "portions")")
+        }
+        return composer.compose(KitchenSnapshot(today: today, horizonDays: horizonDays, pastDays: pastDays,
+                                                journal: journal, events: events + liveExpiry,
+                                                whispers: whispers + liveWhispers))
     }
 
     // MARK: - Actions
@@ -854,12 +868,13 @@ final class KitchenStore {
             // A future day with two meals — shows the day-grouped card in the timeline.
             plannedMeal(shakshuka, inDays: 2, .morning, missing: 3),
             plannedMeal(orzo, inDays: 2, .evening, missing: 2),
-            // A deadline, a single far-out plan (week marker + fold around it), an invite.
-            DatedEvent(kind: .expiry(ExpiryMilestone(date: day(3), itemName: "spinach"))),
+            // A single far-out plan (week marker + fold around it) and an invite. Expiry
+            // diamonds + the leftover whisper are NOT seeded here — they're derived live
+            // from stock in `timelineEntries`, so the Plan tab can't contradict Pantry/Feed.
             plannedMeal(greens, inDays: 8, .evening, missing: 1),
             DatedEvent(kind: .proposal(Proposal(date: day(12), text: "Your list hit 5 items — milk runs out around Monday.")))
         ]
-        whispers = [DatedWhisper(date: day(1), text: "ragù waiting · 3 portions")]
+        whispers = []
         shoppingList = [
             ShoppingEntry(name: "Eggs", amount: "1 dozen"),
             ShoppingEntry(name: "Lemon", amount: "3"),
