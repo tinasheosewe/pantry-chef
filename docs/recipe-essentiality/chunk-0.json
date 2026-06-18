@@ -1,0 +1,560 @@
+{
+  "recipes": [
+    {
+      "name": "Fluffy Buttermilk Pancakes",
+      "index": 0,
+      "count": 8,
+      "optional": [
+        {
+          "i": 1,
+          "name": "sugar"
+        }
+      ]
+    },
+    {
+      "name": "Overnight Oats with Berries",
+      "index": 1,
+      "count": 6,
+      "optional": [
+        {
+          "i": 3,
+          "name": "maple syrup"
+        }
+      ]
+    },
+    {
+      "name": "Green Power Smoothie",
+      "index": 2,
+      "count": 6,
+      "optional": [
+        {
+          "i": 4,
+          "name": "chia seeds"
+        },
+        {
+          "i": 5,
+          "name": "lime"
+        }
+      ]
+    },
+    {
+      "name": "Bacon Egg and Cheese Sandwich",
+      "index": 3,
+      "count": 7,
+      "optional": [
+        {
+          "i": 4,
+          "name": "butter"
+        },
+        {
+          "i": 5,
+          "name": "salt"
+        },
+        {
+          "i": 6,
+          "name": "black pepper"
+        }
+      ]
+    },
+    {
+      "name": "Mushroom and Herb Frittata",
+      "index": 4,
+      "count": 8,
+      "optional": [
+        {
+          "i": 5,
+          "name": "fresh thyme"
+        },
+        {
+          "i": 7,
+          "name": "black pepper"
+        }
+      ]
+    },
+    {
+      "name": "Breakfast Burrito",
+      "index": 5,
+      "count": 8,
+      "optional": [
+        {
+          "i": 4,
+          "name": "salsa"
+        },
+        {
+          "i": 6,
+          "name": "salt"
+        },
+        {
+          "i": 7,
+          "name": "black pepper"
+        }
+      ]
+    },
+    {
+      "name": "Savory Chicken Congee",
+      "index": 6,
+      "count": 8,
+      "optional": [
+        {
+          "i": 4,
+          "name": "scallions"
+        },
+        {
+          "i": 6,
+          "name": "sesame oil"
+        },
+        {
+          "i": 7,
+          "name": "salt"
+        }
+      ]
+    },
+    {
+      "name": "Maple Cinnamon Granola",
+      "index": 7,
+      "count": 7,
+      "optional": [
+        {
+          "i": 2,
+          "name": "pumpkin seeds"
+        },
+        {
+          "i": 6,
+          "name": "salt"
+        }
+      ]
+    },
+    {
+      "name": "Avocado Toast with Chili and Lime",
+      "index": 8,
+      "count": 7,
+      "optional": [
+        {
+          "i": 3,
+          "name": "red pepper flakes"
+        },
+        {
+          "i": 4,
+          "name": "olive oil"
+        },
+        {
+          "i": 5,
+          "name": "salt"
+        },
+        {
+          "i": 6,
+          "name": "black pepper"
+        }
+      ]
+    },
+    {
+      "name": "Spinach and Feta Egg Muffins",
+      "index": 9,
+      "count": 7,
+      "optional": [
+        {
+          "i": 3,
+          "name": "cherry tomatoes"
+        },
+        {
+          "i": 6,
+          "name": "black pepper"
+        }
+      ]
+    },
+    {
+      "name": "Banana Walnut Baked Oatmeal",
+      "index": 10,
+      "count": 8,
+      "optional": [
+        {
+          "i": 3,
+          "name": "walnuts"
+        },
+        {
+          "i": 7,
+          "name": "salt"
+        }
+      ]
+    },
+    {
+      "name": "Huevos Rancheros",
+      "index": 11,
+      "count": 9,
+      "optional": [
+        {
+          "i": 8,
+          "name": "salt"
+        }
+      ]
+    },
+    {
+      "name": "Smoked Salmon Bagel",
+      "index": 12,
+      "count": 7,
+      "optional": [
+        {
+          "i": 3,
+          "name": "red onion"
+        },
+        {
+          "i": 4,
+          "name": "capers"
+        },
+        {
+          "i": 5,
+          "name": "lemon"
+        },
+        {
+          "i": 6,
+          "name": "black pepper"
+        }
+      ]
+    },
+    {
+      "name": "Masala Omelette",
+      "index": 13,
+      "count": 8,
+      "optional": [
+        {
+          "i": 4,
+          "name": "fresh cilantro"
+        },
+        {
+          "i": 7,
+          "name": "salt"
+        }
+      ]
+    },
+    {
+      "name": "Peanut Butter Banana Smoothie",
+      "index": 14,
+      "count": 6,
+      "optional": [
+        {
+          "i": 4,
+          "name": "maple syrup"
+        },
+        {
+          "i": 5,
+          "name": "ground cinnamon"
+        }
+      ]
+    },
+    {
+      "name": "Eggs Benedict",
+      "index": 15,
+      "count": 8,
+      "optional": [
+        {
+          "i": 6,
+          "name": "salt"
+        },
+        {
+          "i": 7,
+          "name": "cayenne pepper"
+        }
+      ]
+    },
+    {
+      "name": "Steel-Cut Oats with Apple",
+      "index": 16,
+      "count": 6,
+      "optional": [
+        {
+          "i": 3,
+          "name": "maple syrup"
+        },
+        {
+          "i": 4,
+          "name": "ground cinnamon"
+        },
+        {
+          "i": 5,
+          "name": "salt"
+        }
+      ]
+    },
+    {
+      "name": "Tofu Scramble",
+      "index": 17,
+      "count": 8,
+      "optional": [
+        {
+          "i": 6,
+          "name": "garlic powder"
+        },
+        {
+          "i": 7,
+          "name": "salt"
+        }
+      ]
+    },
+    {
+      "name": "Dutch Baby Pancake",
+      "index": 18,
+      "count": 8,
+      "optional": [
+        {
+          "i": 4,
+          "name": "sugar"
+        },
+        {
+          "i": 5,
+          "name": "vanilla extract"
+        },
+        {
+          "i": 6,
+          "name": "salt"
+        },
+        {
+          "i": 7,
+          "name": "powdered sugar"
+        }
+      ]
+    },
+    {
+      "name": "Breakfast Quesadilla",
+      "index": 19,
+      "count": 7,
+      "optional": [
+        {
+          "i": 3,
+          "name": "scallions"
+        },
+        {
+          "i": 5,
+          "name": "hot sauce"
+        },
+        {
+          "i": 6,
+          "name": "salt"
+        }
+      ]
+    },
+    {
+      "name": "Chia Pudding with Mango",
+      "index": 20,
+      "count": 8,
+      "optional": [
+        {
+          "i": 3,
+          "name": "vanilla extract"
+        },
+        {
+          "i": 6,
+          "name": "shredded coconut"
+        },
+        {
+          "i": 7,
+          "name": "salt"
+        }
+      ]
+    },
+    {
+      "name": "Croque Madame",
+      "index": 21,
+      "count": 8,
+      "optional": [
+        {
+          "i": 7,
+          "name": "dijon mustard"
+        }
+      ]
+    },
+    {
+      "name": "Sweet Potato Breakfast Hash",
+      "index": 22,
+      "count": 8,
+      "optional": [
+        {
+          "i": 5,
+          "name": "smoked paprika"
+        },
+        {
+          "i": 6,
+          "name": "salt"
+        },
+        {
+          "i": 7,
+          "name": "black pepper"
+        }
+      ]
+    },
+    {
+      "name": "Yogurt Parfait with Granola",
+      "index": 23,
+      "count": 7,
+      "optional": [
+        {
+          "i": 3,
+          "name": "honey"
+        },
+        {
+          "i": 4,
+          "name": "banana"
+        },
+        {
+          "i": 5,
+          "name": "chia seeds"
+        },
+        {
+          "i": 6,
+          "name": "vanilla extract"
+        }
+      ]
+    },
+    {
+      "name": "Garlic Butter Shrimp Pasta",
+      "index": 24,
+      "count": 8,
+      "optional": [
+        {
+          "i": 5,
+          "name": "red pepper flakes"
+        },
+        {
+          "i": 6,
+          "name": "fresh parsley"
+        },
+        {
+          "i": 7,
+          "name": "salt"
+        }
+      ]
+    },
+    {
+      "name": "Chicken Stir-Fry with Broccoli",
+      "index": 25,
+      "count": 8,
+      "optional": [
+        {
+          "i": 6,
+          "name": "cornstarch"
+        },
+        {
+          "i": 7,
+          "name": "oil"
+        }
+      ]
+    },
+    {
+      "name": "Black Bean Tacos",
+      "index": 26,
+      "count": 9,
+      "optional": [
+        {
+          "i": 4,
+          "name": "ground cumin"
+        },
+        {
+          "i": 5,
+          "name": "smoked paprika"
+        },
+        {
+          "i": 7,
+          "name": "lime"
+        },
+        {
+          "i": 8,
+          "name": "olive oil"
+        }
+      ]
+    },
+    {
+      "name": "Pad Thai",
+      "index": 27,
+      "count": 11,
+      "optional": [
+        {
+          "i": 8,
+          "name": "peanuts"
+        },
+        {
+          "i": 9,
+          "name": "oil"
+        },
+        {
+          "i": 10,
+          "name": "lime"
+        }
+      ]
+    },
+    {
+      "name": "Sheet-Pan Sausage and Vegetables",
+      "index": 28,
+      "count": 8,
+      "optional": [
+        {
+          "i": 5,
+          "name": "dried oregano"
+        },
+        {
+          "i": 6,
+          "name": "garlic powder"
+        },
+        {
+          "i": 7,
+          "name": "salt"
+        }
+      ]
+    },
+    {
+      "name": "Teriyaki Salmon Bowl",
+      "index": 29,
+      "count": 9,
+      "optional": [
+        {
+          "i": 3,
+          "name": "cucumber"
+        },
+        {
+          "i": 7,
+          "name": "rice vinegar"
+        },
+        {
+          "i": 8,
+          "name": "oil"
+        }
+      ]
+    },
+    {
+      "name": "Margherita Flatbread",
+      "index": 30,
+      "count": 7,
+      "optional": [
+        {
+          "i": 4,
+          "name": "olive oil"
+        },
+        {
+          "i": 5,
+          "name": "garlic powder"
+        },
+        {
+          "i": 6,
+          "name": "salt"
+        }
+      ]
+    },
+    {
+      "name": "Beef and Broccoli",
+      "index": 31,
+      "count": 8,
+      "optional": [
+        {
+          "i": 5,
+          "name": "cornstarch"
+        },
+        {
+          "i": 6,
+          "name": "brown sugar"
+        },
+        {
+          "i": 7,
+          "name": "oil"
+        }
+      ]
+    }
+  ]
+}

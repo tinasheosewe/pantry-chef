@@ -1,0 +1,223 @@
+{ "recipes": [
+  { "name": "Creamy chicken & mushroom pot pie", "index": 96, "count": 12,
+    "optional": [
+      { "i": 3, "name": "carrots" },
+      { "i": 9, "name": "egg" },
+      { "i": 10, "name": "thyme" },
+      { "i": 11, "name": "black pepper" }
+    ] },
+  { "name": "Baked ziti with sausage", "index": 97, "count": 11,
+    "optional": [
+      { "i": 5, "name": "parmesan" },
+      { "i": 8, "name": "olive oil" },
+      { "i": 9, "name": "dried oregano" },
+      { "i": 10, "name": "salt" }
+    ] },
+  { "name": "Sausage & root vegetable traybake", "index": 98, "count": 10,
+    "optional": [
+      { "i": 4, "name": "apple" },
+      { "i": 5, "name": "olive oil" },
+      { "i": 6, "name": "wholegrain mustard" },
+      { "i": 7, "name": "rosemary" },
+      { "i": 8, "name": "salt" },
+      { "i": 9, "name": "black pepper" }
+    ] },
+  { "name": "Tuna noodle casserole", "index": 99, "count": 11,
+    "optional": [
+      { "i": 2, "name": "frozen peas" },
+      { "i": 8, "name": "cheddar cheese" },
+      { "i": 9, "name": "breadcrumbs" },
+      { "i": 10, "name": "black pepper" }
+    ] },
+  { "name": "Vegetarian lasagna", "index": 100, "count": 12,
+    "optional": [
+      { "i": 8, "name": "parmesan" },
+      { "i": 10, "name": "olive oil" },
+      { "i": 11, "name": "dried oregano" }
+    ] },
+  { "name": "Roast chicken with lemon & herbs", "index": 101, "count": 9,
+    "optional": [
+      { "i": 4, "name": "carrots" },
+      { "i": 5, "name": "thyme" },
+      { "i": 6, "name": "olive oil" },
+      { "i": 7, "name": "salt" },
+      { "i": 8, "name": "black pepper" }
+    ] },
+  { "name": "Macaroni & cheese bake", "index": 102, "count": 9,
+    "optional": [
+      { "i": 5, "name": "dijon mustard" },
+      { "i": 6, "name": "breadcrumbs" },
+      { "i": 7, "name": "nutmeg" },
+      { "i": 8, "name": "salt" }
+    ] },
+  { "name": "Chicken & rice casserole", "index": 103, "count": 10,
+    "optional": [
+      { "i": 4, "name": "carrots" },
+      { "i": 6, "name": "smoked paprika" },
+      { "i": 7, "name": "olive oil" },
+      { "i": 8, "name": "salt" },
+      { "i": 9, "name": "black pepper" }
+    ] },
+  { "name": "Hearty beef stew", "index": 104, "count": 11,
+    "optional": [
+      { "i": 4, "name": "red wine" },
+      { "i": 6, "name": "tomato paste" },
+      { "i": 8, "name": "bay leaf" },
+      { "i": 9, "name": "olive oil" },
+      { "i": 10, "name": "salt" }
+    ] },
+  { "name": "Cheesy broccoli & rice bake", "index": 105, "count": 9,
+    "optional": [
+      { "i": 5, "name": "onion" },
+      { "i": 7, "name": "garlic" },
+      { "i": 8, "name": "black pepper" }
+    ] },
+  { "name": "Pork & apple traybake", "index": 106, "count": 9,
+    "optional": [
+      { "i": 4, "name": "cider" },
+      { "i": 5, "name": "wholegrain mustard" },
+      { "i": 6, "name": "olive oil" },
+      { "i": 7, "name": "sage" },
+      { "i": 8, "name": "salt" }
+    ] },
+  { "name": "Three-bean vegetarian chili", "index": 107, "count": 11,
+    "optional": [
+      { "i": 7, "name": "chipotle in adobo" },
+      { "i": 10, "name": "olive oil" }
+    ] },
+  { "name": "Stuffed bell peppers", "index": 108, "count": 10,
+    "optional": [
+      { "i": 6, "name": "mozzarella" },
+      { "i": 7, "name": "olive oil" },
+      { "i": 8, "name": "dried oregano" },
+      { "i": 9, "name": "salt" }
+    ] },
+  { "name": "Fish pie with cheddar mash", "index": 109, "count": 10,
+    "optional": [
+      { "i": 6, "name": "cheddar cheese" },
+      { "i": 7, "name": "frozen peas" },
+      { "i": 8, "name": "parsley" },
+      { "i": 9, "name": "salt" }
+    ] },
+  { "name": "Lentil & vegetable cottage pie", "index": 110, "count": 10,
+    "optional": [
+      { "i": 4, "name": "mushrooms" },
+      { "i": 7, "name": "olive oil" },
+      { "i": 8, "name": "thyme" },
+      { "i": 9, "name": "soy sauce" }
+    ] },
+  { "name": "Big-batch minestrone soup", "index": 111, "count": 12,
+    "optional": [
+      { "i": 5, "name": "zucchini" },
+      { "i": 7, "name": "kale" },
+      { "i": 10, "name": "olive oil" },
+      { "i": 11, "name": "dried oregano" }
+    ] },
+  { "name": "Chickpea & spinach curry", "index": 112, "count": 10,
+    "optional": [
+      { "i": 6, "name": "ginger" },
+      { "i": 8, "name": "ground cumin" },
+      { "i": 9, "name": "olive oil" }
+    ] },
+  { "name": "Slow-cooker pulled pork", "index": 113, "count": 9,
+    "optional": [
+      { "i": 3, "name": "brown sugar" },
+      { "i": 4, "name": "ground cumin" },
+      { "i": 5, "name": "garlic powder" },
+      { "i": 8, "name": "salt" }
+    ] },
+  { "name": "Freezer breakfast burritos", "index": 114, "count": 9,
+    "optional": [
+      { "i": 4, "name": "bell pepper" },
+      { "i": 6, "name": "salsa" },
+      { "i": 7, "name": "olive oil" },
+      { "i": 8, "name": "ground cumin" }
+    ] },
+  { "name": "Batch turkey & quinoa meatballs", "index": 115, "count": 9,
+    "optional": [
+      { "i": 5, "name": "parsley" },
+      { "i": 6, "name": "dried oregano" },
+      { "i": 7, "name": "olive oil" },
+      { "i": 8, "name": "salt" }
+    ] },
+  { "name": "Roasted vegetable & feta grain bowl base", "index": 116, "count": 9,
+    "optional": [
+      { "i": 4, "name": "cherry tomatoes" },
+      { "i": 6, "name": "olive oil" },
+      { "i": 7, "name": "dried oregano" },
+      { "i": 8, "name": "salt" }
+    ] },
+  { "name": "Sheet-pan chicken & broccoli meal-prep", "index": 117, "count": 8,
+    "optional": [
+      { "i": 4, "name": "lemon" },
+      { "i": 5, "name": "smoked paprika" },
+      { "i": 6, "name": "dried oregano" },
+      { "i": 7, "name": "salt" }
+    ] },
+  { "name": "Big-batch bolognese sauce", "index": 118, "count": 11,
+    "optional": [
+      { "i": 5, "name": "celery" },
+      { "i": 7, "name": "red wine" },
+      { "i": 9, "name": "olive oil" },
+      { "i": 10, "name": "dried oregano" }
+    ] },
+  { "name": "Coconut chickpea & sweet potato stew", "index": 119, "count": 10,
+    "optional": [
+      { "i": 6, "name": "ginger" },
+      { "i": 7, "name": "spinach" },
+      { "i": 9, "name": "olive oil" }
+    ] },
+  { "name": "Baked teriyaki salmon meal-prep", "index": 120, "count": 9,
+    "optional": [
+      { "i": 2, "name": "frozen edamame" },
+      { "i": 7, "name": "sesame oil" },
+      { "i": 8, "name": "rice vinegar" }
+    ] },
+  { "name": "Hearty lentil soup", "index": 121, "count": 10,
+    "optional": [
+      { "i": 7, "name": "ground cumin" },
+      { "i": 8, "name": "olive oil" },
+      { "i": 9, "name": "lemon" }
+    ] },
+  { "name": "Beef & vegetable freezer stew", "index": 122, "count": 10,
+    "optional": [
+      { "i": 6, "name": "tomato paste" },
+      { "i": 7, "name": "cornstarch" },
+      { "i": 8, "name": "bay leaf" },
+      { "i": 9, "name": "olive oil" }
+    ] },
+  { "name": "Mediterranean quinoa salad jars", "index": 123, "count": 9,
+    "optional": [
+      { "i": 5, "name": "red onion" },
+      { "i": 7, "name": "olive oil" },
+      { "i": 8, "name": "parsley" }
+    ] },
+  { "name": "Pulled BBQ jackfruit", "index": 124, "count": 8,
+    "optional": [
+      { "i": 4, "name": "smoked paprika" },
+      { "i": 5, "name": "ground cumin" },
+      { "i": 6, "name": "vegetable stock" },
+      { "i": 7, "name": "olive oil" }
+    ] },
+  { "name": "Thai red curry with vegetables", "index": 125, "count": 9,
+    "optional": [
+      { "i": 5, "name": "snap peas" },
+      { "i": 6, "name": "soy sauce" },
+      { "i": 7, "name": "lime" },
+      { "i": 8, "name": "vegetable oil" }
+    ] },
+  { "name": "Baked oatmeal squares", "index": 126, "count": 8,
+    "optional": [
+      { "i": 4, "name": "maple syrup" },
+      { "i": 6, "name": "cinnamon" },
+      { "i": 7, "name": "mixed berries" }
+    ] },
+  { "name": "Sweet potato & black bean freezer burritos", "index": 127, "count": 9,
+    "optional": [
+      { "i": 4, "name": "onion" },
+      { "i": 5, "name": "ground cumin" },
+      { "i": 6, "name": "smoked paprika" },
+      { "i": 7, "name": "salsa" },
+      { "i": 8, "name": "olive oil" }
+    ] }
+] }
