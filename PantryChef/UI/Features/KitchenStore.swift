@@ -559,9 +559,47 @@ final class KitchenStore {
 
     /// Live readiness for a dish — the single ReadinessService over current stock,
     /// matched through the one catalog-aware IngredientMatching path.
+    ///
+    /// Cached per dish: readiness is read many times per render (the feed's "Ready now"
+    /// rail, the READY stamps, the tailpiece count, the fan) across a 200-dish library,
+    /// and each evaluation walks the catalog for swaps — so recomputing every call made
+    /// the feed crawl. The cache clears whenever anything readiness depends on changes,
+    /// captured by a cheap fingerprint of present stock + the day.
     func readiness(for dish: Dish) -> Readiness {
-        ReadinessService(presence: StockPresence(index: presenceIndex), swaps: CatalogSwapResolver())
+        let key = readinessFingerprint
+        if key != readinessCacheKey { readinessCache.removeAll(); readinessCacheKey = key }
+        if let cached = readinessCache[dish.id] { return cached }
+        let r = ReadinessService(presence: StockPresence(index: presenceIndex), swaps: CatalogSwapResolver())
             .evaluate(dish.requirements)
+        readinessCache[dish.id] = r
+        return r
+    }
+
+    /// Flips true once the post-launch warmup has filled the readiness cache. The feed
+    /// gates its readiness-dependent bits (the "Ready now" rail, READY stamps, the
+    /// ready count) on this so first paint isn't blocked computing readiness over 200
+    /// dishes — they appear a beat later instead of behind a blank screen.
+    var readinessReady = false
+
+    @ObservationIgnored private var readinessCache: [UUID: Readiness] = [:]
+    @ObservationIgnored private var readinessCacheKey = ""
+
+    /// Post-launch warmup (runs after first paint): fill the readiness cache for the
+    /// whole library, compose the opening fan from it, and reveal the ready bits.
+    func warmReadinessAndFan() {
+        for dish in library { _ = readiness(for: dish) }
+        if case .open(let opts, _) = nowState, opts.isEmpty {
+            fanOptions = composeFan()
+            nowState = .open(options: fanOptions, selected: 0)
+        }
+        readinessReady = true
+    }
+
+    /// Everything readiness depends on, as a cheap string: the present (trusted) stock
+    /// identities and the current day. Stock is small, so this is microseconds.
+    private var readinessFingerprint: String {
+        let day = Int(today.timeIntervalSince1970 / 86_400)
+        return "\(day)|\(presentStockCatalogIDs.sorted().joined(separator: ","))|\(presentStockNames.sorted().joined(separator: ","))"
     }
 
     /// The "tonight you could" fan, built from what's actually here (spec §5):
@@ -715,46 +753,60 @@ final class KitchenStore {
                 CookStep("Bring a pot of salted water to the boil and cook the orzo until al dente.", timerSeconds: 540, phase: .cook, attention: .passive),
                 CookStep("Wilt the spinach into the brown butter until just collapsed — about two minutes.", timerSeconds: 120, phase: .cook, attention: .active),
                 CookStep("Fold the orzo and crumbled feta through; finish with lemon, season, and serve.", phase: .finish, attention: .active)
-            ])
+            ],
+            cuisine: "Mediterranean", mealType: "dinner", course: "main",
+            diets: ["vegetarian"], methods: ["stovetop", "one-pan"])
         let shakshuka = Dish(
             name: "Shakshuka", plate: plate([.protein, .produce, .spices], 2), time: "30 min",
             blurb: "Eggs poached in a paprika tomato sauce.",
             ingredients: [line("eggs", "4", "Eggs"), line("tomato", "400 g", "Tomatoes"),
                           line("onion", "1", "Onion"), line("paprika", nil, "Paprika", staple: true)],
             steps: [CookStep("Soften the onion, add tomatoes and paprika, simmer to a sauce.", timerSeconds: 600, phase: .cook, attention: .passive),
-                    CookStep("Make wells, crack in the eggs, cover and cook until just set.", timerSeconds: 480, phase: .cook, attention: .passive)])
+                    CookStep("Make wells, crack in the eggs, cover and cook until just set.", timerSeconds: 480, phase: .cook, attention: .passive)],
+            cuisine: "Middle Eastern", mealType: "breakfast", course: "main",
+            diets: ["vegetarian", "gluten-free"], methods: ["one-pan", "stovetop"])
         let stirfry = Dish(
             name: "Tuesday stir-fry", plate: plate([.produce, .protein], 14), time: "20 min", isYours: true,
             isFavorite: true,
             blurb: "Hot pan, whatever's crisp, twenty minutes.",
             ingredients: [line("baby spinach", "200 g", "Spinach"), line("feta", "100 g", "Feta")],
-            steps: [CookStep("Get the pan smoking hot, then go fast.", phase: .cook, attention: .active)])
+            steps: [CookStep("Get the pan smoking hot, then go fast.", phase: .cook, attention: .active)],
+            cuisine: "Asian", mealType: "dinner", course: "main",
+            diets: ["vegetarian"], methods: ["stovetop", "one-pan"])
         let salmon = Dish(
             name: "Miso butter salmon", plate: plate([.protein, .oils], 5), time: "18 min",
             blurb: "Miso butter does the work; the oven the rest.",
             ingredients: [line("salmon", "2", "Salmon fillets"), line("miso", "2 tbsp", "Miso"),
                           line("butter", "20 g", "Butter")],
             steps: [CookStep("Whisk miso into soft butter; coat the salmon.", phase: .prep, attention: .active, ingredient: "salmon"),
-                    CookStep("Roast until the centre just flakes.", timerSeconds: 600, phase: .cook, attention: .passive, ingredient: "salmon")])
+                    CookStep("Roast until the centre just flakes.", timerSeconds: 600, phase: .cook, attention: .passive, ingredient: "salmon")],
+            cuisine: "Japanese", mealType: "dinner", course: "main",
+            diets: ["pescatarian", "gluten-free", "high-protein"], methods: ["bake"])
         let ragu = Dish(
             name: "Lamb ragù", plate: plate([.protein, .pasta, .produce], 3), time: "2 h 10",
             blurb: "Brown hard, braise low — and it freezes beautifully.",
             ingredients: [line("lamb", "500 g", "Lamb mince"), line("orzo", "2 cups", "Orzo"),
                           line("onion", "1", "Onion"), line("tomato", "400 g", "Tomatoes")],
             steps: [CookStep("Brown the lamb hard, then build the sofrito.", timerSeconds: 600, phase: .cook, attention: .active, ingredient: "lamb"),
-                    CookStep("Add tomatoes and braise low and slow.", timerSeconds: 5400, phase: .cook, attention: .passive, ingredient: "tomato")])
+                    CookStep("Add tomatoes and braise low and slow.", timerSeconds: 5400, phase: .cook, attention: .passive, ingredient: "tomato")],
+            cuisine: "Italian", mealType: "dinner", course: "main",
+            diets: ["high-protein"], methods: ["stovetop", "slow-cook"])
         let greens = Dish(
             name: "Lemon greens", plate: plate([.produce, .dairy], 7), time: "20 min",
             blurb: "Blistered greens, cold cheese, sharp lemon.",
             ingredients: [line("baby spinach", "200 g", "Spinach"), line("feta", "100 g", "Feta"),
                           line("lemon", "1", "Lemon")],
-            steps: [CookStep("Blister the greens, dress with lemon, crumble over feta.", phase: .cook, attention: .active)])
+            steps: [CookStep("Blister the greens, dress with lemon, crumble over feta.", phase: .cook, attention: .active)],
+            cuisine: "Mediterranean", mealType: "lunch", course: "side",
+            diets: ["vegetarian", "gluten-free"], methods: ["stovetop"])
         let frittata = Dish(
             name: "Herb frittata", plate: plate([.dairy, .produce], 9), time: "15 min",
             blurb: "Beaten eggs, folded greens, five minutes under the grill.",
             ingredients: [line("eggs", "6", "Eggs"), line("feta", "100 g", "Feta"),
                           line("baby spinach", "100 g", "Spinach")],
-            steps: [CookStep("Beat the eggs, fold in greens and feta, set under the grill.", timerSeconds: 480, phase: .cook, attention: .passive)])
+            steps: [CookStep("Beat the eggs, fold in greens and feta, set under the grill.", timerSeconds: 480, phase: .cook, attention: .passive)],
+            cuisine: "Italian", mealType: "breakfast", course: "main",
+            diets: ["vegetarian", "gluten-free", "high-protein"], methods: ["one-pan", "stovetop"])
 
         // The seven hand-tuned showroom dishes lead (their steps + the demo stock make
         // them "ready now"); the generated dataset adds breadth so the feed's filters
@@ -843,9 +895,11 @@ final class KitchenStore {
                       category: .frozenFoods, storage: .frozen, storageSince: day(-10))
         ]
 
-        // The fan is composed from real stock, so it's built here, once stock exists.
-        fanOptions = composeFan()
-        nowState = .open(options: fanOptions, selected: 0)
+        // Readiness over a ~200-dish library is the cold-launch cost (composeFan walks
+        // it), so defer it: open with an empty fan and warm on the next runloop, after
+        // first paint. See warmReadinessAndFan().
+        nowState = .open(options: [], selected: 0)
+        Task { @MainActor [weak self] in self?.warmReadinessAndFan() }
 
         // Screenshot/CI hook: open straight to a given space.
         if let forced = ProcessInfo.processInfo.environment["PC_SPACE"],

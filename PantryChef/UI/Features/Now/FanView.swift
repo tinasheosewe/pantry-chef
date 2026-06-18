@@ -44,9 +44,11 @@ struct FanView: View {
         ZStack {
             if let l = leftIndex { sidePlate(options[l], baseOffset: -82, angle: -8) { advance(-1) } }
             if let r = rightIndex { sidePlate(options[r], baseOffset: 82, angle: 8) { advance(1) } }
-            PlateView(name: options[selected].name, composition: options[selected].plate, size: Theme.Metric.plateHero)
-                .offset(x: dragX * 0.45)
-                .zIndex(2)
+            if let centre = current {
+                PlateView(name: centre.name, composition: centre.plate, size: Theme.Metric.plateHero)
+                    .offset(x: dragX * 0.45)
+                    .zIndex(2)
+            }
         }
         .frame(height: Theme.Metric.plateHero + 8)
         .frame(maxWidth: .infinity)

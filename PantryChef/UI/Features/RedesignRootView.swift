@@ -141,10 +141,11 @@ struct RedesignRootView: View {
 
     /// One true line per page (the mock's "№ 163 · sunset 21:43").
     private var tailpiece: String {
-        let ready = store.library.filter { store.readiness(for: $0).isMakeableNow }.count
         switch store.space {
         case .today:
             let dayNumber = Calendar.current.ordinality(of: .day, in: .year, for: store.today) ?? 0
+            guard store.readinessReady else { return "№ \(dayNumber)" }
+            let ready = store.library.filter { store.readiness(for: $0).isMakeableNow }.count
             return "№ \(dayNumber) · \(ready) ready tonight"
         case .plan:
             return "\(store.todaysPlannedMeals.count) planned today · plan ahead"
@@ -271,9 +272,17 @@ struct RedesignRootView: View {
     // MARK: - Feed data (the categorizer)
 
     private func feedItem(_ dish: Dish) -> FeedItem {
-        let ready = store.readiness(for: dish).isMakeableNow
-        return FeedItem(dish: dish, meta: dish.minutes.map { "\($0) min" } ?? dish.time,
-                        stamp: ready ? "READY" : nil)
+        // Distinguish on-hand from cook-with-a-swap (the old "Cookable with a swap"
+        // signal, kept alive in the feed). Skipped until readiness is warm.
+        var stamp: String?
+        if store.readinessReady {
+            switch store.readiness(for: dish) {
+            case .ready: stamp = "READY"
+            case .readyWithSwaps: stamp = "SWAP"
+            case .needs: stamp = nil
+            }
+        }
+        return FeedItem(dish: dish, meta: dish.minutes.map { "\($0) min" } ?? dish.time, stamp: stamp)
     }
 
     /// Which lens a dish belongs to. Derived from the recipe itself + live pantry state.
@@ -322,8 +331,9 @@ struct RedesignRootView: View {
         }
 
         return [
-            rail("Ready now", "Cook with what's on hand",
-                 from: store.library.filter { store.readiness(for: $0).isMakeableNow }),
+            // The pantry-aware rail only appears once readiness is warm (post-launch).
+            store.readinessReady ? rail("Ready now", "Cook with what's on hand",
+                 from: store.library.filter { store.readiness(for: $0).isMakeableNow }) : nil,
             rail("Fast tonight", "Under thirty minutes",
                  from: store.library.filter { ($0.minutes ?? .max) <= 25 }),
             rail("Feeds the table", "Serves four or more",
@@ -336,6 +346,7 @@ struct RedesignRootView: View {
     private var featureDish: Dish? {
         let heroName = heroDishName?.lowercased()
         if let d = store.library.first(where: { usesExpiring($0) && $0.name.lowercased() != heroName }) { return d }
+        guard store.readinessReady else { return nil }
         return store.library.first { store.readiness(for: $0).isMakeableNow && $0.name.lowercased() != heroName }
     }
     private var featureItem: FeedItem? { featureDish.map(feedItem) }
@@ -379,6 +390,15 @@ struct RedesignRootView: View {
                 onAct: { actOnPlan(plan) },
                 onEdit: { editingMeal = plan },
                 onSeeOptions: { withAnimation { showSuggestions = true } })
+        } else if !store.readinessReady, case .open(let opts, _) = store.nowState, opts.isEmpty {
+            // Pre-warm: readiness is still computing on the first runloop after launch.
+            VStack(alignment: .leading, spacing: 6) {
+                Eyebrow(text: NowState.open(options: [], selected: 0).eyebrow(at: DayPart.current()), tone: .urgent)
+                Text("Finding what's ready…")
+                    .font(Theme.Typography.note(13)).foregroundStyle(Theme.Palette.warmGray)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.vertical, 22)
         } else {
             NowModuleView(
                 state: Binding(get: { store.nowState }, set: { store.nowState = $0 }),
