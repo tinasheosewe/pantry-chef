@@ -35,6 +35,8 @@ struct RedesignRootView: View {
     @State private var loggingMeal: PlannedMeal?
     /// The Today feed's active intent lens (the chips). `.all` = the curated default.
     @State private var feedLens: FeedLens = .all
+    /// Scroll anchor at the top of the feed, so changing lens snaps back up.
+    private let feedTop = "feedTop"
     /// Secondary "More filters" (cuisine/diet/meal type/time) layered on the lens.
     @State private var feedFilters = FeedFilters()
     @State private var showFilters = false
@@ -207,27 +209,34 @@ struct RedesignRootView: View {
         let curatedView = feedLens == .all && feedFilters.isEmpty
         return VStack(spacing: 0) {
             todayHeader
-            ScrollView {
-                LazyVStack(alignment: .leading, spacing: 0) {
-                    if curatedView {
-                        pantryHeadline
-                        if showsHero {
-                            nowModule
-                                .padding(.horizontal, Theme.Metric.lg)
-                                .padding(.top, 12)
+            ScrollViewReader { proxy in
+                ScrollView {
+                    LazyVStack(alignment: .leading, spacing: 0) {
+                        Color.clear.frame(height: 0).id(feedTop)
+                        if curatedView {
+                            pantryHeadline
+                            if showsHero {
+                                nowModule
+                                    .padding(.horizontal, Theme.Metric.lg)
+                                    .padding(.top, 12)
+                            }
+                        }
+                        IntentPills(selected: lensBinding, filterCount: feedFilters.activeCount,
+                                    onOpenFilters: { showFilters = true })
+                            .padding(.top, curatedView ? 16 : 12)
+                        if curatedView {
+                            forYouFeed
+                        } else {
+                            gridControls.padding(.horizontal, Theme.Metric.lg).padding(.top, 12)
+                            filteredGrid
                         }
                     }
-                    IntentPills(selected: lensBinding, filterCount: feedFilters.activeCount,
-                                onOpenFilters: { showFilters = true })
-                        .padding(.top, curatedView ? 16 : 12)
-                    if curatedView {
-                        forYouFeed
-                    } else {
-                        gridControls.padding(.horizontal, Theme.Metric.lg).padding(.top, 12)
-                        filteredGrid
-                    }
+                    .padding(.bottom, 28)
                 }
-                .padding(.bottom, 28)
+                // Tapping a rail's "see all" swaps the tall curated feed for a shorter
+                // grid; without this the ScrollView keeps its deep offset and you land
+                // on blank space below the grid. Snap back to the top on any lens change.
+                .onChange(of: feedLens) { _, _ in proxy.scrollTo(feedTop, anchor: .top) }
             }
         }
         .background(Theme.Palette.cream.ignoresSafeArea())
@@ -981,7 +990,9 @@ private struct PlanDaySheet: View {
 private struct PlanAheadSheet: View {
     var onPick: (Date) -> Void
     var onClose: () -> Void
-    @State private var date = Calendar.current.date(byAdding: .day, value: 21, to: Date()) ?? Date()
+    // Start on today, not weeks out — simplest default; the picker opens on the
+    // current month with today already selected.
+    @State private var date = Date()
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {

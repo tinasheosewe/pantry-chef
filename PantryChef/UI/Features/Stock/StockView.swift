@@ -12,6 +12,16 @@ struct StockView: View {
     /// The category tile currently opened to its items — tap a tile to expand it,
     /// tap again to close. nil = the grid sits collapsed.
     @State private var openCategory: FoodCategory?
+    /// The item whose "add to list" quantity we're asking for (we ask how much rather
+    /// than guessing an amount).
+    @State private var listing: ListPrompt?
+
+    struct ListPrompt: Identifiable {
+        let id = UUID()
+        let name: String
+        let plate: PlateComposition
+        let suggested: String?
+    }
 
     private var allPerishable: [StockItem] {
         store.stock
@@ -103,6 +113,12 @@ struct StockView: View {
         .sheet(isPresented: $shopping) {
             ShoppingChecklistView(store: store) { shopping = false }
         }
+        .sheet(item: $listing) { prompt in
+            AddToListSheet(prompt: prompt,
+                           onAdd: { amount in store.addToList(name: prompt.name, amount: amount); listing = nil },
+                           onCancel: { listing = nil })
+                .presentationDetents([.height(260)])
+        }
     }
 
     // MARK: - Category tiles
@@ -192,7 +208,7 @@ struct StockView: View {
                             Text(daysLabel(item))
                                 .font(Theme.Typography.dish(11, weight: .semibold))
                                 .foregroundStyle(Theme.Palette.paprika)
-                            listAffordance(item.name)
+                            listAffordance(item)
                         }
                     }
                     .padding(.vertical, 3)
@@ -208,14 +224,15 @@ struct StockView: View {
         .padding(.top, 14)
     }
 
-    /// One-tap "send to shopping list" for an expiring or running-low item — or a
-    /// quiet "listed" once it's there (spec: low/expiring → easy add to list).
-    @ViewBuilder private func listAffordance(_ name: String) -> some View {
-        if store.isOnList(name) {
+    /// "Send to shopping list" for an expiring or running-low item — but ask *how much*
+    /// to buy first (a quantity prompt), rather than guessing an amount. Shows a quiet
+    /// "listed" once it's there.
+    @ViewBuilder private func listAffordance(_ item: StockItem) -> some View {
+        if store.isOnList(item.name) {
             Text("LISTED").font(.system(size: 9, weight: .medium)).tracking(1.0)
                 .foregroundStyle(Theme.Palette.sage)
         } else {
-            Button { withAnimation { store.addToList(name: name) } } label: {
+            Button { listing = ListPrompt(name: item.name, plate: item.plate, suggested: suggestedAmount(item)) } label: {
                 Text("+ LIST").font(.system(size: 9, weight: .semibold)).tracking(0.8)
                     .foregroundStyle(Theme.Palette.paprika)
                     .padding(.horizontal, 7).frame(minHeight: 30)
@@ -224,6 +241,13 @@ struct StockView: View {
             }
             .buttonStyle(.pressable)
         }
+    }
+
+    /// A starting amount for the prompt — the size you currently keep, when we know it
+    /// (an editable suggestion, not an assumption).
+    private func suggestedAmount(_ item: StockItem) -> String? {
+        if case .perishable(let detail, _) = item.measure, !detail.isEmpty { return detail }
+        return nil
     }
 
     /// "TODAY" for anything at or past its date, else "N DAY(S)".
@@ -322,15 +346,15 @@ struct StockView: View {
                         .foregroundStyle(d <= 3 ? Theme.Palette.paprika : Theme.Palette.warmGray)
                 }
                 // About to turn? Offer the list right where you see it.
-                if urgentIDs.contains(item.id) { listAffordance(item.name) }
+                if urgentIDs.contains(item.id) { listAffordance(item) }
             }
         case .staple(let level):
             switch level {
             case .inStock: OutlineTag(text: "In")
             case .runningLow:
-                HStack(spacing: 8) { OutlineTag(text: "Low", tone: .urgent); listAffordance(item.name) }
+                HStack(spacing: 8) { OutlineTag(text: "Low", tone: .urgent); listAffordance(item) }
             case .out:
-                HStack(spacing: 8) { OutlineTag(text: "Out", tone: .urgent); listAffordance(item.name) }
+                HStack(spacing: 8) { OutlineTag(text: "Out", tone: .urgent); listAffordance(item) }
             }
         case .made(let detail, let portions):
             Text((portions.map { "\($0) \($0 == 1 ? "portion" : "portions")" } ?? detail).uppercased())
@@ -508,5 +532,54 @@ private struct StockItemEditor: View {
                 .background(Rectangle().fill(Theme.Palette.creamRaised))
                 .overlay(Rectangle().strokeBorder(Theme.Palette.ink.opacity(0.25), lineWidth: 1))
         }
+    }
+}
+
+/// "How much to buy?" — a tiny prompt shown when adding a low/expiring item to the
+/// shopping list, so the amount is what the user wants, not a guessed default. The
+/// current pack size is offered as an editable starting point.
+private struct AddToListSheet: View {
+    let prompt: StockView.ListPrompt
+    var onAdd: (String?) -> Void
+    var onCancel: () -> Void
+    @State private var amount: String?
+
+    init(prompt: StockView.ListPrompt, onAdd: @escaping (String?) -> Void, onCancel: @escaping () -> Void) {
+        self.prompt = prompt; self.onAdd = onAdd; self.onCancel = onCancel
+        _amount = State(initialValue: prompt.suggested)
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            HStack(spacing: 11) {
+                PlateView(name: prompt.name, composition: prompt.plate, size: 38)
+                VStack(alignment: .leading, spacing: 2) {
+                    Eyebrow(text: "Add to the list")
+                    Text(prompt.name).font(Theme.Typography.dish(20)).foregroundStyle(Theme.Palette.ink)
+                }
+            }
+            .padding(.top, 22)
+            VStack(alignment: .leading, spacing: 6) {
+                Eyebrow(text: "How much to buy?")
+                AmountField(amount: $amount)
+                    .font(Theme.Typography.fact(15)).foregroundStyle(Theme.Palette.ink)
+                    .padding(.horizontal, 12).padding(.vertical, 10)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background(Rectangle().fill(Theme.Palette.creamRaised))
+                    .overlay(Rectangle().strokeBorder(Theme.Palette.ink.opacity(0.25), lineWidth: 1))
+            }
+            Spacer(minLength: 0)
+            HStack {
+                Button(action: onCancel) {
+                    Text("CANCEL").font(.system(size: 10)).tracking(1.8).foregroundStyle(Theme.Palette.warmGray)
+                }
+                .buttonStyle(.plain)
+                Spacer()
+                PaprikaButton(title: "Add to list") { onAdd(amount) }
+            }
+        }
+        .padding(20)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        .background(KitchenBackground())
     }
 }
