@@ -318,9 +318,10 @@ private struct StockItemEditor: View {
         switch item.measure {
         case .perishable(let detail, let days):
             field("Amount") {
-                TextField("e.g. 300 g", text: Binding(
-                    get: { detail },
-                    set: { item.measure = .perishable(detail: $0, daysLeft: days) }))
+                // Structured number + approved-unit picker (no freeform "300 g" text).
+                AmountField(amount: Binding(
+                    get: { detail.isEmpty ? nil : detail },
+                    set: { item.measure = .perishable(detail: $0 ?? "", daysLeft: days) }))
             }
             field("Days left") {
                 HStack(spacing: 6) {
