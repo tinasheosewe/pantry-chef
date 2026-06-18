@@ -42,6 +42,7 @@ struct RedesignRootView: View {
     @State private var showFilters = false
     /// Name search, shown in any grid view (every lens except the "For you" landing).
     @State private var feedSearch = ""
+    @State private var feedSort: RecipeSort = .readiness
     /// "Cook together" multi-select over the grid.
     @State private var selecting = false
     @State private var selectedIDs: Set<UUID> = []
@@ -430,6 +431,7 @@ struct RedesignRootView: View {
                 }.buttonStyle(.plain)
             }
             Spacer(minLength: 8)
+            SortMenu(sort: $feedSort)
             Button { withAnimation { selecting.toggle(); selectedIDs = [] } } label: {
                 Text(selecting ? "CANCEL" : "COOK TOGETHER")
                     .font(.system(size: 9, weight: .medium)).tracking(1.4)
@@ -467,9 +469,10 @@ struct RedesignRootView: View {
 
     private var filteredDishes: [Dish] {
         let q = feedSearch.trimmingCharacters(in: .whitespaces).lowercased()
-        return feedLibrary.filter {
+        let matched = feedLibrary.filter {
             matches($0, feedLens) && feedFilters.accepts($0) && (q.isEmpty || $0.name.lowercased().contains(q))
         }
+        return store.sorted(matched, by: feedSort)
     }
 
     /// Distinct, sorted values of a string tag across the library (for the filter sheet).

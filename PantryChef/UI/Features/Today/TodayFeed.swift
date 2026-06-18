@@ -25,6 +25,43 @@ enum FeedLens: String, CaseIterable, Identifiable {
     }
 }
 
+/// How a grid of recipes is ordered. The default leads with what you can cook —
+/// the app's whole point — but you can re-sort. Shared by the Today grid and the
+/// meal-planner's picker so both speak the same vocabulary.
+enum RecipeSort: String, CaseIterable, Identifiable {
+    case readiness, quickest, alphabetical, recent
+    var id: String { rawValue }
+    var label: String {
+        switch self {
+        case .readiness: return "Readiness"
+        case .quickest: return "Quickest"
+        case .alphabetical: return "A–Z"
+        case .recent: return "Recently added"
+        }
+    }
+}
+
+/// The shared sort control — a small "↕ READINESS" menu used by the Today grid and
+/// the planner's picker, so re-sorting works the same everywhere.
+struct SortMenu: View {
+    @Binding var sort: RecipeSort
+    var body: some View {
+        Menu {
+            ForEach(RecipeSort.allCases) { s in
+                Button { sort = s } label: {
+                    if sort == s { Label(s.label, systemImage: "checkmark") } else { Text(s.label) }
+                }
+            }
+        } label: {
+            HStack(spacing: 4) {
+                Image(systemName: "arrow.up.arrow.down").font(.system(size: 10, weight: .medium))
+                Text(sort.label.uppercased()).font(.system(size: 9, weight: .medium)).tracking(1.0)
+            }
+            .foregroundStyle(Theme.Palette.paprika).fixedSize().contentShape(Rectangle())
+        }
+    }
+}
+
 /// Secondary filters (the "More filters" sheet) — catalog-derived facets that layer on
 /// top of the active lens. Single-select per dimension; recommended set from the
 /// filter-taxonomy research (cuisine · diet · meal type · time).
@@ -61,6 +98,41 @@ extension KitchenStore {
         case .useItUp: return usesExpiring(dish)
         case .quick: return (dish.minutes ?? .max) <= 25
         case .highProtein: return dish.plate.weights.first?.category == .protein
+        }
+    }
+
+    /// Readiness as a sort rank: make-now (0) → with-a-swap (1) → a-shop-away (2).
+    func readinessRank(_ dish: Dish) -> Int {
+        switch readiness(for: dish) {
+        case .ready: return 0
+        case .readyWithSwaps: return 1
+        case .needs: return 2
+        }
+    }
+
+    /// Order a grid of recipes by the chosen `RecipeSort`. Readiness/quickest break ties
+    /// alphabetically; "recently added" reads the dish's position in the library
+    /// (later = newer, e.g. your own saved dishes).
+    func sorted(_ dishes: [Dish], by sort: RecipeSort) -> [Dish] {
+        func az(_ a: Dish, _ b: Dish) -> Bool {
+            a.name.localizedCaseInsensitiveCompare(b.name) == .orderedAscending
+        }
+        switch sort {
+        case .alphabetical:
+            return dishes.sorted(by: az)
+        case .readiness:
+            return dishes.sorted { a, b in
+                let ra = readinessRank(a), rb = readinessRank(b)
+                return ra != rb ? ra < rb : az(a, b)
+            }
+        case .quickest:
+            return dishes.sorted { a, b in
+                let ma = a.minutes ?? .max, mb = b.minutes ?? .max
+                return ma != mb ? ma < mb : az(a, b)
+            }
+        case .recent:
+            let order = Dictionary(library.enumerated().map { ($1.id, $0) }, uniquingKeysWith: { a, _ in a })
+            return dishes.sorted { (order[$0.id] ?? -1) > (order[$1.id] ?? -1) }
         }
     }
 

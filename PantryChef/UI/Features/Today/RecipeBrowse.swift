@@ -15,30 +15,17 @@ struct RecipeBrowse: View {
     @State private var search = ""
     @State private var filters = FeedFilters()
     @State private var showFilters = false
+    @State private var sort: RecipeSort = .readiness
 
-    /// Matching the lens + filters + search, then sorted make-now → with-a-swap →
-    /// a-shop-away, then alphabetically — a clear, predictable order (the picker's old
-    /// list had none).
+    /// Matching the lens + filters + search, then ordered by the chosen sort (default
+    /// readiness: make-now → with-a-swap → a-shop-away, then A–Z).
     private var results: [Dish] {
         let q = search.trimmingCharacters(in: .whitespaces).lowercased()
-        return library
-            .filter {
-                store.matches($0, lens: lens) && filters.accepts($0)
-                    && (q.isEmpty || $0.name.lowercased().contains(q))
-            }
-            .sorted { a, b in
-                let ra = rank(a), rb = rank(b)
-                if ra != rb { return ra < rb }
-                return a.name.localizedCaseInsensitiveCompare(b.name) == .orderedAscending
-            }
-    }
-
-    private func rank(_ dish: Dish) -> Int {
-        switch store.readiness(for: dish) {
-        case .ready: return 0
-        case .readyWithSwaps: return 1
-        case .needs: return 2
+        let filtered = library.filter {
+            store.matches($0, lens: lens) && filters.accepts($0)
+                && (q.isEmpty || $0.name.lowercased().contains(q))
         }
+        return store.sorted(filtered, by: sort)
     }
 
     private let cols = [GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12)]
@@ -76,7 +63,8 @@ struct RecipeBrowse: View {
         }
     }
 
-    /// Inline editorial search (magnifier + text, no boxed field), matching Today.
+    /// Inline editorial search (magnifier + text, no boxed field), matching Today, with
+    /// the sort menu riding the same line.
     private var searchField: some View {
         HStack(spacing: 12) {
             Image(systemName: "magnifyingglass").font(.system(size: 11))
@@ -89,6 +77,8 @@ struct RecipeBrowse: View {
                         .foregroundStyle(Theme.Palette.ink.opacity(0.45))
                 }.buttonStyle(.plain)
             }
+            Spacer(minLength: 8)
+            SortMenu(sort: $sort)
         }
     }
 
