@@ -59,15 +59,15 @@ struct RedesignRootView: View {
                 LoadingScreen().transition(.opacity)
             }
         }
-        .animation(.easeInOut(duration: 0.45), value: store.readinessReady)
+        .animation(reduceMotion ? nil : .easeInOut(duration: 0.4), value: store.readinessReady)
         .task { await store.warmUp() }
     }
 
     private var main: some View {
         ZStack { space }
             .id(store.space)
-            .transition(reduceMotion ? .opacity : .pageTurn)
-            .animation(.paper, value: store.space)
+            // Tab switches are instant now — the page-turn/paper animation between
+            // spaces was removed (felt fussy).
             .safeAreaInset(edge: .bottom, spacing: 0) {
                 Dock(
                     selection: Binding(get: { store.space }, set: { store.space = $0 }),
@@ -150,14 +150,12 @@ struct RedesignRootView: View {
             }
     }
 
-    /// One true line per page (the mock's "№ 163 · sunset 21:43").
+    /// One true line per page.
     private var tailpiece: String {
         switch store.space {
         case .today:
-            let dayNumber = Calendar.current.ordinality(of: .day, in: .year, for: store.today) ?? 0
-            guard store.readinessReady else { return "№ \(dayNumber)" }
             let ready = feedLibrary.filter { store.readiness(for: $0).isMakeableNow }.count
-            return "№ \(dayNumber) · \(ready) ready tonight"
+            return "\(ready) ready tonight"
         case .plan:
             return "\(store.todaysPlannedMeals.count) planned today · plan ahead"
         case .pantry:
