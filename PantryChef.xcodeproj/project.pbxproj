@@ -201,6 +201,7 @@
 		AACC56B00F6BECBD683E04A1 /* seed_recipes.json in Resources */ = {isa = PBXBuildFile; fileRef = ECEFEB3FB5265EBF48F4495C /* seed_recipes.json */; };
 		AAE0BD6A08ED713193ED3BD7 /* teriyaki-salmon.png in Resources */ = {isa = PBXBuildFile; fileRef = F1FF3E51B196D4D8DFAE88E0 /* teriyaki-salmon.png */; };
 		AB86150E276DB131E340A718 /* falafel-plate.png in Resources */ = {isa = PBXBuildFile; fileRef = A89E9EB9AAB565018CB553BE /* falafel-plate.png */; };
+		ABC1C356E1DA7F52E345EE5A /* CategoryFilterRail.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF9F74A337EE7AD5B1948296 /* CategoryFilterRail.swift */; };
 		AC3F3FE37252F45CF2339622 /* ReadinessServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0124F380C6BD9B6E97C4A3E5 /* ReadinessServiceTests.swift */; };
 		AF61FA9761C1DA32B5EE2882 /* bacon-egg-and-cheese-sandwich.png in Resources */ = {isa = PBXBuildFile; fileRef = 1CB7590083D22303E3B3B8C6 /* bacon-egg-and-cheese-sandwich.png */; };
 		AF6A41AADEA8600D801CC70E /* PantryCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9B0EE388F85446F2B6D4442 /* PantryCatalog.swift */; };
@@ -560,6 +561,7 @@
 		BD7D584D60944F8FC4B0909D /* protein-packed-white-bean-tuna-salad.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "protein-packed-white-bean-tuna-salad.png"; sourceTree = "<group>"; };
 		BDBDB5E663ABC72EBDE1FAE6 /* IngredientPicker.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = IngredientPicker.swift; sourceTree = "<group>"; };
 		BF4ACDEB952F0E92FF5A2FF7 /* RealtimeServiceProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealtimeServiceProtocol.swift; sourceTree = "<group>"; };
+		BF9F74A337EE7AD5B1948296 /* CategoryFilterRail.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CategoryFilterRail.swift; sourceTree = "<group>"; };
 		BFC129C27AAB92A7D9E6A094 /* sweet-potato-black-bean-freezer-burritos.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "sweet-potato-black-bean-freezer-burritos.png"; sourceTree = "<group>"; };
 		C0C49A659EE21F5019A9DF94 /* AppLaunchOptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLaunchOptions.swift; sourceTree = "<group>"; };
 		C277A622D0C630B07548A487 /* IntakePipeline.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = IntakePipeline.swift; sourceTree = "<group>"; };
@@ -1010,6 +1012,7 @@
 				D33DD04E5E06C3BFAD057736 /* FieldNotes.swift */,
 				C591E29EB0703DFFDC5DE962 /* Motion.swift */,
 				0A08A7BBDF492A235BA75E82 /* AmountField.swift */,
+				BF9F74A337EE7AD5B1948296 /* CategoryFilterRail.swift */,
 			);
 			path = Primitives;
 			sourceTree = "<group>";
@@ -1658,6 +1661,7 @@
 				C2C444DEFFD9288E344ABFA0 /* TodayFeed.swift in Sources */,
 				00E1153D471A7982E0CA3F86 /* RecipeSeed.swift in Sources */,
 				4FEF02D71BF388A5F333047C /* RecipeBrowse.swift in Sources */,
+				ABC1C356E1DA7F52E345EE5A /* CategoryFilterRail.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

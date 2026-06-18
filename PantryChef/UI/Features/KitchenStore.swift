@@ -182,9 +182,13 @@ struct ShoppingEntry: Identifiable, Equatable {
     let id: UUID
     var name: String
     var amount: String?
+    /// Every list line carries a category — assignment is required so an item never
+    /// falls outside the aisle grouping. `.other` is a valid, deliberate choice (not a
+    /// silent gap): genuinely uncategorisable things live there.
+    var category: FoodCategory
 
-    init(id: UUID = UUID(), name: String, amount: String? = nil) {
-        self.id = id; self.name = name; self.amount = amount
+    init(id: UUID = UUID(), name: String, amount: String? = nil, category: FoodCategory = .other) {
+        self.id = id; self.name = name; self.amount = amount; self.category = category
     }
 }
 
@@ -210,11 +214,11 @@ final class KitchenStore {
     /// changes and your own estimate stands. See `StockItem.moved(to:now:adjustDaysLeft:)`.
     var autoAdjustDaysOnStorageChange = true
     var shoppingList: [ShoppingEntry] = [
-        ShoppingEntry(name: "Olive oil"),
-        ShoppingEntry(name: "Salmon", amount: "2 fillets"),
-        ShoppingEntry(name: "Miso", amount: "1 tub"),
-        ShoppingEntry(name: "Milk", amount: "2 L"),
-        ShoppingEntry(name: "Eggs", amount: "12")
+        ShoppingEntry(name: "Olive oil", category: .oils),
+        ShoppingEntry(name: "Salmon", amount: "2 fillets", category: .protein),
+        ShoppingEntry(name: "Miso", amount: "1 tub", category: .condiments),
+        ShoppingEntry(name: "Milk", amount: "2 L", category: .dairy),
+        ShoppingEntry(name: "Eggs", amount: "12", category: .dairy)
     ]
     /// The fan's current options — the now-module's Open state rebuilds from these.
     var fanOptions: [FanOption] = []
@@ -492,7 +496,9 @@ final class KitchenStore {
     /// Add to the list, carrying a *desired* amount ("2 L", "12") when we know it.
     /// One line per item (dedup by name); adding more of something already listed is
     /// **additive** — the quantities sum (see `combinedAmount`) rather than overwrite.
-    func addToList(name: String, amount: String? = nil) {
+    /// A category is always assigned (passed explicitly, else resolved from the catalog,
+    /// else `.other`) so every line groups by aisle.
+    func addToList(name: String, amount: String? = nil, category: FoodCategory? = nil) {
         let trimmed = name.trimmingCharacters(in: .whitespaces)
         guard !trimmed.isEmpty else { return }
         let display = trimmed.prefix(1).capitalized + trimmed.dropFirst()
@@ -502,7 +508,8 @@ final class KitchenStore {
             return
         }
         shoppingList.append(ShoppingEntry(name: display,
-                                          amount: (cleanAmount?.isEmpty == false) ? cleanAmount : nil))
+                                          amount: (cleanAmount?.isEmpty == false) ? cleanAmount : nil,
+                                          category: category ?? listCategory(forName: display)))
     }
 
     /// Combine two desired amounts additively: same unit (or both unit-less) → sum the
@@ -529,8 +536,9 @@ final class KitchenStore {
         return shoppingList.contains { $0.name.lowercased() == key }
     }
 
-    /// The FoodCategory a shopping-list line belongs to (for grouping the list by
-    /// aisle), resolved through the catalog and cached. Defaults to `.other`.
+    /// The FoodCategory to assign a list line by name (when one isn't supplied),
+    /// resolved through the catalog and cached. Defaults to `.other`. Used at add-time
+    /// so the category is then stored on the entry, never re-guessed.
     func listCategory(forName name: String) -> FoodCategory {
         let key = name.trimmingCharacters(in: .whitespaces).lowercased()
         if let c = listCategoryCache[key] { return c }
@@ -541,11 +549,11 @@ final class KitchenStore {
     }
     @ObservationIgnored private var listCategoryCache: [String: FoodCategory] = [:]
 
-    /// Shopping entries grouped by category, in display order (empty groups dropped) —
-    /// the one place the list's aisle grouping is derived, shared by the pantry preview
-    /// and the shopping run.
+    /// Shopping entries grouped by their (always-assigned) category, in display order
+    /// (empty groups dropped) — the one place the list's aisle grouping is derived,
+    /// shared by the pantry preview and the shopping run.
     func shoppingByCategory(_ entries: [ShoppingEntry]) -> [(FoodCategory, [ShoppingEntry])] {
-        let byCat = Dictionary(grouping: entries, by: { listCategory(forName: $0.name) })
+        let byCat = Dictionary(grouping: entries, by: \.category)
         return FoodCategory.displayOrder.compactMap { cat in
             guard let items = byCat[cat], !items.isEmpty else { return nil }
             return (cat, items)
@@ -1003,10 +1011,10 @@ final class KitchenStore {
         ]
         whispers = []
         shoppingList = [
-            ShoppingEntry(name: "Eggs", amount: "1 dozen"),
-            ShoppingEntry(name: "Lemon", amount: "3"),
-            ShoppingEntry(name: "Onion"),
-            ShoppingEntry(name: "Miso", amount: "1 tub")
+            ShoppingEntry(name: "Eggs", amount: "1 dozen", category: .dairy),
+            ShoppingEntry(name: "Lemon", amount: "3", category: .produce),
+            ShoppingEntry(name: "Onion", category: .produce),
+            ShoppingEntry(name: "Miso", amount: "1 tub", category: .condiments)
         ]
 
         func catalogID(_ name: String) -> String? { Self.seedCatalogIDs[name] ?? IntakePipeline.bestCatalogID(for: name) }

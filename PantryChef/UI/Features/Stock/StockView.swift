@@ -65,13 +65,16 @@ struct StockView: View {
             .padding(.horizontal, 20).padding(.top, 6)
             // The category chips stay pinned above the list, so switching category is
             // one tap from anywhere — no scrolling back up to a tile grid.
-            categoryRail.padding(.top, 10).padding(.bottom, 2)
+            CategoryFilterRail(categories: groups.map(\.0), selected: $selectedCategory,
+                               flagged: Set(urgent.map(\.category)))
+                .padding(.top, 10).padding(.bottom, 2)
             DashedRule().padding(.horizontal, 20)
             ScrollView {
                 VStack(alignment: .leading, spacing: 0) {
-                    // The cross-cutting expiry warning rides the top of "All" only — in a
-                    // single category, those items still flag their own day counts inline.
-                    if selectedCategory == nil, !urgent.isEmpty { warningBand }
+                    // The expiry warning persists across category filters — scoped to
+                    // the items in view (all of them on "All", just this category's
+                    // otherwise) so it's always actionable, never hidden by a filter.
+                    if !scopedUrgent.isEmpty { warningBand }
                     if let cat = selectedCategory {
                         let items = groups.first { $0.0 == cat }?.1 ?? []
                         sectionHeader(cat, items.count)
@@ -112,47 +115,13 @@ struct StockView: View {
         }
     }
 
-    // MARK: - Category chips + section headers
+    // MARK: - Section headers
 
-    /// The pinned category filter rail: "All" then one chip per non-empty category
-    /// (emoji + name, a paprika dot when something inside is expiring). Tap to narrow
-    /// the list; tap "All" to see everything grouped.
-    private var categoryRail: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 8) {
-                chip("All", emoji: nil, on: selectedCategory == nil, urgent: false) {
-                    selectedCategory = nil
-                }
-                ForEach(groups, id: \.0) { cat, items in
-                    chip(cat.rawValue, emoji: EmojiPlate.categoryFace(cat),
-                         on: selectedCategory == cat,
-                         urgent: items.contains { urgentIDs.contains($0.id) }) {
-                        selectedCategory = cat
-                    }
-                }
-            }
-            .padding(.horizontal, 20)
-        }
-    }
-
-    private func chip(_ title: String, emoji: String?, on: Bool, urgent: Bool,
-                      _ tap: @escaping () -> Void) -> some View {
-        Button { withAnimation(.easeOut(duration: 0.15)) { tap() } } label: {
-            HStack(spacing: 5) {
-                if let emoji { Text(emoji).font(.system(size: 12)) }
-                Text(title.uppercased())
-                    .font(.system(size: 10.5, weight: on ? .semibold : .regular)).tracking(1.0)
-                if urgent {
-                    Circle().fill(Theme.Palette.paprika).frame(width: 5, height: 5)
-                }
-            }
-            .foregroundStyle(on ? Theme.Palette.cream : Theme.Palette.ink)
-            .padding(.horizontal, 11).padding(.vertical, 7)
-            .background(Rectangle().fill(on ? Theme.Palette.ink : .clear))
-            .overlay(Rectangle().strokeBorder(Theme.Palette.ink.opacity(on ? 0 : 0.4), lineWidth: 1))
-            .contentShape(Rectangle())
-        }
-        .buttonStyle(.plain)
+    /// The expiry warnings in view: all of them on "All", just the selected category's
+    /// otherwise — so the band persists across filters instead of vanishing.
+    private var scopedUrgent: [StockItem] {
+        guard let cat = selectedCategory else { return urgent }
+        return urgent.filter { $0.category == cat }
     }
 
     /// A category's section header in the list — emoji, name, count, and a slim
@@ -175,11 +144,11 @@ struct StockView: View {
         VStack(alignment: .leading, spacing: 7) {
             HStack(spacing: 6) {
                 Image(systemName: "exclamationmark.triangle.fill").font(.system(size: 11))
-                Text("USE SOON — \(urgent.count)")
+                Text("USE SOON — \(scopedUrgent.count)")
                     .font(.system(size: 11, weight: .semibold)).tracking(1.4)
             }
             .foregroundStyle(Theme.Palette.paprika)
-            ForEach(urgent) { item in
+            ForEach(scopedUrgent) { item in
                 Button { editing = item } label: {
                     LeaderRow {
                         Text("\(emoji(item))\u{2002}\(item.name)")

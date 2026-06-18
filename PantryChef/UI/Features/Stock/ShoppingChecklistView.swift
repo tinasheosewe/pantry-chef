@@ -18,6 +18,8 @@ struct ShoppingChecklistView: View {
     @State private var newItem = ""
     @State private var seeded = false
     @State private var resolving: Resolving?
+    /// Category filter chip in effect — nil = "All" (every aisle), like the Pantry.
+    @State private var selectedCategory: FoodCategory?
     @FocusState private var addingFocused: Bool
 
     /// A typed item that needs disambiguation before it joins the cart.
@@ -35,17 +37,28 @@ struct ShoppingChecklistView: View {
     private var entries: [ShoppingEntry] { store.shoppingList + extras }
     private var boughtCount: Int { checked.count }
 
+    /// Aisle groups shown — every category on "All", just the selected one otherwise.
+    private var displayedGroups: [(FoodCategory, [ShoppingEntry])] {
+        let all = store.shoppingByCategory(entries)
+        guard let cat = selectedCategory else { return all }
+        return all.filter { $0.0 == cat }
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             header
-            DashedRule().padding(.horizontal, 20).padding(.top, 10)
+            // Pinned category chips, like the Pantry — filter the aisles you shop.
+            CategoryFilterRail(categories: store.shoppingByCategory(entries).map(\.0),
+                               selected: $selectedCategory)
+                .padding(.top, 10)
+            DashedRule().padding(.horizontal, 20).padding(.top, 8)
             // A List so removal is the native swipe gesture (no ✕): swipe a row to
             // remove it. Marking bought is a tap on the check — distinct gesture, no
             // conflict. Separators tinted to ink to fit the printed look.
             // Grouped by category (aisle order), the same grouping the Pantry uses, so
             // you shop section by section.
             List {
-                ForEach(store.shoppingByCategory(entries), id: \.0) { cat, items in
+                ForEach(displayedGroups, id: \.0) { cat, items in
                     Section {
                         ForEach(items) { entry in
                             row(entry)
@@ -247,11 +260,14 @@ struct ShoppingChecklistView: View {
     }
 
     /// Add a resolved ingredient to the cart (checked), seeding its bought amount.
+    /// Its category is resolved (catalog or just-registered custom item) so an ad-hoc
+    /// grab still lands in an aisle, never outside the grouping.
     private func addGrabbed(name: String, amount: String?) {
         guard !name.isEmpty else { return }
         let display = name.prefix(1).capitalized + name.dropFirst()
         if !entries.contains(where: { $0.name.lowercased() == display.lowercased() }) {
-            extras.append(ShoppingEntry(name: display, amount: amount))
+            extras.append(ShoppingEntry(name: display, amount: amount,
+                                        category: store.listCategory(forName: display)))
         }
         amounts[display] = amount ?? ""
         checked.insert(display)
