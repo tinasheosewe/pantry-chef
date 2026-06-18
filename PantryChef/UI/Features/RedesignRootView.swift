@@ -297,31 +297,46 @@ struct RedesignRootView: View {
         }
     }
 
+    /// Name of the dish the hero is already showing (planned meal, or the selected fan
+    /// option), so the rails/feature don't echo it back at you a second time.
+    private var heroDishName: String? {
+        if isIdleNow, let plan = store.planForNow, !showSuggestions { return plan.name }
+        if case .open(let options, let selected) = store.nowState, options.indices.contains(selected) {
+            return options[selected].name
+        }
+        return nil
+    }
+
+    /// Rails, de-duplicated: nothing repeats across rails, and nothing echoes the hero
+    /// or the feature. Each dish earns exactly one slot in the For-you feed.
     private var defaultRails: [FeedRail] {
-        var rails: [FeedRail] = []
-        let ready = store.library.filter { store.readiness(for: $0).isMakeableNow }
-        if !ready.isEmpty {
-            rails.append(FeedRail(title: "Ready now", subtitle: "Cook with what's on hand",
-                                  items: ready.prefix(10).map(feedItem)))
+        let heroName = heroDishName?.lowercased()
+        var used = Set<UUID>()
+        if let f = featureDish { used.insert(f.id) }
+
+        func rail(_ title: String, _ subtitle: String, from pool: [Dish]) -> FeedRail? {
+            let picks = pool.filter { !used.contains($0.id) && $0.name.lowercased() != heroName }.prefix(10)
+            guard !picks.isEmpty else { return nil }
+            picks.forEach { used.insert($0.id) }
+            return FeedRail(title: title, subtitle: subtitle, items: picks.map(feedItem))
         }
-        let fast = store.library.filter { ($0.minutes ?? .max) <= 25 }
-        if !fast.isEmpty {
-            rails.append(FeedRail(title: "Fast tonight", subtitle: "Under thirty minutes",
-                                  items: fast.prefix(10).map(feedItem)))
-        }
-        let family = store.library.filter { $0.servings >= 4 }
-        if !family.isEmpty {
-            rails.append(FeedRail(title: "Feeds the table", subtitle: "Serves four or more",
-                                  items: family.prefix(10).map(feedItem)))
-        }
-        return rails
+
+        return [
+            rail("Ready now", "Cook with what's on hand",
+                 from: store.library.filter { store.readiness(for: $0).isMakeableNow }),
+            rail("Fast tonight", "Under thirty minutes",
+                 from: store.library.filter { ($0.minutes ?? .max) <= 25 }),
+            rail("Feeds the table", "Serves four or more",
+                 from: store.library.filter { $0.servings >= 4 }),
+        ].compactMap { $0 }
     }
 
     /// The editorial feature — lead with a "use it up" dish when something's expiring,
-    /// else the strongest ready-now pick.
+    /// else the strongest ready-now pick. Never the dish the hero is already showing.
     private var featureDish: Dish? {
-        if let d = store.library.first(where: usesExpiring) { return d }
-        return store.library.first { store.readiness(for: $0).isMakeableNow }
+        let heroName = heroDishName?.lowercased()
+        if let d = store.library.first(where: { usesExpiring($0) && $0.name.lowercased() != heroName }) { return d }
+        return store.library.first { store.readiness(for: $0).isMakeableNow && $0.name.lowercased() != heroName }
     }
     private var featureItem: FeedItem? { featureDish.map(feedItem) }
     private var featureEyebrow: String { (featureDish.map(usesExpiring) ?? false) ? "Use it up" : "Ready now" }
@@ -450,118 +465,6 @@ private struct CookFlowScreen: View {
                 onClose()
             }
         )
-    }
-}
-
-/// ON THE CLOCK — the expiring ledger under the now-module: each perishable on a
-/// dotted leader with its days, tomato when it's urgent. One tap from Stores.
-private struct OnTheClockSection: View {
-    var store: KitchenStore
-    var onOpen: () -> Void
-
-    private var items: [StockItem] {
-        store.stock
-            .compactMap { item -> (StockItem, Int)? in
-                if case .perishable(_, let days?) = item.measure, days <= 5 { return (item, days) }
-                return nil
-            }
-            .sorted { $0.1 < $1.1 }
-            .map(\.0)
-    }
-
-    var body: some View {
-        if !items.isEmpty {
-            Button(action: onOpen) {
-                VStack(alignment: .leading, spacing: 7) {
-                    DashedRule()
-                    Eyebrow(text: "On the clock", tone: .urgent).padding(.top, 4)
-                    ForEach(items.prefix(3)) { item in
-                        if case .perishable(let detail, let days?) = item.measure {
-                            LeaderRow {
-                                Text("\(EmojiPlate.face(for: item.name, categories: item.plate.weights.map(\.category)))\u{2002}\(item.name) — \(detail)")
-                                    .font(Theme.Typography.fact(12.5))
-                                    .foregroundStyle(Theme.Palette.ink)
-                                    .lineLimit(1)
-                            } trailing: {
-                                Text(days == 1 ? "1 day" : "\(days) days")
-                                    .font(Theme.Typography.fact(12))
-                                    .foregroundStyle(days <= 3 ? Theme.Palette.paprika : Theme.Palette.warmGray)
-                            }
-                        }
-                    }
-                }
-                .padding(.top, 12)
-                .contentShape(Rectangle())
-            }
-            .buttonStyle(.plain)
-        }
-    }
-}
-
-/// The kitchen at a glance, set as a two-column note above the page floor — each
-/// column a door to its space.
-private struct KitchenLedger: View {
-    var store: KitchenStore
-    var onReady: () -> Void
-    var onStock: () -> Void
-
-    var body: some View {
-        let ready = store.library.filter { store.readiness(for: $0).isMakeableNow }.count
-        VStack(alignment: .leading, spacing: 0) {
-            DashedRule().padding(.top, 12)
-            HStack(alignment: .top, spacing: 12) {
-                Button(action: onReady) {
-                    VStack(alignment: .leading, spacing: 3) {
-                        Eyebrow(text: "Ready tonight")
-                        Text("\(ready) \(ready == 1 ? "dish" : "dishes") — no shopping")
-                            .font(Theme.Typography.fact(11.5))
-                            .foregroundStyle(Theme.Palette.ink)
-                            .fixedSize(horizontal: false, vertical: true)
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .contentShape(Rectangle())
-                }
-                .buttonStyle(.plain)
-                Button(action: onStock) {
-                    VStack(alignment: .leading, spacing: 3) {
-                        Eyebrow(text: "The stores")
-                        Text("\(store.stock.count) in · \(store.shoppingList.count) on the list")
-                            .font(Theme.Typography.fact(11.5))
-                            .foregroundStyle(Theme.Palette.ink)
-                            .fixedSize(horizontal: false, vertical: true)
-                    }
-                    .padding(.leading, 12)
-                    .overlay(alignment: .leading) {
-                        Rectangle()
-                            .fill(.clear)
-                            .frame(width: 1)
-                            .overlay(VerticalDashedRule())
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .contentShape(Rectangle())
-                }
-                .buttonStyle(.plain)
-            }
-            .padding(.top, 9)
-        }
-    }
-}
-
-/// A vertical dashed hand-rule (column dividers).
-struct VerticalDashedRule: View {
-    var body: some View {
-        VLine()
-            .stroke(Theme.Palette.ink.opacity(0.35), style: StrokeStyle(lineWidth: 1, dash: [4, 3]))
-            .frame(width: 1)
-    }
-
-    private struct VLine: Shape {
-        func path(in rect: CGRect) -> Path {
-            var p = Path()
-            p.move(to: CGPoint(x: rect.midX, y: 0))
-            p.addLine(to: CGPoint(x: rect.midX, y: rect.height))
-            return p
-        }
     }
 }
 

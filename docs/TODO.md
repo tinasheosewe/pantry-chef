@@ -5,6 +5,17 @@ each item.
 
 ## Open
 
+### AI-generated recipe ideas in the feed (cost-gated — needs consideration)
+The Today feed is currently powered by the **existing recipe library**, categorized
+into lenses (`RedesignRootView.defaultRails` / `matches`). A richer "always fresh"
+feed would **generate new recipe ideas on demand** via the AI service, tailored to the
+pantry (what's on hand / expiring) and the active lens. Distinct from the 200-recipe
+static seed (which gives breadth without per-view cost). **Cost is the open question:**
+generating ideas on every feed view could massively increase operating cost — needs a
+strategy before building (e.g. cache/precompute per day, generate only on explicit
+"surprise me", cap per session, cheaper model for ideation). Decide the cost model
+first. Layers onto the same feed UI; no UI rework needed. (From feed-redesign review.)
+
 ### Persistence — nothing survives a cold relaunch
 The whole `KitchenStore` is in-memory only (see the seam comment at
 `PantryChef/UI/Features/KitchenStore.swift` ~L190, "the single seam where real

@@ -1,0 +1,1569 @@
+{
+  "recipes": [
+    {
+      "name": "Classic Shakshuka",
+      "blurb": "Eggs poached in a spiced tomato and pepper sauce, made for tearing bread into.",
+      "cuisine": "Middle Eastern",
+      "mealType": "breakfast",
+      "course": "main",
+      "diets": ["vegetarian", "gluten-free"],
+      "methods": ["one-pan", "stovetop"],
+      "timeMinutes": 30,
+      "servings": 2,
+      "difficulty": "easy",
+      "plateCategories": ["protein", "produce", "spices"],
+      "ingredients": [
+        {"name": "eggs", "amount": "4 large", "category": "protein", "staple": false},
+        {"name": "olive oil", "amount": "2 tbsp", "category": "oils", "staple": true},
+        {"name": "onion", "amount": "1 medium, diced", "category": "produce", "staple": false},
+        {"name": "red bell pepper", "amount": "1, diced", "category": "produce", "staple": false},
+        {"name": "garlic", "amount": "3 cloves, minced", "category": "produce", "staple": false},
+        {"name": "canned tomatoes", "amount": "1 can (400g), crushed", "category": "canned", "staple": false},
+        {"name": "ground cumin", "amount": "1 tsp", "category": "spices", "staple": true},
+        {"name": "paprika", "amount": "1 tsp", "category": "spices", "staple": true},
+        {"name": "salt", "amount": "to taste", "category": "spices", "staple": true},
+        {"name": "fresh parsley", "amount": "small handful, chopped", "category": "produce", "staple": false}
+      ],
+      "steps": [
+        "Warm the olive oil in a wide skillet over medium heat. Add the onion and bell pepper and cook for 8 minutes until softened.",
+        "Stir in the garlic, cumin, and paprika and cook for 1 minute until fragrant.",
+        "Pour in the crushed tomatoes, season with salt, and simmer for 8 minutes until the sauce thickens.",
+        "Make four wells in the sauce and crack an egg into each. Cover and cook for 6 to 8 minutes until the whites set but the yolks stay runny.",
+        "Scatter parsley over the top and serve straight from the pan with bread."
+      ]
+    },
+    {
+      "name": "Fluffy Buttermilk Pancakes",
+      "blurb": "Tall, tender stacks with crisp edges and a tang from real buttermilk.",
+      "cuisine": "American",
+      "mealType": "breakfast",
+      "course": "main",
+      "diets": ["vegetarian"],
+      "methods": ["stovetop"],
+      "timeMinutes": 25,
+      "servings": 4,
+      "difficulty": "easy",
+      "plateCategories": ["grains", "dairy", "bakingSupplies"],
+      "ingredients": [
+        {"name": "all-purpose flour", "amount": "2 cups", "category": "bakingSupplies", "staple": true},
+        {"name": "sugar", "amount": "2 tbsp", "category": "bakingSupplies", "staple": true},
+        {"name": "baking powder", "amount": "2 tsp", "category": "bakingSupplies", "staple": true},
+        {"name": "baking soda", "amount": "1/2 tsp", "category": "bakingSupplies", "staple": true},
+        {"name": "salt", "amount": "1/2 tsp", "category": "spices", "staple": true},
+        {"name": "buttermilk", "amount": "2 cups", "category": "dairy", "staple": false},
+        {"name": "eggs", "amount": "2 large", "category": "protein", "staple": false},
+        {"name": "butter", "amount": "3 tbsp, melted", "category": "dairy", "staple": false}
+      ],
+      "steps": [
+        "Whisk the flour, sugar, baking powder, baking soda, and salt in a large bowl.",
+        "In another bowl, beat the buttermilk, eggs, and melted butter together.",
+        "Pour the wet ingredients into the dry and stir just until combined; lumps are fine, do not overmix.",
+        "Heat a lightly greased griddle over medium heat and pour 1/4 cup of batter per pancake.",
+        "Cook until bubbles form on the surface and the edges look dry, about 2 minutes, then flip and cook 1 to 2 minutes more."
+      ]
+    },
+    {
+      "name": "Overnight Oats with Berries",
+      "blurb": "No-cook oats that thicken in the fridge while you sleep.",
+      "cuisine": "American",
+      "mealType": "breakfast",
+      "course": "main",
+      "diets": ["vegetarian", "vegan", "dairy-free", "nut-free"],
+      "methods": ["no-cook"],
+      "timeMinutes": 5,
+      "servings": 1,
+      "difficulty": "easy",
+      "plateCategories": ["grains", "produce", "dairy"],
+      "ingredients": [
+        {"name": "rolled oats", "amount": "1/2 cup", "category": "grains", "staple": false},
+        {"name": "oat milk", "amount": "2/3 cup", "category": "beverages", "staple": false},
+        {"name": "chia seeds", "amount": "1 tbsp", "category": "other", "staple": false},
+        {"name": "maple syrup", "amount": "1 tbsp", "category": "condiments", "staple": false},
+        {"name": "vanilla extract", "amount": "1/4 tsp", "category": "bakingSupplies", "staple": true},
+        {"name": "mixed berries", "amount": "1/2 cup", "category": "produce", "staple": false}
+      ],
+      "steps": [
+        "In a jar, combine the oats, oat milk, chia seeds, maple syrup, and vanilla.",
+        "Stir well, seal the jar, and refrigerate overnight or at least 6 hours.",
+        "In the morning, stir again and add a splash more milk if too thick.",
+        "Top with the berries and eat cold."
+      ]
+    },
+    {
+      "name": "Green Power Smoothie",
+      "blurb": "Spinach you cannot taste, hidden behind banana and mango.",
+      "cuisine": "American",
+      "mealType": "breakfast",
+      "course": "drink",
+      "diets": ["vegetarian", "vegan", "dairy-free", "gluten-free", "nut-free"],
+      "methods": ["no-cook"],
+      "timeMinutes": 5,
+      "servings": 2,
+      "difficulty": "easy",
+      "plateCategories": ["produce", "beverages"],
+      "ingredients": [
+        {"name": "banana", "amount": "1, frozen", "category": "produce", "staple": false},
+        {"name": "frozen mango", "amount": "1 cup", "category": "frozenFoods", "staple": false},
+        {"name": "spinach", "amount": "2 cups", "category": "produce", "staple": false},
+        {"name": "oat milk", "amount": "1 cup", "category": "beverages", "staple": false},
+        {"name": "chia seeds", "amount": "1 tbsp", "category": "other", "staple": false},
+        {"name": "lime", "amount": "1/2, juiced", "category": "produce", "staple": false}
+      ],
+      "steps": [
+        "Add the banana, mango, spinach, and oat milk to a blender.",
+        "Blend on high until completely smooth, about 45 seconds.",
+        "Add the chia seeds and lime juice and pulse a few times to combine.",
+        "Pour into two glasses and drink right away."
+      ]
+    },
+    {
+      "name": "Bacon Egg and Cheese Sandwich",
+      "blurb": "The diner-counter classic on a toasted English muffin.",
+      "cuisine": "American",
+      "mealType": "breakfast",
+      "course": "main",
+      "diets": ["high-protein"],
+      "methods": ["stovetop"],
+      "timeMinutes": 15,
+      "servings": 1,
+      "difficulty": "easy",
+      "plateCategories": ["protein", "breads", "dairy"],
+      "ingredients": [
+        {"name": "English muffin", "amount": "1, split", "category": "breads", "staple": false},
+        {"name": "bacon", "amount": "2 strips", "category": "protein", "staple": false},
+        {"name": "eggs", "amount": "2 large", "category": "protein", "staple": false},
+        {"name": "cheddar cheese", "amount": "1 slice", "category": "dairy", "staple": false},
+        {"name": "butter", "amount": "1 tsp", "category": "dairy", "staple": false},
+        {"name": "salt", "amount": "to taste", "category": "spices", "staple": true},
+        {"name": "black pepper", "amount": "to taste", "category": "spices", "staple": true}
+      ],
+      "steps": [
+        "Cook the bacon in a skillet over medium heat until crisp, then drain on paper towels.",
+        "Toast the English muffin halves until golden.",
+        "Wipe most of the bacon fat from the pan, add the butter, and cook the eggs to your liking, seasoning with salt and pepper.",
+        "Lay the cheese over the hot eggs so it melts, then stack eggs and bacon on the muffin bottom.",
+        "Close the sandwich and serve hot."
+      ]
+    },
+    {
+      "name": "Mushroom and Herb Frittata",
+      "blurb": "A skillet of eggs that finishes under the broiler, puffed and golden.",
+      "cuisine": "Italian",
+      "mealType": "brunch",
+      "course": "main",
+      "diets": ["vegetarian", "gluten-free", "high-protein"],
+      "methods": ["one-pan", "stovetop", "bake"],
+      "timeMinutes": 25,
+      "servings": 4,
+      "difficulty": "medium",
+      "plateCategories": ["protein", "produce", "dairy"],
+      "ingredients": [
+        {"name": "eggs", "amount": "8 large", "category": "protein", "staple": false},
+        {"name": "olive oil", "amount": "2 tbsp", "category": "oils", "staple": true},
+        {"name": "cremini mushrooms", "amount": "300g, sliced", "category": "produce", "staple": false},
+        {"name": "shallot", "amount": "1, sliced", "category": "produce", "staple": false},
+        {"name": "parmesan cheese", "amount": "1/3 cup, grated", "category": "dairy", "staple": false},
+        {"name": "fresh thyme", "amount": "1 tsp", "category": "produce", "staple": false},
+        {"name": "salt", "amount": "1/2 tsp", "category": "spices", "staple": true},
+        {"name": "black pepper", "amount": "to taste", "category": "spices", "staple": true}
+      ],
+      "steps": [
+        "Heat the broiler. Warm the oil in an ovenproof skillet over medium heat and cook the mushrooms and shallot for 7 minutes until browned.",
+        "Whisk the eggs with the parmesan, thyme, salt, and pepper.",
+        "Pour the eggs over the mushrooms and cook without stirring for 4 minutes until the edges set.",
+        "Slide the skillet under the broiler for 3 to 4 minutes until puffed and just set in the center.",
+        "Let it rest 2 minutes, then slice into wedges."
+      ]
+    },
+    {
+      "name": "Breakfast Burrito",
+      "blurb": "Eggs, beans, and cheese rolled tight and seared in the pan.",
+      "cuisine": "Mexican",
+      "mealType": "breakfast",
+      "course": "main",
+      "diets": ["vegetarian", "high-protein"],
+      "methods": ["stovetop"],
+      "timeMinutes": 20,
+      "servings": 2,
+      "difficulty": "easy",
+      "plateCategories": ["protein", "legumes", "breads"],
+      "ingredients": [
+        {"name": "flour tortillas", "amount": "2 large", "category": "breads", "staple": false},
+        {"name": "eggs", "amount": "4 large", "category": "protein", "staple": false},
+        {"name": "canned black beans", "amount": "1/2 can, drained", "category": "canned", "staple": false},
+        {"name": "cheddar cheese", "amount": "1/2 cup, shredded", "category": "dairy", "staple": false},
+        {"name": "salsa", "amount": "1/4 cup", "category": "condiments", "staple": false},
+        {"name": "butter", "amount": "1 tbsp", "category": "dairy", "staple": false},
+        {"name": "salt", "amount": "to taste", "category": "spices", "staple": true},
+        {"name": "black pepper", "amount": "to taste", "category": "spices", "staple": true}
+      ],
+      "steps": [
+        "Warm the beans in a small pan and mash slightly; season with salt.",
+        "Melt the butter in a skillet over medium heat, add the beaten eggs, and scramble softly until just set.",
+        "Lay the tortillas flat and divide the eggs, beans, cheese, and salsa down the center of each.",
+        "Fold in the sides and roll up tightly into burritos.",
+        "Wipe the skillet, return it to medium heat, and sear the burritos seam-side down for 2 minutes per side until golden."
+      ]
+    },
+    {
+      "name": "Savory Chicken Congee",
+      "blurb": "Rice simmered low and slow into a silky, comforting porridge.",
+      "cuisine": "Chinese",
+      "mealType": "breakfast",
+      "course": "main",
+      "diets": ["gluten-free", "dairy-free", "high-protein"],
+      "methods": ["stovetop"],
+      "timeMinutes": 30,
+      "servings": 4,
+      "difficulty": "easy",
+      "plateCategories": ["grains", "protein", "produce"],
+      "ingredients": [
+        {"name": "jasmine rice", "amount": "1 cup", "category": "grains", "staple": false},
+        {"name": "chicken broth", "amount": "8 cups", "category": "canned", "staple": false},
+        {"name": "chicken thighs", "amount": "2, boneless", "category": "protein", "staple": false},
+        {"name": "fresh ginger", "amount": "1 thumb, sliced", "category": "produce", "staple": false},
+        {"name": "scallions", "amount": "3, sliced", "category": "produce", "staple": false},
+        {"name": "soy sauce", "amount": "2 tbsp", "category": "condiments", "staple": false},
+        {"name": "sesame oil", "amount": "1 tsp", "category": "oils", "staple": false},
+        {"name": "salt", "amount": "to taste", "category": "spices", "staple": true}
+      ],
+      "steps": [
+        "Rinse the rice until the water runs clear, then add it to a pot with the broth, ginger, and chicken.",
+        "Bring to a boil, then reduce to a low simmer and cook for 25 minutes, stirring now and then, until the rice breaks down and the porridge is creamy.",
+        "Lift out the chicken, shred it, and stir it back in. Season with soy sauce and salt.",
+        "Ladle into bowls and finish with scallions and a drizzle of sesame oil."
+      ]
+    },
+    {
+      "name": "Maple Cinnamon Granola",
+      "blurb": "Big crunchy clusters of oats and nuts baked until deep golden.",
+      "cuisine": "American",
+      "mealType": "breakfast",
+      "course": "main",
+      "diets": ["vegetarian", "vegan", "dairy-free"],
+      "methods": ["bake", "sheet-pan"],
+      "timeMinutes": 30,
+      "servings": 8,
+      "difficulty": "easy",
+      "plateCategories": ["grains", "nuts", "condiments"],
+      "ingredients": [
+        {"name": "rolled oats", "amount": "3 cups", "category": "grains", "staple": false},
+        {"name": "almonds", "amount": "1 cup, chopped", "category": "nuts", "staple": false},
+        {"name": "pumpkin seeds", "amount": "1/2 cup", "category": "nuts", "staple": false},
+        {"name": "maple syrup", "amount": "1/2 cup", "category": "condiments", "staple": false},
+        {"name": "coconut oil", "amount": "1/3 cup, melted", "category": "oils", "staple": false},
+        {"name": "ground cinnamon", "amount": "1 tsp", "category": "spices", "staple": true},
+        {"name": "salt", "amount": "1/2 tsp", "category": "spices", "staple": true}
+      ],
+      "steps": [
+        "Heat the oven to 325F and line a sheet pan with parchment.",
+        "Toss the oats, almonds, and pumpkin seeds in a large bowl.",
+        "Pour over the maple syrup, melted coconut oil, cinnamon, and salt and stir until everything is coated.",
+        "Spread on the pan and press into an even layer. Bake for 22 minutes, rotating once, until golden.",
+        "Cool completely on the pan without stirring so it forms clusters, then break into pieces."
+      ]
+    },
+    {
+      "name": "Avocado Toast with Chili and Lime",
+      "blurb": "Creamy mashed avocado on crisp toast with a citrus and chili lift.",
+      "cuisine": "American",
+      "mealType": "breakfast",
+      "course": "main",
+      "diets": ["vegetarian", "vegan", "dairy-free"],
+      "methods": ["no-cook"],
+      "timeMinutes": 10,
+      "servings": 2,
+      "difficulty": "easy",
+      "plateCategories": ["produce", "breads", "spices"],
+      "ingredients": [
+        {"name": "sourdough bread", "amount": "2 thick slices", "category": "breads", "staple": false},
+        {"name": "avocado", "amount": "1 ripe", "category": "produce", "staple": false},
+        {"name": "lime", "amount": "1/2, juiced", "category": "produce", "staple": false},
+        {"name": "red pepper flakes", "amount": "1/4 tsp", "category": "spices", "staple": true},
+        {"name": "olive oil", "amount": "1 tsp", "category": "oils", "staple": true},
+        {"name": "salt", "amount": "to taste", "category": "spices", "staple": true},
+        {"name": "black pepper", "amount": "to taste", "category": "spices", "staple": true}
+      ],
+      "steps": [
+        "Toast the sourdough until crisp and golden.",
+        "Mash the avocado with the lime juice, salt, and pepper until spreadable but still chunky.",
+        "Pile the avocado onto the toast and spread to the edges.",
+        "Finish with a drizzle of olive oil and a pinch of red pepper flakes."
+      ]
+    },
+    {
+      "name": "Spinach and Feta Egg Muffins",
+      "blurb": "Crustless mini frittatas baked in a muffin tin for grab-and-go mornings.",
+      "cuisine": "Mediterranean",
+      "mealType": "breakfast",
+      "course": "main",
+      "diets": ["vegetarian", "gluten-free", "low-carb", "high-protein"],
+      "methods": ["bake"],
+      "timeMinutes": 30,
+      "servings": 6,
+      "difficulty": "easy",
+      "plateCategories": ["protein", "produce", "dairy"],
+      "ingredients": [
+        {"name": "eggs", "amount": "8 large", "category": "protein", "staple": false},
+        {"name": "spinach", "amount": "2 cups, chopped", "category": "produce", "staple": false},
+        {"name": "feta cheese", "amount": "1/2 cup, crumbled", "category": "dairy", "staple": false},
+        {"name": "cherry tomatoes", "amount": "1/2 cup, halved", "category": "produce", "staple": false},
+        {"name": "milk", "amount": "1/4 cup", "category": "dairy", "staple": false},
+        {"name": "salt", "amount": "1/2 tsp", "category": "spices", "staple": true},
+        {"name": "black pepper", "amount": "to taste", "category": "spices", "staple": true}
+      ],
+      "steps": [
+        "Heat the oven to 375F and grease a 12-cup muffin tin well.",
+        "Whisk the eggs with the milk, salt, and pepper.",
+        "Divide the spinach, feta, and tomatoes among the muffin cups, then pour the egg mixture over the top.",
+        "Bake for 20 minutes until puffed and set in the center.",
+        "Cool 5 minutes before lifting out; serve warm or refrigerate for the week."
+      ]
+    },
+    {
+      "name": "Banana Walnut Baked Oatmeal",
+      "blurb": "A warm, sliceable oatmeal casserole that tastes like banana bread.",
+      "cuisine": "American",
+      "mealType": "breakfast",
+      "course": "main",
+      "diets": ["vegetarian", "dairy-free"],
+      "methods": ["bake"],
+      "timeMinutes": 30,
+      "servings": 6,
+      "difficulty": "easy",
+      "plateCategories": ["grains", "produce", "nuts"],
+      "ingredients": [
+        {"name": "rolled oats", "amount": "2 cups", "category": "grains", "staple": false},
+        {"name": "banana", "amount": "2 ripe, mashed", "category": "produce", "staple": false},
+        {"name": "almond milk", "amount": "1.5 cups", "category": "beverages", "staple": false},
+        {"name": "walnuts", "amount": "1/2 cup, chopped", "category": "nuts", "staple": false},
+        {"name": "maple syrup", "amount": "1/4 cup", "category": "condiments", "staple": false},
+        {"name": "baking powder", "amount": "1 tsp", "category": "bakingSupplies", "staple": true},
+        {"name": "ground cinnamon", "amount": "1 tsp", "category": "spices", "staple": true},
+        {"name": "salt", "amount": "1/4 tsp", "category": "spices", "staple": true}
+      ],
+      "steps": [
+        "Heat the oven to 350F and grease a baking dish.",
+        "Stir the oats, baking powder, cinnamon, and salt together in a bowl.",
+        "In another bowl, mix the mashed banana, almond milk, and maple syrup, then fold in most of the walnuts.",
+        "Combine wet and dry, pour into the dish, and scatter the remaining walnuts on top.",
+        "Bake for 30 minutes until set and golden, then let cool slightly before slicing."
+      ]
+    },
+    {
+      "name": "Huevos Rancheros",
+      "blurb": "Fried eggs over crisp tortillas drowned in a smoky tomato salsa.",
+      "cuisine": "Mexican",
+      "mealType": "brunch",
+      "course": "main",
+      "diets": ["vegetarian", "gluten-free", "high-protein"],
+      "methods": ["stovetop"],
+      "timeMinutes": 25,
+      "servings": 2,
+      "difficulty": "medium",
+      "plateCategories": ["protein", "produce", "breads"],
+      "ingredients": [
+        {"name": "eggs", "amount": "4 large", "category": "protein", "staple": false},
+        {"name": "corn tortillas", "amount": "4", "category": "breads", "staple": false},
+        {"name": "canned tomatoes", "amount": "1 can (400g)", "category": "canned", "staple": false},
+        {"name": "onion", "amount": "1/2, diced", "category": "produce", "staple": false},
+        {"name": "jalapeno", "amount": "1, minced", "category": "produce", "staple": false},
+        {"name": "garlic", "amount": "2 cloves", "category": "produce", "staple": false},
+        {"name": "canned black beans", "amount": "1 cup", "category": "canned", "staple": false},
+        {"name": "olive oil", "amount": "2 tbsp", "category": "oils", "staple": true},
+        {"name": "salt", "amount": "to taste", "category": "spices", "staple": true}
+      ],
+      "steps": [
+        "Cook the onion, jalapeno, and garlic in 1 tbsp oil until soft, then add the tomatoes and simmer 10 minutes; season with salt.",
+        "Warm the black beans in a small pan and lightly mash.",
+        "In another pan, fry the tortillas in the remaining oil until crisp, then set aside.",
+        "Fry the eggs sunny-side up in the same pan.",
+        "Layer beans on each tortilla, top with eggs, and spoon the salsa generously over everything."
+      ]
+    },
+    {
+      "name": "Smoked Salmon Bagel",
+      "blurb": "Cold-smoked salmon, cream cheese, and capers on a chewy toasted bagel.",
+      "cuisine": "American",
+      "mealType": "brunch",
+      "course": "main",
+      "diets": ["pescatarian", "high-protein"],
+      "methods": ["no-cook"],
+      "timeMinutes": 10,
+      "servings": 1,
+      "difficulty": "easy",
+      "plateCategories": ["protein", "breads", "dairy"],
+      "ingredients": [
+        {"name": "bagel", "amount": "1, split", "category": "breads", "staple": false},
+        {"name": "smoked salmon", "amount": "80g", "category": "protein", "staple": false},
+        {"name": "cream cheese", "amount": "3 tbsp", "category": "dairy", "staple": false},
+        {"name": "red onion", "amount": "2 thin slices", "category": "produce", "staple": false},
+        {"name": "capers", "amount": "1 tbsp", "category": "condiments", "staple": false},
+        {"name": "lemon", "amount": "1 wedge", "category": "produce", "staple": false},
+        {"name": "black pepper", "amount": "to taste", "category": "spices", "staple": true}
+      ],
+      "steps": [
+        "Toast the bagel halves until golden and crisp at the edges.",
+        "Spread a thick layer of cream cheese over both cut sides.",
+        "Drape the smoked salmon over the bottom half and scatter with red onion and capers.",
+        "Squeeze over the lemon, grind on black pepper, and close the bagel."
+      ]
+    },
+    {
+      "name": "Masala Omelette",
+      "blurb": "A spiced Indian omelette folded around onion, chili, and fresh herbs.",
+      "cuisine": "Indian",
+      "mealType": "breakfast",
+      "course": "main",
+      "diets": ["vegetarian", "gluten-free", "low-carb", "high-protein"],
+      "methods": ["stovetop"],
+      "timeMinutes": 15,
+      "servings": 2,
+      "difficulty": "easy",
+      "plateCategories": ["protein", "produce", "spices"],
+      "ingredients": [
+        {"name": "eggs", "amount": "4 large", "category": "protein", "staple": false},
+        {"name": "onion", "amount": "1/2, finely diced", "category": "produce", "staple": false},
+        {"name": "tomato", "amount": "1, diced", "category": "produce", "staple": false},
+        {"name": "green chili", "amount": "1, minced", "category": "produce", "staple": false},
+        {"name": "fresh cilantro", "amount": "2 tbsp, chopped", "category": "produce", "staple": false},
+        {"name": "turmeric", "amount": "1/4 tsp", "category": "spices", "staple": true},
+        {"name": "oil", "amount": "1 tbsp", "category": "oils", "staple": true},
+        {"name": "salt", "amount": "to taste", "category": "spices", "staple": true}
+      ],
+      "steps": [
+        "Beat the eggs with the turmeric, salt, onion, tomato, chili, and cilantro.",
+        "Heat the oil in a nonstick pan over medium heat.",
+        "Pour in the egg mixture and swirl to coat the pan.",
+        "Cook for 2 to 3 minutes until the bottom is set, then fold in half and cook 1 minute more.",
+        "Slide onto a plate and serve hot."
+      ]
+    },
+    {
+      "name": "Peanut Butter Banana Smoothie",
+      "blurb": "A thick, creamy shake that drinks like dessert but fuels a morning.",
+      "cuisine": "American",
+      "mealType": "breakfast",
+      "course": "drink",
+      "diets": ["vegetarian", "vegan", "dairy-free", "high-protein"],
+      "methods": ["no-cook"],
+      "timeMinutes": 5,
+      "servings": 1,
+      "difficulty": "easy",
+      "plateCategories": ["produce", "nuts", "beverages"],
+      "ingredients": [
+        {"name": "banana", "amount": "1, frozen", "category": "produce", "staple": false},
+        {"name": "peanut butter", "amount": "2 tbsp", "category": "nuts", "staple": false},
+        {"name": "almond milk", "amount": "1 cup", "category": "beverages", "staple": false},
+        {"name": "rolled oats", "amount": "2 tbsp", "category": "grains", "staple": false},
+        {"name": "maple syrup", "amount": "1 tsp", "category": "condiments", "staple": false},
+        {"name": "ground cinnamon", "amount": "1 pinch", "category": "spices", "staple": true}
+      ],
+      "steps": [
+        "Add the banana, peanut butter, almond milk, and oats to a blender.",
+        "Blend on high until thick and smooth.",
+        "Taste and add maple syrup if you want it sweeter.",
+        "Pour into a glass and dust with cinnamon."
+      ]
+    },
+    {
+      "name": "Eggs Benedict",
+      "blurb": "Poached eggs and ham on muffins under a blanket of hollandaise.",
+      "cuisine": "American",
+      "mealType": "brunch",
+      "course": "main",
+      "diets": ["high-protein"],
+      "methods": ["stovetop"],
+      "timeMinutes": 30,
+      "servings": 2,
+      "difficulty": "hard",
+      "plateCategories": ["protein", "breads", "dairy"],
+      "ingredients": [
+        {"name": "eggs", "amount": "4 large, plus 2 yolks", "category": "protein", "staple": false},
+        {"name": "English muffins", "amount": "2, split", "category": "breads", "staple": false},
+        {"name": "ham", "amount": "4 slices", "category": "protein", "staple": false},
+        {"name": "butter", "amount": "1/2 cup, melted", "category": "dairy", "staple": false},
+        {"name": "lemon", "amount": "1/2, juiced", "category": "produce", "staple": false},
+        {"name": "white vinegar", "amount": "1 tbsp", "category": "condiments", "staple": true},
+        {"name": "salt", "amount": "to taste", "category": "spices", "staple": true},
+        {"name": "cayenne pepper", "amount": "1 pinch", "category": "spices", "staple": true}
+      ],
+      "steps": [
+        "Whisk the 2 yolks with the lemon juice over a pot of barely simmering water, slowly streaming in the melted butter until thick; season with salt and cayenne and keep warm.",
+        "Bring a wide pan of water with the vinegar to a gentle simmer. Swirl and slip in the eggs one at a time, poaching 3 minutes for runny yolks.",
+        "Toast the muffins and warm the ham in a dry pan.",
+        "Top each muffin half with ham and a poached egg.",
+        "Spoon the hollandaise over the eggs and serve immediately."
+      ]
+    },
+    {
+      "name": "Steel-Cut Oats with Apple",
+      "blurb": "Chewy, nutty oats simmered with sweet apple and warm spice.",
+      "cuisine": "American",
+      "mealType": "breakfast",
+      "course": "main",
+      "diets": ["vegetarian", "vegan", "dairy-free", "nut-free"],
+      "methods": ["stovetop"],
+      "timeMinutes": 30,
+      "servings": 2,
+      "difficulty": "easy",
+      "plateCategories": ["grains", "produce", "spices"],
+      "ingredients": [
+        {"name": "steel-cut oats", "amount": "1 cup", "category": "grains", "staple": false},
+        {"name": "water", "amount": "3 cups", "category": "beverages", "staple": true},
+        {"name": "apple", "amount": "1, diced", "category": "produce", "staple": false},
+        {"name": "maple syrup", "amount": "2 tbsp", "category": "condiments", "staple": false},
+        {"name": "ground cinnamon", "amount": "1 tsp", "category": "spices", "staple": true},
+        {"name": "salt", "amount": "1 pinch", "category": "spices", "staple": true}
+      ],
+      "steps": [
+        "Bring the water and salt to a boil, then stir in the oats and reduce to a simmer.",
+        "Cook uncovered for 20 minutes, stirring occasionally, until thick and tender.",
+        "Add the apple, cinnamon, and maple syrup and cook 5 more minutes until the apple softens.",
+        "Spoon into bowls and add more maple syrup to taste."
+      ]
+    },
+    {
+      "name": "Tofu Scramble",
+      "blurb": "Crumbled tofu cooked with turmeric for a golden, eggy vegan plateful.",
+      "cuisine": "American",
+      "mealType": "breakfast",
+      "course": "main",
+      "diets": ["vegetarian", "vegan", "dairy-free", "gluten-free", "high-protein"],
+      "methods": ["stovetop"],
+      "timeMinutes": 15,
+      "servings": 2,
+      "difficulty": "easy",
+      "plateCategories": ["protein", "produce", "spices"],
+      "ingredients": [
+        {"name": "firm tofu", "amount": "1 block (400g)", "category": "protein", "staple": false},
+        {"name": "olive oil", "amount": "2 tbsp", "category": "oils", "staple": true},
+        {"name": "onion", "amount": "1/2, diced", "category": "produce", "staple": false},
+        {"name": "spinach", "amount": "2 cups", "category": "produce", "staple": false},
+        {"name": "turmeric", "amount": "1/2 tsp", "category": "spices", "staple": true},
+        {"name": "nutritional yeast", "amount": "2 tbsp", "category": "other", "staple": false},
+        {"name": "garlic powder", "amount": "1/2 tsp", "category": "spices", "staple": true},
+        {"name": "salt", "amount": "to taste", "category": "spices", "staple": true}
+      ],
+      "steps": [
+        "Press the tofu to remove excess water, then crumble it into rough pieces.",
+        "Warm the oil and cook the onion for 4 minutes until soft.",
+        "Add the tofu, turmeric, garlic powder, and salt and cook for 6 minutes, stirring, until heated through and lightly golden.",
+        "Stir in the spinach and nutritional yeast and cook until the spinach wilts.",
+        "Serve hot, with toast or tortillas if you like."
+      ]
+    },
+    {
+      "name": "Dutch Baby Pancake",
+      "blurb": "One dramatic puffed pancake that rises in the oven and collapses on the table.",
+      "cuisine": "German",
+      "mealType": "brunch",
+      "course": "main",
+      "diets": ["vegetarian"],
+      "methods": ["bake", "one-pan"],
+      "timeMinutes": 30,
+      "servings": 4,
+      "difficulty": "medium",
+      "plateCategories": ["grains", "dairy", "bakingSupplies"],
+      "ingredients": [
+        {"name": "eggs", "amount": "3 large", "category": "protein", "staple": false},
+        {"name": "all-purpose flour", "amount": "1/2 cup", "category": "bakingSupplies", "staple": true},
+        {"name": "milk", "amount": "1/2 cup", "category": "dairy", "staple": false},
+        {"name": "butter", "amount": "3 tbsp", "category": "dairy", "staple": false},
+        {"name": "sugar", "amount": "1 tbsp", "category": "bakingSupplies", "staple": true},
+        {"name": "vanilla extract", "amount": "1/2 tsp", "category": "bakingSupplies", "staple": true},
+        {"name": "salt", "amount": "1 pinch", "category": "spices", "staple": true},
+        {"name": "powdered sugar", "amount": "for dusting", "category": "bakingSupplies", "staple": false}
+      ],
+      "steps": [
+        "Heat the oven to 425F and put a cast-iron skillet inside to heat.",
+        "Blend the eggs, flour, milk, sugar, vanilla, and salt until smooth and let the batter rest 5 minutes.",
+        "Carefully add the butter to the hot skillet and swirl until melted and foamy.",
+        "Pour in the batter and bake for 18 to 20 minutes until dramatically puffed and golden.",
+        "Dust with powdered sugar and serve at once, before it deflates."
+      ]
+    },
+    {
+      "name": "Breakfast Quesadilla",
+      "blurb": "Scrambled eggs and cheese crisped between a folded tortilla.",
+      "cuisine": "Mexican",
+      "mealType": "breakfast",
+      "course": "main",
+      "diets": ["vegetarian", "high-protein"],
+      "methods": ["stovetop", "one-pan"],
+      "timeMinutes": 15,
+      "servings": 1,
+      "difficulty": "easy",
+      "plateCategories": ["protein", "dairy", "breads"],
+      "ingredients": [
+        {"name": "flour tortilla", "amount": "1 large", "category": "breads", "staple": false},
+        {"name": "eggs", "amount": "2 large", "category": "protein", "staple": false},
+        {"name": "cheddar cheese", "amount": "1/2 cup, shredded", "category": "dairy", "staple": false},
+        {"name": "scallions", "amount": "1, sliced", "category": "produce", "staple": false},
+        {"name": "butter", "amount": "1 tbsp", "category": "dairy", "staple": false},
+        {"name": "hot sauce", "amount": "to taste", "category": "condiments", "staple": false},
+        {"name": "salt", "amount": "to taste", "category": "spices", "staple": true}
+      ],
+      "steps": [
+        "Melt half the butter in a skillet and softly scramble the eggs with a pinch of salt, then set aside.",
+        "Wipe the pan, add the rest of the butter, and lay the tortilla flat over medium heat.",
+        "Sprinkle cheese over one half, top with the eggs and scallions, and add a few dashes of hot sauce.",
+        "Fold the tortilla over and cook 2 minutes per side until crisp and the cheese melts.",
+        "Cut into wedges and serve."
+      ]
+    },
+    {
+      "name": "Chia Pudding with Mango",
+      "blurb": "Coconut chia pudding set overnight and crowned with ripe mango.",
+      "cuisine": "American",
+      "mealType": "breakfast",
+      "course": "main",
+      "diets": ["vegetarian", "vegan", "dairy-free", "gluten-free", "nut-free"],
+      "methods": ["no-cook"],
+      "timeMinutes": 10,
+      "servings": 2,
+      "difficulty": "easy",
+      "plateCategories": ["produce", "dairy", "condiments"],
+      "ingredients": [
+        {"name": "chia seeds", "amount": "1/4 cup", "category": "other", "staple": false},
+        {"name": "coconut milk", "amount": "1.5 cups", "category": "canned", "staple": false},
+        {"name": "maple syrup", "amount": "2 tbsp", "category": "condiments", "staple": false},
+        {"name": "vanilla extract", "amount": "1/2 tsp", "category": "bakingSupplies", "staple": true},
+        {"name": "mango", "amount": "1, diced", "category": "produce", "staple": false}
+      ],
+      "steps": [
+        "Whisk the chia seeds, coconut milk, maple syrup, and vanilla in a jar.",
+        "Let it sit 5 minutes, then whisk again to break up any clumps.",
+        "Seal and refrigerate overnight until thick and set.",
+        "Stir, divide between two glasses, and top with diced mango."
+      ]
+    },
+    {
+      "name": "Croque Madame",
+      "blurb": "A grilled ham and cheese under bechamel, finished with a fried egg.",
+      "cuisine": "French",
+      "mealType": "brunch",
+      "course": "main",
+      "diets": ["high-protein"],
+      "methods": ["stovetop", "bake"],
+      "timeMinutes": 30,
+      "servings": 2,
+      "difficulty": "medium",
+      "plateCategories": ["protein", "breads", "dairy"],
+      "ingredients": [
+        {"name": "white bread", "amount": "4 slices", "category": "breads", "staple": false},
+        {"name": "ham", "amount": "4 slices", "category": "protein", "staple": false},
+        {"name": "gruyere cheese", "amount": "1 cup, grated", "category": "dairy", "staple": false},
+        {"name": "eggs", "amount": "2 large", "category": "protein", "staple": false},
+        {"name": "butter", "amount": "3 tbsp", "category": "dairy", "staple": false},
+        {"name": "all-purpose flour", "amount": "2 tbsp", "category": "bakingSupplies", "staple": true},
+        {"name": "milk", "amount": "1 cup", "category": "dairy", "staple": false},
+        {"name": "dijon mustard", "amount": "1 tsp", "category": "condiments", "staple": false}
+      ],
+      "steps": [
+        "Melt 2 tbsp butter, whisk in the flour, then slowly add the milk to make a smooth bechamel; stir in the mustard and half the cheese.",
+        "Spread bechamel on two slices of bread, layer on ham and some cheese, then close the sandwiches.",
+        "Top each sandwich with more bechamel and the rest of the cheese, then bake at 400F for 10 minutes until bubbling and golden.",
+        "Fry the eggs in the remaining butter to your liking.",
+        "Set a fried egg on each sandwich and serve hot."
+      ]
+    },
+    {
+      "name": "Sweet Potato Breakfast Hash",
+      "blurb": "Crisp-edged sweet potato cubes with peppers and a nest for eggs.",
+      "cuisine": "American",
+      "mealType": "breakfast",
+      "course": "main",
+      "diets": ["vegetarian", "gluten-free", "dairy-free"],
+      "methods": ["one-pan", "stovetop"],
+      "timeMinutes": 30,
+      "servings": 2,
+      "difficulty": "easy",
+      "plateCategories": ["produce", "protein", "spices"],
+      "ingredients": [
+        {"name": "sweet potato", "amount": "2 medium, cubed", "category": "produce", "staple": false},
+        {"name": "red bell pepper", "amount": "1, diced", "category": "produce", "staple": false},
+        {"name": "onion", "amount": "1, diced", "category": "produce", "staple": false},
+        {"name": "eggs", "amount": "4 large", "category": "protein", "staple": false},
+        {"name": "olive oil", "amount": "3 tbsp", "category": "oils", "staple": true},
+        {"name": "smoked paprika", "amount": "1 tsp", "category": "spices", "staple": true},
+        {"name": "salt", "amount": "to taste", "category": "spices", "staple": true},
+        {"name": "black pepper", "amount": "to taste", "category": "spices", "staple": true}
+      ],
+      "steps": [
+        "Heat the oil in a large skillet and add the sweet potato. Cook covered for 10 minutes, stirring occasionally.",
+        "Add the onion, pepper, smoked paprika, salt, and pepper and cook uncovered for 8 minutes until the potato is tender and crisp at the edges.",
+        "Make four wells in the hash and crack an egg into each.",
+        "Cover and cook 5 minutes until the eggs set to your liking, then serve from the pan."
+      ]
+    },
+    {
+      "name": "Yogurt Parfait with Granola",
+      "blurb": "Layers of thick yogurt, crunchy granola, and bright fruit in a glass.",
+      "cuisine": "American",
+      "mealType": "breakfast",
+      "course": "main",
+      "diets": ["vegetarian", "gluten-free", "high-protein"],
+      "methods": ["no-cook"],
+      "timeMinutes": 5,
+      "servings": 1,
+      "difficulty": "easy",
+      "plateCategories": ["dairy", "grains", "produce"],
+      "ingredients": [
+        {"name": "greek yogurt", "amount": "1 cup", "category": "dairy", "staple": false},
+        {"name": "granola", "amount": "1/2 cup", "category": "grains", "staple": false},
+        {"name": "mixed berries", "amount": "1/2 cup", "category": "produce", "staple": false},
+        {"name": "honey", "amount": "1 tbsp", "category": "condiments", "staple": false}
+      ],
+      "steps": [
+        "Spoon half the yogurt into a glass.",
+        "Add a layer of granola and half the berries.",
+        "Repeat with the remaining yogurt, granola, and berries.",
+        "Drizzle honey over the top and serve right away so the granola stays crunchy."
+      ]
+    },
+    {
+      "name": "Garlic Butter Shrimp Pasta",
+      "blurb": "Plump shrimp tossed with linguine in a glossy lemon-garlic butter.",
+      "cuisine": "Italian",
+      "mealType": "dinner",
+      "course": "main",
+      "diets": ["pescatarian", "high-protein"],
+      "methods": ["stovetop", "one-pan"],
+      "timeMinutes": 25,
+      "servings": 4,
+      "difficulty": "easy",
+      "plateCategories": ["pasta", "protein", "produce"],
+      "ingredients": [
+        {"name": "linguine", "amount": "400g", "category": "pasta", "staple": false},
+        {"name": "shrimp", "amount": "500g, peeled", "category": "protein", "staple": false},
+        {"name": "butter", "amount": "4 tbsp", "category": "dairy", "staple": false},
+        {"name": "garlic", "amount": "4 cloves, minced", "category": "produce", "staple": false},
+        {"name": "lemon", "amount": "1, juiced", "category": "produce", "staple": false},
+        {"name": "red pepper flakes", "amount": "1/2 tsp", "category": "spices", "staple": true},
+        {"name": "fresh parsley", "amount": "1/4 cup, chopped", "category": "produce", "staple": false},
+        {"name": "salt", "amount": "to taste", "category": "spices", "staple": true}
+      ],
+      "steps": [
+        "Cook the linguine in salted boiling water until al dente, reserving 1 cup of pasta water before draining.",
+        "Melt the butter in a large skillet, add the garlic and red pepper flakes, and cook 1 minute until fragrant.",
+        "Add the shrimp and cook 2 to 3 minutes per side until pink and opaque.",
+        "Toss in the pasta, lemon juice, and a splash of pasta water until everything is glossy.",
+        "Stir through the parsley, season with salt, and serve."
+      ]
+    },
+    {
+      "name": "Chicken Stir-Fry with Broccoli",
+      "blurb": "Tender chicken and crisp broccoli in a quick savory sauce.",
+      "cuisine": "Chinese",
+      "mealType": "dinner",
+      "course": "main",
+      "diets": ["dairy-free", "high-protein"],
+      "methods": ["stovetop", "one-pan"],
+      "timeMinutes": 25,
+      "servings": 4,
+      "difficulty": "easy",
+      "plateCategories": ["protein", "produce", "condiments"],
+      "ingredients": [
+        {"name": "chicken breast", "amount": "500g, sliced", "category": "protein", "staple": false},
+        {"name": "broccoli", "amount": "1 head, florets", "category": "produce", "staple": false},
+        {"name": "garlic", "amount": "3 cloves, minced", "category": "produce", "staple": false},
+        {"name": "fresh ginger", "amount": "1 tbsp, grated", "category": "produce", "staple": false},
+        {"name": "soy sauce", "amount": "3 tbsp", "category": "condiments", "staple": false},
+        {"name": "oyster sauce", "amount": "2 tbsp", "category": "condiments", "staple": false},
+        {"name": "cornstarch", "amount": "1 tbsp", "category": "bakingSupplies", "staple": true},
+        {"name": "oil", "amount": "2 tbsp", "category": "oils", "staple": true}
+      ],
+      "steps": [
+        "Toss the chicken with the cornstarch. Mix the soy sauce and oyster sauce with 1/4 cup water to make the sauce.",
+        "Heat the oil in a wok over high heat and stir-fry the chicken for 4 minutes until golden, then remove.",
+        "Add the broccoli with a splash of water, cover, and steam 3 minutes until bright green.",
+        "Add the garlic and ginger and stir-fry 30 seconds, then return the chicken.",
+        "Pour in the sauce and toss for 2 minutes until thickened and glossy, then serve over rice."
+      ]
+    },
+    {
+      "name": "Black Bean Tacos",
+      "blurb": "Smoky spiced black beans piled into warm tortillas with crunchy slaw.",
+      "cuisine": "Mexican",
+      "mealType": "dinner",
+      "course": "main",
+      "diets": ["vegetarian", "vegan", "dairy-free", "gluten-free", "high-protein"],
+      "methods": ["stovetop"],
+      "timeMinutes": 20,
+      "servings": 4,
+      "difficulty": "easy",
+      "plateCategories": ["legumes", "produce", "breads"],
+      "ingredients": [
+        {"name": "canned black beans", "amount": "2 cans, drained", "category": "canned", "staple": false},
+        {"name": "corn tortillas", "amount": "8", "category": "breads", "staple": false},
+        {"name": "onion", "amount": "1, diced", "category": "produce", "staple": false},
+        {"name": "garlic", "amount": "2 cloves, minced", "category": "produce", "staple": false},
+        {"name": "ground cumin", "amount": "1 tsp", "category": "spices", "staple": true},
+        {"name": "smoked paprika", "amount": "1 tsp", "category": "spices", "staple": true},
+        {"name": "cabbage", "amount": "2 cups, shredded", "category": "produce", "staple": false},
+        {"name": "lime", "amount": "1, juiced", "category": "produce", "staple": false},
+        {"name": "olive oil", "amount": "2 tbsp", "category": "oils", "staple": true}
+      ],
+      "steps": [
+        "Cook the onion in the oil for 5 minutes, then add the garlic, cumin, and paprika and cook 1 minute.",
+        "Add the beans with a splash of water and simmer 8 minutes, mashing some for a creamier texture.",
+        "Toss the cabbage with the lime juice and a pinch of salt to make a quick slaw.",
+        "Warm the tortillas in a dry pan until pliable.",
+        "Fill the tortillas with beans and top with the slaw."
+      ]
+    },
+    {
+      "name": "Pad Thai",
+      "blurb": "Rice noodles tossed in a sweet-tangy tamarind sauce with peanuts and lime.",
+      "cuisine": "Thai",
+      "mealType": "dinner",
+      "course": "main",
+      "diets": ["vegetarian", "dairy-free"],
+      "methods": ["stovetop", "one-pan"],
+      "timeMinutes": 30,
+      "servings": 4,
+      "difficulty": "medium",
+      "plateCategories": ["pasta", "protein", "nuts"],
+      "ingredients": [
+        {"name": "rice noodles", "amount": "250g", "category": "pasta", "staple": false},
+        {"name": "eggs", "amount": "2 large", "category": "protein", "staple": false},
+        {"name": "firm tofu", "amount": "200g, cubed", "category": "protein", "staple": false},
+        {"name": "bean sprouts", "amount": "2 cups", "category": "produce", "staple": false},
+        {"name": "scallions", "amount": "4, sliced", "category": "produce", "staple": false},
+        {"name": "tamarind paste", "amount": "3 tbsp", "category": "condiments", "staple": false},
+        {"name": "soy sauce", "amount": "2 tbsp", "category": "condiments", "staple": false},
+        {"name": "sugar", "amount": "2 tbsp", "category": "bakingSupplies", "staple": true},
+        {"name": "peanuts", "amount": "1/3 cup, crushed", "category": "nuts", "staple": false},
+        {"name": "oil", "amount": "3 tbsp", "category": "oils", "staple": true},
+        {"name": "lime", "amount": "1, wedges", "category": "produce", "staple": false}
+      ],
+      "steps": [
+        "Soak the rice noodles in hot water until pliable, then drain. Stir the tamarind, soy sauce, and sugar into a sauce.",
+        "Heat the oil in a wok and fry the tofu until golden, then push to one side.",
+        "Crack in the eggs and scramble briefly, then add the drained noodles and the sauce.",
+        "Toss over high heat until the noodles absorb the sauce, about 3 minutes.",
+        "Fold in the bean sprouts and scallions, then serve topped with peanuts and lime wedges."
+      ]
+    },
+    {
+      "name": "Sheet-Pan Sausage and Vegetables",
+      "blurb": "Sausage, peppers, and potatoes roasted together on one tray.",
+      "cuisine": "American",
+      "mealType": "dinner",
+      "course": "main",
+      "diets": ["dairy-free", "gluten-free", "high-protein"],
+      "methods": ["sheet-pan", "bake"],
+      "timeMinutes": 30,
+      "servings": 4,
+      "difficulty": "easy",
+      "plateCategories": ["protein", "produce", "spices"],
+      "ingredients": [
+        {"name": "italian sausage", "amount": "500g", "category": "protein", "staple": false},
+        {"name": "baby potatoes", "amount": "500g, halved", "category": "produce", "staple": false},
+        {"name": "bell peppers", "amount": "2, chopped", "category": "produce", "staple": false},
+        {"name": "red onion", "amount": "1, wedged", "category": "produce", "staple": false},
+        {"name": "olive oil", "amount": "3 tbsp", "category": "oils", "staple": true},
+        {"name": "dried oregano", "amount": "1 tsp", "category": "spices", "staple": true},
+        {"name": "garlic powder", "amount": "1 tsp", "category": "spices", "staple": true},
+        {"name": "salt", "amount": "to taste", "category": "spices", "staple": true}
+      ],
+      "steps": [
+        "Heat the oven to 425F. Toss the potatoes with half the oil, oregano, garlic powder, and salt and roast for 10 minutes.",
+        "Add the peppers, onion, and sausage to the pan and drizzle with the remaining oil.",
+        "Roast for 18 to 20 minutes, turning once, until the sausage is cooked through and the vegetables are tender and browned.",
+        "Serve straight from the pan."
+      ]
+    },
+    {
+      "name": "Caprese Pasta Salad",
+      "blurb": "Tomatoes, mozzarella, and basil tossed with pasta in a bright dressing.",
+      "cuisine": "Italian",
+      "mealType": "dinner",
+      "course": "salad",
+      "diets": ["vegetarian"],
+      "methods": ["stovetop", "no-cook"],
+      "timeMinutes": 20,
+      "servings": 4,
+      "difficulty": "easy",
+      "plateCategories": ["pasta", "produce", "dairy"],
+      "ingredients": [
+        {"name": "fusilli", "amount": "350g", "category": "pasta", "staple": false},
+        {"name": "cherry tomatoes", "amount": "2 cups, halved", "category": "produce", "staple": false},
+        {"name": "fresh mozzarella", "amount": "200g, cubed", "category": "dairy", "staple": false},
+        {"name": "fresh basil", "amount": "1/2 cup, torn", "category": "produce", "staple": false},
+        {"name": "olive oil", "amount": "1/4 cup", "category": "oils", "staple": true},
+        {"name": "balsamic vinegar", "amount": "2 tbsp", "category": "condiments", "staple": false},
+        {"name": "garlic", "amount": "1 clove, minced", "category": "produce", "staple": false},
+        {"name": "salt", "amount": "to taste", "category": "spices", "staple": true}
+      ],
+      "steps": [
+        "Cook the fusilli in salted water until al dente, then drain and rinse under cool water.",
+        "Whisk the olive oil, balsamic, garlic, and salt into a dressing.",
+        "Toss the pasta with the tomatoes, mozzarella, and dressing.",
+        "Fold in the basil just before serving so it stays fresh."
+      ]
+    },
+    {
+      "name": "Teriyaki Salmon Bowl",
+      "blurb": "Glazed salmon over rice with quick-pickled cucumber and edamame.",
+      "cuisine": "Japanese",
+      "mealType": "dinner",
+      "course": "main",
+      "diets": ["pescatarian", "dairy-free", "high-protein"],
+      "methods": ["stovetop"],
+      "timeMinutes": 25,
+      "servings": 2,
+      "difficulty": "easy",
+      "plateCategories": ["protein", "grains", "produce"],
+      "ingredients": [
+        {"name": "salmon fillets", "amount": "2 (150g each)", "category": "protein", "staple": false},
+        {"name": "cooked rice", "amount": "2 cups", "category": "grains", "staple": false},
+        {"name": "edamame", "amount": "1 cup, shelled", "category": "frozenFoods", "staple": false},
+        {"name": "cucumber", "amount": "1, sliced", "category": "produce", "staple": false},
+        {"name": "soy sauce", "amount": "3 tbsp", "category": "condiments", "staple": false},
+        {"name": "honey", "amount": "2 tbsp", "category": "condiments", "staple": false},
+        {"name": "fresh ginger", "amount": "1 tsp, grated", "category": "produce", "staple": false},
+        {"name": "rice vinegar", "amount": "1 tbsp", "category": "condiments", "staple": false},
+        {"name": "oil", "amount": "1 tbsp", "category": "oils", "staple": true}
+      ],
+      "steps": [
+        "Stir the soy sauce, honey, and ginger together for the glaze. Toss the cucumber with the rice vinegar and a pinch of salt.",
+        "Sear the salmon in the oil skin-side down for 4 minutes, then flip and cook 3 minutes more.",
+        "Pour the glaze into the pan and spoon it over the salmon until thick and shiny.",
+        "Warm the edamame in boiling water for 2 minutes.",
+        "Serve the salmon over rice with the edamame and pickled cucumber."
+      ]
+    },
+    {
+      "name": "Margherita Flatbread",
+      "blurb": "Crisp flatbread with tomato, melted mozzarella, and fresh basil.",
+      "cuisine": "Italian",
+      "mealType": "dinner",
+      "course": "main",
+      "diets": ["vegetarian"],
+      "methods": ["bake"],
+      "timeMinutes": 20,
+      "servings": 2,
+      "difficulty": "easy",
+      "plateCategories": ["breads", "dairy", "produce"],
+      "ingredients": [
+        {"name": "naan", "amount": "2 pieces", "category": "breads", "staple": false},
+        {"name": "tomato sauce", "amount": "1/2 cup", "category": "canned", "staple": false},
+        {"name": "fresh mozzarella", "amount": "150g, sliced", "category": "dairy", "staple": false},
+        {"name": "fresh basil", "amount": "10 leaves", "category": "produce", "staple": false},
+        {"name": "olive oil", "amount": "1 tbsp", "category": "oils", "staple": true},
+        {"name": "garlic powder", "amount": "1/2 tsp", "category": "spices", "staple": true},
+        {"name": "salt", "amount": "to taste", "category": "spices", "staple": true}
+      ],
+      "steps": [
+        "Heat the oven to 450F and place the naan on a baking sheet.",
+        "Spread tomato sauce over each, then sprinkle with garlic powder and a little salt.",
+        "Lay the mozzarella slices on top and drizzle with olive oil.",
+        "Bake for 10 minutes until the cheese is bubbling and the edges are crisp.",
+        "Scatter with fresh basil and slice to serve."
+      ]
+    },
+    {
+      "name": "Chickpea Coconut Curry",
+      "blurb": "Creamy spiced chickpeas simmered in coconut milk, ready in half an hour.",
+      "cuisine": "Indian",
+      "mealType": "dinner",
+      "course": "main",
+      "diets": ["vegetarian", "vegan", "dairy-free", "gluten-free", "high-protein"],
+      "methods": ["stovetop", "one-pan"],
+      "timeMinutes": 30,
+      "servings": 4,
+      "difficulty": "easy",
+      "plateCategories": ["legumes", "produce", "spices"],
+      "ingredients": [
+        {"name": "canned chickpeas", "amount": "2 cans, drained", "category": "canned", "staple": false},
+        {"name": "coconut milk", "amount": "1 can (400ml)", "category": "canned", "staple": false},
+        {"name": "onion", "amount": "1, diced", "category": "produce", "staple": false},
+        {"name": "garlic", "amount": "3 cloves, minced", "category": "produce", "staple": false},
+        {"name": "fresh ginger", "amount": "1 tbsp, grated", "category": "produce", "staple": false},
+        {"name": "canned tomatoes", "amount": "1 can (400g)", "category": "canned", "staple": false},
+        {"name": "curry powder", "amount": "2 tbsp", "category": "spices", "staple": true},
+        {"name": "spinach", "amount": "3 cups", "category": "produce", "staple": false},
+        {"name": "oil", "amount": "2 tbsp", "category": "oils", "staple": true}
+      ],
+      "steps": [
+        "Cook the onion in the oil for 5 minutes, then add the garlic, ginger, and curry powder and cook 1 minute.",
+        "Stir in the tomatoes and simmer 5 minutes until thickened.",
+        "Add the chickpeas and coconut milk and simmer 12 minutes until rich and creamy.",
+        "Fold in the spinach and cook until wilted.",
+        "Season to taste and serve over rice."
+      ]
+    },
+    {
+      "name": "Beef and Broccoli",
+      "blurb": "Tender strips of beef and broccoli in a rich savory stir-fry sauce.",
+      "cuisine": "Chinese",
+      "mealType": "dinner",
+      "course": "main",
+      "diets": ["dairy-free", "high-protein"],
+      "methods": ["stovetop", "one-pan"],
+      "timeMinutes": 25,
+      "servings": 4,
+      "difficulty": "medium",
+      "plateCategories": ["protein", "produce", "condiments"],
+      "ingredients": [
+        {"name": "flank steak", "amount": "500g, thinly sliced", "category": "protein", "staple": false},
+        {"name": "broccoli", "amount": "1 head, florets", "category": "produce", "staple": false},
+        {"name": "soy sauce", "amount": "1/4 cup", "category": "condiments", "staple": false},
+        {"name": "oyster sauce", "amount": "2 tbsp", "category": "condiments", "staple": false},
+        {"name": "garlic", "amount": "3 cloves, minced", "category": "produce", "staple": false},
+        {"name": "cornstarch", "amount": "1 tbsp", "category": "bakingSupplies", "staple": true},
+        {"name": "brown sugar", "amount": "1 tbsp", "category": "bakingSupplies", "staple": true},
+        {"name": "oil", "amount": "2 tbsp", "category": "oils", "staple": true}
+      ],
+      "steps": [
+        "Toss the beef with 1 tbsp soy sauce and the cornstarch. Mix the rest of the soy sauce, oyster sauce, brown sugar, and 1/4 cup water for the sauce.",
+        "Heat the oil in a wok over high heat and sear the beef for 2 minutes until browned, then remove.",
+        "Add the broccoli with a splash of water, cover, and steam 3 minutes.",
+        "Add the garlic, return the beef, and pour in the sauce.",
+        "Toss for 2 minutes until the sauce thickens and coats everything, then serve over rice."
+      ]
+    },
+    {
+      "name": "Greek Chicken Bowl",
+      "blurb": "Lemon-oregano chicken over rice with cucumber, tomato, and tzatziki.",
+      "cuisine": "Greek",
+      "mealType": "dinner",
+      "course": "main",
+      "diets": ["gluten-free", "high-protein"],
+      "methods": ["stovetop"],
+      "timeMinutes": 30,
+      "servings": 4,
+      "difficulty": "easy",
+      "plateCategories": ["protein", "grains", "produce"],
+      "ingredients": [
+        {"name": "chicken thighs", "amount": "600g, boneless", "category": "protein", "staple": false},
+        {"name": "cooked rice", "amount": "3 cups", "category": "grains", "staple": false},
+        {"name": "cucumber", "amount": "1, diced", "category": "produce", "staple": false},
+        {"name": "cherry tomatoes", "amount": "1 cup, halved", "category": "produce", "staple": false},
+        {"name": "tzatziki", "amount": "1 cup", "category": "dairy", "staple": false},
+        {"name": "lemon", "amount": "1, juiced", "category": "produce", "staple": false},
+        {"name": "dried oregano", "amount": "2 tsp", "category": "spices", "staple": true},
+        {"name": "olive oil", "amount": "3 tbsp", "category": "oils", "staple": true},
+        {"name": "garlic", "amount": "2 cloves, minced", "category": "produce", "staple": false}
+      ],
+      "steps": [
+        "Toss the chicken with the lemon juice, oregano, garlic, 2 tbsp oil, and salt and let it sit 10 minutes.",
+        "Heat the remaining oil in a skillet and cook the chicken for 6 minutes per side until golden and cooked through.",
+        "Rest the chicken 5 minutes, then slice.",
+        "Divide the rice among bowls and top with chicken, cucumber, and tomatoes.",
+        "Add a generous spoonful of tzatziki to each bowl."
+      ]
+    },
+    {
+      "name": "Spaghetti Aglio e Olio",
+      "blurb": "Spaghetti slicked with garlic-infused olive oil and a kick of chili.",
+      "cuisine": "Italian",
+      "mealType": "dinner",
+      "course": "main",
+      "diets": ["vegetarian", "vegan", "dairy-free"],
+      "methods": ["stovetop", "one-pan"],
+      "timeMinutes": 20,
+      "servings": 4,
+      "difficulty": "easy",
+      "plateCategories": ["pasta", "oils", "produce"],
+      "ingredients": [
+        {"name": "spaghetti", "amount": "400g", "category": "pasta", "staple": false},
+        {"name": "olive oil", "amount": "1/2 cup", "category": "oils", "staple": true},
+        {"name": "garlic", "amount": "6 cloves, thinly sliced", "category": "produce", "staple": false},
+        {"name": "red pepper flakes", "amount": "1 tsp", "category": "spices", "staple": true},
+        {"name": "fresh parsley", "amount": "1/3 cup, chopped", "category": "produce", "staple": false},
+        {"name": "salt", "amount": "to taste", "category": "spices", "staple": true}
+      ],
+      "steps": [
+        "Cook the spaghetti in well-salted boiling water until al dente, reserving 1 cup of pasta water.",
+        "Meanwhile, gently warm the olive oil with the garlic over low heat until the garlic is pale gold, then add the red pepper flakes.",
+        "Add the drained spaghetti to the pan with a splash of pasta water and toss vigorously to emulsify.",
+        "Stir through the parsley, season with salt, and serve."
+      ]
+    },
+    {
+      "name": "Veggie Quesadillas",
+      "blurb": "Crisp tortillas stuffed with peppers, corn, beans, and melted cheese.",
+      "cuisine": "Mexican",
+      "mealType": "dinner",
+      "course": "main",
+      "diets": ["vegetarian", "high-protein"],
+      "methods": ["stovetop", "one-pan"],
+      "timeMinutes": 20,
+      "servings": 4,
+      "difficulty": "easy",
+      "plateCategories": ["breads", "dairy", "produce"],
+      "ingredients": [
+        {"name": "flour tortillas", "amount": "4 large", "category": "breads", "staple": false},
+        {"name": "cheddar cheese", "amount": "2 cups, shredded", "category": "dairy", "staple": false},
+        {"name": "bell pepper", "amount": "1, diced", "category": "produce", "staple": false},
+        {"name": "canned black beans", "amount": "1 can, drained", "category": "canned", "staple": false},
+        {"name": "corn", "amount": "1 cup", "category": "frozenFoods", "staple": false},
+        {"name": "ground cumin", "amount": "1 tsp", "category": "spices", "staple": true},
+        {"name": "oil", "amount": "1 tbsp", "category": "oils", "staple": true},
+        {"name": "salt", "amount": "to taste", "category": "spices", "staple": true}
+      ],
+      "steps": [
+        "Cook the bell pepper in the oil for 4 minutes, then add the beans, corn, cumin, and salt and cook 3 minutes more.",
+        "Lay a tortilla in a dry skillet over medium heat, sprinkle half with cheese, then add the veggie filling and more cheese.",
+        "Fold over and cook 2 minutes per side until crisp and golden and the cheese melts.",
+        "Repeat with the remaining tortillas, then cut into wedges and serve."
+      ]
+    },
+    {
+      "name": "Lemon Herb Cod with Couscous",
+      "blurb": "Flaky baked cod over fluffy couscous brightened with lemon and herbs.",
+      "cuisine": "Mediterranean",
+      "mealType": "dinner",
+      "course": "main",
+      "diets": ["pescatarian", "dairy-free", "high-protein"],
+      "methods": ["bake", "stovetop"],
+      "timeMinutes": 25,
+      "servings": 2,
+      "difficulty": "easy",
+      "plateCategories": ["protein", "grains", "produce"],
+      "ingredients": [
+        {"name": "cod fillets", "amount": "2 (150g each)", "category": "protein", "staple": false},
+        {"name": "couscous", "amount": "1 cup", "category": "grains", "staple": false},
+        {"name": "lemon", "amount": "1, juiced and zested", "category": "produce", "staple": false},
+        {"name": "olive oil", "amount": "3 tbsp", "category": "oils", "staple": true},
+        {"name": "garlic", "amount": "2 cloves, minced", "category": "produce", "staple": false},
+        {"name": "fresh parsley", "amount": "1/4 cup, chopped", "category": "produce", "staple": false},
+        {"name": "vegetable broth", "amount": "1.25 cups", "category": "canned", "staple": false},
+        {"name": "salt", "amount": "to taste", "category": "spices", "staple": true}
+      ],
+      "steps": [
+        "Heat the oven to 400F. Place the cod on a lined tray, drizzle with 1 tbsp oil, the garlic, lemon zest, and salt.",
+        "Bake the cod for 12 to 14 minutes until it flakes easily.",
+        "Meanwhile, bring the broth to a boil, stir in the couscous, cover, and remove from heat for 5 minutes, then fluff.",
+        "Stir the lemon juice, remaining oil, and parsley into the couscous.",
+        "Serve the cod over the couscous with extra lemon."
+      ]
+    },
+    {
+      "name": "Tofu Vegetable Stir-Fry",
+      "blurb": "Crispy tofu and crunchy vegetables in a quick ginger-soy sauce.",
+      "cuisine": "Chinese",
+      "mealType": "dinner",
+      "course": "main",
+      "diets": ["vegetarian", "vegan", "dairy-free", "high-protein"],
+      "methods": ["stovetop", "one-pan"],
+      "timeMinutes": 25,
+      "servings": 4,
+      "difficulty": "easy",
+      "plateCategories": ["protein", "produce", "condiments"],
+      "ingredients": [
+        {"name": "firm tofu", "amount": "1 block (400g), cubed", "category": "protein", "staple": false},
+        {"name": "bell pepper", "amount": "1, sliced", "category": "produce", "staple": false},
+        {"name": "snap peas", "amount": "2 cups", "category": "produce", "staple": false},
+        {"name": "carrot", "amount": "2, sliced", "category": "produce", "staple": false},
+        {"name": "soy sauce", "amount": "3 tbsp", "category": "condiments", "staple": false},
+        {"name": "fresh ginger", "amount": "1 tbsp, grated", "category": "produce", "staple": false},
+        {"name": "garlic", "amount": "2 cloves, minced", "category": "produce", "staple": false},
+        {"name": "cornstarch", "amount": "2 tbsp", "category": "bakingSupplies", "staple": true},
+        {"name": "oil", "amount": "3 tbsp", "category": "oils", "staple": true}
+      ],
+      "steps": [
+        "Press the tofu, cube it, and toss with the cornstarch. Fry in 2 tbsp oil until golden and crisp on all sides, then remove.",
+        "Add the remaining oil and stir-fry the carrot, pepper, and snap peas over high heat for 4 minutes.",
+        "Add the garlic and ginger and cook 30 seconds.",
+        "Return the tofu, add the soy sauce and a splash of water, and toss for 2 minutes.",
+        "Serve over rice or noodles."
+      ]
+    },
+    {
+      "name": "Turkey Taco Skillet",
+      "blurb": "Everything-in-one taco filling with rice and beans in a single pan.",
+      "cuisine": "Mexican",
+      "mealType": "dinner",
+      "course": "main",
+      "diets": ["dairy-free", "gluten-free", "high-protein"],
+      "methods": ["one-pan", "stovetop"],
+      "timeMinutes": 30,
+      "servings": 4,
+      "difficulty": "easy",
+      "plateCategories": ["protein", "grains", "legumes"],
+      "ingredients": [
+        {"name": "ground turkey", "amount": "500g", "category": "protein", "staple": false},
+        {"name": "rice", "amount": "1 cup", "category": "grains", "staple": false},
+        {"name": "canned black beans", "amount": "1 can, drained", "category": "canned", "staple": false},
+        {"name": "canned tomatoes", "amount": "1 can (400g)", "category": "canned", "staple": false},
+        {"name": "onion", "amount": "1, diced", "category": "produce", "staple": false},
+        {"name": "chili powder", "amount": "2 tsp", "category": "spices", "staple": true},
+        {"name": "ground cumin", "amount": "1 tsp", "category": "spices", "staple": true},
+        {"name": "chicken broth", "amount": "2 cups", "category": "canned", "staple": false},
+        {"name": "oil", "amount": "1 tbsp", "category": "oils", "staple": true}
+      ],
+      "steps": [
+        "Brown the turkey with the onion in the oil over medium-high heat, breaking it up, for 6 minutes.",
+        "Stir in the chili powder and cumin and cook 1 minute.",
+        "Add the rice, beans, tomatoes, and broth and bring to a boil.",
+        "Cover, reduce to a simmer, and cook 18 minutes until the rice is tender and the liquid is absorbed.",
+        "Fluff and serve with your favorite taco toppings."
+      ]
+    },
+    {
+      "name": "Sesame Soba Noodle Salad",
+      "blurb": "Cold buckwheat noodles tossed in a nutty sesame-ginger dressing.",
+      "cuisine": "Japanese",
+      "mealType": "dinner",
+      "course": "salad",
+      "diets": ["vegetarian", "vegan", "dairy-free"],
+      "methods": ["stovetop", "no-cook"],
+      "timeMinutes": 20,
+      "servings": 4,
+      "difficulty": "easy",
+      "plateCategories": ["pasta", "produce", "condiments"],
+      "ingredients": [
+        {"name": "soba noodles", "amount": "250g", "category": "pasta", "staple": false},
+        {"name": "carrot", "amount": "1, julienned", "category": "produce", "staple": false},
+        {"name": "cucumber", "amount": "1, julienned", "category": "produce", "staple": false},
+        {"name": "scallions", "amount": "3, sliced", "category": "produce", "staple": false},
+        {"name": "soy sauce", "amount": "3 tbsp", "category": "condiments", "staple": false},
+        {"name": "sesame oil", "amount": "2 tbsp", "category": "oils", "staple": false},
+        {"name": "rice vinegar", "amount": "2 tbsp", "category": "condiments", "staple": false},
+        {"name": "fresh ginger", "amount": "1 tbsp, grated", "category": "produce", "staple": false},
+        {"name": "sesame seeds", "amount": "1 tbsp", "category": "spices", "staple": false}
+      ],
+      "steps": [
+        "Cook the soba noodles per the package, then drain and rinse under cold water until cool.",
+        "Whisk the soy sauce, sesame oil, rice vinegar, and ginger into a dressing.",
+        "Toss the noodles with the carrot, cucumber, scallions, and dressing.",
+        "Sprinkle with sesame seeds and serve chilled."
+      ]
+    },
+    {
+      "name": "White Bean and Kale Soup",
+      "blurb": "A brothy, garlicky soup of creamy white beans and tender kale.",
+      "cuisine": "Italian",
+      "mealType": "dinner",
+      "course": "soup",
+      "diets": ["vegetarian", "vegan", "dairy-free", "gluten-free", "high-protein"],
+      "methods": ["stovetop", "one-pan"],
+      "timeMinutes": 30,
+      "servings": 4,
+      "difficulty": "easy",
+      "plateCategories": ["legumes", "produce", "canned"],
+      "ingredients": [
+        {"name": "canned white beans", "amount": "2 cans, drained", "category": "canned", "staple": false},
+        {"name": "kale", "amount": "1 bunch, chopped", "category": "produce", "staple": false},
+        {"name": "onion", "amount": "1, diced", "category": "produce", "staple": false},
+        {"name": "carrot", "amount": "2, diced", "category": "produce", "staple": false},
+        {"name": "garlic", "amount": "4 cloves, minced", "category": "produce", "staple": false},
+        {"name": "vegetable broth", "amount": "6 cups", "category": "canned", "staple": false},
+        {"name": "olive oil", "amount": "2 tbsp", "category": "oils", "staple": true},
+        {"name": "dried thyme", "amount": "1 tsp", "category": "spices", "staple": true},
+        {"name": "salt", "amount": "to taste", "category": "spices", "staple": true}
+      ],
+      "steps": [
+        "Cook the onion and carrot in the oil for 6 minutes, then add the garlic and thyme and cook 1 minute.",
+        "Pour in the broth and beans, bring to a boil, then simmer 10 minutes.",
+        "Mash some of the beans against the pot to thicken the soup.",
+        "Stir in the kale and cook 5 minutes until wilted and tender.",
+        "Season with salt and serve."
+      ]
+    },
+    {
+      "name": "Pesto Gnocchi with Cherry Tomatoes",
+      "blurb": "Pillowy gnocchi tossed in basil pesto with blistered tomatoes.",
+      "cuisine": "Italian",
+      "mealType": "dinner",
+      "course": "main",
+      "diets": ["vegetarian"],
+      "methods": ["stovetop", "one-pan"],
+      "timeMinutes": 20,
+      "servings": 4,
+      "difficulty": "easy",
+      "plateCategories": ["pasta", "produce", "condiments"],
+      "ingredients": [
+        {"name": "potato gnocchi", "amount": "500g", "category": "pasta", "staple": false},
+        {"name": "basil pesto", "amount": "1/2 cup", "category": "condiments", "staple": false},
+        {"name": "cherry tomatoes", "amount": "2 cups", "category": "produce", "staple": false},
+        {"name": "parmesan cheese", "amount": "1/3 cup, grated", "category": "dairy", "staple": false},
+        {"name": "olive oil", "amount": "2 tbsp", "category": "oils", "staple": true},
+        {"name": "garlic", "amount": "2 cloves, minced", "category": "produce", "staple": false},
+        {"name": "salt", "amount": "to taste", "category": "spices", "staple": true}
+      ],
+      "steps": [
+        "Boil the gnocchi until they float, about 2 to 3 minutes, then drain, reserving a little cooking water.",
+        "Heat the oil in a skillet and cook the tomatoes for 4 minutes until they blister and burst.",
+        "Add the garlic and cook 30 seconds, then add the gnocchi.",
+        "Stir in the pesto and a splash of cooking water until everything is coated.",
+        "Top with parmesan and serve."
+      ]
+    },
+    {
+      "name": "Black Pepper Chicken",
+      "blurb": "Peppery, garlicky chicken stir-fried with crisp onion and celery.",
+      "cuisine": "Chinese",
+      "mealType": "dinner",
+      "course": "main",
+      "diets": ["dairy-free", "high-protein"],
+      "methods": ["stovetop", "one-pan"],
+      "timeMinutes": 25,
+      "servings": 4,
+      "difficulty": "easy",
+      "plateCategories": ["protein", "produce", "spices"],
+      "ingredients": [
+        {"name": "chicken breast", "amount": "500g, cubed", "category": "protein", "staple": false},
+        {"name": "onion", "amount": "1, chunked", "category": "produce", "staple": false},
+        {"name": "celery", "amount": "3 stalks, sliced", "category": "produce", "staple": false},
+        {"name": "soy sauce", "amount": "3 tbsp", "category": "condiments", "staple": false},
+        {"name": "black pepper", "amount": "1.5 tsp, coarse", "category": "spices", "staple": true},
+        {"name": "garlic", "amount": "3 cloves, minced", "category": "produce", "staple": false},
+        {"name": "cornstarch", "amount": "1 tbsp", "category": "bakingSupplies", "staple": true},
+        {"name": "oil", "amount": "2 tbsp", "category": "oils", "staple": true}
+      ],
+      "steps": [
+        "Toss the chicken with the cornstarch and 1 tbsp soy sauce.",
+        "Heat the oil over high heat and stir-fry the chicken for 5 minutes until golden, then remove.",
+        "Stir-fry the onion and celery for 3 minutes until crisp-tender, then add the garlic and black pepper.",
+        "Return the chicken, add the remaining soy sauce and a splash of water, and toss 2 minutes until glossy.",
+        "Serve over rice."
+      ]
+    },
+    {
+      "name": "Halloumi and Chickpea Salad",
+      "blurb": "Golden seared halloumi over chickpeas, greens, and a lemon dressing.",
+      "cuisine": "Mediterranean",
+      "mealType": "dinner",
+      "course": "salad",
+      "diets": ["vegetarian", "gluten-free", "high-protein"],
+      "methods": ["stovetop", "no-cook"],
+      "timeMinutes": 20,
+      "servings": 2,
+      "difficulty": "easy",
+      "plateCategories": ["protein", "legumes", "produce"],
+      "ingredients": [
+        {"name": "halloumi", "amount": "225g, sliced", "category": "dairy", "staple": false},
+        {"name": "canned chickpeas", "amount": "1 can, drained", "category": "canned", "staple": false},
+        {"name": "mixed greens", "amount": "4 cups", "category": "produce", "staple": false},
+        {"name": "cherry tomatoes", "amount": "1 cup, halved", "category": "produce", "staple": false},
+        {"name": "cucumber", "amount": "1, diced", "category": "produce", "staple": false},
+        {"name": "lemon", "amount": "1, juiced", "category": "produce", "staple": false},
+        {"name": "olive oil", "amount": "3 tbsp", "category": "oils", "staple": true},
+        {"name": "dried oregano", "amount": "1 tsp", "category": "spices", "staple": true}
+      ],
+      "steps": [
+        "Pat the halloumi dry and sear in a dry nonstick pan for 2 minutes per side until golden.",
+        "Whisk the lemon juice, olive oil, and oregano into a dressing.",
+        "Toss the greens, chickpeas, tomatoes, and cucumber with the dressing.",
+        "Top the salad with the warm halloumi and serve immediately."
+      ]
+    },
+    {
+      "name": "Miso Butter Udon",
+      "blurb": "Slippery udon noodles tossed in a savory, glossy miso butter sauce.",
+      "cuisine": "Japanese",
+      "mealType": "dinner",
+      "course": "main",
+      "diets": ["vegetarian"],
+      "methods": ["stovetop", "one-pan"],
+      "timeMinutes": 15,
+      "servings": 2,
+      "difficulty": "easy",
+      "plateCategories": ["pasta", "condiments", "produce"],
+      "ingredients": [
+        {"name": "udon noodles", "amount": "2 portions", "category": "pasta", "staple": false},
+        {"name": "white miso", "amount": "2 tbsp", "category": "condiments", "staple": false},
+        {"name": "butter", "amount": "2 tbsp", "category": "dairy", "staple": false},
+        {"name": "soy sauce", "amount": "1 tbsp", "category": "condiments", "staple": false},
+        {"name": "garlic", "amount": "2 cloves, minced", "category": "produce", "staple": false},
+        {"name": "scallions", "amount": "2, sliced", "category": "produce", "staple": false},
+        {"name": "sesame seeds", "amount": "1 tsp", "category": "spices", "staple": false}
+      ],
+      "steps": [
+        "Cook the udon according to the package, then drain, reserving 1/4 cup of the cooking water.",
+        "Melt the butter in a pan, add the garlic, and cook 30 seconds.",
+        "Whisk in the miso, soy sauce, and reserved water until smooth.",
+        "Toss the udon in the sauce until glossy and well coated.",
+        "Finish with scallions and sesame seeds."
+      ]
+    },
+    {
+      "name": "Sheet-Pan Fajitas",
+      "blurb": "Sizzling strips of chicken and peppers roasted hot and fast.",
+      "cuisine": "Mexican",
+      "mealType": "dinner",
+      "course": "main",
+      "diets": ["dairy-free", "gluten-free", "high-protein"],
+      "methods": ["sheet-pan", "bake"],
+      "timeMinutes": 30,
+      "servings": 4,
+      "difficulty": "easy",
+      "plateCategories": ["protein", "produce", "spices"],
+      "ingredients": [
+        {"name": "chicken breast", "amount": "600g, sliced", "category": "protein", "staple": false},
+        {"name": "bell peppers", "amount": "3, sliced", "category": "produce", "staple": false},
+        {"name": "onion", "amount": "1 large, sliced", "category": "produce", "staple": false},
+        {"name": "chili powder", "amount": "2 tsp", "category": "spices", "staple": true},
+        {"name": "ground cumin", "amount": "1 tsp", "category": "spices", "staple": true},
+        {"name": "smoked paprika", "amount": "1 tsp", "category": "spices", "staple": true},
+        {"name": "lime", "amount": "1, juiced", "category": "produce", "staple": false},
+        {"name": "olive oil", "amount": "3 tbsp", "category": "oils", "staple": true},
+        {"name": "salt", "amount": "to taste", "category": "spices", "staple": true}
+      ],
+      "steps": [
+        "Heat the oven to 425F. Toss the chicken, peppers, and onion with the oil, chili powder, cumin, paprika, and salt.",
+        "Spread in a single layer on a sheet pan.",
+        "Roast for 20 minutes, stirring once, until the chicken is cooked and the edges char slightly.",
+        "Squeeze over the lime juice and serve with warm tortillas."
+      ]
+    },
+    {
+      "name": "Creamy Tuscan Salmon",
+      "blurb": "Seared salmon in a garlicky cream sauce with spinach and sun-dried tomato.",
+      "cuisine": "Italian",
+      "mealType": "dinner",
+      "course": "main",
+      "diets": ["pescatarian", "gluten-free", "low-carb", "high-protein"],
+      "methods": ["stovetop", "one-pan"],
+      "timeMinutes": 25,
+      "servings": 4,
+      "difficulty": "medium",
+      "plateCategories": ["protein", "dairy", "produce"],
+      "ingredients": [
+        {"name": "salmon fillets", "amount": "4 (150g each)", "category": "protein", "staple": false},
+        {"name": "heavy cream", "amount": "1 cup", "category": "dairy", "staple": false},
+        {"name": "spinach", "amount": "3 cups", "category": "produce", "staple": false},
+        {"name": "sun-dried tomatoes", "amount": "1/3 cup, sliced", "category": "canned", "staple": false},
+        {"name": "garlic", "amount": "3 cloves, minced", "category": "produce", "staple": false},
+        {"name": "parmesan cheese", "amount": "1/3 cup, grated", "category": "dairy", "staple": false},
+        {"name": "olive oil", "amount": "2 tbsp", "category": "oils", "staple": true},
+        {"name": "salt", "amount": "to taste", "category": "spices", "staple": true}
+      ],
+      "steps": [
+        "Season the salmon with salt and sear in the oil for 4 minutes per side, then remove.",
+        "In the same pan, cook the garlic and sun-dried tomatoes for 1 minute.",
+        "Pour in the cream and parmesan and simmer 3 minutes until thickened.",
+        "Stir in the spinach until wilted.",
+        "Return the salmon to the pan, spoon the sauce over, and warm through before serving."
+      ]
+    },
+    {
+      "name": "Red Lentil Dahl",
+      "blurb": "Velvety red lentils simmered with tomato and warm spices.",
+      "cuisine": "Indian",
+      "mealType": "dinner",
+      "course": "main",
+      "diets": ["vegetarian", "vegan", "dairy-free", "gluten-free", "high-protein"],
+      "methods": ["stovetop", "one-pan"],
+      "timeMinutes": 30,
+      "servings": 4,
+      "difficulty": "easy",
+      "plateCategories": ["legumes", "spices", "produce"],
+      "ingredients": [
+        {"name": "red lentils", "amount": "1.5 cups", "category": "legumes", "staple": false},
+        {"name": "canned tomatoes", "amount": "1 can (400g)", "category": "canned", "staple": false},
+        {"name": "onion", "amount": "1, diced", "category": "produce", "staple": false},
+        {"name": "garlic", "amount": "3 cloves, minced", "category": "produce", "staple": false},
+        {"name": "fresh ginger", "amount": "1 tbsp, grated", "category": "produce", "staple": false},
+        {"name": "curry powder", "amount": "2 tbsp", "category": "spices", "staple": true},
+        {"name": "turmeric", "amount": "1/2 tsp", "category": "spices", "staple": true},
+        {"name": "vegetable broth", "amount": "3.5 cups", "category": "canned", "staple": false},
+        {"name": "oil", "amount": "2 tbsp", "category": "oils", "staple": true}
+      ],
+      "steps": [
+        "Rinse the lentils until the water runs clear.",
+        "Cook the onion in the oil for 5 minutes, then add the garlic, ginger, curry powder, and turmeric and cook 1 minute.",
+        "Add the lentils, tomatoes, and broth and bring to a boil.",
+        "Reduce to a simmer and cook 20 minutes, stirring now and then, until the lentils break down and the dahl is thick.",
+        "Season with salt and serve over rice."
+      ]
+    },
+    {
+      "name": "Buffalo Cauliflower Wraps",
+      "blurb": "Crispy baked cauliflower in spicy buffalo sauce, wrapped with cool ranch slaw.",
+      "cuisine": "American",
+      "mealType": "dinner",
+      "course": "main",
+      "diets": ["vegetarian"],
+      "methods": ["bake"],
+      "timeMinutes": 30,
+      "servings": 4,
+      "difficulty": "medium",
+      "plateCategories": ["produce", "breads", "condiments"],
+      "ingredients": [
+        {"name": "cauliflower", "amount": "1 head, florets", "category": "produce", "staple": false},
+        {"name": "all-purpose flour", "amount": "1/2 cup", "category": "bakingSupplies", "staple": true},
+        {"name": "milk", "amount": "1/2 cup", "category": "dairy", "staple": false},
+        {"name": "buffalo sauce", "amount": "1/2 cup", "category": "condiments", "staple": false},
+        {"name": "flour tortillas", "amount": "4 large", "category": "breads", "staple": false},
+        {"name": "cabbage", "amount": "2 cups, shredded", "category": "produce", "staple": false},
+        {"name": "ranch dressing", "amount": "1/3 cup", "category": "condiments", "staple": false},
+        {"name": "garlic powder", "amount": "1 tsp", "category": "spices", "staple": true}
+      ],
+      "steps": [
+        "Heat the oven to 450F. Whisk the flour, milk, garlic powder, and a pinch of salt into a batter.",
+        "Dip the cauliflower in the batter, then arrange on a lined tray and bake 20 minutes until crisp.",
+        "Toss the baked cauliflower in the buffalo sauce and bake 5 minutes more.",
+        "Mix the cabbage with the ranch dressing to make a slaw.",
+        "Fill the tortillas with cauliflower and slaw, then roll up and serve."
+      ]
+    },
+    {
+      "name": "Thai Basil Chicken",
+      "blurb": "Fiery minced chicken with garlic, chili, and fragrant basil over rice.",
+      "cuisine": "Thai",
+      "mealType": "dinner",
+      "course": "main",
+      "diets": ["dairy-free", "high-protein"],
+      "methods": ["stovetop", "one-pan"],
+      "timeMinutes": 20,
+      "servings": 4,
+      "difficulty": "easy",
+      "plateCategories": ["protein", "produce", "condiments"],
+      "ingredients": [
+        {"name": "ground chicken", "amount": "500g", "category": "protein", "staple": false},
+        {"name": "thai basil", "amount": "1 cup", "category": "produce", "staple": false},
+        {"name": "garlic", "amount": "4 cloves, minced", "category": "produce", "staple": false},
+        {"name": "thai chili", "amount": "2, minced", "category": "produce", "staple": false},
+        {"name": "soy sauce", "amount": "2 tbsp", "category": "condiments", "staple": false},
+        {"name": "oyster sauce", "amount": "2 tbsp", "category": "condiments", "staple": false},
+        {"name": "fish sauce", "amount": "1 tbsp", "category": "condiments", "staple": false},
+        {"name": "sugar", "amount": "1 tsp", "category": "bakingSupplies", "staple": true},
+        {"name": "oil", "amount": "2 tbsp", "category": "oils", "staple": true}
+      ],
+      "steps": [
+        "Heat the oil over high heat and fry the garlic and chili for 30 seconds.",
+        "Add the chicken and cook for 5 minutes, breaking it up, until browned.",
+        "Stir in the soy sauce, oyster sauce, fish sauce, and sugar and cook 2 minutes.",
+        "Turn off the heat and fold in the basil until just wilted.",
+        "Serve over rice, with a fried egg on top if you like."
+      ]
+    },
+    {
+      "name": "Mushroom Risotto",
+      "blurb": "Creamy arborio rice stirred slowly with earthy mushrooms and parmesan.",
+      "cuisine": "Italian",
+      "mealType": "dinner",
+      "course": "main",
+      "diets": ["vegetarian", "gluten-free"],
+      "methods": ["stovetop", "one-pan"],
+      "timeMinutes": 30,
+      "servings": 4,
+      "difficulty": "medium",
+      "plateCategories": ["grains", "produce", "dairy"],
+      "ingredients": [
+        {"name": "arborio rice", "amount": "1.5 cups", "category": "grains", "staple": false},
+        {"name": "cremini mushrooms", "amount": "300g, sliced", "category": "produce", "staple": false},
+        {"name": "onion", "amount": "1, diced", "category": "produce", "staple": false},
+        {"name": "garlic", "amount": "2 cloves, minced", "category": "produce", "staple": false},
+        {"name": "vegetable broth", "amount": "5 cups, warm", "category": "canned", "staple": false},
+        {"name": "parmesan cheese", "amount": "1/2 cup, grated", "category": "dairy", "staple": false},
+        {"name": "butter", "amount": "3 tbsp", "category": "dairy", "staple": false},
+        {"name": "olive oil", "amount": "2 tbsp", "category": "oils", "staple": true},
+        {"name": "salt", "amount": "to taste", "category": "spices", "staple": true}
+      ],
+      "steps": [
+        "Cook the mushrooms in 1 tbsp butter until browned, then set aside.",
+        "In the same pan, cook the onion in the oil for 5 minutes, then add the garlic and rice and stir 1 minute until the rice is glossy.",
+        "Add the warm broth one ladle at a time, stirring until absorbed before adding more, for about 18 minutes.",
+        "When the rice is creamy and just tender, stir in the mushrooms, parmesan, and remaining butter.",
+        "Season with salt and serve right away."
+      ]
+    }
+  ]
+}
