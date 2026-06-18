@@ -333,7 +333,7 @@ private struct StockItemEditor: View {
                             item.storageSince = today
                             item.consumedFraction = 0
                             item.measure = .perishable(detail: detail,
-                                                       daysLeft: digits.isEmpty ? nil : Int(digits))
+                                                       daysLeft: digits.isEmpty ? nil : Double(digits))
                         }))
                         .keyboardType(.numberPad)
                         .fixedSize()

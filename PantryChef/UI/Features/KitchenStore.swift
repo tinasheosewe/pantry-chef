@@ -8,7 +8,10 @@ import Observation
 struct StockItem: Identifiable, Equatable {
     enum Section: String { case made = "Made by you", useSoon = "Use soon", have = "In stock", staples = "Staples" }
     enum Measure: Equatable {
-        case perishable(detail: String, daysLeft: Int?)
+        // daysLeft is the FULL-PRECISION remaining lifetime (a Double): storage moves
+        // re-project it without losing a partial day each time. It's truncated to a whole
+        // number only at the consumer boundary (`daysLeft(now:)`), never in storage.
+        case perishable(detail: String, daysLeft: Double?)
         case staple(StapleLevel)
         /// Leftover / batch-cooked food. `portions` is the structured count drawn down
         /// as it's eaten (nil when we only have the free-text `detail`).
@@ -112,7 +115,9 @@ struct StockItem: Identifiable, Equatable {
     /// nil unless it's a tracked perishable.
     func daysLeft(now: Date = Date()) -> Int? {
         guard case .perishable(_, let stored?) = measure else { return nil }
-        return max(0, stored - Int(ExpiryEngine.daysBetween(storageSince, now)))
+        // Truncate the full-precision remaining lifetime to a whole number here, at the
+        // consumer boundary — the stored value stays a Double so moves don't lose a day.
+        return max(0, Int(stored - ExpiryEngine.daysBetween(storageSince, now)))
     }
 
     /// A leftover / batch-cooked item.
@@ -128,7 +133,7 @@ struct StockItem: Identifiable, Equatable {
     private func currentConsumedFraction(now: Date) -> Double {
         if case .perishable(_, let stored?) = measure,
            let safe = ExpiryEngine.safeDays(catalogItemID: catalogItemID, storage: storage), safe > 0 {
-            let remaining = Double(stored) - ExpiryEngine.daysBetween(storageSince, now)
+            let remaining = stored - ExpiryEngine.daysBetween(storageSince, now)
             return min(1, max(0, 1 - remaining / Double(safe)))
         }
         return ExpiryEngine.consumedAfterStint(
@@ -151,7 +156,7 @@ struct StockItem: Identifiable, Equatable {
     /// life so the class factor keeps them effectively always-confirmed.
     private var knowledgeShelfLifeDays: Int? {
         switch measure {
-        case .perishable(_, let days): return days
+        case .perishable(_, let days): return days.map { Int($0) }
         case .made: return 30
         case .staple: return KitchenConfig.Resolution.stapleMinShelfLifeDays
         }
@@ -237,7 +242,9 @@ final class KitchenStore {
         let liveExpiry = expiringSoon(within: 7).compactMap { item -> DatedEvent? in
             guard let d = item.daysLeft(now: today),
                   let date = cal.date(byAdding: .day, value: max(0, d), to: today) else { return nil }
-            return DatedEvent(kind: .expiry(ExpiryMilestone(date: date, itemName: item.name)))
+            // Stable id (the stock item's) so the timeline row doesn't churn each render,
+            // and so two items turning on the same day stay distinct diamonds.
+            return DatedEvent(kind: .expiry(ExpiryMilestone(id: item.id, date: date, itemName: item.name)))
         }
         let liveWhispers = leftovers.compactMap { item -> DatedWhisper? in
             guard let p = item.madePortions, p > 0 else { return nil }

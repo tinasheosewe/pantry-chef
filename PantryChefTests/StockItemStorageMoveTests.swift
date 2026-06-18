@@ -21,13 +21,13 @@ final class StockItemStorageMoveTests: XCTestCase {
     private func greekYogurt(fridgeDaysLeft: Int) -> StockItem {
         StockItem(key: "gy", name: "Greek yogurt",
                   plate: .init(categories: [.dairy], seed: 1),
-                  section: .have, measure: .perishable(detail: "500 g", daysLeft: fridgeDaysLeft),
+                  section: .have, measure: .perishable(detail: "500 g", daysLeft: Double(fridgeDaysLeft)),
                   lastConfirmed: now, catalogItemID: "greek-yogurt",
                   category: .dairy, storage: .refrigerated, storageSince: now)
     }
 
     private func daysLeft(_ item: StockItem) -> Int? {
-        if case .perishable(_, let d) = item.measure { return d }
+        if case .perishable(_, let d) = item.measure { return d.map { Int($0) } }
         return nil
     }
 
@@ -75,7 +75,7 @@ final class StockItemStorageMoveTests: XCTestCase {
 
     private func spinach(fridgeDaysLeft: Int) -> StockItem {
         StockItem(key: "spinach", name: "Baby spinach", plate: .init(categories: [.produce], seed: 1),
-                  section: .useSoon, measure: .perishable(detail: "300 g", daysLeft: fridgeDaysLeft),
+                  section: .useSoon, measure: .perishable(detail: "300 g", daysLeft: Double(fridgeDaysLeft)),
                   lastConfirmed: now, catalogItemID: "spinach",
                   category: .produce, storage: .refrigerated, storageSince: now)
     }

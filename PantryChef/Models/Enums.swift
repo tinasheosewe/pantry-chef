@@ -223,6 +223,7 @@ enum DietaryTag: String, Codable, CaseIterable, Identifiable {
     case highProtein = "High Protein"
     case keto = "Keto"
     case paleo = "Paleo"
+    case pescatarian = "Pescatarian"
     case halal = "Halal"
     case kosher = "Kosher"
 
@@ -239,6 +240,7 @@ enum DietaryTag: String, Codable, CaseIterable, Identifiable {
         case .highProtein: return "bolt.fill"
         case .keto: return "flame.fill"
         case .paleo: return "leaf.arrow.circlepath"
+        case .pescatarian: return "fish.fill"
         case .halal: return "checkmark.seal.fill"
         case .kosher: return "star.fill"
         }

@@ -11,7 +11,7 @@ final class StockItemCertaintyTests: XCTestCase {
     private func perishable(daysLeft: Int?, confirmed: Date) -> StockItem {
         StockItem(key: "spinach", name: "Spinach",
                   plate: .init(categories: [.produce], seed: 1),
-                  section: .useSoon, measure: .perishable(detail: "300 g", daysLeft: daysLeft),
+                  section: .useSoon, measure: .perishable(detail: "300 g", daysLeft: daysLeft.map(Double.init)),
                   lastConfirmed: confirmed)
     }
 

@@ -36,10 +36,10 @@ final class ExpiryEngineTests: XCTestCase {
 
     func testBlendedMoveExample_pantryThenFridge() {
         // 2 days of a 5-day pantry life = 0.4 consumed; moved to a 7-day fridge life
-        // leaves 0.6 × 7 ≈ 4 days.
+        // leaves 0.6 × 7 = 4.2 days (full precision — display truncates to 4).
         let consumed = ExpiryEngine.consumedAfterStint(priorFraction: 0, daysInStint: 2, safeDays: 5)
         XCTAssertEqual(consumed, 0.4, accuracy: 0.0001)
-        XCTAssertEqual(ExpiryEngine.freshDaysLeft(safeDays: 7, consumedFraction: consumed), 4)
+        XCTAssertEqual(ExpiryEngine.freshDaysLeft(safeDays: 7, consumedFraction: consumed) ?? 0, 4.2, accuracy: 0.0001)
     }
 
     func testStockItemMovedFoldsTheStintAndResetsAnchor() {
