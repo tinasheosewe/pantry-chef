@@ -38,6 +38,9 @@ struct RedesignRootView: View {
     @State private var showSuggestions = false
     /// The Today feed's active intent lens (the chips). `.all` = the curated default.
     @State private var feedLens: FeedLens = .all
+    /// Secondary "More filters" (cuisine/diet/meal type/time) layered on the lens.
+    @State private var feedFilters = FeedFilters()
+    @State private var showFilters = false
     /// Full dish library, opened from the feed's "browse all" / now-module "see all".
     @State private var showAllDishes = false
     @Environment(\.scenePhase) private var scenePhase
@@ -204,28 +207,43 @@ struct RedesignRootView: View {
     /// image-led recipe feed. Default lens ("For you") = named intent rails with one
     /// editorial feature woven in; a specific lens collapses to a filtered grid. This
     /// merged the old Today + Ideas tabs — the only unique content was the feed.
-    @ViewBuilder private var todayFeed: some View {
-        VStack(spacing: 0) {
+    private var todayFeed: some View {
+        // The curated "For you" rails show only on the default lens with no extra
+        // filters; any lens or filter turns the feed into a filtered grid.
+        let curatedView = feedLens == .all && feedFilters.isEmpty
+        return VStack(spacing: 0) {
             todayHeader
             ScrollView {
                 LazyVStack(alignment: .leading, spacing: 0) {
-                    if feedLens == .all {
+                    if curatedView {
                         nowModule
                             .padding(.horizontal, Theme.Metric.lg)
                             .padding(.top, 10)
                     }
-                    IntentPills(selected: $feedLens).padding(.top, feedLens == .all ? 16 : 12)
-                    if feedLens == .all {
+                    IntentPills(selected: $feedLens, filterCount: feedFilters.activeCount,
+                                onOpenFilters: { showFilters = true })
+                        .padding(.top, curatedView ? 16 : 12)
+                    if curatedView {
                         forYouFeed
                         browseAllFooter.padding(.top, 20)
                     } else {
-                        lensGrid(feedLens)
+                        filteredGrid
                     }
                 }
                 .padding(.bottom, 28)
             }
         }
         .background(Theme.Palette.cream.ignoresSafeArea())
+        .sheet(isPresented: $showFilters) {
+            FeedFiltersSheet(
+                filters: $feedFilters,
+                cuisines: distinctTags { $0.cuisine },
+                diets: distinctDiets,
+                mealTypes: distinctTags { $0.mealType },
+                resultCount: filteredDishes.count,
+                onClose: { showFilters = false })
+            .presentationDetents([.medium, .large])
+        }
     }
 
     /// The curated default: intent rails with one magazine feature after the first rail.
@@ -241,11 +259,11 @@ struct RedesignRootView: View {
         }
     }
 
-    /// A specific lens → a two-column grid of every matching dish.
-    @ViewBuilder private func lensGrid(_ lens: FeedLens) -> some View {
-        let dishes = store.library.filter { matches($0, lens) }
+    /// Lens + secondary filters → a two-column grid of every matching dish.
+    @ViewBuilder private var filteredGrid: some View {
+        let dishes = filteredDishes
         if dishes.isEmpty {
-            Text("Nothing here right now.")
+            Text("Nothing matches those filters.")
                 .font(Theme.Typography.note(13)).foregroundStyle(Theme.Palette.warmGray)
                 .frame(maxWidth: .infinity).padding(.top, 40)
         } else {
@@ -257,6 +275,28 @@ struct RedesignRootView: View {
             }
             .padding(.horizontal, Theme.Metric.lg).padding(.top, 14)
         }
+    }
+
+    /// Dishes matching the active lens AND the secondary filters.
+    private var filteredDishes: [Dish] {
+        store.library.filter { matches($0, feedLens) && feedFilters.accepts($0) }
+    }
+
+    /// Distinct, sorted values of a string tag across the library (for the filter sheet).
+    private func distinctTags(_ key: (Dish) -> String?) -> [String] {
+        var seen = Set<String>(); var out: [String] = []
+        for dish in store.library {
+            guard let v = key(dish), !v.isEmpty else { continue }
+            if seen.insert(v.lowercased()).inserted { out.append(v) }
+        }
+        return out.sorted()
+    }
+    private var distinctDiets: [String] {
+        var seen = Set<String>(); var out: [String] = []
+        for dish in store.library {
+            for d in dish.diets where seen.insert(d.lowercased()).inserted { out.append(d) }
+        }
+        return out.sorted()
     }
 
     private var browseAllFooter: some View {
@@ -292,7 +332,6 @@ struct RedesignRootView: View {
         case .readyNow: return store.readiness(for: dish).isMakeableNow
         case .useItUp: return usesExpiring(dish)
         case .quick: return (dish.minutes ?? .max) <= 25
-        case .family: return dish.servings >= 4
         case .highProtein: return dish.plate.weights.first?.category == .protein
         }
     }
