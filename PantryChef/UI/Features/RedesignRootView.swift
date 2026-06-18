@@ -268,7 +268,7 @@ struct RedesignRootView: View {
         leftoversRail
         if store.readinessReady {
             // Use-it-up leads when something's turning — a full rail now, not one card.
-            tierRail("Use it up", "Cook these before they turn", .useItUp)
+            tierRail("Use it up", "Cook before these ingredients turn", .useItUp)
             tierRail("Make it now", "Everything's already on hand", .makeNow, excludingName: featureDish?.name)
             if let feature = featureItem {
                 FeatureCard(item: feature, eyebrow: featureEyebrow, subtitle: featureSubtitle,

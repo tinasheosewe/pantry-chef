@@ -65,26 +65,25 @@ def gen_one(name, key):
     s = slug(name)
     out = os.path.join(ART, f"{s}.png")
     if os.path.exists(out): return (s, "skip")
-    png = paint(name, key)
-    open(out, "wb").write(png)
-    subprocess.run(["sips", "-Z", str(MAXSIDE), out], check=True,
-                   stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-    normalize_transparency(out)
-    return (s, "ok")
+    # gpt-image-1 occasionally paints an opaque background square despite
+    # background=transparent. We REJECT those and regenerate (never tack on
+    # transparency) — a plate must come back cleanly cut out, or we try again.
+    for attempt in range(4):
+        png = paint(name, key)
+        open(out, "wb").write(png)
+        subprocess.run(["sips", "-Z", str(MAXSIDE), out], check=True,
+                       stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        if has_transparent_background(out):
+            return (s, "ok")
+    return (s, "fail-bg")  # accepted last attempt but flagged — never shipped silently
 
-def normalize_transparency(path):
-    """gpt-image-1 occasionally paints an opaque background square despite
-    background=transparent; flood-fill it away from the corners so every plate sits
-    transparently on the page. (PlateArtCoverageTests guards this too.)"""
-    from PIL import Image, ImageDraw
+def has_transparent_background(path):
+    """A clean cutout: all four corners effectively transparent."""
+    from PIL import Image
     im = Image.open(path).convert("RGBA")
     w, h = im.size
-    corners = [(0, 0), (w - 1, 0), (0, h - 1), (w - 1, h - 1)]
-    if all(im.getpixel(c)[3] <= 40 for c in corners):
-        return
-    for c in corners:
-        ImageDraw.floodfill(im, c, (0, 0, 0, 0), thresh=80)
-    im.save(path)
+    corners = [(1, 1), (w - 2, 1), (1, h - 2), (w - 2, h - 2)]
+    return all(im.getpixel(c)[3] <= 40 for c in corners)
 
 def main():
     limit = workers = None
