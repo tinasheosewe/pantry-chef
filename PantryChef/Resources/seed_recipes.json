@@ -410,7 +410,7 @@
      "amount": "1 tsp",
      "category": "produce",
      "staple": false,
-     "catalogId": "thyme",
+     "catalogId": "fresh-thyme",
      "optional": true
     },
     {
@@ -465,7 +465,7 @@
      "amount": "2 large",
      "category": "breads",
      "staple": false,
-     "catalogId": "flour",
+     "catalogId": "tortilla",
      "optional": false
     },
     {
@@ -593,7 +593,7 @@
      "amount": "3, sliced",
      "category": "produce",
      "staple": false,
-     "catalogId": "scallion-scallion",
+     "catalogId": "scallion",
      "optional": true
     },
     {
@@ -857,7 +857,7 @@
      "amount": "1/2 cup, halved",
      "category": "produce",
      "staple": false,
-     "catalogId": "cherry-grenadine",
+     "catalogId": "cherry-tomato",
      "optional": true
     },
     {
@@ -1024,7 +1024,7 @@
      "amount": "4",
      "category": "breads",
      "staple": false,
-     "catalogId": "corn",
+     "catalogId": "tortilla",
      "optional": false
     },
     {
@@ -1127,7 +1127,7 @@
      "amount": "80g",
      "category": "protein",
      "staple": false,
-     "catalogId": "salmon-oily-fish",
+     "catalogId": "smoked-salmon",
      "optional": false
     },
     {
@@ -1389,7 +1389,7 @@
      "amount": "2, split",
      "category": "breads",
      "staple": false,
-     "catalogId": "english-muffin-sourdough",
+     "catalogId": "english-muffin",
      "optional": false
     },
     {
@@ -1421,7 +1421,7 @@
      "amount": "1 tbsp",
      "category": "condiments",
      "staple": true,
-     "catalogId": "wine-vinegar",
+     "catalogId": "distilled-white-vinegar",
      "optional": false
     },
     {
@@ -1559,7 +1559,7 @@
      "amount": "1 block (400g)",
      "category": "protein",
      "staple": false,
-     "catalogId": "tofu",
+     "catalogId": "firm-tofu",
      "optional": false
     },
     {
@@ -1774,7 +1774,7 @@
      "amount": "1, sliced",
      "category": "produce",
      "staple": false,
-     "catalogId": "scallion-scallion",
+     "catalogId": "scallion",
      "optional": true
     },
     {
@@ -1934,7 +1934,7 @@
      "amount": "4 slices",
      "category": "breads",
      "staple": false,
-     "catalogId": "bread",
+     "catalogId": "sandwich-bread",
      "optional": false
     },
     {
@@ -2071,7 +2071,7 @@
      "amount": "1 tsp",
      "category": "spices",
      "staple": true,
-     "catalogId": "paprika",
+     "catalogId": "smoked-paprika",
      "optional": true
     },
     {
@@ -2213,7 +2213,7 @@
      "amount": "400g",
      "category": "pasta",
      "staple": false,
-     "catalogId": "pasta",
+     "catalogId": "linguine",
      "optional": false
     },
     {
@@ -2261,7 +2261,7 @@
      "amount": "1/4 cup, chopped",
      "category": "produce",
      "staple": false,
-     "catalogId": "parsley",
+     "catalogId": "flat-leaf-parsley-fresh",
      "optional": true
     },
     {
@@ -2415,7 +2415,7 @@
      "amount": "8",
      "category": "breads",
      "staple": false,
-     "catalogId": "corn",
+     "catalogId": "tortilla",
      "optional": false
     },
     {
@@ -2447,7 +2447,7 @@
      "amount": "1 tsp",
      "category": "spices",
      "staple": true,
-     "catalogId": "paprika",
+     "catalogId": "smoked-paprika",
      "optional": true
     },
     {
@@ -2527,7 +2527,7 @@
      "amount": "200g, cubed",
      "category": "protein",
      "staple": false,
-     "catalogId": "tofu",
+     "catalogId": "firm-tofu",
      "optional": false
     },
     {
@@ -2543,7 +2543,7 @@
      "amount": "4, sliced",
      "category": "produce",
      "staple": false,
-     "catalogId": "scallion-scallion",
+     "catalogId": "scallion",
      "optional": false
     },
     {
@@ -2743,7 +2743,7 @@
      "amount": "1 cup, shelled",
      "category": "frozenFoods",
      "staple": false,
-     "catalogId": "beans",
+     "catalogId": "edamame",
      "optional": false
     },
     {
@@ -2853,7 +2853,7 @@
      "amount": "10 leaves",
      "category": "produce",
      "staple": false,
-     "catalogId": "basil",
+     "catalogId": "fresh-basil",
      "optional": false
     },
     {
@@ -3036,7 +3036,7 @@
      "amount": "1 cup, halved",
      "category": "produce",
      "staple": false,
-     "catalogId": "cherry-grenadine",
+     "catalogId": "cherry-tomato",
      "optional": true
     },
     {
@@ -3117,7 +3117,7 @@
      "amount": "400g",
      "category": "pasta",
      "staple": false,
-     "catalogId": "spaghetti-squash",
+     "catalogId": "spaghetti",
      "optional": false
     },
     {
@@ -3149,7 +3149,7 @@
      "amount": "1/3 cup, chopped",
      "category": "produce",
      "staple": false,
-     "catalogId": "parsley",
+     "catalogId": "flat-leaf-parsley-fresh",
      "optional": true
     },
     {
@@ -3197,7 +3197,7 @@
      "amount": "2 (150g each)",
      "category": "protein",
      "staple": false,
-     "catalogId": "salt-cod-fillet",
+     "catalogId": "cod",
      "optional": false
     },
     {
@@ -3237,7 +3237,7 @@
      "amount": "1/4 cup, chopped",
      "category": "produce",
      "staple": false,
-     "catalogId": "parsley",
+     "catalogId": "flat-leaf-parsley-fresh",
      "optional": true
     },
     {
@@ -3294,7 +3294,7 @@
      "amount": "500g",
      "category": "protein",
      "staple": false,
-     "catalogId": "turkey-ground",
+     "catalogId": "ground-turkey",
      "optional": false
     },
     {
@@ -3399,7 +3399,7 @@
      "amount": "250g",
      "category": "pasta",
      "staple": false,
-     "catalogId": "noodle",
+     "catalogId": "soba-noodles",
      "optional": false
     },
     {
@@ -3423,7 +3423,7 @@
      "amount": "3, sliced",
      "category": "produce",
      "staple": false,
-     "catalogId": "scallion-scallion",
+     "catalogId": "scallion",
      "optional": true
     },
     {
@@ -3463,7 +3463,7 @@
      "amount": "1 tbsp",
      "category": "spices",
      "staple": false,
-     "catalogId": "unhulled",
+     "catalogId": "sesame-seed",
      "optional": true
     }
    ],
@@ -3624,7 +3624,7 @@
      "amount": "2 cups",
      "category": "produce",
      "staple": false,
-     "catalogId": "cherry-grenadine",
+     "catalogId": "cherry-tomato",
      "optional": true
     },
     {
@@ -3697,7 +3697,7 @@
      "amount": "225g, sliced",
      "category": "dairy",
      "staple": false,
-     "catalogId": "cheese",
+     "catalogId": "halloumi",
      "optional": false
     },
     {
@@ -3721,7 +3721,7 @@
      "amount": "1 cup, halved",
      "category": "produce",
      "staple": false,
-     "catalogId": "cherry-grenadine",
+     "catalogId": "cherry-tomato",
      "optional": true
     },
     {
@@ -3791,7 +3791,7 @@
      "amount": "2 portions",
      "category": "pasta",
      "staple": false,
-     "catalogId": "noodle",
+     "catalogId": "udon-noodles",
      "optional": false
     },
     {
@@ -3799,7 +3799,7 @@
      "amount": "2 tbsp",
      "category": "condiments",
      "staple": false,
-     "catalogId": "honeydew-melon",
+     "catalogId": "miso",
      "optional": false
     },
     {
@@ -3831,7 +3831,7 @@
      "amount": "2, sliced",
      "category": "produce",
      "staple": false,
-     "catalogId": "scallion-scallion",
+     "catalogId": "scallion",
      "optional": true
     },
     {
@@ -3839,7 +3839,7 @@
      "amount": "1 tsp",
      "category": "spices",
      "staple": false,
-     "catalogId": "unhulled",
+     "catalogId": "sesame-seed",
      "optional": true
     }
    ],
@@ -3920,7 +3920,7 @@
      "amount": "1 tsp",
      "category": "spices",
      "staple": true,
-     "catalogId": "paprika",
+     "catalogId": "smoked-paprika",
      "optional": true
     },
     {
@@ -4084,7 +4084,7 @@
      "amount": "1.5 cups",
      "category": "legumes",
      "staple": false,
-     "catalogId": "bell",
+     "catalogId": "red-lentil",
      "optional": false
     },
     {
@@ -4210,7 +4210,7 @@
      "amount": "1/2 cup",
      "category": "condiments",
      "staple": false,
-     "catalogId": "hot-sauce",
+     "catalogId": "buffalo-sauce",
      "optional": false
     },
     {
@@ -4218,7 +4218,7 @@
      "amount": "4 large",
      "category": "breads",
      "staple": false,
-     "catalogId": "flour",
+     "catalogId": "tortilla",
      "optional": false
     },
     {
@@ -4234,7 +4234,7 @@
      "amount": "1/3 cup",
      "category": "condiments",
      "staple": false,
-     "catalogId": "dressing",
+     "catalogId": "ranch-dressing",
      "optional": true
     },
     {
@@ -4306,7 +4306,7 @@
      "amount": "2, minced",
      "category": "produce",
      "staple": false,
-     "catalogId": "thai-chili-sauce",
+     "catalogId": "bird-s-eye-chili",
      "optional": true
     },
     {
@@ -4488,7 +4488,7 @@
      "amount": "400 g",
      "category": "pasta",
      "staple": false,
-     "catalogId": "spaghetti-squash",
+     "catalogId": "spaghetti",
      "optional": false
     },
     {
@@ -4575,7 +4575,7 @@
      "amount": "1 tsp",
      "category": "bakingSupplies",
      "staple": true,
-     "catalogId": "potato-flakes",
+     "catalogId": "instant-yeast",
      "optional": false
     },
     {
@@ -4615,7 +4615,7 @@
      "amount": "1 handful",
      "category": "produce",
      "staple": false,
-     "catalogId": "basil",
+     "catalogId": "fresh-basil",
      "optional": true
     }
    ],
@@ -4799,7 +4799,7 @@
      "amount": "120 ml",
      "category": "alcohol",
      "staple": false,
-     "catalogId": "wine-vinegar",
+     "catalogId": "dry-white-wine",
      "optional": true
     },
     {
@@ -4871,7 +4871,7 @@
      "amount": "200 g",
      "category": "produce",
      "staple": false,
-     "catalogId": "pineapple-mint",
+     "catalogId": "pineapple",
      "optional": false
     },
     {
@@ -4887,7 +4887,7 @@
      "amount": "12",
      "category": "breads",
      "staple": false,
-     "catalogId": "corn",
+     "catalogId": "tortilla",
      "optional": false
     },
     {
@@ -5484,7 +5484,7 @@
      "amount": "2 tsp",
      "category": "spices",
      "staple": false,
-     "catalogId": "chili-powder",
+     "catalogId": "kashmiri-chili-powder",
      "optional": false
     },
     {
@@ -5651,7 +5651,7 @@
      "amount": "500 g",
      "category": "protein",
      "staple": false,
-     "catalogId": "tofu",
+     "catalogId": "silken-tofu",
      "optional": false
     },
     {
@@ -5707,7 +5707,7 @@
      "amount": "3",
      "category": "produce",
      "staple": false,
-     "catalogId": "scallion-scallion",
+     "catalogId": "scallion",
      "optional": true
     },
     {
@@ -5908,7 +5908,7 @@
      "amount": "1 tbsp",
      "category": "bakingSupplies",
      "staple": false,
-     "catalogId": "sugar",
+     "catalogId": "palm-sugar",
      "optional": true
     }
    ],
@@ -6093,7 +6093,7 @@
      "amount": "2",
      "category": "produce",
      "staple": false,
-     "catalogId": "scallion-scallion",
+     "catalogId": "scallion",
      "optional": true
     }
    ],
@@ -6294,7 +6294,7 @@
      "amount": "3",
      "category": "produce",
      "staple": false,
-     "catalogId": "scallion-scallion",
+     "catalogId": "scallion",
      "optional": true
     }
    ],
@@ -6521,7 +6521,7 @@
      "amount": "250 g",
      "category": "legumes",
      "staple": false,
-     "catalogId": "light-brown-sugar",
+     "catalogId": "brown-lentil",
      "optional": false
     },
     {
@@ -7068,7 +7068,7 @@
      "amount": "1 tbsp",
      "category": "spices",
      "staple": false,
-     "catalogId": "fines-herbes",
+     "catalogId": "herbes-de-provence",
      "optional": true
     }
    ],
@@ -7293,7 +7293,7 @@
      "amount": "400 g",
      "category": "grains",
      "staple": false,
-     "catalogId": "rice",
+     "catalogId": "paella-rice",
      "optional": false
     },
     {
@@ -7439,7 +7439,7 @@
      "amount": "2 tsp",
      "category": "spices",
      "staple": true,
-     "catalogId": "paprika",
+     "catalogId": "smoked-paprika",
      "optional": true
     },
     {
@@ -7529,7 +7529,7 @@
      "amount": "1 tsp",
      "category": "spices",
      "staple": true,
-     "catalogId": "clove",
+     "catalogId": "ground-ginger",
      "optional": true
     },
     {
@@ -7700,7 +7700,7 @@
      "amount": "200 g",
      "category": "legumes",
      "staple": false,
-     "catalogId": "light-brown-sugar",
+     "catalogId": "brown-lentil",
      "optional": false
     },
     {
@@ -7740,7 +7740,7 @@
      "amount": "1 tsp",
      "category": "spices",
      "staple": true,
-     "catalogId": "clove",
+     "catalogId": "ground-ginger",
      "optional": true
     },
     {
@@ -7861,7 +7861,7 @@
      "amount": "3",
      "category": "produce",
      "staple": false,
-     "catalogId": "scallion-scallion",
+     "catalogId": "scallion",
      "optional": true
     }
    ],
@@ -7911,7 +7911,7 @@
      "amount": "8",
      "category": "breads",
      "staple": false,
-     "catalogId": "corn",
+     "catalogId": "tortilla",
      "optional": false
     },
     {
@@ -7998,7 +7998,7 @@
      "amount": "400 g",
      "category": "pasta",
      "staple": false,
-     "catalogId": "pasta",
+     "catalogId": "rigatoni",
      "optional": false
     },
     {
@@ -8030,7 +8030,7 @@
      "amount": "80 g",
      "category": "dairy",
      "staple": false,
-     "catalogId": "ricotta",
+     "catalogId": "ricotta-salata",
      "optional": true
     },
     {
@@ -8038,7 +8038,7 @@
      "amount": "1 handful",
      "category": "produce",
      "staple": false,
-     "catalogId": "basil",
+     "catalogId": "fresh-basil",
      "optional": true
     },
     {
@@ -8143,7 +8143,7 @@
      "amount": "4",
      "category": "breads",
      "staple": false,
-     "catalogId": "bread",
+     "catalogId": "pita",
      "optional": false
     },
     {
@@ -8288,7 +8288,7 @@
      "amount": "2 portions",
      "category": "pasta",
      "staple": false,
-     "catalogId": "noodle",
+     "catalogId": "ramen-noodles",
      "optional": false
     },
     {
@@ -8352,7 +8352,7 @@
      "amount": "2",
      "category": "produce",
      "staple": false,
-     "catalogId": "scallion-scallion",
+     "catalogId": "scallion",
      "optional": true
     }
    ],
@@ -8514,7 +8514,7 @@
      "amount": "1 tsp",
      "category": "spices",
      "staple": true,
-     "catalogId": "paprika",
+     "catalogId": "smoked-paprika",
      "optional": true
     },
     {
@@ -8670,7 +8670,7 @@
      "amount": "4",
      "category": "protein",
      "staple": false,
-     "catalogId": "salt-cod-fillet",
+     "catalogId": "cod",
      "optional": false
     },
     {
@@ -8678,7 +8678,7 @@
      "amount": "300 g",
      "category": "produce",
      "staple": false,
-     "catalogId": "cherry-grenadine",
+     "catalogId": "cherry-tomato",
      "optional": false
     },
     {
@@ -9083,7 +9083,7 @@
      "amount": "1",
      "category": "produce",
      "staple": false,
-     "catalogId": "orange-bitters",
+     "catalogId": "orange",
      "optional": true
     },
     {
@@ -9131,7 +9131,7 @@
      "amount": "16",
      "category": "breads",
      "staple": false,
-     "catalogId": "corn",
+     "catalogId": "tortilla",
      "optional": false
     }
    ],
@@ -9331,7 +9331,7 @@
      "amount": "1 sheet",
      "category": "frozenFoods",
      "staple": false,
-     "catalogId": "pastry",
+     "catalogId": "puff-pastry",
      "optional": false
     },
     {
@@ -9427,7 +9427,7 @@
      "amount": "450g",
      "category": "pasta",
      "staple": false,
-     "catalogId": "pasta",
+     "catalogId": "ziti",
      "optional": false
     },
     {
@@ -9443,7 +9443,7 @@
      "amount": "2 cans (800g)",
      "category": "canned",
      "staple": false,
-     "catalogId": "chili-flakes",
+     "catalogId": "canned-crushed-tomatoes",
      "optional": false
     },
     {
@@ -9668,7 +9668,7 @@
      "amount": "2 cans (320g)",
      "category": "canned",
      "staple": false,
-     "catalogId": "tuna",
+     "catalogId": "canned-tuna",
      "optional": false
     },
     {
@@ -9732,7 +9732,7 @@
      "amount": "50g",
      "category": "breads",
      "staple": false,
-     "catalogId": "panko",
+     "catalogId": "breadcrumb",
      "optional": true
     },
     {
@@ -9813,7 +9813,7 @@
      "amount": "2 cans (800g)",
      "category": "canned",
      "staple": false,
-     "catalogId": "chili-flakes",
+     "catalogId": "canned-crushed-tomatoes",
      "optional": false
     },
     {
@@ -10016,7 +10016,7 @@
      "amount": "450g",
      "category": "pasta",
      "staple": false,
-     "catalogId": "pasta",
+     "catalogId": "macaroni",
      "optional": false
     },
     {
@@ -10064,7 +10064,7 @@
      "amount": "60g",
      "category": "breads",
      "staple": false,
-     "catalogId": "panko",
+     "catalogId": "breadcrumb",
      "optional": true
     },
     {
@@ -10130,7 +10130,7 @@
      "amount": "300g",
      "category": "grains",
      "staple": false,
-     "catalogId": "long-grain",
+     "catalogId": "rice",
      "optional": false
     },
     {
@@ -10170,7 +10170,7 @@
      "amount": "1 tsp",
      "category": "spices",
      "staple": true,
-     "catalogId": "paprika",
+     "catalogId": "smoked-paprika",
      "optional": true
     },
     {
@@ -10357,7 +10357,7 @@
      "amount": "300g",
      "category": "grains",
      "staple": false,
-     "catalogId": "long-grain",
+     "catalogId": "rice",
      "optional": false
     },
     {
@@ -10595,7 +10595,7 @@
      "amount": "1 can (400g)",
      "category": "canned",
      "staple": false,
-     "catalogId": "chili-flakes",
+     "catalogId": "canned-crushed-tomatoes",
      "optional": false
     },
     {
@@ -10627,7 +10627,7 @@
      "amount": "1 tbsp",
      "category": "canned",
      "staple": false,
-     "catalogId": "chipotle-adobo-sauce",
+     "catalogId": "chipotle-peppers-in-adobo",
      "optional": true
     },
     {
@@ -10716,7 +10716,7 @@
      "amount": "1 can (400g)",
      "category": "canned",
      "staple": false,
-     "catalogId": "chili-flakes",
+     "catalogId": "canned-crushed-tomatoes",
      "optional": false
     },
     {
@@ -10921,7 +10921,7 @@
      "amount": "300g dried",
      "category": "legumes",
      "staple": false,
-     "catalogId": "banana",
+     "catalogId": "green-lentil",
      "optional": false
     },
     {
@@ -10961,7 +10961,7 @@
      "amount": "1 can (400g)",
      "category": "canned",
      "staple": false,
-     "catalogId": "chili-flakes",
+     "catalogId": "canned-crushed-tomatoes",
      "optional": false
     },
     {
@@ -11051,7 +11051,7 @@
      "amount": "1 can (400g)",
      "category": "canned",
      "staple": false,
-     "catalogId": "chili-flakes",
+     "catalogId": "canned-crushed-tomatoes",
      "optional": false
     },
     {
@@ -11182,7 +11182,7 @@
      "amount": "1 can (400g)",
      "category": "canned",
      "staple": false,
-     "catalogId": "chili-flakes",
+     "catalogId": "canned-crushed-tomatoes",
      "optional": false
     },
     {
@@ -11295,7 +11295,7 @@
      "amount": "1 tbsp",
      "category": "spices",
      "staple": true,
-     "catalogId": "paprika",
+     "catalogId": "smoked-paprika",
      "optional": false
     },
     {
@@ -11392,7 +11392,7 @@
      "amount": "8 large",
      "category": "breads",
      "staple": false,
-     "catalogId": "flour",
+     "catalogId": "tortilla",
      "optional": false
     },
     {
@@ -11489,7 +11489,7 @@
      "amount": "700g",
      "category": "protein",
      "staple": false,
-     "catalogId": "turkey-ground",
+     "catalogId": "ground-turkey",
      "optional": false
     },
     {
@@ -11626,7 +11626,7 @@
      "amount": "250g",
      "category": "produce",
      "staple": false,
-     "catalogId": "cherry-grenadine",
+     "catalogId": "cherry-tomato",
      "optional": true
     },
     {
@@ -11741,7 +11741,7 @@
      "amount": "1 tsp",
      "category": "spices",
      "staple": true,
-     "catalogId": "paprika",
+     "catalogId": "smoked-paprika",
      "optional": true
     },
     {
@@ -11806,7 +11806,7 @@
      "amount": "2 cans (800g)",
      "category": "canned",
      "staple": false,
-     "catalogId": "chili-flakes",
+     "catalogId": "canned-crushed-tomatoes",
      "optional": false
     },
     {
@@ -11945,7 +11945,7 @@
      "amount": "1 can (400g)",
      "category": "canned",
      "staple": false,
-     "catalogId": "chili-flakes",
+     "catalogId": "canned-crushed-tomatoes",
      "optional": false
     },
     {
@@ -12141,7 +12141,7 @@
      "amount": "350g dried",
      "category": "legumes",
      "staple": false,
-     "catalogId": "light-brown-sugar",
+     "catalogId": "brown-lentil",
      "optional": false
     },
     {
@@ -12173,7 +12173,7 @@
      "amount": "1 can (400g)",
      "category": "canned",
      "staple": false,
-     "catalogId": "chili-flakes",
+     "catalogId": "canned-crushed-tomatoes",
      "optional": false
     },
     {
@@ -12287,7 +12287,7 @@
      "amount": "1 can (400g)",
      "category": "canned",
      "staple": false,
-     "catalogId": "chili-flakes",
+     "catalogId": "canned-crushed-tomatoes",
      "optional": false
     },
     {
@@ -12393,7 +12393,7 @@
      "amount": "200g",
      "category": "produce",
      "staple": false,
-     "catalogId": "cherry-grenadine",
+     "catalogId": "cherry-tomato",
      "optional": false
     },
     {
@@ -12506,7 +12506,7 @@
      "amount": "1 tsp",
      "category": "spices",
      "staple": true,
-     "catalogId": "paprika",
+     "catalogId": "smoked-paprika",
      "optional": true
     },
     {
@@ -12573,7 +12573,7 @@
      "amount": "400g",
      "category": "protein",
      "staple": false,
-     "catalogId": "tofu",
+     "catalogId": "firm-tofu",
      "optional": false
     },
     {
@@ -12790,7 +12790,7 @@
      "amount": "8 large",
      "category": "breads",
      "staple": false,
-     "catalogId": "flour",
+     "catalogId": "tortilla",
      "optional": false
     },
     {
@@ -12822,7 +12822,7 @@
      "amount": "1 tsp",
      "category": "spices",
      "staple": true,
-     "catalogId": "paprika",
+     "catalogId": "smoked-paprika",
      "optional": true
     },
     {
@@ -12897,7 +12897,7 @@
      "amount": "1 can (400g)",
      "category": "canned",
      "staple": false,
-     "catalogId": "chili-flakes",
+     "catalogId": "canned-crushed-tomatoes",
      "optional": false
     },
     {
@@ -12913,7 +12913,7 @@
      "amount": "80g",
      "category": "snacks",
      "staple": false,
-     "catalogId": "apricot",
+     "catalogId": "dried-apricot",
      "optional": true
     },
     {
@@ -13025,7 +13025,7 @@
      "amount": "1 tsp",
      "category": "spices",
      "staple": true,
-     "catalogId": "paprika",
+     "catalogId": "smoked-paprika",
      "optional": true
     },
     {
@@ -13107,7 +13107,7 @@
      "amount": "150g",
      "category": "produce",
      "staple": false,
-     "catalogId": "cherry-grenadine",
+     "catalogId": "cherry-tomato",
      "optional": true
     },
     {
@@ -13182,7 +13182,7 @@
      "amount": "4",
      "category": "protein",
      "staple": false,
-     "catalogId": "salt-cod-fillet",
+     "catalogId": "cod",
      "optional": false
     },
     {
@@ -13198,7 +13198,7 @@
      "amount": "250g",
      "category": "produce",
      "staple": false,
-     "catalogId": "cherry-grenadine",
+     "catalogId": "cherry-tomato",
      "optional": false
     },
     {
@@ -13312,7 +13312,7 @@
      "amount": "2 tbsp",
      "category": "condiments",
      "staple": false,
-     "catalogId": "red-wine",
+     "catalogId": "red-wine-vinegar",
      "optional": false
     },
     {
@@ -13474,7 +13474,7 @@
      "amount": "450g",
      "category": "protein",
      "staple": false,
-     "catalogId": "tofu",
+     "catalogId": "firm-tofu",
      "optional": false
     },
     {
@@ -13839,7 +13839,7 @@
      "amount": "1 tsp",
      "category": "spices",
      "staple": true,
-     "catalogId": "paprika",
+     "catalogId": "smoked-paprika",
      "optional": true
     },
     {
@@ -13897,7 +13897,7 @@
      "amount": "700g",
      "category": "protein",
      "staple": false,
-     "catalogId": "turkey-ground",
+     "catalogId": "ground-turkey",
      "optional": false
     },
     {
@@ -13913,7 +13913,7 @@
      "amount": "1 can (400g)",
      "category": "canned",
      "staple": false,
-     "catalogId": "chili-flakes",
+     "catalogId": "canned-crushed-tomatoes",
      "optional": false
     },
     {
@@ -14262,7 +14262,7 @@
      "amount": "1 tsp",
      "category": "spices",
      "staple": true,
-     "catalogId": "paprika",
+     "catalogId": "smoked-paprika",
      "optional": true
     },
     {
@@ -14320,7 +14320,7 @@
      "amount": "2 cans (320g)",
      "category": "canned",
      "staple": false,
-     "catalogId": "tuna",
+     "catalogId": "canned-tuna",
      "optional": false
     },
     {
@@ -14336,7 +14336,7 @@
      "amount": "200g",
      "category": "produce",
      "staple": false,
-     "catalogId": "cherry-grenadine",
+     "catalogId": "cherry-tomato",
      "optional": true
     },
     {
@@ -14417,7 +14417,7 @@
      "amount": "14 oz",
      "category": "protein",
      "staple": false,
-     "catalogId": "tofu",
+     "catalogId": "firm-tofu",
      "optional": false
     },
     {
@@ -14497,7 +14497,7 @@
      "amount": "1 tbsp",
      "category": "spices",
      "staple": false,
-     "catalogId": "unhulled",
+     "catalogId": "sesame-seed",
      "optional": true
     }
    ],
@@ -14547,7 +14547,7 @@
      "amount": "8",
      "category": "breads",
      "staple": false,
-     "catalogId": "corn",
+     "catalogId": "tortilla",
      "optional": false
     },
     {
@@ -14555,7 +14555,7 @@
      "amount": "2 tbsp",
      "category": "canned",
      "staple": false,
-     "catalogId": "chipotle-adobo-sauce",
+     "catalogId": "chipotle-peppers-in-adobo",
      "optional": false
     },
     {
@@ -14563,7 +14563,7 @@
      "amount": "1 tsp",
      "category": "spices",
      "staple": true,
-     "catalogId": "paprika",
+     "catalogId": "smoked-paprika",
      "optional": true
     },
     {
@@ -14814,7 +14814,7 @@
      "amount": "1 tbsp",
      "category": "produce",
      "staple": false,
-     "catalogId": "thyme",
+     "catalogId": "fresh-thyme",
      "optional": true
     },
     {
@@ -14830,7 +14830,7 @@
      "amount": "1/2 cup",
      "category": "alcohol",
      "staple": false,
-     "catalogId": "wine-vinegar",
+     "catalogId": "dry-white-wine",
      "optional": true
     },
     {
@@ -14896,7 +14896,7 @@
      "amount": "1.5 cups",
      "category": "legumes",
      "staple": false,
-     "catalogId": "bell",
+     "catalogId": "red-lentil",
      "optional": false
     },
     {
@@ -15031,7 +15031,7 @@
      "amount": "3/4 cup",
      "category": "breads",
      "staple": false,
-     "catalogId": "panko",
+     "catalogId": "breadcrumb",
      "optional": false
     },
     {
@@ -15063,7 +15063,7 @@
      "amount": "1/4 cup",
      "category": "produce",
      "staple": false,
-     "catalogId": "basil",
+     "catalogId": "fresh-basil",
      "optional": true
     }
    ],
@@ -15118,7 +15118,7 @@
      "amount": "8",
      "category": "breads",
      "staple": false,
-     "catalogId": "flour",
+     "catalogId": "tortilla",
      "optional": false
     },
     {
@@ -15158,7 +15158,7 @@
      "amount": "1 tsp",
      "category": "spices",
      "staple": true,
-     "catalogId": "paprika",
+     "catalogId": "smoked-paprika",
      "optional": true
     },
     {
@@ -15233,7 +15233,7 @@
      "amount": "1 can",
      "category": "canned",
      "staple": false,
-     "catalogId": "canned-green-chile",
+     "catalogId": "canned-diced-tomatoes",
      "optional": false
     },
     {
@@ -15337,7 +15337,7 @@
      "amount": "10 oz",
      "category": "protein",
      "staple": false,
-     "catalogId": "tofu",
+     "catalogId": "firm-tofu",
      "optional": false
     },
     {
@@ -15377,7 +15377,7 @@
      "amount": "4",
      "category": "produce",
      "staple": false,
-     "catalogId": "scallion-scallion",
+     "catalogId": "scallion",
      "optional": true
     },
     {
@@ -15458,7 +15458,7 @@
      "amount": "1.5 cups",
      "category": "legumes",
      "staple": false,
-     "catalogId": "banana",
+     "catalogId": "green-lentil",
      "optional": false
     },
     {
@@ -15514,7 +15514,7 @@
      "amount": "1 tbsp",
      "category": "produce",
      "staple": false,
-     "catalogId": "thyme",
+     "catalogId": "fresh-thyme",
      "optional": true
     },
     {
@@ -15579,7 +15579,7 @@
      "amount": "3 tbsp",
      "category": "condiments",
      "staple": false,
-     "catalogId": "honeydew-melon",
+     "catalogId": "miso",
      "optional": false
     },
     {
@@ -15619,7 +15619,7 @@
      "amount": "2",
      "category": "produce",
      "staple": false,
-     "catalogId": "scallion-scallion",
+     "catalogId": "scallion",
      "optional": true
     },
     {
@@ -15627,7 +15627,7 @@
      "amount": "1 tbsp",
      "category": "spices",
      "staple": false,
-     "catalogId": "unhulled",
+     "catalogId": "sesame-seed",
      "optional": true
     }
    ],
@@ -15700,7 +15700,7 @@
      "amount": "1 tsp",
      "category": "spices",
      "staple": true,
-     "catalogId": "paprika",
+     "catalogId": "smoked-paprika",
      "optional": true
     },
     {
@@ -15853,7 +15853,7 @@
      "amount": "1 tbsp",
      "category": "condiments",
      "staple": false,
-     "catalogId": "red-wine",
+     "catalogId": "red-wine-vinegar",
      "optional": true
     }
    ],
@@ -15910,7 +15910,7 @@
      "amount": "1/2 cup chopped",
      "category": "produce",
      "staple": false,
-     "catalogId": "mint",
+     "catalogId": "fresh-mint",
      "optional": true
     },
     {
@@ -15934,7 +15934,7 @@
      "amount": "3",
      "category": "produce",
      "staple": false,
-     "catalogId": "scallion-scallion",
+     "catalogId": "scallion",
      "optional": true
     },
     {
@@ -16013,7 +16013,7 @@
      "amount": "4",
      "category": "produce",
      "staple": false,
-     "catalogId": "scallion-scallion",
+     "catalogId": "scallion",
      "optional": true
     },
     {
@@ -16207,7 +16207,7 @@
      "amount": "1/2 cup",
      "category": "produce",
      "staple": false,
-     "catalogId": "basil",
+     "catalogId": "fresh-basil",
      "optional": false
     },
     {
@@ -16231,7 +16231,7 @@
      "amount": "1 pinch",
      "category": "spices",
      "staple": true,
-     "catalogId": "salt",
+     "catalogId": "flaky-sea-salt",
      "optional": true
     },
     {
@@ -16294,7 +16294,7 @@
      "amount": "1/3 cup",
      "category": "snacks",
      "staple": false,
-     "catalogId": "basil",
+     "catalogId": "dried-cranberry",
      "optional": true
     },
     {
@@ -16469,7 +16469,7 @@
      "amount": "1.5 cups",
      "category": "legumes",
      "staple": false,
-     "catalogId": "banana",
+     "catalogId": "green-lentil",
      "optional": false
     },
     {
@@ -16581,7 +16581,7 @@
      "amount": "1/4 cup",
      "category": "produce",
      "staple": false,
-     "catalogId": "mint",
+     "catalogId": "fresh-mint",
      "optional": true
     },
     {
@@ -16780,7 +16780,7 @@
      "amount": "1/2 cup",
      "category": "produce",
      "staple": false,
-     "catalogId": "basil",
+     "catalogId": "fresh-basil",
      "optional": false
     },
     {
@@ -16788,7 +16788,7 @@
      "amount": "3 tbsp",
      "category": "condiments",
      "staple": false,
-     "catalogId": "red-wine",
+     "catalogId": "red-wine-vinegar",
      "optional": false
     },
     {
@@ -16944,7 +16944,7 @@
      "amount": "1 cup",
      "category": "legumes",
      "staple": false,
-     "catalogId": "bell",
+     "catalogId": "red-lentil",
      "optional": false
     },
     {
@@ -17072,7 +17072,7 @@
      "amount": "1/2 cup",
      "category": "produce",
      "staple": false,
-     "catalogId": "basil",
+     "catalogId": "fresh-basil",
      "optional": false
     },
     {
@@ -17144,7 +17144,7 @@
      "amount": "1 can",
      "category": "canned",
      "staple": false,
-     "catalogId": "canned-green-chile",
+     "catalogId": "canned-diced-tomatoes",
      "optional": false
     },
     {
@@ -17394,7 +17394,7 @@
      "amount": "1 tsp",
      "category": "spices",
      "staple": true,
-     "catalogId": "paprika",
+     "catalogId": "smoked-paprika",
      "optional": true
     },
     {
@@ -17410,7 +17410,7 @@
      "amount": "3",
      "category": "produce",
      "staple": false,
-     "catalogId": "scallion-scallion",
+     "catalogId": "scallion",
      "optional": true
     }
    ],
@@ -17499,7 +17499,7 @@
      "amount": "1 piece",
      "category": "dairy",
      "staple": false,
-     "catalogId": "carrot-orange",
+     "catalogId": "parmesan",
      "optional": true
     },
     {
@@ -17683,7 +17683,7 @@
      "amount": "1/2 cup",
      "category": "alcohol",
      "staple": false,
-     "catalogId": "wine-vinegar",
+     "catalogId": "dry-white-wine",
      "optional": true
     },
     {
@@ -17707,7 +17707,7 @@
      "amount": "1 tbsp",
      "category": "produce",
      "staple": false,
-     "catalogId": "thyme",
+     "catalogId": "fresh-thyme",
      "optional": true
     },
     {
@@ -17797,7 +17797,7 @@
      "amount": "1 tsp",
      "category": "spices",
      "staple": true,
-     "catalogId": "paprika",
+     "catalogId": "smoked-paprika",
      "optional": true
     },
     {
@@ -18022,7 +18022,7 @@
      "amount": "1 tbsp",
      "category": "produce",
      "staple": false,
-     "catalogId": "thyme",
+     "catalogId": "fresh-thyme",
      "optional": true
     },
     {
@@ -18104,7 +18104,7 @@
      "amount": "1 tsp",
      "category": "spices",
      "staple": true,
-     "catalogId": "paprika",
+     "catalogId": "smoked-paprika",
      "optional": true
     },
     {
@@ -18706,7 +18706,7 @@
      "amount": "8 oz",
      "category": "snacks",
      "staple": false,
-     "catalogId": "baking-chocolate",
+     "catalogId": "dark-chocolate",
      "optional": false
     },
     {
@@ -18923,7 +18923,7 @@
      "amount": "1",
      "category": "produce",
      "staple": false,
-     "catalogId": "orange-bitters",
+     "catalogId": "orange",
      "optional": true
     }
    ],
@@ -19210,7 +19210,7 @@
      "amount": "1 tbsp",
      "category": "produce",
      "staple": false,
-     "catalogId": "thyme",
+     "catalogId": "fresh-thyme",
      "optional": true
     },
     {

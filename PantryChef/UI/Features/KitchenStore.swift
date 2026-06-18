@@ -955,7 +955,7 @@ final class KitchenStore {
                       measure: .staple(.inStock), catalogItemID: "chickpea", category: .legumes, storage: .pantry),
             StockItem(key: "tortillas", name: "Corn tortillas", plate: plate([.breads], 47), section: .have,
                       measure: .perishable(detail: "1 pack", daysLeft: 14), lastConfirmed: day(-4),
-                      catalogItemID: "corn", category: .breads, storage: .pantry, storageSince: day(-4)),
+                      catalogItemID: "tortilla", category: .breads, storage: .pantry, storageSince: day(-4)),
 
             // Pantry backbone — staples.
             staple("rice", "Rice", "rice", .grains, .inStock, 49),
