@@ -1,17 +1,20 @@
 import SwiftUI
 
-/// The three root spaces of the redesign (spec §3). Cook is an instrument entered
-/// from the timeline, and "add" is the composer — neither is a space.
+/// The four root spaces of the redesign, split for approachability (testers found
+/// one combined feed overwhelming): Today is the calm "what now"; Ideas is the
+/// visual recipe feed; Plan is the day-by-day ruler; Pantry holds stock + expiry
+/// warnings. Cook is an instrument, and "add" is the composer — neither is a space.
 enum RootSpace: String, CaseIterable, Identifiable, Sendable {
-    case timeline, library, stock
+    case today, ideas, plan, pantry
 
     var id: String { rawValue }
 
     var title: String {
         switch self {
-        case .timeline: return "Today"
-        case .library: return "Dishes"
-        case .stock: return "Stores"
+        case .today: return "Today"
+        case .ideas: return "Ideas"
+        case .plan: return "Plan"
+        case .pantry: return "Pantry"
         }
     }
 }
@@ -75,7 +78,7 @@ struct Dock: View {
 
 #Preview("Dock") {
     struct Harness: View {
-        @State private var selection: RootSpace = .timeline
+        @State private var selection: RootSpace = .today
         var body: some View {
             ZStack(alignment: .bottom) {
                 Theme.Palette.cream.ignoresSafeArea()

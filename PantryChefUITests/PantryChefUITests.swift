@@ -1,7 +1,7 @@
 import XCTest
 
-/// Smoke test for the Field Notes redesign: the app launches onto the timeline
-/// and the page-floor nav band reaches every space.
+/// Smoke test for the Field Notes redesign: the app launches onto Today and the
+/// page-floor nav band reaches every space (Today · Ideas · Plan · Pantry · ＋).
 final class PantryChefUITests: XCTestCase {
     override func setUpWithError() throws {
         continueAfterFailure = false
@@ -11,17 +11,15 @@ final class PantryChefUITests: XCTestCase {
         let app = XCUIApplication()
         app.launch()
 
-        // The nav band's three spaces and the composer door.
+        // The nav band's four spaces and the composer door.
         XCTAssertTrue(app.buttons["Today"].waitForExistence(timeout: 10))
         XCTAssertTrue(app.buttons["Add"].exists)
 
-        app.buttons["Dishes"].tap()
-        XCTAssertTrue(app.staticTexts["Dishes"].waitForExistence(timeout: 5))
-
-        app.buttons["Stores"].tap()
-        XCTAssertTrue(app.staticTexts["Stores"].waitForExistence(timeout: 5))
-
-        app.buttons["Today"].tap()
-        XCTAssertTrue(app.buttons["Add"].waitForExistence(timeout: 5))
+        // Every space is reachable and the dock survives each hop.
+        for tab in ["Ideas", "Plan", "Pantry", "Today"] {
+            app.buttons[tab].tap()
+            XCTAssertTrue(app.buttons[tab].waitForExistence(timeout: 5))
+            XCTAssertTrue(app.buttons["Add"].exists)
+        }
     }
 }

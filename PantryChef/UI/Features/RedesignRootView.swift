@@ -130,12 +130,14 @@ struct RedesignRootView: View {
     private var tailpiece: String {
         let ready = store.library.filter { store.readiness(for: $0).isMakeableNow }.count
         switch store.space {
-        case .timeline:
+        case .today:
             let dayNumber = Calendar.current.ordinality(of: .day, in: .year, for: store.today) ?? 0
             return "№ \(dayNumber) · \(ready) ready tonight"
-        case .library:
+        case .ideas:
             return "\(store.library.count) dishes · \(ready) ready"
-        case .stock:
+        case .plan:
+            return "\(store.todaysPlannedMeals.count) planned today · plan ahead"
+        case .pantry:
             return "\(store.stock.count) items · \(store.shoppingList.count) on the list"
         }
     }
@@ -159,7 +161,15 @@ struct RedesignRootView: View {
 
     @ViewBuilder private var space: some View {
         switch store.space {
-        case .timeline:
+        case .today:
+            todayHome
+        case .ideas:
+            LibraryView(
+                store: store,
+                onCook: { dish in detailDish = dish },
+                onCookTogether: { dishes in multiSession = CookSession(dishes: dishes) }
+            )
+        case .plan:
             TimelineView(
                 entries: store.timelineEntries,
                 today: store.today,
@@ -167,65 +177,99 @@ struct RedesignRootView: View {
                 onOpenMeal: { name in detailDish = store.dish(named: name) },
                 onTapMeal: { editingMeal = $0 },
                 onDismissProposal: { id in withAnimation { store.dismissProposal(id) } },
-                onOpenStock: { store.space = .stock },
+                onOpenStock: { store.space = .pantry },
                 onPlanAhead: { showPlanAhead = true },
                 onSettings: { showSettings = true },
                 nowContent: {
-                    AnyView(VStack(alignment: .leading, spacing: 0) {
-                        if isIdleNow, let plan = store.planForNow, !showSuggestions {
-                            // A meal is planned for now — it leads, with the generic
-                            // "you could…" suggestions one tap away.
-                            PlannedNowView(
-                                meal: plan,
-                                onAct: { actOnPlan(plan) },
-                                onEdit: { editingMeal = plan },
-                                onSeeOptions: { withAnimation { showSuggestions = true } })
-                        } else {
-                            NowModuleView(
-                                state: Binding(get: { store.nowState }, set: { store.nowState = $0 }),
-                                onCook: { option in
-                                    // A cookable dish opens the instrument; a ready-made
-                                    // pick is just logged as eaten.
-                                    if option.level.usesInstrument, let dish = option.dish {
-                                        detailDish = dish
-                                    } else {
-                                        store.logEaten(option)
-                                    }
-                                },
-                                onSeeAll: {
-                                    store.libraryFilter = .all
-                                    withAnimation { store.space = .library }
-                                },
-                                onChange: { store.resetNow() },
-                                onResume: {
-                                    if case .cooking(let p) = store.nowState, let dish = p.dish {
-                                        multiSession = CookSession(dishes: [dish])
-                                    }
-                                }
-                            )
-                        }
-                        TodayPlanView(
-                            store: store,
-                            excluding: (isIdleNow && !showSuggestions) ? store.planForNow?.id : nil,
-                            onTapMeal: { editingMeal = $0 },
-                            onAdd: { planTarget = PlanTarget(date: store.today) })
-                        OnTheClockSection(store: store) { withAnimation { store.space = .stock } }
-                        KitchenLedger(
-                            store: store,
-                            onReady: { store.libraryFilter = .ready; withAnimation { store.space = .library } },
-                            onStock: { withAnimation { store.space = .stock } }
-                        )
-                    })
+                    // On the Plan feed the "now" anchor is just today's plan — the full
+                    // now-module (cook CTA, options) lives on the Today hero, not here.
+                    AnyView(TodayPlanView(
+                        store: store,
+                        onTapMeal: { editingMeal = $0 },
+                        onAdd: { planTarget = PlanTarget(date: store.today) }))
                 }
             )
-        case .library:
-            LibraryView(
-                store: store,
-                onCook: { dish in detailDish = dish },
-                onCookTogether: { dishes in multiSession = CookSession(dishes: dishes) }
-            )
-        case .stock:
+        case .pantry:
             StockView(store: store)
+        }
+    }
+
+    /// The calm Today hero — just "what to do now" + today's plan. The dense ruler
+    /// moved to Plan; expiry + ledger moved to Pantry (approachability redesign:
+    /// testers were greeted by a wall of text and bounced).
+    @ViewBuilder private var todayHome: some View {
+        VStack(spacing: 0) {
+            todayHeader
+            ScrollView {
+                VStack(alignment: .leading, spacing: 0) {
+                    nowModule
+                    TodayPlanView(
+                        store: store,
+                        excluding: (isIdleNow && !showSuggestions) ? store.planForNow?.id : nil,
+                        onTapMeal: { editingMeal = $0 },
+                        onAdd: { planTarget = PlanTarget(date: store.today) })
+                }
+                .padding(.horizontal, Theme.Metric.lg)
+                .padding(.top, 10)
+                .padding(.bottom, 28)
+            }
+        }
+        .background(Theme.Palette.cream.ignoresSafeArea())
+    }
+
+    /// Date + settings, a single quiet line over the hero.
+    private var todayHeader: some View {
+        VStack(spacing: 0) {
+            HStack(alignment: .firstTextBaseline) {
+                Text(DayLabel.monthDayLong(for: store.today))
+                    .font(Theme.Typography.dish(26)).foregroundStyle(Theme.Palette.ink)
+                Spacer()
+                Text(DayLabel.eyebrow(for: store.today).uppercased())
+                    .font(.system(size: 10)).tracking(Theme.Metric.eyebrowTracking)
+                    .foregroundStyle(Theme.Palette.ink.opacity(0.55))
+                Button { showSettings = true } label: {
+                    Image(systemName: "gearshape").font(.system(size: 15))
+                        .foregroundStyle(Theme.Palette.ink.opacity(0.5))
+                        .padding(.vertical, 4).padding(.leading, 12).contentShape(Rectangle())
+                }
+                .buttonStyle(.plain).accessibilityLabel("Settings")
+            }
+            .padding(.horizontal, Theme.Metric.lg).padding(.top, 6)
+            DashedRule().padding(.horizontal, Theme.Metric.lg).padding(.top, 9).padding(.bottom, 2)
+        }
+    }
+
+    /// "What's for now": a meal planned for the current part of day leads if there is
+    /// one; otherwise the ready-options fan. Shared hero of the Today tab.
+    @ViewBuilder private var nowModule: some View {
+        if isIdleNow, let plan = store.planForNow, !showSuggestions {
+            PlannedNowView(
+                meal: plan,
+                onAct: { actOnPlan(plan) },
+                onEdit: { editingMeal = plan },
+                onSeeOptions: { withAnimation { showSuggestions = true } })
+        } else {
+            NowModuleView(
+                state: Binding(get: { store.nowState }, set: { store.nowState = $0 }),
+                onCook: { option in
+                    // A cookable dish opens the instrument; a ready-made pick is logged.
+                    if option.level.usesInstrument, let dish = option.dish {
+                        detailDish = dish
+                    } else {
+                        store.logEaten(option)
+                    }
+                },
+                onSeeAll: {
+                    store.libraryFilter = .all
+                    withAnimation { store.space = .ideas }
+                },
+                onChange: { store.resetNow() },
+                onResume: {
+                    if case .cooking(let p) = store.nowState, let dish = p.dish {
+                        multiSession = CookSession(dishes: [dish])
+                    }
+                }
+            )
         }
     }
 }

@@ -191,7 +191,7 @@ struct ShoppingEntry: Identifiable, Equatable {
 @Observable
 final class KitchenStore {
     var today = Date()
-    var space: RootSpace = .timeline
+    var space: RootSpace = .today
     var nowState: NowState = .open(options: [], selected: 0)
 
     var journal: [JournalItem]
