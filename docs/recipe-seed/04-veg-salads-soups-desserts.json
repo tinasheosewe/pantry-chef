@@ -1,0 +1,4203 @@
+{
+  "recipes": [
+    {
+      "name": "Crispy sesame tofu with broccoli",
+      "blurb": "Cornstarch-dusted tofu turns golden and shatteringly crisp under a glossy soy-sesame glaze.",
+      "cuisine": "Chinese",
+      "mealType": "dinner",
+      "course": "main",
+      "diets": [
+        "vegan",
+        "dairy-free",
+        "high-protein"
+      ],
+      "methods": [
+        "stovetop",
+        "one-pan"
+      ],
+      "timeMinutes": 35,
+      "servings": 4,
+      "difficulty": "medium",
+      "plateCategories": [
+        "protein",
+        "produce",
+        "condiments"
+      ],
+      "ingredients": [
+        {
+          "name": "firm tofu",
+          "amount": "14 oz",
+          "category": "protein",
+          "staple": false
+        },
+        {
+          "name": "cornstarch",
+          "amount": "1/3 cup",
+          "category": "bakingSupplies",
+          "staple": true
+        },
+        {
+          "name": "broccoli",
+          "amount": "1 head",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "soy sauce",
+          "amount": "3 tbsp",
+          "category": "condiments",
+          "staple": true
+        },
+        {
+          "name": "rice vinegar",
+          "amount": "1 tbsp",
+          "category": "condiments",
+          "staple": false
+        },
+        {
+          "name": "maple syrup",
+          "amount": "2 tbsp",
+          "category": "condiments",
+          "staple": false
+        },
+        {
+          "name": "garlic",
+          "amount": "3 cloves",
+          "category": "produce",
+          "staple": true
+        },
+        {
+          "name": "ginger",
+          "amount": "1 tbsp grated",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "sesame oil",
+          "amount": "1 tbsp",
+          "category": "oils",
+          "staple": false
+        },
+        {
+          "name": "vegetable oil",
+          "amount": "3 tbsp",
+          "category": "oils",
+          "staple": true
+        },
+        {
+          "name": "sesame seeds",
+          "amount": "1 tbsp",
+          "category": "spices",
+          "staple": false
+        }
+      ],
+      "steps": [
+        "Press the tofu between paper towels for 15 minutes, then cut into 1-inch cubes and toss with the cornstarch until evenly coated.",
+        "Heat the vegetable oil in a large nonstick pan over medium-high and fry the tofu, turning, until golden and crisp on all sides, about 8 minutes. Remove to a plate.",
+        "Steam or blanch the broccoli florets until just tender, about 3 minutes, then drain.",
+        "Whisk the soy sauce, rice vinegar, maple syrup, garlic, ginger, and sesame oil into a sauce.",
+        "Pour the sauce into the hot pan and simmer until it thickens slightly, about 1 minute, then return the tofu and broccoli and toss to coat.",
+        "Scatter with sesame seeds and serve over rice."
+      ]
+    },
+    {
+      "name": "Smoky tempeh tacos",
+      "blurb": "Crumbled tempeh simmered in chipotle and lime makes a hearty, protein-packed taco filling.",
+      "cuisine": "Mexican",
+      "mealType": "dinner",
+      "course": "main",
+      "diets": [
+        "vegan",
+        "dairy-free",
+        "high-protein"
+      ],
+      "methods": [
+        "stovetop",
+        "one-pan"
+      ],
+      "timeMinutes": 25,
+      "servings": 4,
+      "difficulty": "easy",
+      "plateCategories": [
+        "protein",
+        "breads",
+        "spices"
+      ],
+      "ingredients": [
+        {
+          "name": "tempeh",
+          "amount": "8 oz",
+          "category": "protein",
+          "staple": false
+        },
+        {
+          "name": "corn tortillas",
+          "amount": "8",
+          "category": "breads",
+          "staple": false
+        },
+        {
+          "name": "chipotle in adobo",
+          "amount": "2 tbsp",
+          "category": "canned",
+          "staple": false
+        },
+        {
+          "name": "smoked paprika",
+          "amount": "1 tsp",
+          "category": "spices",
+          "staple": true
+        },
+        {
+          "name": "cumin",
+          "amount": "1 tsp",
+          "category": "spices",
+          "staple": true
+        },
+        {
+          "name": "lime",
+          "amount": "1",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "onion",
+          "amount": "1",
+          "category": "produce",
+          "staple": true
+        },
+        {
+          "name": "garlic",
+          "amount": "2 cloves",
+          "category": "produce",
+          "staple": true
+        },
+        {
+          "name": "olive oil",
+          "amount": "2 tbsp",
+          "category": "oils",
+          "staple": true
+        },
+        {
+          "name": "avocado",
+          "amount": "1",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "cilantro",
+          "amount": "1/4 cup",
+          "category": "produce",
+          "staple": false
+        }
+      ],
+      "steps": [
+        "Crumble the tempeh with your hands into rough pea-sized pieces.",
+        "Heat the olive oil in a skillet over medium and soften the chopped onion for 4 minutes, then add the garlic for 1 minute.",
+        "Add the tempeh, smoked paprika, and cumin and cook until the tempeh browns, about 6 minutes.",
+        "Stir in the chopped chipotle, a splash of water, and the juice of half the lime, then simmer 3 minutes.",
+        "Warm the tortillas in a dry pan, fill with the tempeh, and top with sliced avocado, cilantro, and a squeeze of remaining lime."
+      ]
+    },
+    {
+      "name": "Palak paneer",
+      "blurb": "Soft cubes of paneer folded into a velvety, lightly spiced spinach gravy.",
+      "cuisine": "Indian",
+      "mealType": "dinner",
+      "course": "main",
+      "diets": [
+        "vegetarian",
+        "gluten-free",
+        "high-protein"
+      ],
+      "methods": [
+        "stovetop",
+        "one-pan"
+      ],
+      "timeMinutes": 40,
+      "servings": 4,
+      "difficulty": "medium",
+      "plateCategories": [
+        "produce",
+        "protein",
+        "spices"
+      ],
+      "ingredients": [
+        {
+          "name": "spinach",
+          "amount": "1 lb",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "paneer",
+          "amount": "10 oz",
+          "category": "dairy",
+          "staple": false
+        },
+        {
+          "name": "onion",
+          "amount": "1",
+          "category": "produce",
+          "staple": true
+        },
+        {
+          "name": "tomato",
+          "amount": "2",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "garlic",
+          "amount": "4 cloves",
+          "category": "produce",
+          "staple": true
+        },
+        {
+          "name": "ginger",
+          "amount": "1 tbsp grated",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "garam masala",
+          "amount": "1 tsp",
+          "category": "spices",
+          "staple": false
+        },
+        {
+          "name": "cumin",
+          "amount": "1 tsp",
+          "category": "spices",
+          "staple": true
+        },
+        {
+          "name": "turmeric",
+          "amount": "1/2 tsp",
+          "category": "spices",
+          "staple": true
+        },
+        {
+          "name": "heavy cream",
+          "amount": "1/4 cup",
+          "category": "dairy",
+          "staple": false
+        },
+        {
+          "name": "butter",
+          "amount": "2 tbsp",
+          "category": "dairy",
+          "staple": true
+        }
+      ],
+      "steps": [
+        "Blanch the spinach in boiling water for 1 minute, drain, cool under cold water, then blend to a smooth puree.",
+        "Cube the paneer and lightly fry in 1 tablespoon butter until golden at the edges, then set aside.",
+        "Melt the remaining butter and cook the cumin until fragrant, then add chopped onion and cook until soft.",
+        "Stir in the garlic, ginger, and chopped tomato and cook until the tomato breaks down, about 6 minutes.",
+        "Add the turmeric and garam masala, then stir in the spinach puree and simmer for 5 minutes.",
+        "Fold in the paneer and cream, warm through, and season with salt before serving."
+      ]
+    },
+    {
+      "name": "Mushroom and white bean ragout",
+      "blurb": "Meaty mixed mushrooms and creamy cannellini beans in a thyme-scented pan sauce.",
+      "cuisine": "Italian",
+      "mealType": "dinner",
+      "course": "main",
+      "diets": [
+        "vegan",
+        "dairy-free",
+        "gluten-free"
+      ],
+      "methods": [
+        "stovetop",
+        "one-pan"
+      ],
+      "timeMinutes": 30,
+      "servings": 4,
+      "difficulty": "easy",
+      "plateCategories": [
+        "produce",
+        "legumes",
+        "spices"
+      ],
+      "ingredients": [
+        {
+          "name": "mixed mushrooms",
+          "amount": "1 lb",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "cannellini beans",
+          "amount": "2 cans",
+          "category": "canned",
+          "staple": false
+        },
+        {
+          "name": "garlic",
+          "amount": "3 cloves",
+          "category": "produce",
+          "staple": true
+        },
+        {
+          "name": "shallot",
+          "amount": "1",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "fresh thyme",
+          "amount": "1 tbsp",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "vegetable broth",
+          "amount": "1 cup",
+          "category": "canned",
+          "staple": false
+        },
+        {
+          "name": "white wine",
+          "amount": "1/2 cup",
+          "category": "alcohol",
+          "staple": false
+        },
+        {
+          "name": "olive oil",
+          "amount": "3 tbsp",
+          "category": "oils",
+          "staple": true
+        },
+        {
+          "name": "lemon",
+          "amount": "1",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "parsley",
+          "amount": "1/4 cup",
+          "category": "produce",
+          "staple": false
+        }
+      ],
+      "steps": [
+        "Heat the olive oil in a wide pan over high and sear the sliced mushrooms undisturbed until deeply browned, about 6 minutes.",
+        "Lower the heat, add the chopped shallot and garlic with the thyme, and cook 2 minutes.",
+        "Pour in the wine and simmer until nearly evaporated, scraping up any browned bits.",
+        "Add the drained beans and broth and simmer until the sauce thickens slightly, about 8 minutes.",
+        "Finish with a squeeze of lemon and chopped parsley, and serve over toast or polenta."
+      ]
+    },
+    {
+      "name": "Chana masala",
+      "blurb": "Chickpeas simmered in a tangy tomato-onion gravy bright with amchur and garam masala.",
+      "cuisine": "Indian",
+      "mealType": "dinner",
+      "course": "main",
+      "diets": [
+        "vegan",
+        "gluten-free",
+        "dairy-free"
+      ],
+      "methods": [
+        "stovetop",
+        "one-pan"
+      ],
+      "timeMinutes": 35,
+      "servings": 4,
+      "difficulty": "easy",
+      "plateCategories": [
+        "legumes",
+        "produce",
+        "spices"
+      ],
+      "ingredients": [
+        {
+          "name": "chickpeas",
+          "amount": "2 cans",
+          "category": "canned",
+          "staple": false
+        },
+        {
+          "name": "onion",
+          "amount": "1",
+          "category": "produce",
+          "staple": true
+        },
+        {
+          "name": "tomato",
+          "amount": "3",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "garlic",
+          "amount": "4 cloves",
+          "category": "produce",
+          "staple": true
+        },
+        {
+          "name": "ginger",
+          "amount": "1 tbsp grated",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "garam masala",
+          "amount": "1.5 tsp",
+          "category": "spices",
+          "staple": false
+        },
+        {
+          "name": "cumin",
+          "amount": "1 tsp",
+          "category": "spices",
+          "staple": true
+        },
+        {
+          "name": "coriander",
+          "amount": "1 tsp",
+          "category": "spices",
+          "staple": false
+        },
+        {
+          "name": "turmeric",
+          "amount": "1/2 tsp",
+          "category": "spices",
+          "staple": true
+        },
+        {
+          "name": "amchur",
+          "amount": "1 tsp",
+          "category": "spices",
+          "staple": false
+        },
+        {
+          "name": "vegetable oil",
+          "amount": "2 tbsp",
+          "category": "oils",
+          "staple": true
+        },
+        {
+          "name": "cilantro",
+          "amount": "1/4 cup",
+          "category": "produce",
+          "staple": false
+        }
+      ],
+      "steps": [
+        "Heat the oil and cook the cumin seeds until they crackle, then add finely chopped onion and cook until golden, about 8 minutes.",
+        "Stir in the garlic and ginger for 1 minute, then add the grated or chopped tomato and cook until jammy, about 8 minutes.",
+        "Add the turmeric, coriander, garam masala, and amchur and cook 1 minute until fragrant.",
+        "Tip in the drained chickpeas with 1 cup water and simmer for 12 minutes, mashing a few chickpeas to thicken the gravy.",
+        "Season with salt, finish with cilantro, and serve with rice or flatbread."
+      ]
+    },
+    {
+      "name": "Red lentil dal",
+      "blurb": "Silky red lentils with a sizzling cumin-and-garlic tarka poured over the top.",
+      "cuisine": "Indian",
+      "mealType": "dinner",
+      "course": "main",
+      "diets": [
+        "vegan",
+        "gluten-free",
+        "dairy-free",
+        "high-protein"
+      ],
+      "methods": [
+        "stovetop",
+        "one-pan"
+      ],
+      "timeMinutes": 35,
+      "servings": 4,
+      "difficulty": "easy",
+      "plateCategories": [
+        "legumes",
+        "spices",
+        "produce"
+      ],
+      "ingredients": [
+        {
+          "name": "red lentils",
+          "amount": "1.5 cups",
+          "category": "legumes",
+          "staple": false
+        },
+        {
+          "name": "onion",
+          "amount": "1",
+          "category": "produce",
+          "staple": true
+        },
+        {
+          "name": "garlic",
+          "amount": "4 cloves",
+          "category": "produce",
+          "staple": true
+        },
+        {
+          "name": "ginger",
+          "amount": "1 tbsp grated",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "turmeric",
+          "amount": "1 tsp",
+          "category": "spices",
+          "staple": true
+        },
+        {
+          "name": "cumin",
+          "amount": "1 tsp",
+          "category": "spices",
+          "staple": true
+        },
+        {
+          "name": "tomato",
+          "amount": "1",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "coconut oil",
+          "amount": "2 tbsp",
+          "category": "oils",
+          "staple": false
+        },
+        {
+          "name": "lemon",
+          "amount": "1",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "cilantro",
+          "amount": "1/4 cup",
+          "category": "produce",
+          "staple": false
+        }
+      ],
+      "steps": [
+        "Rinse the lentils, then simmer with the turmeric, chopped tomato, and 4 cups water until soft and broken down, about 20 minutes, stirring occasionally.",
+        "Season the dal with salt and whisk briefly to make it creamy, adding water to loosen if needed.",
+        "Heat the coconut oil in a small pan and fry the cumin seeds until they pop, then add chopped onion and cook until golden.",
+        "Add the garlic and ginger to the pan and cook 1 minute until fragrant.",
+        "Pour the sizzling tarka over the dal, stir through, and finish with lemon juice and cilantro."
+      ]
+    },
+    {
+      "name": "Stuffed portobello mushrooms",
+      "blurb": "Big mushroom caps filled with garlicky spinach, sun-dried tomato, and crisp breadcrumbs.",
+      "cuisine": "Italian",
+      "mealType": "dinner",
+      "course": "main",
+      "diets": [
+        "vegetarian"
+      ],
+      "methods": [
+        "bake",
+        "sheet-pan"
+      ],
+      "timeMinutes": 35,
+      "servings": 4,
+      "difficulty": "easy",
+      "plateCategories": [
+        "produce",
+        "breads",
+        "dairy"
+      ],
+      "ingredients": [
+        {
+          "name": "portobello mushrooms",
+          "amount": "4 large",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "spinach",
+          "amount": "5 oz",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "sun-dried tomatoes",
+          "amount": "1/3 cup",
+          "category": "canned",
+          "staple": false
+        },
+        {
+          "name": "breadcrumbs",
+          "amount": "3/4 cup",
+          "category": "breads",
+          "staple": false
+        },
+        {
+          "name": "parmesan",
+          "amount": "1/2 cup grated",
+          "category": "dairy",
+          "staple": false
+        },
+        {
+          "name": "garlic",
+          "amount": "3 cloves",
+          "category": "produce",
+          "staple": true
+        },
+        {
+          "name": "olive oil",
+          "amount": "3 tbsp",
+          "category": "oils",
+          "staple": true
+        },
+        {
+          "name": "fresh basil",
+          "amount": "1/4 cup",
+          "category": "produce",
+          "staple": false
+        }
+      ],
+      "steps": [
+        "Heat the oven to 400F and remove the stems and gills from the mushroom caps, then brush all over with olive oil.",
+        "Wilt the spinach with the garlic in a hot pan, then chop with the sun-dried tomatoes.",
+        "Mix the spinach mixture with the breadcrumbs, half the parmesan, and a drizzle of oil.",
+        "Pile the filling into the caps, top with the remaining parmesan, and arrange on a lined sheet pan.",
+        "Bake for 18 to 20 minutes until the mushrooms are tender and the topping is golden, then finish with torn basil."
+      ]
+    },
+    {
+      "name": "Black bean and sweet potato enchiladas",
+      "blurb": "Soft tortillas rolled around spiced sweet potato and black beans under a smoky red sauce.",
+      "cuisine": "Mexican",
+      "mealType": "dinner",
+      "course": "main",
+      "diets": [
+        "vegetarian",
+        "high-protein"
+      ],
+      "methods": [
+        "bake"
+      ],
+      "timeMinutes": 55,
+      "servings": 4,
+      "difficulty": "medium",
+      "plateCategories": [
+        "legumes",
+        "produce",
+        "breads"
+      ],
+      "ingredients": [
+        {
+          "name": "sweet potato",
+          "amount": "2 medium",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "black beans",
+          "amount": "2 cans",
+          "category": "canned",
+          "staple": false
+        },
+        {
+          "name": "flour tortillas",
+          "amount": "8",
+          "category": "breads",
+          "staple": false
+        },
+        {
+          "name": "enchilada sauce",
+          "amount": "2 cups",
+          "category": "canned",
+          "staple": false
+        },
+        {
+          "name": "cheddar cheese",
+          "amount": "1.5 cups grated",
+          "category": "dairy",
+          "staple": false
+        },
+        {
+          "name": "onion",
+          "amount": "1",
+          "category": "produce",
+          "staple": true
+        },
+        {
+          "name": "cumin",
+          "amount": "1 tsp",
+          "category": "spices",
+          "staple": true
+        },
+        {
+          "name": "smoked paprika",
+          "amount": "1 tsp",
+          "category": "spices",
+          "staple": true
+        },
+        {
+          "name": "olive oil",
+          "amount": "2 tbsp",
+          "category": "oils",
+          "staple": true
+        },
+        {
+          "name": "cilantro",
+          "amount": "1/4 cup",
+          "category": "produce",
+          "staple": false
+        }
+      ],
+      "steps": [
+        "Heat the oven to 400F and roast the peeled, diced sweet potato with oil, cumin, and paprika for 25 minutes until tender.",
+        "Soften the chopped onion in a pan, then stir in the drained black beans and the roasted sweet potato, mashing slightly.",
+        "Spread a thin layer of enchilada sauce in a baking dish.",
+        "Fill each tortilla with the bean mixture, roll up, and place seam side down in the dish.",
+        "Pour the remaining sauce over the top, scatter with cheese, and bake for 20 minutes until bubbling.",
+        "Finish with cilantro before serving."
+      ]
+    },
+    {
+      "name": "Coconut chickpea curry",
+      "blurb": "A quick, creamy curry of chickpeas and spinach in fragrant coconut and tomato.",
+      "cuisine": "Indian",
+      "mealType": "dinner",
+      "course": "main",
+      "diets": [
+        "vegan",
+        "gluten-free",
+        "dairy-free",
+        "high-protein"
+      ],
+      "methods": [
+        "stovetop",
+        "one-pan"
+      ],
+      "timeMinutes": 30,
+      "servings": 4,
+      "difficulty": "easy",
+      "plateCategories": [
+        "legumes",
+        "produce",
+        "spices"
+      ],
+      "ingredients": [
+        {
+          "name": "chickpeas",
+          "amount": "2 cans",
+          "category": "canned",
+          "staple": false
+        },
+        {
+          "name": "coconut milk",
+          "amount": "1 can",
+          "category": "canned",
+          "staple": false
+        },
+        {
+          "name": "diced tomatoes",
+          "amount": "1 can",
+          "category": "canned",
+          "staple": false
+        },
+        {
+          "name": "spinach",
+          "amount": "4 oz",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "onion",
+          "amount": "1",
+          "category": "produce",
+          "staple": true
+        },
+        {
+          "name": "garlic",
+          "amount": "3 cloves",
+          "category": "produce",
+          "staple": true
+        },
+        {
+          "name": "ginger",
+          "amount": "1 tbsp grated",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "curry powder",
+          "amount": "2 tbsp",
+          "category": "spices",
+          "staple": false
+        },
+        {
+          "name": "vegetable oil",
+          "amount": "2 tbsp",
+          "category": "oils",
+          "staple": true
+        },
+        {
+          "name": "lime",
+          "amount": "1",
+          "category": "produce",
+          "staple": false
+        }
+      ],
+      "steps": [
+        "Heat the oil and soften the chopped onion for 5 minutes, then add the garlic, ginger, and curry powder and cook 1 minute.",
+        "Add the diced tomatoes and simmer for 5 minutes until slightly reduced.",
+        "Stir in the drained chickpeas and coconut milk and simmer gently for 12 minutes.",
+        "Fold in the spinach until wilted, then season with salt and a squeeze of lime.",
+        "Serve over rice or with naan."
+      ]
+    },
+    {
+      "name": "Tofu pad thai",
+      "blurb": "Springy rice noodles tossed with crispy tofu, peanuts, and a sweet-tangy tamarind sauce.",
+      "cuisine": "Thai",
+      "mealType": "dinner",
+      "course": "main",
+      "diets": [
+        "vegetarian",
+        "dairy-free"
+      ],
+      "methods": [
+        "stovetop",
+        "one-pan"
+      ],
+      "timeMinutes": 35,
+      "servings": 4,
+      "difficulty": "medium",
+      "plateCategories": [
+        "pasta",
+        "protein",
+        "condiments"
+      ],
+      "ingredients": [
+        {
+          "name": "rice noodles",
+          "amount": "8 oz",
+          "category": "pasta",
+          "staple": false
+        },
+        {
+          "name": "firm tofu",
+          "amount": "10 oz",
+          "category": "protein",
+          "staple": false
+        },
+        {
+          "name": "tamarind paste",
+          "amount": "2 tbsp",
+          "category": "condiments",
+          "staple": false
+        },
+        {
+          "name": "soy sauce",
+          "amount": "3 tbsp",
+          "category": "condiments",
+          "staple": true
+        },
+        {
+          "name": "brown sugar",
+          "amount": "2 tbsp",
+          "category": "bakingSupplies",
+          "staple": false
+        },
+        {
+          "name": "bean sprouts",
+          "amount": "2 cups",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "scallions",
+          "amount": "4",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "peanuts",
+          "amount": "1/3 cup",
+          "category": "nuts",
+          "staple": false
+        },
+        {
+          "name": "garlic",
+          "amount": "3 cloves",
+          "category": "produce",
+          "staple": true
+        },
+        {
+          "name": "egg",
+          "amount": "2",
+          "category": "protein",
+          "staple": false
+        },
+        {
+          "name": "vegetable oil",
+          "amount": "3 tbsp",
+          "category": "oils",
+          "staple": true
+        },
+        {
+          "name": "lime",
+          "amount": "1",
+          "category": "produce",
+          "staple": false
+        }
+      ],
+      "steps": [
+        "Soak the rice noodles in hot water until pliable, then drain.",
+        "Whisk the tamarind paste, soy sauce, and brown sugar with 2 tablespoons water to make the sauce.",
+        "Fry the cubed tofu in oil until golden, then push to one side and scramble the eggs.",
+        "Add the garlic and noodles, pour in the sauce, and toss over high heat until the noodles soften and absorb the sauce.",
+        "Stir in most of the bean sprouts and scallions, then plate and top with peanuts, the remaining sprouts, and lime wedges."
+      ]
+    },
+    {
+      "name": "Lentil shepherd's pie",
+      "blurb": "Savory braised lentils and vegetables under a cloud of golden mashed potato.",
+      "cuisine": "British",
+      "mealType": "dinner",
+      "course": "main",
+      "diets": [
+        "vegan",
+        "gluten-free",
+        "dairy-free"
+      ],
+      "methods": [
+        "bake",
+        "stovetop"
+      ],
+      "timeMinutes": 60,
+      "servings": 6,
+      "difficulty": "medium",
+      "plateCategories": [
+        "legumes",
+        "produce",
+        "spices"
+      ],
+      "ingredients": [
+        {
+          "name": "green lentils",
+          "amount": "1.5 cups",
+          "category": "legumes",
+          "staple": false
+        },
+        {
+          "name": "potatoes",
+          "amount": "2 lb",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "carrots",
+          "amount": "2",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "onion",
+          "amount": "1",
+          "category": "produce",
+          "staple": true
+        },
+        {
+          "name": "celery",
+          "amount": "2 stalks",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "tomato paste",
+          "amount": "2 tbsp",
+          "category": "canned",
+          "staple": false
+        },
+        {
+          "name": "vegetable broth",
+          "amount": "2 cups",
+          "category": "canned",
+          "staple": false
+        },
+        {
+          "name": "fresh thyme",
+          "amount": "1 tbsp",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "olive oil",
+          "amount": "3 tbsp",
+          "category": "oils",
+          "staple": true
+        },
+        {
+          "name": "frozen peas",
+          "amount": "1 cup",
+          "category": "frozenFoods",
+          "staple": false
+        }
+      ],
+      "steps": [
+        "Simmer the rinsed lentils in plenty of water until just tender, about 20 minutes, then drain.",
+        "Boil the peeled, chopped potatoes until soft, then mash with 2 tablespoons olive oil and salt.",
+        "Heat the remaining oil and soften the diced onion, carrot, and celery for 8 minutes, then stir in the tomato paste and thyme.",
+        "Add the lentils, broth, and peas and simmer until thickened, about 8 minutes, then season well.",
+        "Spread the filling in a baking dish, top with the mash, and rough the surface with a fork.",
+        "Bake at 400F for 25 minutes until the top is golden."
+      ]
+    },
+    {
+      "name": "Miso-glazed eggplant",
+      "blurb": "Soft, custardy eggplant lacquered with a sweet-savory miso glaze and broiled until caramelized.",
+      "cuisine": "Japanese",
+      "mealType": "dinner",
+      "course": "main",
+      "diets": [
+        "vegan",
+        "dairy-free"
+      ],
+      "methods": [
+        "bake",
+        "stovetop"
+      ],
+      "timeMinutes": 35,
+      "servings": 4,
+      "difficulty": "easy",
+      "plateCategories": [
+        "produce",
+        "condiments",
+        "spices"
+      ],
+      "ingredients": [
+        {
+          "name": "eggplant",
+          "amount": "2 medium",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "white miso",
+          "amount": "3 tbsp",
+          "category": "condiments",
+          "staple": false
+        },
+        {
+          "name": "mirin",
+          "amount": "2 tbsp",
+          "category": "condiments",
+          "staple": false
+        },
+        {
+          "name": "maple syrup",
+          "amount": "1 tbsp",
+          "category": "condiments",
+          "staple": false
+        },
+        {
+          "name": "rice vinegar",
+          "amount": "1 tbsp",
+          "category": "condiments",
+          "staple": false
+        },
+        {
+          "name": "sesame oil",
+          "amount": "2 tbsp",
+          "category": "oils",
+          "staple": false
+        },
+        {
+          "name": "scallions",
+          "amount": "2",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "sesame seeds",
+          "amount": "1 tbsp",
+          "category": "spices",
+          "staple": false
+        }
+      ],
+      "steps": [
+        "Halve the eggplants lengthwise and score the cut sides in a diamond pattern.",
+        "Brush the cut sides with sesame oil and roast at 425F for 20 minutes until soft.",
+        "Whisk the miso, mirin, maple syrup, and rice vinegar into a smooth glaze.",
+        "Spread the glaze over the eggplant and broil for 3 to 4 minutes until bubbling and caramelized.",
+        "Garnish with sliced scallions and sesame seeds."
+      ]
+    },
+    {
+      "name": "Chickpea shawarma bowls",
+      "blurb": "Crisp spiced chickpeas over fluffy grains with tahini drizzle and quick-pickled onions.",
+      "cuisine": "Middle Eastern",
+      "mealType": "lunch",
+      "course": "main",
+      "diets": [
+        "vegan",
+        "dairy-free",
+        "high-protein"
+      ],
+      "methods": [
+        "bake",
+        "sheet-pan"
+      ],
+      "timeMinutes": 40,
+      "servings": 4,
+      "difficulty": "easy",
+      "plateCategories": [
+        "legumes",
+        "grains",
+        "produce"
+      ],
+      "ingredients": [
+        {
+          "name": "chickpeas",
+          "amount": "2 cans",
+          "category": "canned",
+          "staple": false
+        },
+        {
+          "name": "couscous",
+          "amount": "1.5 cups",
+          "category": "grains",
+          "staple": false
+        },
+        {
+          "name": "cumin",
+          "amount": "1 tsp",
+          "category": "spices",
+          "staple": true
+        },
+        {
+          "name": "coriander",
+          "amount": "1 tsp",
+          "category": "spices",
+          "staple": false
+        },
+        {
+          "name": "smoked paprika",
+          "amount": "1 tsp",
+          "category": "spices",
+          "staple": true
+        },
+        {
+          "name": "turmeric",
+          "amount": "1/2 tsp",
+          "category": "spices",
+          "staple": true
+        },
+        {
+          "name": "tahini",
+          "amount": "1/4 cup",
+          "category": "condiments",
+          "staple": false
+        },
+        {
+          "name": "lemon",
+          "amount": "1",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "red onion",
+          "amount": "1",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "cucumber",
+          "amount": "1",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "olive oil",
+          "amount": "3 tbsp",
+          "category": "oils",
+          "staple": true
+        }
+      ],
+      "steps": [
+        "Heat the oven to 425F and toss the drained chickpeas with oil, cumin, coriander, paprika, and turmeric, then roast for 25 minutes until crisp.",
+        "Cover the couscous with an equal volume of boiling water, cover, and let stand 5 minutes, then fluff.",
+        "Thinly slice the red onion and toss with the juice of half the lemon and a pinch of salt to quick-pickle.",
+        "Whisk the tahini with the remaining lemon juice and enough water to make a pourable sauce.",
+        "Build bowls with couscous, chickpeas, sliced cucumber, and pickled onion, then drizzle with tahini sauce."
+      ]
+    },
+    {
+      "name": "Greek salad",
+      "blurb": "Sun-ripe tomatoes, cucumber, and creamy feta dressed simply in olive oil and oregano.",
+      "cuisine": "Greek",
+      "mealType": "lunch",
+      "course": "salad",
+      "diets": [
+        "vegetarian",
+        "gluten-free",
+        "low-carb"
+      ],
+      "methods": [
+        "no-cook",
+        "raw"
+      ],
+      "timeMinutes": 15,
+      "servings": 4,
+      "difficulty": "easy",
+      "plateCategories": [
+        "produce",
+        "dairy",
+        "oils"
+      ],
+      "ingredients": [
+        {
+          "name": "tomatoes",
+          "amount": "4",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "cucumber",
+          "amount": "1",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "red onion",
+          "amount": "1/2",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "feta cheese",
+          "amount": "6 oz",
+          "category": "dairy",
+          "staple": false
+        },
+        {
+          "name": "kalamata olives",
+          "amount": "1/2 cup",
+          "category": "canned",
+          "staple": false
+        },
+        {
+          "name": "green bell pepper",
+          "amount": "1",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "olive oil",
+          "amount": "1/4 cup",
+          "category": "oils",
+          "staple": true
+        },
+        {
+          "name": "dried oregano",
+          "amount": "1 tsp",
+          "category": "spices",
+          "staple": true
+        },
+        {
+          "name": "red wine vinegar",
+          "amount": "1 tbsp",
+          "category": "condiments",
+          "staple": false
+        }
+      ],
+      "steps": [
+        "Cut the tomatoes into wedges and the cucumber into thick half-moons.",
+        "Thinly slice the red onion and bell pepper.",
+        "Combine the vegetables and olives in a wide bowl.",
+        "Whisk the olive oil, vinegar, and oregano with a pinch of salt and pour over.",
+        "Top with a slab of feta, drizzle with a little more oil, and serve."
+      ]
+    },
+    {
+      "name": "Quinoa tabbouleh",
+      "blurb": "A herb-forward, lemony grain salad with quinoa standing in for bulgur.",
+      "cuisine": "Middle Eastern",
+      "mealType": "lunch",
+      "course": "salad",
+      "diets": [
+        "vegan",
+        "gluten-free",
+        "dairy-free"
+      ],
+      "methods": [
+        "stovetop",
+        "no-cook"
+      ],
+      "timeMinutes": 30,
+      "servings": 4,
+      "difficulty": "easy",
+      "plateCategories": [
+        "grains",
+        "produce",
+        "oils"
+      ],
+      "ingredients": [
+        {
+          "name": "quinoa",
+          "amount": "1 cup",
+          "category": "grains",
+          "staple": false
+        },
+        {
+          "name": "parsley",
+          "amount": "2 cups chopped",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "fresh mint",
+          "amount": "1/2 cup chopped",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "tomatoes",
+          "amount": "2",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "cucumber",
+          "amount": "1",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "scallions",
+          "amount": "3",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "lemon",
+          "amount": "2",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "olive oil",
+          "amount": "1/4 cup",
+          "category": "oils",
+          "staple": true
+        }
+      ],
+      "steps": [
+        "Rinse the quinoa, then simmer in 2 cups water until tender and the grains uncurl, about 15 minutes, and let cool.",
+        "Finely chop the parsley, mint, tomatoes, cucumber, and scallions.",
+        "Combine the cooled quinoa with the herbs and vegetables.",
+        "Dress generously with lemon juice, olive oil, and salt, then taste and adjust the lemon."
+      ]
+    },
+    {
+      "name": "Crunchy Asian slaw",
+      "blurb": "Shredded cabbage and carrot in a punchy sesame-ginger dressing with toasted almonds.",
+      "cuisine": "Asian",
+      "mealType": "lunch",
+      "course": "salad",
+      "diets": [
+        "vegan",
+        "dairy-free"
+      ],
+      "methods": [
+        "no-cook",
+        "raw"
+      ],
+      "timeMinutes": 20,
+      "servings": 6,
+      "difficulty": "easy",
+      "plateCategories": [
+        "produce",
+        "condiments",
+        "nuts"
+      ],
+      "ingredients": [
+        {
+          "name": "green cabbage",
+          "amount": "1/2 head",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "red cabbage",
+          "amount": "1/4 head",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "carrots",
+          "amount": "2",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "scallions",
+          "amount": "4",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "almonds",
+          "amount": "1/3 cup sliced",
+          "category": "nuts",
+          "staple": false
+        },
+        {
+          "name": "soy sauce",
+          "amount": "2 tbsp",
+          "category": "condiments",
+          "staple": true
+        },
+        {
+          "name": "rice vinegar",
+          "amount": "3 tbsp",
+          "category": "condiments",
+          "staple": false
+        },
+        {
+          "name": "sesame oil",
+          "amount": "2 tbsp",
+          "category": "oils",
+          "staple": false
+        },
+        {
+          "name": "maple syrup",
+          "amount": "1 tbsp",
+          "category": "condiments",
+          "staple": false
+        },
+        {
+          "name": "ginger",
+          "amount": "1 tbsp grated",
+          "category": "produce",
+          "staple": false
+        }
+      ],
+      "steps": [
+        "Finely shred both cabbages and the carrots, and slice the scallions.",
+        "Toast the sliced almonds in a dry pan until golden, then set aside.",
+        "Whisk the soy sauce, rice vinegar, sesame oil, maple syrup, and ginger into a dressing.",
+        "Toss the vegetables with the dressing and let sit 10 minutes to soften slightly.",
+        "Top with the toasted almonds just before serving."
+      ]
+    },
+    {
+      "name": "Roasted beet and goat cheese salad",
+      "blurb": "Sweet roasted beets, tangy goat cheese, and toasted walnuts over peppery greens.",
+      "cuisine": "American",
+      "mealType": "lunch",
+      "course": "salad",
+      "diets": [
+        "vegetarian",
+        "gluten-free",
+        "low-carb"
+      ],
+      "methods": [
+        "bake",
+        "no-cook"
+      ],
+      "timeMinutes": 50,
+      "servings": 4,
+      "difficulty": "easy",
+      "plateCategories": [
+        "produce",
+        "dairy",
+        "nuts"
+      ],
+      "ingredients": [
+        {
+          "name": "beets",
+          "amount": "4 medium",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "goat cheese",
+          "amount": "4 oz",
+          "category": "dairy",
+          "staple": false
+        },
+        {
+          "name": "walnuts",
+          "amount": "1/2 cup",
+          "category": "nuts",
+          "staple": false
+        },
+        {
+          "name": "arugula",
+          "amount": "5 oz",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "olive oil",
+          "amount": "3 tbsp",
+          "category": "oils",
+          "staple": true
+        },
+        {
+          "name": "balsamic vinegar",
+          "amount": "2 tbsp",
+          "category": "condiments",
+          "staple": false
+        },
+        {
+          "name": "honey",
+          "amount": "1 tsp",
+          "category": "condiments",
+          "staple": false
+        }
+      ],
+      "steps": [
+        "Wrap the beets in foil and roast at 400F for 45 minutes until tender, then cool, peel, and cut into wedges.",
+        "Toast the walnuts in a dry pan until fragrant.",
+        "Whisk the olive oil, balsamic vinegar, and honey with a pinch of salt.",
+        "Toss the arugula with most of the dressing and pile onto plates.",
+        "Top with the beets, crumbled goat cheese, and walnuts, then drizzle with the remaining dressing."
+      ]
+    },
+    {
+      "name": "Caprese salad",
+      "blurb": "Layers of ripe tomato, fresh mozzarella, and basil finished with good olive oil.",
+      "cuisine": "Italian",
+      "mealType": "lunch",
+      "course": "salad",
+      "diets": [
+        "vegetarian",
+        "gluten-free",
+        "low-carb"
+      ],
+      "methods": [
+        "no-cook",
+        "raw"
+      ],
+      "timeMinutes": 10,
+      "servings": 4,
+      "difficulty": "easy",
+      "plateCategories": [
+        "produce",
+        "dairy",
+        "oils"
+      ],
+      "ingredients": [
+        {
+          "name": "tomatoes",
+          "amount": "4",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "fresh mozzarella",
+          "amount": "8 oz",
+          "category": "dairy",
+          "staple": false
+        },
+        {
+          "name": "fresh basil",
+          "amount": "1/2 cup",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "olive oil",
+          "amount": "3 tbsp",
+          "category": "oils",
+          "staple": true
+        },
+        {
+          "name": "balsamic glaze",
+          "amount": "1 tbsp",
+          "category": "condiments",
+          "staple": false
+        },
+        {
+          "name": "flaky salt",
+          "amount": "1 pinch",
+          "category": "spices",
+          "staple": true
+        },
+        {
+          "name": "black pepper",
+          "amount": "to taste",
+          "category": "spices",
+          "staple": true
+        }
+      ],
+      "steps": [
+        "Slice the tomatoes and mozzarella into rounds of similar thickness.",
+        "Arrange them alternating on a platter, tucking basil leaves between the slices.",
+        "Drizzle with olive oil and a little balsamic glaze.",
+        "Season with flaky salt and black pepper and serve right away."
+      ]
+    },
+    {
+      "name": "Farro and roasted squash salad",
+      "blurb": "Chewy farro with caramelized butternut, dried cranberries, and a maple-mustard dressing.",
+      "cuisine": "American",
+      "mealType": "lunch",
+      "course": "salad",
+      "diets": [
+        "vegan",
+        "dairy-free"
+      ],
+      "methods": [
+        "bake",
+        "stovetop"
+      ],
+      "timeMinutes": 50,
+      "servings": 6,
+      "difficulty": "medium",
+      "plateCategories": [
+        "grains",
+        "produce",
+        "nuts"
+      ],
+      "ingredients": [
+        {
+          "name": "farro",
+          "amount": "1.5 cups",
+          "category": "grains",
+          "staple": false
+        },
+        {
+          "name": "butternut squash",
+          "amount": "1 small",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "dried cranberries",
+          "amount": "1/3 cup",
+          "category": "snacks",
+          "staple": false
+        },
+        {
+          "name": "pecans",
+          "amount": "1/2 cup",
+          "category": "nuts",
+          "staple": false
+        },
+        {
+          "name": "arugula",
+          "amount": "3 oz",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "dijon mustard",
+          "amount": "1 tbsp",
+          "category": "condiments",
+          "staple": false
+        },
+        {
+          "name": "maple syrup",
+          "amount": "1 tbsp",
+          "category": "condiments",
+          "staple": false
+        },
+        {
+          "name": "apple cider vinegar",
+          "amount": "2 tbsp",
+          "category": "condiments",
+          "staple": false
+        },
+        {
+          "name": "olive oil",
+          "amount": "1/4 cup",
+          "category": "oils",
+          "staple": true
+        }
+      ],
+      "steps": [
+        "Cook the farro in salted water until tender and chewy, about 25 minutes, then drain and cool.",
+        "Roast the peeled, cubed squash with 1 tablespoon oil at 425F for 25 minutes until caramelized.",
+        "Toast the pecans in a dry pan until fragrant, then roughly chop.",
+        "Whisk the mustard, maple syrup, vinegar, and remaining oil into a dressing.",
+        "Toss the farro, squash, cranberries, pecans, and arugula with the dressing and season to taste."
+      ]
+    },
+    {
+      "name": "Classic coleslaw",
+      "blurb": "A creamy, tangy cabbage slaw that is the perfect crunchy partner to anything off the grill.",
+      "cuisine": "American",
+      "mealType": "lunch",
+      "course": "side",
+      "diets": [
+        "vegetarian",
+        "gluten-free"
+      ],
+      "methods": [
+        "no-cook",
+        "raw"
+      ],
+      "timeMinutes": 15,
+      "servings": 6,
+      "difficulty": "easy",
+      "plateCategories": [
+        "produce",
+        "condiments",
+        "dairy"
+      ],
+      "ingredients": [
+        {
+          "name": "green cabbage",
+          "amount": "1/2 head",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "carrots",
+          "amount": "2",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "mayonnaise",
+          "amount": "1/2 cup",
+          "category": "condiments",
+          "staple": false
+        },
+        {
+          "name": "apple cider vinegar",
+          "amount": "2 tbsp",
+          "category": "condiments",
+          "staple": false
+        },
+        {
+          "name": "dijon mustard",
+          "amount": "1 tsp",
+          "category": "condiments",
+          "staple": false
+        },
+        {
+          "name": "sugar",
+          "amount": "1 tbsp",
+          "category": "bakingSupplies",
+          "staple": true
+        },
+        {
+          "name": "celery seed",
+          "amount": "1/2 tsp",
+          "category": "spices",
+          "staple": false
+        }
+      ],
+      "steps": [
+        "Finely shred the cabbage and grate the carrots into a large bowl.",
+        "Whisk the mayonnaise, vinegar, mustard, sugar, and celery seed with a good pinch of salt.",
+        "Pour the dressing over the vegetables and toss until evenly coated.",
+        "Chill for at least 20 minutes to let the flavors meld before serving."
+      ]
+    },
+    {
+      "name": "Warm lentil and feta salad",
+      "blurb": "Earthy green lentils tossed warm with roasted peppers, herbs, and salty feta.",
+      "cuisine": "Mediterranean",
+      "mealType": "lunch",
+      "course": "salad",
+      "diets": [
+        "vegetarian",
+        "gluten-free",
+        "high-protein"
+      ],
+      "methods": [
+        "stovetop"
+      ],
+      "timeMinutes": 35,
+      "servings": 4,
+      "difficulty": "easy",
+      "plateCategories": [
+        "legumes",
+        "produce",
+        "dairy"
+      ],
+      "ingredients": [
+        {
+          "name": "green lentils",
+          "amount": "1.5 cups",
+          "category": "legumes",
+          "staple": false
+        },
+        {
+          "name": "roasted red peppers",
+          "amount": "1 cup",
+          "category": "canned",
+          "staple": false
+        },
+        {
+          "name": "feta cheese",
+          "amount": "4 oz",
+          "category": "dairy",
+          "staple": false
+        },
+        {
+          "name": "red onion",
+          "amount": "1/2",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "parsley",
+          "amount": "1/2 cup",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "lemon",
+          "amount": "1",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "olive oil",
+          "amount": "3 tbsp",
+          "category": "oils",
+          "staple": true
+        },
+        {
+          "name": "dijon mustard",
+          "amount": "1 tsp",
+          "category": "condiments",
+          "staple": false
+        }
+      ],
+      "steps": [
+        "Simmer the rinsed lentils in salted water until tender but holding shape, about 22 minutes, then drain.",
+        "Whisk the lemon juice, mustard, and olive oil into a dressing.",
+        "While the lentils are warm, toss them with the dressing.",
+        "Fold in the chopped roasted peppers, thinly sliced red onion, and parsley.",
+        "Crumble the feta over the top and serve warm or at room temperature."
+      ]
+    },
+    {
+      "name": "Watermelon and feta salad",
+      "blurb": "Juicy watermelon, salty feta, and mint with a lime drizzle for a hot-day refresher.",
+      "cuisine": "Mediterranean",
+      "mealType": "lunch",
+      "course": "salad",
+      "diets": [
+        "vegetarian",
+        "gluten-free"
+      ],
+      "methods": [
+        "no-cook",
+        "raw"
+      ],
+      "timeMinutes": 15,
+      "servings": 4,
+      "difficulty": "easy",
+      "plateCategories": [
+        "produce",
+        "dairy",
+        "oils"
+      ],
+      "ingredients": [
+        {
+          "name": "watermelon",
+          "amount": "4 cups cubed",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "feta cheese",
+          "amount": "4 oz",
+          "category": "dairy",
+          "staple": false
+        },
+        {
+          "name": "fresh mint",
+          "amount": "1/4 cup",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "lime",
+          "amount": "1",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "olive oil",
+          "amount": "2 tbsp",
+          "category": "oils",
+          "staple": true
+        },
+        {
+          "name": "red onion",
+          "amount": "1/4",
+          "category": "produce",
+          "staple": false
+        }
+      ],
+      "steps": [
+        "Arrange the cubed watermelon on a platter.",
+        "Scatter over the crumbled feta, thinly sliced red onion, and torn mint.",
+        "Squeeze the lime over the top and drizzle with olive oil.",
+        "Finish with a little flaky salt and serve chilled."
+      ]
+    },
+    {
+      "name": "Kale Caesar with crispy chickpeas",
+      "blurb": "Massaged kale in a creamy vegan Caesar with crunchy roasted chickpeas instead of croutons.",
+      "cuisine": "American",
+      "mealType": "lunch",
+      "course": "salad",
+      "diets": [
+        "vegan",
+        "dairy-free",
+        "high-protein"
+      ],
+      "methods": [
+        "bake",
+        "no-cook"
+      ],
+      "timeMinutes": 35,
+      "servings": 4,
+      "difficulty": "easy",
+      "plateCategories": [
+        "produce",
+        "legumes",
+        "condiments"
+      ],
+      "ingredients": [
+        {
+          "name": "kale",
+          "amount": "1 large bunch",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "chickpeas",
+          "amount": "1 can",
+          "category": "canned",
+          "staple": false
+        },
+        {
+          "name": "tahini",
+          "amount": "3 tbsp",
+          "category": "condiments",
+          "staple": false
+        },
+        {
+          "name": "lemon",
+          "amount": "1",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "dijon mustard",
+          "amount": "1 tsp",
+          "category": "condiments",
+          "staple": false
+        },
+        {
+          "name": "garlic",
+          "amount": "1 clove",
+          "category": "produce",
+          "staple": true
+        },
+        {
+          "name": "capers",
+          "amount": "1 tbsp",
+          "category": "canned",
+          "staple": false
+        },
+        {
+          "name": "olive oil",
+          "amount": "2 tbsp",
+          "category": "oils",
+          "staple": true
+        },
+        {
+          "name": "nutritional yeast",
+          "amount": "2 tbsp",
+          "category": "condiments",
+          "staple": false
+        }
+      ],
+      "steps": [
+        "Toss the drained chickpeas with olive oil and salt and roast at 425F for 25 minutes until crisp.",
+        "Whisk the tahini, lemon juice, mustard, grated garlic, chopped capers, and nutritional yeast with water to a pourable dressing.",
+        "Strip the kale from the stems, tear into pieces, and massage with a little dressing until softened.",
+        "Toss the kale with the rest of the dressing.",
+        "Top with the crispy chickpeas just before serving."
+      ]
+    },
+    {
+      "name": "Caprese-style panzanella",
+      "blurb": "Crusty bread soaked in tomato juices with mozzarella, basil, and a sharp vinaigrette.",
+      "cuisine": "Italian",
+      "mealType": "lunch",
+      "course": "salad",
+      "diets": [
+        "vegetarian"
+      ],
+      "methods": [
+        "bake",
+        "no-cook"
+      ],
+      "timeMinutes": 25,
+      "servings": 4,
+      "difficulty": "easy",
+      "plateCategories": [
+        "breads",
+        "produce",
+        "dairy"
+      ],
+      "ingredients": [
+        {
+          "name": "crusty bread",
+          "amount": "4 cups cubed",
+          "category": "breads",
+          "staple": false
+        },
+        {
+          "name": "tomatoes",
+          "amount": "4",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "fresh mozzarella",
+          "amount": "8 oz",
+          "category": "dairy",
+          "staple": false
+        },
+        {
+          "name": "cucumber",
+          "amount": "1",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "fresh basil",
+          "amount": "1/2 cup",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "red wine vinegar",
+          "amount": "3 tbsp",
+          "category": "condiments",
+          "staple": false
+        },
+        {
+          "name": "olive oil",
+          "amount": "1/3 cup",
+          "category": "oils",
+          "staple": true
+        },
+        {
+          "name": "garlic",
+          "amount": "1 clove",
+          "category": "produce",
+          "staple": true
+        }
+      ],
+      "steps": [
+        "Toss the bread cubes with a little oil and toast at 400F for 10 minutes until golden but still chewy.",
+        "Cut the tomatoes into chunks, salt them, and let sit 10 minutes to release their juices.",
+        "Whisk the vinegar, remaining olive oil, and grated garlic into a vinaigrette.",
+        "Combine the bread, tomatoes with their juices, sliced cucumber, and torn mozzarella.",
+        "Pour over the vinaigrette, fold in the basil, and let stand 10 minutes before serving."
+      ]
+    },
+    {
+      "name": "Spiced carrot and chickpea salad",
+      "blurb": "Ribboned carrots and chickpeas in a warm cumin dressing brightened with lemon and herbs.",
+      "cuisine": "Moroccan",
+      "mealType": "lunch",
+      "course": "salad",
+      "diets": [
+        "vegan",
+        "gluten-free",
+        "dairy-free",
+        "high-protein"
+      ],
+      "methods": [
+        "no-cook",
+        "stovetop"
+      ],
+      "timeMinutes": 20,
+      "servings": 4,
+      "difficulty": "easy",
+      "plateCategories": [
+        "produce",
+        "legumes",
+        "spices"
+      ],
+      "ingredients": [
+        {
+          "name": "carrots",
+          "amount": "4",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "chickpeas",
+          "amount": "1 can",
+          "category": "canned",
+          "staple": false
+        },
+        {
+          "name": "cumin",
+          "amount": "1 tsp",
+          "category": "spices",
+          "staple": true
+        },
+        {
+          "name": "cinnamon",
+          "amount": "1/4 tsp",
+          "category": "spices",
+          "staple": true
+        },
+        {
+          "name": "lemon",
+          "amount": "1",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "parsley",
+          "amount": "1/4 cup",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "raisins",
+          "amount": "1/4 cup",
+          "category": "snacks",
+          "staple": false
+        },
+        {
+          "name": "olive oil",
+          "amount": "3 tbsp",
+          "category": "oils",
+          "staple": true
+        }
+      ],
+      "steps": [
+        "Peel the carrots into ribbons or coarsely grate them.",
+        "Warm the cumin and cinnamon in the olive oil for 30 seconds until fragrant, then take off the heat.",
+        "Whisk the lemon juice into the warm spiced oil.",
+        "Toss the carrots, drained chickpeas, and raisins with the dressing and season with salt.",
+        "Fold in the parsley and let sit 10 minutes before serving."
+      ]
+    },
+    {
+      "name": "Lentil and lemon soup",
+      "blurb": "A bright, comforting red lentil soup finished with a generous squeeze of lemon.",
+      "cuisine": "Middle Eastern",
+      "mealType": "lunch",
+      "course": "soup",
+      "diets": [
+        "vegan",
+        "gluten-free",
+        "dairy-free",
+        "high-protein"
+      ],
+      "methods": [
+        "stovetop",
+        "one-pan"
+      ],
+      "timeMinutes": 35,
+      "servings": 4,
+      "difficulty": "easy",
+      "plateCategories": [
+        "legumes",
+        "produce",
+        "spices"
+      ],
+      "ingredients": [
+        {
+          "name": "red lentils",
+          "amount": "1 cup",
+          "category": "legumes",
+          "staple": false
+        },
+        {
+          "name": "onion",
+          "amount": "1",
+          "category": "produce",
+          "staple": true
+        },
+        {
+          "name": "carrots",
+          "amount": "2",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "garlic",
+          "amount": "3 cloves",
+          "category": "produce",
+          "staple": true
+        },
+        {
+          "name": "cumin",
+          "amount": "1.5 tsp",
+          "category": "spices",
+          "staple": true
+        },
+        {
+          "name": "turmeric",
+          "amount": "1/2 tsp",
+          "category": "spices",
+          "staple": true
+        },
+        {
+          "name": "vegetable broth",
+          "amount": "5 cups",
+          "category": "canned",
+          "staple": false
+        },
+        {
+          "name": "lemon",
+          "amount": "1",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "olive oil",
+          "amount": "2 tbsp",
+          "category": "oils",
+          "staple": true
+        }
+      ],
+      "steps": [
+        "Heat the oil and soften the chopped onion and carrot for 6 minutes, then add the garlic, cumin, and turmeric.",
+        "Stir in the rinsed lentils and the broth and bring to a boil.",
+        "Lower to a simmer and cook until the lentils are completely soft, about 20 minutes.",
+        "Blend until smooth, or partially blend for more texture, then season with salt.",
+        "Stir in the juice of the lemon and serve with extra wedges."
+      ]
+    },
+    {
+      "name": "Roasted tomato basil soup",
+      "blurb": "Oven-roasted tomatoes blended into a deep, sweet soup with a swirl of fresh basil.",
+      "cuisine": "American",
+      "mealType": "lunch",
+      "course": "soup",
+      "diets": [
+        "vegetarian",
+        "gluten-free"
+      ],
+      "methods": [
+        "bake",
+        "stovetop"
+      ],
+      "timeMinutes": 55,
+      "servings": 4,
+      "difficulty": "easy",
+      "plateCategories": [
+        "produce",
+        "dairy",
+        "oils"
+      ],
+      "ingredients": [
+        {
+          "name": "tomatoes",
+          "amount": "3 lb",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "onion",
+          "amount": "1",
+          "category": "produce",
+          "staple": true
+        },
+        {
+          "name": "garlic",
+          "amount": "5 cloves",
+          "category": "produce",
+          "staple": true
+        },
+        {
+          "name": "fresh basil",
+          "amount": "1/2 cup",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "vegetable broth",
+          "amount": "2 cups",
+          "category": "canned",
+          "staple": false
+        },
+        {
+          "name": "heavy cream",
+          "amount": "1/4 cup",
+          "category": "dairy",
+          "staple": false
+        },
+        {
+          "name": "olive oil",
+          "amount": "3 tbsp",
+          "category": "oils",
+          "staple": true
+        }
+      ],
+      "steps": [
+        "Halve the tomatoes and quarter the onion, then toss with the garlic, oil, and salt on a sheet pan.",
+        "Roast at 425F for 35 minutes until soft and lightly charred.",
+        "Scrape everything into a pot, add the broth, and simmer for 10 minutes.",
+        "Blend until smooth, then stir in the cream and most of the basil.",
+        "Season to taste and serve topped with the remaining basil."
+      ]
+    },
+    {
+      "name": "Minestrone",
+      "blurb": "A rustic Italian vegetable soup loaded with beans, pasta, and whatever is in season.",
+      "cuisine": "Italian",
+      "mealType": "lunch",
+      "course": "soup",
+      "diets": [
+        "vegan",
+        "dairy-free"
+      ],
+      "methods": [
+        "stovetop",
+        "one-pan"
+      ],
+      "timeMinutes": 45,
+      "servings": 6,
+      "difficulty": "easy",
+      "plateCategories": [
+        "produce",
+        "legumes",
+        "pasta"
+      ],
+      "ingredients": [
+        {
+          "name": "cannellini beans",
+          "amount": "1 can",
+          "category": "canned",
+          "staple": false
+        },
+        {
+          "name": "diced tomatoes",
+          "amount": "1 can",
+          "category": "canned",
+          "staple": false
+        },
+        {
+          "name": "small pasta",
+          "amount": "1 cup",
+          "category": "pasta",
+          "staple": false
+        },
+        {
+          "name": "onion",
+          "amount": "1",
+          "category": "produce",
+          "staple": true
+        },
+        {
+          "name": "carrots",
+          "amount": "2",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "celery",
+          "amount": "2 stalks",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "zucchini",
+          "amount": "1",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "garlic",
+          "amount": "3 cloves",
+          "category": "produce",
+          "staple": true
+        },
+        {
+          "name": "vegetable broth",
+          "amount": "6 cups",
+          "category": "canned",
+          "staple": false
+        },
+        {
+          "name": "olive oil",
+          "amount": "3 tbsp",
+          "category": "oils",
+          "staple": true
+        },
+        {
+          "name": "dried oregano",
+          "amount": "1 tsp",
+          "category": "spices",
+          "staple": true
+        }
+      ],
+      "steps": [
+        "Heat the oil and soften the chopped onion, carrot, and celery for 8 minutes, then add the garlic and oregano.",
+        "Stir in the diced tomatoes and broth and bring to a simmer.",
+        "Add the diced zucchini and beans and simmer for 15 minutes.",
+        "Stir in the pasta and cook until tender, about 10 minutes more.",
+        "Season with salt and pepper and serve with a drizzle of olive oil."
+      ]
+    },
+    {
+      "name": "Creamy roasted carrot soup",
+      "blurb": "Velvety roasted carrots blended with ginger and coconut milk for a naturally sweet bowl.",
+      "cuisine": "American",
+      "mealType": "lunch",
+      "course": "soup",
+      "diets": [
+        "vegan",
+        "gluten-free",
+        "dairy-free"
+      ],
+      "methods": [
+        "bake",
+        "stovetop"
+      ],
+      "timeMinutes": 50,
+      "servings": 4,
+      "difficulty": "easy",
+      "plateCategories": [
+        "produce",
+        "canned",
+        "spices"
+      ],
+      "ingredients": [
+        {
+          "name": "carrots",
+          "amount": "2 lb",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "onion",
+          "amount": "1",
+          "category": "produce",
+          "staple": true
+        },
+        {
+          "name": "ginger",
+          "amount": "1 tbsp grated",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "coconut milk",
+          "amount": "1 can",
+          "category": "canned",
+          "staple": false
+        },
+        {
+          "name": "vegetable broth",
+          "amount": "3 cups",
+          "category": "canned",
+          "staple": false
+        },
+        {
+          "name": "cumin",
+          "amount": "1 tsp",
+          "category": "spices",
+          "staple": true
+        },
+        {
+          "name": "olive oil",
+          "amount": "3 tbsp",
+          "category": "oils",
+          "staple": true
+        }
+      ],
+      "steps": [
+        "Toss the peeled, chopped carrots and onion with oil and salt and roast at 425F for 30 minutes.",
+        "Transfer to a pot with the ginger, cumin, and broth and simmer for 10 minutes.",
+        "Add most of the coconut milk and blend until completely smooth.",
+        "Season to taste and reheat gently if needed.",
+        "Serve with a swirl of the remaining coconut milk."
+      ]
+    },
+    {
+      "name": "Vegan corn chowder",
+      "blurb": "A creamy, dairy-free chowder thick with sweet corn, potatoes, and smoky paprika.",
+      "cuisine": "American",
+      "mealType": "lunch",
+      "course": "soup",
+      "diets": [
+        "vegan",
+        "gluten-free",
+        "dairy-free"
+      ],
+      "methods": [
+        "stovetop",
+        "one-pan"
+      ],
+      "timeMinutes": 40,
+      "servings": 4,
+      "difficulty": "easy",
+      "plateCategories": [
+        "produce",
+        "canned",
+        "spices"
+      ],
+      "ingredients": [
+        {
+          "name": "corn",
+          "amount": "4 cups",
+          "category": "frozenFoods",
+          "staple": false
+        },
+        {
+          "name": "potatoes",
+          "amount": "1 lb",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "onion",
+          "amount": "1",
+          "category": "produce",
+          "staple": true
+        },
+        {
+          "name": "garlic",
+          "amount": "3 cloves",
+          "category": "produce",
+          "staple": true
+        },
+        {
+          "name": "coconut milk",
+          "amount": "1 can",
+          "category": "canned",
+          "staple": false
+        },
+        {
+          "name": "vegetable broth",
+          "amount": "3 cups",
+          "category": "canned",
+          "staple": false
+        },
+        {
+          "name": "smoked paprika",
+          "amount": "1 tsp",
+          "category": "spices",
+          "staple": true
+        },
+        {
+          "name": "olive oil",
+          "amount": "2 tbsp",
+          "category": "oils",
+          "staple": true
+        },
+        {
+          "name": "scallions",
+          "amount": "3",
+          "category": "produce",
+          "staple": false
+        }
+      ],
+      "steps": [
+        "Heat the oil and soften the chopped onion for 5 minutes, then add the garlic and smoked paprika.",
+        "Add the diced potatoes, 3 cups of the corn, and the broth, and simmer until the potatoes are tender, about 15 minutes.",
+        "Blend about half the soup until smooth, then return it to the pot for a creamy but chunky texture.",
+        "Stir in the coconut milk and the remaining corn and warm through.",
+        "Season with salt and serve topped with sliced scallions."
+      ]
+    },
+    {
+      "name": "Tuscan white bean and kale soup",
+      "blurb": "A hearty, garlicky bean soup with tender kale and a Parmesan-rind depth.",
+      "cuisine": "Italian",
+      "mealType": "lunch",
+      "course": "soup",
+      "diets": [
+        "vegetarian",
+        "gluten-free",
+        "high-protein"
+      ],
+      "methods": [
+        "stovetop",
+        "one-pan"
+      ],
+      "timeMinutes": 40,
+      "servings": 6,
+      "difficulty": "easy",
+      "plateCategories": [
+        "legumes",
+        "produce",
+        "dairy"
+      ],
+      "ingredients": [
+        {
+          "name": "cannellini beans",
+          "amount": "2 cans",
+          "category": "canned",
+          "staple": false
+        },
+        {
+          "name": "kale",
+          "amount": "1 bunch",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "onion",
+          "amount": "1",
+          "category": "produce",
+          "staple": true
+        },
+        {
+          "name": "carrots",
+          "amount": "2",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "garlic",
+          "amount": "4 cloves",
+          "category": "produce",
+          "staple": true
+        },
+        {
+          "name": "vegetable broth",
+          "amount": "6 cups",
+          "category": "canned",
+          "staple": false
+        },
+        {
+          "name": "parmesan rind",
+          "amount": "1 piece",
+          "category": "dairy",
+          "staple": false
+        },
+        {
+          "name": "rosemary",
+          "amount": "1 sprig",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "olive oil",
+          "amount": "3 tbsp",
+          "category": "oils",
+          "staple": true
+        }
+      ],
+      "steps": [
+        "Heat the oil and soften the chopped onion and carrot for 8 minutes, then add the garlic and rosemary.",
+        "Add the broth, the drained beans, and the Parmesan rind, and simmer for 15 minutes.",
+        "Mash some of the beans against the side of the pot to thicken the broth.",
+        "Stir in the chopped kale and simmer until tender, about 8 minutes.",
+        "Remove the rind, season, and serve with grated Parmesan and a drizzle of oil."
+      ]
+    },
+    {
+      "name": "Thai coconut soup",
+      "blurb": "A fragrant tom kha with mushrooms, lemongrass, and lime in a silky coconut broth.",
+      "cuisine": "Thai",
+      "mealType": "lunch",
+      "course": "soup",
+      "diets": [
+        "vegan",
+        "gluten-free",
+        "dairy-free"
+      ],
+      "methods": [
+        "stovetop",
+        "one-pan"
+      ],
+      "timeMinutes": 30,
+      "servings": 4,
+      "difficulty": "easy",
+      "plateCategories": [
+        "canned",
+        "produce",
+        "spices"
+      ],
+      "ingredients": [
+        {
+          "name": "coconut milk",
+          "amount": "2 cans",
+          "category": "canned",
+          "staple": false
+        },
+        {
+          "name": "vegetable broth",
+          "amount": "2 cups",
+          "category": "canned",
+          "staple": false
+        },
+        {
+          "name": "mushrooms",
+          "amount": "8 oz",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "lemongrass",
+          "amount": "2 stalks",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "ginger",
+          "amount": "2 tbsp sliced",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "lime",
+          "amount": "2",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "soy sauce",
+          "amount": "2 tbsp",
+          "category": "condiments",
+          "staple": true
+        },
+        {
+          "name": "red chili",
+          "amount": "1",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "cilantro",
+          "amount": "1/4 cup",
+          "category": "produce",
+          "staple": false
+        }
+      ],
+      "steps": [
+        "Bruise the lemongrass stalks and simmer them with the ginger in the broth for 8 minutes to infuse.",
+        "Add the coconut milk and sliced mushrooms and simmer gently for 8 minutes.",
+        "Season with the soy sauce and the juice of both limes.",
+        "Fish out the lemongrass, then add sliced chili to taste.",
+        "Serve scattered with cilantro."
+      ]
+    },
+    {
+      "name": "French onion soup",
+      "blurb": "Deeply caramelized onions in a rich broth under bubbling, cheese-topped toast.",
+      "cuisine": "French",
+      "mealType": "dinner",
+      "course": "soup",
+      "diets": [
+        "vegetarian"
+      ],
+      "methods": [
+        "stovetop",
+        "bake"
+      ],
+      "timeMinutes": 75,
+      "servings": 4,
+      "difficulty": "medium",
+      "plateCategories": [
+        "produce",
+        "breads",
+        "dairy"
+      ],
+      "ingredients": [
+        {
+          "name": "onions",
+          "amount": "3 lb",
+          "category": "produce",
+          "staple": true
+        },
+        {
+          "name": "butter",
+          "amount": "3 tbsp",
+          "category": "dairy",
+          "staple": true
+        },
+        {
+          "name": "vegetable broth",
+          "amount": "6 cups",
+          "category": "canned",
+          "staple": false
+        },
+        {
+          "name": "white wine",
+          "amount": "1/2 cup",
+          "category": "alcohol",
+          "staple": false
+        },
+        {
+          "name": "baguette",
+          "amount": "1/2",
+          "category": "breads",
+          "staple": false
+        },
+        {
+          "name": "gruyere cheese",
+          "amount": "1.5 cups grated",
+          "category": "dairy",
+          "staple": false
+        },
+        {
+          "name": "fresh thyme",
+          "amount": "1 tbsp",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "flour",
+          "amount": "1 tbsp",
+          "category": "bakingSupplies",
+          "staple": true
+        }
+      ],
+      "steps": [
+        "Melt the butter and cook the thinly sliced onions over medium-low, stirring often, until deep golden brown, about 40 minutes.",
+        "Stir in the flour and thyme and cook 1 minute, then pour in the wine and scrape up the browned bits.",
+        "Add the broth and simmer for 20 minutes, then season with salt and pepper.",
+        "Toast slices of baguette until crisp.",
+        "Ladle the soup into oven-safe bowls, top with the toast and grated Gruyere, and broil until the cheese is bubbling and golden."
+      ]
+    },
+    {
+      "name": "Split pea soup",
+      "blurb": "A thick, comforting bowl of split peas slow-simmered with carrots and smoky seasoning.",
+      "cuisine": "American",
+      "mealType": "lunch",
+      "course": "soup",
+      "diets": [
+        "vegan",
+        "gluten-free",
+        "dairy-free",
+        "high-protein"
+      ],
+      "methods": [
+        "stovetop",
+        "one-pan"
+      ],
+      "timeMinutes": 70,
+      "servings": 6,
+      "difficulty": "easy",
+      "plateCategories": [
+        "legumes",
+        "produce",
+        "spices"
+      ],
+      "ingredients": [
+        {
+          "name": "split peas",
+          "amount": "2 cups",
+          "category": "legumes",
+          "staple": false
+        },
+        {
+          "name": "onion",
+          "amount": "1",
+          "category": "produce",
+          "staple": true
+        },
+        {
+          "name": "carrots",
+          "amount": "3",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "celery",
+          "amount": "2 stalks",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "garlic",
+          "amount": "3 cloves",
+          "category": "produce",
+          "staple": true
+        },
+        {
+          "name": "smoked paprika",
+          "amount": "1 tsp",
+          "category": "spices",
+          "staple": true
+        },
+        {
+          "name": "bay leaf",
+          "amount": "1",
+          "category": "spices",
+          "staple": false
+        },
+        {
+          "name": "vegetable broth",
+          "amount": "7 cups",
+          "category": "canned",
+          "staple": false
+        },
+        {
+          "name": "olive oil",
+          "amount": "2 tbsp",
+          "category": "oils",
+          "staple": true
+        }
+      ],
+      "steps": [
+        "Heat the oil and soften the chopped onion, carrot, and celery for 8 minutes, then add the garlic and smoked paprika.",
+        "Stir in the rinsed split peas, bay leaf, and broth and bring to a boil.",
+        "Lower to a simmer and cook, stirring occasionally, until the peas break down and the soup is thick, about 50 minutes.",
+        "Discard the bay leaf and season generously with salt and pepper.",
+        "Blend a portion for a smoother texture if you like, then serve."
+      ]
+    },
+    {
+      "name": "Butternut squash soup",
+      "blurb": "Silky roasted squash soup with warming spices and a touch of apple sweetness.",
+      "cuisine": "American",
+      "mealType": "lunch",
+      "course": "soup",
+      "diets": [
+        "vegan",
+        "gluten-free",
+        "dairy-free"
+      ],
+      "methods": [
+        "bake",
+        "stovetop"
+      ],
+      "timeMinutes": 55,
+      "servings": 4,
+      "difficulty": "easy",
+      "plateCategories": [
+        "produce",
+        "spices",
+        "oils"
+      ],
+      "ingredients": [
+        {
+          "name": "butternut squash",
+          "amount": "1 large",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "apple",
+          "amount": "1",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "onion",
+          "amount": "1",
+          "category": "produce",
+          "staple": true
+        },
+        {
+          "name": "garlic",
+          "amount": "3 cloves",
+          "category": "produce",
+          "staple": true
+        },
+        {
+          "name": "vegetable broth",
+          "amount": "4 cups",
+          "category": "canned",
+          "staple": false
+        },
+        {
+          "name": "cinnamon",
+          "amount": "1/2 tsp",
+          "category": "spices",
+          "staple": true
+        },
+        {
+          "name": "nutmeg",
+          "amount": "1/4 tsp",
+          "category": "spices",
+          "staple": false
+        },
+        {
+          "name": "olive oil",
+          "amount": "3 tbsp",
+          "category": "oils",
+          "staple": true
+        }
+      ],
+      "steps": [
+        "Toss the peeled, cubed squash with oil and salt and roast at 425F for 30 minutes until tender.",
+        "Soften the chopped onion in a pot for 5 minutes, then add the garlic, cinnamon, and nutmeg.",
+        "Add the roasted squash, chopped apple, and broth and simmer for 10 minutes.",
+        "Blend until completely smooth, adding broth to reach your preferred consistency.",
+        "Season to taste and serve."
+      ]
+    },
+    {
+      "name": "Vegetable barley stew",
+      "blurb": "A hearty, brothy stew of barley, root vegetables, and mushrooms for a cold evening.",
+      "cuisine": "American",
+      "mealType": "dinner",
+      "course": "soup",
+      "diets": [
+        "vegan",
+        "dairy-free"
+      ],
+      "methods": [
+        "stovetop",
+        "one-pan"
+      ],
+      "timeMinutes": 60,
+      "servings": 6,
+      "difficulty": "easy",
+      "plateCategories": [
+        "grains",
+        "produce",
+        "spices"
+      ],
+      "ingredients": [
+        {
+          "name": "pearl barley",
+          "amount": "1 cup",
+          "category": "grains",
+          "staple": false
+        },
+        {
+          "name": "mushrooms",
+          "amount": "8 oz",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "carrots",
+          "amount": "3",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "celery",
+          "amount": "2 stalks",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "onion",
+          "amount": "1",
+          "category": "produce",
+          "staple": true
+        },
+        {
+          "name": "garlic",
+          "amount": "3 cloves",
+          "category": "produce",
+          "staple": true
+        },
+        {
+          "name": "tomato paste",
+          "amount": "2 tbsp",
+          "category": "canned",
+          "staple": false
+        },
+        {
+          "name": "vegetable broth",
+          "amount": "7 cups",
+          "category": "canned",
+          "staple": false
+        },
+        {
+          "name": "fresh thyme",
+          "amount": "1 tbsp",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "olive oil",
+          "amount": "3 tbsp",
+          "category": "oils",
+          "staple": true
+        }
+      ],
+      "steps": [
+        "Heat the oil and brown the sliced mushrooms, then add the chopped onion, carrot, and celery and cook 8 minutes.",
+        "Stir in the garlic, thyme, and tomato paste and cook 2 minutes.",
+        "Add the rinsed barley and broth and bring to a boil.",
+        "Simmer until the barley is tender and the stew has thickened, about 40 minutes.",
+        "Season with salt and pepper and serve."
+      ]
+    },
+    {
+      "name": "Black bean soup",
+      "blurb": "A smoky, satisfying black bean soup brightened with lime and ready in under an hour.",
+      "cuisine": "Mexican",
+      "mealType": "lunch",
+      "course": "soup",
+      "diets": [
+        "vegan",
+        "gluten-free",
+        "dairy-free",
+        "high-protein"
+      ],
+      "methods": [
+        "stovetop",
+        "one-pan"
+      ],
+      "timeMinutes": 35,
+      "servings": 4,
+      "difficulty": "easy",
+      "plateCategories": [
+        "legumes",
+        "produce",
+        "spices"
+      ],
+      "ingredients": [
+        {
+          "name": "black beans",
+          "amount": "3 cans",
+          "category": "canned",
+          "staple": false
+        },
+        {
+          "name": "onion",
+          "amount": "1",
+          "category": "produce",
+          "staple": true
+        },
+        {
+          "name": "garlic",
+          "amount": "4 cloves",
+          "category": "produce",
+          "staple": true
+        },
+        {
+          "name": "cumin",
+          "amount": "1.5 tsp",
+          "category": "spices",
+          "staple": true
+        },
+        {
+          "name": "smoked paprika",
+          "amount": "1 tsp",
+          "category": "spices",
+          "staple": true
+        },
+        {
+          "name": "vegetable broth",
+          "amount": "3 cups",
+          "category": "canned",
+          "staple": false
+        },
+        {
+          "name": "lime",
+          "amount": "1",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "cilantro",
+          "amount": "1/4 cup",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "olive oil",
+          "amount": "2 tbsp",
+          "category": "oils",
+          "staple": true
+        }
+      ],
+      "steps": [
+        "Heat the oil and soften the chopped onion for 5 minutes, then add the garlic, cumin, and smoked paprika.",
+        "Add two cans of the beans with their liquid and the broth and simmer for 10 minutes.",
+        "Blend the soup until mostly smooth, then return it to the pot.",
+        "Stir in the remaining can of drained beans and warm through for a chunky texture.",
+        "Season with salt and lime juice and serve topped with cilantro."
+      ]
+    },
+    {
+      "name": "Apple crumble",
+      "blurb": "Tender cinnamon-spiced apples under a buttery, golden oat crumble.",
+      "cuisine": "British",
+      "mealType": "dessert",
+      "course": "dessert",
+      "diets": [
+        "vegetarian"
+      ],
+      "methods": [
+        "bake"
+      ],
+      "timeMinutes": 55,
+      "servings": 6,
+      "difficulty": "easy",
+      "plateCategories": [
+        "produce",
+        "grains",
+        "bakingSupplies"
+      ],
+      "ingredients": [
+        {
+          "name": "apples",
+          "amount": "6",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "rolled oats",
+          "amount": "1 cup",
+          "category": "grains",
+          "staple": false
+        },
+        {
+          "name": "flour",
+          "amount": "3/4 cup",
+          "category": "bakingSupplies",
+          "staple": true
+        },
+        {
+          "name": "brown sugar",
+          "amount": "3/4 cup",
+          "category": "bakingSupplies",
+          "staple": false
+        },
+        {
+          "name": "butter",
+          "amount": "1/2 cup",
+          "category": "dairy",
+          "staple": true
+        },
+        {
+          "name": "cinnamon",
+          "amount": "1.5 tsp",
+          "category": "spices",
+          "staple": true
+        },
+        {
+          "name": "lemon",
+          "amount": "1",
+          "category": "produce",
+          "staple": false
+        }
+      ],
+      "steps": [
+        "Heat the oven to 375F and peel, core, and slice the apples into a baking dish.",
+        "Toss the apples with half the brown sugar, the cinnamon, and a squeeze of lemon.",
+        "Rub the butter into the flour and oats with the remaining sugar until crumbly.",
+        "Scatter the crumble evenly over the apples.",
+        "Bake for 40 minutes until the topping is golden and the fruit is bubbling at the edges.",
+        "Cool slightly and serve warm."
+      ]
+    },
+    {
+      "name": "Chocolate chip cookies",
+      "blurb": "Chewy-centered, crisp-edged cookies loaded with pools of melted chocolate.",
+      "cuisine": "American",
+      "mealType": "dessert",
+      "course": "dessert",
+      "diets": [
+        "vegetarian"
+      ],
+      "methods": [
+        "bake"
+      ],
+      "timeMinutes": 30,
+      "servings": 24,
+      "difficulty": "easy",
+      "plateCategories": [
+        "bakingSupplies",
+        "dairy",
+        "snacks"
+      ],
+      "ingredients": [
+        {
+          "name": "flour",
+          "amount": "2.25 cups",
+          "category": "bakingSupplies",
+          "staple": true
+        },
+        {
+          "name": "butter",
+          "amount": "1 cup",
+          "category": "dairy",
+          "staple": true
+        },
+        {
+          "name": "brown sugar",
+          "amount": "1 cup",
+          "category": "bakingSupplies",
+          "staple": false
+        },
+        {
+          "name": "sugar",
+          "amount": "1/2 cup",
+          "category": "bakingSupplies",
+          "staple": true
+        },
+        {
+          "name": "eggs",
+          "amount": "2",
+          "category": "protein",
+          "staple": false
+        },
+        {
+          "name": "vanilla extract",
+          "amount": "2 tsp",
+          "category": "bakingSupplies",
+          "staple": false
+        },
+        {
+          "name": "baking soda",
+          "amount": "1 tsp",
+          "category": "bakingSupplies",
+          "staple": true
+        },
+        {
+          "name": "chocolate chips",
+          "amount": "2 cups",
+          "category": "snacks",
+          "staple": false
+        },
+        {
+          "name": "salt",
+          "amount": "1 tsp",
+          "category": "spices",
+          "staple": true
+        }
+      ],
+      "steps": [
+        "Heat the oven to 375F and line two baking sheets with parchment.",
+        "Cream the softened butter with both sugars until light and fluffy.",
+        "Beat in the eggs and vanilla, then mix in the flour, baking soda, and salt until just combined.",
+        "Fold in the chocolate chips.",
+        "Scoop tablespoon-sized mounds onto the sheets, spacing them well apart.",
+        "Bake for 9 to 11 minutes until the edges are golden but the centers look soft, then cool on the sheet for 5 minutes."
+      ]
+    },
+    {
+      "name": "Vegan chocolate avocado mousse",
+      "blurb": "An impossibly silky chocolate mousse made entirely from ripe avocado and cocoa.",
+      "cuisine": "American",
+      "mealType": "dessert",
+      "course": "dessert",
+      "diets": [
+        "vegan",
+        "gluten-free",
+        "dairy-free"
+      ],
+      "methods": [
+        "no-cook",
+        "raw"
+      ],
+      "timeMinutes": 15,
+      "servings": 4,
+      "difficulty": "easy",
+      "plateCategories": [
+        "produce",
+        "bakingSupplies",
+        "condiments"
+      ],
+      "ingredients": [
+        {
+          "name": "avocados",
+          "amount": "2 ripe",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "cocoa powder",
+          "amount": "1/2 cup",
+          "category": "bakingSupplies",
+          "staple": false
+        },
+        {
+          "name": "maple syrup",
+          "amount": "1/3 cup",
+          "category": "condiments",
+          "staple": false
+        },
+        {
+          "name": "vanilla extract",
+          "amount": "1 tsp",
+          "category": "bakingSupplies",
+          "staple": false
+        },
+        {
+          "name": "almond milk",
+          "amount": "1/4 cup",
+          "category": "beverages",
+          "staple": false
+        },
+        {
+          "name": "salt",
+          "amount": "1 pinch",
+          "category": "spices",
+          "staple": true
+        }
+      ],
+      "steps": [
+        "Scoop the avocado flesh into a food processor.",
+        "Add the cocoa powder, maple syrup, vanilla, almond milk, and salt.",
+        "Blend until completely smooth, scraping down the sides as needed.",
+        "Add a splash more almond milk if it is too thick.",
+        "Spoon into glasses and chill for at least 30 minutes before serving."
+      ]
+    },
+    {
+      "name": "Lemon bars",
+      "blurb": "Bright, tangy lemon curd set over a buttery shortbread base and dusted with powdered sugar.",
+      "cuisine": "American",
+      "mealType": "dessert",
+      "course": "dessert",
+      "diets": [
+        "vegetarian"
+      ],
+      "methods": [
+        "bake"
+      ],
+      "timeMinutes": 60,
+      "servings": 12,
+      "difficulty": "medium",
+      "plateCategories": [
+        "bakingSupplies",
+        "produce",
+        "dairy"
+      ],
+      "ingredients": [
+        {
+          "name": "flour",
+          "amount": "1.5 cups",
+          "category": "bakingSupplies",
+          "staple": true
+        },
+        {
+          "name": "butter",
+          "amount": "3/4 cup",
+          "category": "dairy",
+          "staple": true
+        },
+        {
+          "name": "powdered sugar",
+          "amount": "1/2 cup",
+          "category": "bakingSupplies",
+          "staple": false
+        },
+        {
+          "name": "sugar",
+          "amount": "1.5 cups",
+          "category": "bakingSupplies",
+          "staple": true
+        },
+        {
+          "name": "eggs",
+          "amount": "4",
+          "category": "protein",
+          "staple": false
+        },
+        {
+          "name": "lemons",
+          "amount": "4",
+          "category": "produce",
+          "staple": false
+        }
+      ],
+      "steps": [
+        "Heat the oven to 350F and line an 8-inch pan with parchment.",
+        "Rub the butter into 1.25 cups of the flour with the powdered sugar to form a crumbly dough, then press into the pan.",
+        "Bake the base for 20 minutes until pale golden.",
+        "Whisk the eggs, sugar, the remaining flour, and the juice and zest of the lemons into a smooth filling.",
+        "Pour the filling over the warm crust and bake for another 22 minutes until just set.",
+        "Cool completely, then dust with powdered sugar and cut into squares."
+      ]
+    },
+    {
+      "name": "Banana bread",
+      "blurb": "A moist, tender loaf made with very ripe bananas and a hint of cinnamon.",
+      "cuisine": "American",
+      "mealType": "snack",
+      "course": "dessert",
+      "diets": [
+        "vegetarian"
+      ],
+      "methods": [
+        "bake"
+      ],
+      "timeMinutes": 70,
+      "servings": 10,
+      "difficulty": "easy",
+      "plateCategories": [
+        "produce",
+        "bakingSupplies",
+        "dairy"
+      ],
+      "ingredients": [
+        {
+          "name": "bananas",
+          "amount": "3 ripe",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "flour",
+          "amount": "1.75 cups",
+          "category": "bakingSupplies",
+          "staple": true
+        },
+        {
+          "name": "sugar",
+          "amount": "3/4 cup",
+          "category": "bakingSupplies",
+          "staple": true
+        },
+        {
+          "name": "butter",
+          "amount": "1/2 cup",
+          "category": "dairy",
+          "staple": true
+        },
+        {
+          "name": "eggs",
+          "amount": "2",
+          "category": "protein",
+          "staple": false
+        },
+        {
+          "name": "baking soda",
+          "amount": "1 tsp",
+          "category": "bakingSupplies",
+          "staple": true
+        },
+        {
+          "name": "vanilla extract",
+          "amount": "1 tsp",
+          "category": "bakingSupplies",
+          "staple": false
+        },
+        {
+          "name": "cinnamon",
+          "amount": "1 tsp",
+          "category": "spices",
+          "staple": true
+        }
+      ],
+      "steps": [
+        "Heat the oven to 350F and grease a loaf pan.",
+        "Mash the bananas, then mix in the melted butter, sugar, eggs, and vanilla.",
+        "Stir in the flour, baking soda, and cinnamon until just combined.",
+        "Pour into the loaf pan and smooth the top.",
+        "Bake for 55 to 60 minutes until a skewer comes out clean, then cool in the pan for 10 minutes."
+      ]
+    },
+    {
+      "name": "Mixed berry crumble",
+      "blurb": "Juicy summer berries baked under a crisp almond-oat topping.",
+      "cuisine": "American",
+      "mealType": "dessert",
+      "course": "dessert",
+      "diets": [
+        "vegan",
+        "dairy-free"
+      ],
+      "methods": [
+        "bake"
+      ],
+      "timeMinutes": 50,
+      "servings": 6,
+      "difficulty": "easy",
+      "plateCategories": [
+        "produce",
+        "grains",
+        "bakingSupplies"
+      ],
+      "ingredients": [
+        {
+          "name": "mixed berries",
+          "amount": "5 cups",
+          "category": "frozenFoods",
+          "staple": false
+        },
+        {
+          "name": "rolled oats",
+          "amount": "1 cup",
+          "category": "grains",
+          "staple": false
+        },
+        {
+          "name": "flour",
+          "amount": "1/2 cup",
+          "category": "bakingSupplies",
+          "staple": true
+        },
+        {
+          "name": "almonds",
+          "amount": "1/2 cup chopped",
+          "category": "nuts",
+          "staple": false
+        },
+        {
+          "name": "brown sugar",
+          "amount": "2/3 cup",
+          "category": "bakingSupplies",
+          "staple": false
+        },
+        {
+          "name": "coconut oil",
+          "amount": "1/2 cup",
+          "category": "oils",
+          "staple": false
+        },
+        {
+          "name": "lemon",
+          "amount": "1",
+          "category": "produce",
+          "staple": false
+        }
+      ],
+      "steps": [
+        "Heat the oven to 375F and tip the berries into a baking dish with a squeeze of lemon and 2 tablespoons of the sugar.",
+        "Mix the oats, flour, almonds, and remaining sugar in a bowl.",
+        "Pour in the melted coconut oil and stir until the mixture clumps.",
+        "Scatter the topping over the berries.",
+        "Bake for 35 to 40 minutes until the top is golden and the fruit is bubbling, then cool slightly."
+      ]
+    },
+    {
+      "name": "Flourless chocolate cake",
+      "blurb": "A dense, fudgy, naturally gluten-free chocolate cake with a glossy crackled top.",
+      "cuisine": "French",
+      "mealType": "dessert",
+      "course": "dessert",
+      "diets": [
+        "vegetarian",
+        "gluten-free"
+      ],
+      "methods": [
+        "bake"
+      ],
+      "timeMinutes": 50,
+      "servings": 10,
+      "difficulty": "medium",
+      "plateCategories": [
+        "bakingSupplies",
+        "dairy",
+        "protein"
+      ],
+      "ingredients": [
+        {
+          "name": "dark chocolate",
+          "amount": "8 oz",
+          "category": "snacks",
+          "staple": false
+        },
+        {
+          "name": "butter",
+          "amount": "1/2 cup",
+          "category": "dairy",
+          "staple": true
+        },
+        {
+          "name": "sugar",
+          "amount": "3/4 cup",
+          "category": "bakingSupplies",
+          "staple": true
+        },
+        {
+          "name": "eggs",
+          "amount": "4",
+          "category": "protein",
+          "staple": false
+        },
+        {
+          "name": "cocoa powder",
+          "amount": "1/2 cup",
+          "category": "bakingSupplies",
+          "staple": false
+        },
+        {
+          "name": "vanilla extract",
+          "amount": "1 tsp",
+          "category": "bakingSupplies",
+          "staple": false
+        },
+        {
+          "name": "salt",
+          "amount": "1/4 tsp",
+          "category": "spices",
+          "staple": true
+        }
+      ],
+      "steps": [
+        "Heat the oven to 350F and line the bottom of an 8-inch springform pan with parchment.",
+        "Melt the chocolate and butter together until smooth, then let cool slightly.",
+        "Whisk in the sugar, then beat in the eggs one at a time.",
+        "Stir in the cocoa powder, vanilla, and salt until glossy and smooth.",
+        "Pour into the pan and bake for 25 minutes until the top is set but the center is still slightly soft.",
+        "Cool completely before releasing from the pan."
+      ]
+    },
+    {
+      "name": "Peanut butter no-bake bars",
+      "blurb": "Chewy oat and peanut butter bars set in the fridge with a chocolate top, no oven needed.",
+      "cuisine": "American",
+      "mealType": "snack",
+      "course": "dessert",
+      "diets": [
+        "vegan",
+        "dairy-free"
+      ],
+      "methods": [
+        "no-cook"
+      ],
+      "timeMinutes": 20,
+      "servings": 12,
+      "difficulty": "easy",
+      "plateCategories": [
+        "grains",
+        "nuts",
+        "snacks"
+      ],
+      "ingredients": [
+        {
+          "name": "rolled oats",
+          "amount": "2 cups",
+          "category": "grains",
+          "staple": false
+        },
+        {
+          "name": "peanut butter",
+          "amount": "3/4 cup",
+          "category": "condiments",
+          "staple": false
+        },
+        {
+          "name": "maple syrup",
+          "amount": "1/2 cup",
+          "category": "condiments",
+          "staple": false
+        },
+        {
+          "name": "chocolate chips",
+          "amount": "3/4 cup",
+          "category": "snacks",
+          "staple": false
+        },
+        {
+          "name": "coconut oil",
+          "amount": "1 tbsp",
+          "category": "oils",
+          "staple": false
+        },
+        {
+          "name": "vanilla extract",
+          "amount": "1 tsp",
+          "category": "bakingSupplies",
+          "staple": false
+        },
+        {
+          "name": "salt",
+          "amount": "1 pinch",
+          "category": "spices",
+          "staple": true
+        }
+      ],
+      "steps": [
+        "Warm the peanut butter and maple syrup together until smooth, then stir in the vanilla and salt.",
+        "Mix in the oats until evenly coated, then press firmly into a parchment-lined 8-inch pan.",
+        "Melt the chocolate chips with the coconut oil and spread over the top.",
+        "Chill for at least 1 hour until firm.",
+        "Lift out and cut into bars."
+      ]
+    },
+    {
+      "name": "Poached pears in spiced wine",
+      "blurb": "Whole pears gently poached until ruby-tinged in a fragrant spiced red wine syrup.",
+      "cuisine": "French",
+      "mealType": "dessert",
+      "course": "dessert",
+      "diets": [
+        "vegan",
+        "gluten-free",
+        "dairy-free"
+      ],
+      "methods": [
+        "stovetop",
+        "one-pan"
+      ],
+      "timeMinutes": 45,
+      "servings": 4,
+      "difficulty": "easy",
+      "plateCategories": [
+        "produce",
+        "alcohol",
+        "spices"
+      ],
+      "ingredients": [
+        {
+          "name": "pears",
+          "amount": "4 firm",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "red wine",
+          "amount": "2 cups",
+          "category": "alcohol",
+          "staple": false
+        },
+        {
+          "name": "sugar",
+          "amount": "3/4 cup",
+          "category": "bakingSupplies",
+          "staple": true
+        },
+        {
+          "name": "cinnamon stick",
+          "amount": "1",
+          "category": "spices",
+          "staple": false
+        },
+        {
+          "name": "star anise",
+          "amount": "2",
+          "category": "spices",
+          "staple": false
+        },
+        {
+          "name": "orange",
+          "amount": "1",
+          "category": "produce",
+          "staple": false
+        }
+      ],
+      "steps": [
+        "Peel the pears, leaving the stems intact, and trim the bases so they stand upright.",
+        "Combine the wine, sugar, cinnamon, star anise, and strips of orange peel in a pot and bring to a simmer.",
+        "Lay the pears on their sides in the liquid and poach gently, turning occasionally, until tender, about 25 minutes.",
+        "Remove the pears and simmer the liquid until reduced to a syrup, about 10 minutes.",
+        "Serve the pears upright with the spiced syrup spooned over."
+      ]
+    },
+    {
+      "name": "Carrot cake",
+      "blurb": "A spiced, moist carrot cake crowned with tangy cream cheese frosting.",
+      "cuisine": "American",
+      "mealType": "dessert",
+      "course": "dessert",
+      "diets": [
+        "vegetarian"
+      ],
+      "methods": [
+        "bake"
+      ],
+      "timeMinutes": 70,
+      "servings": 12,
+      "difficulty": "medium",
+      "plateCategories": [
+        "bakingSupplies",
+        "produce",
+        "dairy"
+      ],
+      "ingredients": [
+        {
+          "name": "carrots",
+          "amount": "3 cups grated",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "flour",
+          "amount": "2 cups",
+          "category": "bakingSupplies",
+          "staple": true
+        },
+        {
+          "name": "sugar",
+          "amount": "1.5 cups",
+          "category": "bakingSupplies",
+          "staple": true
+        },
+        {
+          "name": "eggs",
+          "amount": "4",
+          "category": "protein",
+          "staple": false
+        },
+        {
+          "name": "vegetable oil",
+          "amount": "1 cup",
+          "category": "oils",
+          "staple": true
+        },
+        {
+          "name": "baking soda",
+          "amount": "1.5 tsp",
+          "category": "bakingSupplies",
+          "staple": true
+        },
+        {
+          "name": "cinnamon",
+          "amount": "2 tsp",
+          "category": "spices",
+          "staple": true
+        },
+        {
+          "name": "cream cheese",
+          "amount": "8 oz",
+          "category": "dairy",
+          "staple": false
+        },
+        {
+          "name": "powdered sugar",
+          "amount": "2 cups",
+          "category": "bakingSupplies",
+          "staple": false
+        },
+        {
+          "name": "walnuts",
+          "amount": "1 cup",
+          "category": "nuts",
+          "staple": false
+        }
+      ],
+      "steps": [
+        "Heat the oven to 350F and grease two 9-inch cake pans.",
+        "Whisk the eggs, sugar, and oil until smooth, then stir in the flour, baking soda, and cinnamon.",
+        "Fold in the grated carrots and chopped walnuts.",
+        "Divide between the pans and bake for 30 to 35 minutes until a skewer comes out clean, then cool completely.",
+        "Beat the cream cheese with the powdered sugar until smooth and spread between and over the layers."
+      ]
+    },
+    {
+      "name": "Sticky toffee pudding",
+      "blurb": "A date-sweetened sponge drenched in warm toffee sauce, best served with cream.",
+      "cuisine": "British",
+      "mealType": "dessert",
+      "course": "dessert",
+      "diets": [
+        "vegetarian"
+      ],
+      "methods": [
+        "bake",
+        "stovetop"
+      ],
+      "timeMinutes": 60,
+      "servings": 8,
+      "difficulty": "medium",
+      "plateCategories": [
+        "bakingSupplies",
+        "produce",
+        "dairy"
+      ],
+      "ingredients": [
+        {
+          "name": "medjool dates",
+          "amount": "1.5 cups pitted",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "flour",
+          "amount": "1.5 cups",
+          "category": "bakingSupplies",
+          "staple": true
+        },
+        {
+          "name": "brown sugar",
+          "amount": "3/4 cup",
+          "category": "bakingSupplies",
+          "staple": false
+        },
+        {
+          "name": "butter",
+          "amount": "1/2 cup",
+          "category": "dairy",
+          "staple": true
+        },
+        {
+          "name": "eggs",
+          "amount": "2",
+          "category": "protein",
+          "staple": false
+        },
+        {
+          "name": "baking soda",
+          "amount": "1 tsp",
+          "category": "bakingSupplies",
+          "staple": true
+        },
+        {
+          "name": "heavy cream",
+          "amount": "3/4 cup",
+          "category": "dairy",
+          "staple": false
+        },
+        {
+          "name": "vanilla extract",
+          "amount": "1 tsp",
+          "category": "bakingSupplies",
+          "staple": false
+        }
+      ],
+      "steps": [
+        "Heat the oven to 350F and grease a baking dish. Simmer the chopped dates in 1 cup water for 5 minutes, then stir in the baking soda and let cool.",
+        "Cream half the butter with half the brown sugar, then beat in the eggs and vanilla.",
+        "Fold in the flour, then stir in the date mixture, and pour into the dish.",
+        "Bake for 30 minutes until risen and firm to the touch.",
+        "Meanwhile, melt the remaining butter and sugar with the cream and simmer for 3 minutes to make the toffee sauce.",
+        "Pour some sauce over the warm pudding and serve the rest alongside."
+      ]
+    },
+    {
+      "name": "Maple roasted root vegetables",
+      "blurb": "Caramelized carrots, parsnips, and beets glazed with maple and finished with thyme.",
+      "cuisine": "American",
+      "mealType": "dinner",
+      "course": "side",
+      "diets": [
+        "vegan",
+        "gluten-free",
+        "dairy-free"
+      ],
+      "methods": [
+        "bake",
+        "sheet-pan"
+      ],
+      "timeMinutes": 45,
+      "servings": 6,
+      "difficulty": "easy",
+      "plateCategories": [
+        "produce",
+        "condiments",
+        "oils"
+      ],
+      "ingredients": [
+        {
+          "name": "carrots",
+          "amount": "3",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "parsnips",
+          "amount": "3",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "beets",
+          "amount": "2",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "maple syrup",
+          "amount": "3 tbsp",
+          "category": "condiments",
+          "staple": false
+        },
+        {
+          "name": "olive oil",
+          "amount": "3 tbsp",
+          "category": "oils",
+          "staple": true
+        },
+        {
+          "name": "fresh thyme",
+          "amount": "1 tbsp",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "garlic",
+          "amount": "3 cloves",
+          "category": "produce",
+          "staple": true
+        }
+      ],
+      "steps": [
+        "Heat the oven to 425F and cut all the vegetables into even chunks.",
+        "Toss them with the oil, smashed garlic, thyme, and a good pinch of salt on a sheet pan.",
+        "Roast for 25 minutes, stirring once.",
+        "Drizzle with the maple syrup, toss, and roast for another 12 to 15 minutes until caramelized and tender.",
+        "Serve hot."
+      ]
+    },
+    {
+      "name": "Lemon herb rice pilaf",
+      "blurb": "Fluffy, fragrant rice toasted in butter and brightened with lemon and fresh herbs.",
+      "cuisine": "Mediterranean",
+      "mealType": "dinner",
+      "course": "side",
+      "diets": [
+        "vegetarian",
+        "gluten-free"
+      ],
+      "methods": [
+        "stovetop",
+        "one-pan"
+      ],
+      "timeMinutes": 30,
+      "servings": 4,
+      "difficulty": "easy",
+      "plateCategories": [
+        "grains",
+        "produce",
+        "dairy"
+      ],
+      "ingredients": [
+        {
+          "name": "basmati rice",
+          "amount": "1.5 cups",
+          "category": "grains",
+          "staple": false
+        },
+        {
+          "name": "onion",
+          "amount": "1",
+          "category": "produce",
+          "staple": true
+        },
+        {
+          "name": "garlic",
+          "amount": "2 cloves",
+          "category": "produce",
+          "staple": true
+        },
+        {
+          "name": "vegetable broth",
+          "amount": "2.5 cups",
+          "category": "canned",
+          "staple": false
+        },
+        {
+          "name": "butter",
+          "amount": "2 tbsp",
+          "category": "dairy",
+          "staple": true
+        },
+        {
+          "name": "lemon",
+          "amount": "1",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "parsley",
+          "amount": "1/4 cup",
+          "category": "produce",
+          "staple": false
+        }
+      ],
+      "steps": [
+        "Melt the butter and soften the finely chopped onion for 4 minutes, then add the garlic.",
+        "Stir in the rinsed rice and toast for 2 minutes until the grains turn translucent at the edges.",
+        "Pour in the broth, bring to a boil, then cover and simmer on low for 15 minutes.",
+        "Turn off the heat and let stand, covered, for 5 minutes, then fluff with a fork.",
+        "Stir in the lemon zest, a squeeze of lemon juice, and the parsley before serving."
+      ]
+    }
+  ]
+}

@@ -629,13 +629,16 @@
         {"name": "coconut milk", "amount": "1.5 cups", "category": "canned", "staple": false},
         {"name": "maple syrup", "amount": "2 tbsp", "category": "condiments", "staple": false},
         {"name": "vanilla extract", "amount": "1/2 tsp", "category": "bakingSupplies", "staple": true},
-        {"name": "mango", "amount": "1, diced", "category": "produce", "staple": false}
+        {"name": "mango", "amount": "1, diced", "category": "produce", "staple": false},
+        {"name": "lime", "amount": "1/2, zested", "category": "produce", "staple": false},
+        {"name": "shredded coconut", "amount": "2 tbsp, toasted", "category": "nuts", "staple": false},
+        {"name": "salt", "amount": "1 pinch", "category": "spices", "staple": true}
       ],
       "steps": [
-        "Whisk the chia seeds, coconut milk, maple syrup, and vanilla in a jar.",
+        "Whisk the chia seeds, coconut milk, maple syrup, vanilla, and a pinch of salt in a jar.",
         "Let it sit 5 minutes, then whisk again to break up any clumps.",
         "Seal and refrigerate overnight until thick and set.",
-        "Stir, divide between two glasses, and top with diced mango."
+        "Stir, divide between two glasses, and top with diced mango, lime zest, and toasted coconut."
       ]
     },
     {
@@ -713,13 +716,16 @@
         {"name": "greek yogurt", "amount": "1 cup", "category": "dairy", "staple": false},
         {"name": "granola", "amount": "1/2 cup", "category": "grains", "staple": false},
         {"name": "mixed berries", "amount": "1/2 cup", "category": "produce", "staple": false},
-        {"name": "honey", "amount": "1 tbsp", "category": "condiments", "staple": false}
+        {"name": "honey", "amount": "1 tbsp", "category": "condiments", "staple": false},
+        {"name": "banana", "amount": "1/2, sliced", "category": "produce", "staple": false},
+        {"name": "chia seeds", "amount": "1 tsp", "category": "other", "staple": false},
+        {"name": "vanilla extract", "amount": "1/4 tsp", "category": "bakingSupplies", "staple": true}
       ],
       "steps": [
-        "Spoon half the yogurt into a glass.",
-        "Add a layer of granola and half the berries.",
-        "Repeat with the remaining yogurt, granola, and berries.",
-        "Drizzle honey over the top and serve right away so the granola stays crunchy."
+        "Stir the vanilla into the yogurt.",
+        "Spoon half the yogurt into a glass and add a layer of granola, half the berries, and half the banana.",
+        "Repeat with the remaining yogurt, granola, berries, and banana.",
+        "Sprinkle with chia seeds, drizzle honey over the top, and serve right away so the granola stays crunchy."
       ]
     },
     {
@@ -873,35 +879,6 @@
         "Add the peppers, onion, and sausage to the pan and drizzle with the remaining oil.",
         "Roast for 18 to 20 minutes, turning once, until the sausage is cooked through and the vegetables are tender and browned.",
         "Serve straight from the pan."
-      ]
-    },
-    {
-      "name": "Caprese Pasta Salad",
-      "blurb": "Tomatoes, mozzarella, and basil tossed with pasta in a bright dressing.",
-      "cuisine": "Italian",
-      "mealType": "dinner",
-      "course": "salad",
-      "diets": ["vegetarian"],
-      "methods": ["stovetop", "no-cook"],
-      "timeMinutes": 20,
-      "servings": 4,
-      "difficulty": "easy",
-      "plateCategories": ["pasta", "produce", "dairy"],
-      "ingredients": [
-        {"name": "fusilli", "amount": "350g", "category": "pasta", "staple": false},
-        {"name": "cherry tomatoes", "amount": "2 cups, halved", "category": "produce", "staple": false},
-        {"name": "fresh mozzarella", "amount": "200g, cubed", "category": "dairy", "staple": false},
-        {"name": "fresh basil", "amount": "1/2 cup, torn", "category": "produce", "staple": false},
-        {"name": "olive oil", "amount": "1/4 cup", "category": "oils", "staple": true},
-        {"name": "balsamic vinegar", "amount": "2 tbsp", "category": "condiments", "staple": false},
-        {"name": "garlic", "amount": "1 clove, minced", "category": "produce", "staple": false},
-        {"name": "salt", "amount": "to taste", "category": "spices", "staple": true}
-      ],
-      "steps": [
-        "Cook the fusilli in salted water until al dente, then drain and rinse under cool water.",
-        "Whisk the olive oil, balsamic, garlic, and salt into a dressing.",
-        "Toss the pasta with the tomatoes, mozzarella, and dressing.",
-        "Fold in the basil just before serving so it stays fresh."
       ]
     },
     {
@@ -1084,35 +1061,6 @@
       ]
     },
     {
-      "name": "Veggie Quesadillas",
-      "blurb": "Crisp tortillas stuffed with peppers, corn, beans, and melted cheese.",
-      "cuisine": "Mexican",
-      "mealType": "dinner",
-      "course": "main",
-      "diets": ["vegetarian", "high-protein"],
-      "methods": ["stovetop", "one-pan"],
-      "timeMinutes": 20,
-      "servings": 4,
-      "difficulty": "easy",
-      "plateCategories": ["breads", "dairy", "produce"],
-      "ingredients": [
-        {"name": "flour tortillas", "amount": "4 large", "category": "breads", "staple": false},
-        {"name": "cheddar cheese", "amount": "2 cups, shredded", "category": "dairy", "staple": false},
-        {"name": "bell pepper", "amount": "1, diced", "category": "produce", "staple": false},
-        {"name": "canned black beans", "amount": "1 can, drained", "category": "canned", "staple": false},
-        {"name": "corn", "amount": "1 cup", "category": "frozenFoods", "staple": false},
-        {"name": "ground cumin", "amount": "1 tsp", "category": "spices", "staple": true},
-        {"name": "oil", "amount": "1 tbsp", "category": "oils", "staple": true},
-        {"name": "salt", "amount": "to taste", "category": "spices", "staple": true}
-      ],
-      "steps": [
-        "Cook the bell pepper in the oil for 4 minutes, then add the beans, corn, cumin, and salt and cook 3 minutes more.",
-        "Lay a tortilla in a dry skillet over medium heat, sprinkle half with cheese, then add the veggie filling and more cheese.",
-        "Fold over and cook 2 minutes per side until crisp and golden and the cheese melts.",
-        "Repeat with the remaining tortillas, then cut into wedges and serve."
-      ]
-    },
-    {
       "name": "Lemon Herb Cod with Couscous",
       "blurb": "Flaky baked cod over fluffy couscous brightened with lemon and herbs.",
       "cuisine": "Mediterranean",
@@ -1292,36 +1240,6 @@
         "Add the garlic and cook 30 seconds, then add the gnocchi.",
         "Stir in the pesto and a splash of cooking water until everything is coated.",
         "Top with parmesan and serve."
-      ]
-    },
-    {
-      "name": "Black Pepper Chicken",
-      "blurb": "Peppery, garlicky chicken stir-fried with crisp onion and celery.",
-      "cuisine": "Chinese",
-      "mealType": "dinner",
-      "course": "main",
-      "diets": ["dairy-free", "high-protein"],
-      "methods": ["stovetop", "one-pan"],
-      "timeMinutes": 25,
-      "servings": 4,
-      "difficulty": "easy",
-      "plateCategories": ["protein", "produce", "spices"],
-      "ingredients": [
-        {"name": "chicken breast", "amount": "500g, cubed", "category": "protein", "staple": false},
-        {"name": "onion", "amount": "1, chunked", "category": "produce", "staple": false},
-        {"name": "celery", "amount": "3 stalks, sliced", "category": "produce", "staple": false},
-        {"name": "soy sauce", "amount": "3 tbsp", "category": "condiments", "staple": false},
-        {"name": "black pepper", "amount": "1.5 tsp, coarse", "category": "spices", "staple": true},
-        {"name": "garlic", "amount": "3 cloves, minced", "category": "produce", "staple": false},
-        {"name": "cornstarch", "amount": "1 tbsp", "category": "bakingSupplies", "staple": true},
-        {"name": "oil", "amount": "2 tbsp", "category": "oils", "staple": true}
-      ],
-      "steps": [
-        "Toss the chicken with the cornstarch and 1 tbsp soy sauce.",
-        "Heat the oil over high heat and stir-fry the chicken for 5 minutes until golden, then remove.",
-        "Stir-fry the onion and celery for 3 minutes until crisp-tender, then add the garlic and black pepper.",
-        "Return the chicken, add the remaining soy sauce and a splash of water, and toss 2 minutes until glossy.",
-        "Serve over rice."
       ]
     },
     {

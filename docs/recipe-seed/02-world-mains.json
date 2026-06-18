@@ -1,0 +1,4074 @@
+{
+  "recipes": [
+    {
+      "name": "Spaghetti alla carbonara",
+      "blurb": "Silky Roman pasta built from eggs, cheese, and crisped guanciale - no cream needed.",
+      "cuisine": "Italian",
+      "mealType": "dinner",
+      "course": "main",
+      "diets": [
+        "high-protein"
+      ],
+      "methods": [
+        "stovetop"
+      ],
+      "timeMinutes": 25,
+      "servings": 4,
+      "difficulty": "medium",
+      "plateCategories": [
+        "pasta",
+        "protein",
+        "dairy"
+      ],
+      "ingredients": [
+        {
+          "name": "spaghetti",
+          "amount": "400 g",
+          "category": "pasta",
+          "staple": false
+        },
+        {
+          "name": "guanciale",
+          "amount": "150 g",
+          "category": "protein",
+          "staple": false
+        },
+        {
+          "name": "eggs",
+          "amount": "4",
+          "category": "protein",
+          "staple": false
+        },
+        {
+          "name": "pecorino romano",
+          "amount": "80 g",
+          "category": "dairy",
+          "staple": false
+        },
+        {
+          "name": "black pepper",
+          "amount": "1 tsp",
+          "category": "spices",
+          "staple": true
+        },
+        {
+          "name": "salt",
+          "amount": "to taste",
+          "category": "spices",
+          "staple": true
+        }
+      ],
+      "steps": [
+        "Bring a large pot of salted water to a boil and cook the spaghetti until al dente.",
+        "Cut the guanciale into short strips and render slowly in a dry pan until golden and crisp.",
+        "Whisk the whole eggs with the grated pecorino and a generous amount of cracked pepper into a paste.",
+        "Reserve a cup of pasta water, then drain the spaghetti and toss it into the pan with the guanciale off the heat.",
+        "Pour in the egg mixture and stir quickly, loosening with splashes of pasta water until a glossy sauce coats every strand.",
+        "Serve at once with extra pecorino and pepper."
+      ]
+    },
+    {
+      "name": "Margherita pizza",
+      "blurb": "A blistered, chewy crust dressed simply with tomato, mozzarella, and fresh basil.",
+      "cuisine": "Italian",
+      "mealType": "dinner",
+      "course": "main",
+      "diets": [
+        "vegetarian"
+      ],
+      "methods": [
+        "bake"
+      ],
+      "timeMinutes": 90,
+      "servings": 4,
+      "difficulty": "medium",
+      "plateCategories": [
+        "grains",
+        "dairy",
+        "produce"
+      ],
+      "ingredients": [
+        {
+          "name": "bread flour",
+          "amount": "500 g",
+          "category": "grains",
+          "staple": false
+        },
+        {
+          "name": "instant yeast",
+          "amount": "1 tsp",
+          "category": "bakingSupplies",
+          "staple": true
+        },
+        {
+          "name": "salt",
+          "amount": "10 g",
+          "category": "spices",
+          "staple": true
+        },
+        {
+          "name": "olive oil",
+          "amount": "2 tbsp",
+          "category": "oils",
+          "staple": true
+        },
+        {
+          "name": "canned tomatoes",
+          "amount": "400 g",
+          "category": "canned",
+          "staple": false
+        },
+        {
+          "name": "fresh mozzarella",
+          "amount": "250 g",
+          "category": "dairy",
+          "staple": false
+        },
+        {
+          "name": "fresh basil",
+          "amount": "1 handful",
+          "category": "produce",
+          "staple": false
+        }
+      ],
+      "steps": [
+        "Mix the flour, yeast, and salt, then add about 320 ml warm water and the oil to form a shaggy dough.",
+        "Knead until smooth and elastic, then cover and let it rise until doubled, around an hour.",
+        "Divide into two balls, shape, and rest while you heat the oven as hot as it will go with a stone or steel inside.",
+        "Crush the tomatoes with a pinch of salt for a quick sauce.",
+        "Stretch each ball into a thin round, spread with sauce, and dot with torn mozzarella.",
+        "Bake until the crust is charred and puffed, then finish with fresh basil and a drizzle of oil."
+      ]
+    },
+    {
+      "name": "Lasagna bolognese",
+      "blurb": "Layered ribbons of pasta, slow-cooked meat ragu, and creamy bechamel baked until bubbling.",
+      "cuisine": "Italian",
+      "mealType": "dinner",
+      "course": "main",
+      "diets": [
+        "high-protein"
+      ],
+      "methods": [
+        "bake",
+        "stovetop"
+      ],
+      "timeMinutes": 150,
+      "servings": 8,
+      "difficulty": "hard",
+      "plateCategories": [
+        "pasta",
+        "protein",
+        "dairy"
+      ],
+      "ingredients": [
+        {
+          "name": "lasagna sheets",
+          "amount": "300 g",
+          "category": "pasta",
+          "staple": false
+        },
+        {
+          "name": "ground beef",
+          "amount": "500 g",
+          "category": "protein",
+          "staple": false
+        },
+        {
+          "name": "ground pork",
+          "amount": "250 g",
+          "category": "protein",
+          "staple": false
+        },
+        {
+          "name": "canned tomatoes",
+          "amount": "800 g",
+          "category": "canned",
+          "staple": false
+        },
+        {
+          "name": "onion",
+          "amount": "1",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "carrot",
+          "amount": "1",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "butter",
+          "amount": "60 g",
+          "category": "dairy",
+          "staple": false
+        },
+        {
+          "name": "flour",
+          "amount": "60 g",
+          "category": "bakingSupplies",
+          "staple": true
+        },
+        {
+          "name": "milk",
+          "amount": "750 ml",
+          "category": "dairy",
+          "staple": false
+        },
+        {
+          "name": "parmesan",
+          "amount": "100 g",
+          "category": "dairy",
+          "staple": false
+        }
+      ],
+      "steps": [
+        "Soften the diced onion and carrot in oil, then brown both meats until no pink remains.",
+        "Add the tomatoes, season, and simmer the ragu gently for at least an hour until rich and thick.",
+        "Make a bechamel by melting the butter, whisking in flour, then slowly adding warm milk until smooth.",
+        "Spread a little ragu in a baking dish, then layer pasta, ragu, bechamel, and parmesan.",
+        "Repeat the layers, finishing with bechamel and a heavy dusting of parmesan.",
+        "Bake until golden and bubbling, then rest 15 minutes before slicing."
+      ]
+    },
+    {
+      "name": "Risotto ai funghi",
+      "blurb": "Creamy slow-stirred rice perfumed with mushrooms and finished with parmesan.",
+      "cuisine": "Italian",
+      "mealType": "dinner",
+      "course": "main",
+      "diets": [
+        "vegetarian",
+        "gluten-free"
+      ],
+      "methods": [
+        "stovetop"
+      ],
+      "timeMinutes": 40,
+      "servings": 4,
+      "difficulty": "medium",
+      "plateCategories": [
+        "grains",
+        "produce",
+        "dairy"
+      ],
+      "ingredients": [
+        {
+          "name": "arborio rice",
+          "amount": "320 g",
+          "category": "grains",
+          "staple": false
+        },
+        {
+          "name": "mushrooms",
+          "amount": "300 g",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "vegetable stock",
+          "amount": "1.2 l",
+          "category": "canned",
+          "staple": false
+        },
+        {
+          "name": "onion",
+          "amount": "1",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "white wine",
+          "amount": "120 ml",
+          "category": "alcohol",
+          "staple": false
+        },
+        {
+          "name": "butter",
+          "amount": "50 g",
+          "category": "dairy",
+          "staple": false
+        },
+        {
+          "name": "parmesan",
+          "amount": "60 g",
+          "category": "dairy",
+          "staple": false
+        }
+      ],
+      "steps": [
+        "Saute the sliced mushrooms in butter until golden, then set aside.",
+        "Soften the finely chopped onion, add the rice, and toast it for a minute until translucent at the edges.",
+        "Pour in the wine and stir until absorbed.",
+        "Add hot stock a ladle at a time, stirring, until each addition is absorbed and the rice is creamy but still firm.",
+        "Fold the mushrooms back in along with the parmesan and a knob of butter.",
+        "Rest briefly, then serve loose and creamy."
+      ]
+    },
+    {
+      "name": "Chicken tacos al pastor",
+      "blurb": "Marinated chicken charred and tucked into warm tortillas with pineapple and onion.",
+      "cuisine": "Mexican",
+      "mealType": "dinner",
+      "course": "main",
+      "diets": [
+        "dairy-free",
+        "high-protein"
+      ],
+      "methods": [
+        "stovetop"
+      ],
+      "timeMinutes": 45,
+      "servings": 4,
+      "difficulty": "medium",
+      "plateCategories": [
+        "protein",
+        "produce",
+        "spices"
+      ],
+      "ingredients": [
+        {
+          "name": "chicken thighs",
+          "amount": "700 g",
+          "category": "protein",
+          "staple": false
+        },
+        {
+          "name": "dried guajillo chiles",
+          "amount": "3",
+          "category": "spices",
+          "staple": false
+        },
+        {
+          "name": "pineapple",
+          "amount": "200 g",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "white onion",
+          "amount": "1",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "corn tortillas",
+          "amount": "12",
+          "category": "breads",
+          "staple": false
+        },
+        {
+          "name": "garlic",
+          "amount": "3 cloves",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "cumin",
+          "amount": "1 tsp",
+          "category": "spices",
+          "staple": true
+        },
+        {
+          "name": "cilantro",
+          "amount": "1 handful",
+          "category": "produce",
+          "staple": false
+        }
+      ],
+      "steps": [
+        "Soak the dried chiles in hot water, then blend with garlic, cumin, a little pineapple, and salt into a smooth marinade.",
+        "Coat the chicken in the marinade and rest at least 30 minutes.",
+        "Sear the chicken in a hot pan until charred and cooked through, then chop into small pieces.",
+        "Char the pineapple chunks in the same pan and dice the onion and cilantro.",
+        "Warm the tortillas until pliable.",
+        "Fill each tortilla with chicken, pineapple, onion, and cilantro, and serve with lime."
+      ]
+    },
+    {
+      "name": "Beef chili con carne",
+      "blurb": "A deep, smoky pot of beef and beans simmered low with dried chiles and cumin.",
+      "cuisine": "Mexican",
+      "mealType": "dinner",
+      "course": "main",
+      "diets": [
+        "gluten-free",
+        "dairy-free",
+        "high-protein"
+      ],
+      "methods": [
+        "stovetop",
+        "slow-cook"
+      ],
+      "timeMinutes": 120,
+      "servings": 6,
+      "difficulty": "easy",
+      "plateCategories": [
+        "protein",
+        "legumes",
+        "spices"
+      ],
+      "ingredients": [
+        {
+          "name": "ground beef",
+          "amount": "700 g",
+          "category": "protein",
+          "staple": false
+        },
+        {
+          "name": "kidney beans",
+          "amount": "400 g",
+          "category": "legumes",
+          "staple": false
+        },
+        {
+          "name": "canned tomatoes",
+          "amount": "800 g",
+          "category": "canned",
+          "staple": false
+        },
+        {
+          "name": "onion",
+          "amount": "2",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "chili powder",
+          "amount": "2 tbsp",
+          "category": "spices",
+          "staple": true
+        },
+        {
+          "name": "cumin",
+          "amount": "1 tbsp",
+          "category": "spices",
+          "staple": true
+        },
+        {
+          "name": "garlic",
+          "amount": "3 cloves",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "beef stock",
+          "amount": "250 ml",
+          "category": "canned",
+          "staple": false
+        }
+      ],
+      "steps": [
+        "Brown the beef in a heavy pot, breaking it up, then remove and set aside.",
+        "Soften the chopped onion and garlic, then stir in the chili powder and cumin until fragrant.",
+        "Return the beef, add the tomatoes and stock, and bring to a gentle simmer.",
+        "Cook uncovered for about 90 minutes, stirring occasionally, until thick and deeply flavored.",
+        "Add the drained beans in the last 20 minutes and adjust the seasoning.",
+        "Serve hot with rice or cornbread."
+      ]
+    },
+    {
+      "name": "Chiles rellenos",
+      "blurb": "Roasted poblanos stuffed with cheese, cloaked in airy egg batter, and fried golden.",
+      "cuisine": "Mexican",
+      "mealType": "dinner",
+      "course": "main",
+      "diets": [
+        "vegetarian",
+        "gluten-free"
+      ],
+      "methods": [
+        "stovetop"
+      ],
+      "timeMinutes": 60,
+      "servings": 4,
+      "difficulty": "hard",
+      "plateCategories": [
+        "produce",
+        "dairy",
+        "protein"
+      ],
+      "ingredients": [
+        {
+          "name": "poblano peppers",
+          "amount": "4",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "cheese",
+          "amount": "250 g",
+          "category": "dairy",
+          "staple": false
+        },
+        {
+          "name": "eggs",
+          "amount": "4",
+          "category": "protein",
+          "staple": false
+        },
+        {
+          "name": "canned tomatoes",
+          "amount": "400 g",
+          "category": "canned",
+          "staple": false
+        },
+        {
+          "name": "onion",
+          "amount": "1",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "garlic",
+          "amount": "2 cloves",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "flour",
+          "amount": "60 g",
+          "category": "bakingSupplies",
+          "staple": true
+        },
+        {
+          "name": "oil",
+          "amount": "for frying",
+          "category": "oils",
+          "staple": true
+        }
+      ],
+      "steps": [
+        "Char the poblanos over a flame until blackened, then steam in a bag and peel off the skins.",
+        "Slit each pepper, remove the seeds, and stuff with cheese.",
+        "Simmer the tomatoes with onion and garlic into a light sauce.",
+        "Separate the eggs, beat the whites to stiff peaks, then fold in the yolks for the batter.",
+        "Dust the peppers in flour, coat in batter, and fry until golden on all sides.",
+        "Serve in the warm tomato sauce."
+      ]
+    },
+    {
+      "name": "Chicken tikka masala",
+      "blurb": "Charred yogurt-marinated chicken simmered in a creamy, spiced tomato sauce.",
+      "cuisine": "Indian",
+      "mealType": "dinner",
+      "course": "main",
+      "diets": [
+        "gluten-free",
+        "high-protein"
+      ],
+      "methods": [
+        "stovetop"
+      ],
+      "timeMinutes": 50,
+      "servings": 4,
+      "difficulty": "medium",
+      "plateCategories": [
+        "protein",
+        "spices",
+        "dairy"
+      ],
+      "ingredients": [
+        {
+          "name": "chicken thighs",
+          "amount": "700 g",
+          "category": "protein",
+          "staple": false
+        },
+        {
+          "name": "yogurt",
+          "amount": "200 g",
+          "category": "dairy",
+          "staple": false
+        },
+        {
+          "name": "garam masala",
+          "amount": "2 tsp",
+          "category": "spices",
+          "staple": true
+        },
+        {
+          "name": "canned tomatoes",
+          "amount": "400 g",
+          "category": "canned",
+          "staple": false
+        },
+        {
+          "name": "heavy cream",
+          "amount": "150 ml",
+          "category": "dairy",
+          "staple": false
+        },
+        {
+          "name": "ginger",
+          "amount": "1 thumb",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "garlic",
+          "amount": "4 cloves",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "onion",
+          "amount": "1",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "ground turmeric",
+          "amount": "1 tsp",
+          "category": "spices",
+          "staple": true
+        }
+      ],
+      "steps": [
+        "Marinate the cubed chicken in yogurt, half the garam masala, and grated ginger and garlic for at least 30 minutes.",
+        "Sear the chicken in a hot pan until charred at the edges, then set aside.",
+        "Soften the onion, add the remaining spices and turmeric, and cook until fragrant.",
+        "Stir in the tomatoes and simmer until thick, then blend smooth if you prefer.",
+        "Return the chicken, pour in the cream, and simmer until cooked through and saucy.",
+        "Finish with a little extra garam masala and serve with rice or naan."
+      ]
+    },
+    {
+      "name": "Chana masala",
+      "blurb": "Hearty chickpeas stewed in a tangy, spiced tomato gravy - a vegan staple.",
+      "cuisine": "Indian",
+      "mealType": "dinner",
+      "course": "main",
+      "diets": [
+        "vegan",
+        "vegetarian",
+        "gluten-free",
+        "dairy-free"
+      ],
+      "methods": [
+        "stovetop"
+      ],
+      "timeMinutes": 35,
+      "servings": 4,
+      "difficulty": "easy",
+      "plateCategories": [
+        "legumes",
+        "spices",
+        "produce"
+      ],
+      "ingredients": [
+        {
+          "name": "chickpeas",
+          "amount": "800 g",
+          "category": "legumes",
+          "staple": false
+        },
+        {
+          "name": "canned tomatoes",
+          "amount": "400 g",
+          "category": "canned",
+          "staple": false
+        },
+        {
+          "name": "onion",
+          "amount": "1",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "garlic",
+          "amount": "3 cloves",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "ginger",
+          "amount": "1 thumb",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "garam masala",
+          "amount": "2 tsp",
+          "category": "spices",
+          "staple": true
+        },
+        {
+          "name": "ground cumin",
+          "amount": "1 tsp",
+          "category": "spices",
+          "staple": true
+        },
+        {
+          "name": "ground turmeric",
+          "amount": "1 tsp",
+          "category": "spices",
+          "staple": true
+        }
+      ],
+      "steps": [
+        "Soften the chopped onion in oil until deep golden.",
+        "Add the grated ginger and garlic and cook for a minute.",
+        "Stir in the cumin, turmeric, and garam masala until fragrant.",
+        "Add the tomatoes and cook down into a thick paste.",
+        "Add the drained chickpeas with a splash of water and simmer 15 minutes.",
+        "Mash a few chickpeas to thicken the gravy, then finish with fresh cilantro."
+      ]
+    },
+    {
+      "name": "Saag paneer",
+      "blurb": "Soft cubes of paneer folded into a velvety spiced spinach gravy.",
+      "cuisine": "Indian",
+      "mealType": "dinner",
+      "course": "main",
+      "diets": [
+        "vegetarian",
+        "gluten-free"
+      ],
+      "methods": [
+        "stovetop"
+      ],
+      "timeMinutes": 40,
+      "servings": 4,
+      "difficulty": "medium",
+      "plateCategories": [
+        "produce",
+        "dairy",
+        "spices"
+      ],
+      "ingredients": [
+        {
+          "name": "spinach",
+          "amount": "500 g",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "paneer",
+          "amount": "250 g",
+          "category": "dairy",
+          "staple": false
+        },
+        {
+          "name": "onion",
+          "amount": "1",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "garlic",
+          "amount": "3 cloves",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "ginger",
+          "amount": "1 thumb",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "garam masala",
+          "amount": "1 tsp",
+          "category": "spices",
+          "staple": true
+        },
+        {
+          "name": "ground cumin",
+          "amount": "1 tsp",
+          "category": "spices",
+          "staple": true
+        },
+        {
+          "name": "heavy cream",
+          "amount": "60 ml",
+          "category": "dairy",
+          "staple": false
+        }
+      ],
+      "steps": [
+        "Blanch the spinach briefly, then blend into a smooth puree.",
+        "Pan-fry the paneer cubes until lightly golden, then set aside.",
+        "Soften the onion with ginger and garlic, then add the cumin and garam masala.",
+        "Stir in the spinach puree and simmer gently for ten minutes.",
+        "Fold in the paneer and a swirl of cream and warm through.",
+        "Adjust the seasoning and serve with rice or flatbread."
+      ]
+    },
+    {
+      "name": "Lamb rogan josh",
+      "blurb": "Tender lamb braised in an aromatic Kashmiri sauce stained deep red with chile.",
+      "cuisine": "Indian",
+      "mealType": "dinner",
+      "course": "main",
+      "diets": [
+        "gluten-free",
+        "high-protein"
+      ],
+      "methods": [
+        "stovetop",
+        "slow-cook"
+      ],
+      "timeMinutes": 120,
+      "servings": 6,
+      "difficulty": "medium",
+      "plateCategories": [
+        "protein",
+        "spices",
+        "dairy"
+      ],
+      "ingredients": [
+        {
+          "name": "lamb shoulder",
+          "amount": "1 kg",
+          "category": "protein",
+          "staple": false
+        },
+        {
+          "name": "yogurt",
+          "amount": "200 g",
+          "category": "dairy",
+          "staple": false
+        },
+        {
+          "name": "onion",
+          "amount": "2",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "garlic",
+          "amount": "4 cloves",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "ginger",
+          "amount": "1 thumb",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "kashmiri chili powder",
+          "amount": "2 tsp",
+          "category": "spices",
+          "staple": false
+        },
+        {
+          "name": "garam masala",
+          "amount": "2 tsp",
+          "category": "spices",
+          "staple": true
+        },
+        {
+          "name": "ground cumin",
+          "amount": "1 tsp",
+          "category": "spices",
+          "staple": true
+        },
+        {
+          "name": "ground coriander",
+          "amount": "2 tsp",
+          "category": "spices",
+          "staple": true
+        }
+      ],
+      "steps": [
+        "Brown the cubed lamb in batches and set aside.",
+        "Soften the onions deeply, then add the ginger, garlic, and ground spices.",
+        "Return the lamb and stir to coat in the spices.",
+        "Whisk in the yogurt a spoonful at a time to keep it from splitting.",
+        "Add a little water, cover, and braise gently for about 90 minutes until the lamb is fork tender.",
+        "Finish with garam masala and let it rest before serving."
+      ]
+    },
+    {
+      "name": "Kung pao chicken",
+      "blurb": "Wok-fried chicken with peanuts and dried chiles in a glossy sweet-savory sauce.",
+      "cuisine": "Chinese",
+      "mealType": "dinner",
+      "course": "main",
+      "diets": [
+        "dairy-free",
+        "high-protein"
+      ],
+      "methods": [
+        "stovetop"
+      ],
+      "timeMinutes": 30,
+      "servings": 4,
+      "difficulty": "medium",
+      "plateCategories": [
+        "protein",
+        "nuts",
+        "condiments"
+      ],
+      "ingredients": [
+        {
+          "name": "chicken thighs",
+          "amount": "500 g",
+          "category": "protein",
+          "staple": false
+        },
+        {
+          "name": "peanuts",
+          "amount": "80 g",
+          "category": "nuts",
+          "staple": false
+        },
+        {
+          "name": "dried red chiles",
+          "amount": "8",
+          "category": "spices",
+          "staple": false
+        },
+        {
+          "name": "soy sauce",
+          "amount": "3 tbsp",
+          "category": "condiments",
+          "staple": true
+        },
+        {
+          "name": "rice vinegar",
+          "amount": "1 tbsp",
+          "category": "condiments",
+          "staple": false
+        },
+        {
+          "name": "sugar",
+          "amount": "1 tbsp",
+          "category": "bakingSupplies",
+          "staple": true
+        },
+        {
+          "name": "garlic",
+          "amount": "3 cloves",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "ginger",
+          "amount": "1 thumb",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "cornstarch",
+          "amount": "1 tbsp",
+          "category": "bakingSupplies",
+          "staple": true
+        }
+      ],
+      "steps": [
+        "Cut the chicken into cubes and toss with a little soy sauce and cornstarch.",
+        "Mix the remaining soy, vinegar, sugar, and a splash of water into a sauce.",
+        "Heat a wok until smoking and stir-fry the chicken until browned, then remove.",
+        "Fry the dried chiles, garlic, and ginger briefly until fragrant.",
+        "Return the chicken, pour in the sauce, and toss until glossy and thickened.",
+        "Stir in the peanuts and serve immediately."
+      ]
+    },
+    {
+      "name": "Mapo tofu",
+      "blurb": "Silky tofu in a numbing, spicy Sichuan sauce of fermented beans and chile oil.",
+      "cuisine": "Chinese",
+      "mealType": "dinner",
+      "course": "main",
+      "diets": [
+        "high-protein"
+      ],
+      "methods": [
+        "stovetop"
+      ],
+      "timeMinutes": 30,
+      "servings": 4,
+      "difficulty": "medium",
+      "plateCategories": [
+        "protein",
+        "condiments",
+        "spices"
+      ],
+      "ingredients": [
+        {
+          "name": "silken tofu",
+          "amount": "500 g",
+          "category": "protein",
+          "staple": false
+        },
+        {
+          "name": "ground pork",
+          "amount": "150 g",
+          "category": "protein",
+          "staple": false
+        },
+        {
+          "name": "doubanjiang",
+          "amount": "2 tbsp",
+          "category": "condiments",
+          "staple": false
+        },
+        {
+          "name": "sichuan peppercorns",
+          "amount": "1 tsp",
+          "category": "spices",
+          "staple": false
+        },
+        {
+          "name": "soy sauce",
+          "amount": "1 tbsp",
+          "category": "condiments",
+          "staple": true
+        },
+        {
+          "name": "garlic",
+          "amount": "3 cloves",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "ginger",
+          "amount": "1 thumb",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "scallions",
+          "amount": "3",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "cornstarch",
+          "amount": "1 tbsp",
+          "category": "bakingSupplies",
+          "staple": true
+        }
+      ],
+      "steps": [
+        "Toast the Sichuan peppercorns and grind them to a powder.",
+        "Brown the ground pork in oil until crisp.",
+        "Add the doubanjiang, garlic, and ginger and fry until the oil turns red.",
+        "Pour in stock or water and the soy sauce, then slide in the cubed tofu.",
+        "Simmer gently, then thicken with a cornstarch slurry.",
+        "Finish with the ground peppercorns and sliced scallions."
+      ]
+    },
+    {
+      "name": "Beef and broccoli stir-fry",
+      "blurb": "Tender sliced beef and crisp broccoli in a quick, glossy brown sauce.",
+      "cuisine": "Chinese",
+      "mealType": "dinner",
+      "course": "main",
+      "diets": [
+        "dairy-free",
+        "high-protein"
+      ],
+      "methods": [
+        "stovetop",
+        "one-pan"
+      ],
+      "timeMinutes": 25,
+      "servings": 4,
+      "difficulty": "easy",
+      "plateCategories": [
+        "protein",
+        "produce",
+        "condiments"
+      ],
+      "ingredients": [
+        {
+          "name": "flank steak",
+          "amount": "500 g",
+          "category": "protein",
+          "staple": false
+        },
+        {
+          "name": "broccoli",
+          "amount": "400 g",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "soy sauce",
+          "amount": "3 tbsp",
+          "category": "condiments",
+          "staple": true
+        },
+        {
+          "name": "oyster sauce",
+          "amount": "2 tbsp",
+          "category": "condiments",
+          "staple": false
+        },
+        {
+          "name": "garlic",
+          "amount": "3 cloves",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "ginger",
+          "amount": "1 thumb",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "cornstarch",
+          "amount": "1 tbsp",
+          "category": "bakingSupplies",
+          "staple": true
+        },
+        {
+          "name": "sesame oil",
+          "amount": "1 tsp",
+          "category": "oils",
+          "staple": false
+        }
+      ],
+      "steps": [
+        "Slice the beef thinly against the grain and toss with a little soy and cornstarch.",
+        "Blanch the broccoli florets briefly until bright green, then drain.",
+        "Mix the remaining soy, oyster sauce, and a splash of water into a sauce.",
+        "Sear the beef in a hot wok until just browned, then remove.",
+        "Fry the garlic and ginger, add the broccoli, then return the beef.",
+        "Pour in the sauce, toss until glossy, and finish with sesame oil."
+      ]
+    },
+    {
+      "name": "Pad thai",
+      "blurb": "Stir-fried rice noodles with shrimp, egg, and tofu in a sweet-sour tamarind sauce.",
+      "cuisine": "Thai",
+      "mealType": "dinner",
+      "course": "main",
+      "diets": [
+        "dairy-free"
+      ],
+      "methods": [
+        "stovetop"
+      ],
+      "timeMinutes": 35,
+      "servings": 4,
+      "difficulty": "medium",
+      "plateCategories": [
+        "pasta",
+        "protein",
+        "condiments"
+      ],
+      "ingredients": [
+        {
+          "name": "rice noodles",
+          "amount": "300 g",
+          "category": "pasta",
+          "staple": false
+        },
+        {
+          "name": "shrimp",
+          "amount": "300 g",
+          "category": "protein",
+          "staple": false
+        },
+        {
+          "name": "firm tofu",
+          "amount": "150 g",
+          "category": "protein",
+          "staple": false
+        },
+        {
+          "name": "eggs",
+          "amount": "2",
+          "category": "protein",
+          "staple": false
+        },
+        {
+          "name": "tamarind paste",
+          "amount": "3 tbsp",
+          "category": "condiments",
+          "staple": false
+        },
+        {
+          "name": "fish sauce",
+          "amount": "3 tbsp",
+          "category": "condiments",
+          "staple": false
+        },
+        {
+          "name": "palm sugar",
+          "amount": "2 tbsp",
+          "category": "bakingSupplies",
+          "staple": false
+        },
+        {
+          "name": "peanuts",
+          "amount": "60 g",
+          "category": "nuts",
+          "staple": false
+        },
+        {
+          "name": "bean sprouts",
+          "amount": "150 g",
+          "category": "produce",
+          "staple": false
+        }
+      ],
+      "steps": [
+        "Soak the rice noodles in warm water until pliable, then drain.",
+        "Mix the tamarind, fish sauce, and palm sugar into a sauce.",
+        "Fry the cubed tofu until golden, then add the shrimp and cook through.",
+        "Push everything aside and scramble the eggs in the wok.",
+        "Add the noodles and sauce and toss over high heat until coated and tender.",
+        "Stir in the bean sprouts and serve topped with crushed peanuts and lime."
+      ]
+    },
+    {
+      "name": "Thai green curry",
+      "blurb": "Fragrant coconut curry with chicken, eggplant, and basil over jasmine rice.",
+      "cuisine": "Thai",
+      "mealType": "dinner",
+      "course": "main",
+      "diets": [
+        "gluten-free",
+        "dairy-free"
+      ],
+      "methods": [
+        "stovetop"
+      ],
+      "timeMinutes": 35,
+      "servings": 4,
+      "difficulty": "easy",
+      "plateCategories": [
+        "protein",
+        "produce",
+        "spices"
+      ],
+      "ingredients": [
+        {
+          "name": "chicken thighs",
+          "amount": "600 g",
+          "category": "protein",
+          "staple": false
+        },
+        {
+          "name": "green curry paste",
+          "amount": "3 tbsp",
+          "category": "condiments",
+          "staple": false
+        },
+        {
+          "name": "coconut milk",
+          "amount": "400 ml",
+          "category": "canned",
+          "staple": false
+        },
+        {
+          "name": "thai eggplant",
+          "amount": "200 g",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "fish sauce",
+          "amount": "2 tbsp",
+          "category": "condiments",
+          "staple": false
+        },
+        {
+          "name": "thai basil",
+          "amount": "1 handful",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "kaffir lime leaves",
+          "amount": "4",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "palm sugar",
+          "amount": "1 tbsp",
+          "category": "bakingSupplies",
+          "staple": false
+        }
+      ],
+      "steps": [
+        "Simmer the thick top of the coconut milk until the oil separates.",
+        "Fry the curry paste in the coconut oil until deeply fragrant.",
+        "Add the sliced chicken and stir to coat.",
+        "Pour in the rest of the coconut milk, lime leaves, fish sauce, and sugar.",
+        "Add the eggplant and simmer until everything is tender.",
+        "Stir through the basil just before serving with jasmine rice."
+      ]
+    },
+    {
+      "name": "Chicken katsu curry",
+      "blurb": "Crisp panko chicken cutlets over rice with a mellow Japanese curry sauce.",
+      "cuisine": "Japanese",
+      "mealType": "dinner",
+      "course": "main",
+      "diets": [
+        "dairy-free"
+      ],
+      "methods": [
+        "stovetop"
+      ],
+      "timeMinutes": 45,
+      "servings": 4,
+      "difficulty": "medium",
+      "plateCategories": [
+        "protein",
+        "spices",
+        "produce"
+      ],
+      "ingredients": [
+        {
+          "name": "chicken breast",
+          "amount": "4",
+          "category": "protein",
+          "staple": false
+        },
+        {
+          "name": "panko breadcrumbs",
+          "amount": "150 g",
+          "category": "breads",
+          "staple": false
+        },
+        {
+          "name": "eggs",
+          "amount": "2",
+          "category": "protein",
+          "staple": false
+        },
+        {
+          "name": "flour",
+          "amount": "60 g",
+          "category": "bakingSupplies",
+          "staple": true
+        },
+        {
+          "name": "onion",
+          "amount": "1",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "carrot",
+          "amount": "1",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "curry powder",
+          "amount": "2 tbsp",
+          "category": "spices",
+          "staple": true
+        },
+        {
+          "name": "soy sauce",
+          "amount": "1 tbsp",
+          "category": "condiments",
+          "staple": true
+        }
+      ],
+      "steps": [
+        "Soften the chopped onion and carrot, then stir in the curry powder and flour.",
+        "Add stock and soy sauce gradually, simmering into a smooth, thick curry sauce.",
+        "Flatten the chicken slightly, then coat in flour, egg, and panko.",
+        "Fry the cutlets in hot oil until golden and cooked through.",
+        "Slice the katsu into strips.",
+        "Serve over rice with the curry sauce poured alongside."
+      ]
+    },
+    {
+      "name": "Teriyaki salmon",
+      "blurb": "Pan-seared salmon glazed in a glossy homemade teriyaki sauce.",
+      "cuisine": "Japanese",
+      "mealType": "dinner",
+      "course": "main",
+      "diets": [
+        "pescatarian",
+        "dairy-free",
+        "gluten-free",
+        "high-protein"
+      ],
+      "methods": [
+        "stovetop",
+        "one-pan"
+      ],
+      "timeMinutes": 20,
+      "servings": 4,
+      "difficulty": "easy",
+      "plateCategories": [
+        "protein",
+        "condiments"
+      ],
+      "ingredients": [
+        {
+          "name": "salmon fillets",
+          "amount": "4",
+          "category": "protein",
+          "staple": false
+        },
+        {
+          "name": "soy sauce",
+          "amount": "4 tbsp",
+          "category": "condiments",
+          "staple": true
+        },
+        {
+          "name": "mirin",
+          "amount": "3 tbsp",
+          "category": "condiments",
+          "staple": false
+        },
+        {
+          "name": "sake",
+          "amount": "2 tbsp",
+          "category": "alcohol",
+          "staple": false
+        },
+        {
+          "name": "sugar",
+          "amount": "1 tbsp",
+          "category": "bakingSupplies",
+          "staple": true
+        },
+        {
+          "name": "ginger",
+          "amount": "1 thumb",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "scallions",
+          "amount": "2",
+          "category": "produce",
+          "staple": false
+        }
+      ],
+      "steps": [
+        "Mix the soy sauce, mirin, sake, and sugar into a teriyaki sauce.",
+        "Sear the salmon skin-side down in a hot pan until crisp.",
+        "Flip and cook briefly, then pour off any excess oil.",
+        "Add the sauce and grated ginger and let it bubble and reduce.",
+        "Spoon the thickening glaze over the salmon until shiny.",
+        "Serve scattered with sliced scallions over rice."
+      ]
+    },
+    {
+      "name": "Bibimbap",
+      "blurb": "A vibrant Korean rice bowl topped with seasoned vegetables, beef, and a fried egg.",
+      "cuisine": "Korean",
+      "mealType": "dinner",
+      "course": "main",
+      "diets": [
+        "dairy-free",
+        "high-protein"
+      ],
+      "methods": [
+        "stovetop"
+      ],
+      "timeMinutes": 50,
+      "servings": 4,
+      "difficulty": "medium",
+      "plateCategories": [
+        "grains",
+        "produce",
+        "protein"
+      ],
+      "ingredients": [
+        {
+          "name": "cooked rice",
+          "amount": "4 cups",
+          "category": "grains",
+          "staple": false
+        },
+        {
+          "name": "ground beef",
+          "amount": "300 g",
+          "category": "protein",
+          "staple": false
+        },
+        {
+          "name": "spinach",
+          "amount": "200 g",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "carrot",
+          "amount": "2",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "shiitake mushrooms",
+          "amount": "150 g",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "eggs",
+          "amount": "4",
+          "category": "protein",
+          "staple": false
+        },
+        {
+          "name": "gochujang",
+          "amount": "3 tbsp",
+          "category": "condiments",
+          "staple": false
+        },
+        {
+          "name": "sesame oil",
+          "amount": "2 tbsp",
+          "category": "oils",
+          "staple": false
+        },
+        {
+          "name": "soy sauce",
+          "amount": "2 tbsp",
+          "category": "condiments",
+          "staple": true
+        }
+      ],
+      "steps": [
+        "Season and brown the beef with soy sauce and a little sesame oil.",
+        "Blanch the spinach and dress with sesame oil and salt.",
+        "Saute the julienned carrots and the sliced mushrooms separately.",
+        "Fry the eggs sunny side up.",
+        "Mound the rice in bowls and arrange the vegetables and beef in sections on top.",
+        "Add an egg and a spoon of gochujang to each, then mix at the table."
+      ]
+    },
+    {
+      "name": "Korean braised short ribs",
+      "blurb": "Galbi-jjim: short ribs slow-braised in a sweet-savory soy broth until falling apart.",
+      "cuisine": "Korean",
+      "mealType": "dinner",
+      "course": "main",
+      "diets": [
+        "dairy-free",
+        "high-protein"
+      ],
+      "methods": [
+        "slow-cook",
+        "stovetop"
+      ],
+      "timeMinutes": 150,
+      "servings": 6,
+      "difficulty": "medium",
+      "plateCategories": [
+        "protein",
+        "produce",
+        "condiments"
+      ],
+      "ingredients": [
+        {
+          "name": "beef short ribs",
+          "amount": "1.5 kg",
+          "category": "protein",
+          "staple": false
+        },
+        {
+          "name": "soy sauce",
+          "amount": "120 ml",
+          "category": "condiments",
+          "staple": true
+        },
+        {
+          "name": "pear",
+          "amount": "1",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "garlic",
+          "amount": "6 cloves",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "ginger",
+          "amount": "1 thumb",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "brown sugar",
+          "amount": "3 tbsp",
+          "category": "bakingSupplies",
+          "staple": false
+        },
+        {
+          "name": "carrot",
+          "amount": "2",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "scallions",
+          "amount": "3",
+          "category": "produce",
+          "staple": false
+        }
+      ],
+      "steps": [
+        "Blanch the short ribs briefly to remove impurities, then rinse.",
+        "Blend the pear, garlic, ginger, soy sauce, and sugar into a braising liquid.",
+        "Combine the ribs and liquid in a pot with enough water to cover.",
+        "Braise gently for about two hours until the meat is tender.",
+        "Add the chunked carrots in the last 30 minutes.",
+        "Reduce the sauce until glossy and serve scattered with scallions."
+      ]
+    },
+    {
+      "name": "Chicken shawarma",
+      "blurb": "Warmly spiced marinated chicken roasted and piled into wraps with garlic sauce.",
+      "cuisine": "Middle Eastern",
+      "mealType": "dinner",
+      "course": "main",
+      "diets": [
+        "dairy-free",
+        "high-protein"
+      ],
+      "methods": [
+        "bake"
+      ],
+      "timeMinutes": 50,
+      "servings": 4,
+      "difficulty": "easy",
+      "plateCategories": [
+        "protein",
+        "spices",
+        "breads"
+      ],
+      "ingredients": [
+        {
+          "name": "chicken thighs",
+          "amount": "800 g",
+          "category": "protein",
+          "staple": false
+        },
+        {
+          "name": "ground cumin",
+          "amount": "2 tsp",
+          "category": "spices",
+          "staple": true
+        },
+        {
+          "name": "ground coriander",
+          "amount": "2 tsp",
+          "category": "spices",
+          "staple": true
+        },
+        {
+          "name": "paprika",
+          "amount": "2 tsp",
+          "category": "spices",
+          "staple": true
+        },
+        {
+          "name": "garlic",
+          "amount": "4 cloves",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "lemon",
+          "amount": "1",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "olive oil",
+          "amount": "3 tbsp",
+          "category": "oils",
+          "staple": true
+        },
+        {
+          "name": "flatbread",
+          "amount": "4",
+          "category": "breads",
+          "staple": false
+        }
+      ],
+      "steps": [
+        "Mix the cumin, coriander, paprika, crushed garlic, lemon juice, and oil into a marinade.",
+        "Coat the chicken thighs and marinate for at least an hour.",
+        "Roast the chicken at high heat until charred at the edges and cooked through.",
+        "Rest, then slice into thin strips.",
+        "Warm the flatbreads.",
+        "Fill the wraps with chicken, salad, and a drizzle of garlic sauce."
+      ]
+    },
+    {
+      "name": "Lamb kofta",
+      "blurb": "Juicy spiced lamb skewers grilled until charred and served with herbs.",
+      "cuisine": "Middle Eastern",
+      "mealType": "dinner",
+      "course": "main",
+      "diets": [
+        "dairy-free",
+        "gluten-free",
+        "high-protein"
+      ],
+      "methods": [
+        "grill"
+      ],
+      "timeMinutes": 35,
+      "servings": 4,
+      "difficulty": "easy",
+      "plateCategories": [
+        "protein",
+        "spices",
+        "produce"
+      ],
+      "ingredients": [
+        {
+          "name": "ground lamb",
+          "amount": "700 g",
+          "category": "protein",
+          "staple": false
+        },
+        {
+          "name": "onion",
+          "amount": "1",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "parsley",
+          "amount": "1 handful",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "ground cumin",
+          "amount": "2 tsp",
+          "category": "spices",
+          "staple": true
+        },
+        {
+          "name": "ground coriander",
+          "amount": "1 tsp",
+          "category": "spices",
+          "staple": true
+        },
+        {
+          "name": "ground cinnamon",
+          "amount": "0.5 tsp",
+          "category": "spices",
+          "staple": true
+        },
+        {
+          "name": "garlic",
+          "amount": "3 cloves",
+          "category": "produce",
+          "staple": false
+        }
+      ],
+      "steps": [
+        "Grate the onion and squeeze out excess liquid.",
+        "Mix the lamb with the onion, chopped parsley, garlic, and spices and season well.",
+        "Knead briefly until cohesive, then chill for 20 minutes.",
+        "Shape the mixture around skewers into long logs.",
+        "Grill over high heat, turning, until charred outside and just cooked within.",
+        "Serve with flatbread, yogurt, and salad."
+      ]
+    },
+    {
+      "name": "Mujadara",
+      "blurb": "Humble, deeply savory lentils and rice crowned with sweet caramelized onions.",
+      "cuisine": "Middle Eastern",
+      "mealType": "dinner",
+      "course": "main",
+      "diets": [
+        "vegan",
+        "vegetarian",
+        "dairy-free",
+        "high-protein"
+      ],
+      "methods": [
+        "stovetop"
+      ],
+      "timeMinutes": 50,
+      "servings": 4,
+      "difficulty": "easy",
+      "plateCategories": [
+        "legumes",
+        "grains",
+        "produce"
+      ],
+      "ingredients": [
+        {
+          "name": "brown lentils",
+          "amount": "250 g",
+          "category": "legumes",
+          "staple": false
+        },
+        {
+          "name": "rice",
+          "amount": "200 g",
+          "category": "grains",
+          "staple": false
+        },
+        {
+          "name": "onion",
+          "amount": "3",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "ground cumin",
+          "amount": "1 tsp",
+          "category": "spices",
+          "staple": true
+        },
+        {
+          "name": "ground coriander",
+          "amount": "1 tsp",
+          "category": "spices",
+          "staple": true
+        },
+        {
+          "name": "olive oil",
+          "amount": "4 tbsp",
+          "category": "oils",
+          "staple": true
+        },
+        {
+          "name": "salt",
+          "amount": "to taste",
+          "category": "spices",
+          "staple": true
+        }
+      ],
+      "steps": [
+        "Simmer the lentils until almost tender, then drain, reserving some liquid.",
+        "Slice the onions thinly and fry slowly in plenty of oil until deep brown and sweet.",
+        "Remove half the onions to use as a topping.",
+        "Add the rice and spices to the remaining onions and toast briefly.",
+        "Add the lentils and water to cover, then cook covered until the rice is fluffy.",
+        "Fluff and serve topped with the reserved crispy onions."
+      ]
+    },
+    {
+      "name": "Greek chicken souvlaki",
+      "blurb": "Lemon and oregano marinated chicken skewers grilled and served with tzatziki.",
+      "cuisine": "Greek",
+      "mealType": "dinner",
+      "course": "main",
+      "diets": [
+        "gluten-free",
+        "high-protein"
+      ],
+      "methods": [
+        "grill"
+      ],
+      "timeMinutes": 40,
+      "servings": 4,
+      "difficulty": "easy",
+      "plateCategories": [
+        "protein",
+        "produce",
+        "dairy"
+      ],
+      "ingredients": [
+        {
+          "name": "chicken breast",
+          "amount": "700 g",
+          "category": "protein",
+          "staple": false
+        },
+        {
+          "name": "lemon",
+          "amount": "2",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "dried oregano",
+          "amount": "2 tsp",
+          "category": "spices",
+          "staple": true
+        },
+        {
+          "name": "garlic",
+          "amount": "4 cloves",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "olive oil",
+          "amount": "4 tbsp",
+          "category": "oils",
+          "staple": true
+        },
+        {
+          "name": "yogurt",
+          "amount": "250 g",
+          "category": "dairy",
+          "staple": false
+        },
+        {
+          "name": "cucumber",
+          "amount": "1",
+          "category": "produce",
+          "staple": false
+        }
+      ],
+      "steps": [
+        "Cube the chicken and marinate in lemon juice, oregano, garlic, and oil for an hour.",
+        "Grate and drain the cucumber, then mix with yogurt and garlic for tzatziki.",
+        "Thread the chicken onto skewers.",
+        "Grill over high heat, turning, until charred and cooked through.",
+        "Rest the skewers briefly.",
+        "Serve with the tzatziki, warm pita, and a tomato salad."
+      ]
+    },
+    {
+      "name": "Moussaka",
+      "blurb": "Layers of eggplant and spiced lamb under a golden baked bechamel top.",
+      "cuisine": "Greek",
+      "mealType": "dinner",
+      "course": "main",
+      "diets": [
+        "high-protein"
+      ],
+      "methods": [
+        "bake",
+        "stovetop"
+      ],
+      "timeMinutes": 110,
+      "servings": 8,
+      "difficulty": "hard",
+      "plateCategories": [
+        "protein",
+        "produce",
+        "dairy"
+      ],
+      "ingredients": [
+        {
+          "name": "eggplant",
+          "amount": "3",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "ground lamb",
+          "amount": "700 g",
+          "category": "protein",
+          "staple": false
+        },
+        {
+          "name": "canned tomatoes",
+          "amount": "400 g",
+          "category": "canned",
+          "staple": false
+        },
+        {
+          "name": "onion",
+          "amount": "1",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "ground cinnamon",
+          "amount": "1 tsp",
+          "category": "spices",
+          "staple": true
+        },
+        {
+          "name": "butter",
+          "amount": "60 g",
+          "category": "dairy",
+          "staple": false
+        },
+        {
+          "name": "flour",
+          "amount": "60 g",
+          "category": "bakingSupplies",
+          "staple": true
+        },
+        {
+          "name": "milk",
+          "amount": "600 ml",
+          "category": "dairy",
+          "staple": false
+        },
+        {
+          "name": "eggs",
+          "amount": "2",
+          "category": "protein",
+          "staple": false
+        }
+      ],
+      "steps": [
+        "Slice and salt the eggplant, then roast or fry until soft and golden.",
+        "Brown the lamb with the onion, then add tomatoes and cinnamon and simmer into a thick sauce.",
+        "Make a bechamel with butter, flour, and milk, then whisk in the eggs off the heat.",
+        "Layer eggplant and meat sauce in a baking dish.",
+        "Pour the bechamel over the top and smooth it out.",
+        "Bake until deeply golden, then rest before slicing."
+      ]
+    },
+    {
+      "name": "Coq au vin",
+      "blurb": "Chicken braised slowly in red wine with mushrooms, bacon, and pearl onions.",
+      "cuisine": "French",
+      "mealType": "dinner",
+      "course": "main",
+      "diets": [
+        "high-protein"
+      ],
+      "methods": [
+        "slow-cook",
+        "stovetop"
+      ],
+      "timeMinutes": 120,
+      "servings": 6,
+      "difficulty": "hard",
+      "plateCategories": [
+        "protein",
+        "alcohol",
+        "produce"
+      ],
+      "ingredients": [
+        {
+          "name": "chicken pieces",
+          "amount": "1.5 kg",
+          "category": "protein",
+          "staple": false
+        },
+        {
+          "name": "bacon",
+          "amount": "150 g",
+          "category": "protein",
+          "staple": false
+        },
+        {
+          "name": "red wine",
+          "amount": "750 ml",
+          "category": "alcohol",
+          "staple": false
+        },
+        {
+          "name": "mushrooms",
+          "amount": "300 g",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "pearl onions",
+          "amount": "200 g",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "garlic",
+          "amount": "3 cloves",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "butter",
+          "amount": "40 g",
+          "category": "dairy",
+          "staple": false
+        },
+        {
+          "name": "flour",
+          "amount": "2 tbsp",
+          "category": "bakingSupplies",
+          "staple": true
+        },
+        {
+          "name": "thyme",
+          "amount": "few sprigs",
+          "category": "produce",
+          "staple": false
+        }
+      ],
+      "steps": [
+        "Render the chopped bacon, then brown the chicken in the fat and set aside.",
+        "Saute the pearl onions and mushrooms until golden, then remove.",
+        "Stir the flour into the pan, then deglaze with the red wine.",
+        "Return the chicken, bacon, garlic, and thyme and braise gently for about an hour.",
+        "Add the onions and mushrooms back in the last 20 minutes.",
+        "Swirl in the butter to gloss the sauce and serve."
+      ]
+    },
+    {
+      "name": "Beef bourguignon",
+      "blurb": "Beef slow-braised in red wine until meltingly tender with mushrooms and onions.",
+      "cuisine": "French",
+      "mealType": "dinner",
+      "course": "main",
+      "diets": [
+        "dairy-free",
+        "high-protein"
+      ],
+      "methods": [
+        "slow-cook",
+        "stovetop"
+      ],
+      "timeMinutes": 180,
+      "servings": 6,
+      "difficulty": "hard",
+      "plateCategories": [
+        "protein",
+        "alcohol",
+        "produce"
+      ],
+      "ingredients": [
+        {
+          "name": "beef chuck",
+          "amount": "1.2 kg",
+          "category": "protein",
+          "staple": false
+        },
+        {
+          "name": "bacon",
+          "amount": "150 g",
+          "category": "protein",
+          "staple": false
+        },
+        {
+          "name": "red wine",
+          "amount": "750 ml",
+          "category": "alcohol",
+          "staple": false
+        },
+        {
+          "name": "carrot",
+          "amount": "3",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "mushrooms",
+          "amount": "300 g",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "pearl onions",
+          "amount": "200 g",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "beef stock",
+          "amount": "500 ml",
+          "category": "canned",
+          "staple": false
+        },
+        {
+          "name": "flour",
+          "amount": "2 tbsp",
+          "category": "bakingSupplies",
+          "staple": true
+        },
+        {
+          "name": "garlic",
+          "amount": "3 cloves",
+          "category": "produce",
+          "staple": false
+        }
+      ],
+      "steps": [
+        "Render the bacon, then brown the cubed beef in batches and set aside.",
+        "Soften the carrots and garlic, then stir in the flour.",
+        "Deglaze with the wine, then return the beef, bacon, and stock.",
+        "Braise covered in a low oven for about two and a half hours until tender.",
+        "Saute the mushrooms and pearl onions separately and add near the end.",
+        "Skim any fat, adjust the seasoning, and serve with potatoes or bread."
+      ]
+    },
+    {
+      "name": "Ratatouille",
+      "blurb": "A sun-drenched Provencal stew of eggplant, zucchini, peppers, and tomato.",
+      "cuisine": "French",
+      "mealType": "dinner",
+      "course": "main",
+      "diets": [
+        "vegan",
+        "vegetarian",
+        "gluten-free",
+        "dairy-free"
+      ],
+      "methods": [
+        "stovetop"
+      ],
+      "timeMinutes": 60,
+      "servings": 4,
+      "difficulty": "easy",
+      "plateCategories": [
+        "produce",
+        "oils",
+        "spices"
+      ],
+      "ingredients": [
+        {
+          "name": "eggplant",
+          "amount": "1",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "zucchini",
+          "amount": "2",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "bell pepper",
+          "amount": "2",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "canned tomatoes",
+          "amount": "400 g",
+          "category": "canned",
+          "staple": false
+        },
+        {
+          "name": "onion",
+          "amount": "1",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "garlic",
+          "amount": "3 cloves",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "olive oil",
+          "amount": "4 tbsp",
+          "category": "oils",
+          "staple": true
+        },
+        {
+          "name": "herbes de provence",
+          "amount": "1 tbsp",
+          "category": "spices",
+          "staple": false
+        }
+      ],
+      "steps": [
+        "Dice the eggplant, zucchini, and peppers into even pieces.",
+        "Fry each vegetable separately in oil until lightly browned, then set aside.",
+        "Soften the onion and garlic in the same pan.",
+        "Add the tomatoes and herbs and simmer into a sauce.",
+        "Return all the vegetables and simmer gently until tender but not mushy.",
+        "Rest off the heat to let the flavors settle, then serve warm or at room temperature."
+      ]
+    },
+    {
+      "name": "Smoky BBQ pulled pork",
+      "blurb": "Slow-cooked pork shoulder pulled into tender shreds and tossed in tangy sauce.",
+      "cuisine": "American",
+      "mealType": "dinner",
+      "course": "main",
+      "diets": [
+        "dairy-free",
+        "high-protein"
+      ],
+      "methods": [
+        "slow-cook"
+      ],
+      "timeMinutes": 360,
+      "servings": 8,
+      "difficulty": "easy",
+      "plateCategories": [
+        "protein",
+        "spices",
+        "condiments"
+      ],
+      "ingredients": [
+        {
+          "name": "pork shoulder",
+          "amount": "2 kg",
+          "category": "protein",
+          "staple": false
+        },
+        {
+          "name": "brown sugar",
+          "amount": "3 tbsp",
+          "category": "bakingSupplies",
+          "staple": false
+        },
+        {
+          "name": "paprika",
+          "amount": "2 tbsp",
+          "category": "spices",
+          "staple": true
+        },
+        {
+          "name": "garlic powder",
+          "amount": "1 tbsp",
+          "category": "spices",
+          "staple": true
+        },
+        {
+          "name": "barbecue sauce",
+          "amount": "300 ml",
+          "category": "condiments",
+          "staple": false
+        },
+        {
+          "name": "cider vinegar",
+          "amount": "60 ml",
+          "category": "condiments",
+          "staple": false
+        },
+        {
+          "name": "onion",
+          "amount": "1",
+          "category": "produce",
+          "staple": false
+        }
+      ],
+      "steps": [
+        "Rub the pork all over with the sugar, paprika, garlic powder, and salt.",
+        "Place in a slow cooker over the sliced onion with the vinegar.",
+        "Cook on low for about eight hours until the meat is fork tender.",
+        "Lift out the pork and shred it with two forks, discarding excess fat.",
+        "Toss the shredded meat with the barbecue sauce and some cooking juices.",
+        "Pile onto buns with slaw."
+      ]
+    },
+    {
+      "name": "Classic beef burgers",
+      "blurb": "Juicy seared beef patties stacked with cheese and the usual fixings.",
+      "cuisine": "American",
+      "mealType": "dinner",
+      "course": "main",
+      "diets": [
+        "high-protein"
+      ],
+      "methods": [
+        "grill",
+        "stovetop"
+      ],
+      "timeMinutes": 25,
+      "servings": 4,
+      "difficulty": "easy",
+      "plateCategories": [
+        "protein",
+        "breads",
+        "dairy"
+      ],
+      "ingredients": [
+        {
+          "name": "ground beef",
+          "amount": "600 g",
+          "category": "protein",
+          "staple": false
+        },
+        {
+          "name": "burger buns",
+          "amount": "4",
+          "category": "breads",
+          "staple": false
+        },
+        {
+          "name": "cheddar",
+          "amount": "4 slices",
+          "category": "dairy",
+          "staple": false
+        },
+        {
+          "name": "lettuce",
+          "amount": "few leaves",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "tomato",
+          "amount": "1",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "onion",
+          "amount": "1",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "salt",
+          "amount": "to taste",
+          "category": "spices",
+          "staple": true
+        },
+        {
+          "name": "black pepper",
+          "amount": "to taste",
+          "category": "spices",
+          "staple": true
+        }
+      ],
+      "steps": [
+        "Gently form the beef into four loose patties and season generously.",
+        "Press a small dimple in the center of each so they cook flat.",
+        "Sear in a screaming-hot pan or grill, flipping once, until well crusted.",
+        "Add cheese in the last minute and let it melt under a lid.",
+        "Toast the buns lightly.",
+        "Build each burger with lettuce, tomato, onion, and your favorite sauce."
+      ]
+    },
+    {
+      "name": "Paella valenciana",
+      "blurb": "Saffron rice studded with chicken, rabbit, beans, and a prized crisp socarrat.",
+      "cuisine": "Spanish",
+      "mealType": "dinner",
+      "course": "main",
+      "diets": [
+        "gluten-free",
+        "dairy-free",
+        "high-protein"
+      ],
+      "methods": [
+        "stovetop"
+      ],
+      "timeMinutes": 70,
+      "servings": 6,
+      "difficulty": "hard",
+      "plateCategories": [
+        "grains",
+        "protein",
+        "produce"
+      ],
+      "ingredients": [
+        {
+          "name": "paella rice",
+          "amount": "400 g",
+          "category": "grains",
+          "staple": false
+        },
+        {
+          "name": "chicken thighs",
+          "amount": "500 g",
+          "category": "protein",
+          "staple": false
+        },
+        {
+          "name": "green beans",
+          "amount": "150 g",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "lima beans",
+          "amount": "150 g",
+          "category": "legumes",
+          "staple": false
+        },
+        {
+          "name": "tomato",
+          "amount": "2",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "saffron",
+          "amount": "1 pinch",
+          "category": "spices",
+          "staple": false
+        },
+        {
+          "name": "paprika",
+          "amount": "1 tsp",
+          "category": "spices",
+          "staple": true
+        },
+        {
+          "name": "chicken stock",
+          "amount": "1 l",
+          "category": "canned",
+          "staple": false
+        },
+        {
+          "name": "olive oil",
+          "amount": "4 tbsp",
+          "category": "oils",
+          "staple": true
+        }
+      ],
+      "steps": [
+        "Brown the chicken pieces in oil in a wide paella pan, then push to the side.",
+        "Saute the green beans and add the grated tomato and paprika, cooking into a sofrito.",
+        "Stir in the rice to coat in the flavored oil.",
+        "Pour in the hot saffron-infused stock and add the lima beans.",
+        "Simmer without stirring until the rice absorbs the liquid.",
+        "Raise the heat at the end to form a crisp socarrat, then rest before serving."
+      ]
+    },
+    {
+      "name": "Spanish chicken and chorizo",
+      "blurb": "One-pan braise of chicken, smoky chorizo, peppers, and paprika-spiked tomato.",
+      "cuisine": "Spanish",
+      "mealType": "dinner",
+      "course": "main",
+      "diets": [
+        "gluten-free",
+        "dairy-free",
+        "high-protein"
+      ],
+      "methods": [
+        "one-pan",
+        "stovetop"
+      ],
+      "timeMinutes": 50,
+      "servings": 4,
+      "difficulty": "easy",
+      "plateCategories": [
+        "protein",
+        "produce",
+        "spices"
+      ],
+      "ingredients": [
+        {
+          "name": "chicken thighs",
+          "amount": "8",
+          "category": "protein",
+          "staple": false
+        },
+        {
+          "name": "chorizo",
+          "amount": "200 g",
+          "category": "protein",
+          "staple": false
+        },
+        {
+          "name": "bell pepper",
+          "amount": "2",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "canned tomatoes",
+          "amount": "400 g",
+          "category": "canned",
+          "staple": false
+        },
+        {
+          "name": "onion",
+          "amount": "1",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "smoked paprika",
+          "amount": "2 tsp",
+          "category": "spices",
+          "staple": true
+        },
+        {
+          "name": "garlic",
+          "amount": "3 cloves",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "chicken stock",
+          "amount": "200 ml",
+          "category": "canned",
+          "staple": false
+        }
+      ],
+      "steps": [
+        "Brown the chicken thighs skin-side down until golden, then set aside.",
+        "Fry the sliced chorizo until its red oil releases.",
+        "Soften the onion, peppers, and garlic in that oil.",
+        "Stir in the smoked paprika, then add the tomatoes and stock.",
+        "Nestle the chicken back in and simmer until cooked through and saucy.",
+        "Serve with crusty bread or rice."
+      ]
+    },
+    {
+      "name": "Moroccan chicken tagine",
+      "blurb": "Slow-cooked chicken with preserved lemon, olives, and warm North African spices.",
+      "cuisine": "North African",
+      "mealType": "dinner",
+      "course": "main",
+      "diets": [
+        "gluten-free",
+        "dairy-free",
+        "high-protein"
+      ],
+      "methods": [
+        "slow-cook",
+        "stovetop"
+      ],
+      "timeMinutes": 75,
+      "servings": 4,
+      "difficulty": "medium",
+      "plateCategories": [
+        "protein",
+        "spices",
+        "produce"
+      ],
+      "ingredients": [
+        {
+          "name": "chicken thighs",
+          "amount": "8",
+          "category": "protein",
+          "staple": false
+        },
+        {
+          "name": "preserved lemon",
+          "amount": "1",
+          "category": "condiments",
+          "staple": false
+        },
+        {
+          "name": "green olives",
+          "amount": "100 g",
+          "category": "canned",
+          "staple": false
+        },
+        {
+          "name": "onion",
+          "amount": "2",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "ground ginger",
+          "amount": "1 tsp",
+          "category": "spices",
+          "staple": true
+        },
+        {
+          "name": "ground turmeric",
+          "amount": "1 tsp",
+          "category": "spices",
+          "staple": true
+        },
+        {
+          "name": "ground cumin",
+          "amount": "1 tsp",
+          "category": "spices",
+          "staple": true
+        },
+        {
+          "name": "garlic",
+          "amount": "3 cloves",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "cilantro",
+          "amount": "1 handful",
+          "category": "produce",
+          "staple": false
+        }
+      ],
+      "steps": [
+        "Brown the chicken in oil, then set aside.",
+        "Soften the sliced onions and garlic, then stir in the ginger, turmeric, and cumin.",
+        "Return the chicken with a splash of water and bring to a simmer.",
+        "Cover and braise gently until the chicken is very tender.",
+        "Add the chopped preserved lemon and olives in the last ten minutes.",
+        "Scatter with cilantro and serve with couscous or bread."
+      ]
+    },
+    {
+      "name": "Vegetable couscous tagine",
+      "blurb": "A fragrant North African stew of chickpeas and root vegetables over fluffy couscous.",
+      "cuisine": "North African",
+      "mealType": "dinner",
+      "course": "main",
+      "diets": [
+        "vegan",
+        "vegetarian",
+        "dairy-free"
+      ],
+      "methods": [
+        "stovetop"
+      ],
+      "timeMinutes": 50,
+      "servings": 4,
+      "difficulty": "easy",
+      "plateCategories": [
+        "legumes",
+        "produce",
+        "grains"
+      ],
+      "ingredients": [
+        {
+          "name": "chickpeas",
+          "amount": "400 g",
+          "category": "legumes",
+          "staple": false
+        },
+        {
+          "name": "couscous",
+          "amount": "300 g",
+          "category": "grains",
+          "staple": false
+        },
+        {
+          "name": "carrot",
+          "amount": "2",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "zucchini",
+          "amount": "1",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "canned tomatoes",
+          "amount": "400 g",
+          "category": "canned",
+          "staple": false
+        },
+        {
+          "name": "ras el hanout",
+          "amount": "2 tsp",
+          "category": "spices",
+          "staple": false
+        },
+        {
+          "name": "onion",
+          "amount": "1",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "vegetable stock",
+          "amount": "500 ml",
+          "category": "canned",
+          "staple": false
+        }
+      ],
+      "steps": [
+        "Soften the onion, then stir in the ras el hanout until fragrant.",
+        "Add the chopped carrots, zucchini, tomatoes, and stock.",
+        "Simmer until the vegetables are tender.",
+        "Stir in the chickpeas and warm through.",
+        "Pour boiling stock over the couscous, cover, and let it steam, then fluff with a fork.",
+        "Spoon the vegetable stew over the couscous and serve."
+      ]
+    },
+    {
+      "name": "Harira",
+      "blurb": "A comforting Moroccan tomato, lentil, and chickpea soup brightened with herbs.",
+      "cuisine": "North African",
+      "mealType": "dinner",
+      "course": "main",
+      "diets": [
+        "vegan",
+        "vegetarian",
+        "dairy-free",
+        "high-protein"
+      ],
+      "methods": [
+        "stovetop"
+      ],
+      "timeMinutes": 60,
+      "servings": 6,
+      "difficulty": "easy",
+      "plateCategories": [
+        "legumes",
+        "produce",
+        "spices"
+      ],
+      "ingredients": [
+        {
+          "name": "brown lentils",
+          "amount": "200 g",
+          "category": "legumes",
+          "staple": false
+        },
+        {
+          "name": "chickpeas",
+          "amount": "400 g",
+          "category": "legumes",
+          "staple": false
+        },
+        {
+          "name": "canned tomatoes",
+          "amount": "800 g",
+          "category": "canned",
+          "staple": false
+        },
+        {
+          "name": "onion",
+          "amount": "1",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "celery",
+          "amount": "2 stalks",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "ground ginger",
+          "amount": "1 tsp",
+          "category": "spices",
+          "staple": true
+        },
+        {
+          "name": "ground turmeric",
+          "amount": "1 tsp",
+          "category": "spices",
+          "staple": true
+        },
+        {
+          "name": "cilantro",
+          "amount": "1 handful",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "vegetable stock",
+          "amount": "1.5 l",
+          "category": "canned",
+          "staple": false
+        }
+      ],
+      "steps": [
+        "Soften the chopped onion and celery, then add the ginger and turmeric.",
+        "Stir in the tomatoes and cook briefly to deepen the flavor.",
+        "Add the lentils and stock and simmer until the lentils are soft.",
+        "Add the chickpeas and warm through.",
+        "Blend a portion of the soup to thicken it if you like.",
+        "Stir in plenty of chopped cilantro and serve with lemon wedges."
+      ]
+    },
+    {
+      "name": "Vegan dan dan noodles",
+      "blurb": "Springy noodles in a nutty, chili-laced sauce topped with savory crumbled mushrooms.",
+      "cuisine": "Chinese",
+      "mealType": "dinner",
+      "course": "main",
+      "diets": [
+        "vegan",
+        "vegetarian",
+        "dairy-free"
+      ],
+      "methods": [
+        "stovetop"
+      ],
+      "timeMinutes": 30,
+      "servings": 4,
+      "difficulty": "medium",
+      "plateCategories": [
+        "pasta",
+        "condiments",
+        "produce"
+      ],
+      "ingredients": [
+        {
+          "name": "wheat noodles",
+          "amount": "400 g",
+          "category": "pasta",
+          "staple": false
+        },
+        {
+          "name": "mushrooms",
+          "amount": "300 g",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "tahini",
+          "amount": "3 tbsp",
+          "category": "condiments",
+          "staple": false
+        },
+        {
+          "name": "soy sauce",
+          "amount": "3 tbsp",
+          "category": "condiments",
+          "staple": true
+        },
+        {
+          "name": "chili oil",
+          "amount": "2 tbsp",
+          "category": "oils",
+          "staple": false
+        },
+        {
+          "name": "sichuan peppercorns",
+          "amount": "1 tsp",
+          "category": "spices",
+          "staple": false
+        },
+        {
+          "name": "garlic",
+          "amount": "3 cloves",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "scallions",
+          "amount": "3",
+          "category": "produce",
+          "staple": false
+        }
+      ],
+      "steps": [
+        "Finely chop the mushrooms and fry until dark and crisp, seasoned with soy sauce.",
+        "Whisk the tahini, remaining soy, chili oil, and garlic with a little hot water into a sauce.",
+        "Toast and grind the Sichuan peppercorns.",
+        "Cook the noodles until just tender, then drain.",
+        "Spoon the sauce into bowls and pile the noodles on top.",
+        "Crown with the crispy mushrooms, ground peppercorns, and scallions, then toss to eat."
+      ]
+    },
+    {
+      "name": "Black bean tostadas",
+      "blurb": "Crisp tortillas heaped with smoky black beans, avocado, and tangy slaw.",
+      "cuisine": "Mexican",
+      "mealType": "dinner",
+      "course": "main",
+      "diets": [
+        "vegan",
+        "vegetarian",
+        "dairy-free",
+        "gluten-free"
+      ],
+      "methods": [
+        "stovetop"
+      ],
+      "timeMinutes": 25,
+      "servings": 4,
+      "difficulty": "easy",
+      "plateCategories": [
+        "legumes",
+        "produce",
+        "breads"
+      ],
+      "ingredients": [
+        {
+          "name": "black beans",
+          "amount": "800 g",
+          "category": "legumes",
+          "staple": false
+        },
+        {
+          "name": "corn tortillas",
+          "amount": "8",
+          "category": "breads",
+          "staple": false
+        },
+        {
+          "name": "avocado",
+          "amount": "2",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "cabbage",
+          "amount": "200 g",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "lime",
+          "amount": "2",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "ground cumin",
+          "amount": "1 tsp",
+          "category": "spices",
+          "staple": true
+        },
+        {
+          "name": "onion",
+          "amount": "1",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "cilantro",
+          "amount": "1 handful",
+          "category": "produce",
+          "staple": false
+        }
+      ],
+      "steps": [
+        "Crisp the tortillas in a dry pan or oven until they snap.",
+        "Saute the onion, add the drained beans and cumin, and mash to a chunky spread.",
+        "Toss the shredded cabbage with lime juice and salt for a quick slaw.",
+        "Mash the avocado with lime and salt.",
+        "Spread the beans over each tostada.",
+        "Top with avocado, slaw, and cilantro and serve right away."
+      ]
+    },
+    {
+      "name": "Pasta alla norma",
+      "blurb": "Sicilian pasta with fried eggplant, rich tomato sauce, and salty ricotta salata.",
+      "cuisine": "Italian",
+      "mealType": "dinner",
+      "course": "main",
+      "diets": [
+        "vegetarian"
+      ],
+      "methods": [
+        "stovetop"
+      ],
+      "timeMinutes": 40,
+      "servings": 4,
+      "difficulty": "easy",
+      "plateCategories": [
+        "pasta",
+        "produce",
+        "dairy"
+      ],
+      "ingredients": [
+        {
+          "name": "rigatoni",
+          "amount": "400 g",
+          "category": "pasta",
+          "staple": false
+        },
+        {
+          "name": "eggplant",
+          "amount": "2",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "canned tomatoes",
+          "amount": "800 g",
+          "category": "canned",
+          "staple": false
+        },
+        {
+          "name": "garlic",
+          "amount": "3 cloves",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "ricotta salata",
+          "amount": "80 g",
+          "category": "dairy",
+          "staple": false
+        },
+        {
+          "name": "fresh basil",
+          "amount": "1 handful",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "olive oil",
+          "amount": "5 tbsp",
+          "category": "oils",
+          "staple": true
+        }
+      ],
+      "steps": [
+        "Dice the eggplant, salt it, then fry in oil until golden and tender.",
+        "Make a quick sauce by simmering the tomatoes with garlic and basil.",
+        "Cook the rigatoni until al dente, reserving a little pasta water.",
+        "Fold most of the fried eggplant into the sauce.",
+        "Toss the pasta through the sauce, loosening with pasta water.",
+        "Top with the remaining eggplant, grated ricotta salata, and basil."
+      ]
+    },
+    {
+      "name": "Falafel plate",
+      "blurb": "Crisp herbed chickpea fritters with tahini, salad, and warm pita.",
+      "cuisine": "Middle Eastern",
+      "mealType": "dinner",
+      "course": "main",
+      "diets": [
+        "vegan",
+        "vegetarian",
+        "dairy-free"
+      ],
+      "methods": [
+        "stovetop"
+      ],
+      "timeMinutes": 45,
+      "servings": 4,
+      "difficulty": "medium",
+      "plateCategories": [
+        "legumes",
+        "produce",
+        "condiments"
+      ],
+      "ingredients": [
+        {
+          "name": "dried chickpeas",
+          "amount": "250 g",
+          "category": "legumes",
+          "staple": false
+        },
+        {
+          "name": "parsley",
+          "amount": "1 bunch",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "cilantro",
+          "amount": "1 bunch",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "onion",
+          "amount": "1",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "garlic",
+          "amount": "3 cloves",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "ground cumin",
+          "amount": "2 tsp",
+          "category": "spices",
+          "staple": true
+        },
+        {
+          "name": "tahini",
+          "amount": "3 tbsp",
+          "category": "condiments",
+          "staple": false
+        },
+        {
+          "name": "pita bread",
+          "amount": "4",
+          "category": "breads",
+          "staple": false
+        },
+        {
+          "name": "oil",
+          "amount": "for frying",
+          "category": "oils",
+          "staple": true
+        }
+      ],
+      "steps": [
+        "Soak the dried chickpeas overnight, then drain well.",
+        "Blitz the chickpeas with the herbs, onion, garlic, and cumin into a coarse paste.",
+        "Rest the mixture, then shape into small patties.",
+        "Fry in hot oil until deep golden and crisp outside.",
+        "Loosen the tahini with lemon juice and water into a pourable sauce.",
+        "Serve the falafel with tahini, salad, and warm pita."
+      ]
+    },
+    {
+      "name": "Shrimp pad krapow",
+      "blurb": "Fiery Thai basil stir-fry of shrimp, chiles, and garlic over rice with a crispy egg.",
+      "cuisine": "Thai",
+      "mealType": "dinner",
+      "course": "main",
+      "diets": [
+        "pescatarian",
+        "dairy-free",
+        "gluten-free"
+      ],
+      "methods": [
+        "stovetop",
+        "one-pan"
+      ],
+      "timeMinutes": 20,
+      "servings": 2,
+      "difficulty": "easy",
+      "plateCategories": [
+        "protein",
+        "produce",
+        "condiments"
+      ],
+      "ingredients": [
+        {
+          "name": "shrimp",
+          "amount": "300 g",
+          "category": "protein",
+          "staple": false
+        },
+        {
+          "name": "thai basil",
+          "amount": "1 handful",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "thai chiles",
+          "amount": "3",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "garlic",
+          "amount": "4 cloves",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "fish sauce",
+          "amount": "2 tbsp",
+          "category": "condiments",
+          "staple": false
+        },
+        {
+          "name": "oyster sauce",
+          "amount": "1 tbsp",
+          "category": "condiments",
+          "staple": false
+        },
+        {
+          "name": "sugar",
+          "amount": "1 tsp",
+          "category": "bakingSupplies",
+          "staple": true
+        },
+        {
+          "name": "eggs",
+          "amount": "2",
+          "category": "protein",
+          "staple": false
+        }
+      ],
+      "steps": [
+        "Pound the garlic and chiles into a rough paste.",
+        "Fry the eggs in plenty of hot oil until the edges are crisp, then set aside.",
+        "Stir-fry the garlic and chiles briefly, then add the shrimp.",
+        "Add the fish sauce, oyster sauce, and sugar and toss until the shrimp are cooked.",
+        "Throw in the basil and stir just until wilted.",
+        "Serve over rice topped with the crispy egg."
+      ]
+    },
+    {
+      "name": "Japanese miso ramen",
+      "blurb": "A warming bowl of springy noodles in rich miso broth with corn and scallions.",
+      "cuisine": "Japanese",
+      "mealType": "dinner",
+      "course": "main",
+      "diets": [
+        "vegetarian"
+      ],
+      "methods": [
+        "stovetop"
+      ],
+      "timeMinutes": 40,
+      "servings": 2,
+      "difficulty": "medium",
+      "plateCategories": [
+        "pasta",
+        "condiments",
+        "produce"
+      ],
+      "ingredients": [
+        {
+          "name": "ramen noodles",
+          "amount": "2 portions",
+          "category": "pasta",
+          "staple": false
+        },
+        {
+          "name": "miso paste",
+          "amount": "3 tbsp",
+          "category": "condiments",
+          "staple": false
+        },
+        {
+          "name": "vegetable stock",
+          "amount": "1 l",
+          "category": "canned",
+          "staple": false
+        },
+        {
+          "name": "corn",
+          "amount": "100 g",
+          "category": "frozenFoods",
+          "staple": false
+        },
+        {
+          "name": "shiitake mushrooms",
+          "amount": "100 g",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "garlic",
+          "amount": "2 cloves",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "ginger",
+          "amount": "1 thumb",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "eggs",
+          "amount": "2",
+          "category": "protein",
+          "staple": false
+        },
+        {
+          "name": "scallions",
+          "amount": "2",
+          "category": "produce",
+          "staple": false
+        }
+      ],
+      "steps": [
+        "Soft-boil the eggs for about seven minutes, then peel and halve.",
+        "Saute the garlic, ginger, and sliced mushrooms in a pot.",
+        "Add the stock and bring to a simmer.",
+        "Whisk the miso paste with a ladle of broth, then stir it back in without boiling.",
+        "Cook the ramen noodles separately and divide between bowls.",
+        "Ladle over the broth and top with corn, egg, and scallions."
+      ]
+    },
+    {
+      "name": "Spanakopita",
+      "blurb": "Flaky phyllo pie filled with spinach, herbs, and salty feta.",
+      "cuisine": "Greek",
+      "mealType": "dinner",
+      "course": "main",
+      "diets": [
+        "vegetarian"
+      ],
+      "methods": [
+        "bake"
+      ],
+      "timeMinutes": 75,
+      "servings": 6,
+      "difficulty": "medium",
+      "plateCategories": [
+        "produce",
+        "dairy",
+        "breads"
+      ],
+      "ingredients": [
+        {
+          "name": "spinach",
+          "amount": "800 g",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "feta",
+          "amount": "250 g",
+          "category": "dairy",
+          "staple": false
+        },
+        {
+          "name": "phyllo pastry",
+          "amount": "250 g",
+          "category": "frozenFoods",
+          "staple": false
+        },
+        {
+          "name": "eggs",
+          "amount": "3",
+          "category": "protein",
+          "staple": false
+        },
+        {
+          "name": "onion",
+          "amount": "1",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "dill",
+          "amount": "1 handful",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "olive oil",
+          "amount": "5 tbsp",
+          "category": "oils",
+          "staple": true
+        }
+      ],
+      "steps": [
+        "Wilt the spinach, then squeeze out as much water as possible and chop.",
+        "Soften the onion and combine with the spinach, crumbled feta, eggs, and dill.",
+        "Brush a baking dish and layer half the phyllo sheets, brushing each with oil.",
+        "Spread the spinach filling evenly over the pastry base.",
+        "Top with the remaining phyllo, brushing every layer, and score the top.",
+        "Bake until deeply golden and crisp, then cool slightly before cutting."
+      ]
+    },
+    {
+      "name": "Gambas al ajillo with rice",
+      "blurb": "Garlicky sizzling shrimp in chili-spiked olive oil, served over rice.",
+      "cuisine": "Spanish",
+      "mealType": "dinner",
+      "course": "main",
+      "diets": [
+        "pescatarian",
+        "dairy-free",
+        "gluten-free",
+        "high-protein"
+      ],
+      "methods": [
+        "stovetop",
+        "one-pan"
+      ],
+      "timeMinutes": 25,
+      "servings": 4,
+      "difficulty": "easy",
+      "plateCategories": [
+        "protein",
+        "oils",
+        "grains"
+      ],
+      "ingredients": [
+        {
+          "name": "shrimp",
+          "amount": "600 g",
+          "category": "protein",
+          "staple": false
+        },
+        {
+          "name": "garlic",
+          "amount": "8 cloves",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "dried red chiles",
+          "amount": "2",
+          "category": "spices",
+          "staple": false
+        },
+        {
+          "name": "olive oil",
+          "amount": "120 ml",
+          "category": "oils",
+          "staple": true
+        },
+        {
+          "name": "smoked paprika",
+          "amount": "1 tsp",
+          "category": "spices",
+          "staple": true
+        },
+        {
+          "name": "parsley",
+          "amount": "1 handful",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "cooked rice",
+          "amount": "4 cups",
+          "category": "grains",
+          "staple": false
+        }
+      ],
+      "steps": [
+        "Warm the olive oil gently with thinly sliced garlic and the dried chiles.",
+        "Cook until the garlic is fragrant and just turning gold, not brown.",
+        "Stir in the smoked paprika.",
+        "Add the shrimp and cook over higher heat until pink and curled.",
+        "Toss through chopped parsley and a squeeze of lemon.",
+        "Spoon the shrimp and the garlicky oil over warm rice."
+      ]
+    },
+    {
+      "name": "Bun cha",
+      "blurb": "Grilled pork patties and noodles served with herbs and a tangy dipping sauce.",
+      "cuisine": "Thai",
+      "mealType": "dinner",
+      "course": "main",
+      "diets": [
+        "dairy-free",
+        "high-protein"
+      ],
+      "methods": [
+        "grill"
+      ],
+      "timeMinutes": 45,
+      "servings": 4,
+      "difficulty": "medium",
+      "plateCategories": [
+        "protein",
+        "pasta",
+        "produce"
+      ],
+      "ingredients": [
+        {
+          "name": "ground pork",
+          "amount": "600 g",
+          "category": "protein",
+          "staple": false
+        },
+        {
+          "name": "rice noodles",
+          "amount": "300 g",
+          "category": "pasta",
+          "staple": false
+        },
+        {
+          "name": "fish sauce",
+          "amount": "4 tbsp",
+          "category": "condiments",
+          "staple": false
+        },
+        {
+          "name": "sugar",
+          "amount": "3 tbsp",
+          "category": "bakingSupplies",
+          "staple": true
+        },
+        {
+          "name": "lime",
+          "amount": "2",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "garlic",
+          "amount": "4 cloves",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "shallots",
+          "amount": "2",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "fresh herbs",
+          "amount": "1 large handful",
+          "category": "produce",
+          "staple": false
+        }
+      ],
+      "steps": [
+        "Mix the pork with minced shallots, half the garlic, a little fish sauce, and sugar, then form small patties.",
+        "Make a dipping sauce from fish sauce, sugar, lime juice, water, and the rest of the garlic.",
+        "Grill the patties over high heat until charred and cooked through.",
+        "Cook the rice noodles and rinse under cool water.",
+        "Add the warm patties to the dipping sauce.",
+        "Serve the noodles, herbs, and pork together, dipping as you eat."
+      ]
+    },
+    {
+      "name": "Mediterranean baked cod",
+      "blurb": "Flaky cod roasted with tomatoes, olives, and capers in bright olive oil.",
+      "cuisine": "Mediterranean",
+      "mealType": "dinner",
+      "course": "main",
+      "diets": [
+        "pescatarian",
+        "dairy-free",
+        "gluten-free",
+        "low-carb",
+        "high-protein"
+      ],
+      "methods": [
+        "bake",
+        "one-pan"
+      ],
+      "timeMinutes": 35,
+      "servings": 4,
+      "difficulty": "easy",
+      "plateCategories": [
+        "protein",
+        "produce",
+        "condiments"
+      ],
+      "ingredients": [
+        {
+          "name": "cod fillets",
+          "amount": "4",
+          "category": "protein",
+          "staple": false
+        },
+        {
+          "name": "cherry tomatoes",
+          "amount": "300 g",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "black olives",
+          "amount": "100 g",
+          "category": "canned",
+          "staple": false
+        },
+        {
+          "name": "capers",
+          "amount": "2 tbsp",
+          "category": "condiments",
+          "staple": false
+        },
+        {
+          "name": "garlic",
+          "amount": "3 cloves",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "lemon",
+          "amount": "1",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "olive oil",
+          "amount": "4 tbsp",
+          "category": "oils",
+          "staple": true
+        },
+        {
+          "name": "parsley",
+          "amount": "1 handful",
+          "category": "produce",
+          "staple": false
+        }
+      ],
+      "steps": [
+        "Toss the cherry tomatoes, olives, capers, and garlic with oil in a baking dish.",
+        "Roast for ten minutes until the tomatoes begin to burst.",
+        "Nestle the cod fillets among the tomatoes and season.",
+        "Drizzle with more oil and lemon juice.",
+        "Bake until the fish is just opaque and flakes easily.",
+        "Scatter with parsley and serve with bread or potatoes."
+      ]
+    },
+    {
+      "name": "Shakshuka",
+      "blurb": "Eggs poached in a spiced tomato and pepper sauce, scooped up with bread.",
+      "cuisine": "Mediterranean",
+      "mealType": "dinner",
+      "course": "main",
+      "diets": [
+        "vegetarian",
+        "gluten-free"
+      ],
+      "methods": [
+        "stovetop",
+        "one-pan"
+      ],
+      "timeMinutes": 30,
+      "servings": 4,
+      "difficulty": "easy",
+      "plateCategories": [
+        "produce",
+        "protein",
+        "spices"
+      ],
+      "ingredients": [
+        {
+          "name": "canned tomatoes",
+          "amount": "800 g",
+          "category": "canned",
+          "staple": false
+        },
+        {
+          "name": "eggs",
+          "amount": "6",
+          "category": "protein",
+          "staple": false
+        },
+        {
+          "name": "bell pepper",
+          "amount": "2",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "onion",
+          "amount": "1",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "garlic",
+          "amount": "3 cloves",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "ground cumin",
+          "amount": "1 tsp",
+          "category": "spices",
+          "staple": true
+        },
+        {
+          "name": "paprika",
+          "amount": "1 tsp",
+          "category": "spices",
+          "staple": true
+        },
+        {
+          "name": "parsley",
+          "amount": "1 handful",
+          "category": "produce",
+          "staple": false
+        }
+      ],
+      "steps": [
+        "Soften the sliced peppers and onion in oil until tender.",
+        "Add the garlic, cumin, and paprika and cook until fragrant.",
+        "Pour in the tomatoes and simmer into a thick sauce, seasoning well.",
+        "Make wells in the sauce and crack an egg into each.",
+        "Cover and cook gently until the whites set but the yolks stay runny.",
+        "Scatter with parsley and serve straight from the pan with bread."
+      ]
+    },
+    {
+      "name": "Tuscan white bean and kale stew",
+      "blurb": "A hearty, brothy pot of white beans, kale, and garlic finished with olive oil.",
+      "cuisine": "Mediterranean",
+      "mealType": "dinner",
+      "course": "main",
+      "diets": [
+        "vegan",
+        "vegetarian",
+        "dairy-free",
+        "high-protein"
+      ],
+      "methods": [
+        "stovetop"
+      ],
+      "timeMinutes": 40,
+      "servings": 4,
+      "difficulty": "easy",
+      "plateCategories": [
+        "legumes",
+        "produce",
+        "oils"
+      ],
+      "ingredients": [
+        {
+          "name": "white beans",
+          "amount": "800 g",
+          "category": "legumes",
+          "staple": false
+        },
+        {
+          "name": "kale",
+          "amount": "200 g",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "carrot",
+          "amount": "2",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "celery",
+          "amount": "2 stalks",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "onion",
+          "amount": "1",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "garlic",
+          "amount": "4 cloves",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "vegetable stock",
+          "amount": "1 l",
+          "category": "canned",
+          "staple": false
+        },
+        {
+          "name": "olive oil",
+          "amount": "4 tbsp",
+          "category": "oils",
+          "staple": true
+        }
+      ],
+      "steps": [
+        "Soften the chopped onion, carrot, and celery in olive oil.",
+        "Add the garlic and cook briefly.",
+        "Pour in the stock and add half the beans.",
+        "Mash some of the beans against the pot to thicken the broth.",
+        "Add the remaining beans and the chopped kale and simmer until tender.",
+        "Finish with a generous drizzle of olive oil and serve with bread."
+      ]
+    },
+    {
+      "name": "Japchae",
+      "blurb": "Chewy Korean glass noodles tossed with colorful vegetables and a sesame-soy glaze.",
+      "cuisine": "Korean",
+      "mealType": "dinner",
+      "course": "main",
+      "diets": [
+        "vegan",
+        "vegetarian",
+        "dairy-free"
+      ],
+      "methods": [
+        "stovetop"
+      ],
+      "timeMinutes": 40,
+      "servings": 4,
+      "difficulty": "medium",
+      "plateCategories": [
+        "pasta",
+        "produce",
+        "condiments"
+      ],
+      "ingredients": [
+        {
+          "name": "sweet potato noodles",
+          "amount": "250 g",
+          "category": "pasta",
+          "staple": false
+        },
+        {
+          "name": "spinach",
+          "amount": "150 g",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "carrot",
+          "amount": "2",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "shiitake mushrooms",
+          "amount": "150 g",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "bell pepper",
+          "amount": "1",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "soy sauce",
+          "amount": "4 tbsp",
+          "category": "condiments",
+          "staple": true
+        },
+        {
+          "name": "sesame oil",
+          "amount": "2 tbsp",
+          "category": "oils",
+          "staple": false
+        },
+        {
+          "name": "sugar",
+          "amount": "1 tbsp",
+          "category": "bakingSupplies",
+          "staple": true
+        },
+        {
+          "name": "garlic",
+          "amount": "3 cloves",
+          "category": "produce",
+          "staple": false
+        }
+      ],
+      "steps": [
+        "Boil the glass noodles until chewy, then drain and cut into shorter lengths.",
+        "Blanch the spinach and squeeze it dry.",
+        "Stir-fry the carrots, mushrooms, and peppers separately until just tender.",
+        "Mix the soy sauce, sesame oil, sugar, and garlic into a dressing.",
+        "Toss the noodles, vegetables, and dressing together in a large bowl.",
+        "Warm through briefly and serve garnished with sesame seeds."
+      ]
+    },
+    {
+      "name": "Butter chicken",
+      "blurb": "Tender chicken in a silky, lightly sweet tomato and butter sauce.",
+      "cuisine": "Indian",
+      "mealType": "dinner",
+      "course": "main",
+      "diets": [
+        "gluten-free",
+        "high-protein"
+      ],
+      "methods": [
+        "stovetop"
+      ],
+      "timeMinutes": 50,
+      "servings": 4,
+      "difficulty": "medium",
+      "plateCategories": [
+        "protein",
+        "dairy",
+        "spices"
+      ],
+      "ingredients": [
+        {
+          "name": "chicken thighs",
+          "amount": "700 g",
+          "category": "protein",
+          "staple": false
+        },
+        {
+          "name": "yogurt",
+          "amount": "150 g",
+          "category": "dairy",
+          "staple": false
+        },
+        {
+          "name": "butter",
+          "amount": "60 g",
+          "category": "dairy",
+          "staple": false
+        },
+        {
+          "name": "canned tomatoes",
+          "amount": "400 g",
+          "category": "canned",
+          "staple": false
+        },
+        {
+          "name": "heavy cream",
+          "amount": "150 ml",
+          "category": "dairy",
+          "staple": false
+        },
+        {
+          "name": "garam masala",
+          "amount": "2 tsp",
+          "category": "spices",
+          "staple": true
+        },
+        {
+          "name": "ginger",
+          "amount": "1 thumb",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "garlic",
+          "amount": "4 cloves",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "ground cumin",
+          "amount": "1 tsp",
+          "category": "spices",
+          "staple": true
+        }
+      ],
+      "steps": [
+        "Marinate the chicken in yogurt, ginger, garlic, and half the garam masala for at least 30 minutes.",
+        "Sear the chicken until charred at the edges, then set aside.",
+        "Melt the butter and cook the remaining spices until fragrant.",
+        "Add the tomatoes and simmer until thick, then blend smooth.",
+        "Stir in the cream and return the chicken to warm through.",
+        "Finish with a little more butter and serve with rice or naan."
+      ]
+    },
+    {
+      "name": "Carnitas",
+      "blurb": "Mexican pork slow-cooked until tender, then crisped in its own fat for tacos.",
+      "cuisine": "Mexican",
+      "mealType": "dinner",
+      "course": "main",
+      "diets": [
+        "gluten-free",
+        "dairy-free",
+        "high-protein"
+      ],
+      "methods": [
+        "slow-cook",
+        "stovetop"
+      ],
+      "timeMinutes": 180,
+      "servings": 8,
+      "difficulty": "medium",
+      "plateCategories": [
+        "protein",
+        "produce",
+        "spices"
+      ],
+      "ingredients": [
+        {
+          "name": "pork shoulder",
+          "amount": "2 kg",
+          "category": "protein",
+          "staple": false
+        },
+        {
+          "name": "orange",
+          "amount": "1",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "onion",
+          "amount": "1",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "garlic",
+          "amount": "5 cloves",
+          "category": "produce",
+          "staple": false
+        },
+        {
+          "name": "ground cumin",
+          "amount": "1 tbsp",
+          "category": "spices",
+          "staple": true
+        },
+        {
+          "name": "dried oregano",
+          "amount": "1 tsp",
+          "category": "spices",
+          "staple": true
+        },
+        {
+          "name": "bay leaves",
+          "amount": "2",
+          "category": "spices",
+          "staple": false
+        },
+        {
+          "name": "corn tortillas",
+          "amount": "16",
+          "category": "breads",
+          "staple": false
+        }
+      ],
+      "steps": [
+        "Cut the pork into large chunks and season with cumin, oregano, and salt.",
+        "Place in a pot with the onion, garlic, bay leaves, and the juice and halves of the orange.",
+        "Add water to come halfway up and braise gently until very tender.",
+        "Remove the lid and let the liquid cook away so the pork fries in its own fat.",
+        "Crisp the pork, turning, until the edges are deeply browned.",
+        "Pile into warm tortillas with onion, cilantro, and lime."
+      ]
+    }
+  ]
+}

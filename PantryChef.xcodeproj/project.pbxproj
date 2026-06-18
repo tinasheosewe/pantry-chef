@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		00E1153D471A7982E0CA3F86 /* RecipeSeed.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37D2DE4E7AE893634E203960 /* RecipeSeed.swift */; };
 		0248FD5136004BE914474B21 /* ResolutionClassTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4EC84421D4A2864AE180C6D /* ResolutionClassTests.swift */; };
 		04B3B6AA63619905246D9295 /* IntakePipeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = C277A622D0C630B07548A487 /* IntakePipeline.swift */; };
 		0D574F78BDC28376F33CEA94 /* SeedDishCatalogTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56846FEA588376592A76B680 /* SeedDishCatalogTests.swift */; };
@@ -162,6 +163,7 @@
 		2EAF4BBB6D4452027050DF1E /* AppError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppError.swift; sourceTree = "<group>"; };
 		34FBDF3045F807228F2ED54C /* ItemCertainty.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ItemCertainty.swift; sourceTree = "<group>"; };
 		353D73D6645D3DD2DDEC4808 /* LibraryView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LibraryView.swift; sourceTree = "<group>"; };
+		37D2DE4E7AE893634E203960 /* RecipeSeed.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RecipeSeed.swift; sourceTree = "<group>"; };
 		3E8B2D4D276D1DB31BFD0269 /* UserCatalogStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserCatalogStore.swift; sourceTree = "<group>"; };
 		420C676E86193CE0F9F81388 /* PlateRenderLibrary.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PlateRenderLibrary.swift; sourceTree = "<group>"; };
 		429A404308616F18132F9767 /* FanView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FanView.swift; sourceTree = "<group>"; };
@@ -292,6 +294,7 @@
 			isa = PBXGroup;
 			children = (
 				039DE23286DA5BF1F840B8EF /* TodayFeed.swift */,
+				37D2DE4E7AE893634E203960 /* RecipeSeed.swift */,
 			);
 			name = Today;
 			path = Today;
@@ -880,6 +883,7 @@
 				4C4264D61939374CCF134900 /* AmountField.swift in Sources */,
 				71D7C5ADA6DF7F74486CDE1B /* CatalogSwaps.swift in Sources */,
 				C2C444DEFFD9288E344ABFA0 /* TodayFeed.swift in Sources */,
+				00E1153D471A7982E0CA3F86 /* RecipeSeed.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

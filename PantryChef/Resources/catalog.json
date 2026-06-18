@@ -16453,7 +16453,10 @@
     "defaultStorage": "Refrigerated",
     "aliases": [
       "bell peppers",
-      "sweet pepper"
+      "sweet pepper",
+      "roasted red peppers",
+      "roasted red pepper",
+      "roasted red bell pepper"
     ],
     "facets": [
       {
@@ -36169,7 +36172,10 @@
     "aliases": [
       "cellophane noodles",
       "glass noodle",
-      "glass noodles"
+      "glass noodles",
+      "sweet potato noodles",
+      "sweet potato noodle",
+      "dangmyeon"
     ],
     "facets": [
       {

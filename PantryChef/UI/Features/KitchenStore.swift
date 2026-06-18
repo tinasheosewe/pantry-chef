@@ -756,7 +756,13 @@ final class KitchenStore {
                           line("baby spinach", "100 g", "Spinach")],
             steps: [CookStep("Beat the eggs, fold in greens and feta, set under the grill.", timerSeconds: 480, phase: .cook, attention: .passive)])
 
-        library = [frittata, orzo, shakshuka, stirfry, salmon, ragu, greens]
+        // The seven hand-tuned showroom dishes lead (their steps + the demo stock make
+        // them "ready now"); the generated dataset adds breadth so the feed's filters
+        // have real variety. Dedupe by name, curated first.
+        let curated = [frittata, orzo, shakshuka, stirfry, salmon, ragu, greens]
+        var seenNames = Set(curated.map { $0.name.lowercased() })
+        let seeded = RecipeSeed.all.filter { seenNames.insert($0.name.lowercased()).inserted }
+        library = curated + seeded
 
         journal = [
             JournalItem(date: day(-4), name: "Spinach & feta orzo", plate: orzo.plate,

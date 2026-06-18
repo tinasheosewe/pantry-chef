@@ -126,15 +126,26 @@ struct Dish: Identifiable, Equatable, Sendable {
     var blurb: String?
     var ingredients: [RecipeLine]
     var steps: [CookStep]
+    /// Browse/filter tags (from the seeded recipe dataset) — power the Today feed's
+    /// lenses beyond the pantry-derived ones. Empty/nil for hand-built or user dishes.
+    var cuisine: String?
+    var mealType: String?
+    var course: String?
+    var diets: [String]
+    var methods: [String]
 
     init(id: UUID = UUID(), name: String, plate: PlateComposition, time: String,
          isYours: Bool = false, isFavorite: Bool = false, servings: Int = 2,
          blurb: String? = nil,
-         ingredients: [RecipeLine], steps: [CookStep] = []) {
+         ingredients: [RecipeLine], steps: [CookStep] = [],
+         cuisine: String? = nil, mealType: String? = nil, course: String? = nil,
+         diets: [String] = [], methods: [String] = []) {
         self.id = id; self.name = name; self.plate = plate; self.time = time
         self.isYours = isYours; self.isFavorite = isFavorite; self.servings = servings
         self.blurb = blurb
         self.ingredients = ingredients; self.steps = steps
+        self.cuisine = cuisine; self.mealType = mealType; self.course = course
+        self.diets = diets; self.methods = methods
     }
 
     var requirements: [IngredientRequirement] { ingredients.map(\.requirement) }
@@ -143,7 +154,8 @@ struct Dish: Identifiable, Equatable, Sendable {
     /// original recipe is left untouched. Marked as the user's own, not favorited.
     func copyAsNew() -> Dish {
         Dish(name: name, plate: plate, time: time, isYours: true, isFavorite: false,
-             servings: servings, blurb: blurb, ingredients: ingredients, steps: steps)
+             servings: servings, blurb: blurb, ingredients: ingredients, steps: steps,
+             cuisine: cuisine, mealType: mealType, course: course, diets: diets, methods: methods)
     }
 
     /// This dish scaled to a different serving count: every ingredient amount with
