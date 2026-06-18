@@ -675,6 +675,8 @@ final class KitchenStore {
     /// ready count) on this so first paint isn't blocked computing readiness over 200
     /// dishes — they appear a beat later instead of behind a blank screen.
     var readinessReady = false
+    /// 0→1 load progress for the loading screen's growing sprig. Driven by `warmUp`.
+    var loadProgress: Double = 0
 
     @ObservationIgnored private var readinessCache: [UUID: Readiness] = [:]
     @ObservationIgnored private var readinessCacheKey = ""
@@ -709,24 +711,29 @@ final class KitchenStore {
     @MainActor
     func warmUp() async {
         guard !readinessReady else { return }
+        loadProgress = 0.12   // a first sprout right away — never a dead start
         // 1. Catalog indices (≈2.9k items) off-main — the big cold cost.
         await Task.detached(priority: .userInitiated) {
             _ = IntakePipeline.bestCatalogID(for: "salt")
         }.value
+        loadProgress = 0.35
         // 2. Warm readiness for the whole library (the headline counts every dish),
-        //    yielding between chunks. needs/wants stays lazy — only the handful of
-        //    visible NEEDS tiles compute it, cached on first render.
-        var n = 0
-        for dish in library {
+        //    yielding between chunks (so the sprig keeps growing). needs/wants stays
+        //    lazy — only the handful of visible NEEDS tiles compute it, cached later.
+        let total = max(library.count, 1)
+        for (n, dish) in library.enumerated() {
             _ = readiness(for: dish)
-            n += 1
-            if n % 16 == 0 { await Task.yield() }
+            if n % 16 == 0 {
+                loadProgress = 0.35 + 0.6 * Double(n) / Double(total)
+                await Task.yield()
+            }
         }
         // 3. Compose the opening fan, then reveal.
         if case .open(let opts, _) = nowState, opts.isEmpty {
             fanOptions = composeFan()
             nowState = .open(options: fanOptions, selected: 0)
         }
+        loadProgress = 1.0
         readinessReady = true
     }
 

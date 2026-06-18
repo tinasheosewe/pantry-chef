@@ -56,7 +56,7 @@ struct RedesignRootView: View {
             } else {
                 // Proactively load everything behind a loading screen — the UI only
                 // appears once it's actually usable (no frozen half-built page).
-                LoadingScreen().transition(.opacity)
+                LoadingScreen(progress: store.loadProgress).transition(.opacity)
             }
         }
         .animation(reduceMotion ? nil : .easeInOut(duration: 0.4), value: store.readinessReady)
