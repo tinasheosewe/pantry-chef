@@ -288,9 +288,15 @@ final class KitchenStore {
         }
     }
 
+    /// The plan only runs forward — a meal can't be scheduled before today. The pickers
+    /// already bound to today, but this is the model-level backstop for any entry point.
+    private func planDay(for date: Date) -> Date {
+        max(date, cal.startOfDay(for: today))
+    }
+
     func planMeal(_ dish: Dish, on date: Date, part: DayPart = .evening, servings: Int? = nil) {
         // Anchor the hour to the part so a day's meals sort morning → evening.
-        let when = cal.date(bySettingHour: part.anchorHour, minute: 0, second: 0, of: date) ?? date
+        let when = cal.date(bySettingHour: part.anchorHour, minute: 0, second: 0, of: planDay(for: date)) ?? date
         events.append(DatedEvent(kind: .meal(PlannedMeal(
             date: when, name: dish.name, plate: dish.plate, level: .cooked,
             dayPart: part, servings: servings ?? dish.servings,
@@ -300,7 +306,7 @@ final class KitchenStore {
     /// Plan a leftover / ready-made dish — heat-and-eat, logged not cooked.
     /// `servings` is the portions you intend to eat.
     func planLeftover(_ item: StockItem, on date: Date, part: DayPart = .evening, servings: Int = 1) {
-        let when = cal.date(bySettingHour: part.anchorHour, minute: 0, second: 0, of: date) ?? date
+        let when = cal.date(bySettingHour: part.anchorHour, minute: 0, second: 0, of: planDay(for: date)) ?? date
         events.append(DatedEvent(kind: .meal(PlannedMeal(
             date: when, name: item.name, plate: item.plate, level: .served,
             dayPart: part, servings: servings, missingCount: 0))))
@@ -427,6 +433,18 @@ final class KitchenStore {
         journal.append(JournalItem(
             date: today, name: dish.name, plate: dish.plate, level: .cooked,
             note: "\(dish.servings) \(dish.servings == 1 ? "serving" : "servings")"))
+        pruneHistory()
+    }
+
+    /// Keep history bounded. The plan looks forward, so the journal record and any
+    /// long-passed planned meals older than the retention window are dropped — they're
+    /// no longer surfaced and would otherwise accumulate without limit. The recent record
+    /// is kept (it powers "you've made this N times").
+    static let historyRetentionDays = 90
+    private func pruneHistory() {
+        let cutoff = cal.date(byAdding: .day, value: -Self.historyRetentionDays, to: today) ?? today
+        journal.removeAll { $0.date < cutoff }
+        events.removeAll { if case .meal(let m) = $0.kind { return m.date < cutoff }; return false }
     }
 
     /// Add `count` portions to a named leftover (cooking *produces* food), creating it

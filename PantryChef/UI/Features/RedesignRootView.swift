@@ -139,7 +139,7 @@ struct RedesignRootView: View {
         case .today:
             let dayNumber = Calendar.current.ordinality(of: .day, in: .year, for: store.today) ?? 0
             guard store.readinessReady else { return "№ \(dayNumber)" }
-            let ready = store.library.filter { store.readiness(for: $0).isMakeableNow }.count
+            let ready = feedLibrary.filter { store.readiness(for: $0).isMakeableNow }.count
             return "№ \(dayNumber) · \(ready) ready tonight"
         case .plan:
             return "\(store.todaysPlannedMeals.count) planned today · plan ahead"
@@ -252,7 +252,7 @@ struct RedesignRootView: View {
     /// cook doesn't act on, so it's not surfaced here. (Appears once readiness is warm.)
     @ViewBuilder private var pantryHeadline: some View {
         if store.readinessReady {
-            let makeable = store.library.filter { store.readiness(for: $0).isMakeableNow }.count
+            let makeable = feedLibrary.filter { store.readiness(for: $0).isMakeableNow }.count
             (Text("\(makeable) ").font(Theme.Typography.dish(28, weight: .semibold))
                 + Text(makeable == 1 ? "recipe you can make tonight" : "recipes you can make tonight")
                     .font(Theme.Typography.dish(19)))
@@ -287,7 +287,7 @@ struct RedesignRootView: View {
     /// full grid for that lens.
     private func tierRail(_ title: String, _ subtitle: String, _ lens: FeedLens,
                           sortByMissing: Bool = false) -> some View {
-        var dishes = store.library.filter { matches($0, lens) }
+        var dishes = feedLibrary.filter { matches($0, lens) }
         if sortByMissing {
             dishes.sort { store.readiness(for: $0).missingCount < store.readiness(for: $1).missingCount }
         }
@@ -447,9 +447,15 @@ struct RedesignRootView: View {
     }
 
     /// Dishes matching the active lens AND the secondary filters AND the search.
+    /// The library the feed + browse show: excludes dishes that clash with the user's
+    /// dietary profile (avoided allergens) — we never surface something they can't eat.
+    private var feedLibrary: [Dish] {
+        store.library.filter { DishInsights.conflicts($0, with: store.profile).isEmpty }
+    }
+
     private var filteredDishes: [Dish] {
         let q = feedSearch.trimmingCharacters(in: .whitespaces).lowercased()
-        return store.library.filter {
+        return feedLibrary.filter {
             matches($0, feedLens) && feedFilters.accepts($0) && (q.isEmpty || $0.name.lowercased().contains(q))
         }
     }
@@ -457,7 +463,7 @@ struct RedesignRootView: View {
     /// Distinct, sorted values of a string tag across the library (for the filter sheet).
     private func distinctTags(_ key: (Dish) -> String?) -> [String] {
         var seen = Set<String>(); var out: [String] = []
-        for dish in store.library {
+        for dish in feedLibrary {
             guard let v = key(dish), !v.isEmpty else { continue }
             if seen.insert(v.lowercased()).inserted { out.append(v) }
         }
@@ -465,7 +471,7 @@ struct RedesignRootView: View {
     }
     private var distinctDiets: [String] {
         var seen = Set<String>(); var out: [String] = []
-        for dish in store.library {
+        for dish in feedLibrary {
             for d in dish.diets where seen.insert(d.lowercased()).inserted { out.append(d) }
         }
         return out.sorted()
@@ -500,9 +506,9 @@ struct RedesignRootView: View {
     /// else the strongest ready-now pick. Never the dish the hero is already showing.
     private var featureDish: Dish? {
         let heroName = heroDishName?.lowercased()
-        if let d = store.library.first(where: { usesExpiring($0) && $0.name.lowercased() != heroName }) { return d }
+        if let d = feedLibrary.first(where: { usesExpiring($0) && $0.name.lowercased() != heroName }) { return d }
         guard store.readinessReady else { return nil }
-        return store.library.first { store.readiness(for: $0).isMakeableNow && $0.name.lowercased() != heroName }
+        return feedLibrary.first { store.readiness(for: $0).isMakeableNow && $0.name.lowercased() != heroName }
     }
     private var featureItem: FeedItem? { featureDish.map(feedItem) }
     private var featureEyebrow: String { (featureDish.map(usesExpiring) ?? false) ? "Use it up" : "Ready now" }
