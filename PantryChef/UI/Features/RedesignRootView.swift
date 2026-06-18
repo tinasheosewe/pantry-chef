@@ -33,9 +33,6 @@ struct RedesignRootView: View {
     @State private var editingMeal: PlannedMeal?
     /// A heat-and-eat meal being logged — drives the "how much is left?" prompt.
     @State private var loggingMeal: PlannedMeal?
-    /// When a meal is planned for now, the now-module leads with it; this reveals the
-    /// generic "you could…" suggestions instead, on demand.
-    @State private var showSuggestions = false
     /// The Today feed's active intent lens (the chips). `.all` = the curated default.
     @State private var feedLens: FeedLens = .all
     /// Secondary "More filters" (cuisine/diet/meal type/time) layered on the lens.
@@ -69,7 +66,6 @@ struct RedesignRootView: View {
             .onChange(of: scenePhase) { _, phase in
                 if phase == .active {
                     store.today = Date()          // un-freeze the knowledge clock
-                    showSuggestions = false       // let the plan lead again
                     ThemeManager.shared.refresh()
                     PlateRenderLibrary.shared.sweep()
                 }
@@ -215,7 +211,7 @@ struct RedesignRootView: View {
             todayHeader
             ScrollView {
                 LazyVStack(alignment: .leading, spacing: 0) {
-                    if curatedView {
+                    if curatedView && showsHero {
                         nowModule
                             .padding(.horizontal, Theme.Metric.lg)
                             .padding(.top, 10)
@@ -246,8 +242,10 @@ struct RedesignRootView: View {
         }
     }
 
-    /// The curated default: intent rails with one magazine feature after the first rail.
+    /// The curated default: a leftovers rail (when present), then intent rails with one
+    /// magazine feature after the first.
     @ViewBuilder private var forYouFeed: some View {
+        leftoversRail
         let rails = defaultRails
         ForEach(Array(rails.enumerated()), id: \.element.id) { idx, rail in
             RecipeRail(rail: rail, onOpen: { detailDish = $0 })
@@ -257,6 +255,64 @@ struct RedesignRootView: View {
                     .padding(.horizontal, Theme.Metric.lg).padding(.top, 18)
             }
         }
+    }
+
+    /// Heat-and-eat leftovers, leading the feed so you use them up first. Only shown
+    /// when there are any (no empty rail). Tap → the "how much is left?" eat flow.
+    @ViewBuilder private var leftoversRail: some View {
+        let items = store.leftovers
+        if !items.isEmpty {
+            VStack(alignment: .leading, spacing: 9) {
+                VStack(alignment: .leading, spacing: 1) {
+                    Text("Eat first").font(Theme.Typography.dish(17)).foregroundStyle(Theme.Palette.ink)
+                    Text("Heat-and-eat — use up what's already made")
+                        .font(Theme.Typography.note(12)).foregroundStyle(Theme.Palette.warmGray)
+                }
+                .padding(.horizontal, Theme.Metric.lg)
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(alignment: .top, spacing: 12) {
+                        ForEach(items) { leftoverTile($0) }
+                    }
+                    .padding(.horizontal, Theme.Metric.lg)
+                }
+            }
+            .padding(.top, 18)
+        }
+    }
+
+    private func leftoverTile(_ item: StockItem) -> some View {
+        Button {
+            loggingMeal = PlannedMeal(date: store.today, name: item.name, plate: item.plate,
+                                      level: .served, servings: 1)
+        } label: {
+            VStack(alignment: .leading, spacing: 6) {
+                ZStack(alignment: .topLeading) {
+                    Rectangle().fill(Theme.Palette.creamRaised).frame(width: 142, height: 96)
+                        .overlay(PlateView(name: item.name, composition: item.plate, size: 62))
+                        .overlay(Rectangle().strokeBorder(Theme.Palette.hairline, lineWidth: 1))
+                    Text("LEFTOVER").font(.system(size: 8.5, weight: .bold)).tracking(1)
+                        .foregroundStyle(Theme.Palette.sage)
+                        .padding(.horizontal, 5).padding(.vertical, 2)
+                        .background(Rectangle().fill(Theme.Palette.cream))
+                        .overlay(Rectangle().strokeBorder(Theme.Palette.sage.opacity(0.6), lineWidth: 1))
+                        .padding(6)
+                }
+                Text(item.name).font(Theme.Typography.dish(15)).foregroundStyle(Theme.Palette.ink)
+                    .lineLimit(1).frame(width: 142, alignment: .leading)
+                Text(leftoverPortions(item)).font(Theme.Typography.fact(11))
+                    .foregroundStyle(Theme.Palette.warmGray).frame(width: 142, alignment: .leading)
+            }
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+    }
+
+    private func leftoverPortions(_ item: StockItem) -> String {
+        if case .made(let detail, let portions) = item.measure {
+            if let p = portions { return "\(p) \(p == 1 ? "portion" : "portions")" }
+            return detail
+        }
+        return ""
     }
 
     /// Lens + secondary filters → a two-column grid of every matching dish.
@@ -348,10 +404,7 @@ struct RedesignRootView: View {
     /// Name of the dish the hero is already showing (planned meal, or the selected fan
     /// option), so the rails/feature don't echo it back at you a second time.
     private var heroDishName: String? {
-        if isIdleNow, let plan = store.planForNow, !showSuggestions { return plan.name }
-        if case .open(let options, let selected) = store.nowState, options.indices.contains(selected) {
-            return options[selected].name
-        }
+        if isIdleNow, let plan = store.planForNow { return plan.name }
         return nil
     }
 
@@ -422,22 +475,22 @@ struct RedesignRootView: View {
 
     /// "What's for now": a meal planned for the current part of day leads if there is
     /// one; otherwise the ready-options fan. Shared hero of the Today tab.
+    /// The hero shows only when there's something decisive to say: a meal planned for
+    /// now, or a cook in flight (committed/cooking/cooked). When idle with nothing
+    /// planned there's no fan — the feed (leftovers + ready rails) is the exploration.
+    private var showsHero: Bool {
+        if isIdleNow { return store.planForNow != nil }
+        return true
+    }
+
     @ViewBuilder private var nowModule: some View {
-        if isIdleNow, let plan = store.planForNow, !showSuggestions {
+        if isIdleNow, let plan = store.planForNow {
             PlannedNowView(
                 meal: plan,
                 onAct: { actOnPlan(plan) },
-                onEdit: { editingMeal = plan },
-                onSeeOptions: { withAnimation { showSuggestions = true } })
-        } else if !store.readinessReady, case .open(let opts, _) = store.nowState, opts.isEmpty {
-            // Pre-warm: readiness is still computing on the first runloop after launch.
-            VStack(alignment: .leading, spacing: 6) {
-                Eyebrow(text: NowState.open(options: [], selected: 0).eyebrow(at: DayPart.current()), tone: .urgent)
-                Text("Finding what's ready…")
-                    .font(Theme.Typography.note(13)).foregroundStyle(Theme.Palette.warmGray)
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.vertical, 22)
+                onEdit: { editingMeal = plan })
+        } else if isIdleNow {
+            EmptyView()
         } else {
             NowModuleView(
                 state: Binding(get: { store.nowState }, set: { store.nowState = $0 }),
@@ -593,7 +646,6 @@ private struct PlannedNowView: View {
     let meal: PlannedMeal
     var onAct: () -> Void
     var onEdit: () -> Void
-    var onSeeOptions: () -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -611,22 +663,14 @@ private struct PlannedNowView: View {
                 .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
-            HStack(spacing: 14) {
-                Button(action: onAct) {
-                    Text(meal.isCookable ? "COOK" : "LOG IT")
-                        .font(.system(size: 11, weight: .medium)).tracking(1.6)
-                        .foregroundStyle(Theme.Palette.cream)
-                        .padding(.horizontal, 18).padding(.vertical, 10)
-                        .background(Rectangle().fill(Theme.Palette.paprika))
-                }
-                .buttonStyle(.plain)
-                Spacer()
-                Button(action: onSeeOptions) {
-                    Text("see other options →").font(Theme.Typography.fact(12))
-                        .foregroundStyle(Theme.Palette.warmGray)
-                }
-                .buttonStyle(.plain)
+            Button(action: onAct) {
+                Text(meal.isCookable ? "COOK" : "LOG IT")
+                    .font(.system(size: 11, weight: .medium)).tracking(1.6)
+                    .foregroundStyle(Theme.Palette.cream)
+                    .padding(.horizontal, 18).padding(.vertical, 10)
+                    .background(Rectangle().fill(Theme.Palette.paprika))
             }
+            .buttonStyle(.plain)
         }
         .padding(.bottom, 12)
     }
