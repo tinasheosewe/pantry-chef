@@ -307,14 +307,19 @@ struct CookFlowView: View {
         .overlay(Rectangle().strokeBorder(Theme.Palette.ink.opacity(0.18), lineWidth: 1))
     }
 
-    /// "started 19:04 · eating by 19:30" — honest cook logistics.
+    /// "started 19:04 · eating by 19:30" — honest cook logistics. The "eating by"
+    /// estimate appears ONLY when every remaining step has a real cook time; we never
+    /// guess from a default (a wrong ETA is worse than none — seed recipes are fully
+    /// timed, user-authored steps may not be).
     private var logistics: String? {
         guard let startedAt else { return nil }
-        let remaining = schedule[min(step, max(schedule.count - 1, 0))...].reduce(0) {
-            $0 + ($1.step.timerSeconds ?? AppConfig.defaultStepDurationSeconds)
-        }
         let f = DateFormatter(); f.dateFormat = "HH:mm"
-        return "started \(f.string(from: startedAt)) · eating by \(f.string(from: Date().addingTimeInterval(TimeInterval(remaining))))"
+        let started = "started \(f.string(from: startedAt))"
+        let remainingSteps = schedule[min(step, max(schedule.count - 1, 0))...]
+        let times = remainingSteps.map(\.step.timerSeconds)
+        guard !times.contains(where: { $0 == nil }) else { return started }
+        let remaining = times.compactMap { $0 }.reduce(0, +)
+        return "\(started) · eating by \(f.string(from: Date().addingTimeInterval(TimeInterval(remaining))))"
     }
 
     /// "PREP · DISH A" up front, then "DISH A" once the cooking starts — the unified

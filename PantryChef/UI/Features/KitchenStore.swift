@@ -948,7 +948,7 @@ final class KitchenStore {
             StockItem(key: "ginger", name: "Ginger", plate: plate([.produce], 39), section: .have,
                       measure: .staple(.inStock), catalogItemID: "ginger", category: .produce, storage: .pantry),
             StockItem(key: "canned tomatoes", name: "Canned tomatoes", plate: plate([.canned], 41), section: .have,
-                      measure: .staple(.inStock), catalogItemID: "canned-ripe", category: .canned, storage: .pantry),
+                      measure: .staple(.inStock), catalogItemID: "canned-diced-tomatoes", category: .canned, storage: .pantry),
             StockItem(key: "black beans", name: "Black beans", plate: plate([.legumes], 43), section: .have,
                       measure: .staple(.inStock), catalogItemID: "black-beans", category: .legumes, storage: .pantry),
             StockItem(key: "chickpeas", name: "Chickpeas", plate: plate([.legumes], 45), section: .have,

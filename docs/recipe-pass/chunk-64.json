@@ -1,0 +1,292 @@
+{
+  "recipes": [
+    {
+      "name": "Bibimbap",
+      "index": 64,
+      "count": 6,
+      "timeMinutes": 50,
+      "stepSeconds": [360, 240, 480, 240, 180, 90],
+      "valid": true,
+      "issue": null
+    },
+    {
+      "name": "Korean braised short ribs",
+      "index": 65,
+      "count": 6,
+      "timeMinutes": 150,
+      "stepSeconds": [420, 180, 180, 7200, 1800, 600],
+      "valid": true,
+      "issue": null
+    },
+    {
+      "name": "Chicken shawarma",
+      "index": 66,
+      "count": 6,
+      "timeMinutes": 50,
+      "stepSeconds": [180, 3600, 1500, 300, 120, 120],
+      "valid": true,
+      "issue": null
+    },
+    {
+      "name": "Lamb kofta",
+      "index": 67,
+      "count": 6,
+      "timeMinutes": 35,
+      "stepSeconds": [120, 180, 1200, 180, 540, 90],
+      "valid": true,
+      "issue": null
+    },
+    {
+      "name": "Mujadara",
+      "index": 68,
+      "count": 6,
+      "timeMinutes": 50,
+      "stepSeconds": [1500, 900, 30, 120, 1200, 90],
+      "valid": true,
+      "issue": null
+    },
+    {
+      "name": "Greek chicken souvlaki",
+      "index": 69,
+      "count": 6,
+      "timeMinutes": 40,
+      "stepSeconds": [3600, 240, 180, 600, 180, 120],
+      "valid": true,
+      "issue": null
+    },
+    {
+      "name": "Moussaka",
+      "index": 70,
+      "count": 6,
+      "timeMinutes": 110,
+      "stepSeconds": [1500, 1500, 360, 240, 120, 2700],
+      "valid": true,
+      "issue": null
+    },
+    {
+      "name": "Coq au vin",
+      "index": 71,
+      "count": 6,
+      "timeMinutes": 120,
+      "stepSeconds": [600, 360, 180, 3600, 1200, 90],
+      "valid": true,
+      "issue": null
+    },
+    {
+      "name": "Beef bourguignon",
+      "index": 72,
+      "count": 6,
+      "timeMinutes": 180,
+      "stepSeconds": [720, 300, 180, 9000, 360, 180],
+      "valid": true,
+      "issue": null
+    },
+    {
+      "name": "Ratatouille",
+      "index": 73,
+      "count": 6,
+      "timeMinutes": 60,
+      "stepSeconds": [240, 720, 240, 900, 900, 300],
+      "valid": true,
+      "issue": null
+    },
+    {
+      "name": "Smoky BBQ pulled pork",
+      "index": 74,
+      "count": 6,
+      "timeMinutes": 360,
+      "stepSeconds": [180, 120, 28800, 300, 120, 90],
+      "valid": true,
+      "issue": null
+    },
+    {
+      "name": "Classic beef burgers",
+      "index": 75,
+      "count": 6,
+      "timeMinutes": 25,
+      "stepSeconds": [120, 60, 360, 60, 90, 90],
+      "valid": true,
+      "issue": null
+    },
+    {
+      "name": "Paella valenciana",
+      "index": 76,
+      "count": 6,
+      "timeMinutes": 70,
+      "stepSeconds": [600, 480, 120, 120, 1200, 360],
+      "valid": true,
+      "issue": null
+    },
+    {
+      "name": "Spanish chicken and chorizo",
+      "index": 77,
+      "count": 6,
+      "timeMinutes": 50,
+      "stepSeconds": [480, 240, 360, 180, 1200, 60],
+      "valid": true,
+      "issue": null
+    },
+    {
+      "name": "Moroccan chicken tagine",
+      "index": 78,
+      "count": 6,
+      "timeMinutes": 75,
+      "stepSeconds": [360, 300, 120, 2400, 600, 90],
+      "valid": true,
+      "issue": null
+    },
+    {
+      "name": "Vegetable couscous tagine",
+      "index": 79,
+      "count": 6,
+      "timeMinutes": 50,
+      "stepSeconds": [300, 180, 1200, 180, 600, 90],
+      "valid": true,
+      "issue": null
+    },
+    {
+      "name": "Harira",
+      "index": 80,
+      "count": 6,
+      "timeMinutes": 60,
+      "stepSeconds": [300, 180, 1800, 180, 120, 90],
+      "valid": true,
+      "issue": null
+    },
+    {
+      "name": "Vegan dan dan noodles",
+      "index": 81,
+      "count": 6,
+      "timeMinutes": 30,
+      "stepSeconds": [420, 120, 120, 480, 60, 90],
+      "valid": true,
+      "issue": null
+    },
+    {
+      "name": "Black bean tostadas",
+      "index": 82,
+      "count": 6,
+      "timeMinutes": 25,
+      "stepSeconds": [300, 360, 120, 90, 60, 90],
+      "valid": true,
+      "issue": null
+    },
+    {
+      "name": "Pasta alla norma",
+      "index": 83,
+      "count": 6,
+      "timeMinutes": 40,
+      "stepSeconds": [600, 600, 600, 60, 120, 90],
+      "valid": true,
+      "issue": null
+    },
+    {
+      "name": "Falafel plate",
+      "index": 84,
+      "count": 6,
+      "timeMinutes": 45,
+      "stepSeconds": [60, 240, 600, 480, 120, 120],
+      "valid": true,
+      "issue": null
+    },
+    {
+      "name": "Shrimp pad krapow",
+      "index": 85,
+      "count": 6,
+      "timeMinutes": 20,
+      "stepSeconds": [120, 180, 180, 180, 60, 90],
+      "valid": true,
+      "issue": null
+    },
+    {
+      "name": "Japanese miso ramen",
+      "index": 86,
+      "count": 6,
+      "timeMinutes": 40,
+      "stepSeconds": [420, 300, 480, 120, 300, 120],
+      "valid": true,
+      "issue": null
+    },
+    {
+      "name": "Spanakopita",
+      "index": 87,
+      "count": 6,
+      "timeMinutes": 75,
+      "stepSeconds": [420, 300, 360, 120, 300, 2400],
+      "valid": true,
+      "issue": null
+    },
+    {
+      "name": "Gambas al ajillo with rice",
+      "index": 88,
+      "count": 6,
+      "timeMinutes": 25,
+      "stepSeconds": [180, 240, 30, 240, 60, 90],
+      "valid": true,
+      "issue": null
+    },
+    {
+      "name": "Bun cha",
+      "index": 89,
+      "count": 6,
+      "timeMinutes": 45,
+      "stepSeconds": [300, 120, 480, 480, 60, 120],
+      "valid": true,
+      "issue": null
+    },
+    {
+      "name": "Mediterranean baked cod",
+      "index": 90,
+      "count": 6,
+      "timeMinutes": 35,
+      "stepSeconds": [180, 600, 120, 60, 900, 90],
+      "valid": true,
+      "issue": null
+    },
+    {
+      "name": "Tuscan white bean and kale stew",
+      "index": 91,
+      "count": 6,
+      "timeMinutes": 40,
+      "stepSeconds": [480, 60, 120, 120, 900, 90],
+      "valid": true,
+      "issue": null
+    },
+    {
+      "name": "Japchae",
+      "index": 92,
+      "count": 6,
+      "timeMinutes": 40,
+      "stepSeconds": [480, 240, 480, 120, 180, 180],
+      "valid": true,
+      "issue": null
+    },
+    {
+      "name": "Butter chicken",
+      "index": 93,
+      "count": 6,
+      "timeMinutes": 50,
+      "stepSeconds": [1800, 480, 180, 900, 300, 120],
+      "valid": true,
+      "issue": null
+    },
+    {
+      "name": "Carnitas",
+      "index": 94,
+      "count": 6,
+      "timeMinutes": 180,
+      "stepSeconds": [300, 180, 7200, 1800, 600, 120],
+      "valid": true,
+      "issue": null
+    },
+    {
+      "name": "Classic beef & vegetable shepherd's pie",
+      "index": 95,
+      "count": 6,
+      "timeMinutes": 75,
+      "stepSeconds": [1080, 360, 1020, 300, 180, 1800],
+      "valid": true,
+      "issue": null
+    }
+  ]
+}

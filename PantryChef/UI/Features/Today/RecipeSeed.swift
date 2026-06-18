@@ -21,7 +21,15 @@ enum RecipeSeed {
         let servings: Int?
         let plateCategories: [String]?
         let ingredients: [Ingredient]
-        let steps: [String]
+        let steps: [Step]
+
+        /// A step plus its real cook time (seconds). Every seed step carries one (a
+        /// recipe pass assigned them), so single-dish ETAs are accurate; only
+        /// user-authored steps may lack a time, and the cook flow omits the ETA then.
+        struct Step: Decodable {
+            let text: String
+            let seconds: Int?
+        }
 
         struct Ingredient: Decodable {
             let name: String
@@ -95,7 +103,7 @@ enum RecipeSeed {
             servings: max(1, r.servings ?? 2),
             blurb: r.blurb,
             ingredients: lines,
-            steps: r.steps.map { CookStep($0) },
+            steps: r.steps.map { CookStep($0.text, timerSeconds: $0.seconds) },
             cuisine: r.cuisine,
             mealType: r.mealType,
             course: r.course,

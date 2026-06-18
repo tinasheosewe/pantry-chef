@@ -1,0 +1,473 @@
+{
+  "recipes": [
+    {
+      "name": "Fluffy Buttermilk Pancakes",
+      "index": 0,
+      "count": 5,
+      "timeMinutes": 25,
+      "stepSeconds": [
+        120,
+        90,
+        60,
+        120,
+        180
+      ],
+      "valid": true,
+      "issue": null
+    },
+    {
+      "name": "Overnight Oats with Berries",
+      "index": 1,
+      "count": 4,
+      "timeMinutes": 5,
+      "stepSeconds": [
+        90,
+        60,
+        30,
+        45
+      ],
+      "valid": true,
+      "issue": null
+    },
+    {
+      "name": "Green Power Smoothie",
+      "index": 2,
+      "count": 4,
+      "timeMinutes": 5,
+      "stepSeconds": [
+        60,
+        45,
+        30,
+        30
+      ],
+      "valid": true,
+      "issue": null
+    },
+    {
+      "name": "Bacon Egg and Cheese Sandwich",
+      "index": 3,
+      "count": 5,
+      "timeMinutes": 15,
+      "stepSeconds": [
+        360,
+        120,
+        240,
+        60,
+        30
+      ],
+      "valid": true,
+      "issue": null
+    },
+    {
+      "name": "Mushroom and Herb Frittata",
+      "index": 4,
+      "count": 5,
+      "timeMinutes": 25,
+      "stepSeconds": [
+        420,
+        90,
+        240,
+        210,
+        120
+      ],
+      "valid": true,
+      "issue": null
+    },
+    {
+      "name": "Breakfast Burrito",
+      "index": 5,
+      "count": 5,
+      "timeMinutes": 20,
+      "stepSeconds": [
+        180,
+        180,
+        90,
+        60,
+        240
+      ],
+      "valid": true,
+      "issue": null
+    },
+    {
+      "name": "Savory Chicken Congee",
+      "index": 6,
+      "count": 4,
+      "timeMinutes": 30,
+      "stepSeconds": [
+        120,
+        1500,
+        120,
+        60
+      ],
+      "valid": true,
+      "issue": null
+    },
+    {
+      "name": "Maple Cinnamon Granola",
+      "index": 7,
+      "count": 5,
+      "timeMinutes": 30,
+      "stepSeconds": [
+        120,
+        90,
+        90,
+        1320,
+        600
+      ],
+      "valid": true,
+      "issue": null
+    },
+    {
+      "name": "Avocado Toast with Chili and Lime",
+      "index": 8,
+      "count": 4,
+      "timeMinutes": 10,
+      "stepSeconds": [
+        180,
+        90,
+        45,
+        45
+      ],
+      "valid": true,
+      "issue": null
+    },
+    {
+      "name": "Spinach and Feta Egg Muffins",
+      "index": 9,
+      "count": 5,
+      "timeMinutes": 30,
+      "stepSeconds": [
+        120,
+        90,
+        120,
+        1200,
+        300
+      ],
+      "valid": true,
+      "issue": null
+    },
+    {
+      "name": "Banana Walnut Baked Oatmeal",
+      "index": 10,
+      "count": 5,
+      "timeMinutes": 30,
+      "stepSeconds": [
+        120,
+        90,
+        120,
+        90,
+        1800
+      ],
+      "valid": true,
+      "issue": null
+    },
+    {
+      "name": "Huevos Rancheros",
+      "index": 11,
+      "count": 5,
+      "timeMinutes": 25,
+      "stepSeconds": [
+        660,
+        120,
+        240,
+        180,
+        90
+      ],
+      "valid": true,
+      "issue": null
+    },
+    {
+      "name": "Smoked Salmon Bagel",
+      "index": 12,
+      "count": 4,
+      "timeMinutes": 10,
+      "stepSeconds": [
+        120,
+        60,
+        60,
+        45
+      ],
+      "valid": true,
+      "issue": null
+    },
+    {
+      "name": "Masala Omelette",
+      "index": 13,
+      "count": 5,
+      "timeMinutes": 15,
+      "stepSeconds": [
+        120,
+        60,
+        30,
+        240,
+        30
+      ],
+      "valid": true,
+      "issue": null
+    },
+    {
+      "name": "Peanut Butter Banana Smoothie",
+      "index": 14,
+      "count": 4,
+      "timeMinutes": 5,
+      "stepSeconds": [
+        45,
+        45,
+        30,
+        30
+      ],
+      "valid": true,
+      "issue": null
+    },
+    {
+      "name": "Eggs Benedict",
+      "index": 15,
+      "count": 5,
+      "timeMinutes": 30,
+      "stepSeconds": [
+        420,
+        240,
+        120,
+        60,
+        45
+      ],
+      "valid": true,
+      "issue": null
+    },
+    {
+      "name": "Steel-Cut Oats with Apple",
+      "index": 16,
+      "count": 4,
+      "timeMinutes": 30,
+      "stepSeconds": [
+        120,
+        1200,
+        300,
+        45
+      ],
+      "valid": true,
+      "issue": null
+    },
+    {
+      "name": "Tofu Scramble",
+      "index": 17,
+      "count": 5,
+      "timeMinutes": 15,
+      "stepSeconds": [
+        180,
+        240,
+        360,
+        120,
+        45
+      ],
+      "valid": true,
+      "issue": null
+    },
+    {
+      "name": "Dutch Baby Pancake",
+      "index": 18,
+      "count": 5,
+      "timeMinutes": 30,
+      "stepSeconds": [
+        300,
+        90,
+        60,
+        1140,
+        45
+      ],
+      "valid": true,
+      "issue": null
+    },
+    {
+      "name": "Breakfast Quesadilla",
+      "index": 19,
+      "count": 5,
+      "timeMinutes": 15,
+      "stepSeconds": [
+        180,
+        60,
+        60,
+        240,
+        45
+      ],
+      "valid": true,
+      "issue": null
+    },
+    {
+      "name": "Chia Pudding with Mango",
+      "index": 20,
+      "count": 4,
+      "timeMinutes": 10,
+      "stepSeconds": [
+        90,
+        60,
+        45,
+        90
+      ],
+      "valid": true,
+      "issue": null
+    },
+    {
+      "name": "Croque Madame",
+      "index": 21,
+      "count": 5,
+      "timeMinutes": 30,
+      "stepSeconds": [
+        300,
+        120,
+        600,
+        180,
+        45
+      ],
+      "valid": true,
+      "issue": null
+    },
+    {
+      "name": "Sweet Potato Breakfast Hash",
+      "index": 22,
+      "count": 4,
+      "timeMinutes": 30,
+      "stepSeconds": [
+        600,
+        480,
+        60,
+        300
+      ],
+      "valid": true,
+      "issue": null
+    },
+    {
+      "name": "Yogurt Parfait with Granola",
+      "index": 23,
+      "count": 4,
+      "timeMinutes": 5,
+      "stepSeconds": [
+        30,
+        60,
+        45,
+        45
+      ],
+      "valid": true,
+      "issue": null
+    },
+    {
+      "name": "Garlic Butter Shrimp Pasta",
+      "index": 24,
+      "count": 5,
+      "timeMinutes": 25,
+      "stepSeconds": [
+        540,
+        90,
+        300,
+        90,
+        45
+      ],
+      "valid": true,
+      "issue": null
+    },
+    {
+      "name": "Chicken Stir-Fry with Broccoli",
+      "index": 25,
+      "count": 5,
+      "timeMinutes": 25,
+      "stepSeconds": [
+        120,
+        240,
+        180,
+        90,
+        150
+      ],
+      "valid": true,
+      "issue": null
+    },
+    {
+      "name": "Black Bean Tacos",
+      "index": 26,
+      "count": 5,
+      "timeMinutes": 20,
+      "stepSeconds": [
+        360,
+        480,
+        90,
+        120,
+        90
+      ],
+      "valid": true,
+      "issue": null
+    },
+    {
+      "name": "Pad Thai",
+      "index": 27,
+      "count": 5,
+      "timeMinutes": 30,
+      "stepSeconds": [
+        300,
+        240,
+        120,
+        180,
+        90
+      ],
+      "valid": true,
+      "issue": null
+    },
+    {
+      "name": "Sheet-Pan Sausage and Vegetables",
+      "index": 28,
+      "count": 4,
+      "timeMinutes": 30,
+      "stepSeconds": [
+        600,
+        120,
+        1140,
+        30
+      ],
+      "valid": true,
+      "issue": null
+    },
+    {
+      "name": "Teriyaki Salmon Bowl",
+      "index": 29,
+      "count": 5,
+      "timeMinutes": 25,
+      "stepSeconds": [
+        120,
+        420,
+        120,
+        120,
+        60
+      ],
+      "valid": true,
+      "issue": null
+    },
+    {
+      "name": "Margherita Flatbread",
+      "index": 30,
+      "count": 5,
+      "timeMinutes": 20,
+      "stepSeconds": [
+        120,
+        60,
+        60,
+        600,
+        60
+      ],
+      "valid": true,
+      "issue": null
+    },
+    {
+      "name": "Beef and Broccoli",
+      "index": 31,
+      "count": 5,
+      "timeMinutes": 25,
+      "stepSeconds": [
+        120,
+        120,
+        180,
+        90,
+        150
+      ],
+      "valid": true,
+      "issue": null
+    }
+  ]
+}
