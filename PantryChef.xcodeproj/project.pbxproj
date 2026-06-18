@@ -115,6 +115,7 @@
 		5E8C66C5C923989EC863CBD0 /* mixed-berry-crumble.png in Resources */ = {isa = PBXBuildFile; fileRef = 0B8AD386EA1A6097072295C0 /* mixed-berry-crumble.png */; };
 		5E9B28599BE1B1F5F248130A /* tofu-pad-thai.png in Resources */ = {isa = PBXBuildFile; fileRef = AB6DD50550DB7463DCE4BDE6 /* tofu-pad-thai.png */; };
 		5FD555B05267C452E7F433A8 /* CustomIngredientForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0BD5F8F5E89DEF2F5F52E23 /* CustomIngredientForm.swift */; };
+		60569CEA220CA74318A53FC8 /* LoadingScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACCFF92A65BD0D4C6035AAA8 /* LoadingScreen.swift */; };
 		60C79905591F4E0C201A9A62 /* Fraunces-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C2CAE194CB15CCC78F5F22C6 /* Fraunces-Italic.ttf */; };
 		60D0EE313FC98666DD3F7BA5 /* AIDishMappingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99EDB3A919F342036B1A4A1A /* AIDishMappingTests.swift */; };
 		62E0F6FCD8C0B8E58B18A185 /* CookFlowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52C9664BC03D8B5DE7127A5D /* CookFlowView.swift */; };
@@ -545,6 +546,7 @@
 		A9FA54A922A61928EBE6E98A /* croque-madame.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "croque-madame.png"; sourceTree = "<group>"; };
 		AB2A2F58881751A6DC0ACD1C /* greek-chicken-bowl.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "greek-chicken-bowl.png"; sourceTree = "<group>"; };
 		AB6DD50550DB7463DCE4BDE6 /* tofu-pad-thai.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "tofu-pad-thai.png"; sourceTree = "<group>"; };
+		ACCFF92A65BD0D4C6035AAA8 /* LoadingScreen.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LoadingScreen.swift; sourceTree = "<group>"; };
 		AD162BD9EE2D642AD62136A7 /* FontLoader.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FontLoader.swift; sourceTree = "<group>"; };
 		AD6E44F08B08E0C299DB08E1 /* PantryChefUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PantryChefUITests.swift; sourceTree = "<group>"; };
 		AFBD85378CDDC12692F78A74 /* red-lentil-dal.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "red-lentil-dal.png"; sourceTree = "<group>"; };
@@ -1185,6 +1187,7 @@
 				14DACC4E2A5CF6464B4285AE /* Cook */,
 				A11D45DDF993C1B8A12A4804 /* Settings */,
 				09C6A615712E8D69ECBC66F4 /* Today */,
+				ACCFF92A65BD0D4C6035AAA8 /* LoadingScreen.swift */,
 			);
 			path = Features;
 			sourceTree = "<group>";
@@ -1662,6 +1665,7 @@
 				00E1153D471A7982E0CA3F86 /* RecipeSeed.swift in Sources */,
 				4FEF02D71BF388A5F333047C /* RecipeBrowse.swift in Sources */,
 				ABC1C356E1DA7F52E345EE5A /* CategoryFilterRail.swift in Sources */,
+				60569CEA220CA74318A53FC8 /* LoadingScreen.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

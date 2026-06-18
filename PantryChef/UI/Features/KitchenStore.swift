@@ -700,10 +700,29 @@ final class KitchenStore {
 
     @ObservationIgnored private var wantsCache: [UUID: Int] = [:]
 
-    /// Post-launch warmup (runs after first paint): fill the readiness cache for the
-    /// whole library, compose the opening fan from it, and reveal the ready bits.
-    func warmReadinessAndFan() {
-        for dish in library { _ = readiness(for: dish) }
+    /// Proactively load everything the UI needs *before* it's shown (driven by the root
+    /// view's `.task`, behind the loading screen). Builds the catalog indices off the
+    /// main thread (the heavy cold cost), then warms readiness + the needs/wants cache
+    /// for the whole library in small chunks that `yield`, so the loading screen keeps
+    /// animating and the main thread never locks up. Finally composes the opening fan
+    /// and flips `readinessReady`, revealing the app. Idempotent.
+    @MainActor
+    func warmUp() async {
+        guard !readinessReady else { return }
+        // 1. Catalog indices (≈2.9k items) off-main — the big cold cost.
+        await Task.detached(priority: .userInitiated) {
+            _ = IntakePipeline.bestCatalogID(for: "salt")
+        }.value
+        // 2. Warm readiness for the whole library (the headline counts every dish),
+        //    yielding between chunks. needs/wants stays lazy — only the handful of
+        //    visible NEEDS tiles compute it, cached on first render.
+        var n = 0
+        for dish in library {
+            _ = readiness(for: dish)
+            n += 1
+            if n % 16 == 0 { await Task.yield() }
+        }
+        // 3. Compose the opening fan, then reveal.
         if case .open(let opts, _) = nowState, opts.isEmpty {
             fanOptions = composeFan()
             nowState = .open(options: fanOptions, selected: 0)
@@ -1093,15 +1112,11 @@ final class KitchenStore {
             staple("olive oil", "Olive oil", "olive-oil", .oils, .runningLow, 8)
         ]
 
-        // The cold-launch cost is the 2,277-item catalog index build (triggered the
-        // first time anything resolves a name). Init no longer touches the catalog (seed
-        // ids are pre-baked above), so force that build on a BACKGROUND thread, then warm
-        // readiness + the fan on the main actor. First paint isn't blocked by either.
+        // The cold-launch cost is the catalog index build + warming readiness over the
+        // whole library. Both are done proactively behind the loading screen via
+        // `warmUp()` (driven by the root view's `.task`), so the real UI only appears
+        // once everything's ready — never a frozen half-built page.
         nowState = .open(options: [], selected: 0)
-        Task.detached(priority: .userInitiated) { [weak self] in
-            _ = IntakePipeline.bestCatalogID(for: "salt")   // builds the catalog indices off-main
-            await MainActor.run { self?.warmReadinessAndFan() }
-        }
 
         // Screenshot/CI hook: open straight to a given space.
         if let forced = ProcessInfo.processInfo.environment["PC_SPACE"],

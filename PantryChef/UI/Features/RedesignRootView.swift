@@ -50,6 +50,20 @@ struct RedesignRootView: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
+        ZStack {
+            if store.readinessReady {
+                main.transition(.opacity)
+            } else {
+                // Proactively load everything behind a loading screen — the UI only
+                // appears once it's actually usable (no frozen half-built page).
+                LoadingScreen().transition(.opacity)
+            }
+        }
+        .animation(.easeInOut(duration: 0.45), value: store.readinessReady)
+        .task { await store.warmUp() }
+    }
+
+    private var main: some View {
         ZStack { space }
             .id(store.space)
             .transition(reduceMotion ? .opacity : .pageTurn)
