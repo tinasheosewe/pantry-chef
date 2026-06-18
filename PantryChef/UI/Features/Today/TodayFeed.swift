@@ -5,14 +5,17 @@ import SwiftUI
 /// to a single filtered grid. Pantry-aware lenses (Ready now / Use it up) are the
 /// app's moat, so they lead.
 enum FeedLens: String, CaseIterable, Identifiable {
-    case all, readyNow, useItUp, quick, highProtein
+    case all, makeNow, oneSwap, shop, useItUp, quick, highProtein
 
     var id: String { rawValue }
 
+    /// Pantry-intelligence lenses lead — these are the app's whole point.
     var title: String {
         switch self {
         case .all: return "For you"
-        case .readyNow: return "Ready now"
+        case .makeNow: return "Make now"
+        case .oneSwap: return "One swap"
+        case .shop: return "Shop"
         case .useItUp: return "Use it up"
         case .quick: return "Quick"
         case .highProtein: return "High-protein"
@@ -49,6 +52,8 @@ struct FeedItem: Identifiable {
     let dish: Dish
     let meta: String
     let stamp: String?
+    /// Tier colour for the stamp — green = make now, gold = one swap, gray = a shop away.
+    var stampColor: Color = Theme.Palette.sage
 }
 
 /// A named horizontal rail of feed items ("Ready now", "Fast tonight"…).
@@ -126,10 +131,10 @@ struct RecipeTile: View {
                     if let stamp = item.stamp {
                         Text(stamp)
                             .font(.system(size: 8.5, weight: .bold)).tracking(1)
-                            .foregroundStyle(Theme.Palette.sage)
+                            .foregroundStyle(item.stampColor)
                             .padding(.horizontal, 5).padding(.vertical, 2)
                             .background(Rectangle().fill(Theme.Palette.cream))
-                            .overlay(Rectangle().strokeBorder(Theme.Palette.sage.opacity(0.6), lineWidth: 1))
+                            .overlay(Rectangle().strokeBorder(item.stampColor.opacity(0.6), lineWidth: 1))
                             .padding(6)
                     }
                 }
@@ -146,20 +151,19 @@ struct RecipeTile: View {
     }
 }
 
-/// A named rail: editorial title + italic note over a row of tiles.
+/// A named rail: editorial title (with an optional count + tap-through "see all")
+/// over a row of tiles. The tappable header is the obvious toggle into the full grid.
 struct RecipeRail: View {
     let rail: FeedRail
     var onOpen: (Dish) -> Void
+    /// Total in this lens (shown next to the title); nil hides the count.
+    var total: Int? = nil
+    /// Tap-through to this rail's full grid; nil makes the header non-interactive.
+    var onSeeAll: (() -> Void)? = nil
 
     var body: some View {
         VStack(alignment: .leading, spacing: 9) {
-            VStack(alignment: .leading, spacing: 1) {
-                Text(rail.title).font(Theme.Typography.dish(17)).foregroundStyle(Theme.Palette.ink)
-                if let s = rail.subtitle {
-                    Text(s).font(Theme.Typography.note(12)).foregroundStyle(Theme.Palette.warmGray)
-                }
-            }
-            .padding(.horizontal, Theme.Metric.lg)
+            header.padding(.horizontal, Theme.Metric.lg)
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(alignment: .top, spacing: 12) {
                     ForEach(rail.items) { item in
@@ -170,6 +174,31 @@ struct RecipeRail: View {
             }
         }
         .padding(.top, 18)
+    }
+
+    @ViewBuilder private var header: some View {
+        let titleLine = HStack(alignment: .firstTextBaseline, spacing: 6) {
+            Text(rail.title).font(Theme.Typography.dish(17)).foregroundStyle(Theme.Palette.ink)
+            if let total, total > rail.items.count {
+                Text("\(total)").font(Theme.Typography.numeral(12, weight: .semibold))
+                    .foregroundStyle(Theme.Palette.warmGray)
+            }
+            if onSeeAll != nil {
+                Spacer(minLength: 0)
+                Text("see all →").font(.system(size: 11, weight: .medium))
+                    .foregroundStyle(Theme.Palette.paprika)
+            }
+        }
+        VStack(alignment: .leading, spacing: 1) {
+            if let onSeeAll {
+                Button(action: onSeeAll) { titleLine.contentShape(Rectangle()) }.buttonStyle(.plain)
+            } else {
+                titleLine
+            }
+            if let s = rail.subtitle {
+                Text(s).font(Theme.Typography.note(12)).foregroundStyle(Theme.Palette.warmGray)
+            }
+        }
     }
 }
 

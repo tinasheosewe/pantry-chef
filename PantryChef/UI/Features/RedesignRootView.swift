@@ -211,17 +211,19 @@ struct RedesignRootView: View {
             todayHeader
             ScrollView {
                 LazyVStack(alignment: .leading, spacing: 0) {
-                    if curatedView && showsHero {
-                        nowModule
-                            .padding(.horizontal, Theme.Metric.lg)
-                            .padding(.top, 10)
+                    if curatedView {
+                        pantryHeadline
+                        if showsHero {
+                            nowModule
+                                .padding(.horizontal, Theme.Metric.lg)
+                                .padding(.top, 12)
+                        }
                     }
                     IntentPills(selected: $feedLens, filterCount: feedFilters.activeCount,
                                 onOpenFilters: { showFilters = true })
                         .padding(.top, curatedView ? 16 : 12)
                     if curatedView {
                         forYouFeed
-                        browseAllFooter.padding(.top, 20)
                     } else {
                         filteredGrid
                     }
@@ -242,17 +244,66 @@ struct RedesignRootView: View {
         }
     }
 
-    /// The curated default: a leftovers rail (when present), then intent rails with one
-    /// magazine feature after the first.
+    /// The loud pantry-intelligence headline — the app's whole reason to exist, stated
+    /// up top: how many recipes your pantry can make right now, and how many are one
+    /// swap away. (Appears once readiness is warm.)
+    @ViewBuilder private var pantryHeadline: some View {
+        if store.readinessReady {
+            let now = store.library.filter { if case .ready = store.readiness(for: $0) { return true } else { return false } }.count
+            let swap = store.library.filter { if case .readyWithSwaps = store.readiness(for: $0) { return true } else { return false } }.count
+            VStack(alignment: .leading, spacing: 3) {
+                (Text("\(now) ").font(Theme.Typography.dish(28, weight: .semibold))
+                    + Text(now == 1 ? "recipe you can make now" : "recipes you can make now")
+                        .font(Theme.Typography.dish(19)))
+                    .foregroundStyle(Theme.Palette.ink)
+                    .fixedSize(horizontal: false, vertical: true)
+                if swap > 0 {
+                    Text("+ \(swap) more with a single swap")
+                        .font(Theme.Typography.note(13)).foregroundStyle(Theme.Palette.sage)
+                }
+            }
+            .padding(.horizontal, Theme.Metric.lg).padding(.top, 12)
+        }
+    }
+
+    /// The curated default, pantry-first: leftovers to use up, then the three readiness
+    /// tiers (make now → one swap → a shop away), each tappable through to its full grid.
     @ViewBuilder private var forYouFeed: some View {
         leftoversRail
-        let rails = defaultRails
-        ForEach(Array(rails.enumerated()), id: \.element.id) { idx, rail in
-            RecipeRail(rail: rail, onOpen: { detailDish = $0 })
-            if idx == 0, let feature = featureItem {
+        if store.readinessReady {
+            tierRail("Make it now", "Everything's already on hand", .makeNow)
+            if let feature = featureItem {
                 FeatureCard(item: feature, eyebrow: featureEyebrow, subtitle: featureSubtitle,
                             onOpen: { detailDish = $0 })
                     .padding(.horizontal, Theme.Metric.lg).padding(.top, 18)
+            }
+            tierRail("One swap away", "Cook it with a single substitution", .oneSwap)
+            tierRail("A quick shop", "You're an ingredient or two short", .shop, sortByMissing: true)
+            browseAllFooter.padding(.top, 22)
+        } else {
+            Text("Reading your pantry…")
+                .font(Theme.Typography.note(13)).foregroundStyle(Theme.Palette.warmGray)
+                .frame(maxWidth: .infinity).padding(.top, 36)
+        }
+    }
+
+    /// One pantry-tier rail — only shown if it has dishes; header taps through to the
+    /// full grid for that lens.
+    private func tierRail(_ title: String, _ subtitle: String, _ lens: FeedLens,
+                          sortByMissing: Bool = false) -> some View {
+        var dishes = store.library.filter { matches($0, lens) }
+        if sortByMissing {
+            dishes.sort { store.readiness(for: $0).missingCount < store.readiness(for: $1).missingCount }
+        }
+        let total = dishes.count
+        let items = dishes.prefix(12).map(feedItem)
+        return Group {
+            if !items.isEmpty {
+                RecipeRail(
+                    rail: FeedRail(title: title, subtitle: subtitle, items: Array(items)),
+                    onOpen: { detailDish = $0 },
+                    total: total,
+                    onSeeAll: { withAnimation { feedLens = lens } })
             }
         }
     }
@@ -290,7 +341,7 @@ struct RedesignRootView: View {
                     Rectangle().fill(Theme.Palette.creamRaised).frame(width: 142, height: 96)
                         .overlay(PlateView(name: item.name, composition: item.plate, size: 62))
                         .overlay(Rectangle().strokeBorder(Theme.Palette.hairline, lineWidth: 1))
-                    Text("LEFTOVER").font(.system(size: 8.5, weight: .bold)).tracking(1)
+                    Text("LEFTOVERS").font(.system(size: 8.5, weight: .bold)).tracking(1)
                         .foregroundStyle(Theme.Palette.sage)
                         .padding(.horizontal, 5).padding(.vertical, 2)
                         .background(Rectangle().fill(Theme.Palette.cream))
@@ -368,24 +419,33 @@ struct RedesignRootView: View {
     // MARK: - Feed data (the categorizer)
 
     private func feedItem(_ dish: Dish) -> FeedItem {
-        // Distinguish on-hand from cook-with-a-swap (the old "Cookable with a swap"
-        // signal, kept alive in the feed). Skipped until readiness is warm.
-        var stamp: String?
-        if store.readinessReady {
-            switch store.readiness(for: dish) {
-            case .ready: stamp = "READY"
-            case .readyWithSwaps: stamp = "SWAP"
-            case .needs: stamp = nil
-            }
+        // Every tile shouts its pantry status — the whole point of the app. "MAKE NOW"
+        // (all on hand) avoids "ready" reading as already-cooked; "1 SWAP" is the old
+        // cookable-with-a-swap signal; "NEEDS N" is what you'd shop for. Until readiness
+        // is warm, no stamp.
+        let meta = dish.minutes.map { "\($0) min" } ?? dish.time
+        guard store.readinessReady else { return FeedItem(dish: dish, meta: meta, stamp: nil) }
+        switch store.readiness(for: dish) {
+        case .ready:
+            return FeedItem(dish: dish, meta: meta, stamp: "MAKE NOW", stampColor: Theme.Palette.sage)
+        case .readyWithSwaps(let swaps):
+            return FeedItem(dish: dish, meta: meta,
+                            stamp: swaps.count == 1 ? "1 SWAP" : "\(swaps.count) SWAPS",
+                            stampColor: Theme.Palette.ink)
+        case .needs(let items):
+            return FeedItem(dish: dish, meta: meta, stamp: "NEEDS \(items.count)",
+                            stampColor: Theme.Palette.warmGray)
         }
-        return FeedItem(dish: dish, meta: dish.minutes.map { "\($0) min" } ?? dish.time, stamp: stamp)
     }
 
-    /// Which lens a dish belongs to. Derived from the recipe itself + live pantry state.
+    /// Which lens a dish belongs to. The pantry tiers (makeNow/oneSwap/shop) are the
+    /// app's core, derived from live readiness.
     private func matches(_ dish: Dish, _ lens: FeedLens) -> Bool {
         switch lens {
         case .all: return true
-        case .readyNow: return store.readiness(for: dish).isMakeableNow
+        case .makeNow: if case .ready = store.readiness(for: dish) { return true }; return false
+        case .oneSwap: if case .readyWithSwaps = store.readiness(for: dish) { return true }; return false
+        case .shop: if case .needs = store.readiness(for: dish) { return true }; return false
         case .useItUp: return usesExpiring(dish)
         case .quick: return (dish.minutes ?? .max) <= 25
         case .highProtein: return dish.plate.weights.first?.category == .protein
@@ -406,31 +466,6 @@ struct RedesignRootView: View {
     private var heroDishName: String? {
         if isIdleNow, let plan = store.planForNow { return plan.name }
         return nil
-    }
-
-    /// Rails, de-duplicated: nothing repeats across rails, and nothing echoes the hero
-    /// or the feature. Each dish earns exactly one slot in the For-you feed.
-    private var defaultRails: [FeedRail] {
-        let heroName = heroDishName?.lowercased()
-        var used = Set<UUID>()
-        if let f = featureDish { used.insert(f.id) }
-
-        func rail(_ title: String, _ subtitle: String, from pool: [Dish]) -> FeedRail? {
-            let picks = pool.filter { !used.contains($0.id) && $0.name.lowercased() != heroName }.prefix(10)
-            guard !picks.isEmpty else { return nil }
-            picks.forEach { used.insert($0.id) }
-            return FeedRail(title: title, subtitle: subtitle, items: picks.map(feedItem))
-        }
-
-        return [
-            // The pantry-aware rail only appears once readiness is warm (post-launch).
-            store.readinessReady ? rail("Ready now", "Cook with what's on hand",
-                 from: store.library.filter { store.readiness(for: $0).isMakeableNow }) : nil,
-            rail("Fast tonight", "Under thirty minutes",
-                 from: store.library.filter { ($0.minutes ?? .max) <= 25 }),
-            rail("Feeds the table", "Serves four or more",
-                 from: store.library.filter { $0.servings >= 4 }),
-        ].compactMap { $0 }
     }
 
     /// The editorial feature — lead with a "use it up" dish when something's expiring,
