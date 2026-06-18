@@ -46,7 +46,6 @@
     "dietaryTags": [
       "Vegetarian",
       "Vegan",
-      "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
     ],
@@ -66,6 +65,14 @@
         "ratio": "1:1",
         "notes": "Same family as flour."
       }
+    ],
+    "allergens": [
+      "gluten"
+    ],
+    "aliases": [
+      "doppio zero flour",
+      "tipo 00",
+      "00 pizza flour"
     ]
   },
   {
@@ -2380,13 +2387,12 @@
       "croissant"
     ],
     "allergens": [
-      "tree-nut"
+      "gluten",
+      "tree-nut",
+      "dairy"
     ],
     "dietaryTags": [
-      "Vegetarian",
-      "Vegan",
-      "Gluten-Free",
-      "Dairy-Free"
+      "Vegetarian"
     ],
     "swaps": [
       {
@@ -2475,7 +2481,9 @@
       }
     ],
     "aliases": [
-      "ground almonds"
+      "ground almonds",
+      "almond meal",
+      "almond powder"
     ]
   },
   {
@@ -3647,7 +3655,6 @@
     "dietaryTags": [
       "Vegetarian",
       "Vegan",
-      "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
     ],
@@ -3667,6 +3674,9 @@
         "ratio": "1:1",
         "notes": "Same family as waffle."
       }
+    ],
+    "allergens": [
+      "gluten"
     ]
   },
   {
@@ -3839,7 +3849,7 @@
   },
   {
     "id": "anchovy",
-    "name": "anchovy oily fish",
+    "name": "anchovy",
     "category": "Protein",
     "defaultUnit": "lb",
     "defaultQuantity": 1.0,
@@ -3920,6 +3930,7 @@
       "fish"
     ],
     "dietaryTags": [
+      "Pescatarian",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -5440,7 +5451,6 @@
     "dietaryTags": [
       "Vegetarian",
       "Vegan",
-      "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
     ],
@@ -5460,6 +5470,9 @@
         "ratio": "1:1",
         "notes": "Same family as pie."
       }
+    ],
+    "allergens": [
+      "gluten"
     ]
   },
   {
@@ -5615,15 +5628,15 @@
     ],
     "freshnessByStorage": {
       "Pantry": [
-        365,
-        1095
+        180,
+        365
       ],
       "Refrigerated": [
-        5,
-        7
+        7,
+        14
       ],
       "Frozen": [
-        90,
+        60,
         180
       ]
     },
@@ -6028,11 +6041,7 @@
     "defaultUnit": "fl oz",
     "defaultQuantity": 25.0,
     "defaultStorage": "Pantry",
-    "aliases": [
-      "akvavit",
-      "aqua vitae",
-      "aquavits"
-    ],
+    "aliases": [],
     "facets": [
       {
         "key": "processing",
@@ -7327,12 +7336,11 @@
       "bagel"
     ],
     "allergens": [
-      "gluten"
+      "gluten",
+      "dairy"
     ],
     "dietaryTags": [
       "Vegetarian",
-      "Vegan",
-      "Dairy-Free",
       "Nut-Free"
     ],
     "swaps": [
@@ -8243,6 +8251,7 @@
       "shellfish"
     ],
     "dietaryTags": [
+      "Pescatarian",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -8343,8 +8352,7 @@
     "defaultStorage": "Pantry",
     "aliases": [
       "avocado oils",
-      "huile d'avocat",
-      "oil spray"
+      "huile d'avocat"
     ],
     "facets": [
       {
@@ -8570,12 +8578,13 @@
     ],
     "dietaryTags": [
       "Vegetarian",
-      "Vegan",
-      "Gluten-Free",
-      "Dairy-Free",
       "Nut-Free"
     ],
-    "parentIds": []
+    "parentIds": [],
+    "allergens": [
+      "gluten",
+      "egg"
+    ]
   },
   {
     "id": "baby-nopal",
@@ -8731,6 +8740,7 @@
       "shellfish"
     ],
     "dietaryTags": [
+      "Pescatarian",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -10482,8 +10492,8 @@
     "defaultQuantity": 1.0,
     "aliases": [
       "unsweetened chocolate",
-      "dark chocolate",
-      "bittersweet chocolate"
+      "unsweetened baking chocolate",
+      "baker's chocolate"
     ],
     "facets": [],
     "defaultSelections": [],
@@ -10695,7 +10705,8 @@
       "balsamic",
       "balsamic vinegars",
       "balsamic glaze",
-      "balsamic reduction"
+      "balsamic reduction",
+      "aceto balsamico di modena"
     ],
     "facets": [
       {
@@ -11179,7 +11190,6 @@
     "dietaryTags": [
       "Vegetarian",
       "Vegan",
-      "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
     ],
@@ -11189,6 +11199,9 @@
         "ratio": "1:1",
         "notes": "Same family as pancake."
       }
+    ],
+    "allergens": [
+      "gluten"
     ]
   },
   {
@@ -11807,7 +11820,7 @@
   },
   {
     "id": "barnyard",
-    "name": "barnyard millet porridge",
+    "name": "barnyard millet",
     "category": "Grains & Cereals",
     "defaultUnit": "cup",
     "defaultQuantity": 1.0,
@@ -12348,6 +12361,7 @@
       "shellfish"
     ],
     "dietaryTags": [
+      "Pescatarian",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -12711,13 +12725,6 @@
     "defaultQuantity": 1.0,
     "defaultStorage": "Pantry",
     "aliases": [
-      "bean sprout",
-      "bean sprouts",
-      "edamame",
-      "faba bean",
-      "fresh bean sprouts",
-      "ful",
-      "haricot",
       "legume",
       "pulse"
     ],
@@ -13094,13 +13101,7 @@
       "beef bouillon cube",
       "beef bouillon granule",
       "beef bouillon powder",
-      "beef demi-glace",
-      "bouillon cubes",
-      "bouillon granules",
-      "broth cube",
-      "broth cubes",
-      "stock cube",
-      "stock cubes"
+      "beef demi-glace"
     ],
     "facets": [
       {
@@ -14525,6 +14526,8 @@
       "gluten"
     ],
     "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
       "Dairy-Free",
       "Nut-Free"
     ],
@@ -15834,7 +15837,6 @@
     "dietaryTags": [
       "Vegetarian",
       "Vegan",
-      "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
     ],
@@ -15854,6 +15856,9 @@
         "ratio": "1:1",
         "notes": "Same family as waffle."
       }
+    ],
+    "allergens": [
+      "gluten"
     ]
   },
   {
@@ -16046,6 +16051,7 @@
       "shellfish"
     ],
     "dietaryTags": [
+      "Pescatarian",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -16119,6 +16125,7 @@
       "fish"
     ],
     "dietaryTags": [
+      "Pescatarian",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -16552,6 +16559,7 @@
       "fish"
     ],
     "dietaryTags": [
+      "Pescatarian",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -17315,8 +17323,8 @@
     "defaultQuantity": 8.0,
     "defaultStorage": "Pantry",
     "aliases": [
-      "almond oils",
-      "huile d'amande"
+      "amande amère",
+      "bitter almond essence oil"
     ],
     "facets": [
       {
@@ -19229,7 +19237,8 @@
     "aliases": [
       "blue cheese crumble",
       "blue cheese dressing crumble",
-      "danish blue"
+      "danish blue",
+      "bleu cheese"
     ],
     "facets": [
       {
@@ -19552,6 +19561,7 @@
       "shellfish"
     ],
     "dietaryTags": [
+      "Pescatarian",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -21500,10 +21510,7 @@
     "defaultQuantity": 25.0,
     "defaultStorage": "Pantry",
     "aliases": [
-      "bourbons",
-      "whiskeys",
-      "whiskies",
-      "whisky"
+      "bourbons"
     ],
     "facets": [
       {
@@ -21972,7 +21979,6 @@
     "dietaryTags": [
       "Vegetarian",
       "Vegan",
-      "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
     ],
@@ -23453,7 +23459,8 @@
     "defaultQuantity": 3.0,
     "defaultStorage": "Pantry",
     "aliases": [
-      "baker's yeast"
+      "brewers yeast",
+      "inactive yeast"
     ],
     "facets": [
       {
@@ -25380,6 +25387,7 @@
       "shellfish"
     ],
     "dietaryTags": [
+      "Pescatarian",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -25520,6 +25528,8 @@
     ],
     "gramsPerCup": 150,
     "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -25629,7 +25639,6 @@
     "dietaryTags": [
       "Vegetarian",
       "Vegan",
-      "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
     ],
@@ -25649,6 +25658,9 @@
         "ratio": "1:1",
         "notes": "Same family as waffle."
       }
+    ],
+    "allergens": [
+      "gluten"
     ]
   },
   {
@@ -29206,6 +29218,7 @@
       "shellfish"
     ],
     "dietaryTags": [
+      "Pescatarian",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -29430,6 +29443,7 @@
       "shellfish"
     ],
     "dietaryTags": [
+      "Pescatarian",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -31788,6 +31802,7 @@
       "fish"
     ],
     "dietaryTags": [
+      "Pescatarian",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -33182,7 +33197,8 @@
     "aliases": [
       "castor sugar",
       "berry sugar",
-      "baker's sugar"
+      "baker's sugar",
+      "superfine sugar"
     ]
   },
   {
@@ -33772,6 +33788,7 @@
       "fish"
     ],
     "dietaryTags": [
+      "Pescatarian",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -35539,7 +35556,6 @@
     "dietaryTags": [
       "Vegetarian",
       "Vegan",
-      "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
     ],
@@ -35563,6 +35579,9 @@
     "aliases": [
       "chappati",
       "chapathi"
+    ],
+    "allergens": [
+      "gluten"
     ]
   },
   {
@@ -36651,44 +36670,31 @@
       "asadero cheese",
       "barrel cheese",
       "blend cheese",
-      "bleu cheese",
       "block cheese",
-      "boursin cheese",
       "brick cheese",
-      "burrata cheese",
-      "camembert cheese",
       "chedder cheese",
       "cheese blend",
       "cheese choice",
       "cheese cracker",
-      "cheese curd",
       "cheese slice",
       "cheese soup",
       "cheeses",
-      "chevre cheese",
       "container ricotta cheese",
       "cow cheese",
       "cream-style cottage cheese",
       "creamed cheese",
-      "edam cheese",
-      "emmenthaler cheese",
       "english cheese",
-      "farmer cheese",
       "favorite cheese",
       "four cheese",
-      "fresco cheese",
       "freshly parmigiano-reggiano cheese",
       "freshly pecorino cheese",
       "fromage",
       "garlic cheese",
       "gruy re cheese",
-      "halloumi cheese",
-      "haloumi cheese",
       "hard cheese",
       "italian cheese",
       "italian cheese blend",
       "jalapeno cheese",
-      "jarlsberg cheese",
       "light cheese",
       "light ricotta cheese",
       "locatelli cheese",
@@ -36704,37 +36710,21 @@
       "nacho cheese dorito",
       "nacho cheese flavor",
       "nacho cheese soup",
-      "neufchatel cheese",
-      "oaxaca cheese",
-      "padano cheese",
-      "paneer cheese",
-      "panela cheese",
       "parmesean cheese",
       "parmesian cheese",
       "parmigiano cheese",
       "parmigiano reggiano cheese",
       "pecorino cheese",
       "pepperjack cheese",
-      "philadelphia neufchatel cheese",
       "pimento cheese",
       "pimiento cheese",
       "pizza cheese",
       "polly-o original ricotta cheese",
-      "process cheese",
-      "processed cheese",
-      "processed cheese food",
-      "raclette cheese",
       "refrigerated cheese tortellini",
-      "ricotta salata cheese",
-      "roquefort cheese",
-      "soy cheese",
-      "stilton cheese",
       "taco cheese",
-      "taleggio cheese",
       "tasty cheese",
       "three cheese",
       "type cheese",
-      "vegan cheese",
       "white cheese",
       "whiz cheese",
       "whole-milk ricotta cheese",
@@ -36978,11 +36968,12 @@
       "babka"
     ],
     "allergens": [
-      "dairy"
+      "gluten",
+      "dairy",
+      "egg"
     ],
     "dietaryTags": [
       "Vegetarian",
-      "Gluten-Free",
       "Nut-Free"
     ],
     "swaps": [
@@ -37235,12 +37226,12 @@
       "cake"
     ],
     "allergens": [
-      "gluten"
+      "gluten",
+      "dairy",
+      "egg"
     ],
     "dietaryTags": [
       "Vegetarian",
-      "Vegan",
-      "Dairy-Free",
       "Nut-Free"
     ],
     "swaps": [
@@ -37615,7 +37606,9 @@
     "defaultQuantity": 8.0,
     "defaultStorage": "Pantry",
     "aliases": [
-      "cherry jello"
+      "glace cherry",
+      "glace cherries",
+      "cocktail cherries"
     ],
     "facets": [
       {
@@ -37842,7 +37835,6 @@
     "dietaryTags": [
       "Vegetarian",
       "Vegan",
-      "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
     ],
@@ -37862,6 +37854,9 @@
         "ratio": "1:1",
         "notes": "Same family as pie."
       }
+    ],
+    "allergens": [
+      "gluten"
     ]
   },
   {
@@ -37994,6 +37989,7 @@
       "shellfish"
     ],
     "dietaryTags": [
+      "Pescatarian",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -38688,10 +38684,7 @@
     "defaultUnit": "can",
     "defaultQuantity": 1.0,
     "defaultStorage": "Pantry",
-    "aliases": [
-      "chicken soup",
-      "cream of chicken soup"
-    ],
+    "aliases": [],
     "facets": [
       {
         "key": "grade",
@@ -39765,8 +39758,6 @@
       "pie"
     ],
     "dietaryTags": [
-      "Gluten-Free",
-      "Dairy-Free",
       "Nut-Free"
     ],
     "swaps": [
@@ -39785,6 +39776,10 @@
         "ratio": "1:1",
         "notes": "Same family as pie."
       }
+    ],
+    "allergens": [
+      "gluten",
+      "dairy"
     ]
   },
   {
@@ -40123,6 +40118,8 @@
       "gluten"
     ],
     "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
       "Dairy-Free",
       "Nut-Free"
     ],
@@ -41056,8 +41053,7 @@
     "aliases": [
       "chile paste",
       "chili pastes",
-      "chilli paste",
-      "sambal"
+      "chilli paste"
     ],
     "facets": [
       {
@@ -41375,7 +41371,6 @@
       "chimichurris",
       "classic chimichurri",
       "green chimichurri",
-      "green enchilada sauce",
       "chimichurri spicy",
       "chimichurri smoky"
     ],
@@ -42377,10 +42372,7 @@
     "defaultUnit": "oz",
     "defaultQuantity": 8.0,
     "defaultStorage": "Pantry",
-    "aliases": [
-      "chocolates",
-      "cooking chocolate"
-    ],
+    "aliases": [],
     "facets": [
       {
         "key": "form",
@@ -42637,7 +42629,8 @@
       "semisweet chocolate chips",
       "chocolate morsels",
       "chocolate buttons",
-      "chocolate callets"
+      "chocolate callets",
+      "semisweet chocolate"
     ],
     "facets": [],
     "defaultSelections": [],
@@ -44573,9 +44566,6 @@
     ],
     "dietaryTags": [
       "Vegetarian",
-      "Vegan",
-      "Gluten-Free",
-      "Dairy-Free",
       "Nut-Free"
     ],
     "swaps": [
@@ -44594,6 +44584,10 @@
         "ratio": "1:1",
         "notes": "Same family as babka."
       }
+    ],
+    "allergens": [
+      "gluten",
+      "egg"
     ]
   },
   {
@@ -45038,6 +45032,7 @@
       "shellfish"
     ],
     "dietaryTags": [
+      "Pescatarian",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -47010,6 +47005,7 @@
       "fish"
     ],
     "dietaryTags": [
+      "Pescatarian",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -47554,9 +47550,7 @@
     "defaultUnit": "oz",
     "defaultQuantity": 8.0,
     "defaultStorage": "Refrigerated",
-    "aliases": [
-      "colby-jack cheese"
-    ],
+    "aliases": [],
     "facets": [
       {
         "key": "form",
@@ -47992,8 +47986,6 @@
       "protein-powder"
     ],
     "dietaryTags": [
-      "Vegetarian",
-      "Vegan",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -48201,6 +48193,7 @@
       "shellfish"
     ],
     "dietaryTags": [
+      "Pescatarian",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -48281,6 +48274,7 @@
       "fish"
     ],
     "dietaryTags": [
+      "Pescatarian",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -48678,7 +48672,10 @@
       "cooking sprays",
       "nonstick spray",
       "nonstick cooking spray",
-      "baking spray"
+      "baking spray",
+      "oil spray",
+      "pam",
+      "aerosol oil"
     ],
     "facets": [
       {
@@ -49226,9 +49223,7 @@
     "defaultQuantity": 2.0,
     "defaultStorage": "Refrigerated",
     "aliases": [
-      "light corn syrup",
-      "light-colored corn syrup",
-      "white corn syrup"
+      "corn salsa"
     ],
     "facets": [
       {
@@ -49946,7 +49941,7 @@
   },
   {
     "id": "cornmeal-white",
-    "name": "cornmeal porridge white",
+    "name": "white cornmeal",
     "category": "Grains & Cereals",
     "defaultUnit": "cup",
     "defaultQuantity": 1.0,
@@ -50462,9 +50457,7 @@
     "defaultStorage": "Refrigerated",
     "aliases": [
       "cottage cheeses",
-      "curds",
-      "farmers cheese",
-      "paneer (loose)"
+      "curds"
     ],
     "facets": [
       {
@@ -51051,10 +51044,10 @@
     ],
     "parentIds": [],
     "allergens": [
-      "fish",
       "shellfish"
     ],
     "dietaryTags": [
+      "Pescatarian",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -51332,8 +51325,6 @@
     ],
     "dietaryTags": [
       "Vegetarian",
-      "Vegan",
-      "Dairy-Free",
       "Nut-Free"
     ],
     "parentIds": []
@@ -51907,9 +51898,6 @@
     ],
     "dietaryTags": [
       "Vegetarian",
-      "Vegan",
-      "Gluten-Free",
-      "Dairy-Free",
       "Nut-Free"
     ],
     "swaps": [
@@ -51918,6 +51906,10 @@
         "ratio": "1:1",
         "notes": "Same family as scone."
       }
+    ],
+    "allergens": [
+      "gluten",
+      "dairy"
     ]
   },
   {
@@ -51985,6 +51977,7 @@
       "shellfish"
     ],
     "dietaryTags": [
+      "Pescatarian",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -52254,7 +52247,6 @@
       "fromage à la crème",
       "queso crema",
       "soft cheese",
-      "neufchatel",
       "whipped cream cheese",
       "block cream cheese",
       "spreadable cream cheese"
@@ -52461,12 +52453,12 @@
       "cowpea"
     ],
     "gramsPerCup": 240.0,
-    "allergens": [
-      "dairy"
-    ],
+    "allergens": [],
     "dietaryTags": [
+      "Vegan",
       "Vegetarian",
       "Gluten-Free",
+      "Dairy-Free",
       "Nut-Free"
     ],
     "swaps": [
@@ -52643,6 +52635,9 @@
         "ratio": "1:1",
         "notes": "Same family as cream."
       }
+    ],
+    "aliases": [
+      "double cream"
     ]
   },
   {
@@ -52698,12 +52693,12 @@
       ]
     },
     "gramsPerCup": 185.0,
-    "allergens": [
-      "dairy"
-    ],
+    "allergens": [],
     "dietaryTags": [
       "Vegetarian",
+      "Vegan",
       "Gluten-Free",
+      "Dairy-Free",
       "Nut-Free"
     ],
     "parentIds": []
@@ -52807,11 +52802,12 @@
     },
     "gramsPerCup": 240.0,
     "allergens": [
-      "dairy",
       "gluten"
     ],
     "dietaryTags": [
       "Vegetarian",
+      "Vegan",
+      "Dairy-Free",
       "Nut-Free"
     ],
     "parentIds": []
@@ -53341,9 +53337,7 @@
     "defaultUnit": "tbsp",
     "defaultQuantity": 1.0,
     "defaultStorage": "Refrigerated",
-    "aliases": [
-      "creamy peanut butter"
-    ],
+    "aliases": [],
     "facets": [
       {
         "key": "grade",
@@ -53703,11 +53697,13 @@
     "dietaryTags": [
       "Vegetarian",
       "Vegan",
-      "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
     ],
-    "parentIds": []
+    "parentIds": [],
+    "allergens": [
+      "gluten"
+    ]
   },
   {
     "id": "cress",
@@ -53932,13 +53928,13 @@
       }
     ],
     "dietaryTags": [
-      "Vegetarian",
-      "Vegan",
-      "Gluten-Free",
-      "Dairy-Free",
-      "Nut-Free"
+      "Vegetarian"
     ],
-    "parentIds": []
+    "parentIds": [],
+    "allergens": [
+      "gluten",
+      "dairy"
+    ]
   },
   {
     "id": "crookneck",
@@ -54167,6 +54163,7 @@
       "fish"
     ],
     "dietaryTags": [
+      "Pescatarian",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -54248,11 +54245,13 @@
     "dietaryTags": [
       "Vegetarian",
       "Vegan",
-      "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
     ],
-    "parentIds": []
+    "parentIds": [],
+    "allergens": [
+      "gluten"
+    ]
   },
   {
     "id": "crunchy-chocolate-hazelnut-spread",
@@ -54261,9 +54260,7 @@
     "defaultUnit": "tbsp",
     "defaultQuantity": 8.0,
     "defaultStorage": "Pantry",
-    "aliases": [
-      "crunchy peanut butter"
-    ],
+    "aliases": [],
     "facets": [
       {
         "key": "color",
@@ -56669,6 +56666,7 @@
       "shellfish"
     ],
     "dietaryTags": [
+      "Pescatarian",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -57453,9 +57451,7 @@
     "defaultQuantity": 8.0,
     "defaultStorage": "Refrigerated",
     "aliases": [
-      "aerosol cream",
-      "chantilly cream",
-      "whipped creams"
+      "vegan whipped cream"
     ],
     "facets": [
       {
@@ -58069,10 +58065,7 @@
     "defaultUnit": "oz",
     "defaultQuantity": 12.0,
     "defaultStorage": "Pantry",
-    "aliases": [
-      "chais",
-      "spiced tea"
-    ],
+    "aliases": [],
     "facets": [
       {
         "key": "color",
@@ -59240,7 +59233,8 @@
     "defaultStorage": "Refrigerated",
     "aliases": [
       "dijon",
-      "grey poupon"
+      "grey poupon",
+      "moutarde de dijon"
     ],
     "facets": [
       {
@@ -60073,11 +60067,13 @@
     "dietaryTags": [
       "Vegetarian",
       "Vegan",
-      "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
     ],
-    "parentIds": []
+    "parentIds": [],
+    "allergens": [
+      "gluten"
+    ]
   },
   {
     "id": "dough-sourdough",
@@ -60164,7 +60160,6 @@
     "dietaryTags": [
       "Vegetarian",
       "Vegan",
-      "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
     ],
@@ -60184,6 +60179,9 @@
         "ratio": "1:1",
         "notes": "Same family as dough."
       }
+    ],
+    "allergens": [
+      "gluten"
     ]
   },
   {
@@ -61025,8 +61023,7 @@
     "defaultStorage": "Pantry",
     "aliases": [
       "dried orange peels",
-      "dried orange zest",
-      "orange zest"
+      "dried orange zest"
     ],
     "facets": [
       {
@@ -62362,10 +62359,10 @@
       "crab"
     ],
     "allergens": [
-      "fish",
       "shellfish"
     ],
     "dietaryTags": [
+      "Pescatarian",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -62396,7 +62393,9 @@
     "defaultQuantity": 1.0,
     "defaultStorage": "Pantry",
     "aliases": [
-      "semolinas"
+      "durum wheat",
+      "triticum durum",
+      "hard wheat"
     ],
     "facets": [
       {
@@ -62571,11 +62570,10 @@
     ],
     "gramsPerCup": 150,
     "gramsPerPiece": 50.0,
-    "allergens": [
-      "egg"
-    ],
+    "allergens": [],
     "dietaryTags": [
       "Vegetarian",
+      "Vegan",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -62747,7 +62745,7 @@
   },
   {
     "id": "eel",
-    "name": "eel oily fish",
+    "name": "eel",
     "category": "Protein",
     "defaultUnit": "lb",
     "defaultQuantity": 1.0,
@@ -62820,6 +62818,7 @@
       "fish"
     ],
     "dietaryTags": [
+      "Pescatarian",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -63771,12 +63770,12 @@
     ],
     "gramsPerCup": 240,
     "allergens": [
+      "dairy",
       "egg"
     ],
     "dietaryTags": [
       "Vegetarian",
       "Gluten-Free",
-      "Dairy-Free",
       "Nut-Free"
     ],
     "parentIds": []
@@ -66892,6 +66891,7 @@
       "shellfish"
     ],
     "dietaryTags": [
+      "Pescatarian",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -67119,7 +67119,7 @@
     "category": "Dairy & Eggs",
     "defaultUnit": "cup",
     "defaultQuantity": 4.0,
-    "defaultStorage": "Refrigerated",
+    "defaultStorage": "Pantry",
     "facets": [
       {
         "key": "form",
@@ -67996,7 +67996,9 @@
       "horse bean",
       "windsor bean",
       "broad beans",
-      "broad bean"
+      "broad bean",
+      "faba bean",
+      "ful"
     ],
     "facets": [
       {
@@ -69120,7 +69122,7 @@
   },
   {
     "id": "finger-millet",
-    "name": "finger millet porridge",
+    "name": "finger millet",
     "category": "Grains & Cereals",
     "defaultUnit": "cup",
     "defaultQuantity": 1.0,
@@ -69605,8 +69607,6 @@
     "defaultQuantity": 1.0,
     "defaultStorage": "Pantry",
     "aliases": [
-      "passata",
-      "salsa di pomodoro",
       "fire roasted tomatoes",
       "fire roasted diced tomatoes"
     ],
@@ -69886,6 +69886,7 @@
       "fish"
     ],
     "dietaryTags": [
+      "Pescatarian",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -69977,7 +69978,8 @@
       "patis",
       "budu",
       "shottsuru",
-      "colatura"
+      "colatura",
+      "ngan pya ye"
     ],
     "facets": [
       {
@@ -70903,11 +70905,13 @@
     "dietaryTags": [
       "Vegetarian",
       "Vegan",
-      "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
     ],
-    "parentIds": []
+    "parentIds": [],
+    "allergens": [
+      "gluten"
+    ]
   },
   {
     "id": "flavored-apple-cider-vinegar",
@@ -72388,10 +72392,7 @@
     "defaultStorage": "Pantry",
     "aliases": [
       "fortified",
-      "fortified wines",
-      "vin",
-      "vino",
-      "wines"
+      "fortified wines"
     ],
     "facets": [
       {
@@ -72661,7 +72662,7 @@
   },
   {
     "id": "foxtail",
-    "name": "foxtail millet porridge",
+    "name": "foxtail millet",
     "category": "Grains & Cereals",
     "defaultUnit": "cup",
     "defaultQuantity": 1.0,
@@ -73009,11 +73010,13 @@
     "dietaryTags": [
       "Vegetarian",
       "Vegan",
-      "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
     ],
-    "parentIds": []
+    "parentIds": [],
+    "allergens": [
+      "gluten"
+    ]
   },
   {
     "id": "freestone",
@@ -75613,7 +75616,7 @@
     "category": "Breads & Bakery",
     "defaultUnit": "loaf",
     "defaultQuantity": 1,
-    "defaultStorage": "Pantry",
+    "defaultStorage": "Frozen",
     "facets": [
       {
         "key": "form",
@@ -76282,6 +76285,7 @@
       "shellfish"
     ],
     "dietaryTags": [
+      "Pescatarian",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -77676,7 +77680,6 @@
     "defaultQuantity": 12.0,
     "defaultStorage": "Pantry",
     "aliases": [
-      "ginger ale",
       "ginger beers",
       "spicy ginger beer"
     ],
@@ -79708,12 +79711,7 @@
     "defaultUnit": "cup",
     "defaultQuantity": 4.0,
     "defaultStorage": "Refrigerated",
-    "aliases": [
-      "caprine milk",
-      "chèvre milk",
-      "goatmilk",
-      "lait de chèvre"
-    ],
+    "aliases": [],
     "facets": [
       {
         "key": "form",
@@ -79922,6 +79920,7 @@
       "dairy"
     ],
     "dietaryTags": [
+      "Vegetarian",
       "Gluten-Free",
       "Nut-Free"
     ],
@@ -80629,13 +80628,9 @@
     "defaultQuantity": 1.0,
     "defaultStorage": "Refrigerated",
     "aliases": [
-      "chile paste",
-      "chili pastes",
-      "chilli paste",
       "gochu jang",
       "gochujangs",
       "korean chili paste",
-      "sambal",
       "korean red pepper paste",
       "hot pepper paste",
       "kochujang"
@@ -81261,7 +81256,8 @@
       "golden syrups",
       "light treacle",
       "lyle's golden syrup",
-      "regular golden syrup"
+      "regular golden syrup",
+      "cane syrup"
     ],
     "facets": [
       {
@@ -83844,6 +83840,7 @@
       "fish"
     ],
     "dietaryTags": [
+      "Pescatarian",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -84930,6 +84927,7 @@
       "shellfish"
     ],
     "dietaryTags": [
+      "Pescatarian",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -85609,7 +85607,6 @@
     "dietaryTags": [
       "Vegetarian",
       "Vegan",
-      "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
     ],
@@ -87530,10 +87527,10 @@
       "croissant"
     ],
     "allergens": [
+      "gluten",
       "dairy"
     ],
     "dietaryTags": [
-      "Gluten-Free",
       "Nut-Free"
     ],
     "swaps": [
@@ -87883,6 +87880,7 @@
       "shellfish"
     ],
     "dietaryTags": [
+      "Pescatarian",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -88067,7 +88065,7 @@
   },
   {
     "id": "hash",
-    "name": "hash corned beef",
+    "name": "corned beef hash",
     "category": "Protein",
     "defaultUnit": "lb",
     "defaultQuantity": 1.0,
@@ -89424,12 +89422,7 @@
     "defaultUnit": "bunch",
     "defaultQuantity": 1.0,
     "defaultStorage": "Pantry",
-    "aliases": [
-      "fresh herb",
-      "fresh herbs",
-      "herbs",
-      "mixed herbs"
-    ],
+    "aliases": [],
     "facets": [
       {
         "key": "form",
@@ -89886,7 +89879,7 @@
   },
   {
     "id": "herring",
-    "name": "herring oily fish",
+    "name": "herring",
     "category": "Protein",
     "defaultUnit": "lb",
     "defaultQuantity": 1.0,
@@ -89959,6 +89952,7 @@
       "fish"
     ],
     "dietaryTags": [
+      "Pescatarian",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -91149,7 +91143,6 @@
     "defaultQuantity": 1.0,
     "defaultStorage": "Pantry",
     "aliases": [
-      "canned hominy",
       "dried hominy",
       "nixtamal",
       "pozole corn"
@@ -92770,7 +92763,8 @@
       "humus",
       "hommos",
       "hommus",
-      "hummus spicy"
+      "hummus spicy",
+      "hommus bi tahini"
     ],
     "facets": [
       {
@@ -93088,7 +93082,13 @@
     "defaultStorage": "Frozen",
     "aliases": [
       "frozen ice cream",
-      "ice creams"
+      "ice creams",
+      "gelato",
+      "frozen yogurt",
+      "froyo",
+      "sorbet",
+      "sherbet",
+      "soft serve"
     ],
     "facets": [
       {
@@ -93348,10 +93348,11 @@
     ],
     "allergens": [
       "fish",
-      "shellfish"
+      "shellfish",
+      "gluten"
     ],
     "dietaryTags": [
-      "Gluten-Free",
+      "Pescatarian",
       "Dairy-Free",
       "Nut-Free"
     ],
@@ -93433,10 +93434,11 @@
     ],
     "allergens": [
       "fish",
-      "shellfish"
+      "shellfish",
+      "gluten"
     ],
     "dietaryTags": [
-      "Gluten-Free",
+      "Pescatarian",
       "Dairy-Free",
       "Nut-Free"
     ],
@@ -93518,10 +93520,11 @@
     ],
     "allergens": [
       "fish",
-      "shellfish"
+      "shellfish",
+      "gluten"
     ],
     "dietaryTags": [
-      "Gluten-Free",
+      "Pescatarian",
       "Dairy-Free",
       "Nut-Free"
     ],
@@ -93603,10 +93606,11 @@
     ],
     "allergens": [
       "fish",
-      "shellfish"
+      "shellfish",
+      "gluten"
     ],
     "dietaryTags": [
-      "Gluten-Free",
+      "Pescatarian",
       "Dairy-Free",
       "Nut-Free"
     ],
@@ -94718,8 +94722,6 @@
       "meatball"
     ],
     "dietaryTags": [
-      "Vegetarian",
-      "Vegan",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -97547,6 +97549,7 @@
       "shellfish"
     ],
     "dietaryTags": [
+      "Pescatarian",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -98404,6 +98407,7 @@
       "fish"
     ],
     "dietaryTags": [
+      "Pescatarian",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -98484,11 +98488,13 @@
     "dietaryTags": [
       "Vegetarian",
       "Vegan",
-      "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
     ],
-    "parentIds": []
+    "parentIds": [],
+    "allergens": [
+      "gluten"
+    ]
   },
   {
     "id": "kandahar",
@@ -99483,9 +99489,6 @@
     "gramsPerPiece": 67.0,
     "dietaryTags": [
       "Vegetarian",
-      "Vegan",
-      "Gluten-Free",
-      "Dairy-Free",
       "Nut-Free"
     ],
     "swaps": [
@@ -99504,6 +99507,10 @@
         "ratio": "1:1",
         "notes": "Same family as pie."
       }
+    ],
+    "allergens": [
+      "gluten",
+      "dairy"
     ]
   },
   {
@@ -100187,6 +100194,7 @@
       "shellfish"
     ],
     "dietaryTags": [
+      "Pescatarian",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -100320,10 +100328,10 @@
       "crab"
     ],
     "allergens": [
-      "fish",
       "shellfish"
     ],
     "dietaryTags": [
+      "Pescatarian",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -100422,6 +100430,11 @@
         "ratio": "1:1",
         "notes": "Same family as mushroom."
       }
+    ],
+    "aliases": [
+      "king oyster",
+      "eryngii",
+      "royal trumpet"
     ]
   },
   {
@@ -101903,6 +101916,7 @@
       "shellfish"
     ],
     "dietaryTags": [
+      "Pescatarian",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -103849,7 +103863,7 @@
       ]
     },
     "id": "landjager",
-    "name": "landjäger cured meat",
+    "name": "landjäger",
     "category": "Protein",
     "parentIds": [
       "cured-meat"
@@ -104075,6 +104089,7 @@
       "shellfish"
     ],
     "dietaryTags": [
+      "Pescatarian",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -104402,7 +104417,6 @@
     "dietaryTags": [
       "Vegetarian",
       "Vegan",
-      "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
     ],
@@ -104427,6 +104441,9 @@
       "lavosh",
       "armenian flatbread",
       "lawash"
+    ],
+    "allergens": [
+      "gluten"
     ]
   },
   {
@@ -105147,11 +105164,7 @@
     "defaultUnit": "pkg",
     "defaultQuantity": 1.0,
     "defaultStorage": "Pantry",
-    "aliases": [
-      "lemon flavored gelatin",
-      "lemon gelatin",
-      "lemon jello"
-    ],
+    "aliases": [],
     "facets": [
       {
         "key": "form",
@@ -105707,12 +105720,12 @@
     ],
     "gramsPerPiece": 60.0,
     "allergens": [
-      "egg"
+      "gluten",
+      "egg",
+      "dairy"
     ],
     "dietaryTags": [
       "Vegetarian",
-      "Gluten-Free",
-      "Dairy-Free",
       "Nut-Free"
     ],
     "swaps": [
@@ -106877,9 +106890,6 @@
     ],
     "dietaryTags": [
       "Vegetarian",
-      "Vegan",
-      "Gluten-Free",
-      "Dairy-Free",
       "Nut-Free"
     ],
     "swaps": [
@@ -106898,6 +106908,11 @@
         "ratio": "1:1",
         "notes": "Same family as waffle."
       }
+    ],
+    "allergens": [
+      "gluten",
+      "egg",
+      "dairy"
     ]
   },
   {
@@ -106909,7 +106924,6 @@
     "defaultStorage": "Pantry",
     "aliases": [
       "brown sugar",
-      "dark brown sugar",
       "soft brown sugar",
       "golden brown sugar"
     ],
@@ -108234,6 +108248,7 @@
       "shellfish"
     ],
     "dietaryTags": [
+      "Pescatarian",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -108336,10 +108351,10 @@
     },
     "parentIds": [],
     "allergens": [
-      "fish",
       "shellfish"
     ],
     "dietaryTags": [
+      "Pescatarian",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -108415,10 +108430,10 @@
     ],
     "gramsPerCup": 150,
     "gramsPerPiece": 18.0,
-    "allergens": [
-      "shellfish"
-    ],
+    "allergens": [],
     "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -108873,9 +108888,7 @@
     "defaultUnit": "oz",
     "defaultQuantity": 32.0,
     "defaultStorage": "Refrigerated",
-    "aliases": [
-      "low-fat yogurt"
-    ],
+    "aliases": [],
     "facets": [
       {
         "key": "form",
@@ -109317,7 +109330,7 @@
       ]
     },
     "id": "luncheon-meat",
-    "name": "luncheon meat cured",
+    "name": "luncheon meat",
     "category": "Protein",
     "parentIds": [
       "cured-meat"
@@ -110028,6 +110041,7 @@
       "fish"
     ],
     "dietaryTags": [
+      "Pescatarian",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -110644,6 +110658,7 @@
       "fish"
     ],
     "dietaryTags": [
+      "Pescatarian",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -111161,9 +111176,7 @@
     "defaultQuantity": 8.0,
     "defaultStorage": "Refrigerated",
     "aliases": [
-      "fresh paneer",
-      "indian cottage cheese",
-      "paneers"
+      "cream paneer"
     ],
     "facets": [
       {
@@ -111665,7 +111678,8 @@
       "chutneys",
       "fruit chutney",
       "indian chutney",
-      "major grey chutney"
+      "major grey chutney",
+      "aam ki chutney"
     ],
     "facets": [
       {
@@ -111902,6 +111916,7 @@
       "shellfish"
     ],
     "dietaryTags": [
+      "Pescatarian",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -113169,7 +113184,6 @@
     "defaultQuantity": 8.0,
     "defaultStorage": "Pantry",
     "aliases": [
-      "almond paste",
       "marzipans",
       "almond sugar paste"
     ],
@@ -114517,9 +114531,7 @@
     "defaultUnit": "pkg",
     "defaultQuantity": 1,
     "defaultStorage": "Refrigerated",
-    "aliases": [
-      "meat tortellini"
-    ],
+    "aliases": [],
     "facets": [
       {
         "key": "preservation",
@@ -114797,6 +114809,7 @@
       "shellfish"
     ],
     "dietaryTags": [
+      "Pescatarian",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -115114,6 +115127,7 @@
       "shellfish"
     ],
     "dietaryTags": [
+      "Pescatarian",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -115658,7 +115672,6 @@
     "aliases": [
       "dried mexican oregano",
       "lippia graveolens",
-      "mexican",
       "oregano mexicano"
     ],
     "facets": [
@@ -116531,11 +116544,7 @@
       "croissant"
     ],
     "dietaryTags": [
-      "Vegetarian",
-      "Vegan",
-      "Gluten-Free",
-      "Dairy-Free",
-      "Nut-Free"
+      "Vegetarian"
     ],
     "swaps": [
       {
@@ -116548,6 +116557,10 @@
         "ratio": "1:1",
         "notes": "Same family as croissant."
       }
+    ],
+    "allergens": [
+      "gluten",
+      "dairy"
     ]
   },
   {
@@ -116819,6 +116832,7 @@
       "fish"
     ],
     "dietaryTags": [
+      "Pescatarian",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -117438,7 +117452,7 @@
   },
   {
     "id": "mixed-nuts",
-    "name": "mixed nuts nut",
+    "name": "mixed nuts",
     "category": "Nuts & Seeds",
     "defaultUnit": "cup",
     "defaultQuantity": 1.0,
@@ -117517,8 +117531,7 @@
       "Vegetarian",
       "Vegan",
       "Gluten-Free",
-      "Dairy-Free",
-      "Nut-Free"
+      "Dairy-Free"
     ],
     "swaps": [
       {
@@ -117536,6 +117549,10 @@
         "ratio": "1:1",
         "notes": "Same family as nut."
       }
+    ],
+    "allergens": [
+      "tree-nut",
+      "peanut"
     ]
   },
   {
@@ -118012,7 +118029,6 @@
     "aliases": [
       "ajinomoto",
       "flavor enhancer 621",
-      "monosodium glutamate powder",
       "msg",
       "umami seasoning",
       "e621"
@@ -119738,7 +119754,6 @@
     "dietaryTags": [
       "Vegetarian",
       "Vegan",
-      "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
     ],
@@ -119753,6 +119768,9 @@
         "ratio": "1:1",
         "notes": "Same family as porridge."
       }
+    ],
+    "allergens": [
+      "gluten"
     ]
   },
   {
@@ -120567,10 +120585,7 @@
     "defaultUnit": "can",
     "defaultQuantity": 1.0,
     "defaultStorage": "Pantry",
-    "aliases": [
-      "cream of mushroom soup",
-      "mushroom soup"
-    ],
+    "aliases": [],
     "facets": [
       {
         "key": "fat",
@@ -121039,6 +121054,7 @@
       "shellfish"
     ],
     "dietaryTags": [
+      "Pescatarian",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -121053,9 +121069,7 @@
     "defaultQuantity": 1.0,
     "defaultStorage": "Refrigerated",
     "aliases": [
-      "black mustard seed",
       "brown mustard",
-      "brown mustard seed",
       "chinese mustard",
       "coarse grain mustard",
       "coarse-grained mustard",
@@ -121075,16 +121089,13 @@
       "powdered mustard",
       "prepared mustard",
       "regular mustard",
-      "remoulades",
       "salad mustard",
       "spicy mustard",
       "stone mustard",
       "stone-ground mustard",
-      "white mustard seed",
       "whole-grain mustard",
       "wholegrain mustard",
-      "yellow mustard",
-      "yellow mustard seed"
+      "yellow mustard"
     ],
     "facets": [
       {
@@ -122600,8 +122611,8 @@
     "defaultQuantity": 1.0,
     "defaultStorage": "Refrigerated",
     "aliases": [
-      "cheese sauces",
-      "queso"
+      "nacho cheese",
+      "nacho sauce"
     ],
     "facets": [
       {
@@ -123484,7 +123495,8 @@
       "haricot beans",
       "haricot bean",
       "pea beans",
-      "boston beans"
+      "boston beans",
+      "haricot"
     ]
   },
   {
@@ -123772,6 +123784,10 @@
         "ratio": "1:1",
         "notes": "Same family as cream cheese."
       }
+    ],
+    "aliases": [
+      "neufchatel",
+      "neufchatel cheese"
     ]
   },
   {
@@ -124961,12 +124977,12 @@
       ]
     },
     "gramsPerCup": 240.0,
-    "allergens": [
-      "dairy"
-    ],
+    "allergens": [],
     "dietaryTags": [
       "Vegetarian",
+      "Vegan",
       "Gluten-Free",
+      "Dairy-Free",
       "Nut-Free"
     ],
     "parentIds": []
@@ -125066,9 +125082,7 @@
     "defaultUnit": "oz",
     "defaultQuantity": 32.0,
     "defaultStorage": "Refrigerated",
-    "aliases": [
-      "nonfat yogurt"
-    ],
+    "aliases": [],
     "facets": [
       {
         "key": "form",
@@ -125983,7 +125997,6 @@
     "defaultQuantity": 0.5,
     "defaultStorage": "Pantry",
     "aliases": [
-      "ground nut",
       "nut kernel",
       "tree nut"
     ],
@@ -126037,8 +126050,7 @@
       "Vegetarian",
       "Vegan",
       "Gluten-Free",
-      "Dairy-Free",
-      "Nut-Free"
+      "Dairy-Free"
     ],
     "parentIds": []
   },
@@ -126137,11 +126149,7 @@
       "babka"
     ],
     "dietaryTags": [
-      "Vegetarian",
-      "Vegan",
-      "Gluten-Free",
-      "Dairy-Free",
-      "Nut-Free"
+      "Vegetarian"
     ],
     "swaps": [
       {
@@ -126159,6 +126167,11 @@
         "ratio": "1:1",
         "notes": "Same family as babka."
       }
+    ],
+    "allergens": [
+      "gluten",
+      "egg",
+      "tree-nut"
     ]
   },
   {
@@ -126321,13 +126334,12 @@
       "babka"
     ],
     "allergens": [
-      "tree-nut"
+      "gluten",
+      "tree-nut",
+      "dairy"
     ],
     "dietaryTags": [
-      "Vegetarian",
-      "Vegan",
-      "Gluten-Free",
-      "Dairy-Free"
+      "Vegetarian"
     ],
     "swaps": [
       {
@@ -126704,13 +126716,7 @@
     "defaultUnit": "cup",
     "defaultQuantity": 0.5,
     "defaultStorage": "Pantry",
-    "aliases": [
-      "grain groats",
-      "groat",
-      "oat groats",
-      "oatmeal",
-      "whole groats"
-    ],
+    "aliases": [],
     "facets": [
       {
         "key": "form",
@@ -127314,6 +127320,7 @@
       "shellfish"
     ],
     "dietaryTags": [
+      "Pescatarian",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -127457,6 +127464,7 @@
       "fish"
     ],
     "dietaryTags": [
+      "Pescatarian",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -127766,12 +127774,10 @@
     "defaultStorage": "Pantry",
     "aliases": [
       "aceite de oliva",
-      "aerosol oil",
       "evoo",
       "extra virgin olive oil",
       "olio d'oliva",
       "olive oils",
-      "pam",
       "virgin olive oil"
     ],
     "facets": [
@@ -128140,6 +128146,7 @@
       "shellfish"
     ],
     "dietaryTags": [
+      "Pescatarian",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -129601,9 +129608,8 @@
     "defaultQuantity": 2.0,
     "defaultStorage": "Pantry",
     "aliases": [
-      "orange flavored gelatin",
-      "orange gelatin",
-      "orange jello"
+      "orange essence",
+      "natural orange flavour"
     ],
     "facets": [
       {
@@ -130926,6 +130932,7 @@
       "fish"
     ],
     "dietaryTags": [
+      "Pescatarian",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -131926,6 +131933,7 @@
       "shellfish"
     ],
     "dietaryTags": [
+      "Pescatarian",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -131985,10 +131993,10 @@
     ],
     "gramsPerCup": 150,
     "gramsPerPiece": 18.0,
-    "allergens": [
-      "shellfish"
-    ],
+    "allergens": [],
     "dietaryTags": [
+      "Vegetarian",
+      "Vegan",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -132263,6 +132271,7 @@
       "shellfish"
     ],
     "dietaryTags": [
+      "Pescatarian",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -132447,6 +132456,7 @@
       "fish"
     ],
     "dietaryTags": [
+      "Pescatarian",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -132476,7 +132486,6 @@
     "aliases": [
       "palm",
       "palm oils",
-      "red palm oil",
       "palm fruit oil",
       "dende oil",
       "dendê",
@@ -132675,11 +132684,13 @@
     "dietaryTags": [
       "Vegetarian",
       "Vegan",
-      "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
     ],
-    "parentIds": []
+    "parentIds": [],
+    "allergens": [
+      "gluten"
+    ]
   },
   {
     "id": "pancake-baking-mix",
@@ -132910,7 +132921,8 @@
       "paneers",
       "panir",
       "chhena",
-      "indian paneer"
+      "indian paneer",
+      "paneer cheese"
     ],
     "facets": [
       {
@@ -134295,7 +134307,6 @@
     "defaultStorage": "Pantry",
     "aliases": [
       "italian pasta",
-      "noodles",
       "pastas",
       "dried pasta",
       "pasta noodles",
@@ -137024,12 +137035,12 @@
     "gramsPerCup": 258.0,
     "allergens": [
       "gluten",
-      "peanut"
+      "peanut",
+      "egg",
+      "dairy"
     ],
     "dietaryTags": [
-      "Vegetarian",
-      "Vegan",
-      "Dairy-Free"
+      "Vegetarian"
     ],
     "swaps": [
       {
@@ -137572,14 +137583,12 @@
   },
   {
     "id": "pearl-barley",
-    "name": "pearl barley groats",
+    "name": "pearl barley",
     "category": "Grains & Cereals",
     "defaultUnit": "cup",
     "defaultQuantity": 1.0,
     "defaultStorage": "Pantry",
-    "aliases": [
-      "pearl millet"
-    ],
+    "aliases": [],
     "facets": [
       {
         "key": "form",
@@ -138187,13 +138196,13 @@
       "pie"
     ],
     "allergens": [
-      "tree-nut"
+      "gluten",
+      "tree-nut",
+      "egg",
+      "dairy"
     ],
     "dietaryTags": [
-      "Vegetarian",
-      "Vegan",
-      "Gluten-Free",
-      "Dairy-Free"
+      "Vegetarian"
     ],
     "swaps": [
       {
@@ -138365,10 +138374,10 @@
       "crab"
     ],
     "allergens": [
-      "fish",
       "shellfish"
     ],
     "dietaryTags": [
+      "Pescatarian",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -139930,8 +139939,6 @@
       ]
     },
     "dietaryTags": [
-      "Vegetarian",
-      "Vegan",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -140036,8 +140043,6 @@
       "pheasant"
     ],
     "dietaryTags": [
-      "Vegetarian",
-      "Vegan",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -140158,8 +140163,6 @@
       "pheasant"
     ],
     "dietaryTags": [
-      "Vegetarian",
-      "Vegan",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -140262,8 +140265,6 @@
       "pheasant"
     ],
     "dietaryTags": [
-      "Vegetarian",
-      "Vegan",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -140384,8 +140385,6 @@
       "pheasant"
     ],
     "dietaryTags": [
-      "Vegetarian",
-      "Vegan",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -140503,8 +140502,6 @@
       "pheasant"
     ],
     "dietaryTags": [
-      "Vegetarian",
-      "Vegan",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -140625,8 +140622,6 @@
       "pheasant"
     ],
     "dietaryTags": [
-      "Vegetarian",
-      "Vegan",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -140875,7 +140870,6 @@
     "dietaryTags": [
       "Vegetarian",
       "Vegan",
-      "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
     ],
@@ -140885,6 +140879,9 @@
         "ratio": "1:1",
         "notes": "Same family as pie shell."
       }
+    ],
+    "allergens": [
+      "gluten"
     ]
   },
   {
@@ -141696,11 +141693,13 @@
     "dietaryTags": [
       "Vegetarian",
       "Vegan",
-      "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
     ],
-    "parentIds": []
+    "parentIds": [],
+    "allergens": [
+      "gluten"
+    ]
   },
   {
     "id": "pie-filling",
@@ -141749,7 +141748,7 @@
   },
   {
     "id": "pie-mix",
-    "name": "pie mix pumpkin puree",
+    "name": "pumpkin pie mix",
     "category": "Canned & Jarred",
     "defaultUnit": "can",
     "defaultQuantity": 1.0,
@@ -141919,11 +141918,13 @@
     "dietaryTags": [
       "Vegetarian",
       "Vegan",
-      "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
     ],
-    "parentIds": []
+    "parentIds": [],
+    "allergens": [
+      "gluten"
+    ]
   },
   {
     "id": "pierce",
@@ -143308,7 +143309,6 @@
     "dietaryTags": [
       "Vegetarian",
       "Vegan",
-      "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
     ],
@@ -143335,6 +143335,9 @@
       "pocket bread",
       "khubz",
       "arabic bread"
+    ],
+    "allergens": [
+      "gluten"
     ]
   },
   {
@@ -143383,7 +143386,6 @@
     "dietaryTags": [
       "Vegetarian",
       "Vegan",
-      "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
     ],
@@ -143403,6 +143405,9 @@
         "ratio": "1:1",
         "notes": "Same family as dough."
       }
+    ],
+    "allergens": [
+      "gluten"
     ]
   },
   {
@@ -144856,6 +144861,7 @@
       "fish"
     ],
     "dietaryTags": [
+      "Pescatarian",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -144958,7 +144964,8 @@
       "pomegranate molasseses",
       "pomegranate syrup",
       "narsharab",
-      "pomegranate molases"
+      "pomegranate molases",
+      "rob el rumman"
     ],
     "facets": [
       {
@@ -145498,9 +145505,6 @@
     ],
     "dietaryTags": [
       "Vegetarian",
-      "Vegan",
-      "Gluten-Free",
-      "Dairy-Free",
       "Nut-Free"
     ],
     "swaps": [
@@ -145519,6 +145523,10 @@
         "ratio": "1:1",
         "notes": "Same family as babka."
       }
+    ],
+    "allergens": [
+      "gluten",
+      "egg"
     ]
   },
   {
@@ -148249,7 +148257,7 @@
   {
     "id": "potato-flakes",
     "name": "potato flakes",
-    "category": "Grains & Cereals",
+    "category": "Produce",
     "defaultUnit": "cup",
     "defaultQuantity": 1.0,
     "defaultStorage": "Pantry",
@@ -148442,7 +148450,6 @@
     "defaultQuantity": 1.0,
     "defaultStorage": "Pantry",
     "aliases": [
-      "potato flour",
       "potato starches"
     ],
     "facets": [
@@ -149109,11 +149116,8 @@
     "defaultQuantity": 4.0,
     "defaultStorage": "Refrigerated",
     "aliases": [
-      "dry milk",
-      "instant milk",
-      "milk powder",
-      "powdered milks",
-      "skim milk"
+      "skim milk",
+      "nonfat dry milk"
     ],
     "facets": [
       {
@@ -149184,7 +149188,8 @@
       "confectioners sugar",
       "confectioner's sugar",
       "confectioners' sugar",
-      "icing sugar"
+      "icing sugar",
+      "4x sugar"
     ],
     "facets": [
       {
@@ -149432,6 +149437,7 @@
       "shellfish"
     ],
     "dietaryTags": [
+      "Pescatarian",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -149708,7 +149714,7 @@
   },
   {
     "id": "proso",
-    "name": "proso millet porridge",
+    "name": "proso millet",
     "category": "Grains & Cereals",
     "defaultUnit": "cup",
     "defaultQuantity": 1.0,
@@ -149826,7 +149832,6 @@
     "dietaryTags": [
       "Vegetarian",
       "Vegan",
-      "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
     ],
@@ -149836,6 +149841,9 @@
         "ratio": "1:1",
         "notes": "Same family as pancake."
       }
+    ],
+    "allergens": [
+      "gluten"
     ]
   },
   {
@@ -151558,6 +151566,7 @@
       "shellfish"
     ],
     "dietaryTags": [
+      "Pescatarian",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -152512,6 +152521,7 @@
       "shellfish"
     ],
     "dietaryTags": [
+      "Pescatarian",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -152541,9 +152551,7 @@
     "defaultUnit": "cup",
     "defaultQuantity": 1.0,
     "defaultStorage": "Pantry",
-    "aliases": [
-      "quick oats"
-    ],
+    "aliases": [],
     "facets": [
       {
         "key": "form",
@@ -154748,9 +154756,6 @@
     ],
     "dietaryTags": [
       "Vegetarian",
-      "Vegan",
-      "Gluten-Free",
-      "Dairy-Free",
       "Nut-Free"
     ],
     "swaps": [
@@ -154759,6 +154764,10 @@
         "ratio": "1:1",
         "notes": "Same family as scone."
       }
+    ],
+    "allergens": [
+      "gluten",
+      "dairy"
     ]
   },
   {
@@ -155156,7 +155165,8 @@
     "aliases": [
       "fast-action yeast",
       "quick yeast",
-      "bread machine yeast"
+      "bread machine yeast",
+      "instant yeast"
     ]
   },
   {
@@ -156181,6 +156191,7 @@
       "shellfish"
     ],
     "dietaryTags": [
+      "Pescatarian",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -156358,9 +156369,7 @@
     "defaultUnit": "tbsp",
     "defaultQuantity": 4.0,
     "defaultStorage": "Refrigerated",
-    "aliases": [
-      "red enchilada sauce"
-    ],
+    "aliases": [],
     "facets": [
       {
         "key": "grade",
@@ -157518,6 +157527,7 @@
       "shellfish"
     ],
     "dietaryTags": [
+      "Pescatarian",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -159013,9 +159023,7 @@
     "defaultUnit": "cup",
     "defaultQuantity": 0.5,
     "defaultStorage": "Pantry",
-    "aliases": [
-      "rice porridge"
-    ],
+    "aliases": [],
     "facets": [
       {
         "key": "form",
@@ -161044,6 +161052,7 @@
       "shellfish"
     ],
     "dietaryTags": [
+      "Pescatarian",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -162589,7 +162598,6 @@
     "dietaryTags": [
       "Vegetarian",
       "Vegan",
-      "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
     ],
@@ -162615,6 +162623,9 @@
       "phulka",
       "rotli",
       "indian flatbread"
+    ],
+    "allergens": [
+      "gluten"
     ]
   },
   {
@@ -164332,6 +164343,7 @@
       "shellfish"
     ],
     "dietaryTags": [
+      "Pescatarian",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -164918,7 +164930,6 @@
     "aliases": [
       "japanese rice wine",
       "nihonshu",
-      "rice wines",
       "sakes"
     ],
     "facets": [
@@ -165354,6 +165365,7 @@
       "fish"
     ],
     "dietaryTags": [
+      "Pescatarian",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -165427,6 +165439,7 @@
       "fish"
     ],
     "dietaryTags": [
+      "Pescatarian",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -165972,6 +165985,7 @@
       "fish"
     ],
     "dietaryTags": [
+      "Pescatarian",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -166079,6 +166093,7 @@
       "fish"
     ],
     "dietaryTags": [
+      "Pescatarian",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -166213,6 +166228,7 @@
       "fish"
     ],
     "dietaryTags": [
+      "Pescatarian",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -166350,6 +166366,7 @@
       "fish"
     ],
     "dietaryTags": [
+      "Pescatarian",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -166526,7 +166543,7 @@
   },
   {
     "id": "sardine",
-    "name": "sardine oily fish",
+    "name": "sardine",
     "category": "Protein",
     "defaultUnit": "lb",
     "defaultQuantity": 1.0,
@@ -166606,6 +166623,7 @@
       "fish"
     ],
     "dietaryTags": [
+      "Pescatarian",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -166743,7 +166761,7 @@
     "category": "Canned & Jarred",
     "defaultUnit": "can",
     "defaultQuantity": 1.0,
-    "defaultStorage": "Pantry",
+    "defaultStorage": "Refrigerated",
     "facets": [
       {
         "key": "fat",
@@ -166804,12 +166822,12 @@
     ],
     "freshnessByStorage": {
       "Pantry": [
-        365,
-        1095
+        180,
+        365
       ],
       "Refrigerated": [
-        5,
-        7
+        30,
+        90
       ],
       "Frozen": [
         90,
@@ -167055,9 +167073,7 @@
     "defaultUnit": "pkg",
     "defaultQuantity": 1,
     "defaultStorage": "Refrigerated",
-    "aliases": [
-      "tortellinis"
-    ],
+    "aliases": [],
     "facets": [
       {
         "key": "preservation",
@@ -167521,6 +167537,7 @@
       "shellfish"
     ],
     "dietaryTags": [
+      "Pescatarian",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -167769,12 +167786,7 @@
     "defaultUnit": "fl oz",
     "defaultQuantity": 25.0,
     "defaultStorage": "Pantry",
-    "aliases": [
-      "german schnapps",
-      "schnaaps",
-      "schnappses",
-      "schnaps"
-    ],
+    "aliases": [],
     "facets": [
       {
         "key": "processing",
@@ -167930,12 +167942,13 @@
     },
     "dietaryTags": [
       "Vegetarian",
-      "Vegan",
-      "Gluten-Free",
-      "Dairy-Free",
       "Nut-Free"
     ],
-    "parentIds": []
+    "parentIds": [],
+    "allergens": [
+      "gluten",
+      "dairy"
+    ]
   },
   {
     "id": "scotch-bonnet",
@@ -168323,6 +168336,7 @@
       "shellfish"
     ],
     "dietaryTags": [
+      "Pescatarian",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -169287,7 +169301,6 @@
       "sesame",
       "sesame oils",
       "til oil",
-      "toasted sesame oil",
       "light sesame oil",
       "raw sesame oil",
       "ellu enne",
@@ -169526,6 +169539,7 @@
       "fish"
     ],
     "dietaryTags": [
+      "Pescatarian",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -170065,10 +170079,6 @@
       "pie"
     ],
     "dietaryTags": [
-      "Vegetarian",
-      "Vegan",
-      "Gluten-Free",
-      "Dairy-Free",
       "Nut-Free"
     ],
     "swaps": [
@@ -170489,7 +170499,6 @@
     "defaultStorage": "Pantry",
     "aliases": [
       "japanese shochu",
-      "korean soju",
       "shochus"
     ],
     "facets": [
@@ -171455,6 +171464,7 @@
       "shellfish"
     ],
     "dietaryTags": [
+      "Pescatarian",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -171761,6 +171771,7 @@
       "shellfish"
     ],
     "dietaryTags": [
+      "Pescatarian",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -172324,6 +172335,7 @@
       "shellfish"
     ],
     "dietaryTags": [
+      "Pescatarian",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -172409,6 +172421,7 @@
       "fish"
     ],
     "dietaryTags": [
+      "Pescatarian",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -173127,10 +173140,7 @@
     "defaultUnit": "oz",
     "defaultQuantity": 32.0,
     "defaultStorage": "Refrigerated",
-    "aliases": [
-      "low-fat plain yogurt",
-      "nonfat plain yogurt"
-    ],
+    "aliases": [],
     "facets": [
       {
         "key": "form",
@@ -173447,6 +173457,7 @@
       "shellfish"
     ],
     "dietaryTags": [
+      "Pescatarian",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -174500,10 +174511,10 @@
       "crab"
     ],
     "allergens": [
-      "fish",
       "shellfish"
     ],
     "dietaryTags": [
+      "Pescatarian",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -174929,6 +174940,7 @@
       "shellfish"
     ],
     "dietaryTags": [
+      "Pescatarian",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -175178,10 +175190,8 @@
     "defaultQuantity": 1.0,
     "defaultStorage": "Pantry",
     "aliases": [
-      "jowar",
-      "milo",
-      "sorghum grain",
-      "sorghums"
+      "white jowar",
+      "white milo"
     ],
     "facets": [
       {
@@ -176186,7 +176196,8 @@
       }
     ],
     "aliases": [
-      "soy protein isolate"
+      "soy protein isolate",
+      "soy protein"
     ]
   },
   {
@@ -176923,7 +176934,8 @@
     "defaultQuantity": 1.0,
     "defaultStorage": "Pantry",
     "aliases": [
-      "spanish saffron"
+      "pimenton dulce",
+      "spanish sweet paprika"
     ],
     "facets": [
       {
@@ -177121,10 +177133,10 @@
       "crab"
     ],
     "allergens": [
-      "fish",
       "shellfish"
     ],
     "dietaryTags": [
+      "Pescatarian",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -178875,7 +178887,8 @@
       "sriracha sauce",
       "srirachas",
       "sriraja",
-      "huy fong"
+      "huy fong",
+      "tuong ot sriracha"
     ],
     "facets": [
       {
@@ -179691,6 +179704,7 @@
       "fish"
     ],
     "dietaryTags": [
+      "Pescatarian",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -180220,10 +180234,10 @@
       "crab"
     ],
     "allergens": [
-      "fish",
       "shellfish"
     ],
     "dietaryTags": [
+      "Pescatarian",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -180496,11 +180510,7 @@
     "defaultUnit": "tbsp",
     "defaultQuantity": 4.0,
     "defaultStorage": "Pantry",
-    "aliases": [
-      "strawberry flavored gelatin",
-      "strawberry gelatin",
-      "strawberry jello"
-    ],
+    "aliases": [],
     "facets": [
       {
         "key": "form",
@@ -182571,10 +182581,11 @@
       ]
     },
     "allergens": [
-      "fish"
+      "fish",
+      "gluten"
     ],
     "dietaryTags": [
-      "Gluten-Free",
+      "Pescatarian",
       "Dairy-Free",
       "Nut-Free"
     ],
@@ -182731,8 +182742,6 @@
       "meatball"
     ],
     "dietaryTags": [
-      "Vegetarian",
-      "Vegan",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -182762,9 +182771,7 @@
     "defaultUnit": "tbsp",
     "defaultQuantity": 2.0,
     "defaultStorage": "Refrigerated",
-    "aliases": [
-      "sweet relish"
-    ],
+    "aliases": [],
     "facets": [
       {
         "key": "form",
@@ -183651,9 +183658,6 @@
     "gramsPerPiece": 170.0,
     "dietaryTags": [
       "Vegetarian",
-      "Vegan",
-      "Gluten-Free",
-      "Dairy-Free",
       "Nut-Free"
     ],
     "swaps": [
@@ -183672,6 +183676,11 @@
         "ratio": "1:1",
         "notes": "Same family as pie."
       }
+    ],
+    "allergens": [
+      "gluten",
+      "dairy",
+      "egg"
     ]
   },
   {
@@ -184360,6 +184369,7 @@
       "fish"
     ],
     "dietaryTags": [
+      "Pescatarian",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -186009,7 +186019,6 @@
     "defaultQuantity": 1.0,
     "defaultStorage": "Pantry",
     "aliases": [
-      "suet",
       "beef dripping",
       "dripping",
       "rendered fat"
@@ -186405,7 +186414,6 @@
     "dietaryTags": [
       "Vegetarian",
       "Vegan",
-      "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
     ],
@@ -186429,6 +186437,9 @@
     "aliases": [
       "tandoori roti",
       "tandoori naan"
+    ],
+    "allergens": [
+      "gluten"
     ]
   },
   {
@@ -187541,7 +187552,6 @@
     "defaultQuantity": 25.0,
     "defaultStorage": "Pantry",
     "aliases": [
-      "agave spirit",
       "tequilas"
     ],
     "facets": [
@@ -187761,11 +187771,13 @@
     "dietaryTags": [
       "Vegetarian",
       "Vegan",
-      "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
     ],
-    "parentIds": []
+    "parentIds": [],
+    "allergens": [
+      "gluten"
+    ]
   },
   {
     "id": "textured-vegetable-protein",
@@ -188033,9 +188045,7 @@
     "defaultUnit": "tbsp",
     "defaultQuantity": 4.0,
     "defaultStorage": "Refrigerated",
-    "aliases": [
-      "thai peanut sauce"
-    ],
+    "aliases": [],
     "facets": [
       {
         "key": "grade",
@@ -188602,6 +188612,7 @@
       "shellfish"
     ],
     "dietaryTags": [
+      "Pescatarian",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -190554,7 +190565,6 @@
     "defaultQuantity": 1.0,
     "defaultStorage": "Pantry",
     "aliases": [
-      "arhar dal",
       "split pigeon pea",
       "toor daal",
       "tuvar dal"
@@ -191196,11 +191206,7 @@
     "defaultUnit": "can",
     "defaultQuantity": 1.0,
     "defaultStorage": "Pantry",
-    "aliases": [
-      "canned fruit cocktail",
-      "fruit cocktails",
-      "mixed fruit"
-    ],
+    "aliases": [],
     "facets": [
       {
         "key": "grade",
@@ -191293,7 +191299,7 @@
   },
   {
     "id": "trout",
-    "name": "trout oily fish",
+    "name": "trout",
     "category": "Protein",
     "defaultUnit": "lb",
     "defaultQuantity": 1.0,
@@ -191366,6 +191372,7 @@
       "fish"
     ],
     "dietaryTags": [
+      "Pescatarian",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -191442,6 +191449,7 @@
       "fish"
     ],
     "dietaryTags": [
+      "Pescatarian",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -191789,7 +191797,7 @@
     "category": "Protein",
     "defaultUnit": "lb",
     "defaultQuantity": 1.0,
-    "defaultStorage": "Frozen",
+    "defaultStorage": "Refrigerated",
     "aliases": [
       "ahi tuna",
       "albacore",
@@ -191881,6 +191889,7 @@
       "fish"
     ],
     "dietaryTags": [
+      "Pescatarian",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -192101,7 +192110,8 @@
     ],
     "aliases": [
       "raw sugar",
-      "demerara-style sugar"
+      "demerara-style sugar",
+      "sugar in the raw"
     ]
   },
   {
@@ -194565,12 +194575,12 @@
     "category": "Snacks",
     "dietaryTags": [
       "Vegetarian",
-      "Vegan",
-      "Gluten-Free",
-      "Dairy-Free",
       "Nut-Free"
     ],
-    "parentIds": []
+    "parentIds": [],
+    "allergens": [
+      "gluten"
+    ]
   },
   {
     "id": "vates",
@@ -196071,8 +196081,6 @@
     "defaultQuantity": 1.0,
     "defaultStorage": "Pantry",
     "aliases": [
-      "cream of vegetable soup",
-      "vegetable soup",
       "veg broth"
     ],
     "facets": [
@@ -196987,7 +196995,7 @@
   },
   {
     "id": "vegetarian-black-bean-sauce",
-    "name": "vegetarian",
+    "name": "vegetarian black bean sauce",
     "category": "Condiments & Sauces",
     "defaultUnit": "tbsp",
     "defaultQuantity": 2.0,
@@ -198639,9 +198647,7 @@
     "defaultUnit": "oz",
     "defaultQuantity": 7,
     "defaultStorage": "Pantry",
-    "aliases": [
-      "rice vermicelli"
-    ],
+    "aliases": [],
     "facets": [
       {
         "key": "form",
@@ -199507,11 +199513,13 @@
     "dietaryTags": [
       "Vegetarian",
       "Vegan",
-      "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
     ],
-    "parentIds": []
+    "parentIds": [],
+    "allergens": [
+      "gluten"
+    ]
   },
   {
     "id": "waffle-baking-mix",
@@ -200606,7 +200614,6 @@
     "defaultStorage": "Pantry",
     "aliases": [
       "citrullus seed",
-      "egusi",
       "watermelon seeds"
     ],
     "facets": [
@@ -200682,10 +200689,8 @@
     "defaultQuantity": 1.0,
     "defaultStorage": "Pantry",
     "aliases": [
-      "wheat berries",
-      "wheat grain",
       "wheats",
-      "whole wheat"
+      "wheat bran flakes"
     ],
     "facets": [
       {
@@ -201008,7 +201013,8 @@
     "aliases": [
       "whey powder",
       "whey isolate",
-      "whey protein isolate"
+      "whey protein isolate",
+      "whey protein"
     ],
     "facets": [
       {
@@ -201607,10 +201613,7 @@
     "defaultQuantity": 2.0,
     "defaultStorage": "Pantry",
     "aliases": [
-      "aceto balsamico",
-      "balsamic",
-      "balsamic vinegars",
-      "white gravy"
+      "white balsamic"
     ],
     "facets": [
       {
@@ -201944,9 +201947,7 @@
     "defaultUnit": "tbsp",
     "defaultQuantity": 4.0,
     "defaultStorage": "Pantry",
-    "aliases": [
-      "white poppy seed"
-    ],
+    "aliases": [],
     "facets": [
       {
         "key": "form",
@@ -202116,6 +202117,7 @@
       "fish"
     ],
     "dietaryTags": [
+      "Pescatarian",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -202518,6 +202520,7 @@
       "shellfish"
     ],
     "dietaryTags": [
+      "Pescatarian",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -202712,6 +202715,7 @@
       "shellfish"
     ],
     "dietaryTags": [
+      "Pescatarian",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -202738,9 +202742,9 @@
     "defaultStorage": "Pantry",
     "aliases": [
       "granulated sugar",
-      "white cake mix",
       "cane sugar",
-      "caster-grade sugar"
+      "caster-grade sugar",
+      "table sugar"
     ],
     "facets": [
       {
@@ -202907,6 +202911,7 @@
       "fish"
     ],
     "dietaryTags": [
+      "Pescatarian",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -203187,8 +203192,7 @@
     "defaultQuantity": 32.0,
     "defaultStorage": "Refrigerated",
     "aliases": [
-      "whole",
-      "whole-milk yogurt"
+      "whole"
     ],
     "facets": [
       {
@@ -205831,11 +205835,13 @@
     "dietaryTags": [
       "Vegetarian",
       "Vegan",
-      "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
     ],
-    "parentIds": []
+    "parentIds": [],
+    "allergens": [
+      "gluten"
+    ]
   },
   {
     "id": "xanthan-gum",
@@ -206627,7 +206633,7 @@
   },
   {
     "id": "yellow-cornmeal",
-    "name": "yellow cornmeal porridge",
+    "name": "yellow cornmeal",
     "category": "Grains & Cereals",
     "defaultUnit": "cup",
     "defaultQuantity": 1.0,
@@ -228000,7 +228006,8 @@
     "aliases": [
       "squeaky cheese",
       "fresh cheese curds",
-      "poutine curds"
+      "poutine curds",
+      "cheese curd"
     ],
     "facets": [
       {
@@ -228146,7 +228153,8 @@
       "singles",
       "process cheese",
       "processed cheese food",
-      "burger cheese"
+      "burger cheese",
+      "processed cheese"
     ],
     "facets": [
       {
@@ -228272,7 +228280,8 @@
     "defaultStorage": "Refrigerated",
     "aliases": [
       "grana padano cheese",
-      "grana"
+      "grana",
+      "padano"
     ],
     "facets": [
       {
@@ -248474,7 +248483,6 @@
     "defaultStorage": "Pantry",
     "aliases": [
       "manicotti pasta",
-      "cannelloni tubes",
       "stuffing tubes"
     ],
     "facets": [
@@ -267323,6 +267331,7 @@
     },
     "isUserDefined": false,
     "dietaryTags": [
+      "Pescatarian",
       "Gluten-Free",
       "Dairy-Free",
       "Nut-Free"
@@ -283447,7 +283456,6 @@
     "defaultQuantity": 8,
     "defaultStorage": "Pantry",
     "aliases": [
-      "rice vermicelli",
       "rice noodle vermicelli",
       "mai fun",
       "maifun",
