@@ -25,9 +25,12 @@ enum ExpiryEngine {
     // MARK: Pure math (catalog-free, fully unit-testable)
 
     /// Days left given a known safe lifetime and the fraction of life already used.
+    /// Rounds (never truncates): truncating toward zero shaved a partial day off every
+    /// storage move, so fridge → freezer → fridge decayed (2 → 1 → 0) instead of being
+    /// reversible. Rounding keeps the projection symmetric, so round-trips are stable.
     static func freshDaysLeft(safeDays: Int?, consumedFraction: Double) -> Int? {
         guard let s = safeDays, s > 0 else { return nil }
-        return max(0, Int((1 - clamp(consumedFraction)) * Double(s)))
+        return max(0, Int(((1 - clamp(consumedFraction)) * Double(s)).rounded()))
     }
 
     /// Consumed fraction after a stint of `daysInStint` against a known safe lifetime.

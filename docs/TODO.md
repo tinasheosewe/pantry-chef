@@ -5,6 +5,49 @@ each item.
 
 ## Open
 
+### Move heavy services to a backend server (consider later)
+On-device is wrong for the compute-heavy / cost-bearing pieces. Candidates to move
+server-side, with reasons:
+- **AI recipe generation / "make it healthier" / tweak** — model cost + key safety +
+  caching (can't ship API keys in the app; serverside lets us cache + rate-limit).
+- **Recipe photo / painted-plate generation** — bundle this WITH custom-recipe parsing
+  (paste a URL / text → structured Dish + a generated plate) as one ingestion service.
+  Image gen is expensive + slow; do it once server-side, cache the asset, serve the URL.
+- **Custom recipe parsing / import** — NLP + catalog mapping; benefits from the full
+  catalog + shared improvements without an app update.
+- **The catalog itself** — currently a 3.9MB bundled `catalog.json`. A server catalog
+  means expansions/fixes ship without an app release (but breaks pure-offline; needs a
+  bundled fallback + sync). Tension with offline ingredient-add (see below).
+- **Consider also:** readiness/substitution compute if it grows; telemetry/crash
+  aggregation; nutrition lookups; usage-based personalization/ranking for the feed.
+**Open question to decide later:** the offline boundary — what MUST work with no network
+(viewing saved recipes, pantry edits, cook mode) vs. what can require it (generation,
+import). Decide the split before building. (Not now — capture only.)
+
+### Require hand-painted plate art (validation) + drop the emoji fallback — weigh risks
+Only ~5 dishes have bundled `Resources/PlateArt/*.png`; the other ~190 fall back to
+emoji-on-plate. Idea: generate painted plates for ALL recipes (an AI-render pipeline —
+belongs in the backend ingestion service above, NOT doable by text subagents) and make
+"has plate art" a validation, removing the emoji fallback so the feed is uniformly rich.
+**Risks:** generation cost/time for 200+; no fallback means a missing/failed render = a
+blank tile (worse than emoji); offline new recipes would have no art until the server
+paints them. Same idea for **ingredient art**, but riskier: a no-fallback rule removes
+the ability to add an ingredient offline (you couldn't render its face) — likely keep a
+fallback for ingredients even if recipes go strict. Decide per-surface.
+
+### Load-bearing vs droppable ingredients (suggestion-framework enhancement)
+Mark each recipe ingredient as **load-bearing** (the dish's identity — can't drop, maybe
+can't swap beyond a very close sibling) vs **droppable** (e.g. "¼ tsp paprika" — fine to
+omit). Then readiness/"can I make this" only blocks on missing *load-bearing* items; a
+missing droppable one still reads as makeable (with a note). Sharpens the whole pantry
+suggestion engine — missing a garnish ≠ can't cook. Needs: a per-line flag (default from
+heuristics: tiny quantities / "to taste" / garnish verbs → droppable; the protein/the
+defining sauce → load-bearing), surfaced in the editor + AI ingestion. **UI:** explorer —
+readiness counts droppables as optional, so more dishes qualify as "make now"; recipe page
+— droppable lines dimmed / marked "optional", load-bearing maybe bolded; cook mode — gather
+screen separates "essential" from "optional/skip if short", and the swap chooser only
+offers swaps for swappable lines. (From feed review — decide model + UI before building.)
+
 ### AI-generated recipe ideas in the feed (cost-gated — needs consideration)
 The Today feed is currently powered by the **existing recipe library**, categorized
 into lenses (`RedesignRootView.defaultRails` / `matches`). A richer "always fresh"

@@ -73,6 +73,27 @@ final class StockItemStorageMoveTests: XCTestCase {
         XCTAssertLessThan(pantry ?? .max, fridge ?? 0)
     }
 
+    private func spinach(fridgeDaysLeft: Int) -> StockItem {
+        StockItem(key: "spinach", name: "Baby spinach", plate: .init(categories: [.produce], seed: 1),
+                  section: .useSoon, measure: .perishable(detail: "300 g", daysLeft: fridgeDaysLeft),
+                  lastConfirmed: now, catalogItemID: "spinach",
+                  category: .produce, storage: .refrigerated, storageSince: now)
+    }
+
+    /// The reported bug: spinach (explicit fridge AND freezer ranges) dropped 2 → 1 → 0
+    /// across fridge ↔ freezer moves because the projection truncated a partial day each
+    /// time. Round-trips must now hold steady.
+    func testSpinachStorageRoundTripDoesNotDecay() {
+        var item = spinach(fridgeDaysLeft: 2)
+        let start = daysLeft(item)
+        for _ in 0..<4 {
+            item = item.moved(to: .frozen, now: now)
+            XCTAssertGreaterThan(daysLeft(item) ?? 0, start ?? 0, "the freezer extends shelf life")
+            item = item.moved(to: .refrigerated, now: now)
+            XCTAssertEqual(daysLeft(item), start, "back in the fridge it must land on the original, not decay")
+        }
+    }
+
     func testNotAdjustingOnlyRelabelsStorage() {
         let original = fridgeItem()
         let moved = original.moved(to: .frozen, now: now, adjustDaysLeft: false)
