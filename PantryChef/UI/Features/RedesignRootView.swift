@@ -586,7 +586,7 @@ struct RedesignRootView: View {
         VStack(spacing: 0) {
             HStack(alignment: .firstTextBaseline) {
                 Text(DayLabel.monthDayLong(for: store.today))
-                    .font(Theme.Typography.dish(26)).foregroundStyle(Theme.Palette.ink)
+                    .font(Theme.Typography.pageTitle).foregroundStyle(Theme.Palette.ink)
                 Spacer()
                 Text(DayLabel.eyebrow(for: store.today).uppercased())
                     .font(.system(size: 10)).tracking(Theme.Metric.eyebrowTracking)
@@ -598,8 +598,8 @@ struct RedesignRootView: View {
                 }
                 .buttonStyle(.plain).accessibilityLabel("Settings")
             }
-            .padding(.horizontal, Theme.Metric.lg).padding(.top, 6)
-            DashedRule().padding(.horizontal, Theme.Metric.lg).padding(.top, 9).padding(.bottom, 2)
+            .padding(.horizontal, Theme.Metric.pageMargin).padding(.top, 6)
+            DashedRule().padding(.horizontal, Theme.Metric.pageMargin).padding(.top, 9).padding(.bottom, 2)
         }
     }
 

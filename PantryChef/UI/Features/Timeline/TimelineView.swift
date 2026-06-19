@@ -75,7 +75,7 @@ struct TimelineView: View {
     private func header(_ proxy: ScrollViewProxy) -> some View {
         VStack(spacing: 0) {
             HStack(alignment: .firstTextBaseline) {
-                Text(headerTitle).font(Theme.Typography.dish(22)).foregroundStyle(Theme.Palette.ink)
+                Text(headerTitle).font(Theme.Typography.pageTitle).foregroundStyle(Theme.Palette.ink)
                     .animation(nil, value: headerTitle)
                 Spacer()
                 if isAwayFromNow {
@@ -105,12 +105,10 @@ struct TimelineView: View {
                 .buttonStyle(.plain)
                 .accessibilityLabel("Settings")
             }
-            .padding(.leading, Theme.Metric.spineWidth)
-            .padding(.trailing, Theme.Metric.lg)
+            .padding(.horizontal, Theme.Metric.pageMargin)
             .padding(.top, 6)
             DashedRule()
-                .padding(.leading, Theme.Metric.spineWidth)
-                .padding(.trailing, Theme.Metric.lg)
+                .padding(.horizontal, Theme.Metric.pageMargin)
                 .padding(.top, 9)
                 .padding(.bottom, 2)
         }

@@ -149,6 +149,10 @@ enum Theme {
         /// small-caps labels hold against body text; scales with Dynamic Type.
         static var eyebrow: Font { scaledSystem(size: 11, weight: .medium) }
 
+        /// The page-title header on each top-level space (Today / Plan / Pantry). One
+        /// size, defined once, so the three headers never drift apart again.
+        static var pageTitle: Font { dish(24) }
+
         /// A system font that tracks Dynamic Type, built through UIFontMetrics so
         /// our fixed point sizes still grow with the user's setting.
         private static func scaledSystem(size: CGFloat, weight: Font.Weight,
@@ -194,6 +198,9 @@ enum Theme {
         static let sm: CGFloat = 8
         static let md: CGFloat = 12
         static let lg: CGFloat = 16
+        /// The shared left/right inset for each space's page-title header + its rule, so
+        /// Today / Plan / Pantry headers line up at the same edge.
+        static let pageMargin: CGFloat = 20
         static let xl: CGFloat = 24
     }
 

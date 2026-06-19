@@ -59,7 +59,7 @@ struct StockView: View {
         VStack(spacing: 0) {
             VStack(alignment: .leading, spacing: 4) {
                 HStack(alignment: .firstTextBaseline, spacing: 2) {
-                    Text("Pantry").font(Theme.Typography.dish(22)).foregroundStyle(Theme.Palette.ink)
+                    Text("Pantry").font(Theme.Typography.pageTitle).foregroundStyle(Theme.Palette.ink)
                     Spacer()
                     cartButton
                     Button(action: onSettings) {
@@ -74,7 +74,7 @@ struct StockView: View {
                     .fixedSize(horizontal: false, vertical: true)
                 DashedRule().padding(.top, 6)
             }
-            .padding(.horizontal, 20).padding(.top, 6)
+            .padding(.horizontal, Theme.Metric.pageMargin).padding(.top, 6)
             // The category chips stay pinned above the list, so switching category is
             // one tap from anywhere — no scrolling back up to a tile grid.
             CategoryFilterRail(categories: groups.map(\.0), selected: $selectedCategory,
