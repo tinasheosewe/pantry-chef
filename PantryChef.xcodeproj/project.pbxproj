@@ -56,6 +56,7 @@
 		28E5D7F98AD387494191D7F4 /* crunchy-asian-slaw.png in Resources */ = {isa = PBXBuildFile; fileRef = F37DCE7E6762A550A5565A2E /* crunchy-asian-slaw.png */; };
 		2931C955B0E550197F818A10 /* warm-lentil-and-feta-salad.png in Resources */ = {isa = PBXBuildFile; fileRef = 5985405FEB96EA08E27DF3A7 /* warm-lentil-and-feta-salad.png */; };
 		29671422BF7500F177814A0D /* buffalo-cauliflower-wraps.png in Resources */ = {isa = PBXBuildFile; fileRef = CA3705EAE3F05B8418E7F52C /* buffalo-cauliflower-wraps.png */; };
+		297137BC03E053BA90CFA696 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BA90CCC7D9FA8260A9CAA92 /* NotificationService.swift */; };
 		2AECCCF4817DD8BE380C4231 /* red-lentil-dal.png in Resources */ = {isa = PBXBuildFile; fileRef = AFBD85378CDDC12692F78A74 /* red-lentil-dal.png */; };
 		2AFDB1152C900E38B394F5A6 /* chicken-tikka-masala.png in Resources */ = {isa = PBXBuildFile; fileRef = C7397781D69431FE6D5A83E2 /* chicken-tikka-masala.png */; };
 		2C7DB6C316F3A418AC2F5988 /* mujadara.png in Resources */ = {isa = PBXBuildFile; fileRef = A3D1F30E6AFF3904D74D6C10 /* mujadara.png */; };
@@ -357,6 +358,7 @@
 		0B1C036C5BD4CD41F1060C93 /* stuffed-bell-peppers.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "stuffed-bell-peppers.png"; sourceTree = "<group>"; };
 		0B76FED7A3D176AF217A80B7 /* pork-apple-traybake.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "pork-apple-traybake.png"; sourceTree = "<group>"; };
 		0B8AD386EA1A6097072295C0 /* mixed-berry-crumble.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "mixed-berry-crumble.png"; sourceTree = "<group>"; };
+		0BA90CCC7D9FA8260A9CAA92 /* NotificationService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
 		0D0F2D0F7962ED1AADC2579C /* split-pea-soup.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "split-pea-soup.png"; sourceTree = "<group>"; };
 		0E18074B26503B469E9775FC /* miso-butter-udon.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "miso-butter-udon.png"; sourceTree = "<group>"; };
 		0E2EDF0206FC005D0ADED33A /* baked-ziti-with-sausage.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "baked-ziti-with-sausage.png"; sourceTree = "<group>"; };
@@ -1221,6 +1223,7 @@
 				822D5F908F780A317F9B37C1 /* ExpiryEngine.swift */,
 				C277A622D0C630B07548A487 /* IntakePipeline.swift */,
 				E94F1754D943A372889A09B4 /* PantryPersistence.swift */,
+				0BA90CCC7D9FA8260A9CAA92 /* NotificationService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -1676,6 +1679,7 @@
 				ABC1C356E1DA7F52E345EE5A /* CategoryFilterRail.swift in Sources */,
 				60569CEA220CA74318A53FC8 /* LoadingScreen.swift in Sources */,
 				59B384E56F09D1C12D4C4483 /* PantryPersistence.swift in Sources */,
+				297137BC03E053BA90CFA696 /* NotificationService.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

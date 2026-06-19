@@ -32,6 +32,24 @@ final class PantryPersistenceTests: XCTestCase {
         XCTAssertEqual(back.events.map(\.id), snap.events.map(\.id))
     }
 
+    func testExpiryReminderSettingSurvivesAndOldFilesDefaultOn() throws {
+        var snap = PantrySnapshot(stock: [], shoppingList: [], events: [], journal: [],
+                                  whispers: [], profile: DietaryProfile(), autoAdjust: true,
+                                  assumeSpiceRack: true, expiryReminders: false)
+        XCTAssertFalse(try roundTrip(snap).expiryReminders, "the reminder setting round-trips")
+
+        // A snapshot written before the field existed (key absent) must still load,
+        // defaulting reminders on rather than failing the whole read.
+        snap.expiryReminders = true
+        let enc = JSONEncoder(); enc.dateEncodingStrategy = .iso8601
+        var json = try JSONSerialization.jsonObject(with: enc.encode(snap)) as! [String: Any]
+        json.removeValue(forKey: "expiryReminders")
+        let data = try JSONSerialization.data(withJSONObject: json)
+        let dec = JSONDecoder(); dec.dateDecodingStrategy = .iso8601
+        let back = try dec.decode(PantrySnapshot.self, from: data)
+        XCTAssertTrue(back.expiryReminders, "a missing key falls back to the default, not a decode failure")
+    }
+
     func testAllMeasureCasesRoundTrip() throws {
         let plate = PlateComposition(categories: [.produce], seed: 1)
         let items = [

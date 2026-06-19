@@ -177,6 +177,19 @@ final class MealPlanningTests: XCTestCase {
                        "multi-dish banks each dish at its own servings, not one shared count")
     }
 
+    func testExpiryReminderPlansCoverWhatsTurningAndRespectTheSetting() {
+        let store = KitchenStore()
+        let plans = store.expiryReminderPlans()
+        XCTAssertFalse(plans.isEmpty, "the seed kitchen has perishables turning soon")
+        XCTAssertTrue(plans.allSatisfy { !$0.names.isEmpty }, "every reminder names something")
+        XCTAssertTrue(plans.allSatisfy { $0.fireAt.timeIntervalSince(store.today) > 0 },
+                      "reminders are scheduled in the future, never in the past")
+        XCTAssertEqual(plans.map(\.fireAt), plans.map(\.fireAt).sorted(),
+                       "plans come back soonest-first")
+        store.expiryReminders = false
+        XCTAssertTrue(store.expiryReminderPlans().isEmpty, "off means no reminders at all")
+    }
+
     func testUpdateCookingTimerMirrorsOntoTheNowCard() {
         let store = KitchenStore()
         store.beginCooking([minestroneDish(servings: 2)], stepIndex: 1, totalSteps: 4)

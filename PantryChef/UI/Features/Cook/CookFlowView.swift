@@ -71,7 +71,7 @@ struct CookFlowView: View {
         .background(KitchenBackground())
         // Greasy hands, no taps for minutes — the screen must not sleep mid-cook.
         .onAppear { UIApplication.shared.isIdleTimerDisabled = true }
-        .onDisappear { UIApplication.shared.isIdleTimerDisabled = false }
+        .onDisappear { UIApplication.shared.isIdleTimerDisabled = false; NotificationService.cancelAllCookTimers() }
         // Moving between steps no longer nukes the timer — a step's countdown keeps
         // running so you can start a simmer and walk ahead to prep the next thing.
         .onChange(of: step) { onStep(step, schedule.count) }
@@ -316,6 +316,7 @@ struct CookFlowView: View {
         guard let total = timerSeconds(at: index) else { return }
         timers[index] = StepTimer(total: total, endsAt: Date().addingTimeInterval(TimeInterval(total)), pausedRemaining: nil)
         firedTimers.remove(index)
+        scheduleNotification(for: index)
         onTimer(runningTimerText)
     }
 
@@ -326,13 +327,23 @@ struct CookFlowView: View {
         if let end = t.endsAt {                                   // running → pause
             let rem = max(0, Int(end.timeIntervalSince(Date()).rounded()))
             timers[index] = StepTimer(total: t.total, endsAt: nil, pausedRemaining: rem)
+            NotificationService.cancelCookTimer(index: index)
         } else if let rem = t.pausedRemaining, rem > 0 {          // paused → resume
             timers[index] = StepTimer(total: t.total, endsAt: Date().addingTimeInterval(TimeInterval(rem)), pausedRemaining: nil)
+            scheduleNotification(for: index)
         } else {                                                  // finished → again
             timers[index] = StepTimer(total: total, endsAt: Date().addingTimeInterval(TimeInterval(total)), pausedRemaining: nil)
             firedTimers.remove(index)
+            scheduleNotification(for: index)
         }
         onTimer(runningTimerText)
+    }
+
+    /// Mirror this step's running timer as a backgrounded banner at its end instant.
+    private func scheduleNotification(for index: Int) {
+        guard let end = timers[index]?.endsAt else { return }
+        let dishName = schedule.indices.contains(index) ? schedule[index].dishName : (dishes.first?.name ?? "your dish")
+        NotificationService.scheduleCookTimer(index: index, stepNumber: index + 1, dishName: dishName, fireAt: end)
     }
 
     /// Snap any running timer that has crossed zero to a stopped, finished state, and
@@ -341,6 +352,9 @@ struct CookFlowView: View {
         for (index, t) in timers where t.endsAt != nil {
             if Int(t.endsAt!.timeIntervalSince(now).rounded()) <= 0, !firedTimers.contains(index) {
                 firedTimers.insert(index)
+                // We caught it landing in-app (the heartbeat fires) — so drop the
+                // backgrounded banner; no double signal for a timer you just watched.
+                NotificationService.cancelCookTimer(index: index)
             }
         }
         onTimer(runningTimerText)

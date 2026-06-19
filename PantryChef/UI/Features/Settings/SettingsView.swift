@@ -14,6 +14,17 @@ struct SettingsView: View {
     private var assumeSpiceRack: Binding<Bool> {
         Binding(get: { store.assumeSpiceRack }, set: { store.assumeSpiceRack = $0 })
     }
+    /// Turning reminders on asks for notification permission in context (never cold on
+    /// launch); either way we reconcile the scheduled reminders to the new setting.
+    private var expiryReminders: Binding<Bool> {
+        Binding(get: { store.expiryReminders }, set: { on in
+            store.expiryReminders = on
+            Task {
+                if on { await NotificationService.ensureAuthorized() }
+                await NotificationService.syncExpiryReminders(store.expiryReminderPlans())
+            }
+        })
+    }
 
     var body: some View {
         VStack(spacing: 0) {
@@ -60,6 +71,16 @@ struct SettingsView: View {
                     Text("Assume a basic spice rack")
                         .font(Theme.Typography.fact(15)).foregroundStyle(Theme.Palette.ink)
                     Text("Treat everyday dried spices (cumin, paprika, oregano, cinnamon…) as on hand, so a dish isn't \"a shop away\" over spices you almost certainly keep. Specialty ones (saffron, ras el hanout…) still count. Turn off to require every spice in your pantry.")
+                        .font(Theme.Typography.note(12)).foregroundStyle(Theme.Palette.warmGray)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            }
+            .tint(Theme.Palette.paprika)
+            Toggle(isOn: expiryReminders) {
+                VStack(alignment: .leading, spacing: 3) {
+                    Text("Use-it-up reminders")
+                        .font(Theme.Typography.fact(15)).foregroundStyle(Theme.Palette.ink)
+                    Text("Get a notification on the last good morning for anything about to turn, so it gets cooked instead of binned. Cook timers always notify; this covers the fridge.")
                         .font(Theme.Typography.note(12)).foregroundStyle(Theme.Palette.warmGray)
                         .fixedSize(horizontal: false, vertical: true)
                 }

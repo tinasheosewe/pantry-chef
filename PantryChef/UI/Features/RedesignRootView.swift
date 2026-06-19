@@ -62,7 +62,18 @@ struct RedesignRootView: View {
             }
         }
         .animation(reduceMotion ? nil : .easeInOut(duration: 0.4), value: store.readinessReady)
-        .task { await store.warmUp() }
+        .task {
+            await store.warmUp()
+            // Reconcile use-it-up reminders once the kitchen is loaded (silent unless
+            // notifications are already granted — no cold prompt here).
+            await NotificationService.syncExpiryReminders(store.expiryReminderPlans())
+        }
+        // Re-sync when leaving the app, so the freshest pantry drives the reminders.
+        .onChange(of: scenePhase) { _, phase in
+            if phase == .background {
+                Task { await NotificationService.syncExpiryReminders(store.expiryReminderPlans()) }
+            }
+        }
     }
 
     private var main: some View {

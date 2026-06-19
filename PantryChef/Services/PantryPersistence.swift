@@ -15,6 +15,30 @@ struct PantrySnapshot: Codable {
     var profile: DietaryProfile
     var autoAdjust: Bool
     var assumeSpiceRack: Bool
+    var expiryReminders: Bool = true
+}
+
+extension PantrySnapshot {
+    private enum CodingKeys: String, CodingKey {
+        case version, stock, shoppingList, events, journal, whispers
+        case profile, autoAdjust, assumeSpiceRack, expiryReminders
+    }
+
+    /// Tolerant decode so a snapshot written before a field existed still loads
+    /// (newer keys fall back to their defaults rather than failing the whole read).
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        version = try c.decodeIfPresent(Int.self, forKey: .version) ?? 1
+        stock = try c.decode([StockItem].self, forKey: .stock)
+        shoppingList = try c.decodeIfPresent([ShoppingEntry].self, forKey: .shoppingList) ?? []
+        events = try c.decode([DatedEvent].self, forKey: .events)
+        journal = try c.decode([JournalItem].self, forKey: .journal)
+        whispers = try c.decode([DatedWhisper].self, forKey: .whispers)
+        profile = try c.decode(DietaryProfile.self, forKey: .profile)
+        autoAdjust = try c.decode(Bool.self, forKey: .autoAdjust)
+        assumeSpiceRack = try c.decode(Bool.self, forKey: .assumeSpiceRack)
+        expiryReminders = try c.decodeIfPresent(Bool.self, forKey: .expiryReminders) ?? true
+    }
 }
 
 /// Reads/writes the snapshot as JSON in Application Support. Pure I/O, no app state.

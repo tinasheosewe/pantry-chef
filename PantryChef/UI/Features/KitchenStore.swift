@@ -250,18 +250,23 @@ final class KitchenStore {
     private func snapshot() -> PantrySnapshot {
         PantrySnapshot(stock: stock, shoppingList: shoppingList, events: events,
                        journal: journal, whispers: whispers, profile: profile,
-                       autoAdjust: autoAdjustDaysOnStorageChange, assumeSpiceRack: assumeSpiceRack)
+                       autoAdjust: autoAdjustDaysOnStorageChange, assumeSpiceRack: assumeSpiceRack,
+                       expiryReminders: expiryReminders)
     }
 
     private func apply(_ s: PantrySnapshot) {
         stock = s.stock; shoppingList = s.shoppingList; events = s.events
         journal = s.journal; whispers = s.whispers; profile = s.profile
         autoAdjustDaysOnStorageChange = s.autoAdjust; assumeSpiceRack = s.assumeSpiceRack
+        expiryReminders = s.expiryReminders
     }
     /// Settings: when on, moving an item between pantry/fridge/freezer re-projects
     /// its days-left from the new location's shelf life; when off, only the label
     /// changes and your own estimate stands. See `StockItem.moved(to:now:adjustDaysLeft:)`.
     var autoAdjustDaysOnStorageChange = true { didSet { schedulePersist() } }
+    /// Settings: when on (and notifications granted), schedule a "use it up" reminder
+    /// for perishables about to turn — fired on their last good morning.
+    var expiryReminders = true { didSet { schedulePersist() } }
     var shoppingList: [ShoppingEntry] = [
         ShoppingEntry(name: "Olive oil", category: .oils),
         ShoppingEntry(name: "Salmon", amount: "2 fillets", category: .protein),
@@ -721,6 +726,26 @@ final class KitchenStore {
             }
             .sorted { $0.1 < $1.1 }
             .map(\.0)
+    }
+
+    /// Use-it-up notification plans: perishables turning soon, grouped by the day they
+    /// should be used, each fired at 10am on that last good morning. Empty when the
+    /// setting is off. Pure (no notification-center calls) so it's unit-testable.
+    func expiryReminderPlans() -> [NotificationService.ExpiryReminderPlan] {
+        guard expiryReminders else { return [] }
+        let startOfToday = cal.startOfDay(for: today)
+        var byFire: [Date: [String]] = [:]
+        for item in expiringSoon(within: KitchenConfig.Stores.expiryWarningDays) {
+            guard let d = item.daysLeft(now: today) else { continue }
+            // Last good morning = the day it drops to one day of life. Already-urgent
+            // items (≤1 day) nudge this morning; never schedule in the past.
+            guard let day = cal.date(byAdding: .day, value: max(0, d - 1), to: startOfToday),
+                  let fire = cal.date(bySettingHour: 10, minute: 0, second: 0, of: day),
+                  fire.timeIntervalSince(today) > 0 else { continue }
+            byFire[fire, default: []].append(item.name)
+        }
+        return byFire.sorted { $0.key < $1.key }
+            .map { NotificationService.ExpiryReminderPlan(names: $0.value, fireAt: $0.key) }
     }
 
     /// Live readiness for a dish — the single ReadinessService over current stock,
