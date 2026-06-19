@@ -97,4 +97,30 @@ final class SeedDishCatalogTests: XCTestCase {
         }
         XCTAssertTrue(missing.isEmpty, "Seed line missing catalogItemID:\n  " + missing.joined(separator: "\n  "))
     }
+
+    /// A dish's defining dried/ground spices must never be optional — you can't make
+    /// tagine without cumin. (Fresh finishing herbs and salt/pepper are exempt: garnish
+    /// herbs are a fair per-recipe call and salt/pepper are assumed-present staples.)
+    func testDefiningSpicesAreNotOptional() {
+        let byID = Dictionary(PantryCatalog.allItems.map { ($0.id, $0) }, uniquingKeysWith: { a, _ in a })
+        let freshHerbs: Set<String> = [
+            "cilantro", "parsley", "basil", "mint", "dill", "chives", "tarragon",
+            "scallion", "green onion", "spring onion", "lemongrass", "watercress", "arugula",
+            "herb", "herbs", "fresh herbs", "mixed herbs", "mixed fresh herbs"
+        ]
+        var offenders: [String] = []
+        for dish in RecipeSeed.all {
+            for line in dish.ingredients where !line.essential {
+                guard let id = line.catalogItemID, let item = byID[id],
+                      item.category == .spices else { continue }
+                let n = item.name.lowercased(), ln = line.name.lowercased()
+                if n.contains("salt") || n.contains("pepper") { continue }
+                if freshHerbs.contains(n) || freshHerbs.contains(ln) { continue }
+                offenders.append("\(dish.name): '\(line.name)' (\(id)) marked optional")
+            }
+        }
+        XCTAssertTrue(offenders.isEmpty,
+                      "\(offenders.count) defining dried spice(s) marked optional:\n  "
+                        + offenders.prefix(20).joined(separator: "\n  "))
+    }
 }

@@ -56,7 +56,11 @@ struct StockView: View {
     var body: some View {
         VStack(spacing: 0) {
             VStack(alignment: .leading, spacing: 4) {
-                Text("Pantry").font(Theme.Typography.dish(22)).foregroundStyle(Theme.Palette.ink)
+                HStack(alignment: .firstTextBaseline) {
+                    Text("Pantry").font(Theme.Typography.dish(22)).foregroundStyle(Theme.Palette.ink)
+                    Spacer()
+                    cartButton
+                }
                 Text(summary)
                     .font(Theme.Typography.note(11.5)).foregroundStyle(Theme.Palette.warmGray)
                     .fixedSize(horizontal: false, vertical: true)
@@ -87,9 +91,8 @@ struct StockView: View {
                         }
                     }
                     // Cooked/leftover dishes live in Dishes (and the now-module's
-                    // ready-made fan), not here — Stores is ingredients & staples.
-                    // The list preview follows the same category filter as the inventory.
-                    if !scopedShoppingList.isEmpty { listSection }
+                    // ready-made fan), not here — Stores is ingredients & staples. The
+                    // shopping list now opens from the header cart, not a buried footer.
                 }
                 .padding(.horizontal, 20).padding(.bottom, 24)
             }
@@ -316,54 +319,29 @@ struct StockView: View {
         }
     }
 
-    /// The shopping list, filtered to the same category as the inventory above it.
-    private var scopedShoppingList: [ShoppingEntry] {
-        guard let cat = selectedCategory else { return store.shoppingList }
-        return store.shoppingList.filter { $0.category == cat }
-    }
-
-    /// A read-only preview — managing the list (amounts, bought, removal) happens in
-    /// the Shop run, so there's one place to keep it in sync. Grouped by category
-    /// (same aisle order as the inventory), and filtered to the selected chip. The
-    /// whole section taps through to Shop.
-    private var listSection: some View {
+    /// The shopping list lives one tap away in the header — a cart with the item count,
+    /// always reachable without scrolling the inventory. Opens the Shop run.
+    private var cartButton: some View {
         Button { shopping = true } label: {
-            VStack(alignment: .leading, spacing: 0) {
-                // A bold rule + cart-headed title so the list clearly starts here — not
-                // a quiet eyebrow you scroll past.
-                SolidRule().padding(.top, 22)
-                HStack(spacing: 8) {
-                    Image(systemName: "cart.fill").font(.system(size: 14))
-                        .foregroundStyle(Theme.Palette.paprika)
-                    Text("Shopping list").font(Theme.Typography.dish(19)).foregroundStyle(Theme.Palette.ink)
-                    Text("\(scopedShoppingList.count)")
-                        .font(Theme.Typography.numeral(13, weight: .semibold))
-                        .foregroundStyle(Theme.Palette.warmGray)
-                    Spacer()
-                    Text("SHOP →").font(.system(size: 10, weight: .semibold)).tracking(1.4)
-                        .foregroundStyle(Theme.Palette.cream)
-                        .padding(.horizontal, 11).padding(.vertical, 7)
-                        .background(Rectangle().fill(Theme.Palette.paprika))
-                }
-                .padding(.top, 12).padding(.bottom, 4)
-                ForEach(store.shoppingByCategory(scopedShoppingList), id: \.0) { cat, items in
-                    sectionHeader(cat, items.count)
-                    ForEach(items) { entry in
-                        HStack(spacing: 9) {
-                            PlateView(name: entry.name, composition: store.plate(forName: entry.name), size: 26)
-                            Text(entry.name).font(Theme.Typography.fact(13.5)).foregroundStyle(Theme.Palette.ink)
-                            if let amount = entry.amount {
-                                Text(amount).font(Theme.Typography.fact(11.5)).foregroundStyle(Theme.Palette.warmGraySoft)
-                            }
-                            Spacer(minLength: 4)
-                        }
-                        .padding(.vertical, 5)
+            Image(systemName: "cart")
+                .font(.system(size: 17, weight: .medium))
+                .foregroundStyle(Theme.Palette.paprika)
+                .overlay(alignment: .topTrailing) {
+                    if !store.shoppingList.isEmpty {
+                        Text("\(store.shoppingList.count)")
+                            .font(.system(size: 9, weight: .bold))
+                            .foregroundStyle(Theme.Palette.cream)
+                            .frame(minWidth: 14, minHeight: 14).padding(.horizontal, 1)
+                            .background(Rectangle().fill(Theme.Palette.paprika))
+                            .offset(x: 10, y: -7)
                     }
                 }
-            }
-            .contentShape(Rectangle())
+                .frame(width: 44, height: 44, alignment: .trailing)
+                .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
+        .accessibilityLabel("Shopping list")
+        .accessibilityValue("\(store.shoppingList.count) items")
     }
 }
 

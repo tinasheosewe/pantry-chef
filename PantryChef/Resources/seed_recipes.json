@@ -360,7 +360,7 @@
      "category": "spices",
      "staple": true,
      "catalogId": "salt",
-     "optional": true
+     "optional": false
     },
     {
      "name": "black pepper",
@@ -368,7 +368,7 @@
      "category": "spices",
      "staple": true,
      "catalogId": "peppercorn",
-     "optional": true
+     "optional": false
     }
    ],
    "steps": [
@@ -481,7 +481,7 @@
      "category": "spices",
      "staple": true,
      "catalogId": "peppercorn",
-     "optional": true
+     "optional": false
     }
    ],
    "steps": [
@@ -583,7 +583,7 @@
      "category": "spices",
      "staple": true,
      "catalogId": "salt",
-     "optional": true
+     "optional": false
     },
     {
      "name": "black pepper",
@@ -591,7 +591,7 @@
      "category": "spices",
      "staple": true,
      "catalogId": "peppercorn",
-     "optional": true
+     "optional": false
     }
    ],
    "steps": [
@@ -702,7 +702,7 @@
      "category": "spices",
      "staple": true,
      "catalogId": "salt",
-     "optional": true
+     "optional": false
     }
    ],
    "steps": [
@@ -792,7 +792,7 @@
      "name": "ground cinnamon",
      "amount": "1 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "cinnamon",
      "optional": false
     },
@@ -802,7 +802,7 @@
      "category": "spices",
      "staple": true,
      "catalogId": "salt",
-     "optional": true
+     "optional": false
     }
    ],
    "steps": [
@@ -881,7 +881,7 @@
      "category": "spices",
      "staple": true,
      "catalogId": "chili-flakes",
-     "optional": true
+     "optional": false
     },
     {
      "name": "olive oil",
@@ -897,7 +897,7 @@
      "category": "spices",
      "staple": true,
      "catalogId": "salt",
-     "optional": true
+     "optional": false
     },
     {
      "name": "black pepper",
@@ -905,7 +905,7 @@
      "category": "spices",
      "staple": true,
      "catalogId": "peppercorn",
-     "optional": true
+     "optional": false
     }
    ],
    "steps": [
@@ -1005,7 +1005,7 @@
      "category": "spices",
      "staple": true,
      "catalogId": "peppercorn",
-     "optional": true
+     "optional": false
     }
    ],
    "steps": [
@@ -1105,7 +1105,7 @@
      "name": "ground cinnamon",
      "amount": "1 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "cinnamon",
      "optional": false
     },
@@ -1115,7 +1115,7 @@
      "category": "spices",
      "staple": true,
      "catalogId": "salt",
-     "optional": true
+     "optional": false
     }
    ],
    "steps": [
@@ -1234,7 +1234,7 @@
      "category": "spices",
      "staple": true,
      "catalogId": "salt",
-     "optional": true
+     "optional": false
     }
    ],
    "steps": [
@@ -1336,7 +1336,7 @@
      "category": "spices",
      "staple": true,
      "catalogId": "peppercorn",
-     "optional": true
+     "optional": false
     }
    ],
    "steps": [
@@ -1426,7 +1426,7 @@
      "name": "turmeric",
      "amount": "1/4 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "turmeric",
      "optional": false
     },
@@ -1444,7 +1444,7 @@
      "category": "spices",
      "staple": true,
      "catalogId": "salt",
-     "optional": true
+     "optional": false
     }
    ],
    "steps": [
@@ -1538,9 +1538,9 @@
      "name": "ground cinnamon",
      "amount": "1 pinch",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "cinnamon",
-     "optional": true
+     "optional": false
     }
    ],
    "steps": [
@@ -1637,7 +1637,7 @@
      "category": "spices",
      "staple": true,
      "catalogId": "salt",
-     "optional": true
+     "optional": false
     },
     {
      "name": "cayenne pepper",
@@ -1731,9 +1731,9 @@
      "name": "ground cinnamon",
      "amount": "1 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "cinnamon",
-     "optional": true
+     "optional": false
     },
     {
      "name": "salt",
@@ -1741,7 +1741,7 @@
      "category": "spices",
      "staple": true,
      "catalogId": "salt",
-     "optional": true
+     "optional": false
     }
    ],
    "steps": [
@@ -1824,7 +1824,7 @@
      "name": "turmeric",
      "amount": "1/2 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "turmeric",
      "optional": false
     },
@@ -1840,9 +1840,9 @@
      "name": "garlic powder",
      "amount": "1/2 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "garlic-powder",
-     "optional": true
+     "optional": false
     },
     {
      "name": "salt",
@@ -1850,7 +1850,7 @@
      "category": "spices",
      "staple": true,
      "catalogId": "salt",
-     "optional": true
+     "optional": false
     }
    ],
    "steps": [
@@ -1952,7 +1952,7 @@
      "category": "spices",
      "staple": true,
      "catalogId": "salt",
-     "optional": true
+     "optional": false
     },
     {
      "name": "powdered sugar",
@@ -2063,7 +2063,7 @@
      "category": "spices",
      "staple": true,
      "catalogId": "salt",
-     "optional": true
+     "optional": false
     }
    ],
    "steps": [
@@ -2176,7 +2176,7 @@
      "category": "spices",
      "staple": true,
      "catalogId": "salt",
-     "optional": true
+     "optional": false
     }
    ],
    "steps": [
@@ -2376,9 +2376,9 @@
      "name": "smoked paprika",
      "amount": "1 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "smoked-paprika",
-     "optional": true
+     "optional": false
     },
     {
      "name": "salt",
@@ -2386,7 +2386,7 @@
      "category": "spices",
      "staple": true,
      "catalogId": "salt",
-     "optional": true
+     "optional": false
     },
     {
      "name": "black pepper",
@@ -2394,7 +2394,7 @@
      "category": "spices",
      "staple": true,
      "catalogId": "peppercorn",
-     "optional": true
+     "optional": false
     }
    ],
    "steps": [
@@ -2584,7 +2584,7 @@
      "category": "spices",
      "staple": true,
      "catalogId": "chili-flakes",
-     "optional": true
+     "optional": false
     },
     {
      "name": "fresh parsley",
@@ -2600,7 +2600,7 @@
      "category": "spices",
      "staple": true,
      "catalogId": "salt",
-     "optional": true
+     "optional": false
     }
    ],
    "steps": [
@@ -2798,17 +2798,17 @@
      "name": "ground cumin",
      "amount": "1 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "cumin",
-     "optional": true
+     "optional": false
     },
     {
      "name": "smoked paprika",
      "amount": "1 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "smoked-paprika",
-     "optional": true
+     "optional": false
     },
     {
      "name": "cabbage",
@@ -3061,17 +3061,17 @@
      "name": "dried oregano",
      "amount": "1 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "oregano",
-     "optional": true
+     "optional": false
     },
     {
      "name": "garlic powder",
      "amount": "1 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "garlic-powder",
-     "optional": true
+     "optional": false
     },
     {
      "name": "salt",
@@ -3079,7 +3079,7 @@
      "category": "spices",
      "staple": true,
      "catalogId": "salt",
-     "optional": true
+     "optional": false
     }
    ],
    "steps": [
@@ -3285,9 +3285,9 @@
      "name": "garlic powder",
      "amount": "1/2 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "garlic-powder",
-     "optional": true
+     "optional": false
     },
     {
      "name": "salt",
@@ -3295,7 +3295,7 @@
      "category": "spices",
      "staple": true,
      "catalogId": "salt",
-     "optional": true
+     "optional": false
     }
    ],
    "steps": [
@@ -3506,9 +3506,9 @@
      "name": "dried oregano",
      "amount": "2 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "oregano",
-     "optional": true
+     "optional": false
     },
     {
      "name": "olive oil",
@@ -3604,7 +3604,7 @@
      "category": "spices",
      "staple": true,
      "catalogId": "chili-flakes",
-     "optional": true
+     "optional": false
     },
     {
      "name": "fresh parsley",
@@ -3620,7 +3620,7 @@
      "category": "spices",
      "staple": true,
      "catalogId": "salt",
-     "optional": true
+     "optional": false
     }
    ],
    "steps": [
@@ -3728,7 +3728,7 @@
      "category": "spices",
      "staple": true,
      "catalogId": "salt",
-     "optional": true
+     "optional": false
     }
    ],
    "steps": [
@@ -3822,17 +3822,17 @@
      "name": "chili powder",
      "amount": "2 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "chili-powder",
-     "optional": true
+     "optional": false
     },
     {
      "name": "ground cumin",
      "amount": "1 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "cumin",
-     "optional": true
+     "optional": false
     },
     {
      "name": "chicken broth",
@@ -4076,9 +4076,9 @@
      "name": "dried thyme",
      "amount": "1 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "thyme",
-     "optional": true
+     "optional": false
     },
     {
      "name": "salt",
@@ -4086,7 +4086,7 @@
      "category": "spices",
      "staple": true,
      "catalogId": "salt",
-     "optional": true
+     "optional": false
     }
    ],
    "steps": [
@@ -4188,7 +4188,7 @@
      "category": "spices",
      "staple": true,
      "catalogId": "salt",
-     "optional": true
+     "optional": false
     }
    ],
    "steps": [
@@ -4298,9 +4298,9 @@
      "name": "dried oregano",
      "amount": "1 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "oregano",
-     "optional": true
+     "optional": false
     }
    ],
    "steps": [
@@ -4476,25 +4476,25 @@
      "name": "chili powder",
      "amount": "2 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "chili-powder",
-     "optional": true
+     "optional": false
     },
     {
      "name": "ground cumin",
      "amount": "1 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "cumin",
-     "optional": true
+     "optional": false
     },
     {
      "name": "smoked paprika",
      "amount": "1 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "smoked-paprika",
-     "optional": true
+     "optional": false
     },
     {
      "name": "lime",
@@ -4518,7 +4518,7 @@
      "category": "spices",
      "staple": true,
      "catalogId": "salt",
-     "optional": true
+     "optional": false
     }
    ],
    "steps": [
@@ -4627,7 +4627,7 @@
      "category": "spices",
      "staple": true,
      "catalogId": "salt",
-     "optional": true
+     "optional": false
     }
    ],
    "steps": [
@@ -4723,7 +4723,7 @@
      "name": "curry powder",
      "amount": "2 tbsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "curry-powder",
      "optional": false
     },
@@ -4731,9 +4731,9 @@
      "name": "turmeric",
      "amount": "1/2 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "turmeric",
-     "optional": true
+     "optional": false
     },
     {
      "name": "vegetable broth",
@@ -4856,9 +4856,9 @@
      "name": "garlic powder",
      "amount": "1 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "garlic-powder",
-     "optional": true
+     "optional": false
     }
    ],
    "steps": [
@@ -5096,7 +5096,7 @@
      "category": "spices",
      "staple": true,
      "catalogId": "salt",
-     "optional": true
+     "optional": false
     }
    ],
    "steps": [
@@ -5181,7 +5181,7 @@
      "category": "spices",
      "staple": true,
      "catalogId": "peppercorn",
-     "optional": true
+     "optional": false
     },
     {
      "name": "salt",
@@ -5189,7 +5189,7 @@
      "category": "spices",
      "staple": true,
      "catalogId": "salt",
-     "optional": true
+     "optional": false
     }
    ],
    "steps": [
@@ -5262,7 +5262,7 @@
      "category": "spices",
      "staple": true,
      "catalogId": "salt",
-     "optional": true
+     "optional": false
     },
     {
      "name": "olive oil",
@@ -5634,9 +5634,9 @@
      "name": "cumin",
      "amount": "1 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "cumin",
-     "optional": true
+     "optional": false
     },
     {
      "name": "cilantro",
@@ -5734,7 +5734,7 @@
      "name": "chili powder",
      "amount": "2 tbsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "chili-powder",
      "optional": false
     },
@@ -5742,9 +5742,9 @@
      "name": "cumin",
      "amount": "1 tbsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "cumin",
-     "optional": true
+     "optional": false
     },
     {
      "name": "garlic",
@@ -5946,7 +5946,7 @@
      "name": "garam masala",
      "amount": "2 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "garam-masala",
      "optional": false
     },
@@ -5994,9 +5994,9 @@
      "name": "ground turmeric",
      "amount": "1 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "turmeric",
-     "optional": true
+     "optional": false
     }
    ],
    "steps": [
@@ -6094,7 +6094,7 @@
      "name": "garam masala",
      "amount": "2 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "garam-masala",
      "optional": false
     },
@@ -6102,17 +6102,17 @@
      "name": "ground cumin",
      "amount": "1 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "cumin",
-     "optional": true
+     "optional": false
     },
     {
      "name": "ground turmeric",
      "amount": "1 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "turmeric",
-     "optional": true
+     "optional": false
     }
    ],
    "steps": [
@@ -6208,7 +6208,7 @@
      "name": "garam masala",
      "amount": "1 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "garam-masala",
      "optional": false
     },
@@ -6216,9 +6216,9 @@
      "name": "ground cumin",
      "amount": "1 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "cumin",
-     "optional": true
+     "optional": false
     },
     {
      "name": "heavy cream",
@@ -6331,25 +6331,25 @@
      "name": "garam masala",
      "amount": "2 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "garam-masala",
-     "optional": true
+     "optional": false
     },
     {
      "name": "ground cumin",
      "amount": "1 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "cumin",
-     "optional": true
+     "optional": false
     },
     {
      "name": "ground coriander",
      "amount": "2 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "coriander",
-     "optional": true
+     "optional": false
     }
    ],
    "steps": [
@@ -6550,7 +6550,7 @@
      "name": "sichuan peppercorns",
      "amount": "1 tsp",
      "category": "spices",
-     "staple": false,
+     "staple": true,
      "catalogId": "szechuan-peppercorn",
      "optional": false
     },
@@ -6924,7 +6924,7 @@
      "name": "curry powder",
      "amount": "2 tbsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "curry-powder",
      "optional": false
     },
@@ -7343,25 +7343,25 @@
      "name": "ground cumin",
      "amount": "2 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "cumin",
-     "optional": true
+     "optional": false
     },
     {
      "name": "ground coriander",
      "amount": "2 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "coriander",
-     "optional": true
+     "optional": false
     },
     {
      "name": "paprika",
      "amount": "2 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "paprika",
-     "optional": true
+     "optional": false
     },
     {
      "name": "garlic",
@@ -7474,7 +7474,7 @@
      "name": "ground cumin",
      "amount": "2 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "cumin",
      "optional": false
     },
@@ -7482,17 +7482,17 @@
      "name": "ground coriander",
      "amount": "1 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "coriander",
-     "optional": true
+     "optional": false
     },
     {
      "name": "ground cinnamon",
      "amount": "0.5 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "cinnamon",
-     "optional": true
+     "optional": false
     },
     {
      "name": "garlic",
@@ -7582,7 +7582,7 @@
      "name": "ground cumin",
      "amount": "1 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "cumin",
      "optional": false
     },
@@ -7590,9 +7590,9 @@
      "name": "ground coriander",
      "amount": "1 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "coriander",
-     "optional": true
+     "optional": false
     },
     {
      "name": "olive oil",
@@ -7608,7 +7608,7 @@
      "category": "spices",
      "staple": true,
      "catalogId": "salt",
-     "optional": true
+     "optional": false
     }
    ],
    "steps": [
@@ -7680,7 +7680,7 @@
      "name": "dried oregano",
      "amount": "2 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "oregano",
      "optional": false
     },
@@ -7802,9 +7802,9 @@
      "name": "ground cinnamon",
      "amount": "1 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "cinnamon",
-     "optional": true
+     "optional": false
     },
     {
      "name": "butter",
@@ -7958,7 +7958,7 @@
      "category": "produce",
      "staple": false,
      "catalogId": "thyme",
-     "optional": true
+     "optional": false
     }
    ],
    "steps": [
@@ -8197,7 +8197,7 @@
      "category": "spices",
      "staple": false,
      "catalogId": "herbes-de-provence",
-     "optional": true
+     "optional": false
     }
    ],
    "steps": [
@@ -8269,7 +8269,7 @@
      "name": "paprika",
      "amount": "2 tbsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "paprika",
      "optional": false
     },
@@ -8277,9 +8277,9 @@
      "name": "garlic powder",
      "amount": "1 tbsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "garlic-powder",
-     "optional": true
+     "optional": false
     },
     {
      "name": "barbecue sauce",
@@ -8409,7 +8409,7 @@
      "category": "spices",
      "staple": true,
      "catalogId": "salt",
-     "optional": true
+     "optional": false
     },
     {
      "name": "black pepper",
@@ -8417,7 +8417,7 @@
      "category": "spices",
      "staple": true,
      "catalogId": "peppercorn",
-     "optional": true
+     "optional": false
     }
    ],
    "steps": [
@@ -8522,9 +8522,9 @@
      "name": "paprika",
      "amount": "1 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "paprika",
-     "optional": true
+     "optional": false
     },
     {
      "name": "chicken stock",
@@ -8638,9 +8638,9 @@
      "name": "smoked paprika",
      "amount": "2 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "smoked-paprika",
-     "optional": true
+     "optional": false
     },
     {
      "name": "garlic",
@@ -8731,7 +8731,7 @@
      "amount": "100 g",
      "category": "canned",
      "staple": false,
-     "catalogId": "banana",
+     "catalogId": "olive",
      "optional": true
     },
     {
@@ -8746,25 +8746,25 @@
      "name": "ground ginger",
      "amount": "1 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "ground-ginger",
-     "optional": true
+     "optional": false
     },
     {
      "name": "ground turmeric",
      "amount": "1 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "turmeric",
-     "optional": true
+     "optional": false
     },
     {
      "name": "ground cumin",
      "amount": "1 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "cumin",
-     "optional": true
+     "optional": false
     },
     {
      "name": "garlic",
@@ -8993,17 +8993,17 @@
      "name": "ground ginger",
      "amount": "1 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "ground-ginger",
-     "optional": true
+     "optional": false
     },
     {
      "name": "ground turmeric",
      "amount": "1 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "turmeric",
-     "optional": true
+     "optional": false
     },
     {
      "name": "cilantro",
@@ -9116,9 +9116,9 @@
      "name": "sichuan peppercorns",
      "amount": "1 tsp",
      "category": "spices",
-     "staple": false,
+     "staple": true,
      "catalogId": "szechuan-peppercorn",
-     "optional": true
+     "optional": false
     },
     {
      "name": "garlic",
@@ -9232,9 +9232,9 @@
      "name": "ground cumin",
      "amount": "1 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "cumin",
-     "optional": true
+     "optional": false
     },
     {
      "name": "onion",
@@ -9452,9 +9452,9 @@
      "name": "ground cumin",
      "amount": "2 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "cumin",
-     "optional": true
+     "optional": false
     },
     {
      "name": "tahini",
@@ -9911,9 +9911,9 @@
      "name": "smoked paprika",
      "amount": "1 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "smoked-paprika",
-     "optional": true
+     "optional": false
     },
     {
      "name": "parsley",
@@ -10496,7 +10496,7 @@
      "name": "garam masala",
      "amount": "2 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "garam-masala",
      "optional": false
     },
@@ -10520,9 +10520,9 @@
      "name": "ground cumin",
      "amount": "1 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "cumin",
-     "optional": true
+     "optional": false
     }
    ],
    "steps": [
@@ -10612,7 +10612,7 @@
      "name": "ground cumin",
      "amount": "1 tbsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "cumin",
      "optional": false
     },
@@ -10620,9 +10620,9 @@
      "name": "dried oregano",
      "amount": "1 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "oregano",
-     "optional": true
+     "optional": false
     },
     {
      "name": "bay leaves",
@@ -10630,7 +10630,7 @@
      "category": "spices",
      "staple": false,
      "catalogId": "bay-leaf",
-     "optional": true
+     "optional": false
     },
     {
      "name": "corn tortillas",
@@ -10784,7 +10784,7 @@
      "category": "spices",
      "staple": true,
      "catalogId": "salt",
-     "optional": true
+     "optional": false
     }
    ],
    "steps": [
@@ -10920,9 +10920,9 @@
      "name": "thyme",
      "amount": "1 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "thyme",
-     "optional": true
+     "optional": false
     },
     {
      "name": "black pepper",
@@ -10930,7 +10930,7 @@
      "category": "spices",
      "staple": true,
      "catalogId": "peppercorn",
-     "optional": true
+     "optional": false
     }
    ],
    "steps": [
@@ -11058,9 +11058,9 @@
      "name": "dried oregano",
      "amount": "1 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "oregano",
-     "optional": true
+     "optional": false
     },
     {
      "name": "salt",
@@ -11068,7 +11068,7 @@
      "category": "spices",
      "staple": true,
      "catalogId": "salt",
-     "optional": true
+     "optional": false
     }
    ],
    "steps": [
@@ -11181,9 +11181,9 @@
      "name": "rosemary",
      "amount": "2 sprigs",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "rosemary",
-     "optional": true
+     "optional": false
     },
     {
      "name": "salt",
@@ -11191,7 +11191,7 @@
      "category": "spices",
      "staple": true,
      "catalogId": "salt",
-     "optional": true
+     "optional": false
     },
     {
      "name": "black pepper",
@@ -11199,7 +11199,7 @@
      "category": "spices",
      "staple": true,
      "catalogId": "peppercorn",
-     "optional": true
+     "optional": false
     }
    ],
    "steps": [
@@ -11334,7 +11334,7 @@
      "category": "spices",
      "staple": true,
      "catalogId": "peppercorn",
-     "optional": true
+     "optional": false
     }
    ],
    "steps": [
@@ -11479,9 +11479,9 @@
      "name": "dried oregano",
      "amount": "1 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "oregano",
-     "optional": true
+     "optional": false
     }
    ],
    "steps": [
@@ -11580,9 +11580,9 @@
      "name": "thyme",
      "amount": "4 sprigs",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "thyme",
-     "optional": true
+     "optional": false
     },
     {
      "name": "olive oil",
@@ -11598,7 +11598,7 @@
      "category": "spices",
      "staple": true,
      "catalogId": "salt",
-     "optional": true
+     "optional": false
     },
     {
      "name": "black pepper",
@@ -11606,7 +11606,7 @@
      "category": "spices",
      "staple": true,
      "catalogId": "peppercorn",
-     "optional": true
+     "optional": false
     }
    ],
    "steps": [
@@ -11715,9 +11715,9 @@
      "name": "nutmeg",
      "amount": "1 pinch",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "nutmeg",
-     "optional": true
+     "optional": false
     },
     {
      "name": "salt",
@@ -11725,7 +11725,7 @@
      "category": "spices",
      "staple": true,
      "catalogId": "salt",
-     "optional": true
+     "optional": false
     }
    ],
    "steps": [
@@ -11831,9 +11831,9 @@
      "name": "smoked paprika",
      "amount": "1 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "smoked-paprika",
-     "optional": true
+     "optional": false
     },
     {
      "name": "olive oil",
@@ -11849,7 +11849,7 @@
      "category": "spices",
      "staple": true,
      "catalogId": "salt",
-     "optional": true
+     "optional": false
     },
     {
      "name": "black pepper",
@@ -11857,7 +11857,7 @@
      "category": "spices",
      "staple": true,
      "catalogId": "peppercorn",
-     "optional": true
+     "optional": false
     }
    ],
    "steps": [
@@ -11975,9 +11975,9 @@
      "name": "bay leaf",
      "amount": "2",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "bay-leaf",
-     "optional": true
+     "optional": false
     },
     {
      "name": "olive oil",
@@ -11993,7 +11993,7 @@
      "category": "spices",
      "staple": true,
      "catalogId": "salt",
-     "optional": true
+     "optional": false
     }
    ],
    "steps": [
@@ -12117,7 +12117,7 @@
      "category": "spices",
      "staple": true,
      "catalogId": "peppercorn",
-     "optional": true
+     "optional": false
     }
    ],
    "steps": [
@@ -12232,9 +12232,9 @@
      "name": "sage",
      "amount": "1 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "sage",
-     "optional": true
+     "optional": false
     },
     {
      "name": "salt",
@@ -12242,7 +12242,7 @@
      "category": "spices",
      "staple": true,
      "catalogId": "salt",
-     "optional": true
+     "optional": false
     }
    ],
    "steps": [
@@ -12362,7 +12362,7 @@
      "name": "ground cumin",
      "amount": "1 tbsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "cumin",
      "optional": false
     },
@@ -12370,7 +12370,7 @@
      "name": "chili powder",
      "amount": "1 tbsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "chili-powder",
      "optional": false
     },
@@ -12498,9 +12498,9 @@
      "name": "dried oregano",
      "amount": "1 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "oregano",
-     "optional": true
+     "optional": false
     },
     {
      "name": "salt",
@@ -12508,7 +12508,7 @@
      "category": "spices",
      "staple": true,
      "catalogId": "salt",
-     "optional": true
+     "optional": false
     }
    ],
    "steps": [
@@ -12639,7 +12639,7 @@
      "category": "spices",
      "staple": true,
      "catalogId": "salt",
-     "optional": true
+     "optional": false
     }
    ],
    "steps": [
@@ -12763,9 +12763,9 @@
      "name": "thyme",
      "amount": "1 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "thyme",
-     "optional": true
+     "optional": false
     },
     {
      "name": "soy sauce",
@@ -12919,9 +12919,9 @@
      "name": "dried oregano",
      "amount": "1 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "oregano",
-     "optional": true
+     "optional": false
     }
    ],
    "steps": [
@@ -13033,7 +13033,7 @@
      "name": "curry powder",
      "amount": "2 tbsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "curry-powder",
      "optional": false
     },
@@ -13041,9 +13041,9 @@
      "name": "ground cumin",
      "amount": "1 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "cumin",
-     "optional": true
+     "optional": false
     },
     {
      "name": "olive oil",
@@ -13121,7 +13121,7 @@
      "name": "smoked paprika",
      "amount": "1 tbsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "smoked-paprika",
      "optional": false
     },
@@ -13137,17 +13137,17 @@
      "name": "ground cumin",
      "amount": "1 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "cumin",
-     "optional": true
+     "optional": false
     },
     {
      "name": "garlic powder",
      "amount": "1 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "garlic-powder",
-     "optional": true
+     "optional": false
     },
     {
      "name": "apple cider vinegar",
@@ -13171,7 +13171,7 @@
      "category": "spices",
      "staple": true,
      "catalogId": "salt",
-     "optional": true
+     "optional": false
     }
    ],
    "steps": [
@@ -13292,9 +13292,9 @@
      "name": "ground cumin",
      "amount": "1 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "cumin",
-     "optional": true
+     "optional": false
     }
    ],
    "steps": [
@@ -13396,9 +13396,9 @@
      "name": "dried oregano",
      "amount": "1 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "oregano",
-     "optional": true
+     "optional": false
     },
     {
      "name": "olive oil",
@@ -13414,7 +13414,7 @@
      "category": "spices",
      "staple": true,
      "catalogId": "salt",
-     "optional": true
+     "optional": false
     }
    ],
    "steps": [
@@ -13524,9 +13524,9 @@
      "name": "dried oregano",
      "amount": "1 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "oregano",
-     "optional": true
+     "optional": false
     },
     {
      "name": "salt",
@@ -13534,7 +13534,7 @@
      "category": "spices",
      "staple": true,
      "catalogId": "salt",
-     "optional": true
+     "optional": false
     }
    ],
    "steps": [
@@ -13630,17 +13630,17 @@
      "name": "smoked paprika",
      "amount": "1 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "smoked-paprika",
-     "optional": true
+     "optional": false
     },
     {
      "name": "dried oregano",
      "amount": "1 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "oregano",
-     "optional": true
+     "optional": false
     },
     {
      "name": "salt",
@@ -13648,7 +13648,7 @@
      "category": "spices",
      "staple": true,
      "catalogId": "salt",
-     "optional": true
+     "optional": false
     }
    ],
    "steps": [
@@ -13782,9 +13782,9 @@
      "name": "dried oregano",
      "amount": "1 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "oregano",
-     "optional": true
+     "optional": false
     }
    ],
    "steps": [
@@ -13904,7 +13904,7 @@
      "name": "curry powder",
      "amount": "2 tbsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "curry-powder",
      "optional": false
     },
@@ -14146,9 +14146,9 @@
      "name": "ground cumin",
      "amount": "1 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "cumin",
-     "optional": true
+     "optional": false
     },
     {
      "name": "olive oil",
@@ -14283,9 +14283,9 @@
      "name": "bay leaf",
      "amount": "2",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "bay-leaf",
-     "optional": true
+     "optional": false
     },
     {
      "name": "olive oil",
@@ -14503,17 +14503,17 @@
      "name": "smoked paprika",
      "amount": "1 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "smoked-paprika",
-     "optional": true
+     "optional": false
     },
     {
      "name": "ground cumin",
      "amount": "1 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "cumin",
-     "optional": true
+     "optional": false
     },
     {
      "name": "vegetable stock",
@@ -14751,9 +14751,9 @@
      "name": "cinnamon",
      "amount": "1 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "cinnamon",
-     "optional": true
+     "optional": false
     },
     {
      "name": "mixed berries",
@@ -14856,17 +14856,17 @@
      "name": "ground cumin",
      "amount": "2 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "cumin",
-     "optional": true
+     "optional": false
     },
     {
      "name": "smoked paprika",
      "amount": "1 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "smoked-paprika",
-     "optional": true
+     "optional": false
     },
     {
      "name": "salsa",
@@ -15097,9 +15097,9 @@
      "name": "smoked paprika",
      "amount": "1 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "smoked-paprika",
-     "optional": true
+     "optional": false
     },
     {
      "name": "olive oil",
@@ -15115,7 +15115,7 @@
      "category": "spices",
      "staple": true,
      "catalogId": "peppercorn",
-     "optional": true
+     "optional": false
     }
    ],
    "steps": [
@@ -15228,7 +15228,7 @@
      "category": "spices",
      "staple": true,
      "catalogId": "salt",
-     "optional": true
+     "optional": false
     }
    ],
    "steps": [
@@ -15340,9 +15340,9 @@
      "name": "dried oregano",
      "amount": "1 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "oregano",
-     "optional": true
+     "optional": false
     },
     {
      "name": "salt",
@@ -15350,7 +15350,7 @@
      "category": "spices",
      "staple": true,
      "catalogId": "salt",
-     "optional": true
+     "optional": false
     }
    ],
    "steps": [
@@ -15445,17 +15445,17 @@
      "name": "red chili flakes",
      "amount": "1 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "chili-flakes",
-     "optional": true
+     "optional": false
     },
     {
      "name": "dried oregano",
      "amount": "1 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "oregano",
-     "optional": true
+     "optional": false
     },
     {
      "name": "salt",
@@ -15463,7 +15463,7 @@
      "category": "spices",
      "staple": true,
      "catalogId": "salt",
-     "optional": true
+     "optional": false
     }
    ],
    "steps": [
@@ -15557,9 +15557,9 @@
      "name": "cinnamon",
      "amount": "1/2 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "cinnamon",
-     "optional": true
+     "optional": false
     },
     {
      "name": "butter",
@@ -15780,7 +15780,7 @@
      "name": "ground cumin",
      "amount": "2 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "cumin",
      "optional": false
     },
@@ -15936,7 +15936,7 @@
      "category": "spices",
      "staple": true,
      "catalogId": "salt",
-     "optional": true
+     "optional": false
     }
    ],
    "steps": [
@@ -16023,17 +16023,17 @@
      "name": "dried oregano",
      "amount": "1 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "oregano",
-     "optional": true
+     "optional": false
     },
     {
      "name": "smoked paprika",
      "amount": "1 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "smoked-paprika",
-     "optional": true
+     "optional": false
     },
     {
      "name": "salt",
@@ -16041,7 +16041,7 @@
      "category": "spices",
      "staple": true,
      "catalogId": "salt",
-     "optional": true
+     "optional": false
     },
     {
      "name": "black pepper",
@@ -16049,7 +16049,7 @@
      "category": "spices",
      "staple": true,
      "catalogId": "peppercorn",
-     "optional": true
+     "optional": false
     }
    ],
    "steps": [
@@ -16152,7 +16152,7 @@
      "name": "chili powder",
      "amount": "2 tbsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "chili-powder",
      "optional": false
     },
@@ -16160,7 +16160,7 @@
      "name": "ground cumin",
      "amount": "1 tbsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "cumin",
      "optional": false
     },
@@ -16403,7 +16403,7 @@
      "category": "spices",
      "staple": true,
      "catalogId": "salt",
-     "optional": true
+     "optional": false
     },
     {
      "name": "black pepper",
@@ -16411,7 +16411,7 @@
      "category": "spices",
      "staple": true,
      "catalogId": "peppercorn",
-     "optional": true
+     "optional": false
     }
    ],
    "steps": [
@@ -16506,17 +16506,17 @@
      "name": "ground cumin",
      "amount": "1 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "cumin",
-     "optional": true
+     "optional": false
     },
     {
      "name": "smoked paprika",
      "amount": "1 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "smoked-paprika",
-     "optional": true
+     "optional": false
     },
     {
      "name": "olive oil",
@@ -16645,7 +16645,7 @@
      "category": "spices",
      "staple": true,
      "catalogId": "salt",
-     "optional": true
+     "optional": false
     }
    ],
    "steps": [
@@ -16863,17 +16863,17 @@
      "name": "smoked paprika",
      "amount": "1 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "smoked-paprika",
-     "optional": true
+     "optional": false
     },
     {
      "name": "cumin",
      "amount": "1 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "cumin",
-     "optional": true
+     "optional": false
     },
     {
      "name": "lime",
@@ -17031,7 +17031,7 @@
      "name": "cumin",
      "amount": "1 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "cumin",
      "optional": false
     },
@@ -17039,7 +17039,7 @@
      "name": "turmeric",
      "amount": "1/2 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "turmeric",
      "optional": false
     },
@@ -17276,7 +17276,7 @@
      "name": "turmeric",
      "amount": "1 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "turmeric",
      "optional": false
     },
@@ -17284,7 +17284,7 @@
      "name": "cumin",
      "amount": "1 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "cumin",
      "optional": false
     },
@@ -17528,17 +17528,17 @@
      "name": "cumin",
      "amount": "1 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "cumin",
-     "optional": true
+     "optional": false
     },
     {
      "name": "smoked paprika",
      "amount": "1 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "smoked-paprika",
-     "optional": true
+     "optional": false
     },
     {
      "name": "olive oil",
@@ -18143,7 +18143,7 @@
      "name": "cumin",
      "amount": "1 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "cumin",
      "optional": false
     },
@@ -18153,23 +18153,23 @@
      "category": "spices",
      "staple": false,
      "catalogId": "coriander",
-     "optional": true
+     "optional": false
     },
     {
      "name": "smoked paprika",
      "amount": "1 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "smoked-paprika",
-     "optional": true
+     "optional": false
     },
     {
      "name": "turmeric",
      "amount": "1/2 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "turmeric",
-     "optional": true
+     "optional": false
     },
     {
      "name": "tahini",
@@ -18319,9 +18319,9 @@
      "name": "dried oregano",
      "amount": "1 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "oregano",
-     "optional": true
+     "optional": false
     },
     {
      "name": "red wine vinegar",
@@ -18764,7 +18764,7 @@
      "category": "spices",
      "staple": true,
      "catalogId": "flaky-sea-salt",
-     "optional": true
+     "optional": false
     },
     {
      "name": "black pepper",
@@ -18772,7 +18772,7 @@
      "category": "spices",
      "staple": true,
      "catalogId": "peppercorn",
-     "optional": true
+     "optional": false
     }
    ],
    "steps": [
@@ -18990,7 +18990,7 @@
      "category": "spices",
      "staple": false,
      "catalogId": "celery-seed",
-     "optional": true
+     "optional": false
     }
    ],
    "steps": [
@@ -19308,7 +19308,7 @@
      "category": "condiments",
      "staple": false,
      "catalogId": "nutritional-yeast",
-     "optional": true
+     "optional": false
     }
    ],
    "steps": [
@@ -19489,7 +19489,7 @@
      "name": "cumin",
      "amount": "1 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "cumin",
      "optional": false
     },
@@ -19497,9 +19497,9 @@
      "name": "cinnamon",
      "amount": "1/4 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "cinnamon",
-     "optional": true
+     "optional": false
     },
     {
      "name": "lemon",
@@ -19618,7 +19618,7 @@
      "name": "cumin",
      "amount": "1.5 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "cumin",
      "optional": false
     },
@@ -19626,9 +19626,9 @@
      "name": "turmeric",
      "amount": "1/2 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "turmeric",
-     "optional": true
+     "optional": false
     },
     {
      "name": "vegetable broth",
@@ -19888,9 +19888,9 @@
      "name": "dried oregano",
      "amount": "1 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "oregano",
-     "optional": true
+     "optional": false
     }
    ],
    "steps": [
@@ -19984,9 +19984,9 @@
      "name": "cumin",
      "amount": "1 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "cumin",
-     "optional": true
+     "optional": false
     },
     {
      "name": "olive oil",
@@ -20096,9 +20096,9 @@
      "name": "smoked paprika",
      "amount": "1 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "smoked-paprika",
-     "optional": true
+     "optional": false
     },
     {
      "name": "olive oil",
@@ -20226,7 +20226,7 @@
      "category": "produce",
      "staple": false,
      "catalogId": "rosemary",
-     "optional": true
+     "optional": false
     },
     {
      "name": "olive oil",
@@ -20346,7 +20346,7 @@
      "category": "produce",
      "staple": false,
      "catalogId": "chili-flakes",
-     "optional": true
+     "optional": false
     },
     {
      "name": "cilantro",
@@ -20559,9 +20559,9 @@
      "name": "smoked paprika",
      "amount": "1 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "smoked-paprika",
-     "optional": true
+     "optional": false
     },
     {
      "name": "bay leaf",
@@ -20569,7 +20569,7 @@
      "category": "spices",
      "staple": false,
      "catalogId": "bay-leaf",
-     "optional": true
+     "optional": false
     },
     {
      "name": "vegetable broth",
@@ -20679,9 +20679,9 @@
      "name": "cinnamon",
      "amount": "1/2 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "cinnamon",
-     "optional": true
+     "optional": false
     },
     {
      "name": "nutmeg",
@@ -20689,7 +20689,7 @@
      "category": "spices",
      "staple": false,
      "catalogId": "nutmeg",
-     "optional": true
+     "optional": false
     },
     {
      "name": "olive oil",
@@ -20903,7 +20903,7 @@
      "name": "cumin",
      "amount": "1.5 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "cumin",
      "optional": false
     },
@@ -20911,9 +20911,9 @@
      "name": "smoked paprika",
      "amount": "1 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "smoked-paprika",
-     "optional": true
+     "optional": false
     },
     {
      "name": "vegetable broth",
@@ -21036,9 +21036,9 @@
      "name": "cinnamon",
      "amount": "1.5 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "cinnamon",
-     "optional": true
+     "optional": false
     },
     {
      "name": "lemon",
@@ -21167,7 +21167,7 @@
      "category": "spices",
      "staple": true,
      "catalogId": "salt",
-     "optional": true
+     "optional": false
     }
    ],
    "steps": [
@@ -21267,7 +21267,7 @@
      "category": "spices",
      "staple": true,
      "catalogId": "salt",
-     "optional": true
+     "optional": false
     }
    ],
    "steps": [
@@ -21471,9 +21471,9 @@
      "name": "cinnamon",
      "amount": "1 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "cinnamon",
-     "optional": true
+     "optional": false
     }
    ],
    "steps": [
@@ -21677,7 +21677,7 @@
      "category": "spices",
      "staple": true,
      "catalogId": "salt",
-     "optional": true
+     "optional": false
     }
    ],
    "steps": [
@@ -21783,7 +21783,7 @@
      "category": "spices",
      "staple": true,
      "catalogId": "salt",
-     "optional": true
+     "optional": false
     }
    ],
    "steps": [
@@ -21863,7 +21863,7 @@
      "category": "spices",
      "staple": false,
      "catalogId": "cinnamon",
-     "optional": true
+     "optional": false
     },
     {
      "name": "star anise",
@@ -21871,7 +21871,7 @@
      "category": "spices",
      "staple": false,
      "catalogId": "star-anise",
-     "optional": true
+     "optional": false
     },
     {
      "name": "orange",
@@ -21978,9 +21978,9 @@
      "name": "cinnamon",
      "amount": "2 tsp",
      "category": "spices",
-     "staple": true,
+     "staple": false,
      "catalogId": "cinnamon",
-     "optional": true
+     "optional": false
     },
     {
      "name": "cream cheese",

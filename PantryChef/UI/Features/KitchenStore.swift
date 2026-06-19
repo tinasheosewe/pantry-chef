@@ -1116,7 +1116,28 @@ final class KitchenStore {
             staple("flour", "Flour", "flour", .bakingSupplies, .inStock, 11),
             staple("oats", "Rolled oats", "oats", .grains, .inStock, 51),
             staple("soy sauce", "Soy sauce", "soy-sauce", .condiments, .inStock, 53),
-            staple("olive oil", "Olive oil", "olive-oil", .oils, .runningLow, 8)
+            staple("olive oil", "Olive oil", "olive-oil", .oils, .runningLow, 8),
+
+            // The spice rack — the everyday dried spices a stocked kitchen keeps. Seed
+            // recipes now require their defining spices (essential, not assumed), so the
+            // rack is what makes spiced dishes read "ready"; a dish hinging on a specialty
+            // spice (saffron, ras el hanout…) we don't keep reads "needs" — by design.
+            staple("cumin", "Cumin", "cumin", .spices, .inStock, 60),
+            staple("smoked paprika", "Smoked paprika", "smoked-paprika", .spices, .inStock, 61),
+            staple("paprika", "Paprika", "paprika", .spices, .inStock, 62),
+            staple("oregano", "Dried oregano", "oregano", .spices, .inStock, 63),
+            staple("cinnamon", "Cinnamon", "cinnamon", .spices, .inStock, 64),
+            staple("turmeric", "Turmeric", "turmeric", .spices, .inStock, 65),
+            staple("coriander", "Ground coriander", "coriander", .spices, .inStock, 66),
+            staple("garlic powder", "Garlic powder", "garlic-powder", .spices, .inStock, 67),
+            staple("chili powder", "Chili powder", "chili-powder", .spices, .inStock, 68),
+            staple("chili flakes", "Chili flakes", "chili-flakes", .spices, .inStock, 69),
+            staple("curry powder", "Curry powder", "curry-powder", .spices, .inStock, 70),
+            staple("garam masala", "Garam masala", "garam-masala", .spices, .inStock, 71),
+            staple("ground ginger", "Ground ginger", "ground-ginger", .spices, .inStock, 72),
+            staple("dried thyme", "Dried thyme", "thyme", .spices, .inStock, 73),
+            staple("bay leaves", "Bay leaves", "bay-leaf", .spices, .inStock, 75),
+            staple("nutmeg", "Nutmeg", "nutmeg", .spices, .inStock, 76)
         ]
 
         // The cold-launch cost is the catalog index build + warming readiness over the
