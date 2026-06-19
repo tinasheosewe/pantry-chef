@@ -207,7 +207,7 @@ struct RedesignRootView: View {
                 }
             )
         case .pantry:
-            StockView(store: store)
+            StockView(store: store, onSettings: { showSettings = true })
         }
     }
 

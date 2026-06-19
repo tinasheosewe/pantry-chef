@@ -6,6 +6,7 @@ import SwiftUI
 /// MADE BY YOU, and THE LIST. Rows are tappable → editor.
 struct StockView: View {
     var store: KitchenStore
+    var onSettings: () -> Void = {}
 
     @State private var editing: StockItem?
     @State private var shopping = false
@@ -57,10 +58,16 @@ struct StockView: View {
     var body: some View {
         VStack(spacing: 0) {
             VStack(alignment: .leading, spacing: 4) {
-                HStack(alignment: .firstTextBaseline) {
+                HStack(alignment: .firstTextBaseline, spacing: 2) {
                     Text("Pantry").font(Theme.Typography.dish(22)).foregroundStyle(Theme.Palette.ink)
                     Spacer()
                     cartButton
+                    Button(action: onSettings) {
+                        Image(systemName: "gearshape").font(.system(size: 15))
+                            .foregroundStyle(Theme.Palette.ink.opacity(0.5))
+                            .frame(width: 36, height: 44, alignment: .trailing).contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain).accessibilityLabel("Settings")
                 }
                 Text(summary)
                     .font(Theme.Typography.note(11.5)).foregroundStyle(Theme.Palette.warmGray)
