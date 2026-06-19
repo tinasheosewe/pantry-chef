@@ -180,6 +180,7 @@
 		9401091C2FED619E098D871E /* PantryPersistenceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CBD7AEE36174997047EFAAD /* PantryPersistenceTests.swift */; };
 		94A12E5AB8FAFC800AC85BD3 /* greek-chicken-bowl.png in Resources */ = {isa = PBXBuildFile; fileRef = AB2A2F58881751A6DC0ACD1C /* greek-chicken-bowl.png */; };
 		94A15C8DA60B29DCBCBCA9B4 /* Sentry in Frameworks */ = {isa = PBXBuildFile; productRef = 89A23A09254EE6E4E5510F16 /* Sentry */; };
+		96E0ED7DEE078EFCD4E8BB46 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F9FF54EB3F9985E1341527C /* OnboardingView.swift */; };
 		985C92B3D17DA6D0C3EE23F0 /* NowModuleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED6332873D469B3DAEC6B4B2 /* NowModuleView.swift */; };
 		993BD04166C2C11356C46EBA /* sheet-pan-chicken-broccoli-meal-prep.png in Resources */ = {isa = PBXBuildFile; fileRef = 6407A24BA5F97A109307C0BA /* sheet-pan-chicken-broccoli-meal-prep.png */; };
 		99538A9C204B8CBE3C073DBB /* butter-chicken.png in Resources */ = {isa = PBXBuildFile; fileRef = 77352A1B8FA7F6959E86ED68 /* butter-chicken.png */; };
@@ -360,6 +361,7 @@
 		0EB9699BE6FCAA589DEAB869 /* PantryIntake.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PantryIntake.swift; sourceTree = "<group>"; };
 		0ECBCD9CD1772C61D677ED05 /* thai-red-curry-with-vegetables.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "thai-red-curry-with-vegetables.png"; sourceTree = "<group>"; };
 		0F4550D5ECA525ED872882D3 /* IngredientMatching.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = IngredientMatching.swift; sourceTree = "<group>"; };
+		0F9FF54EB3F9985E1341527C /* OnboardingView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		0FEA952467D85FC0633C1A53 /* vegetable-couscous-tagine.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "vegetable-couscous-tagine.png"; sourceTree = "<group>"; };
 		11832F25E4EDE858376EF759 /* baked-falafel-bowl.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "baked-falafel-bowl.png"; sourceTree = "<group>"; };
 		1383024CEFB446FE515EAD80 /* smoky-bbq-pulled-pork.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "smoky-bbq-pulled-pork.png"; sourceTree = "<group>"; };
@@ -1025,6 +1027,15 @@
 			path = Stock;
 			sourceTree = "<group>";
 		};
+		6AA135D077085F80ACE124C7 /* Onboarding */ = {
+			isa = PBXGroup;
+			children = (
+				0F9FF54EB3F9985E1341527C /* OnboardingView.swift */,
+			);
+			name = Onboarding;
+			path = Onboarding;
+			sourceTree = "<group>";
+		};
 		6B5AB82EC74E826DA1D60A4E /* Foundation */ = {
 			isa = PBXGroup;
 			children = (
@@ -1159,6 +1170,7 @@
 				A11D45DDF993C1B8A12A4804 /* Settings */,
 				09C6A615712E8D69ECBC66F4 /* Today */,
 				ACCFF92A65BD0D4C6035AAA8 /* LoadingScreen.swift */,
+				6AA135D077085F80ACE124C7 /* Onboarding */,
 			);
 			path = Features;
 			sourceTree = "<group>";
@@ -1636,6 +1648,7 @@
 				C50767D0B9C91B44F79BBD35 /* Nutrition.swift in Sources */,
 				47B4F2E1FE0A76DC9FFCF07A /* SubscriptionService.swift in Sources */,
 				85102979F8B1C20A210A2ECB /* PaywallView.swift in Sources */,
+				96E0ED7DEE078EFCD4E8BB46 /* OnboardingView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -230,6 +230,44 @@ final class KitchenStore {
         return f
     }
 
+    /// How many recipes are cookable right now — the headline number, and the live
+    /// "unlock" counter the onboarding sweep climbs as you add your pantry.
+    var makeableCount: Int { feedLibrary.filter { readiness(for: $0).isMakeableNow }.count }
+
+    // The demo seed, captured before a brand-new user's kitchen is emptied — so the
+    // onboarding "explore a sample first" escape hatch can load it on demand.
+    @ObservationIgnored private var sampleStock: [StockItem] = []
+    @ObservationIgnored private var sampleEvents: [DatedEvent] = []
+    @ObservationIgnored private var sampleJournal: [JournalItem] = []
+    @ObservationIgnored private var sampleList: [ShoppingEntry] = []
+
+    /// A genuinely new user's kitchen is *theirs*, and starts empty — clear the demo
+    /// seed's pantry, plans, journal, and list so onboarding builds from nothing rather
+    /// than a stranger's fridge. The recipe library and profile stay.
+    func startEmpty() {
+        stock = []; events = []; journal = []; whispers = []; shoppingList = []
+    }
+
+    /// Load the captured demo kitchen — the onboarding sample escape hatch.
+    func loadSampleKitchen() {
+        stock = sampleStock; events = sampleEvents; journal = sampleJournal; shoppingList = sampleList
+    }
+
+    // MARK: - Onboarding quick-add (tap a common staple in/out of the pantry)
+
+    func hasStaple(id: String?, name: String) -> Bool {
+        if let id { return stock.contains { $0.catalogItemID == id } }
+        return stock.contains { $0.key == name.lowercased() }
+    }
+
+    func toggleStaple(id: String?, name: String) {
+        if let id, let i = stock.firstIndex(where: { $0.catalogItemID == id }) { stock.remove(at: i); return }
+        if id == nil, let i = stock.firstIndex(where: { $0.key == name.lowercased() }) { stock.remove(at: i); return }
+        let item = id.flatMap { PantryCatalog.itemsByID[$0] }
+        stock.append(makeStockItem(name: item?.name ?? name, amount: nil, storage: nil,
+                                   catalogItem: item, lastConfirmed: today))
+    }
+
     // MARK: - Persistence (local snapshot → disk; CloudKit/household sharing later)
 
     @ObservationIgnored private var persistenceEnabled = false
@@ -1336,10 +1374,18 @@ final class KitchenStore {
             recipeNotes[Self.recipeSlug(dish.name)] = RecipeNote(favorite: true)
         }
 
+        // Stash the demo kitchen so the onboarding "explore a sample" option can recall it
+        // after a new user's kitchen is emptied.
+        sampleStock = stock; sampleEvents = events; sampleJournal = journal; sampleList = shoppingList
+
         let opts = AppLaunchOptions.current
         let isTesting = ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil
         if opts.seedPantryItems && !opts.useInMemoryStorage && !isTesting {
-            if let saved = PantryPersistence.load() { apply(saved) }
+            if let saved = PantryPersistence.load() {
+                apply(saved)                          // returning user — their saved kitchen
+            } else if !OnboardingState.hasCompleted {
+                startEmpty()                          // brand-new user — onboarding fills it
+            }
             persistenceEnabled = true
         }
 

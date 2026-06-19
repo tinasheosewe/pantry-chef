@@ -227,6 +227,41 @@ final class MealPlanningTests: XCTestCase {
         XCTAssertEqual(store.journal.count, before + 1, "a ready-made pick is recorded; an empty ad-hoc log is a no-op")
     }
 
+    func testStartEmptyClearsTheDemoKitchenButKeepsTheLibrary() {
+        let store = KitchenStore()
+        XCTAssertFalse(store.stock.isEmpty)
+        let libraryCount = store.library.count
+        store.startEmpty()
+        XCTAssertTrue(store.stock.isEmpty)
+        XCTAssertTrue(store.events.isEmpty)
+        XCTAssertTrue(store.journal.isEmpty)
+        XCTAssertTrue(store.shoppingList.isEmpty)
+        XCTAssertEqual(store.library.count, libraryCount, "recipes stay — only the user's kitchen is emptied")
+    }
+
+    func testToggleStapleAddsThenRemovesByCatalogIdentity() {
+        let store = KitchenStore()
+        store.startEmpty()
+        let id = IntakePipeline.bestCatalogID(for: "Eggs")
+        XCTAssertFalse(store.hasStaple(id: id, name: "Eggs"))
+        store.toggleStaple(id: id, name: "Eggs")
+        XCTAssertTrue(store.hasStaple(id: id, name: "Eggs"))
+        XCTAssertEqual(store.stock.count, 1)
+        store.toggleStaple(id: id, name: "Eggs")
+        XCTAssertFalse(store.hasStaple(id: id, name: "Eggs"))
+        XCTAssertTrue(store.stock.isEmpty, "tapping a selected staple removes it")
+    }
+
+    func testSampleKitchenEscapeHatchRestoresTheDemoAndItsMakeables() {
+        let store = KitchenStore()
+        let demoStock = store.stock.count
+        store.startEmpty()
+        XCTAssertEqual(store.makeableCount, 0, "an empty kitchen cooks nothing")
+        store.loadSampleKitchen()
+        XCTAssertEqual(store.stock.count, demoStock, "the sample restores the demo pantry")
+        XCTAssertGreaterThan(store.makeableCount, 0, "the demo kitchen can actually cook things")
+    }
+
     func testReconfirmByKeyResetsTheKnowledgeClock() {
         let store = KitchenStore()
         let stale = StockItem(key: "test-leek", name: "Leek",

@@ -25,6 +25,7 @@ private struct PlanTarget: Identifiable {
 struct RedesignRootView: View {
     @State private var store = KitchenStore()
     @State private var subscription = SubscriptionService()
+    @State private var showOnboarding = false
     @State private var showComposer = false
     @State private var showSettings = false
     @State private var showPlanAhead = false
@@ -81,10 +82,23 @@ struct RedesignRootView: View {
         // non-sighted user isn't left waiting on a silent sprig.
         .onChange(of: store.readinessReady) { _, ready in
             if ready {
-                let makeable = feedLibrary.filter { store.readiness(for: $0).isMakeableNow }.count
-                AccessibilityNotification.Announcement("Kitchen ready — \(makeable) recipes you can make tonight").post()
+                AccessibilityNotification.Announcement("Kitchen ready — \(store.makeableCount) recipes you can make tonight").post()
+                // First run → the Pantry Sweep, now that readiness is warm so the unlock
+                // counter is live and the app behind is fully loaded.
+                if !OnboardingState.hasCompleted { showOnboarding = true }
             }
         }
+        .fullScreenCover(isPresented: $showOnboarding) {
+            OnboardingView(
+                store: store,
+                onExploreSample: { store.loadSampleKitchen(); finishOnboarding() },
+                onFinish: { finishOnboarding() })
+        }
+    }
+
+    private func finishOnboarding() {
+        OnboardingState.hasCompleted = true
+        showOnboarding = false
     }
 
     private var main: some View {
@@ -310,8 +324,8 @@ struct RedesignRootView: View {
     /// with a small substitution; both are "makeable"). The count of swaps is noise the
     /// cook doesn't act on, so it's not surfaced here. (Appears once readiness is warm.)
     @ViewBuilder private var pantryHeadline: some View {
-        if store.readinessReady {
-            let makeable = feedLibrary.filter { store.readiness(for: $0).isMakeableNow }.count
+        if store.readinessReady && !store.stock.isEmpty {
+            let makeable = store.makeableCount
             (Text("\(makeable) ").font(Theme.Typography.dish(28, weight: .semibold))
                 + Text(makeable == 1 ? "recipe you can make tonight" : "recipes you can make tonight")
                     .font(Theme.Typography.dish(19)))
@@ -321,9 +335,24 @@ struct RedesignRootView: View {
         }
     }
 
+    /// When the pantry is empty (a skipped onboarding), don't show a sad "0 recipes" —
+    /// invite them to add their kitchen, the one thing that makes everything work.
+    private var emptyPantryNudge: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            QuietEmpty(eyebrow: "Your kitchen is empty",
+                       line: "Add what you’ve got and I’ll show you what to cook tonight.")
+            PaprikaButton(title: "Add your kitchen") { showComposer = true }
+                .frame(maxWidth: .infinity).padding(.horizontal, Theme.Metric.lg)
+        }
+        .padding(.top, 24)
+    }
+
     /// The curated default, pantry-first: leftovers to use up, then the three readiness
     /// tiers (make now → one swap → a shop away), each tappable through to its full grid.
     @ViewBuilder private var forYouFeed: some View {
+        if store.readinessReady && store.stock.isEmpty {
+            emptyPantryNudge
+        } else {
         leftoversRail
         if store.readinessReady {
             // Use-it-up leads when something's turning — a full rail now, not one card,
@@ -345,6 +374,7 @@ struct RedesignRootView: View {
             Text("Reading your pantry…")
                 .font(Theme.Typography.note(13)).foregroundStyle(Theme.Palette.warmGray)
                 .frame(maxWidth: .infinity).padding(.top, 36)
+        }
         }
     }
 
