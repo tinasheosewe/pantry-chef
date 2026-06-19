@@ -127,6 +127,7 @@ struct RecipeDetailView: View {
                 actionRow
                 ingredients
                 if !effectiveDish.steps.isEmpty { method }
+                nutritionSection
                 yourTake
             }
             .padding(20).padding(.bottom, 24)
@@ -546,6 +547,45 @@ struct RecipeDetailView: View {
 
     private func sectionTitle(_ text: String) -> some View {
         Eyebrow(text: text).padding(.bottom, 4)
+    }
+
+    // MARK: - Nutrition (explicit when authored, else a labelled estimate)
+
+    @ViewBuilder private var nutritionSection: some View {
+        // Per serving — invariant to the servings stepper — so read the base recipe.
+        if let n = currentDish.nutrition ?? NutritionEstimator.estimate(currentDish) {
+            let estimated = currentDish.nutrition == nil
+            VStack(alignment: .leading, spacing: 7) {
+                sectionTitle("Nutrition")
+                HStack(spacing: 0) {
+                    macroCell("\(n.calories)", "CAL")
+                    macroDivider
+                    macroCell("\(n.protein)g", "PROTEIN")
+                    macroDivider
+                    macroCell("\(n.carbs)g", "CARBS")
+                    macroDivider
+                    macroCell("\(n.fat)g", "FAT")
+                }
+                .overlay(Rectangle().strokeBorder(Theme.Palette.hairline, lineWidth: 1))
+                Text(estimated ? "Per serving · estimated from the ingredients" : "Per serving")
+                    .font(Theme.Typography.fact(10.5)).foregroundStyle(Theme.Palette.warmGraySoft)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel("\(estimated ? "Estimated nutrition per serving" : "Nutrition per serving"): \(n.calories) calories, \(n.protein) grams protein, \(n.carbs) grams carbs, \(n.fat) grams fat")
+        }
+    }
+
+    private func macroCell(_ value: String, _ label: String) -> some View {
+        VStack(spacing: 3) {
+            Text(value).font(Theme.Typography.numeral(18, weight: .semibold)).foregroundStyle(Theme.Palette.ink)
+            Text(label).font(.system(size: 8.5, weight: .medium)).tracking(1.4)
+                .foregroundStyle(Theme.Palette.warmGray)
+        }
+        .frame(maxWidth: .infinity).padding(.vertical, 12)
+    }
+    private var macroDivider: some View {
+        Rectangle().fill(Theme.Palette.hairline).frame(width: 1, height: 30)
     }
 
     // MARK: - Your take (rating + notes)

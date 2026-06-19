@@ -159,19 +159,22 @@ struct Dish: Identifiable, Equatable, Sendable {
     var course: String?
     var diets: [String]
     var methods: [String]
+    /// Explicit per-serving nutrition (hand-authored or AI-generated at build time).
+    /// When nil the recipe page shows a labelled estimate from `NutritionEstimator`.
+    var nutrition: NutritionFacts?
 
     init(id: UUID = UUID(), name: String, plate: PlateComposition, time: String,
          isYours: Bool = false, isFavorite: Bool = false, servings: Int = 2,
          blurb: String? = nil,
          ingredients: [RecipeLine], steps: [CookStep] = [],
          cuisine: String? = nil, mealType: String? = nil, course: String? = nil,
-         diets: [String] = [], methods: [String] = []) {
+         diets: [String] = [], methods: [String] = [], nutrition: NutritionFacts? = nil) {
         self.id = id; self.name = name; self.plate = plate; self.time = time
         self.isYours = isYours; self.isFavorite = isFavorite; self.servings = servings
         self.blurb = blurb
         self.ingredients = ingredients; self.steps = steps
         self.cuisine = cuisine; self.mealType = mealType; self.course = course
-        self.diets = diets; self.methods = methods
+        self.diets = diets; self.methods = methods; self.nutrition = nutrition
     }
 
     var requirements: [IngredientRequirement] { ingredients.map(\.requirement) }

@@ -20,6 +20,7 @@
 		0ECF5375D882995FD8AAEB0E /* spaghetti-alla-carbonara.png in Resources */ = {isa = PBXBuildFile; fileRef = 658D27DE4622AFD68D92CB5E /* spaghetti-alla-carbonara.png */; };
 		0F0DFA82B7C463DDB2BE8294 /* RealtimeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FF94D344E15CC2935F5283B /* RealtimeService.swift */; };
 		104B58671438C133ED21624A /* UnitConversionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C93C8FDEB9C5D988F3270738 /* UnitConversionTests.swift */; };
+		106DD9654D7B4E12CDCC20CF /* NutritionEstimatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B80476BEC5139B370857DEE0 /* NutritionEstimatorTests.swift */; };
 		107341C52627FC95717EF80E /* PantryAddFrequencyTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F857530EA4DFD2289D8D6E0 /* PantryAddFrequencyTracker.swift */; };
 		10A194C83A89C68DED6A4427 /* three-bean-vegetarian-chili.png in Resources */ = {isa = PBXBuildFile; fileRef = 2FC78155EA7425F67BEE537C /* three-bean-vegetarian-chili.png */; };
 		125C82426544C3A6FA821E3C /* DietaryProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCEDED2CE5A479FB65BC6F69 /* DietaryProfile.swift */; };
@@ -242,6 +243,7 @@
 		C42E77B0F85E06C5C54EB415 /* thai-coconut-soup.png in Resources */ = {isa = PBXBuildFile; fileRef = 1C641BE4C674A4F7F17ED1B8 /* thai-coconut-soup.png */; };
 		C4D6A1F93C4ACB3EBB44967F /* sheet-pan-sausage-and-vegetables.png in Resources */ = {isa = PBXBuildFile; fileRef = 4636D2D3D22BC76447DFC1AA /* sheet-pan-sausage-and-vegetables.png */; };
 		C4EE27A169BFA3B35EA3B727 /* saag-paneer.png in Resources */ = {isa = PBXBuildFile; fileRef = F7D337E96E09132BE2A81041 /* saag-paneer.png */; };
+		C50767D0B9C91B44F79BBD35 /* Nutrition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ABA2D7C0D70D34CC6787EB2 /* Nutrition.swift */; };
 		C51CF5B24EFE5ADF522D187E /* IntakeParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97F769A09EF6DC426A57DC8B /* IntakeParserTests.swift */; };
 		C652D63FF853AC0B3617B793 /* Enums.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A3FFC7DAF8A7D9B0FE8D2E4 /* Enums.swift */; };
 		C6C689EC0AFA147AEE168770 /* pork-apple-traybake.png in Resources */ = {isa = PBXBuildFile; fileRef = 0B76FED7A3D176AF217A80B7 /* pork-apple-traybake.png */; };
@@ -458,6 +460,7 @@
 		592A6DFFE83518947BDC4098 /* pulled-bbq-jackfruit.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "pulled-bbq-jackfruit.png"; sourceTree = "<group>"; };
 		59485E1388AA5B4BFC221609 /* output_audio_buffer_cleared.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = output_audio_buffer_cleared.json; sourceTree = "<group>"; };
 		5985405FEB96EA08E27DF3A7 /* warm-lentil-and-feta-salad.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "warm-lentil-and-feta-salad.png"; sourceTree = "<group>"; };
+		5ABA2D7C0D70D34CC6787EB2 /* Nutrition.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Nutrition.swift; sourceTree = "<group>"; };
 		5AE6653E248BFA4C1B2A05B0 /* pesto-gnocchi-with-cherry-tomatoes.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "pesto-gnocchi-with-cherry-tomatoes.png"; sourceTree = "<group>"; };
 		5BC133CEB20A417DB810291D /* poached-pears-in-spiced-wine.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "poached-pears-in-spiced-wine.png"; sourceTree = "<group>"; };
 		5C024C4F227073403F20CA1B /* beef-chili-con-carne.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "beef-chili-con-carne.png"; sourceTree = "<group>"; };
@@ -561,6 +564,7 @@
 		B373F4229381257EA66CDE3C /* Fraunces.ttf */ = {isa = PBXFileReference; includeInIndex = 1; path = Fraunces.ttf; sourceTree = "<group>"; };
 		B3D02E10BC15ED0ADCDC7D1B /* RedesignRootView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RedesignRootView.swift; sourceTree = "<group>"; };
 		B4311CDDF67AA34C2F223237 /* AIModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIModels.swift; sourceTree = "<group>"; };
+		B80476BEC5139B370857DEE0 /* NutritionEstimatorTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NutritionEstimatorTests.swift; sourceTree = "<group>"; };
 		B92718BDCE1D03AA6C9B73B7 /* bun-cha.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "bun-cha.png"; sourceTree = "<group>"; };
 		B9FF8C2650A90D2DB08A4AB1 /* stuffed-portobello-mushrooms.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "stuffed-portobello-mushrooms.png"; sourceTree = "<group>"; };
 		BAB9028C434D2045ADDB09A5 /* KitchenStore.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = KitchenStore.swift; sourceTree = "<group>"; };
@@ -1009,6 +1013,7 @@
 				8A528909975A22DD6DCF57DD /* ShoppingListTests.swift */,
 				5372F046B0B6808478D0F1DD /* RecipeTimeTests.swift */,
 				6CBD7AEE36174997047EFAAD /* PantryPersistenceTests.swift */,
+				B80476BEC5139B370857DEE0 /* NutritionEstimatorTests.swift */,
 			);
 			path = PantryChefTests;
 			sourceTree = "<group>";
@@ -1224,6 +1229,7 @@
 				C277A622D0C630B07548A487 /* IntakePipeline.swift */,
 				E94F1754D943A372889A09B4 /* PantryPersistence.swift */,
 				0BA90CCC7D9FA8260A9CAA92 /* NotificationService.swift */,
+				5ABA2D7C0D70D34CC6787EB2 /* Nutrition.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -1680,6 +1686,7 @@
 				60569CEA220CA74318A53FC8 /* LoadingScreen.swift in Sources */,
 				59B384E56F09D1C12D4C4483 /* PantryPersistence.swift in Sources */,
 				297137BC03E053BA90CFA696 /* NotificationService.swift in Sources */,
+				C50767D0B9C91B44F79BBD35 /* Nutrition.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1723,6 +1730,7 @@
 				F1BB126F88067F5A719EAB45 /* ShoppingListTests.swift in Sources */,
 				FE61B70553E6B47DCFF3A086 /* RecipeTimeTests.swift in Sources */,
 				9401091C2FED619E098D871E /* PantryPersistenceTests.swift in Sources */,
+				106DD9654D7B4E12CDCC20CF /* NutritionEstimatorTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
