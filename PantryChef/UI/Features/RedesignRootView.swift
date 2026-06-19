@@ -35,14 +35,13 @@ struct RedesignRootView: View {
     @State private var loggingMeal: PlannedMeal?
     /// The Today feed's active intent lens (the chips). `.all` = the curated default.
     @State private var feedLens: FeedLens = .all
-    /// Scroll anchor at the top of the feed, so changing lens snaps back up.
-    private let feedTop = "feedTop"
     /// Secondary "More filters" (cuisine/diet/meal type/time) layered on the lens.
     @State private var feedFilters = FeedFilters()
     @State private var showFilters = false
     /// Name search, shown in any grid view (every lens except the "For you" landing).
     @State private var feedSearch = ""
     @State private var feedSort: RecipeSort = .readiness
+    @State private var feedSortAscending = true
     /// "Cook together" multi-select over the grid.
     @State private var selecting = false
     @State private var selectedIDs: Set<UUID> = []
@@ -51,6 +50,9 @@ struct RedesignRootView: View {
 
     var body: some View {
         ZStack {
+            // A persistent paper floor behind everything, so swapping the loading screen
+            // for the app — or one tab for another — never flashes a blank frame.
+            Theme.Palette.cream.ignoresSafeArea()
             if store.readinessReady {
                 main.transition(.opacity)
             } else {
@@ -64,10 +66,10 @@ struct RedesignRootView: View {
     }
 
     private var main: some View {
+        // Tab switches are instant: no `.id(store.space)` (it forced a full teardown +
+        // rebuild of each space, which flickered without the old page-turn to cover it)
+        // and no transition. The persistent floor above keeps the swap clean.
         ZStack { space }
-            .id(store.space)
-            // Tab switches are instant now — the page-turn/paper animation between
-            // spaces was removed (felt fussy).
             .safeAreaInset(edge: .bottom, spacing: 0) {
                 Dock(
                     selection: Binding(get: { store.space }, set: { store.space = $0 }),
@@ -222,35 +224,32 @@ struct RedesignRootView: View {
         let curatedView = feedLens == .all && feedFilters.isEmpty
         return VStack(spacing: 0) {
             todayHeader
-            ScrollViewReader { proxy in
-                ScrollView {
-                    LazyVStack(alignment: .leading, spacing: 0) {
-                        Color.clear.frame(height: 0).id(feedTop)
-                        if curatedView {
-                            pantryHeadline
-                            if showsHero {
-                                nowModule
-                                    .padding(.horizontal, Theme.Metric.lg)
-                                    .padding(.top, 12)
-                            }
-                        }
-                        IntentPills(selected: lensBinding, filterCount: feedFilters.activeCount,
-                                    onOpenFilters: { showFilters = true })
-                            .padding(.top, curatedView ? 16 : 12)
-                        if curatedView {
-                            forYouFeed
-                        } else {
-                            gridControls.padding(.horizontal, Theme.Metric.lg).padding(.top, 12)
-                            filteredGrid
+            ScrollView {
+                LazyVStack(alignment: .leading, spacing: 0) {
+                    if curatedView {
+                        pantryHeadline
+                        if showsHero {
+                            nowModule
+                                .padding(.horizontal, Theme.Metric.lg)
+                                .padding(.top, 12)
                         }
                     }
-                    .padding(.bottom, 28)
+                    IntentPills(selected: lensBinding, filterCount: feedFilters.activeCount,
+                                onOpenFilters: { showFilters = true })
+                        .padding(.top, curatedView ? 16 : 12)
+                    if curatedView {
+                        forYouFeed
+                    } else {
+                        gridControls.padding(.horizontal, Theme.Metric.lg).padding(.top, 12)
+                        filteredGrid
+                    }
                 }
-                // Tapping a rail's "see all" swaps the tall curated feed for a shorter
-                // grid; without this the ScrollView keeps its deep offset and you land
-                // on blank space below the grid. Snap back to the top on any lens change.
-                .onChange(of: feedLens) { _, _ in proxy.scrollTo(feedTop, anchor: .top) }
+                .padding(.bottom, 28)
             }
+            // Re-identify the scroll on lens change so it always starts at the top.
+            // ("Browse all" / a rail's "see all" used to swap the tall curated feed for a
+            // shorter grid while keeping a deep scroll offset → you landed on blank space.)
+            .id(feedLens)
         }
         .background(Theme.Palette.cream.ignoresSafeArea())
         .safeAreaInset(edge: .bottom) {
@@ -443,7 +442,7 @@ struct RedesignRootView: View {
                 }.buttonStyle(.plain)
             }
             Spacer(minLength: 8)
-            SortMenu(sort: $feedSort)
+            SortMenu(sort: $feedSort, ascending: $feedSortAscending)
             Button { withAnimation { selecting.toggle(); selectedIDs = [] } } label: {
                 Text(selecting ? "CANCEL" : "COOK TOGETHER")
                     .font(.system(size: 9, weight: .medium)).tracking(1.4)
@@ -484,7 +483,7 @@ struct RedesignRootView: View {
         let matched = feedLibrary.filter {
             matches($0, feedLens) && feedFilters.accepts($0) && (q.isEmpty || $0.name.lowercased().contains(q))
         }
-        return store.sorted(matched, by: feedSort)
+        return store.sorted(matched, by: feedSort, ascending: feedSortAscending)
     }
 
     /// Distinct, sorted values of a string tag across the library (for the filter sheet).

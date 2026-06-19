@@ -16,6 +16,7 @@ struct RecipeBrowse: View {
     @State private var filters = FeedFilters()
     @State private var showFilters = false
     @State private var sort: RecipeSort = .readiness
+    @State private var ascending = true
 
     /// Matching the lens + filters + search, then ordered by the chosen sort (default
     /// readiness: make-now → with-a-swap → a-shop-away, then A–Z).
@@ -25,7 +26,7 @@ struct RecipeBrowse: View {
             store.matches($0, lens: lens) && filters.accepts($0)
                 && (q.isEmpty || $0.name.lowercased().contains(q))
         }
-        return store.sorted(filtered, by: sort)
+        return store.sorted(filtered, by: sort, ascending: ascending)
     }
 
     private let cols = [GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12)]
@@ -78,7 +79,7 @@ struct RecipeBrowse: View {
                 }.buttonStyle(.plain)
             }
             Spacer(minLength: 8)
-            SortMenu(sort: $sort)
+            SortMenu(sort: $sort, ascending: $ascending)
         }
     }
 

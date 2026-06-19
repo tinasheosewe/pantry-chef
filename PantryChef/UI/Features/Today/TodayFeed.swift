@@ -39,25 +39,36 @@ enum RecipeSort: String, CaseIterable, Identifiable {
         case .recent: return "Recently added"
         }
     }
+    /// Short form for the compact menu button (the full "Recently added" overflowed the row).
+    var shortLabel: String { self == .recent ? "Recent" : label }
 }
 
-/// The shared sort control — a small "↕ READINESS" menu used by the Today grid and
-/// the planner's picker, so re-sorting works the same everywhere.
+/// The shared sort control — a compact "↕ READINESS ⌄" menu used by the Today grid and
+/// the planner's picker. Tap a field to sort by it; tap the active field again to flip
+/// ascending/descending.
 struct SortMenu: View {
     @Binding var sort: RecipeSort
+    @Binding var ascending: Bool
     var body: some View {
         Menu {
             ForEach(RecipeSort.allCases) { s in
-                Button { sort = s } label: {
-                    if sort == s { Label(s.label, systemImage: "checkmark") } else { Text(s.label) }
+                Button {
+                    if sort == s { ascending.toggle() } else { sort = s; ascending = true }
+                } label: {
+                    if sort == s {
+                        Label(s.label, systemImage: ascending ? "chevron.up" : "chevron.down")
+                    } else {
+                        Text(s.label)
+                    }
                 }
             }
         } label: {
-            HStack(spacing: 4) {
+            HStack(spacing: 3) {
                 Image(systemName: "arrow.up.arrow.down").font(.system(size: 10, weight: .medium))
-                Text(sort.label.uppercased()).font(.system(size: 9, weight: .medium)).tracking(1.0)
+                Text(sort.shortLabel.uppercased()).font(.system(size: 9, weight: .medium)).tracking(1.0)
+                Image(systemName: ascending ? "chevron.up" : "chevron.down").font(.system(size: 7, weight: .semibold))
             }
-            .foregroundStyle(Theme.Palette.paprika).fixedSize().contentShape(Rectangle())
+            .foregroundStyle(Theme.Palette.paprika).lineLimit(1).fixedSize().contentShape(Rectangle())
         }
     }
 }
@@ -110,30 +121,37 @@ extension KitchenStore {
         }
     }
 
-    /// Order a grid of recipes by the chosen `RecipeSort`. Readiness/quickest break ties
-    /// alphabetically; "recently added" reads the dish's position in the library
-    /// (later = newer, e.g. your own saved dishes).
-    func sorted(_ dishes: [Dish], by sort: RecipeSort) -> [Dish] {
+    /// Order a grid of recipes by the chosen `RecipeSort`, then reverse for descending.
+    /// Readiness/quickest break ties alphabetically; "recently added" reads the dish's
+    /// position in the library (later = newer, e.g. your own saved dishes). `ascending`
+    /// = the field's natural order (make-now first, fastest first, A→Z, newest first).
+    func sorted(_ dishes: [Dish], by sort: RecipeSort, ascending: Bool = true) -> [Dish] {
         func az(_ a: Dish, _ b: Dish) -> Bool {
             a.name.localizedCaseInsensitiveCompare(b.name) == .orderedAscending
         }
+        let ordered: [Dish]
         switch sort {
         case .alphabetical:
-            return dishes.sorted(by: az)
+            ordered = dishes.sorted(by: az)
         case .readiness:
-            return dishes.sorted { a, b in
-                let ra = readinessRank(a), rb = readinessRank(b)
+            // Precompute each dish's rank once (each call hits the cache + builds the
+            // fingerprint) — calling readiness from inside the O(n log n) comparator made
+            // switching lens/sort lag.
+            let rank = Dictionary(uniqueKeysWithValues: dishes.map { ($0.id, readinessRank($0)) })
+            ordered = dishes.sorted { a, b in
+                let ra = rank[a.id] ?? 9, rb = rank[b.id] ?? 9
                 return ra != rb ? ra < rb : az(a, b)
             }
         case .quickest:
-            return dishes.sorted { a, b in
+            ordered = dishes.sorted { a, b in
                 let ma = a.minutes ?? .max, mb = b.minutes ?? .max
                 return ma != mb ? ma < mb : az(a, b)
             }
         case .recent:
             let order = Dictionary(library.enumerated().map { ($1.id, $0) }, uniquingKeysWith: { a, _ in a })
-            return dishes.sorted { (order[$0.id] ?? -1) > (order[$1.id] ?? -1) }
+            ordered = dishes.sorted { (order[$0.id] ?? -1) > (order[$1.id] ?? -1) }
         }
+        return ascending ? ordered : ordered.reversed()
     }
 
     /// A dish that uses something expiring soon (the "use it up" lens + the feature pick).
