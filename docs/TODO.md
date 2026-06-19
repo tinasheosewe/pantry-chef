@@ -147,3 +147,19 @@ shows as ready-made — no extra tap. "Mark as made" on the recipe screen funnel
 the same op without walking the steps. Eating is logged separately (the eat-path
 how-much-left draw-down). This also **resolved** the "Done card blocks the now slot"
 item — there's no pending cook Done card anymore.
+
+### Deferred from the world-class roadmap (2026-06-19) — DISCUSS (AI-cost contingent)
+Per the user: do everything in the world-class push EXCEPT these, which need a discussion
+first (mostly because they introduce ONGOING per-use AI cost, or are contingent on how
+hard we lean on AI). Build-time AI (e.g. bulk-generating nutrition, regenerating plate art)
+is fine — these are about runtime cost / product direction.
+- **Mic + Realtime voice cook service** — DO NOT wire up yet, but DO NOT delete either
+  (RealtimeService.swift stays; the cook mic at CookFlowView.swift ~388 and composer mic stay
+  as-is). Ongoing AI cost per cook session. Decide if hands-free is worth it.
+- **Onboarding / "Pantry Sweep"** (docs/redesign-spec.md ~269: live-unlock first-run) — needs
+  discussion + is contingent on the AI-lean decision (voice intake etc.). Minimal empty-states
+  are OK to ship; the guided onboarding flow is deferred.
+- **Custom recipe creation front door** — deferred for discussion (also AI-lean contingent:
+  paste/import/AI-assist vs manual). Today the only path is RecipeDetail → Edit → Save-as-new.
+- **Recipe import from URL / web + photo→recipe** — ONGOING AI per import. Defer (AIService
+  `fullRecipeSchema:168` exists, unused). Table-stakes vs competitors; revisit after AI talk.
