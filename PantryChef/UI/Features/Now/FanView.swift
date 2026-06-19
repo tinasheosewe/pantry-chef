@@ -11,6 +11,7 @@ struct FanView: View {
     var onSeeAll: () -> Void
 
     @State private var dragX: CGFloat = 0
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     private var count: Int { options.count }
     private var current: FanOption? { options.indices.contains(selected) ? options[selected] : nil }
@@ -60,9 +61,17 @@ struct FanView: View {
                     let threshold: CGFloat = 48
                     if value.translation.width <= -threshold { advance(1) }
                     else if value.translation.width >= threshold { advance(-1) }
-                    withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) { dragX = 0 }
+                    withAnimation(reduceMotion ? nil : .spring(response: 0.4, dampingFraction: 0.8)) { dragX = 0 }
                 }
         )
+        // VoiceOver can't swipe the carousel — expose it as one adjustable element so
+        // up/down moves between tonight's picks, announcing each as it centres.
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("Tonight's pick")
+        .accessibilityValue(current.map { "\($0.name), \(selected + 1) of \(count)" } ?? "")
+        .accessibilityAdjustableAction { direction in
+            advance(direction == .increment ? 1 : -1)
+        }
     }
 
     private func sidePlate(_ option: FanOption, baseOffset: CGFloat, angle: Double,
@@ -78,7 +87,7 @@ struct FanView: View {
 
     private func advance(_ direction: Int) {
         guard count > 1 else { return }
-        withAnimation(.spring(response: 0.42, dampingFraction: 0.8)) {
+        withAnimation(reduceMotion ? nil : .spring(response: 0.42, dampingFraction: 0.8)) {
             selected = (selected + direction + count) % count
         }
     }
@@ -94,9 +103,11 @@ struct FanView: View {
                 Text("SEE ALL")
                     .font(.system(size: 9)).tracking(1.8)
                     .foregroundStyle(Theme.Palette.ink.opacity(0.55))
+                    .padding(.vertical, 14).padding(.leading, 10)
                     .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
+            .accessibilityLabel("See all options")
         }
     }
 

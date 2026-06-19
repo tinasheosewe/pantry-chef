@@ -23,6 +23,7 @@ enum RootSpace: String, CaseIterable, Identifiable, Sendable {
 /// furniture, not a floating pill.
 struct Dock: View {
     @Binding var selection: RootSpace
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     var onAdd: () -> Void
     /// The page's one true closing line; varies by space.
     var tailpiece: String = ""
@@ -64,7 +65,7 @@ struct Dock: View {
         let isActive = selection == space
         let badge = badges[space] ?? 0
         return Button {
-            withAnimation(.spring(response: 0.32, dampingFraction: 0.82)) { selection = space }
+            withAnimation(reduceMotion ? nil : .spring(response: 0.32, dampingFraction: 0.82)) { selection = space }
         } label: {
             VStack(spacing: 3) {
                 Text(space.title.uppercased())

@@ -39,6 +39,7 @@ struct CookFlowView: View {
     @State private var finishing = false
     @State private var madePortions = 0
     @Environment(\.scenePhase) private var scenePhase
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     private let tick = Timer.publish(every: 0.5, on: .main, in: .common).autoconnect()
 
     /// One countdown anchored to the wall clock. While running it knows the `endsAt`
@@ -154,7 +155,7 @@ struct CookFlowView: View {
                     .font(.system(size: 9)).tracking(1.8).foregroundStyle(Theme.Palette.ink.opacity(0.55))
                 Spacer()
                 PaprikaButton(title: "Start cooking") {
-                    withAnimation(.spring(response: 0.4, dampingFraction: 0.85)) { phase = .cooking }
+                    withAnimation(reduceMotion ? nil : .spring(response: 0.4, dampingFraction: 0.85)) { phase = .cooking }
                 }
             }
             .padding(.top, 8)
@@ -278,12 +279,13 @@ struct CookFlowView: View {
 
     private func advance(_ direction: Int) {
         let target = step + direction
+        let anim: Animation? = reduceMotion ? nil : .paperQuick
         if target < 0 {
             // Already at the first step → step back into gathering; never past it.
-            if step == 0 { withAnimation(.paper) { phase = .gathering } }
-            else { withAnimation(.paperQuick) { step = max(0, target) } }
+            if step == 0 { withAnimation(reduceMotion ? nil : .paper) { phase = .gathering } }
+            else { withAnimation(anim) { step = max(0, target) } }
         }
-        else if target < schedule.count { withAnimation(.paperQuick) { step = target } }
+        else if target < schedule.count { withAnimation(anim) { step = target } }
         // Past the last step → confirm what came out of the pot before banking it.
         else { beginFinish() }
     }
@@ -421,7 +423,7 @@ struct CookFlowView: View {
         if !others.isEmpty {
             VStack(spacing: 6) {
                 ForEach(others, id: \.index) { entry in
-                    Button { withAnimation(.paperQuick) { step = entry.index } } label: {
+                    Button { withAnimation(reduceMotion ? nil : .paperQuick) { step = entry.index } } label: {
                         HStack(spacing: 8) {
                             Image(systemName: isFinished(entry.index) ? "bell.fill" : "timer")
                                 .font(.system(size: 11))

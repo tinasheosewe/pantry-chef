@@ -331,6 +331,13 @@ struct RecipeTile: View {
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
+        // One spoken phrase per card — name, readiness, then time — instead of three
+        // disconnected fragments in source order.
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel([item.dish.name, item.stamp?.lowercased(), item.meta]
+            .compactMap { $0 }.joined(separator: ", "))
+        .accessibilityHint("Opens the recipe")
+        .accessibilityAddTraits(.isButton)
     }
 }
 
@@ -413,6 +420,12 @@ struct FeatureCard: View {
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
+        // One phrase: the editorial eyebrow, the dish, then the time/readiness.
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel([eyebrow, item.dish.name, item.stamp?.lowercased(), item.meta]
+            .compactMap { $0 }.joined(separator: ", "))
+        .accessibilityHint("Opens the recipe")
+        .accessibilityAddTraits(.isButton)
     }
 }
 

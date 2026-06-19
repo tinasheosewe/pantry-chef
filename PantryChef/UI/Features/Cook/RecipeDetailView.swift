@@ -136,9 +136,12 @@ struct RecipeDetailView: View {
             Button(action: onClose) {
                 Image(systemName: "xmark").font(.system(size: 15, weight: .medium))
                     .foregroundStyle(Theme.Palette.warmGray)
-                    .padding(10).background(Circle().fill(Theme.Palette.creamRaised))
+                    .frame(width: 44, height: 44)
+                    .background(Circle().fill(Theme.Palette.creamRaised).frame(width: 36, height: 36))
+                    .contentShape(Circle())
             }
-            .padding(16)
+            .accessibilityLabel("Close")
+            .padding(12)
         }
         .safeAreaInset(edge: .bottom) { pendingChanges ? AnyView(pendingBar) : AnyView(cookBar) }
         .sheet(isPresented: $showEditor) {

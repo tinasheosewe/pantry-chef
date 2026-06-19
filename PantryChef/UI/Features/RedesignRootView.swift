@@ -74,6 +74,14 @@ struct RedesignRootView: View {
                 Task { await NotificationService.syncExpiryReminders(store.expiryReminderPlans()) }
             }
         }
+        // Tell VoiceOver the moment the loading screen gives way to the real app, so a
+        // non-sighted user isn't left waiting on a silent sprig.
+        .onChange(of: store.readinessReady) { _, ready in
+            if ready {
+                let makeable = feedLibrary.filter { store.readiness(for: $0).isMakeableNow }.count
+                AccessibilityNotification.Announcement("Kitchen ready — \(makeable) recipes you can make tonight").post()
+            }
+        }
     }
 
     private var main: some View {

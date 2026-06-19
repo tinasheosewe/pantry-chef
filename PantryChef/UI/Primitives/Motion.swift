@@ -44,6 +44,10 @@ struct InkCheck: View {
             if reduceMotion { draw = now ? 1 : 0 }
             else { withAnimation(.easeOut(duration: 0.22)) { draw = now ? 1 : 0 } }
         }
+        // Reads as a checkbox state to VoiceOver — the value rides up into the labelled
+        // row/button that contains it ("Baby spinach, checked").
+        .accessibilityAddTraits(.isToggle)
+        .accessibilityValue(on ? "checked" : "unchecked")
     }
 
     /// A checkmark in a unit square, drawn left-dip-right so trim animates as a pen.
