@@ -536,7 +536,7 @@ private struct HealthierSheet: View {
                         }
                         .padding(12)
                         .frame(maxWidth: .infinity, alignment: .leading)
-                        .background(RoundedRectangle(cornerRadius: 14).fill(Theme.Palette.creamRaised))
+                        .background(RoundedRectangle(cornerRadius: 3).fill(Theme.Palette.creamRaised))
                     }
                     Text(suggestion.overallImpact).font(Theme.Typography.note(13))
                         .foregroundStyle(Theme.Palette.warmGray).padding(.top, 4)
@@ -566,8 +566,8 @@ private struct TweakSheet: View {
             TextField("What should change?", text: $feedback, axis: .vertical)
                 .font(Theme.Typography.fact(15)).lineLimit(3...5).focused($focused)
                 .padding(12)
-                .background(RoundedRectangle(cornerRadius: 12).fill(Theme.Palette.creamRaised))
-                .overlay(RoundedRectangle(cornerRadius: 12).strokeBorder(Theme.Palette.hairline))
+                .background(RoundedRectangle(cornerRadius: 3).fill(Theme.Palette.creamRaised))
+                .overlay(RoundedRectangle(cornerRadius: 3).strokeBorder(Theme.Palette.hairline))
             HStack {
                 if busy { ProgressView().controlSize(.small) }
                 Spacer()

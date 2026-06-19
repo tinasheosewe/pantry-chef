@@ -47,26 +47,29 @@ enum FoodCategory: String, Codable, CaseIterable, Identifiable {
         }
     }
 
+    /// A muted, earthy "field journal" hue per category — desaturated clays, ochres,
+    /// olives and one cool slate, so the category spines read as printed ink on cream,
+    /// not a bright Material rainbow (which jarred against the ink/cream/paprika world).
     var color: Color {
         switch self {
-        case .alcohol:        return Color(red: 0.58, green: 0.22, blue: 0.44) // burgundy
-        case .bakingSupplies: return Color(red: 0.94, green: 0.53, blue: 0.68) // rose
-        case .beverages:      return Color(red: 0.06, green: 0.73, blue: 0.70) // teal
-        case .breads:         return Color(red: 0.82, green: 0.68, blue: 0.46) // wheat
-        case .canned:         return Color(red: 0.73, green: 0.56, blue: 0.41) // warm brown
-        case .condiments:     return Color(red: 0.62, green: 0.44, blue: 0.87) // lavender
-        case .dairy:          return Color(red: 0.38, green: 0.65, blue: 0.96) // sky blue
-        case .frozenFoods:    return Color(red: 0.35, green: 0.78, blue: 0.88) // ice blue
-        case .grains:         return Color(red: 0.96, green: 0.72, blue: 0.26) // golden
-        case .legumes:        return Color(red: 0.55, green: 0.72, blue: 0.36) // olive green
-        case .nuts:           return Color(red: 0.78, green: 0.66, blue: 0.48) // warm tan
-        case .oils:           return Color(red: 0.88, green: 0.70, blue: 0.18) // golden oil
-        case .other:          return Color(red: 0.62, green: 0.65, blue: 0.70) // cool gray
-        case .pasta:          return Color(red: 0.48, green: 0.40, blue: 0.82) // soft indigo
-        case .produce:        return Color(red: 0.13, green: 0.77, blue: 0.37) // emerald
-        case .protein:        return Color(red: 0.94, green: 0.44, blue: 0.44) // salmon
-        case .snacks:         return Color(red: 0.96, green: 0.80, blue: 0.22) // bright yellow
-        case .spices:         return Color(red: 0.98, green: 0.62, blue: 0.20) // amber
+        case .produce:        return Color(red: 0.36, green: 0.49, blue: 0.31) // olive leaf
+        case .protein:        return Color(red: 0.71, green: 0.37, blue: 0.30) // terracotta
+        case .dairy:          return Color(red: 0.80, green: 0.66, blue: 0.40) // butter gold
+        case .breads:         return Color(red: 0.73, green: 0.55, blue: 0.36) // crust
+        case .pasta:          return Color(red: 0.79, green: 0.63, blue: 0.35) // semolina
+        case .grains:         return Color(red: 0.68, green: 0.54, blue: 0.30) // wheat
+        case .legumes:        return Color(red: 0.49, green: 0.45, blue: 0.27) // lentil
+        case .canned:         return Color(red: 0.62, green: 0.45, blue: 0.34) // tin brown
+        case .frozenFoods:    return Color(red: 0.44, green: 0.54, blue: 0.55) // frost slate
+        case .condiments:     return Color(red: 0.55, green: 0.37, blue: 0.43) // plum
+        case .oils:           return Color(red: 0.69, green: 0.57, blue: 0.29) // pressed oil
+        case .spices:         return Color(red: 0.78, green: 0.45, blue: 0.22) // paprika
+        case .bakingSupplies: return Color(red: 0.72, green: 0.51, blue: 0.51) // rose clay
+        case .nuts:           return Color(red: 0.58, green: 0.44, blue: 0.31) // hazel
+        case .beverages:      return Color(red: 0.45, green: 0.50, blue: 0.43) // sage brown
+        case .alcohol:        return Color(red: 0.50, green: 0.27, blue: 0.32) // burgundy
+        case .snacks:         return Color(red: 0.78, green: 0.56, blue: 0.25) // ochre
+        case .other:          return Color(red: 0.46, green: 0.46, blue: 0.41) // warm gray
         }
     }
 

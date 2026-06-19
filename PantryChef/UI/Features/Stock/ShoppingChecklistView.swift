@@ -56,6 +56,13 @@ struct ShoppingChecklistView: View {
             // Grouped by category (aisle order), the same grouping the Pantry uses, so
             // you shop section by section.
             List {
+                if entries.isEmpty {
+                    QuietEmpty(eyebrow: "Nothing on the list",
+                               line: "Add what you’re short on, or send a recipe’s missing bits here.")
+                        .listRowInsets(EdgeInsets(top: 24, leading: 20, bottom: 8, trailing: 20))
+                        .listRowBackground(Color.clear)
+                        .listRowSeparator(.hidden)
+                }
                 ForEach(displayedGroups, id: \.0) { cat, items in
                     Section {
                         ForEach(items) { entry in

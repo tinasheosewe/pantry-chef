@@ -45,7 +45,7 @@ struct Eyebrow: View {
 
     var body: some View {
         Text(text.uppercased())
-            .font(.system(size: 11, weight: .medium))
+            .font(Theme.Typography.eyebrow)
             .tracking(Theme.Metric.eyebrowTracking)
             .foregroundStyle(color)
     }
@@ -56,6 +56,31 @@ struct Eyebrow: View {
         case .urgent: return Theme.Palette.paprika
         case .win: return Theme.Palette.sage
         }
+    }
+}
+
+/// A quiet, on-brand empty state: a small-caps eyebrow over one serif line, ringed
+/// by whitespace. No illustration, no card — the absence of furniture *is* the
+/// state. Used when a list or surface has nothing to show yet.
+struct QuietEmpty: View {
+    let eyebrow: String
+    let line: String
+
+    var body: some View {
+        VStack(spacing: 8) {
+            Text(eyebrow.uppercased())
+                .font(Theme.Typography.eyebrow)
+                .tracking(Theme.Metric.eyebrowTracking)
+                .foregroundStyle(Theme.Palette.ink.opacity(0.45))
+            Text(line)
+                .font(Theme.Typography.note(15))
+                .foregroundStyle(Theme.Palette.warmGray)
+                .multilineTextAlignment(.center)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 44).padding(.horizontal, 32)
+        .accessibilityElement(children: .combine)
     }
 }
 

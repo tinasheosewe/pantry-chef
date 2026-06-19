@@ -40,9 +40,8 @@ struct RecipeBrowse: View {
                 .padding(.horizontal, Theme.Metric.lg).padding(.top, 12).padding(.bottom, 6)
             ScrollView {
                 if results.isEmpty {
-                    Text("Nothing matches — clear a filter or your search.")
-                        .font(Theme.Typography.note(13)).foregroundStyle(Theme.Palette.warmGray)
-                        .frame(maxWidth: .infinity).padding(.top, 40)
+                    QuietEmpty(eyebrow: "Nothing matches",
+                               line: "Clear a filter or your search to see more.")
                 } else {
                     LazyVGrid(columns: cols, alignment: .leading, spacing: 16) {
                         ForEach(results) { dish in

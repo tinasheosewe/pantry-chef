@@ -104,8 +104,8 @@ struct RecipeEditorView: View {
                 }
                 .font(Theme.Typography.fact(14))
                 .padding(.horizontal, 12).padding(.vertical, 9)
-                .background(RoundedRectangle(cornerRadius: 12).fill(Theme.Palette.creamRaised))
-                .overlay(RoundedRectangle(cornerRadius: 12).strokeBorder(Theme.Palette.hairline))
+                .background(RoundedRectangle(cornerRadius: 3).fill(Theme.Palette.creamRaised))
+                .overlay(RoundedRectangle(cornerRadius: 3).strokeBorder(Theme.Palette.hairline))
             }
             // Add ingredient — resolved through the pipeline, never freeform.
             HStack(spacing: 8) {
@@ -203,8 +203,8 @@ struct RecipeEditorView: View {
                 }
                 .font(Theme.Typography.fact(14))
                 .padding(.horizontal, 12).padding(.vertical, 9)
-                .background(RoundedRectangle(cornerRadius: 12).fill(Theme.Palette.creamRaised))
-                .overlay(RoundedRectangle(cornerRadius: 12).strokeBorder(Theme.Palette.hairline))
+                .background(RoundedRectangle(cornerRadius: 3).fill(Theme.Palette.creamRaised))
+                .overlay(RoundedRectangle(cornerRadius: 3).strokeBorder(Theme.Palette.hairline))
             }
             addButton("Add step") { dish.steps.append(CookStep("")) }
         }
@@ -262,8 +262,8 @@ struct RecipeEditorView: View {
                 .font(Theme.Typography.fact(15)).foregroundStyle(Theme.Palette.ink)
                 .padding(.horizontal, 12).padding(.vertical, 10)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .background(RoundedRectangle(cornerRadius: 12).fill(Theme.Palette.creamRaised))
-                .overlay(RoundedRectangle(cornerRadius: 12).strokeBorder(Theme.Palette.hairline))
+                .background(RoundedRectangle(cornerRadius: 3).fill(Theme.Palette.creamRaised))
+                .overlay(RoundedRectangle(cornerRadius: 3).strokeBorder(Theme.Palette.hairline))
         }
     }
 }

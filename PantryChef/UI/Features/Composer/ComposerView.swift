@@ -126,8 +126,8 @@ struct ComposerView: View {
                 .foregroundStyle(Theme.Palette.paprika)
         }
         .padding(.horizontal, 14).padding(.vertical, 11)
-        .background(RoundedRectangle(cornerRadius: 14, style: .continuous).fill(Theme.Palette.creamRaised))
-        .overlay(RoundedRectangle(cornerRadius: 14, style: .continuous).strokeBorder(Theme.Palette.hairline))
+        .background(RoundedRectangle(cornerRadius: 3).fill(Theme.Palette.creamRaised))
+        .overlay(RoundedRectangle(cornerRadius: 3).strokeBorder(Theme.Palette.hairline))
     }
 
     private var doorways: some View {
@@ -272,9 +272,9 @@ private struct IntakeCard: View {
         }
         .padding(12)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(RoundedRectangle(cornerRadius: 14, style: .continuous)
+        .background(RoundedRectangle(cornerRadius: 3)
             .fill(Theme.Palette.creamRaised.opacity(isPreview ? 0.6 : 1)))
-        .overlay(RoundedRectangle(cornerRadius: 14, style: .continuous)
+        .overlay(RoundedRectangle(cornerRadius: 3)
             .strokeBorder(borderColor, style: StrokeStyle(lineWidth: 1, dash: item.confidence == .unresolved ? [4, 3] : [])))
     }
 
@@ -364,8 +364,8 @@ private struct ComposerItemEditor: View {
                 .font(Theme.Typography.fact(15)).foregroundStyle(Theme.Palette.ink)
                 .padding(.horizontal, 12).padding(.vertical, 10)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .background(RoundedRectangle(cornerRadius: 12).fill(Theme.Palette.creamRaised))
-                .overlay(RoundedRectangle(cornerRadius: 12).strokeBorder(Theme.Palette.hairline))
+                .background(RoundedRectangle(cornerRadius: 3).fill(Theme.Palette.creamRaised))
+                .overlay(RoundedRectangle(cornerRadius: 3).strokeBorder(Theme.Palette.hairline))
         }
     }
 

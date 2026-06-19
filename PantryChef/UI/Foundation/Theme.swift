@@ -145,8 +145,9 @@ enum Theme {
         static func numeral(_ size: CGFloat, weight: Font.Weight = .medium) -> Font {
             scaledSystem(size: size, weight: weight, monospacedDigit: true)
         }
-        /// Uppercase eyebrow label ("TONIGHT", "ON THE CLOCK").
-        static var eyebrow: Font { scaledSystem(size: 11, weight: .regular) }
+        /// Uppercase eyebrow label ("TONIGHT", "ON THE CLOCK"). Medium so the
+        /// small-caps labels hold against body text; scales with Dynamic Type.
+        static var eyebrow: Font { scaledSystem(size: 11, weight: .medium) }
 
         /// A system font that tracks Dynamic Type, built through UIFontMetrics so
         /// our fixed point sizes still grow with the user's setting.
