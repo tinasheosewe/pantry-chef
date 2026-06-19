@@ -187,6 +187,28 @@ struct Dish: Identifiable, Equatable, Sendable {
              cuisine: cuisine, mealType: mealType, course: course, diets: diets, methods: methods)
     }
 
+    /// A blank recipe to fill in — the manual "write a recipe" front door.
+    static func draft() -> Dish {
+        Dish(name: "", plate: PlateComposition(categories: [], seed: UInt64.random(in: 0..<100_000)),
+             time: "", isYours: true, servings: 2, ingredients: [], steps: [])
+    }
+
+    /// A copy whose plate art is derived from the ingredients' catalog categories —
+    /// used when saving a hand-built recipe that has no authored plate.
+    func withDerivedPlate() -> Dish {
+        var seen: [FoodCategory] = []
+        for line in ingredients {
+            guard let id = line.catalogItemID, let cat = PantryCatalog.itemsByID[id]?.category else { continue }
+            if !seen.contains(cat) { seen.append(cat) }
+        }
+        let cats = seen.isEmpty ? [.other] : Array(seen.prefix(3))
+        return Dish(id: id, name: name,
+                    plate: PlateComposition(categories: cats, seed: UInt64(abs(name.hashValue) % 100_000)),
+                    time: time, isYours: isYours, isFavorite: isFavorite, servings: servings,
+                    blurb: blurb, ingredients: ingredients, steps: steps, cuisine: cuisine,
+                    mealType: mealType, course: course, diets: diets, methods: methods, nutrition: nutrition)
+    }
+
     /// This dish scaled to a different serving count: every ingredient amount with
     /// a leading number is multiplied; unitless lines ("to taste") pass through.
     func scaled(to newServings: Int) -> Dish {

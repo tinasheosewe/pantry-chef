@@ -7,6 +7,8 @@ import SwiftUI
 /// ingredient that maps to nothing.
 struct RecipeEditorView: View {
     @State private var dish: Dish
+    /// Header label — "Edit recipe" by default, "New recipe" for the write-from-scratch door.
+    var heading: String = "Edit recipe"
     var autofill: (String) async -> AIIngredientDefinition? = { _ in nil }
     var onSave: (Dish) -> Void
 
@@ -17,12 +19,16 @@ struct RecipeEditorView: View {
     @State private var phaseTagged: Set<UUID> = []
 
     init(dish: Dish,
+         heading: String = "Edit recipe",
          autofill: @escaping (String) async -> AIIngredientDefinition? = { _ in nil },
          onSave: @escaping (Dish) -> Void) {
         _dish = State(initialValue: dish)
+        self.heading = heading
         self.autofill = autofill
         self.onSave = onSave
     }
+
+    private var canSave: Bool { !dish.name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
 
     /// An ingredient phrase being resolved — for adding, or re-mapping a line.
     private enum Resolving: Identifiable {
@@ -40,9 +46,11 @@ struct RecipeEditorView: View {
         VStack(spacing: 0) {
             Capsule().fill(Theme.Palette.hairline).frame(width: 36, height: 4).padding(.top, 10)
             HStack {
-                Text("Edit recipe").font(Theme.Typography.dish(20)).foregroundStyle(Theme.Palette.ink)
+                Text(heading).font(Theme.Typography.dish(20)).foregroundStyle(Theme.Palette.ink)
                 Spacer()
-                PaprikaButton(title: "Save") { onSave(dish) }
+                PaprikaButton(title: "Save") { if canSave { onSave(dish) } }
+                    .opacity(canSave ? 1 : 0.4)
+                    .disabled(!canSave)
             }
             .padding(.horizontal, 20).padding(.top, 12).padding(.bottom, 8)
 

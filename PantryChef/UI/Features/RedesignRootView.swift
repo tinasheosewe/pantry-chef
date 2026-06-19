@@ -24,10 +24,13 @@ private struct PlanTarget: Identifiable {
 /// full-screen cover. Driven by a single `KitchenStore`.
 struct RedesignRootView: View {
     @State private var store = KitchenStore()
+    @State private var subscription = SubscriptionService()
     @State private var showComposer = false
     @State private var showSettings = false
     @State private var showPlanAhead = false
     @State private var detailDish: Dish?
+    /// A blank recipe being written from scratch (the manual front door).
+    @State private var newRecipe: Dish?
     @State private var multiSession: CookSession?
     @State private var planTarget: PlanTarget?
     @State private var editingMeal: PlannedMeal?
@@ -112,11 +115,27 @@ struct RedesignRootView: View {
                 }
             }
             .sheet(isPresented: $showComposer) {
-                ComposerView(store: store, onDismiss: { showComposer = false })
+                ComposerView(store: store, onDismiss: { showComposer = false },
+                             onWriteRecipe: {
+                                 showComposer = false
+                                 // Present the editor on the next runloop — a sheet can't
+                                 // open while another is dismissing in the same tick.
+                                 DispatchQueue.main.async { newRecipe = Dish.draft() }
+                             })
                     .presentationDetents([.medium, .large])
             }
+            .sheet(item: $newRecipe) { draft in
+                RecipeEditorView(dish: draft, heading: "New recipe",
+                                 autofill: { await store.ai.generateIngredientDefinition(name: $0) }) { built in
+                    let dish = built.withDerivedPlate()
+                    store.addDish(dish)
+                    newRecipe = nil
+                    // Drop straight into the recipe you just wrote.
+                    DispatchQueue.main.async { detailDish = dish }
+                }
+            }
             .sheet(isPresented: $showSettings) {
-                SettingsView(store: store, onClose: { showSettings = false })
+                SettingsView(store: store, subscription: subscription, onClose: { showSettings = false })
                     .presentationDetents([.medium, .large])
             }
             .sheet(isPresented: $showPlanAhead) {

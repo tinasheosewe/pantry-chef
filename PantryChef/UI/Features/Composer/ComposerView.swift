@@ -8,6 +8,9 @@ import UIKit
 struct ComposerView: View {
     var store: KitchenStore
     var onDismiss: () -> Void = {}
+    /// Open the blank recipe editor (the manual "write a recipe" front door). The root
+    /// dismisses the composer and presents the editor.
+    var onWriteRecipe: () -> Void = {}
 
     /// Where the staged batch lands on commit.
     enum Destination: String, CaseIterable {
@@ -142,6 +145,10 @@ struct ComposerView: View {
                 if let pasted = UIPasteboard.general.string {
                     text = pasted
                 }
+            }
+            Divider().background(Theme.Palette.hairline)
+            doorway("Write a recipe", "square.and.pencil") {
+                onWriteRecipe()
             }
         }
         .padding(.horizontal, 4)
