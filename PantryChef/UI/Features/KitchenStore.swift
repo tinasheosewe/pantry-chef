@@ -205,16 +205,30 @@ struct ShoppingEntry: Identifiable, Equatable {
 /// a sample kitchen; the single seam where real persistence wires in later.
 @Observable
 final class KitchenStore {
-    var today = Date()
+    var today = Date() { didSet { cachedFingerprint = nil } }
     var space: RootSpace = .today
     var nowState: NowState = .open(options: [], selected: 0)
 
     var journal: [JournalItem]
     var events: [DatedEvent]
     var whispers: [DatedWhisper]
-    var stock: [StockItem]
-    var library: [Dish]
-    var profile = DietaryProfile()
+    var stock: [StockItem] { didSet { cachedFingerprint = nil } }
+    var library: [Dish] { didSet { cachedFeedLibrary = nil } }
+    var profile = DietaryProfile() { didSet { cachedFeedLibrary = nil } }
+
+    // Cheap caches so views (which read these every render) don't rebuild big strings/
+    // filters on the hot path. Invalidated by the `didSet`s above + on assumeSpiceRack.
+    @ObservationIgnored private var cachedFingerprint: String?
+    @ObservationIgnored private var cachedFeedLibrary: [Dish]?
+
+    /// The dietary-filtered library every feed/browse surface shows — never surfaces a
+    /// dish the user can't eat. Cached; recomputed only when `library`/`profile` change.
+    var feedLibrary: [Dish] {
+        if let c = cachedFeedLibrary { return c }
+        let f = library.filter { DishInsights.conflicts($0, with: profile).isEmpty }
+        cachedFeedLibrary = f
+        return f
+    }
     /// Settings: when on, moving an item between pantry/fridge/freezer re-projects
     /// its days-left from the new location's shelf life; when off, only the label
     /// changes and your own estimate stands. See `StockItem.moved(to:now:adjustDaysLeft:)`.
@@ -754,11 +768,17 @@ final class KitchenStore {
         readinessReady = true
     }
 
-    /// Everything readiness depends on, as a cheap string: the present (trusted) stock
-    /// identities and the current day. Stock is small, so this is microseconds.
+    /// Everything readiness depends on, as a string: the present (trusted) stock
+    /// identities + the day. **Cached** — it was rebuilt on every `readiness(for:)` call
+    /// (so ~200× per render via the headline/tailpiece), which dominated the cost the
+    /// readiness cache was supposed to remove. Invalidated by the `didSet`s on
+    /// stock/today + assumeSpiceRack.
     private var readinessFingerprint: String {
+        if let f = cachedFingerprint { return f }
         let day = Int(today.timeIntervalSince1970 / 86_400)
-        return "\(day)|\(presentStockCatalogIDs.sorted().joined(separator: ","))|\(presentStockNames.sorted().joined(separator: ","))"
+        let f = "\(day)|\(presentStockCatalogIDs.sorted().joined(separator: ","))|\(presentStockNames.sorted().joined(separator: ","))"
+        cachedFingerprint = f
+        return f
     }
 
     /// The "tonight you could" fan, built from what's actually here (spec §5):
@@ -857,7 +877,7 @@ final class KitchenStore {
     /// Specialty spices (saffron, ras el hanout, miso, fish sauce…) are NOT in here, so a
     /// dish hinging on one still reads "needs". Recipes always *list* their spices either
     /// way — this only affects "can I make it".
-    var assumeSpiceRack = true
+    var assumeSpiceRack = true { didSet { cachedFingerprint = nil } }
 
     /// The catalog ids assumed present when `assumeSpiceRack` is on.
     static let basicSpiceRack: Set<String> = [

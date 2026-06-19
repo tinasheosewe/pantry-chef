@@ -474,9 +474,7 @@ struct RedesignRootView: View {
     /// Dishes matching the active lens AND the secondary filters AND the search.
     /// The library the feed + browse show: excludes dishes that clash with the user's
     /// dietary profile (avoided allergens) — we never surface something they can't eat.
-    private var feedLibrary: [Dish] {
-        store.library.filter { DishInsights.conflicts($0, with: store.profile).isEmpty }
-    }
+    private var feedLibrary: [Dish] { store.feedLibrary }
 
     private var filteredDishes: [Dish] {
         let q = feedSearch.trimmingCharacters(in: .whitespaces).lowercased()
@@ -976,9 +974,7 @@ private struct PlanDaySheet: View {
 
     /// The dishes the picker browses — dietary-filtered, never surfacing something the
     /// user can't eat (mirrors the Today feed's `feedLibrary`).
-    private var browseLibrary: [Dish] {
-        store.library.filter { DishInsights.conflicts($0, with: store.profile).isEmpty }
-    }
+    private var browseLibrary: [Dish] { store.feedLibrary }
 
     /// Optional, low-friction sense of which meal — defaults to evening, the common
     /// plan. The day still holds the meals; this just tells lunch from dinner.

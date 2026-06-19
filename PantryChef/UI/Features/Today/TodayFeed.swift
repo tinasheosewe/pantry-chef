@@ -155,12 +155,16 @@ extension KitchenStore {
     }
 
     /// A dish that uses something expiring soon (the "use it up" lens + the feature pick).
+    /// Matches by catalog identity/lineage — the same engine readiness uses — not by
+    /// substring (which surfaced peach recipes for expiring "peas", eggplant for "egg").
     func usesExpiring(_ dish: Dish) -> Bool {
-        let expiring = expiringSoon().map { $0.name.lowercased() }
+        let expiring = expiringSoon()
         guard !expiring.isEmpty else { return false }
+        let index = IngredientMatching.Index(names: expiring.map(\.name),
+                                             catalogIDs: expiring.compactMap(\.catalogItemID))
         return dish.ingredients.contains { ing in
-            let name = ing.name.lowercased()
-            return expiring.contains { name.contains($0) || $0.contains(name) }
+            if let id = ing.catalogItemID { return index.contains(catalogItemID: id) }
+            return index.contains(requirement: ing.key)
         }
     }
 

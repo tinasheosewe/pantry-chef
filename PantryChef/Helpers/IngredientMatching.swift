@@ -21,28 +21,41 @@ enum IngredientMatching {
         private let normalizedKeys: Set<String>
         private let lookupKeys: Set<String>
         private let catalogIDs: Set<String>
-        /// Every on-hand catalog id plus all of its ancestors (each set includes the
-        /// id itself), so "is this requirement a base of something I have?" is a
-        /// single membership test.
-        private let onHandLineage: Set<String>
+        /// On-hand id → its FoodCategory, so lineage matches can be gated to the same
+        /// kind of thing (a tomato is not ketchup, even though ketchup descends from it).
+        private let onHandCategories: [String: FoodCategory]
 
         init(names: [String], catalogIDs: [String] = []) {
             normalizedKeys = Set(names.map { IngredientLexicon.normalizeIngredient($0) })
             lookupKeys = Set(names.map { IngredientLexicon.lookupKey($0) })
             let ids = Set(catalogIDs)
             self.catalogIDs = ids
-            onHandLineage = ids.reduce(into: Set<String>()) { $0.formUnion(PantryCatalog.ancestors(of: $1)) }
+            onHandCategories = Dictionary(uniqueKeysWithValues: ids.compactMap { id -> (String, FoodCategory)? in
+                guard let cat = PantryCatalog.itemsByID[id]?.category else { return nil }
+                return (id, cat)
+            })
         }
 
-        /// True if some on-hand item *is* this catalog item, or sits on the same
-        /// parent lineage (the requirement is a base of something on hand, or a
-        /// variant of a base on hand). Siblings don't match — that's a swap, not
-        /// the same ingredient.
+        /// True if some on-hand item *is* this catalog item, or sits on the same parent
+        /// lineage **within the same category**. The category gate is the honesty guard:
+        /// the catalog tree mixes "variant-of" (cherry tomato → tomato) with "derived-
+        /// from" (ketchup → tomato, apple → applesauce), and only the former is an
+        /// interchangeable substitute. Without it, having a plain tomato would read as
+        /// "make now" for a recipe that needs ketchup. Siblings still don't match — that's
+        /// a swap, not the same ingredient. (Same-category base↔specific within a family,
+        /// e.g. generic oil ↔ sesame oil, is a known remaining over-claim — see the typed-
+        /// lineage-edge follow-up.)
         func contains(catalogItemID id: String) -> Bool {
-            // The requirement is an on-hand item, or an ancestor (base) of one.
-            if onHandLineage.contains(id) { return true }
-            // Or an on-hand item is an ancestor (base) of the requirement variant.
-            return !PantryCatalog.ancestors(of: id).isDisjoint(with: catalogIDs)
+            if catalogIDs.contains(id) { return true }          // exact item on hand
+            let reqCategory = PantryCatalog.itemsByID[id]?.category
+            let reqAncestors = PantryCatalog.ancestors(of: id)  // includes id itself
+            for onHand in catalogIDs where onHandCategories[onHand] == reqCategory {
+                // on-hand is a base (ancestor) of the requirement, OR a variant (descendant) of it
+                if reqAncestors.contains(onHand) || PantryCatalog.ancestors(of: onHand).contains(id) {
+                    return true
+                }
+            }
+            return false
         }
 
         /// Name match — the degenerate path for a line with no catalog id.

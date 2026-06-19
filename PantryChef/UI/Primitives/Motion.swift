@@ -58,42 +58,6 @@ struct InkCheck: View {
     }
 }
 
-// MARK: - Page turn between spaces
-
-extension AnyTransition {
-    /// A leaf of paper laying over the last one: the new page swings in from its
-    /// trailing edge; the old one fades and eases back. Falls back to a plain fade
-    /// under Reduce Motion (apply that at the call site).
-    static var pageTurn: AnyTransition {
-        .asymmetric(
-            insertion: .modifier(active: PageFold(angle: -78, opacity: 0, anchor: .trailing),
-                                 identity: PageFold(angle: 0, opacity: 1, anchor: .trailing)),
-            removal: .modifier(active: PageFold(angle: 10, opacity: 0, anchor: .leading),
-                               identity: PageFold(angle: 0, opacity: 1, anchor: .leading))
-        )
-    }
-}
-
-/// Animatable 3D fold around a vertical edge, with a soft perspective so it reads
-/// as a page rather than a spinning card.
-private struct PageFold: ViewModifier, Animatable {
-    var angle: Double
-    var opacity: Double
-    var anchor: UnitPoint
-
-    var animatableData: AnimatablePair<Double, Double> {
-        get { AnimatablePair(angle, opacity) }
-        set { angle = newValue.first; opacity = newValue.second }
-    }
-
-    func body(content: Content) -> some View {
-        content
-            .opacity(opacity)
-            .rotation3DEffect(.degrees(angle), axis: (x: 0, y: 1, z: 0),
-                              anchor: anchor, perspective: 0.4)
-    }
-}
-
 // MARK: - Bloom
 
 /// A one-shot ring that blooms outward and fades — for completion moments (a timer
