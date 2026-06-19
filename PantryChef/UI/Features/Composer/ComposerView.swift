@@ -122,8 +122,6 @@ struct ComposerView: View {
             TextField("300 g spinach, fridge", text: $text)
                 .font(Theme.Typography.fact(14)).focused($focused)
                 .submitLabel(.next).onSubmit(commitCurrent)
-            Image(systemName: "microphone").font(.system(size: 16))
-                .foregroundStyle(Theme.Palette.paprika)
         }
         .padding(.horizontal, 14).padding(.vertical, 11)
         .background(RoundedRectangle(cornerRadius: 3).fill(Theme.Palette.creamRaised))

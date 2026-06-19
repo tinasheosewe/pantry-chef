@@ -148,18 +148,23 @@ the same op without walking the steps. Eating is logged separately (the eat-path
 how-much-left draw-down). This also **resolved** the "Done card blocks the now slot"
 item — there's no pending cook Done card anymore.
 
-### Deferred from the world-class roadmap (2026-06-19) — DISCUSS (AI-cost contingent)
-Per the user: do everything in the world-class push EXCEPT these, which need a discussion
-first (mostly because they introduce ONGOING per-use AI cost, or are contingent on how
-hard we lean on AI). Build-time AI (e.g. bulk-generating nutrition, regenerating plate art)
-is fine — these are about runtime cost / product direction.
-- **Mic + Realtime voice cook service** — DO NOT wire up yet, but DO NOT delete either
-  (RealtimeService.swift stays; the cook mic at CookFlowView.swift ~388 and composer mic stay
-  as-is). Ongoing AI cost per cook session. Decide if hands-free is worth it.
-- **Onboarding / "Pantry Sweep"** (docs/redesign-spec.md ~269: live-unlock first-run) — needs
-  discussion + is contingent on the AI-lean decision (voice intake etc.). Minimal empty-states
-  are OK to ship; the guided onboarding flow is deferred.
-- **Custom recipe creation front door** — deferred for discussion (also AI-lean contingent:
-  paste/import/AI-assist vs manual). Today the only path is RecipeDetail → Edit → Save-as-new.
-- **Recipe import from URL / web + photo→recipe** — ONGOING AI per import. Defer (AIService
-  `fullRecipeSchema:168` exists, unused). Table-stakes vs competitors; revisit after AI talk.
+### AI strategy decided (2026-06-19): free + Plus subscription, voice CUT
+Monetization = free tier + a Plus subscription (launch ~$10/mo + discounted annual; $20/mo is
+top-of-market, A/B later). The daily loop (readiness, two clocks, scheduler, timers, nutrition
+*estimate*) is deterministic/offline → ~0 marginal cost → ~90%+ gross margin. So: keep the free
+loop AI-free; gate all per-use AI behind Plus (or trial→paywall); build-time AI (nutrition,
+plate art) is fine. With voice removed, AI COGS is a rounding error vs ARPU either price.
+
+**DONE — voice fully stripped (2026-06-19):** deleted RealtimeService(+Protocol),
+AudioPipelineHelper, the cook + composer mic affordances, the Realtime tests/fixtures, the
+`swift-realtime-openai` SPM package + the Vendored dir, and the mic/speech Info.plist keys.
+The skip flags for RealtimeService*Tests are no longer needed.
+
+**Deferred for discussion (gate behind Plus when built):**
+- **Onboarding / "Pantry Sweep"** (docs/redesign-spec.md ~269: live-unlock first-run) — build the
+  DETERMINISTIC version (manual + barcode/quick-add, zero AI cost); optional photo/voice intake
+  later as a premium nicety. Minimal empty-states already ship.
+- **Custom recipe creation front door** — build MANUAL first (zero cost; plumbing on the existing
+  RecipeDetail → Edit → Save-as-new path); AI-assist becomes a Plus sweetener.
+- **Recipe import from URL / web + photo→recipe** — strong Plus feature + table-stakes; cache hard
+  so re-opens cost nothing (AIService `fullRecipeSchema:168` exists, unused).

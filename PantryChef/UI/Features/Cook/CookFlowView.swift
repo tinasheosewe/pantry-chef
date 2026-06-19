@@ -603,11 +603,6 @@ struct CookFlowView: View {
             }
             .buttonStyle(.plain)
             Spacer()
-            Circle().fill(Theme.Palette.creamRaised)
-                .overlay(Image(systemName: "microphone").font(.system(size: 16)).foregroundStyle(Theme.Palette.paprika))
-                .overlay(Circle().strokeBorder(Theme.Palette.paprika.opacity(0.5)))
-                .frame(width: 46, height: 46)
-            Spacer()
             BlockButton(title: step < schedule.count - 1 ? "Next →" : "Done") { advance(1) }
         }
     }
