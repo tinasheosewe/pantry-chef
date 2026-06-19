@@ -160,11 +160,20 @@ AudioPipelineHelper, the cook + composer mic affordances, the Realtime tests/fix
 `swift-realtime-openai` SPM package + the Vendored dir, and the mic/speech Info.plist keys.
 The skip flags for RealtimeService*Tests are no longer needed.
 
-**Deferred for discussion (gate behind Plus when built):**
-- **Onboarding / "Pantry Sweep"** (docs/redesign-spec.md ~269: live-unlock first-run) — build the
-  DETERMINISTIC version (manual + barcode/quick-add, zero AI cost); optional photo/voice intake
-  later as a premium nicety. Minimal empty-states already ship.
-- **Custom recipe creation front door** — build MANUAL first (zero cost; plumbing on the existing
-  RecipeDetail → Edit → Save-as-new path); AI-assist becomes a Plus sweetener.
-- **Recipe import from URL / web + photo→recipe** — strong Plus feature + table-stakes; cache hard
-  so re-opens cost nothing (AIService `fullRecipeSchema:168` exists, unused).
+**Pricing decided:** trial → paid, ONE tier (core + AI bundled), 7-day free trial. NO permanent
+free tier at launch (trial-only still lists as "Free" on the store; loosen later if discovery
+needs it — easy to add a capped-pantry free tier, painful to claw back). Sell the anti-waste
+angle, not AI. StoreKit 2 scaffolding shipped 2026-06-19 (SubscriptionService + PantryChef.storekit
++ PaywallView; product com.tboya.pantrychef.plus.yearly @ $29.99/yr). **Manual step:** select
+PantryChef.storekit in the Run scheme's StoreKit Configuration to test purchases in the sim.
+
+**DONE 2026-06-19:**
+- **Onboarding / Pantry Sweep** — first-run lands new users on an EMPTY kitchen + the live-unlock
+  sweep (tap common staples, watch "N recipes you can make" climb), deterministic/zero-AI; "explore
+  a sample" escape hatch; ungated; Skip allowed; empty-pantry nudge on Today.
+- **Manual custom-recipe front door** — "Write a recipe" doorway in the composer → blank editor.
+
+**Still deferred — NEXT DISCUSSION (the AI-powered custom-recipe approaches):**
+- **Recipe import from URL / web + photo→recipe + AI-assisted authoring** — Plus-only; ongoing
+  per-use AI, so cache hard (generate once, store, reuse). AIService `fullRecipeSchema:168` exists,
+  unused. Barcode pantry intake (deterministic) is the v1.5 onboarding add-on.
