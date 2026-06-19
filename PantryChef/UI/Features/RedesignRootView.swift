@@ -299,8 +299,9 @@ struct RedesignRootView: View {
     @ViewBuilder private var forYouFeed: some View {
         leftoversRail
         if store.readinessReady {
-            // Use-it-up leads when something's turning — a full rail now, not one card.
-            tierRail("Use it up", "Cook before these ingredients turn", .useItUp)
+            // Use-it-up leads when something's turning — a full rail now, not one card,
+            // ranked so the dish rescuing the soonest item comes first.
+            tierRail("Use it up", useItUpSubtitle, .useItUp, rescueByExpiry: true)
             tierRail("Make it now", "Everything's already on hand", .makeNow, excludingName: featureDish?.name)
             if let feature = featureItem {
                 FeatureCard(item: feature, eyebrow: featureEyebrow, subtitle: featureSubtitle,
@@ -317,14 +318,31 @@ struct RedesignRootView: View {
         }
     }
 
+    /// Names the most-urgent turning item in the "use it up" rail subtitle, so the
+    /// rail says *why* it's leading — "Baby spinach turns tomorrow — cook these first."
+    private var useItUpSubtitle: String {
+        guard let first = store.expiringSoon().first, let d = first.daysLeft(now: store.today) else {
+            return "Cook before these ingredients turn"
+        }
+        let when = d <= 0 ? "today" : d == 1 ? "tomorrow" : "in \(d) days"
+        return "\(first.name) turns \(when) — cook these first"
+    }
+
     /// One pantry-tier rail — only shown if it has dishes; header taps through to the
     /// full grid for that lens.
     private func tierRail(_ title: String, _ subtitle: String, _ lens: FeedLens,
-                          sortByMissing: Bool = false, excludingName: String? = nil) -> some View {
+                          sortByMissing: Bool = false, rescueByExpiry: Bool = false,
+                          excludingName: String? = nil) -> some View {
         var dishes = feedLibrary.filter { matches($0, lens) }
         if let ex = excludingName?.lowercased() { dishes.removeAll { $0.name.lowercased() == ex } }
         if sortByMissing {
             dishes.sort { store.readiness(for: $0).missingCount < store.readiness(for: $1).missingCount }
+        }
+        if rescueByExpiry {
+            // Lead with the dish that rescues the soonest-turning ingredient.
+            let rank = Dictionary(uniqueKeysWithValues:
+                dishes.map { ($0.id, store.soonestExpiryDaysUsed(by: $0) ?? Int.max) })
+            dishes.sort { (rank[$0.id] ?? .max) < (rank[$1.id] ?? .max) }
         }
         let total = dishes.count
         let items = dishes.prefix(12).map(feedItem)
@@ -625,6 +643,7 @@ private struct RecipeDetailScreen: View {
             readiness: store.readiness(for: dish),
             isOnHand: { store.onHand($0) },
             certaintyForKey: { store.certainty(forKey: $0) },
+            onReconfirm: { store.reconfirm(key: $0) },
             onToggleFavorite: { store.toggleFavorite(dish.id) },
             onUpdateDish: { store.updateDish($0) },
             onSaveAsNew: { store.addDish($0) },

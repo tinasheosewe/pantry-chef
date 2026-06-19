@@ -168,6 +168,24 @@ extension KitchenStore {
         }
     }
 
+    /// Of the soon-to-turn items this dish would use, the fewest days left — so the
+    /// "use it up" surface can lead with whatever rescues the most-urgent thing.
+    /// nil when the dish rescues nothing turning soon.
+    func soonestExpiryDaysUsed(by dish: Dish) -> Int? {
+        var best: Int?
+        for item in expiringSoon() {
+            guard let d = item.daysLeft(now: today) else { continue }
+            let index = IngredientMatching.Index(names: [item.name],
+                                                 catalogIDs: item.catalogItemID.map { [$0] } ?? [])
+            let used = dish.ingredients.contains { ing in
+                if let id = ing.catalogItemID { return index.contains(catalogItemID: id) }
+                return index.contains(requirement: ing.key)
+            }
+            if used { best = min(best ?? .max, d) }
+        }
+        return best
+    }
+
     /// The dish as a feed tile, pantry stamp baked in (MAKE NOW / WITH A SWAP /
     /// NEEDS n · WANTS w). The count of swaps is deliberately not surfaced — the cook
     /// only acts on "can I make it." When it must be shopped for, the stamp carries

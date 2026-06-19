@@ -976,6 +976,12 @@ final class KitchenStore {
         if let i = stock.firstIndex(where: { $0.id == id }) { stock[i].lastConfirmed = today }
     }
 
+    /// Same trust loop, reached from the readiness moment by ingredient key — confirm
+    /// a hedged item in place on the recipe without diving into the pantry.
+    func reconfirm(key: String) {
+        if let i = stock.firstIndex(where: { $0.key == key }) { stock[i].lastConfirmed = today }
+    }
+
     /// "Finished." Drop it from stock and offer it back on the list.
     func markGone(_ id: UUID) {
         guard let i = stock.firstIndex(where: { $0.id == id }) else { return }

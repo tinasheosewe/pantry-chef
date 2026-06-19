@@ -13,6 +13,9 @@ struct RecipeDetailView: View {
     /// Certainty for an on-hand ingredient, so the spread can hedge ("check?")
     /// instead of asserting a confident ✓ on a stale item (spec §7).
     var certaintyForKey: (String) -> ItemCertainty? = { _ in nil }
+    /// "Still here" in the readiness moment — resets the knowledge clock for the
+    /// stock item behind this ingredient key, so a hedge becomes a confident ✓.
+    var onReconfirm: (String) -> Void = { _ in }
     var onToggleFavorite: () -> Void = {}
     var onUpdateDish: (Dish) -> Void = { _ in }
     /// Save the tweaked/edited recipe as a brand-new dish (leaving this one intact).
@@ -50,6 +53,7 @@ struct RecipeDetailView: View {
     init(dish: Dish, readiness: Readiness,
          isOnHand: @escaping (RecipeLine) -> Bool = { _ in true },
          certaintyForKey: @escaping (String) -> ItemCertainty? = { _ in nil },
+         onReconfirm: @escaping (String) -> Void = { _ in },
          onToggleFavorite: @escaping () -> Void = {},
          onUpdateDish: @escaping (Dish) -> Void = { _ in },
          onSaveAsNew: @escaping (Dish) -> Void = { _ in },
@@ -64,6 +68,7 @@ struct RecipeDetailView: View {
         self.readiness = readiness
         self.isOnHand = isOnHand
         self.certaintyForKey = certaintyForKey
+        self.onReconfirm = onReconfirm
         self.onToggleFavorite = onToggleFavorite
         self.onUpdateDish = onUpdateDish
         self.onSaveAsNew = onSaveAsNew
@@ -298,8 +303,54 @@ struct RecipeDetailView: View {
 
     // MARK: - Sections
 
+    /// On-hand essentials the knowledge clock has gone quiet on — the dish *reads*
+    /// ready but leans on these, so the readiness moment hedges instead of asserting.
+    private var uncertainLines: [RecipeLine] {
+        effectiveDish.ingredients.filter { line in
+            line.essential && !line.isStaple && appliedSwaps[line.id] == nil
+                && isOnHand(line) && (certaintyForKey(line.key) ?? .confirmed) <= .uncertain
+        }
+    }
+
+    /// A hedge in the readiness moment: when "ready" rests on items we haven't seen
+    /// lately, say so and let the cook confirm them right here in one tap each — a
+    /// confident ✓ replaces the "?" without leaving the recipe.
+    @ViewBuilder private var confidenceHedge: some View {
+        let lines = uncertainLines
+        if !lines.isEmpty {
+            VStack(alignment: .leading, spacing: 8) {
+                Text(lines.count == 1
+                     ? "Leans on something you haven’t seen lately."
+                     : "Leans on \(lines.count) things you haven’t seen lately.")
+                    .font(Theme.Typography.note(13)).foregroundStyle(Theme.Palette.ink)
+                    .fixedSize(horizontal: false, vertical: true)
+                VStack(alignment: .leading, spacing: 8) {
+                    ForEach(lines) { line in
+                        Button { withAnimation { onReconfirm(line.key) } } label: {
+                            HStack(spacing: 5) {
+                                Image(systemName: "checkmark").font(.system(size: 9, weight: .bold))
+                                Text("\(line.name) — still here")
+                                    .font(.system(size: 11, weight: .medium))
+                            }
+                            .foregroundStyle(Theme.Palette.sage)
+                            .padding(.horizontal, 10).padding(.vertical, 7)
+                            .overlay(Rectangle().strokeBorder(Theme.Palette.sage.opacity(0.55), lineWidth: 1))
+                            .contentShape(Rectangle())
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+            }
+            .padding(.horizontal, 12).padding(.vertical, 11)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(Rectangle().fill(Theme.Palette.paprika.opacity(0.06)))
+            .overlay(Rectangle().strokeBorder(Theme.Palette.paprika.opacity(0.25), lineWidth: 1))
+        }
+    }
+
     private var ingredients: some View {
         VStack(alignment: .leading, spacing: 0) {
+            confidenceHedge.padding(.bottom, 14)
             HStack {
                 sectionTitle("Ingredients")
                 Spacer()
@@ -374,7 +425,13 @@ struct RecipeDetailView: View {
                 } else if !onHand && !line.isStaple {
                     Text("NEED").font(.system(size: 9)).tracking(1.6).foregroundStyle(Theme.Palette.paprika)
                 } else if uncertain {
-                    Text("CHECK?").font(.system(size: 9)).tracking(1.6).foregroundStyle(Theme.Palette.paprika)
+                    // Tap to reconfirm right here — the "?" becomes a confident ✓.
+                    Button { withAnimation { onReconfirm(line.key) } } label: {
+                        Text("STILL HERE?").font(.system(size: 9, weight: .medium)).tracking(1.6)
+                            .foregroundStyle(Theme.Palette.paprika)
+                            .padding(.vertical, 4).contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
                 }
             }
             if let applied {

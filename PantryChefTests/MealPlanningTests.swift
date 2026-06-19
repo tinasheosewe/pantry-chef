@@ -177,6 +177,36 @@ final class MealPlanningTests: XCTestCase {
                        "multi-dish banks each dish at its own servings, not one shared count")
     }
 
+    func testReconfirmByKeyResetsTheKnowledgeClock() {
+        let store = KitchenStore()
+        let stale = StockItem(key: "test-leek", name: "Leek",
+                              plate: .init(categories: [.produce], seed: 3),
+                              section: .have, measure: .perishable(detail: "2", daysLeft: 6),
+                              lastConfirmed: store.today.addingTimeInterval(-40 * 86_400))
+        store.stock.append(stale)
+        XCTAssertLessThanOrEqual(store.certainty(forKey: "test-leek") ?? .confirmed, .uncertain,
+                                 "40 days without evidence reads as a hedge")
+        store.reconfirm(key: "test-leek")
+        XCTAssertEqual(store.certainty(forKey: "test-leek"), .confirmed,
+                       "confirming in the readiness moment resets the clock to certain")
+    }
+
+    func testSoonestExpiryDaysUsedLeadsWithTheMostUrgentRescue() {
+        let store = KitchenStore()
+        guard let top = store.expiringSoon().first, let d = top.daysLeft(now: store.today) else {
+            return XCTFail("seed kitchen should have expiring items")
+        }
+        let dish = Dish(name: "Rescue dish", plate: .init(categories: [.produce], seed: 9),
+                        time: "10 min", servings: 2,
+                        ingredients: [RecipeLine(key: top.key, name: top.name, catalogItemID: top.catalogItemID)])
+        XCTAssertEqual(store.soonestExpiryDaysUsed(by: dish), d,
+                       "a dish using the most-urgent item ranks at its days-left")
+        let unrelated = Dish(name: "Nothing urgent", plate: .init(categories: [.produce], seed: 8),
+                             time: "10 min", servings: 2,
+                             ingredients: [RecipeLine(key: "totally-unrelated-xyz", name: "Xyz", catalogItemID: nil)])
+        XCTAssertNil(store.soonestExpiryDaysUsed(by: unrelated), "rescuing nothing turning → nil")
+    }
+
     func testExpiryReminderPlansCoverWhatsTurningAndRespectTheSetting() {
         let store = KitchenStore()
         let plans = store.expiryReminderPlans()
