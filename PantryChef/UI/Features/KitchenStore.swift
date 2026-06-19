@@ -469,23 +469,34 @@ final class KitchenStore {
                                             timerText: nil, dish: first))
     }
 
-    func finishCooking(_ dishes: [Dish]) {
+    func finishCooking(_ dishes: [Dish], madePortions: Int? = nil) {
         // Cooking is *production*: auto-log each dish (bank its servings + journal it)
         // — no extra tap, you already walked the steps — and return to the fan, where
         // the dish now shows as ready-made. Eating is logged separately, when you eat.
-        for dish in dishes { logCooked(dish) }
+        // A single-dish cook can confirm the real yield (a recipe-for-4 that made 3).
+        for dish in dishes { logCooked(dish, portions: dishes.count == 1 ? madePortions : nil) }
         resetNow()
+    }
+
+    /// Mirror the cook instrument's most-urgent running timer onto the now-card, so a
+    /// minimised cook still shows its countdown. No-op when nothing is cooking.
+    func updateCookingTimer(_ text: String?) {
+        guard case .cooking(let p) = nowState, p.timerText != text else { return }
+        nowState = .cooking(CookingProgress(name: p.name, plate: p.plate, stepIndex: p.stepIndex,
+                                            totalSteps: p.totalSteps, timerText: text, dish: p.dish))
     }
 
     /// Record a cooked dish: bank its (scaled) servings as leftovers and journal it.
     /// This is the single "I made this" operation — reached from finishing the cook
-    /// instrument or "Mark as made" on the recipe. No eat-time prompt; eating draws
-    /// the leftover down separately.
-    func logCooked(_ dish: Dish) {
-        bankLeftover(name: dish.name, plate: dish.plate, add: dish.servings)
+    /// instrument or "Mark as made" on the recipe. `portions` overrides the banked
+    /// count with the cook's confirmed yield. No eat-time prompt; eating draws the
+    /// leftover down separately.
+    func logCooked(_ dish: Dish, portions: Int? = nil) {
+        let made = portions ?? dish.servings
+        bankLeftover(name: dish.name, plate: dish.plate, add: made)
         journal.append(JournalItem(
             date: today, name: dish.name, plate: dish.plate, level: .cooked,
-            note: "\(dish.servings) \(dish.servings == 1 ? "serving" : "servings")"))
+            note: "\(made) \(made == 1 ? "serving" : "servings")"))
         pruneHistory()
     }
 

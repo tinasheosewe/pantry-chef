@@ -189,7 +189,10 @@ struct RecipeEditorView: View {
                             }),
                             axis: .vertical)
                             .lineLimit(1...4)
-                        phaseChip($step)
+                        HStack(spacing: 8) {
+                            phaseChip($step)
+                            timerChip($step)
+                        }
                     }
                     Button {
                         dish.steps.removeAll { $0.id == step.id }
@@ -237,6 +240,46 @@ struct RecipeEditorView: View {
         case .cook: return Theme.Palette.paprika
         case .finish: return Theme.Palette.warmGray
         }
+    }
+
+    /// Set or clear a step's timer from a menu of common durations — so a hand-typed
+    /// recipe can carry real countdowns into the cook instrument, not just prose.
+    private func timerChip(_ step: Binding<CookStep>) -> some View {
+        let seconds = step.wrappedValue.timerSeconds
+        let tinted = seconds != nil
+        return Menu {
+            Button("No timer") { setTimer(step, nil) }
+            ForEach([1, 2, 3, 5, 10, 15, 20, 25, 30, 45, 60], id: \.self) { m in
+                Button("\(m) min") { setTimer(step, m * 60) }
+            }
+        } label: {
+            HStack(spacing: 4) {
+                Image(systemName: "timer").font(.system(size: 10))
+                Text(seconds.map(timerLabel) ?? "TIMER")
+                    .font(.system(size: 9, weight: .medium)).tracking(1.0)
+            }
+            .foregroundStyle(tinted ? Theme.Palette.paprika : Theme.Palette.warmGraySoft)
+            .padding(.horizontal, 9).padding(.vertical, 3)
+            .overlay(Capsule().strokeBorder((tinted ? Theme.Palette.paprika : Theme.Palette.warmGraySoft).opacity(0.5), lineWidth: 1))
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+    }
+
+    /// Rewrite the step with a new timer, keeping a hand-tagged phase/attention but
+    /// letting an untouched step re-infer its attention from the new timer.
+    private func setTimer(_ step: Binding<CookStep>, _ seconds: Int?) {
+        let s = step.wrappedValue
+        if phaseTagged.contains(s.id) {
+            step.wrappedValue = CookStep(id: s.id, s.instruction, timerSeconds: seconds,
+                                         phase: s.phase, attention: s.attention, ingredient: s.ingredient)
+        } else {
+            step.wrappedValue = CookStep(id: s.id, s.instruction, timerSeconds: seconds, ingredient: s.ingredient)
+        }
+    }
+
+    private func timerLabel(_ seconds: Int) -> String {
+        seconds % 60 == 0 ? "\(seconds / 60) MIN" : String(format: "%d:%02d", seconds / 60, seconds % 60)
     }
 
     // MARK: - Bits

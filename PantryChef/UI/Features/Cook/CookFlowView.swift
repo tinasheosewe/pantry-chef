@@ -10,19 +10,45 @@ struct CookFlowView: View {
     var isOnHand: (RecipeLine) -> Bool = { _ in true }
     /// Reports live progress (step index, total) so the now-module can mirror it.
     var onStep: (Int, Int) -> Void = { _, _ in }
-    var onDone: () -> Void
+    /// Reports the most-urgent running timer's countdown (or nil) so the now-card
+    /// can mirror it live.
+    var onTimer: (String?) -> Void = { _ in }
+    /// Finishing the cook — the made-portion count (single dish) the user confirmed,
+    /// or nil to bank each dish at its default servings.
+    var onDone: (Int?) -> Void = { _ in }
     var onClose: () -> Void
 
     private enum Phase { case gathering, cooking }
     @State private var phase: Phase = .gathering
     @State private var gathered: Set<UUID> = []
     @State private var step = 0
-    @State private var timerRemaining: Int?
-    @State private var timerRunning = false
+    /// Per-step countdowns, keyed by step index. Anchored to the wall clock (an end
+    /// Date while running, a frozen remainder while paused) so they survive
+    /// backgrounding and keep running while you move to other steps — a real kitchen
+    /// has several pots going at once.
+    @State private var timers: [Int: StepTimer] = [:]
+    /// A monotonic "now" the running timers read from; bumped each tick and re-synced
+    /// the instant we return to the foreground, so the displayed remainder is always
+    /// the true wall-clock remainder.
+    @State private var now = Date()
     @State private var startedAt: Date?
     @State private var doneSignal = 0
+    @State private var firedTimers: Set<Int> = []
     @State private var swapsExpanded = false
-    private let tick = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+    /// The finish-cook confirmation: how many portions actually came out of the pot.
+    @State private var finishing = false
+    @State private var madePortions = 0
+    @Environment(\.scenePhase) private var scenePhase
+    private let tick = Timer.publish(every: 0.5, on: .main, in: .common).autoconnect()
+
+    /// One countdown anchored to the wall clock. While running it knows the `endsAt`
+    /// instant; while paused it holds the frozen `pausedRemaining`. `total` is the full
+    /// duration so "again" can restart it.
+    struct StepTimer: Equatable {
+        let total: Int
+        var endsAt: Date?
+        var pausedRemaining: Int?
+    }
 
     private var isMulti: Bool { dishes.count > 1 }
     private var allLines: [RecipeLine] { dishes.flatMap(\.ingredients) }
@@ -46,31 +72,31 @@ struct CookFlowView: View {
         // Greasy hands, no taps for minutes — the screen must not sleep mid-cook.
         .onAppear { UIApplication.shared.isIdleTimerDisabled = true }
         .onDisappear { UIApplication.shared.isIdleTimerDisabled = false }
-        .onChange(of: step) {
-            timerRemaining = nil
-            timerRunning = false
-            onStep(step, schedule.count)
-        }
+        // Moving between steps no longer nukes the timer — a step's countdown keeps
+        // running so you can start a simmer and walk ahead to prep the next thing.
+        .onChange(of: step) { onStep(step, schedule.count) }
         .onChange(of: phase) {
             if phase == .cooking {
                 if startedAt == nil { startedAt = Date() }
                 onStep(step, schedule.count)
             }
         }
-        .onReceive(tick) { _ in
-            guard timerRunning, let r = timerRemaining else { return }
-            if r > 1 { timerRemaining = r - 1 } else { timerRemaining = 0; timerRunning = false }
-        }
+        // Returning to the foreground: re-sync the clock so a timer that ran down
+        // while we were backgrounded shows its true (possibly zero) remainder at once.
+        .onChange(of: scenePhase) { if scenePhase == .active { now = Date(); reconcile() } }
+        .onReceive(tick) { _ in now = Date(); reconcile() }
+        .onChange(of: currentRemaining) { onTimer(runningTimerText) }
         .sensoryFeedback(.impact(weight: .light), trigger: gathered)
         .sensoryFeedback(.impact(weight: .medium), trigger: step)
         // The timer escalates in the last ten seconds, then lands a warm heartbeat
         // at zero — demanding but kind, not a jarring alarm.
-        .sensoryFeedback(trigger: timerRemaining) { _, new in
+        .sensoryFeedback(trigger: currentRemaining) { _, new in
             guard let new else { return nil }
             if new == 0 { return .impact(weight: .heavy) }
             if new <= 10 { return .selection }
             return nil
         }
+        .sheet(isPresented: $finishing) { finishSheet }
         // The success buzz is reserved for finishing the cook — a real completion.
         .sensoryFeedback(.success, trigger: doneSignal)
     }
@@ -179,6 +205,7 @@ struct CookFlowView: View {
             if let next = nextStep {
                 nextTicket(next).padding(.top, 8)
             }
+            otherTimersStrip
             Spacer()
             controls
             if let line = logistics {
@@ -251,9 +278,89 @@ struct CookFlowView: View {
 
     private func advance(_ direction: Int) {
         let target = step + direction
-        if target < 0 { withAnimation(.paper) { phase = .gathering } }
+        if target < 0 {
+            // Already at the first step → step back into gathering; never past it.
+            if step == 0 { withAnimation(.paper) { phase = .gathering } }
+            else { withAnimation(.paperQuick) { step = max(0, target) } }
+        }
         else if target < schedule.count { withAnimation(.paperQuick) { step = target } }
-        else { doneSignal += 1; onDone() }
+        // Past the last step → confirm what came out of the pot before banking it.
+        else { beginFinish() }
+    }
+
+    // MARK: - Timers (wall-clock anchored, concurrent across steps)
+
+    /// Seconds left on the timer at `index`: the live wall-clock remainder while
+    /// running, the frozen remainder while paused, or the full duration before it's
+    /// ever started. nil = this step has no timer at all.
+    private func remaining(at index: Int) -> Int? {
+        guard schedule.indices.contains(index), let total = schedule[index].step.timerSeconds else { return nil }
+        guard let t = timers[index] else { return total }
+        if let end = t.endsAt { return max(0, Int(end.timeIntervalSince(now).rounded())) }
+        return t.pausedRemaining ?? total
+    }
+    private func isRunning(_ index: Int) -> Bool { timers[index]?.endsAt != nil }
+    private func isFinished(_ index: Int) -> Bool { timers[index] != nil && remaining(at: index) == 0 }
+
+    /// Remaining on the current step's timer — the value the hero display and the
+    /// escalating haptics read from.
+    private var currentRemaining: Int? { timers[step] != nil ? remaining(at: step) : nil }
+
+    /// The step's timer duration, if the index is in range and the step is timed.
+    private func timerSeconds(at index: Int) -> Int? {
+        schedule.indices.contains(index) ? schedule[index].step.timerSeconds : nil
+    }
+
+    /// Start the step's countdown fresh from its full duration.
+    private func startTimer(_ index: Int) {
+        guard let total = timerSeconds(at: index) else { return }
+        timers[index] = StepTimer(total: total, endsAt: Date().addingTimeInterval(TimeInterval(total)), pausedRemaining: nil)
+        firedTimers.remove(index)
+        onTimer(runningTimerText)
+    }
+
+    /// Tap-through the step timer: start → pause → resume → (when finished) restart.
+    private func toggleTimer(_ index: Int) {
+        guard let total = timerSeconds(at: index) else { return }
+        guard let t = timers[index] else { startTimer(index); return }
+        if let end = t.endsAt {                                   // running → pause
+            let rem = max(0, Int(end.timeIntervalSince(Date()).rounded()))
+            timers[index] = StepTimer(total: t.total, endsAt: nil, pausedRemaining: rem)
+        } else if let rem = t.pausedRemaining, rem > 0 {          // paused → resume
+            timers[index] = StepTimer(total: t.total, endsAt: Date().addingTimeInterval(TimeInterval(rem)), pausedRemaining: nil)
+        } else {                                                  // finished → again
+            timers[index] = StepTimer(total: total, endsAt: Date().addingTimeInterval(TimeInterval(total)), pausedRemaining: nil)
+            firedTimers.remove(index)
+        }
+        onTimer(runningTimerText)
+    }
+
+    /// Snap any running timer that has crossed zero to a stopped, finished state, and
+    /// mark it fired once (so the heartbeat haptic lands a single time).
+    private func reconcile() {
+        for (index, t) in timers where t.endsAt != nil {
+            if Int(t.endsAt!.timeIntervalSince(now).rounded()) <= 0, !firedTimers.contains(index) {
+                firedTimers.insert(index)
+            }
+        }
+        onTimer(runningTimerText)
+    }
+
+    /// Timers running on steps other than the one on screen — so a simmer you left
+    /// behind stays visible while you work ahead.
+    private var otherRunningTimers: [(index: Int, remaining: Int)] {
+        timers.keys.compactMap { i -> (Int, Int)? in
+            guard i != step, isRunning(i) || isFinished(i), let r = remaining(at: i) else { return nil }
+            return (i, r)
+        }
+        .sorted { $0.1 < $1.1 }
+    }
+
+    /// The countdown the now-card mirrors: the running timer closest to firing.
+    private var runningTimerText: String? {
+        let live = timers.keys.filter { isRunning($0) }.compactMap { remaining(at: $0) }
+        guard let soonest = live.min() else { return nil }
+        return format(soonest)
     }
 
     /// The live step, torn open: bordered sheet with a dashed top edge.
@@ -291,6 +398,40 @@ struct CookFlowView: View {
 
     private var nextStep: ScheduledStep? {
         schedule.indices.contains(step + 1) ? schedule[step + 1] : nil
+    }
+
+    /// Timers ticking on other steps — a tap jumps back to that step. So a sauce you
+    /// set simmering stays in view (and a finished one nags) while you work ahead.
+    @ViewBuilder private var otherTimersStrip: some View {
+        let others = otherRunningTimers
+        if !others.isEmpty {
+            VStack(spacing: 6) {
+                ForEach(others, id: \.index) { entry in
+                    Button { withAnimation(.paperQuick) { step = entry.index } } label: {
+                        HStack(spacing: 8) {
+                            Image(systemName: isFinished(entry.index) ? "bell.fill" : "timer")
+                                .font(.system(size: 11))
+                                .foregroundStyle(isFinished(entry.index) ? Theme.Palette.sage : Theme.Palette.paprika)
+                            Text("Step \(entry.index + 1)")
+                                .font(Theme.Typography.fact(11, weight: .medium)).foregroundStyle(Theme.Palette.warmGray)
+                            Text(schedule[entry.index].step.instruction)
+                                .font(Theme.Typography.fact(11)).foregroundStyle(Theme.Palette.warmGraySoft)
+                                .lineLimit(1)
+                            Spacer(minLength: 6)
+                            Text(isFinished(entry.index) ? "DONE" : format(entry.remaining))
+                                .font(Theme.Typography.numeral(12, weight: .medium))
+                                .foregroundStyle(isFinished(entry.index) ? Theme.Palette.sage : Theme.Palette.paprika)
+                        }
+                        .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+            .padding(.horizontal, 12).padding(.vertical, 8)
+            .background(Rectangle().fill(Theme.Palette.ink.opacity(0.04)))
+            .overlay(Rectangle().strokeBorder(Theme.Palette.hairline, lineWidth: 1))
+            .padding(.top, 10)
+        }
     }
 
     private func nextTicket(_ next: ScheduledStep) -> some View {
@@ -347,20 +488,18 @@ struct CookFlowView: View {
     }
 
     private func timer(_ seconds: Int) -> some View {
-        let shown = timerRemaining ?? seconds
-        let finished = timerRemaining == 0
+        let shown = remaining(at: step) ?? seconds
+        let running = isRunning(step)
+        let started = timers[step] != nil
+        let finished = isFinished(step)
         return HStack(alignment: .firstTextBaseline, spacing: 14) {
             Text(format(shown)).font(Theme.Typography.dish(38))
                 .foregroundStyle(finished ? Theme.Palette.sage : Theme.Palette.ink)
                 .contentTransition(.numericText(countsDown: true))
                 .animation(.default, value: shown)
-                .overlay { if finished { Bloom(color: Theme.Palette.sage).id(timerRemaining) } }
-            Button {
-                if finished { timerRemaining = seconds; timerRunning = true; return }
-                if timerRemaining == nil { timerRemaining = seconds }
-                timerRunning.toggle()
-            } label: {
-                Text(finished ? "AGAIN" : (timerRunning ? "PAUSE" : (timerRemaining == nil ? "START" : "RESUME")))
+                .overlay { if finished { Bloom(color: Theme.Palette.sage).id(firedTimers.contains(step)) } }
+            Button { toggleTimer(step) } label: {
+                Text(finished ? "AGAIN" : (running ? "PAUSE" : (started ? "RESUME" : "START")))
                     .font(.system(size: 13, weight: .medium)).tracking(2)
                     .foregroundStyle(Theme.Palette.paprika)
                     .padding(.horizontal, 20).frame(minHeight: 44)
@@ -372,6 +511,69 @@ struct CookFlowView: View {
                 Text("DONE").font(.system(size: 11, weight: .medium)).tracking(2).foregroundStyle(Theme.Palette.sage)
             }
         }
+    }
+
+    // MARK: - Finish confirmation
+
+    private func beginFinish() {
+        // Default to the count we cooked toward; the cook nudges it to what actually
+        // came out (a recipe for 4 sometimes yields 3 real portions).
+        madePortions = max(1, dishes.reduce(0) { $0 + $1.servings })
+        doneSignal += 1
+        finishing = true
+    }
+
+    private var finishSheet: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Capsule().fill(Theme.Palette.hairline).frame(width: 36, height: 4)
+                .frame(maxWidth: .infinity).padding(.top, 10)
+            Text("Nicely done").font(Theme.Typography.dish(22)).foregroundStyle(Theme.Palette.ink)
+                .padding(.top, 16)
+            Text(isMulti
+                 ? "Banking each dish into the fridge."
+                 : "How many portions came out? We’ll keep them as leftovers.")
+                .font(Theme.Typography.note(13)).foregroundStyle(Theme.Palette.warmGray)
+                .fixedSize(horizontal: false, vertical: true).padding(.top, 4)
+
+            if !isMulti {
+                HStack(spacing: 18) {
+                    stepperButton("minus") { madePortions = max(0, madePortions - 1) }
+                    Text("\(madePortions)").font(Theme.Typography.dish(40)).monospacedDigit()
+                        .foregroundStyle(Theme.Palette.ink).frame(minWidth: 64)
+                        .contentTransition(.numericText())
+                        .animation(.snappy, value: madePortions)
+                    stepperButton("plus") { madePortions = min(24, madePortions + 1) }
+                    Spacer()
+                    Text(madePortions == 1 ? "portion" : "portions")
+                        .font(Theme.Typography.fact(13)).foregroundStyle(Theme.Palette.warmGraySoft)
+                }
+                .padding(.vertical, 22)
+                if madePortions == 0 {
+                    Text("Nothing kept — just logs that you made it.")
+                        .font(Theme.Typography.fact(11)).foregroundStyle(Theme.Palette.warmGraySoft)
+                }
+            }
+            Spacer(minLength: 0)
+            PaprikaButton(title: madePortions == 0 && !isMulti ? "Log it" : "Bank it") {
+                finishing = false
+                onDone(isMulti ? nil : madePortions)
+            }
+            .frame(maxWidth: .infinity)
+        }
+        .padding(22)
+        .background(KitchenBackground())
+        .presentationDetents([.height(isMulti ? 240 : 320)])
+    }
+
+    private func stepperButton(_ symbol: String, _ action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Image(systemName: symbol).font(.system(size: 16, weight: .semibold))
+                .foregroundStyle(Theme.Palette.paprika)
+                .frame(width: 44, height: 44)
+                .overlay(Circle().strokeBorder(Theme.Palette.paprika.opacity(0.5), lineWidth: 1.5))
+                .contentShape(Circle())
+        }
+        .buttonStyle(.plain)
     }
 
     private var controls: some View {

@@ -650,8 +650,9 @@ private struct CookFlowScreen: View {
             dishes: session.dishes,
             isOnHand: { store.onHand($0) },
             onStep: { index, total in store.beginCooking(session.dishes, stepIndex: index, totalSteps: total) },
-            onDone: {
-                store.finishCooking(session.dishes)
+            onTimer: { text in store.updateCookingTimer(text) },
+            onDone: { portions in
+                store.finishCooking(session.dishes, madePortions: portions)
                 onClose()
                 onFinished()
             },

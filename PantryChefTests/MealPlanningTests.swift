@@ -153,6 +153,43 @@ final class MealPlanningTests: XCTestCase {
                       "the cooked dish surfaces as a ready-made fan option")
     }
 
+    func testFinishingASingleCookBanksTheConfirmedYield() {
+        let store = KitchenStore()
+        // Recipe was for 4, but only 3 real portions came out — confirm the truth.
+        store.finishCooking([minestroneDish(servings: 4)], madePortions: 3)
+        XCTAssertEqual(store.availablePortions(named: "Minestrone"), 3,
+                       "the confirmed yield is banked, not the recipe's nominal servings")
+    }
+
+    func testFinishingACookWithZeroPortionsBanksNothingButStillJournals() {
+        let store = KitchenStore()
+        let before = store.journal.count
+        store.finishCooking([minestroneDish(servings: 2)], madePortions: 0)
+        XCTAssertNil(store.availablePortions(named: "Minestrone"), "ate it all → nothing kept")
+        XCTAssertEqual(store.journal.count, before + 1, "still recorded that it was made")
+    }
+
+    func testPortionConfirmationOnlyAppliesToSingleDishCooks() {
+        let store = KitchenStore()
+        // A multi-dish finish ignores a single portion count and banks each at default.
+        store.finishCooking([minestroneDish(servings: 2), minestroneDish(servings: 2)], madePortions: 1)
+        XCTAssertEqual(store.availablePortions(named: "Minestrone"), 4,
+                       "multi-dish banks each dish at its own servings, not one shared count")
+    }
+
+    func testUpdateCookingTimerMirrorsOntoTheNowCard() {
+        let store = KitchenStore()
+        store.beginCooking([minestroneDish(servings: 2)], stepIndex: 1, totalSteps: 4)
+        store.updateCookingTimer("04:20")
+        if case .cooking(let p) = store.nowState {
+            XCTAssertEqual(p.timerText, "04:20", "the running timer mirrors onto the cook card")
+        } else { XCTFail("should still be in the cooking state") }
+        store.updateCookingTimer(nil)
+        if case .cooking(let p) = store.nowState {
+            XCTAssertNil(p.timerText, "clearing the timer clears the card's countdown")
+        } else { XCTFail("clearing the timer must not drop the cooking state") }
+    }
+
     func testPlanForNowMatchesTheCurrentPartOfDay() {
         let store = KitchenStore()
         store.events.removeAll()   // ignore the sample seed's own today-plans
