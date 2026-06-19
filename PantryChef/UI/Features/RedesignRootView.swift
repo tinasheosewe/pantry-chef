@@ -309,6 +309,9 @@ struct RedesignRootView: View {
                     .padding(.horizontal, Theme.Metric.lg).padding(.top, 18)
             }
             tierRail("With a swap", "Cook it with a small substitution", .oneSwap)
+            if store.hasFavorites {
+                tierRail("Your favorites", "The ones you keep coming back to", .favorites)
+            }
             tierRail("A quick shop", "You're an ingredient or two short", .shop, sortByMissing: true)
             browseAllFooter.padding(.top, 22)
         } else {
@@ -419,9 +422,13 @@ struct RedesignRootView: View {
     @ViewBuilder private var filteredGrid: some View {
         let dishes = filteredDishes
         if dishes.isEmpty {
-            Text("Nothing matches — clear a filter or your search.")
-                .font(Theme.Typography.note(13)).foregroundStyle(Theme.Palette.warmGray)
-                .frame(maxWidth: .infinity).padding(.top, 40)
+            if feedLens == .favorites && feedFilters.isEmpty && feedSearch.isEmpty {
+                QuietEmpty(eyebrow: "No favorites yet",
+                           line: "Tap the heart on any recipe to keep it here.")
+            } else {
+                QuietEmpty(eyebrow: "Nothing matches",
+                           line: "Clear a filter or your search to see more.")
+            }
         } else {
             LazyVGrid(columns: [GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12)],
                       alignment: .leading, spacing: 16) {
@@ -659,6 +666,12 @@ private struct RecipeDetailScreen: View {
             autofill: { await store.ai.generateIngredientDefinition(name: $0) },
             onCook: { effective in session = CookSession(dishes: [effective]) },
             onLogCooked: { effective in store.logCooked(effective); onClose() },
+            rating: store.rating(for: dish),
+            onRate: { store.setRating($0, for: dish) },
+            savedNote: store.notes(for: dish),
+            onSaveNote: { store.setNotes($0, for: dish) },
+            timesCooked: store.timesCooked(dish),
+            lastCooked: store.lastCooked(dish),
             onClose: onClose
         )
         .fullScreenCover(item: $session) { s in

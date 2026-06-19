@@ -5,6 +5,17 @@ import Foundation
 /// only what the user actually changed — their pantry, list, plans, journal, profile,
 /// and settings — is snapshotted. This is the local foundation; CloudKit sync +
 /// household sharing layer on top of the same Codable shape later.
+/// Per-recipe user data that outlives a reseed — keyed by recipe slug, because seed
+/// dishes regenerate their UUIDs each launch. Holds the favorite flag, a 1–5 rating,
+/// and a free-text note. (Times-cooked / last-cooked are derived from the journal,
+/// not stored here.)
+struct RecipeNote: Codable, Equatable {
+    var favorite = false
+    var rating: Int?
+    var notes: String?
+    var isEmpty: Bool { !favorite && rating == nil && (notes?.isEmpty ?? true) }
+}
+
 struct PantrySnapshot: Codable {
     var version = 1
     var stock: [StockItem]
@@ -16,12 +27,13 @@ struct PantrySnapshot: Codable {
     var autoAdjust: Bool
     var assumeSpiceRack: Bool
     var expiryReminders: Bool = true
+    var recipeNotes: [String: RecipeNote] = [:]
 }
 
 extension PantrySnapshot {
     private enum CodingKeys: String, CodingKey {
         case version, stock, shoppingList, events, journal, whispers
-        case profile, autoAdjust, assumeSpiceRack, expiryReminders
+        case profile, autoAdjust, assumeSpiceRack, expiryReminders, recipeNotes
     }
 
     /// Tolerant decode so a snapshot written before a field existed still loads
@@ -38,6 +50,7 @@ extension PantrySnapshot {
         autoAdjust = try c.decode(Bool.self, forKey: .autoAdjust)
         assumeSpiceRack = try c.decode(Bool.self, forKey: .assumeSpiceRack)
         expiryReminders = try c.decodeIfPresent(Bool.self, forKey: .expiryReminders) ?? true
+        recipeNotes = try c.decodeIfPresent([String: RecipeNote].self, forKey: .recipeNotes) ?? [:]
     }
 }
 

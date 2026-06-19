@@ -251,7 +251,7 @@ final class KitchenStore {
         PantrySnapshot(stock: stock, shoppingList: shoppingList, events: events,
                        journal: journal, whispers: whispers, profile: profile,
                        autoAdjust: autoAdjustDaysOnStorageChange, assumeSpiceRack: assumeSpiceRack,
-                       expiryReminders: expiryReminders)
+                       expiryReminders: expiryReminders, recipeNotes: recipeNotes)
     }
 
     private func apply(_ s: PantrySnapshot) {
@@ -259,6 +259,17 @@ final class KitchenStore {
         journal = s.journal; whispers = s.whispers; profile = s.profile
         autoAdjustDaysOnStorageChange = s.autoAdjust; assumeSpiceRack = s.assumeSpiceRack
         expiryReminders = s.expiryReminders
+        recipeNotes = s.recipeNotes
+        applyRecipeNotesToLibrary()
+    }
+
+    /// The favorite flag's source of truth is the persisted per-recipe note (the
+    /// library reseeds each launch); mirror it onto the loaded dishes so feed tiles
+    /// and the heart reflect saved favorites.
+    private func applyRecipeNotesToLibrary() {
+        for i in library.indices {
+            library[i].isFavorite = recipeNotes[Self.recipeSlug(library[i].name)]?.favorite ?? false
+        }
     }
     /// Settings: when on, moving an item between pantry/fridge/freezer re-projects
     /// its days-left from the new location's shelf life; when off, only the label
@@ -323,8 +334,58 @@ final class KitchenStore {
             ?? library.first { $0.name.lowercased().contains(q) || q.contains($0.name.lowercased()) }
     }
 
+    // MARK: - Per-recipe user data (favorites, ratings, notes, cook history)
+
+    /// Persisted per-recipe data keyed by name slug — favorites, ratings, notes. Survives
+    /// the library reseed (whose dish UUIDs aren't stable across launches).
+    var recipeNotes: [String: RecipeNote] = [:] { didSet { schedulePersist() } }
+
+    /// Stable key for per-recipe data: the trimmed, lowercased name.
+    static func recipeSlug(_ name: String) -> String {
+        name.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
     func toggleFavorite(_ id: UUID) {
-        if let i = library.firstIndex(where: { $0.id == id }) { library[i].isFavorite.toggle() }
+        guard let i = library.firstIndex(where: { $0.id == id }) else { return }
+        library[i].isFavorite.toggle()
+        mutateNote(for: library[i].name) { $0.favorite = library[i].isFavorite }
+    }
+
+    /// Favorited dishes (dietary-filtered), newest favorites surfaced as they're in the
+    /// library order — the Favorites lens/rail reads from here.
+    func favorites() -> [Dish] { feedLibrary.filter(\.isFavorite) }
+    var hasFavorites: Bool { library.contains(where: \.isFavorite) }
+
+    func rating(for dish: Dish) -> Int? { recipeNotes[Self.recipeSlug(dish.name)]?.rating }
+    func notes(for dish: Dish) -> String? { recipeNotes[Self.recipeSlug(dish.name)]?.notes }
+
+    /// Set a 1–5 star rating (nil clears it).
+    func setRating(_ stars: Int?, for dish: Dish) {
+        mutateNote(for: dish.name) { $0.rating = stars }
+    }
+
+    /// Set the free-text note (blank clears it).
+    func setNotes(_ text: String?, for dish: Dish) {
+        let trimmed = text?.trimmingCharacters(in: .whitespacesAndNewlines)
+        mutateNote(for: dish.name) { $0.notes = (trimmed?.isEmpty ?? true) ? nil : trimmed }
+    }
+
+    /// Times this recipe was cooked (within the journal's retention window) and when
+    /// it was last made — derived from the cook journal, the single record of truth.
+    func timesCooked(_ dish: Dish) -> Int {
+        let key = Self.recipeSlug(dish.name)
+        return journal.filter { $0.level == .cooked && Self.recipeSlug($0.name) == key }.count
+    }
+    func lastCooked(_ dish: Dish) -> Date? {
+        let key = Self.recipeSlug(dish.name)
+        return journal.filter { $0.level == .cooked && Self.recipeSlug($0.name) == key }.map(\.date).max()
+    }
+
+    private func mutateNote(for name: String, _ change: (inout RecipeNote) -> Void) {
+        let key = Self.recipeSlug(name)
+        var note = recipeNotes[key] ?? RecipeNote()
+        change(&note)
+        recipeNotes[key] = note.isEmpty ? nil : note
     }
 
     /// Add a brand-new dish to the library (e.g. "save as new" from a tweak/edit).
@@ -409,6 +470,8 @@ final class KitchenStore {
     func logPlannedMeal(_ meal: PlannedMeal, kept: Int = 0) {
         removeMeal(meal.id)
         drawDownLeftover(name: meal.name, plate: meal.plate, to: kept)
+        recordInLog(name: meal.name, plate: meal.plate, level: .served,
+                    note: kept > 0 ? "\(kept) \(kept == 1 ? "portion" : "portions") left" : "all eaten")
         nowState = .cooked(CookedSummary(
             name: meal.name, plate: meal.plate,
             summary: kept > 0
@@ -491,6 +554,15 @@ final class KitchenStore {
                                             totalSteps: p.totalSteps, timerText: text, dish: p.dish))
     }
 
+    /// The one place a meal enters the log — every cook/eat path funnels through here,
+    /// so the journal is the *complete* record (cooks count toward "made N times";
+    /// eaten leftovers and ready-made picks are logged too, at their own level, and
+    /// never inflate the cooked count). Bounded by `pruneHistory`.
+    private func recordInLog(name: String, plate: PlateComposition, level: MealPrepLevel, note: String?) {
+        journal.append(JournalItem(date: today, name: name, plate: plate, level: level, note: note))
+        pruneHistory()
+    }
+
     /// Record a cooked dish: bank its (scaled) servings as leftovers and journal it.
     /// This is the single "I made this" operation — reached from finishing the cook
     /// instrument or "Mark as made" on the recipe. `portions` overrides the banked
@@ -499,10 +571,8 @@ final class KitchenStore {
     func logCooked(_ dish: Dish, portions: Int? = nil) {
         let made = portions ?? dish.servings
         bankLeftover(name: dish.name, plate: dish.plate, add: made)
-        journal.append(JournalItem(
-            date: today, name: dish.name, plate: dish.plate, level: .cooked,
-            note: "\(made) \(made == 1 ? "serving" : "servings")"))
-        pruneHistory()
+        recordInLog(name: dish.name, plate: dish.plate, level: .cooked,
+                    note: "\(made) \(made == 1 ? "serving" : "servings")")
     }
 
     /// Keep history bounded. The plan looks forward, so the journal record and any
@@ -709,8 +779,11 @@ final class KitchenStore {
         let categories = intakes.compactMap { $0.resolvedItemID.flatMap { PantryCatalog.itemsByID[$0] }?.category }
         let plate = PlateComposition(categories: categories.isEmpty ? [.other] : categories,
                                      seed: UInt64(names.joined().utf8.reduce(0) { $0 &+ UInt64($1) } &+ 5))
+        let title = "Tonight: \(names.prefix(3).joined(separator: ", "))"
+        recordInLog(name: title, plate: plate, level: .justAte,
+                    note: "\(names.count) item\(names.count == 1 ? "" : "s") from your kitchen")
         nowState = .cooked(CookedSummary(
-            name: "Tonight: \(names.prefix(3).joined(separator: ", "))",
+            name: title,
             plate: plate, summary: "Logged — \(names.count) item\(names.count == 1 ? "" : "s") from your kitchen."))
     }
 
@@ -903,6 +976,7 @@ final class KitchenStore {
 
     /// Log a ready-made pick as eaten tonight — no cook instrument, just the record.
     func logEaten(_ option: FanOption) {
+        recordInLog(name: option.name, plate: option.plate, level: .justAte, note: "eaten tonight")
         nowState = .cooked(CookedSummary(
             name: option.name, plate: option.plate, summary: "Logged — eaten tonight."))
     }
@@ -1255,6 +1329,13 @@ final class KitchenStore {
         // keeps the seed — everything they change is snapshotted from here on. Tests
         // (XCTest) and UI-test/in-memory runs stay on the fixed seed and never touch disk,
         // for determinism.
+        // Mirror the seed's favorites into the persisted per-recipe notes (now that all
+        // stored properties exist), so they're the source of truth from the start and
+        // survive a save→reload. A loaded snapshot below overrides this with the user's.
+        for dish in library where dish.isFavorite {
+            recipeNotes[Self.recipeSlug(dish.name)] = RecipeNote(favorite: true)
+        }
+
         let opts = AppLaunchOptions.current
         let isTesting = ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil
         if opts.seedPantryItems && !opts.useInMemoryStorage && !isTesting {

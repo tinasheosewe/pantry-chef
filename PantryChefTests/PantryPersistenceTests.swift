@@ -50,6 +50,23 @@ final class PantryPersistenceTests: XCTestCase {
         XCTAssertTrue(back.expiryReminders, "a missing key falls back to the default, not a decode failure")
     }
 
+    func testRecipeNotesRoundTripAndDefaultEmptyOnOldFiles() throws {
+        let notes = ["spinach & feta orzo": RecipeNote(favorite: true, rating: 5, notes: "weeknight win")]
+        let snap = PantrySnapshot(stock: [], shoppingList: [], events: [], journal: [],
+                                  whispers: [], profile: DietaryProfile(), autoAdjust: true,
+                                  assumeSpiceRack: true, expiryReminders: true, recipeNotes: notes)
+        XCTAssertEqual(try roundTrip(snap).recipeNotes, notes, "favorites/ratings/notes survive encode→decode")
+
+        // A snapshot from before recipeNotes existed must still load (empty map).
+        let enc = JSONEncoder(); enc.dateEncodingStrategy = .iso8601
+        var json = try JSONSerialization.jsonObject(with: enc.encode(snap)) as! [String: Any]
+        json.removeValue(forKey: "recipeNotes")
+        let data = try JSONSerialization.data(withJSONObject: json)
+        let dec = JSONDecoder(); dec.dateDecodingStrategy = .iso8601
+        XCTAssertEqual(try dec.decode(PantrySnapshot.self, from: data).recipeNotes, [:],
+                       "a missing key defaults to no notes, not a decode failure")
+    }
+
     func testAllMeasureCasesRoundTrip() throws {
         let plate = PlateComposition(categories: [.produce], seed: 1)
         let items = [

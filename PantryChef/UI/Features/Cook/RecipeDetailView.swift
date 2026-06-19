@@ -32,9 +32,18 @@ struct RecipeDetailView: View {
     /// "I made this" without walking the cook steps — banks the (scaled) servings as
     /// leftovers and journals it, same as finishing the instrument.
     var onLogCooked: (Dish) -> Void = { _ in }
+    /// Your take on this recipe — a 1–5 rating, a free note, and how often/when you've
+    /// cooked it. Persisted per recipe (survives a reseed) by the store.
+    var rating: Int? = nil
+    var onRate: (Int?) -> Void = { _ in }
+    var savedNote: String? = nil
+    var onSaveNote: (String) -> Void = { _ in }
+    var timesCooked: Int = 0
+    var lastCooked: Date? = nil
     var onClose: () -> Void
 
     @State private var currentDish: Dish
+    @State private var noteDraft: String = ""
     @State private var servings: Int
     @State private var appliedSwaps: [UUID: SwapChoice] = [:]
     @State private var showEditor = false
@@ -63,6 +72,12 @@ struct RecipeDetailView: View {
          autofill: @escaping (String) async -> AIIngredientDefinition? = { _ in nil },
          onCook: @escaping (Dish) -> Void,
          onLogCooked: @escaping (Dish) -> Void = { _ in },
+         rating: Int? = nil,
+         onRate: @escaping (Int?) -> Void = { _ in },
+         savedNote: String? = nil,
+         onSaveNote: @escaping (String) -> Void = { _ in },
+         timesCooked: Int = 0,
+         lastCooked: Date? = nil,
          onClose: @escaping () -> Void) {
         self.dish = dish
         self.readiness = readiness
@@ -78,10 +93,17 @@ struct RecipeDetailView: View {
         self.autofill = autofill
         self.onCook = onCook
         self.onLogCooked = onLogCooked
+        self.rating = rating
+        self.onRate = onRate
+        self.savedNote = savedNote
+        self.onSaveNote = onSaveNote
+        self.timesCooked = timesCooked
+        self.lastCooked = lastCooked
         self.onClose = onClose
         _currentDish = State(initialValue: dish)
         _baseline = State(initialValue: dish)
         _servings = State(initialValue: dish.servings)
+        _noteDraft = State(initialValue: savedNote ?? "")
     }
 
     /// The dish as it will actually be cooked: scaled, then swaps applied.
@@ -105,6 +127,7 @@ struct RecipeDetailView: View {
                 actionRow
                 ingredients
                 if !effectiveDish.steps.isEmpty { method }
+                yourTake
             }
             .padding(20).padding(.bottom, 24)
         }
@@ -162,9 +185,24 @@ struct RecipeDetailView: View {
                 PlateView(name: currentDish.name, composition: currentDish.plate, size: 84)
             }
             .padding(.top, 6)
+            if let line = cookHistoryLine {
+                Text(line).font(Theme.Typography.fact(11.5)).foregroundStyle(Theme.Palette.sage)
+                    .padding(.top, 8)
+            }
             factsBand.padding(.top, 14)
         }
         .padding(.top, 14)
+    }
+
+    /// "Cooked 3 times · last made Tuesday" — your own history with this dish, drawn
+    /// from the journal. Hidden until you've made it at least once.
+    private var cookHistoryLine: String? {
+        guard timesCooked > 0 else { return nil }
+        let count = timesCooked == 1 ? "Cooked once" : "Cooked \(timesCooked) times"
+        guard let last = lastCooked else { return count }
+        let f = DateFormatter(); f.doesRelativeDateFormatting = true
+        f.dateStyle = .medium; f.timeStyle = .none
+        return "\(count) · last made \(f.string(from: last))"
     }
 
     /// "WEEKNIGHT · DAIRY" — pace plus what it contains.
@@ -505,6 +543,51 @@ struct RecipeDetailView: View {
 
     private func sectionTitle(_ text: String) -> some View {
         Eyebrow(text: text).padding(.bottom, 4)
+    }
+
+    // MARK: - Your take (rating + notes)
+
+    private var yourTake: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            sectionTitle("Your take")
+            HStack(spacing: 6) {
+                ForEach(1...5, id: \.self) { star in
+                    Button {
+                        // Tapping the current rating clears it; otherwise set it.
+                        withAnimation(.snappy) { onRate(rating == star ? nil : star) }
+                    } label: {
+                        Image(systemName: (rating ?? 0) >= star ? "star.fill" : "star")
+                            .font(.system(size: 20))
+                            .foregroundStyle((rating ?? 0) >= star ? Theme.Palette.sage : Theme.Palette.warmGraySoft)
+                            .frame(width: 34, height: 40)
+                            .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel("\(star) star\(star == 1 ? "" : "s")")
+                }
+                if rating != nil {
+                    Spacer()
+                    Button("Clear") { withAnimation { onRate(nil) } }
+                        .font(Theme.Typography.fact(11)).foregroundStyle(Theme.Palette.warmGray)
+                        .buttonStyle(.plain)
+                }
+            }
+            // A free note — saved on commit (return) or when the field loses focus.
+            TextField("Notes — tweaks, what to serve it with…", text: $noteDraft, axis: .vertical)
+                .font(Theme.Typography.fact(13.5)).foregroundStyle(Theme.Palette.ink)
+                .lineLimit(1...5)
+                .padding(.horizontal, 12).padding(.vertical, 10)
+                .background(RoundedRectangle(cornerRadius: 3).fill(Theme.Palette.creamRaised))
+                .overlay(RoundedRectangle(cornerRadius: 3).strokeBorder(Theme.Palette.hairline))
+                .onSubmit { onSaveNote(noteDraft) }
+                .submitLabel(.done)
+            if noteDraft.trimmingCharacters(in: .whitespacesAndNewlines) != (savedNote ?? "") {
+                Button("Save note") { onSaveNote(noteDraft) }
+                    .font(Theme.Typography.fact(12, weight: .medium)).foregroundStyle(Theme.Palette.paprika)
+                    .buttonStyle(.plain)
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     private var cookBar: some View {

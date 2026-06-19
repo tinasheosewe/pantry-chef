@@ -177,6 +177,56 @@ final class MealPlanningTests: XCTestCase {
                        "multi-dish banks each dish at its own servings, not one shared count")
     }
 
+    func testFavoritesPersistThroughRecipeNotesAndSurfaceInTheLens() {
+        let store = KitchenStore()
+        let dish = store.library.first { !$0.isFavorite }!
+        XCTAssertFalse(store.favorites().contains { $0.id == dish.id })
+        store.toggleFavorite(dish.id)
+        XCTAssertEqual(store.recipeNotes[KitchenStore.recipeSlug(dish.name)]?.favorite, true,
+                       "favorite is recorded in the persisted per-recipe note")
+        XCTAssertTrue(store.favorites().contains { $0.name == dish.name }, "and surfaces in the favorites lens")
+        store.toggleFavorite(dish.id)
+        XCTAssertNil(store.recipeNotes[KitchenStore.recipeSlug(dish.name)], "un-favoriting clears the empty note")
+    }
+
+    func testRatingAndNotesRoundTripAndClear() {
+        let store = KitchenStore()
+        let dish = store.library[0]
+        store.setRating(4, for: dish)
+        store.setNotes("  add chili oil  ", for: dish)
+        XCTAssertEqual(store.rating(for: dish), 4)
+        XCTAssertEqual(store.notes(for: dish), "add chili oil", "notes are trimmed")
+        store.setRating(nil, for: dish)
+        XCTAssertNil(store.rating(for: dish))
+        store.setNotes("   ", for: dish)
+        XCTAssertNil(store.notes(for: dish), "blank notes clear the entry")
+        XCTAssertNil(store.recipeNotes[KitchenStore.recipeSlug(dish.name)], "an emptied note drops out entirely")
+    }
+
+    func testTimesCookedAndLastCookedDeriveFromTheJournalNotEating() {
+        let store = KitchenStore()
+        let dish = minestroneDish(servings: 2)
+        XCTAssertEqual(store.timesCooked(dish), 0)
+        store.logCooked(dish)
+        store.logCooked(dish)
+        XCTAssertEqual(store.timesCooked(dish), 2, "each cook counts")
+        XCTAssertEqual(store.lastCooked(dish).map { Calendar.current.startOfDay(for: $0) },
+                       Calendar.current.startOfDay(for: store.today))
+        // Eating it (a leftover) is logged but must NOT inflate the cooked count.
+        store.logEaten(FanOption(name: dish.name, plate: dish.plate, subtitle: "", reason: "",
+                                 level: .served, dish: dish))
+        XCTAssertEqual(store.timesCooked(dish), 2, "eating isn't cooking")
+    }
+
+    func testEveryEatPathLandsInTheUnifiedLog() {
+        let store = KitchenStore()
+        let before = store.journal.count
+        store.logEaten(FanOption(name: "Apple", plate: .init(categories: [.produce], seed: 2),
+                                 subtitle: "", reason: "", level: .justAte, dish: nil))
+        store.logMeal([])   // empty → no-op, shouldn't add
+        XCTAssertEqual(store.journal.count, before + 1, "a ready-made pick is recorded; an empty ad-hoc log is a no-op")
+    }
+
     func testReconfirmByKeyResetsTheKnowledgeClock() {
         let store = KitchenStore()
         let stale = StockItem(key: "test-leek", name: "Leek",
