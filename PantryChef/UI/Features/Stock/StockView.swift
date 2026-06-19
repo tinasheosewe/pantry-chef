@@ -21,6 +21,7 @@ struct StockView: View {
         let name: String
         let plate: PlateComposition
         let suggested: String?
+        let defaultUnit: MeasurementUnit?
     }
 
     private var allPerishable: [StockItem] {
@@ -188,7 +189,8 @@ struct StockView: View {
     /// second tap because something's low tops up the line instead of being blocked.
     private func listAffordance(_ item: StockItem) -> some View {
         let listed = store.isOnList(item.name)
-        return Button { listing = ListPrompt(name: item.name, plate: item.plate, suggested: suggestedAmount(item)) } label: {
+        return Button { listing = ListPrompt(name: item.name, plate: item.plate, suggested: suggestedAmount(item),
+                                             defaultUnit: PantryCatalog.itemsByID[item.catalogItemID ?? ""]?.defaultUnit) } label: {
             Text(listed ? "+ MORE" : "+ LIST").font(.system(size: 9, weight: .semibold)).tracking(0.8)
                 .foregroundStyle(listed ? Theme.Palette.sage : Theme.Palette.paprika)
                 .padding(.horizontal, 7).frame(minHeight: 30)
@@ -388,10 +390,12 @@ private struct StockItemEditor: View {
         switch item.measure {
         case .perishable(let detail, let days):
             field("Amount") {
-                // Structured number + approved-unit picker (no freeform "300 g" text).
+                // Structured number + approved-unit picker (no freeform "300 g" text),
+                // pre-selecting the ingredient's default unit.
                 AmountField(amount: Binding(
                     get: { detail.isEmpty ? nil : detail },
-                    set: { item.measure = .perishable(detail: $0 ?? "", daysLeft: days) }))
+                    set: { item.measure = .perishable(detail: $0 ?? "", daysLeft: days) }),
+                    defaultUnit: PantryCatalog.itemsByID[item.catalogItemID ?? ""]?.defaultUnit)
             }
             field("Days left") {
                 HStack(spacing: 6) {
@@ -510,7 +514,7 @@ private struct AddToListSheet: View {
             .padding(.top, 22)
             VStack(alignment: .leading, spacing: 6) {
                 Eyebrow(text: "How much to buy?")
-                AmountField(amount: $amount)
+                AmountField(amount: $amount, defaultUnit: prompt.defaultUnit)
                     .font(Theme.Typography.fact(15)).foregroundStyle(Theme.Palette.ink)
                     .padding(.horizontal, 12).padding(.vertical, 10)
                     .frame(maxWidth: .infinity, alignment: .leading)

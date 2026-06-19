@@ -186,9 +186,15 @@ struct ShoppingEntry: Identifiable, Equatable {
     /// falls outside the aisle grouping. `.other` is a valid, deliberate choice (not a
     /// silent gap): genuinely uncategorisable things live there.
     var category: FoodCategory
+    /// Whether it's checked off (in the cart). Lives on the entry so it PERSISTS across
+    /// opening/closing the Shop run — only the user toggles it, and "put away" clears it
+    /// by moving the item to stock.
+    var checked: Bool
 
-    init(id: UUID = UUID(), name: String, amount: String? = nil, category: FoodCategory = .other) {
-        self.id = id; self.name = name; self.amount = amount; self.category = category
+    init(id: UUID = UUID(), name: String, amount: String? = nil,
+         category: FoodCategory = .other, checked: Bool = false) {
+        self.id = id; self.name = name; self.amount = amount
+        self.category = category; self.checked = checked
     }
 }
 
@@ -549,6 +555,17 @@ final class KitchenStore {
     }
     @ObservationIgnored private var listCategoryCache: [String: FoodCategory] = [:]
 
+    /// The catalog default unit for an ingredient by name (g for spinach, L for milk),
+    /// so a quantity field can pre-select it. Catalog-resolved, cached.
+    func defaultUnit(forName name: String) -> MeasurementUnit? {
+        let key = name.trimmingCharacters(in: .whitespaces).lowercased()
+        if let cached = defaultUnitCache[key] { return cached }
+        let u = IntakePipeline.bestCatalogID(for: name).flatMap { PantryCatalog.itemsByID[$0]?.defaultUnit }
+        defaultUnitCache[key] = u
+        return u
+    }
+    @ObservationIgnored private var defaultUnitCache: [String: MeasurementUnit?] = [:]
+
     /// Shopping entries grouped by their (always-assigned) category, in display order
     /// (empty groups dropped) — the one place the list's aisle grouping is derived,
     /// shared by the pantry preview and the shopping run.
@@ -825,11 +842,31 @@ final class KitchenStore {
 
     /// The catalog identities we'll trust for readiness — same honesty rule as
     /// `presentStockNames`, but exact, so an ID-bearing recipe line matches without
-    /// any name normalization.
+    /// any name normalization. With `assumeSpiceRack` on, the common dried spices are
+    /// folded in (assumed present) so a stocked kitchen's spiced dishes read ready
+    /// without logging every jar.
     private var presentStockCatalogIDs: [String] {
         let now = today
-        return stock.filter { $0.certainty(now: now) > .likelyGone }.compactMap(\.catalogItemID)
+        var ids = stock.filter { $0.certainty(now: now) > .likelyGone }.compactMap(\.catalogItemID)
+        if assumeSpiceRack { ids.append(contentsOf: Self.basicSpiceRack) }
+        return ids
     }
+
+    /// Settings: assume a basic spice rack — the everyday dried spices most kitchens
+    /// keep — so readiness doesn't nag for cumin/paprika/etc. you almost certainly have.
+    /// Specialty spices (saffron, ras el hanout, miso, fish sauce…) are NOT in here, so a
+    /// dish hinging on one still reads "needs". Recipes always *list* their spices either
+    /// way — this only affects "can I make it".
+    var assumeSpiceRack = true
+
+    /// The catalog ids assumed present when `assumeSpiceRack` is on.
+    static let basicSpiceRack: Set<String> = [
+        "cumin", "paprika", "smoked-paprika", "oregano", "cinnamon", "turmeric",
+        "coriander", "garlic-powder", "onion-powder", "chili-powder", "chili-flakes",
+        "cayenne", "curry-powder", "garam-masala", "ground-ginger", "thyme", "rosemary",
+        "bay-leaf", "nutmeg", "allspice", "cardamom", "basil", "sage", "dill",
+        "italian-seasoning", "cajun-seasoning"
+    ]
 
     /// The single on-hand index, catalog/synonym-aware (see IngredientMatching).
     private var presenceIndex: IngredientMatching.Index {
@@ -1116,28 +1153,11 @@ final class KitchenStore {
             staple("flour", "Flour", "flour", .bakingSupplies, .inStock, 11),
             staple("oats", "Rolled oats", "oats", .grains, .inStock, 51),
             staple("soy sauce", "Soy sauce", "soy-sauce", .condiments, .inStock, 53),
-            staple("olive oil", "Olive oil", "olive-oil", .oils, .runningLow, 8),
-
-            // The spice rack — the everyday dried spices a stocked kitchen keeps. Seed
-            // recipes now require their defining spices (essential, not assumed), so the
-            // rack is what makes spiced dishes read "ready"; a dish hinging on a specialty
-            // spice (saffron, ras el hanout…) we don't keep reads "needs" — by design.
-            staple("cumin", "Cumin", "cumin", .spices, .inStock, 60),
-            staple("smoked paprika", "Smoked paprika", "smoked-paprika", .spices, .inStock, 61),
-            staple("paprika", "Paprika", "paprika", .spices, .inStock, 62),
-            staple("oregano", "Dried oregano", "oregano", .spices, .inStock, 63),
-            staple("cinnamon", "Cinnamon", "cinnamon", .spices, .inStock, 64),
-            staple("turmeric", "Turmeric", "turmeric", .spices, .inStock, 65),
-            staple("coriander", "Ground coriander", "coriander", .spices, .inStock, 66),
-            staple("garlic powder", "Garlic powder", "garlic-powder", .spices, .inStock, 67),
-            staple("chili powder", "Chili powder", "chili-powder", .spices, .inStock, 68),
-            staple("chili flakes", "Chili flakes", "chili-flakes", .spices, .inStock, 69),
-            staple("curry powder", "Curry powder", "curry-powder", .spices, .inStock, 70),
-            staple("garam masala", "Garam masala", "garam-masala", .spices, .inStock, 71),
-            staple("ground ginger", "Ground ginger", "ground-ginger", .spices, .inStock, 72),
-            staple("dried thyme", "Dried thyme", "thyme", .spices, .inStock, 73),
-            staple("bay leaves", "Bay leaves", "bay-leaf", .spices, .inStock, 75),
-            staple("nutmeg", "Nutmeg", "nutmeg", .spices, .inStock, 76)
+            staple("olive oil", "Olive oil", "olive-oil", .oils, .runningLow, 8)
+            // Common dried spices aren't stocked individually — they're covered by the
+            // "assume a basic spice rack" setting (assumeSpiceRack), which makes spiced
+            // dishes read ready without logging every jar. A dish hinging on a specialty
+            // spice (saffron, ras el hanout…) still reads "needs" — by design.
         ]
 
         // The cold-launch cost is the catalog index build + warming readiness over the

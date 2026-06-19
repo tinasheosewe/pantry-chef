@@ -9,10 +9,8 @@ struct ShoppingChecklistView: View {
     var store: KitchenStore
     var onClose: () -> Void
 
-    /// Local cart state — committed only on Done, so a mistaken tap costs nothing.
-    /// `amounts` starts from each item's *desired* amount and is edited to what was
-    /// actually bought.
-    @State private var checked: Set<String> = []
+    /// Checked state lives on the store entries (persists across open/close); `amounts`
+    /// is the bought amount, seeded from each item's desired amount and edited in place.
     @State private var amounts: [String: String] = [:]
     @State private var extras: [ShoppingEntry] = []
     @State private var newItem = ""
@@ -35,7 +33,7 @@ struct ShoppingChecklistView: View {
     }
 
     private var entries: [ShoppingEntry] { store.shoppingList + extras }
-    private var boughtCount: Int { checked.count }
+    private var boughtCount: Int { entries.filter(\.checked).count }
 
     /// Aisle groups shown — every category on "All", just the selected one otherwise.
     private var displayedGroups: [(FoodCategory, [ShoppingEntry])] {
@@ -70,8 +68,8 @@ struct ShoppingChecklistView: View {
                                 // Tapping the check still toggles bought too.
                                 .swipeActions(edge: .leading, allowsFullSwipe: true) {
                                     Button { toggle(entry.name) } label: {
-                                        Label(checked.contains(entry.name) ? "Un-cart" : "Bought",
-                                              systemImage: checked.contains(entry.name) ? "arrow.uturn.left" : "checkmark")
+                                        Label(entry.checked ? "Un-cart" : "Bought",
+                                              systemImage: entry.checked ? "arrow.uturn.left" : "checkmark")
                                     }
                                     .tint(Theme.Palette.sage)
                                 }
@@ -128,7 +126,6 @@ struct ShoppingChecklistView: View {
             } else {
                 store.removeFromList(entry.name)
             }
-            checked.remove(entry.name)
             amounts[entry.name] = nil
         }
     }
@@ -166,7 +163,7 @@ struct ShoppingChecklistView: View {
 
     private func row(_ entry: ShoppingEntry) -> some View {
         let name = entry.name
-        let isChecked = checked.contains(name)
+        let isChecked = entry.checked
         return HStack(spacing: 11) {
             Button { toggle(name) } label: {
                 InkCheck(on: isChecked, size: 22)
@@ -191,6 +188,7 @@ struct ShoppingChecklistView: View {
                 AmountField(amount: Binding(
                     get: { (amounts[name]?.isEmpty ?? true) ? nil : amounts[name] },
                     set: { amounts[name] = $0 ?? "" }),
+                    defaultUnit: store.defaultUnit(forName: name),
                     qtyWidth: 40, unitWidth: 46)
                     .font(Theme.Typography.fact(13)).foregroundStyle(Theme.Palette.ink)
                     .padding(.horizontal, 8).frame(minHeight: 34)
@@ -227,7 +225,11 @@ struct ShoppingChecklistView: View {
                     .foregroundStyle(Theme.Palette.warmGray)
                 Spacer()
                 BlockButton(title: boughtCount > 0 ? "Put \(boughtCount) away" : "Done") {
-                    for name in checked { store.purchase(name: name, amount: amounts[name]) }
+                    // Completion is the one place checks clear automatically — each bought
+                    // item moves to stock and leaves the list.
+                    for entry in entries where entry.checked {
+                        store.purchase(name: entry.name, amount: amounts[entry.name] ?? entry.amount)
+                    }
                     onClose()
                 }
             }
@@ -236,8 +238,14 @@ struct ShoppingChecklistView: View {
         .background(Theme.Palette.cream)
     }
 
+    /// Toggle the checked flag on the matching entry — a store line (persists) or a
+    /// local ad-hoc extra. Only ever called from a user tap/swipe.
     private func toggle(_ name: String) {
-        if checked.contains(name) { checked.remove(name) } else { checked.insert(name) }
+        if let i = store.shoppingList.firstIndex(where: { $0.name == name }) {
+            store.shoppingList[i].checked.toggle()
+        } else if let i = extras.firstIndex(where: { $0.name == name }) {
+            extras[i].checked.toggle()
+        }
     }
 
     private func commitNewItem() {
@@ -266,11 +274,16 @@ struct ShoppingChecklistView: View {
         guard !name.isEmpty else { return }
         let display = name.prefix(1).capitalized + name.dropFirst()
         let category = store.listCategory(forName: display)
-        if !entries.contains(where: { $0.name.lowercased() == display.lowercased() }) {
-            extras.append(ShoppingEntry(name: display, amount: amount, category: category))
+        // You grabbed it → it's in the cart (checked). Mark the existing line if it was
+        // already on the list/extras, else add a new ad-hoc extra already checked.
+        if let i = store.shoppingList.firstIndex(where: { $0.name.lowercased() == display.lowercased() }) {
+            store.shoppingList[i].checked = true
+        } else if let i = extras.firstIndex(where: { $0.name.lowercased() == display.lowercased() }) {
+            extras[i].checked = true
+        } else {
+            extras.append(ShoppingEntry(name: display, amount: amount, category: category, checked: true))
         }
         amounts[display] = amount ?? ""
-        checked.insert(display)
         // If a category filter is on and the new item belongs to a different aisle, it
         // would be added but hidden — drop to "All" so it's never added out of sight.
         if let sel = selectedCategory, sel != category { selectedCategory = nil }

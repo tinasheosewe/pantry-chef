@@ -11,6 +11,9 @@ struct SettingsView: View {
         Binding(get: { store.autoAdjustDaysOnStorageChange },
                 set: { store.autoAdjustDaysOnStorageChange = $0 })
     }
+    private var assumeSpiceRack: Binding<Bool> {
+        Binding(get: { store.assumeSpiceRack }, set: { store.assumeSpiceRack = $0 })
+    }
 
     var body: some View {
         VStack(spacing: 0) {
@@ -47,6 +50,16 @@ struct SettingsView: View {
                     Text("Adjust days-left on storage change")
                         .font(Theme.Typography.fact(15)).foregroundStyle(Theme.Palette.ink)
                     Text("Moving an item to the fridge or freezer re-projects how long it keeps. Turn off to move things without touching your own estimate.")
+                        .font(Theme.Typography.note(12)).foregroundStyle(Theme.Palette.warmGray)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            }
+            .tint(Theme.Palette.paprika)
+            Toggle(isOn: assumeSpiceRack) {
+                VStack(alignment: .leading, spacing: 3) {
+                    Text("Assume a basic spice rack")
+                        .font(Theme.Typography.fact(15)).foregroundStyle(Theme.Palette.ink)
+                    Text("Treat everyday dried spices (cumin, paprika, oregano, cinnamon…) as on hand, so a dish isn't \"a shop away\" over spices you almost certainly keep. Specialty ones (saffron, ras el hanout…) still count. Turn off to require every spice in your pantry.")
                         .font(Theme.Typography.note(12)).foregroundStyle(Theme.Palette.warmGray)
                         .fixedSize(horizontal: false, vertical: true)
                 }

@@ -31,14 +31,21 @@ enum AmountText {
 /// ingredients and the shopping cart — so the interface is the same everywhere.
 struct AmountField: View {
     @Binding var amount: String?
+    /// The ingredient's catalog default unit — pre-selected when the amount carries no
+    /// unit yet, so typing a quantity fills in a sensible unit (g for spinach, L for
+    /// milk) instead of leaving "unit" blank. The user can still change it.
+    var defaultUnit: MeasurementUnit? = nil
     var qtyWidth: CGFloat = 48
     var unitWidth: CGFloat = 56
+
+    /// The unit shown/used: an explicit one on the amount, else the ingredient default.
+    private var effectiveUnit: MeasurementUnit? { AmountText.unit(amount) ?? defaultUnit }
 
     var body: some View {
         HStack(spacing: 8) {
             TextField("qty", text: Binding(
                 get: { AmountText.qty(amount) },
-                set: { amount = AmountText.compose(qty: $0, unit: AmountText.unit(amount)) }))
+                set: { amount = AmountText.compose(qty: $0, unit: effectiveUnit) }))
                 .keyboardType(.decimalPad)
                 .frame(width: qtyWidth)
             unitMenu
@@ -46,7 +53,7 @@ struct AmountField: View {
     }
 
     private var unitMenu: some View {
-        let current = AmountText.unit(amount)
+        let current = effectiveUnit
         return Menu {
             Button("—") { amount = AmountText.compose(qty: AmountText.qty(amount), unit: nil) }
             ForEach(MeasurementUnit.allCases) { u in

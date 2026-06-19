@@ -86,7 +86,8 @@ struct RecipeEditorView: View {
                 HStack(spacing: 8) {
                     AmountField(amount: Binding(
                         get: { line.amount },
-                        set: { line = line.withAmount(qty: AmountText.qty($0), unit: AmountText.unit($0)) }))
+                        set: { line = line.withAmount(qty: AmountText.qty($0), unit: AmountText.unit($0)) }),
+                        defaultUnit: PantryCatalog.itemsByID[line.catalogItemID ?? ""]?.defaultUnit)
                     Button {
                         beginResolve(phrase: line.name, lineID: line.id)
                     } label: {
