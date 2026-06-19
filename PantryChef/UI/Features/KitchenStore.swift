@@ -5,9 +5,9 @@ import Observation
 
 /// A stock row. Perishables show a day count; staples show honest presence, never
 /// a fake fullness (spec §7).
-struct StockItem: Identifiable, Equatable {
-    enum Section: String { case made = "Made by you", useSoon = "Use soon", have = "In stock", staples = "Staples" }
-    enum Measure: Equatable {
+struct StockItem: Identifiable, Equatable, Codable {
+    enum Section: String, Codable { case made = "Made by you", useSoon = "Use soon", have = "In stock", staples = "Staples" }
+    enum Measure: Equatable, Codable {
         // daysLeft is the FULL-PRECISION remaining lifetime (a Double): storage moves
         // re-project it without losing a partial day each time. It's truncated to a whole
         // number only at the consumer boundary (`daysLeft(now:)`), never in storage.
@@ -17,7 +17,7 @@ struct StockItem: Identifiable, Equatable {
         /// as it's eaten (nil when we only have the free-text `detail`).
         case made(detail: String, portions: Int? = nil)
     }
-    enum StapleLevel: Equatable {
+    enum StapleLevel: Equatable, Codable {
         case inStock, runningLow, out
         var label: String {
             switch self {
@@ -178,7 +178,7 @@ struct StockItem: Identifiable, Equatable {
 
 /// One line on the shopping list — a name and the *desired* amount to buy. The
 /// amount you actually purchase is recorded when you mark it bought (it may differ).
-struct ShoppingEntry: Identifiable, Equatable {
+struct ShoppingEntry: Identifiable, Equatable, Codable {
     let id: UUID
     var name: String
     var amount: String?
@@ -209,12 +209,12 @@ final class KitchenStore {
     var space: RootSpace = .today
     var nowState: NowState = .open(options: [], selected: 0)
 
-    var journal: [JournalItem]
-    var events: [DatedEvent]
-    var whispers: [DatedWhisper]
-    var stock: [StockItem] { didSet { cachedFingerprint = nil } }
+    var journal: [JournalItem] { didSet { schedulePersist() } }
+    var events: [DatedEvent] { didSet { schedulePersist() } }
+    var whispers: [DatedWhisper] { didSet { schedulePersist() } }
+    var stock: [StockItem] { didSet { cachedFingerprint = nil; schedulePersist() } }
     var library: [Dish] { didSet { cachedFeedLibrary = nil } }
-    var profile = DietaryProfile() { didSet { cachedFeedLibrary = nil } }
+    var profile = DietaryProfile() { didSet { cachedFeedLibrary = nil; schedulePersist() } }
 
     // Cheap caches so views (which read these every render) don't rebuild big strings/
     // filters on the hot path. Invalidated by the `didSet`s above + on assumeSpiceRack.
@@ -229,17 +229,46 @@ final class KitchenStore {
         cachedFeedLibrary = f
         return f
     }
+
+    // MARK: - Persistence (local snapshot → disk; CloudKit/household sharing later)
+
+    @ObservationIgnored private var persistenceEnabled = false
+    @ObservationIgnored private var persistTask: Task<Void, Never>?
+
+    /// Debounced save of user-owned state. No-op until init finishes loading/seeding, so
+    /// the demo seed and the load itself don't trigger writes.
+    private func schedulePersist() {
+        guard persistenceEnabled else { return }
+        persistTask?.cancel()
+        persistTask = Task { [weak self] in
+            try? await Task.sleep(nanoseconds: 700_000_000)
+            guard !Task.isCancelled, let self else { return }
+            PantryPersistence.save(self.snapshot())
+        }
+    }
+
+    private func snapshot() -> PantrySnapshot {
+        PantrySnapshot(stock: stock, shoppingList: shoppingList, events: events,
+                       journal: journal, whispers: whispers, profile: profile,
+                       autoAdjust: autoAdjustDaysOnStorageChange, assumeSpiceRack: assumeSpiceRack)
+    }
+
+    private func apply(_ s: PantrySnapshot) {
+        stock = s.stock; shoppingList = s.shoppingList; events = s.events
+        journal = s.journal; whispers = s.whispers; profile = s.profile
+        autoAdjustDaysOnStorageChange = s.autoAdjust; assumeSpiceRack = s.assumeSpiceRack
+    }
     /// Settings: when on, moving an item between pantry/fridge/freezer re-projects
     /// its days-left from the new location's shelf life; when off, only the label
     /// changes and your own estimate stands. See `StockItem.moved(to:now:adjustDaysLeft:)`.
-    var autoAdjustDaysOnStorageChange = true
+    var autoAdjustDaysOnStorageChange = true { didSet { schedulePersist() } }
     var shoppingList: [ShoppingEntry] = [
         ShoppingEntry(name: "Olive oil", category: .oils),
         ShoppingEntry(name: "Salmon", amount: "2 fillets", category: .protein),
         ShoppingEntry(name: "Miso", amount: "1 tub", category: .condiments),
         ShoppingEntry(name: "Milk", amount: "2 L", category: .dairy),
         ShoppingEntry(name: "Eggs", amount: "12", category: .dairy)
-    ]
+    ] { didSet { schedulePersist() } }
     /// The fan's current options — the now-module's Open state rebuilds from these.
     var fanOptions: [FanOption] = []
 
@@ -877,7 +906,7 @@ final class KitchenStore {
     /// Specialty spices (saffron, ras el hanout, miso, fish sauce…) are NOT in here, so a
     /// dish hinging on one still reads "needs". Recipes always *list* their spices either
     /// way — this only affects "can I make it".
-    var assumeSpiceRack = true { didSet { cachedFingerprint = nil } }
+    var assumeSpiceRack = true { didSet { cachedFingerprint = nil; schedulePersist() } }
 
     /// The catalog ids assumed present when `assumeSpiceRack` is on.
     static let basicSpiceRack: Set<String> = [
@@ -1179,6 +1208,17 @@ final class KitchenStore {
             // dishes read ready without logging every jar. A dish hinging on a specialty
             // spice (saffron, ras el hanout…) still reads "needs" — by design.
         ]
+
+        // Load the user's saved kitchen, overriding the demo seed. First launch (no file)
+        // keeps the seed — everything they change is snapshotted from here on. Tests
+        // (XCTest) and UI-test/in-memory runs stay on the fixed seed and never touch disk,
+        // for determinism.
+        let opts = AppLaunchOptions.current
+        let isTesting = ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil
+        if opts.seedPantryItems && !opts.useInMemoryStorage && !isTesting {
+            if let saved = PantryPersistence.load() { apply(saved) }
+            persistenceEnabled = true
+        }
 
         // The cold-launch cost is the catalog index build + warming readiness over the
         // whole library. Both are done proactively behind the loading screen via

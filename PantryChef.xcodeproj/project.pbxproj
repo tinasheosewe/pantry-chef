@@ -105,6 +105,7 @@
 		56F8E1B13E82533C21647E7B /* tuscan-white-bean-and-kale-stew.png in Resources */ = {isa = PBXBuildFile; fileRef = 245A7F093281E82BEB82C82A /* tuscan-white-bean-and-kale-stew.png */; };
 		58C95D93F8DC9BF267EE54F5 /* moussaka.png in Resources */ = {isa = PBXBuildFile; fileRef = C33D4743FD418720AB703AFC /* moussaka.png */; };
 		5966B841C1F476E956FC0F9E /* hearty-beef-stew.png in Resources */ = {isa = PBXBuildFile; fileRef = 00BA4CD9CAFB39284932DA3A /* hearty-beef-stew.png */; };
+		59B384E56F09D1C12D4C4483 /* PantryPersistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = E94F1754D943A372889A09B4 /* PantryPersistence.swift */; };
 		5A71CB0FBFDF5EDA80BD964A /* MultiCookScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8241073BA3C1CE75DE6558C5 /* MultiCookScheduler.swift */; };
 		5B5D14F361B1CECAF39AA534 /* greek-style-baked-cod-with-chickpeas.png in Resources */ = {isa = PBXBuildFile; fileRef = C83773423D3A2F57ACBDD0F4 /* greek-style-baked-cod-with-chickpeas.png */; };
 		5BBA9935454E039A0D29A40E /* spinach-ricotta-egg-muffins.png in Resources */ = {isa = PBXBuildFile; fileRef = 8ECC769840573024FB7A5743 /* spinach-ricotta-egg-muffins.png */; };
@@ -179,6 +180,7 @@
 		91EA1E2C22DF8B809919B728 /* SentryCrashReporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B4D57647D30ABDB98AC89E0 /* SentryCrashReporter.swift */; };
 		92249C4C0AFF33AB8C47164E /* lemon-herb-rice-pilaf.png in Resources */ = {isa = PBXBuildFile; fileRef = 578555C79D6DDE486547158D /* lemon-herb-rice-pilaf.png */; };
 		9368E161A93677357634F403 /* smoky-tempeh-tacos.png in Resources */ = {isa = PBXBuildFile; fileRef = F17CF6118209C6B1636DFA35 /* smoky-tempeh-tacos.png */; };
+		9401091C2FED619E098D871E /* PantryPersistenceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CBD7AEE36174997047EFAAD /* PantryPersistenceTests.swift */; };
 		94A12E5AB8FAFC800AC85BD3 /* greek-chicken-bowl.png in Resources */ = {isa = PBXBuildFile; fileRef = AB2A2F58881751A6DC0ACD1C /* greek-chicken-bowl.png */; };
 		94A15C8DA60B29DCBCBCA9B4 /* Sentry in Frameworks */ = {isa = PBXBuildFile; productRef = 89A23A09254EE6E4E5510F16 /* Sentry */; };
 		985C92B3D17DA6D0C3EE23F0 /* NowModuleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED6332873D469B3DAEC6B4B2 /* NowModuleView.swift */; };
@@ -473,6 +475,7 @@
 		67106B750F48353E27DE5B0D /* catalog.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = catalog.json; sourceTree = "<group>"; };
 		6B28B8AECC9CF967B173DB75 /* macaroni-cheese-bake.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "macaroni-cheese-bake.png"; sourceTree = "<group>"; };
 		6C7081CD8815F70C34855F7F /* peanut-butter-banana-smoothie.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "peanut-butter-banana-smoothie.png"; sourceTree = "<group>"; };
+		6CBD7AEE36174997047EFAAD /* PantryPersistenceTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PantryPersistenceTests.swift; sourceTree = "<group>"; };
 		6D8E6A87A383A93B895C8971 /* salmon-egg-power-bowl.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "salmon-egg-power-bowl.png"; sourceTree = "<group>"; };
 		6DA54DA4B3280DFCD6C1A52C /* MealPlanningTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MealPlanningTests.swift; sourceTree = "<group>"; };
 		6FA305DB5D5B9FBE02C276BD /* LLMBatchSchedule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMBatchSchedule.swift; sourceTree = "<group>"; };
@@ -623,6 +626,7 @@
 		E669061379CB425F819A9BE7 /* vegan-dan-dan-noodles.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "vegan-dan-dan-noodles.png"; sourceTree = "<group>"; };
 		E78FAC124CA100B026C1A8EE /* spiced-carrot-and-chickpea-salad.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "spiced-carrot-and-chickpea-salad.png"; sourceTree = "<group>"; };
 		E80D0B656D67EAC31F4A110A /* lentil-shepherd-s-pie.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "lentil-shepherd-s-pie.png"; sourceTree = "<group>"; };
+		E94F1754D943A372889A09B4 /* PantryPersistence.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PantryPersistence.swift; sourceTree = "<group>"; };
 		EB5BCB7FE435D5641A1D72C3 /* roasted-vegetable-feta-grain-bowl-base.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "roasted-vegetable-feta-grain-bowl-base.png"; sourceTree = "<group>"; };
 		EB93A04A582E1FC944F4F0CA /* coq-au-vin.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "coq-au-vin.png"; sourceTree = "<group>"; };
 		EC346DA4AE07E775F03E0537 /* shakshuka.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = shakshuka.png; sourceTree = "<group>"; };
@@ -1002,6 +1006,7 @@
 				21A5B7B1913DAF532EDDC8EF /* PlateArtCoverageTests.swift */,
 				8A528909975A22DD6DCF57DD /* ShoppingListTests.swift */,
 				5372F046B0B6808478D0F1DD /* RecipeTimeTests.swift */,
+				6CBD7AEE36174997047EFAAD /* PantryPersistenceTests.swift */,
 			);
 			path = PantryChefTests;
 			sourceTree = "<group>";
@@ -1215,6 +1220,7 @@
 				420C676E86193CE0F9F81388 /* PlateRenderLibrary.swift */,
 				822D5F908F780A317F9B37C1 /* ExpiryEngine.swift */,
 				C277A622D0C630B07548A487 /* IntakePipeline.swift */,
+				E94F1754D943A372889A09B4 /* PantryPersistence.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -1669,6 +1675,7 @@
 				4FEF02D71BF388A5F333047C /* RecipeBrowse.swift in Sources */,
 				ABC1C356E1DA7F52E345EE5A /* CategoryFilterRail.swift in Sources */,
 				60569CEA220CA74318A53FC8 /* LoadingScreen.swift in Sources */,
+				59B384E56F09D1C12D4C4483 /* PantryPersistence.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1711,6 +1718,7 @@
 				37A16F31FD256CC9DFE357C9 /* PlateArtCoverageTests.swift in Sources */,
 				F1BB126F88067F5A719EAB45 /* ShoppingListTests.swift in Sources */,
 				FE61B70553E6B47DCFF3A086 /* RecipeTimeTests.swift in Sources */,
+				9401091C2FED619E098D871E /* PantryPersistenceTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -1,7 +1,7 @@
 import Foundation
 
 /// One ingredient family's share of a dish.
-struct CategoryWeight: Equatable, Sendable {
+struct CategoryWeight: Equatable, Sendable, Codable {
     let category: FoodCategory
     let weight: Double
 }
@@ -9,7 +9,7 @@ struct CategoryWeight: Equatable, Sendable {
 /// A dish's ingredient-family makeup plus a stable seed. Carried by every model
 /// that shows a plate; the emoji face derives from it (and the dish name), and the
 /// future AI-render tier will too.
-struct PlateComposition: Equatable, Sendable {
+struct PlateComposition: Equatable, Sendable, Codable {
     /// Category shares, most prominent first. Empty is valid.
     let weights: [CategoryWeight]
     let seed: UInt64

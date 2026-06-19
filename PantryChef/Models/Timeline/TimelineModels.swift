@@ -4,7 +4,7 @@ import Foundation
 // the composer can be golden-file tested and the views stay dumb renderers.
 
 /// A meal that already happened — a record in the journal (spec §4, "past = record").
-struct JournalItem: Identifiable, Equatable, Sendable {
+struct JournalItem: Identifiable, Equatable, Sendable, Codable {
     let id: UUID
     let date: Date
     let name: String
@@ -23,7 +23,7 @@ struct JournalItem: Identifiable, Equatable, Sendable {
 /// A light sense of *when* in the day a meal sits — enough to tell lunch from dinner
 /// without imposing a rigid breakfast/lunch/dinner grid (the app plans by day, not by
 /// slot, spec §4). Ordered so a day's meals read morning → evening.
-enum DayPart: Int, CaseIterable, Equatable, Sendable, Comparable {
+enum DayPart: Int, CaseIterable, Equatable, Sendable, Comparable, Codable {
     case morning, midday, evening
 
     static func < (a: DayPart, b: DayPart) -> Bool { a.rawValue < b.rawValue }
@@ -76,7 +76,7 @@ enum DayPart: Int, CaseIterable, Equatable, Sendable, Comparable {
 }
 
 /// A meal committed to a future day (spec §4, "future = consequence", solid node).
-struct PlannedMeal: Identifiable, Equatable, Sendable {
+struct PlannedMeal: Identifiable, Equatable, Sendable, Codable {
     let id: UUID
     let date: Date
     let name: String
@@ -106,7 +106,7 @@ struct PlannedMeal: Identifiable, Equatable, Sendable {
 }
 
 /// A deadline: an ingredient about to turn (spec §4, diamond marker).
-struct ExpiryMilestone: Identifiable, Equatable, Sendable {
+struct ExpiryMilestone: Identifiable, Equatable, Sendable, Codable {
     let id: UUID
     let date: Date
     let itemName: String
@@ -119,7 +119,7 @@ struct ExpiryMilestone: Identifiable, Equatable, Sendable {
 }
 
 /// A dashed invitation the app floats into the future (meal, batch-cook, shop).
-struct Proposal: Identifiable, Equatable, Sendable {
+struct Proposal: Identifiable, Equatable, Sendable, Codable {
     let id: UUID
     let date: Date
     let text: String
@@ -131,14 +131,14 @@ struct Proposal: Identifiable, Equatable, Sendable {
 
 /// A one-line fact attached to an otherwise bare day so it earns its row instead
 /// of folding (spec §4 density rules, "whispers").
-struct DatedWhisper: Equatable, Sendable {
+struct DatedWhisper: Equatable, Sendable, Codable {
     let date: Date
     let text: String
 }
 
 /// One future thing with a date — the composer weaves these among the day ruler.
-struct DatedEvent: Identifiable, Equatable, Sendable {
-    enum Kind: Equatable, Sendable {
+struct DatedEvent: Identifiable, Equatable, Sendable, Codable {
+    enum Kind: Equatable, Sendable, Codable {
         case meal(PlannedMeal)
         case expiry(ExpiryMilestone)
         case proposal(Proposal)
