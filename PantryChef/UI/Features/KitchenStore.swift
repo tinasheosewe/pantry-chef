@@ -786,9 +786,9 @@ final class KitchenStore {
     private func fanOption(_ dish: Dish, _ r: Readiness) -> FanOption {
         let detail: String
         switch r {
-        case .ready: detail = "\(dish.time) · all on hand"
-        case .readyWithSwaps(let s): detail = "\(dish.time) · \(SwapPhrase.count(s.count))"
-        case .needs(let items): detail = "\(dish.time) · needs \(items.count)"
+        case .ready: detail = "\(dish.timeText) · all on hand"
+        case .readyWithSwaps(let s): detail = "\(dish.timeText) · \(SwapPhrase.count(s.count))"
+        case .needs(let items): detail = "\(dish.timeText) · needs \(items.count)"
         }
         return FanOption(name: dish.name, plate: dish.plate, subtitle: detail,
                          reason: dish.blurb ?? "Ready from what you have.",

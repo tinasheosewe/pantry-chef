@@ -34,14 +34,19 @@ struct Dock: View {
         VStack(spacing: 0) {
             SolidRule()
             HStack(spacing: 0) {
+                // Today / Plan / Pantry are the three real tabs and share the band.
                 ForEach(RootSpace.allCases) { space in
                     spaceButton(space)
                 }
+                // "Add anything" is a capture action, not a space — so it rides the
+                // trailing edge as a compact +, set off by a hairline. Kept narrow
+                // visually but a full 44pt-tall, ~54pt-wide hit area so it's easy to tap.
+                Rectangle().fill(Theme.Palette.ink.opacity(0.14)).frame(width: 1, height: 22)
                 Button(action: onAdd) {
-                    Text("＋")
+                    Image(systemName: "plus")
                         .font(.system(size: 17, weight: .medium))
                         .foregroundStyle(Theme.Palette.paprika)
-                        .frame(maxWidth: .infinity).frame(height: 44)
+                        .frame(width: 54, height: 44)
                         .contentShape(Rectangle())
                 }
                 .buttonStyle(.pressable)

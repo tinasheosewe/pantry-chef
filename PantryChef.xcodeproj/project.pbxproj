@@ -315,6 +315,7 @@
 		FD78B54015F1E12529DB6DB8 /* teriyaki-salmon-bowl.png in Resources */ = {isa = PBXBuildFile; fileRef = 8CE32C9EB2AD58BAC7D5BEDE /* teriyaki-salmon-bowl.png */; };
 		FE2B99A2D29D4E5737B8ECB7 /* split-pea-soup.png in Resources */ = {isa = PBXBuildFile; fileRef = 0D0F2D0F7962ED1AADC2579C /* split-pea-soup.png */; };
 		FE4A1843BFDCEF80409DF983 /* pulled-bbq-jackfruit.png in Resources */ = {isa = PBXBuildFile; fileRef = 592A6DFFE83518947BDC4098 /* pulled-bbq-jackfruit.png */; };
+		FE61B70553E6B47DCFF3A086 /* RecipeTimeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5372F046B0B6808478D0F1DD /* RecipeTimeTests.swift */; };
 		FE8EFEB7D4E2C8BD2FCBE3D6 /* bibimbap.png in Resources */ = {isa = PBXBuildFile; fileRef = 73E6F6D08E188BBB992C340F /* bibimbap.png */; };
 		FEE2ABF449DFE3A45649467E /* SearchEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CA6FC524D07D4BD4347B74B /* SearchEngineTests.swift */; };
 		FF03EB398C6216AE0D6BC39D /* miso-butter-salmon.png in Resources */ = {isa = PBXBuildFile; fileRef = 8B39024CB6A7E1370C24075B /* miso-butter-salmon.png */; };
@@ -439,6 +440,7 @@
 		52C9664BC03D8B5DE7127A5D /* CookFlowView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CookFlowView.swift; sourceTree = "<group>"; };
 		52D60B775452879B009D459A /* beef-vegetable-freezer-stew.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "beef-vegetable-freezer-stew.png"; sourceTree = "<group>"; };
 		52E6BD9C201ACC04B9D2C7E5 /* caprese-salad.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "caprese-salad.png"; sourceTree = "<group>"; };
+		5372F046B0B6808478D0F1DD /* RecipeTimeTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RecipeTimeTests.swift; sourceTree = "<group>"; };
 		53ADC570802BEDF30A7FEAE1 /* CatalogSwapsTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CatalogSwapsTests.swift; sourceTree = "<group>"; };
 		53B69EC70B22628331199DA5 /* coconut-chickpea-sweet-potato-stew.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "coconut-chickpea-sweet-potato-stew.png"; sourceTree = "<group>"; };
 		540AB459CCD86A314CC99AE5 /* lentil-vegetable-cottage-pie.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "lentil-vegetable-cottage-pie.png"; sourceTree = "<group>"; };
@@ -999,6 +1001,7 @@
 				6DA54DA4B3280DFCD6C1A52C /* MealPlanningTests.swift */,
 				21A5B7B1913DAF532EDDC8EF /* PlateArtCoverageTests.swift */,
 				8A528909975A22DD6DCF57DD /* ShoppingListTests.swift */,
+				5372F046B0B6808478D0F1DD /* RecipeTimeTests.swift */,
 			);
 			path = PantryChefTests;
 			sourceTree = "<group>";
@@ -1707,6 +1710,7 @@
 				DA390A2FB998A6A3E41320AD /* MealPlanningTests.swift in Sources */,
 				37A16F31FD256CC9DFE357C9 /* PlateArtCoverageTests.swift in Sources */,
 				F1BB126F88067F5A719EAB45 /* ShoppingListTests.swift in Sources */,
+				FE61B70553E6B47DCFF3A086 /* RecipeTimeTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

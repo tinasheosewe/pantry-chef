@@ -114,9 +114,7 @@ enum RecipeSeed {
     /// "25 min" / "1 h 30" — the display form `Dish.minutes` parses back.
     private static func timeString(_ minutes: Int?) -> String {
         guard let m = minutes, m > 0 else { return "—" }
-        if m < 60 { return "\(m) min" }
-        let h = m / 60, rem = m % 60
-        return rem == 0 ? "\(h) h" : "\(h) h \(rem)"
+        return RecipeTime.format(m)
     }
 }
 

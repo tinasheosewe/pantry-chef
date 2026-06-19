@@ -236,4 +236,21 @@ struct Dish: Identifiable, Equatable, Sendable {
         }
         return numbers.first
     }
+
+    /// The duration formatted for display — under an hour stays in minutes, an hour or
+    /// more reads as hours (+ minutes), never "480 min". Falls back to the raw `time`
+    /// string when it can't be parsed.
+    var timeText: String { RecipeTime.format(minutes) ?? time }
+}
+
+/// One place to phrase a recipe duration, so every surface agrees: "45 min", "1 h",
+/// "2 h 10". Minutes under an hour stay minutes; an hour or more becomes hours (+ the
+/// remaining minutes).
+enum RecipeTime {
+    static func format(_ minutes: Int) -> String {
+        if minutes < 60 { return "\(minutes) min" }
+        let h = minutes / 60, m = minutes % 60
+        return m == 0 ? "\(h) h" : "\(h) h \(m)"
+    }
+    static func format(_ minutes: Int?) -> String? { minutes.map(format) }
 }

@@ -170,7 +170,7 @@ extension KitchenStore {
     /// both counts: what blocks it (Needs) and what it'd take to make it as written
     /// (Wants). No stamp until readiness is warm.
     func feedItem(_ dish: Dish) -> FeedItem {
-        let meta = dish.minutes.map { "\($0) min" } ?? dish.time
+        let meta = dish.timeText
         guard readinessReady else { return FeedItem(dish: dish, meta: meta, stamp: nil) }
         switch readiness(for: dish) {
         case .ready:

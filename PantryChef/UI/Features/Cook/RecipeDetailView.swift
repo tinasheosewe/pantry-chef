@@ -174,7 +174,7 @@ struct RecipeDetailView: View {
         VStack(spacing: 0) {
             SolidRule()
             HStack {
-                bandText(currentDish.time.uppercased())
+                bandText(currentDish.timeText.uppercased())
                 Spacer()
                 HStack(spacing: 10) {
                     bandStepper("−") { if servings > 1 { servings -= 1 } }
