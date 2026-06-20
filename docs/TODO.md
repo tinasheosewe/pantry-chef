@@ -173,7 +173,33 @@ PantryChef.storekit in the Run scheme's StoreKit Configuration to test purchases
   a sample" escape hatch; ungated; Skip allowed; empty-pantry nudge on Today.
 - **Manual custom-recipe front door** — "Write a recipe" doorway in the composer → blank editor.
 
-**Still deferred — NEXT DISCUSSION (the AI-powered custom-recipe approaches):**
-- **Recipe import from URL / web + photo→recipe + AI-assisted authoring** — Plus-only; ongoing
-  per-use AI, so cache hard (generate once, store, reuse). AIService `fullRecipeSchema:168` exists,
-  unused. Barcode pantry intake (deterministic) is the v1.5 onboarding add-on.
+### AI-powered custom recipes — design decided + staged build (2026-06-19)
+All Plus-gated (per-use AI). Unified rule for **ingredients not in the catalog**: they become a
+*smart item* — auto-promoted to a user-defined catalog item via the AI's definition on AI paths,
+user-initiated ("Smart-fill" / "Define myself") on the manual path (deliberate freeform stays
+freeform). Infra exists: `PantryCatalog.registerUserItem` (persists via save/loadUserItems),
+`CustomIngredientForm`, `generateIngredientDefinition`, `RawFullRecipe.toDish` (already resolves
+ingredients via IntakePipeline). Authoring burden: AI-assist is opt-in on a button, lands in the
+existing editor for review — never forced.
+
+**Stage 1 DONE (paste → format):** `AIService.parseRecipe(text:into:)` + `RecipeImportSheet`
+(composer doorway "Paste a recipe · format with AI") → opens the editor in "Review recipe" mode.
+Plus-gated. Unresolved ingredients stay freeform for now.
+
+**Remaining stages (recommended order):**
+1. **Smart-item auto-promotion** — for AI paths, build+register a user catalog item for each
+   unresolved ingredient (extend the parse schema to emit per-ingredient category/storage/shelf-life
+   in the same call, or call generateIngredientDefinition per miss). Plus the manual "N new
+   ingredients → Smart-fill / Define" non-blocking flow.
+2. **Cook-with-what-I-have generation** — `generateFromPantry(have:avoid:)` (the differentiator;
+   strongest paid hook). One-tap from Today / composer → review editor.
+3. **URL import** — fetch page → parse schema.org/Recipe JSON-LD *deterministically (free)* first,
+   fall back to `parseRecipe(text:)` on the stripped page text. Cache by URL.
+4. **Photo → recipe** (cookbook page / dish) — vision message format in `sendChatRequest` + image
+   picker; cache by image hash. Higher reliability for print than handwriting/plates.
+5. **"Polish with AI" in the editor** — serialize the rough dish → `parseRecipe` → replace (the
+   user-authoring assist).
+
+NOTE: live-AI paths need the OpenAI key (Config/LocalSecrets.xcconfig) to verify end-to-end; the
+deterministic transforms (toDish, withDerivedPlate, smart-item creation) are unit-testable.
+Barcode pantry intake (deterministic) is the v1.5 onboarding add-on, separate from this.
