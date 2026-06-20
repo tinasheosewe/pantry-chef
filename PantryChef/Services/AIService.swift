@@ -578,6 +578,51 @@ final class AIService {
         }
     }
 
+    /// Import a recipe from a web URL. Fetches the page and prefers its
+    /// schema.org/Recipe JSON-LD (compact + accurate) — falling back to the stripped
+    /// page text — then runs it through the same `parseRecipe` formatter. Returns nil
+    /// if the URL is bad, the fetch fails, or it isn't a recipe page.
+    func importRecipe(urlString: String) async -> Dish? {
+        let trimmed = urlString.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard let url = URL(string: trimmed), url.scheme?.hasPrefix("http") == true else { return nil }
+        var request = URLRequest(url: url)
+        // Many recipe sites 403 a default URLSession agent — present as a browser.
+        request.setValue("Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1", forHTTPHeaderField: "User-Agent")
+        request.timeoutInterval = 20
+        guard let (data, _) = try? await URLSession.shared.data(for: request),
+              let html = String(data: data, encoding: .utf8) ?? String(data: data, encoding: .isoLatin1) else { return nil }
+        // JSON-LD is a fraction of the tokens of a full blog page, and structured — much
+        // cheaper and more reliable than feeding the AI an ad-laden HTML dump.
+        let source = Self.recipeJSONLD(from: html) ?? Self.strippedText(from: html)
+        guard !source.isEmpty else { return nil }
+        return await parseRecipe(text: String(source.prefix(12_000)), into: .draft())
+    }
+
+    /// The first `application/ld+json` block that describes a Recipe, if present.
+    private static func recipeJSONLD(from html: String) -> String? {
+        let pattern = "<script[^>]*application/ld\\+json[^>]*>(.*?)</script>"
+        guard let re = try? NSRegularExpression(pattern: pattern, options: [.dotMatchesLineSeparators, .caseInsensitive]) else { return nil }
+        let ns = html as NSString
+        for m in re.matches(in: html, range: NSRange(location: 0, length: ns.length)) {
+            let json = ns.substring(with: m.range(at: 1))
+            if json.localizedCaseInsensitiveContains("\"Recipe\"") { return json }
+        }
+        return nil
+    }
+
+    /// HTML reduced to readable text — scripts/styles dropped, tags and entities stripped.
+    private static func strippedText(from html: String) -> String {
+        var s = html
+        for tag in ["script", "style", "noscript", "head", "svg"] {
+            s = s.replacingOccurrences(of: "<\(tag)[^>]*>.*?</\(tag)>", with: " ",
+                                       options: [.regularExpression, .caseInsensitive])
+        }
+        s = s.replacingOccurrences(of: "<[^>]+>", with: " ", options: .regularExpression)
+        s = s.replacingOccurrences(of: "&[a-z]+;", with: " ", options: [.regularExpression, .caseInsensitive])
+        s = s.replacingOccurrences(of: "\\s+", with: " ", options: .regularExpression)
+        return s.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
     // MARK: - Networking (with retry)
 
     /// Maximum number of retry attempts for transient failures.

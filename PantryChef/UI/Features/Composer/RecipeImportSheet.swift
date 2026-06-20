@@ -37,7 +37,7 @@ struct RecipeImportSheet: View {
         HStack(alignment: .firstTextBaseline) {
             VStack(alignment: .leading, spacing: 2) {
                 Text("Paste a recipe").font(Theme.Typography.dish(22)).foregroundStyle(Theme.Palette.ink)
-                Text("Any messy format — AI cleans it up for you.")
+                Text("A link, or any messy text — AI cleans it up for you.")
                     .font(Theme.Typography.note(11.5)).foregroundStyle(Theme.Palette.warmGray)
             }
             Spacer()
@@ -60,7 +60,7 @@ struct RecipeImportSheet: View {
                 .background(RoundedRectangle(cornerRadius: 3).fill(Theme.Palette.creamRaised))
                 .overlay(RoundedRectangle(cornerRadius: 3).strokeBorder(Theme.Palette.hairline))
             if text.isEmpty {
-                Text("Paste or type the recipe here…")
+                Text("Paste a recipe link, or the recipe text…")
                     .font(Theme.Typography.fact(14)).foregroundStyle(Theme.Palette.warmGraySoft)
                     .padding(.horizontal, 15).padding(.vertical, 18).allowsHitTesting(false)
             }
@@ -97,12 +97,22 @@ struct RecipeImportSheet: View {
 
     private func format() {
         guard subscription.isPlus else { showPaywall = true; return }
+        let input = text.trimmingCharacters(in: .whitespacesAndNewlines)
         error = nil; busy = true; focused = false
         Task {
-            let parsed = await store.ai.parseRecipe(text: text, into: .draft())
+            // A bare link → fetch & import; anything else → parse the pasted text.
+            let parsed = isLink(input)
+                ? await store.ai.importRecipe(urlString: input)
+                : await store.ai.parseRecipe(text: text, into: .draft())
             busy = false
             if let parsed { onParsed(parsed) }
-            else { error = "Hmm — that didn’t look like a recipe, or the kitchen’s offline. Give it another try." }
+            else { error = isLink(input)
+                ? "Couldn’t read a recipe from that link — try pasting the recipe text instead."
+                : "Hmm — that didn’t look like a recipe, or the kitchen’s offline. Give it another try." }
         }
+    }
+
+    private func isLink(_ s: String) -> Bool {
+        !s.contains(where: \.isNewline) && (s.hasPrefix("http://") || s.hasPrefix("https://"))
     }
 }
