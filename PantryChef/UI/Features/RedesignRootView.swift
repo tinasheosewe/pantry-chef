@@ -1,4 +1,5 @@
 import SwiftUI
+import PhotosUI
 
 /// The page itself: flat paper, no glow — Field Notes is printed, not lit.
 struct KitchenBackground: View {
@@ -46,6 +47,9 @@ struct RedesignRootView: View {
     @State private var aiGenerating = false
     @State private var aiError: String?
     @State private var showPaywall = false
+    /// Photo-of-a-recipe import (library/screenshots).
+    @State private var showPhotoPicker = false
+    @State private var photoItem: PhotosPickerItem?
     @State private var multiSession: CookSession?
     @State private var planTarget: PlanTarget?
     @State private var editingMeal: PlannedMeal?
@@ -110,6 +114,8 @@ struct RedesignRootView: View {
         }
         .overlay { if aiGenerating { generatingOverlay } }
         .animation(reduceMotion ? nil : .easeInOut(duration: 0.2), value: aiGenerating)
+        .photosPicker(isPresented: $showPhotoPicker, selection: $photoItem, matching: .images)
+        .onChange(of: photoItem) { _, item in if let item { importFromPhoto(item) } }
         .sheet(isPresented: $showPaywall) {
             PaywallView(subscription: subscription, onClose: { showPaywall = false })
         }
@@ -135,6 +141,26 @@ struct RedesignRootView: View {
             aiGenerating = false
             if let dish { recipeDraft = RecipeDraft(dish: dish, heading: "Review recipe") }
             else { aiError = "The chef couldn’t make something from that — try again, or add a few more ingredients." }
+        }
+    }
+
+    /// Photo of a recipe → read it (Plus). Library/screenshots only.
+    private func photoRecipe() {
+        guard subscription.isPlus else { showPaywall = true; return }
+        showPhotoPicker = true
+    }
+
+    private func importFromPhoto(_ item: PhotosPickerItem) {
+        aiGenerating = true
+        Task {
+            defer { photoItem = nil }
+            guard let data = try? await item.loadTransferable(type: Data.self) else {
+                aiGenerating = false; aiError = "Couldn’t read that image."; return
+            }
+            let dish = await store.ai.importRecipeFromImage(data)
+            aiGenerating = false
+            if let dish { recipeDraft = RecipeDraft(dish: dish, heading: "Review recipe") }
+            else { aiError = "Couldn’t read a recipe from that photo — try a clearer shot of the recipe text." }
         }
     }
 
@@ -194,6 +220,10 @@ struct RedesignRootView: View {
                              onCookWithWhatIHave: {
                                  showComposer = false
                                  DispatchQueue.main.async { cookWithWhatIHave() }
+                             },
+                             onPhotoRecipe: {
+                                 showComposer = false
+                                 DispatchQueue.main.async { photoRecipe() }
                              })
                     .presentationDetents([.medium, .large])
             }

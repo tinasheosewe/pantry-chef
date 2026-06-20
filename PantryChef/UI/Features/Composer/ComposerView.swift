@@ -15,6 +15,8 @@ struct ComposerView: View {
     var onPasteRecipe: () -> Void = {}
     /// Generate a recipe from what's in the pantry right now ("cook with what I have").
     var onCookWithWhatIHave: () -> Void = {}
+    /// Read a recipe from a photo / screenshot (library only).
+    var onPhotoRecipe: () -> Void = {}
 
     /// Where the staged batch lands on commit.
     enum Destination: String, CaseIterable {
@@ -157,6 +159,10 @@ struct ComposerView: View {
             Divider().background(Theme.Palette.hairline)
             doorway("Paste a recipe · format with AI", "wand.and.stars") {
                 onPasteRecipe()
+            }
+            Divider().background(Theme.Palette.hairline)
+            doorway("Photo of a recipe · AI", "camera") {
+                onPhotoRecipe()
             }
             Divider().background(Theme.Palette.hairline)
             doorway("Cook with what I have · AI", "sparkles") {

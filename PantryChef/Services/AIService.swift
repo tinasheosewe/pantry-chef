@@ -1,4 +1,5 @@
 import Foundation
+import UIKit
 
 final class AIService {
     private let apiKey: String
@@ -623,6 +624,60 @@ final class AIService {
         return s.trimmingCharacters(in: .whitespacesAndNewlines)
     }
 
+    /// Read a recipe out of a photo — a cookbook page, a handwritten card, or a
+    /// screenshot. Transcribes faithfully (filling only genuinely-missing amounts /
+    /// step timers / servings), then runs through the same structuring + smart-item
+    /// promotion as the other imports. NOT for photos of finished dishes (we don't
+    /// guess recipes from plates). Returns nil if it isn't a readable recipe.
+    func importRecipeFromImage(_ imageData: Data) async -> Dish? {
+        guard let jpeg = Self.downscaledJPEG(imageData, maxDimension: 1280, quality: 0.7) else { return nil }
+
+        let prompt = """
+        This image shows a RECIPE — a cookbook page, a handwritten card, or a screenshot. Read it \
+        and return it as ONE clean, structured recipe. Transcribe the ingredients, quantities, and \
+        method faithfully; fill in only what's genuinely missing (a sensible amount, a step timer \
+        where a duration is stated, servings). If the image is NOT a recipe, or is unreadable, \
+        reject with "rejected": true (do NOT guess a recipe from a photo of a finished dish).
+
+        INGREDIENT QUALITY: store-specific names; natural units (weight for solids/meats, volume for \
+        liquids/oils, piece/whole only for countable items; spices in tsp/tbsp/pinch). Title-case the \
+        title; sentence-case ingredient names and steps.
+
+        For unit, use: tsp, tbsp, cup, ml, L, g, kg, oz, lb, piece, whole, loaf, slice, clove, bunch, can, pinch, to taste.
+        For category, use: Dairy, Produce, Protein, Grains & Cereals, Spices & Herbs, Condiments & Sauces, Baking Supplies, Oils & Fats, Other.
+        Each step task object: {"taskIndex": number, "action": string, "ingredient": string or null, "durationSeconds": number, "type": "active" or "passive", "phase": "prep" or "cook" or "finish", "effort": "easy" or "medium" or "hard", "requiresEquipment": string or null, "dependsOn": [number]}
+
+        Return ONLY the JSON object (rejected / rejectionReason / rejectionMessage / recipe).
+        """
+
+        guard let response = await sendChatRequest(
+            prompt: prompt, imageJPEG: jpeg,
+            responseFormat: ["type": "json_schema", "json_schema": Self.recipeOrRejectionSchema]
+        ) else { return nil }
+        guard let data = response.data(using: .utf8) else { return nil }
+        do {
+            let raw = try JSONDecoder().decode(RawRecipeOrRejection.self, from: data)
+            guard !raw.rejected, let rawRecipe = raw.recipe, !rawRecipe.ingredients.isEmpty else { return nil }
+            let dish = rawRecipe.toDish(preserving: .draft()).withDerivedPlate()
+            return SmartIngredient.promote(dish: dish, rawIngredients: rawRecipe.ingredients)
+        } catch {
+            AppLog.warn("[AIService] Failed to parse recipe photo: \(error)")
+            return nil
+        }
+    }
+
+    /// Downscale + JPEG-encode to bound the vision token cost (a full-res photo is huge).
+    private static func downscaledJPEG(_ data: Data, maxDimension: CGFloat, quality: CGFloat) -> Data? {
+        guard let image = UIImage(data: data) else { return nil }
+        let longest = max(image.size.width, image.size.height)
+        let scale = longest > maxDimension ? maxDimension / longest : 1
+        let target = CGSize(width: image.size.width * scale, height: image.size.height * scale)
+        let resized = UIGraphicsImageRenderer(size: target).image { _ in
+            image.draw(in: CGRect(origin: .zero, size: target))
+        }
+        return resized.jpegData(compressionQuality: quality)
+    }
+
     // MARK: - Networking (with retry)
 
     /// Maximum number of retry attempts for transient failures.
@@ -631,7 +686,7 @@ final class AIService {
     /// Sends a prompt to OpenAI with automatic retry + exponential backoff.
     /// Retries on network errors and 5xx / 429 responses. Gives up on 4xx client errors.
     /// Pass `responseFormat` to enable structured output (e.g. json_schema).
-    private func sendChatRequest(prompt: String, maxTokens: Int = 4096, responseFormat: [String: Any]? = nil) async -> String? {
+    private func sendChatRequest(prompt: String, imageJPEG: Data? = nil, maxTokens: Int = 4096, responseFormat: [String: Any]? = nil) async -> String? {
         guard !apiKey.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
               !AppConfig.isMissing(apiKey) else {
             AppLog.info("[AIService] Missing OpenAI API key")
@@ -647,11 +702,22 @@ final class AIService {
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         request.addValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
 
+        // Text-only → a plain string; with an image → a vision content array (gpt-4o).
+        let userContent: Any
+        if let imageJPEG {
+            userContent = [
+                ["type": "text", "text": prompt],
+                ["type": "image_url", "image_url": ["url": "data:image/jpeg;base64,\(imageJPEG.base64EncodedString())", "detail": "auto"]]
+            ] as [[String: Any]]
+        } else {
+            userContent = prompt
+        }
+
         var body: [String: Any] = [
             "model": model,
             "messages": [
                 ["role": "system", "content": Self.systemPrompt],
-                ["role": "user", "content": prompt]
+                ["role": "user", "content": userContent]
             ],
             "temperature": 0.7,
             "max_tokens": maxTokens
