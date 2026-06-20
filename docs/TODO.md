@@ -202,11 +202,17 @@ existing editor for review — never forced.
   interruption); a quiet banner offers "Smart-fill with AI" (defines all) or tap a NEW line to define
   by hand. `SmartIngredient.register(name:definition:)` shared by import + manual paths.
 
-**STILL TO BUILD — Photo → recipe (the only remaining approach):** NEW infra — a vision request
-path (image as base64 in the chat content array; `sendChatRequest` is text-only today; needs a
-vision-capable model) + a PhotosPicker UI (library-only avoids a camera permission; covers
-screenshots + existing photos). Verify by bundling a test recipe image + temp harness (can't drive
-the picker via simctl). Recipe-photo (cookbook/card/screenshot) is reliable; dish-photo is a flakier
-stretch on the same call.
+**DONE 2026-06-19 (stage 6): Photo → recipe.** `importRecipeFromImage(_:)` — sendChatRequest gained
+optional image support (base64 image_url; gpt-4o already does vision), downscales to bound cost,
+transcribes a recipe photo/screenshot → structured Dish + smart-item promotion. Composer doorway
+"Photo of a recipe · AI" → Plus gate → PhotosPicker (library only, no camera permission). Verified
+live (rendered recipe image → Garlic Butter Shrimp). **Dish-photo guessing deliberately NOT built**
+— off-purpose + unreliable (would manufacture bad first impressions / churn). Live camera capture is
+a possible later add (needs NSCameraUsageDescription).
+
+**AI recipe suite COMPLETE.** All six paths done + live-verified: paste/format, URL import, pantry
+generation, smart-item promotion, in-editor polish + non-blocking smart flow, photo import. All
+Plus-gated, all land in the "Review recipe" editor. Possible future: cache imports by URL/image
+hash; deterministic JSON-LD→Dish (skip AI entirely for marked-up sites).
 
 NOTE: Barcode pantry intake (deterministic) is the v1.5 onboarding add-on, separate from this.
