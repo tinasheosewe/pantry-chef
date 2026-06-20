@@ -42,6 +42,10 @@ struct RedesignRootView: View {
     @State private var recipeDraft: RecipeDraft?
     /// The "paste a recipe → format with AI" import sheet.
     @State private var showImport = false
+    /// "Cook with what I have" generation in flight, and the paywall it may trigger.
+    @State private var aiGenerating = false
+    @State private var aiError: String?
+    @State private var showPaywall = false
     @State private var multiSession: CookSession?
     @State private var planTarget: PlanTarget?
     @State private var editingMeal: PlannedMeal?
@@ -104,11 +108,48 @@ struct RedesignRootView: View {
                 onExploreSample: { store.loadSampleKitchen(); finishOnboarding() },
                 onFinish: { finishOnboarding() })
         }
+        .overlay { if aiGenerating { generatingOverlay } }
+        .animation(reduceMotion ? nil : .easeInOut(duration: 0.2), value: aiGenerating)
+        .sheet(isPresented: $showPaywall) {
+            PaywallView(subscription: subscription, onClose: { showPaywall = false })
+        }
+        .alert("Hmm", isPresented: Binding(get: { aiError != nil }, set: { if !$0 { aiError = nil } })) {
+            Button("OK", role: .cancel) {}
+        } message: { Text(aiError ?? "") }
     }
 
     private func finishOnboarding() {
         OnboardingState.hasCompleted = true
         showOnboarding = false
+    }
+
+    /// "Cook with what I have" — generate a recipe from the present pantry (Plus). Shows
+    /// a loader while the chef thinks, then opens the result in the review editor.
+    private func cookWithWhatIHave() {
+        guard subscription.isPlus else { showPaywall = true; return }
+        let have = store.stock.map(\.name)
+        guard !have.isEmpty else { aiError = "Add a few things to your kitchen first, then I can cook with them."; return }
+        aiError = nil; aiGenerating = true
+        Task {
+            let dish = await store.ai.generateFromPantry(have: have, avoid: store.profile.avoided.map(\.title))
+            aiGenerating = false
+            if let dish { recipeDraft = RecipeDraft(dish: dish, heading: "Review recipe") }
+            else { aiError = "The chef couldn’t make something from that — try again, or add a few more ingredients." }
+        }
+    }
+
+    /// Full-screen "thinking" cover while a recipe generates.
+    private var generatingOverlay: some View {
+        ZStack {
+            Theme.Palette.cream.opacity(0.96).ignoresSafeArea()
+            VStack(spacing: 14) {
+                ProgressView().controlSize(.large).tint(Theme.Palette.paprika)
+                Text("Cooking up an idea…").font(Theme.Typography.dish(18)).foregroundStyle(Theme.Palette.ink)
+                Text("Reading your kitchen and writing you a recipe.")
+                    .font(Theme.Typography.note(13)).foregroundStyle(Theme.Palette.warmGray)
+            }
+        }
+        .transition(.opacity)
     }
 
     private var main: some View {
@@ -149,6 +190,10 @@ struct RedesignRootView: View {
                              onPasteRecipe: {
                                  showComposer = false
                                  DispatchQueue.main.async { showImport = true }
+                             },
+                             onCookWithWhatIHave: {
+                                 showComposer = false
+                                 DispatchQueue.main.async { cookWithWhatIHave() }
                              })
                     .presentationDetents([.medium, .large])
             }

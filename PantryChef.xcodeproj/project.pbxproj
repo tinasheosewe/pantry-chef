@@ -216,6 +216,7 @@
 		B41AE5205FF4CF3B056E12B1 /* carrot-cake.png in Resources */ = {isa = PBXBuildFile; fileRef = 7144F7D47271C9BE1D639422 /* carrot-cake.png */; };
 		B43DD17764354F6D314C7C00 /* PantryChefUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD6E44F08B08E0C299DB08E1 /* PantryChefUITests.swift */; };
 		B5273768CF88DD3F71F88757 /* roasted-beet-and-goat-cheese-salad.png in Resources */ = {isa = PBXBuildFile; fileRef = F53D980BFCDC48E0A7F61C5C /* roasted-beet-and-goat-cheese-salad.png */; };
+		B5EF3B84996AFD5752993F07 /* SmartIngredient.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7FFD66371695F3C29EC6FA8 /* SmartIngredient.swift */; };
 		B60670D7EBB4585A3C5B5428 /* poached-pears-in-spiced-wine.png in Resources */ = {isa = PBXBuildFile; fileRef = 5BC133CEB20A417DB810291D /* poached-pears-in-spiced-wine.png */; };
 		B6BBCE67ADEFE2A8DFDD7F4C /* protein-packed-white-bean-tuna-salad.png in Resources */ = {isa = PBXBuildFile; fileRef = BD7D584D60944F8FC4B0909D /* protein-packed-white-bean-tuna-salad.png */; };
 		B7B98B852A01A38532BDB9E5 /* roasted-vegetable-feta-grain-bowl-base.png in Resources */ = {isa = PBXBuildFile; fileRef = EB5BCB7FE435D5641A1D72C3 /* roasted-vegetable-feta-grain-bowl-base.png */; };
@@ -556,6 +557,7 @@
 		B373F4229381257EA66CDE3C /* Fraunces.ttf */ = {isa = PBXFileReference; includeInIndex = 1; path = Fraunces.ttf; sourceTree = "<group>"; };
 		B3D02E10BC15ED0ADCDC7D1B /* RedesignRootView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RedesignRootView.swift; sourceTree = "<group>"; };
 		B4311CDDF67AA34C2F223237 /* AIModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIModels.swift; sourceTree = "<group>"; };
+		B7FFD66371695F3C29EC6FA8 /* SmartIngredient.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SmartIngredient.swift; sourceTree = "<group>"; };
 		B80476BEC5139B370857DEE0 /* NutritionEstimatorTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NutritionEstimatorTests.swift; sourceTree = "<group>"; };
 		B92718BDCE1D03AA6C9B73B7 /* bun-cha.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "bun-cha.png"; sourceTree = "<group>"; };
 		B9FF8C2650A90D2DB08A4AB1 /* stuffed-portobello-mushrooms.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "stuffed-portobello-mushrooms.png"; sourceTree = "<group>"; };
@@ -704,13 +706,6 @@
 			);
 			name = Cook;
 			path = Cook;
-			sourceTree = "<group>";
-		};
-		1944F804C05BBC140919676C /* Packages */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = Packages;
 			sourceTree = "<group>";
 		};
 		281B85EFE25988CBA5A6A840 /* Fonts */ = {
@@ -1140,7 +1135,6 @@
 			isa = PBXGroup;
 			children = (
 				34F28371AE05805307878306 /* Config */,
-				1944F804C05BBC140919676C /* Packages */,
 				A1F050B4D96949A07B160191 /* PantryChef */,
 				440477AE846DF251E4900D51 /* PantryChefTests */,
 				33CB067DE76FEF9BE4B8E365 /* PantryChefUITests */,
@@ -1199,6 +1193,7 @@
 				0BA90CCC7D9FA8260A9CAA92 /* NotificationService.swift */,
 				5ABA2D7C0D70D34CC6787EB2 /* Nutrition.swift */,
 				C8DDBF8F19D3346B386F7278 /* SubscriptionService.swift */,
+				B7FFD66371695F3C29EC6FA8 /* SmartIngredient.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -1653,6 +1648,7 @@
 				85102979F8B1C20A210A2ECB /* PaywallView.swift in Sources */,
 				96E0ED7DEE078EFCD4E8BB46 /* OnboardingView.swift in Sources */,
 				B7E950AB1A9629354750DCDC /* RecipeImportSheet.swift in Sources */,
+				B5EF3B84996AFD5752993F07 /* SmartIngredient.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

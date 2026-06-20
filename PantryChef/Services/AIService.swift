@@ -519,9 +519,61 @@ final class AIService {
             let raw = try JSONDecoder().decode(RawRecipeOrRejection.self, from: data)
             guard !raw.rejected, let rawRecipe = raw.recipe,
                   !rawRecipe.ingredients.isEmpty else { return nil }
-            return rawRecipe.toDish(preserving: draft).withDerivedPlate()
+            let dish = rawRecipe.toDish(preserving: draft).withDerivedPlate()
+            // Promote any catalog-misses to smart items so expiry/aisle/readiness work.
+            return SmartIngredient.promote(dish: dish, rawIngredients: rawRecipe.ingredients)
         } catch {
             AppLog.warn("[AIService] Failed to parse pasted recipe: \(error)")
+            return nil
+        }
+    }
+
+    /// Generate a recipe from what the user actually has on hand — the pantry-aware
+    /// "cook with what I have." Leans on the supplied ingredients, adds at most a few
+    /// common staples, honors dietary avoidances, and (like import) promotes any
+    /// catalog-miss to a smart item. The app's most differentiated AI use — no
+    /// competitor has the pantry to do this. Returns nil if generation fails.
+    func generateFromPantry(have: [String], avoid: [String] = []) async -> Dish? {
+        let haveList = have.map { $0.trimmingCharacters(in: .whitespaces) }.filter { !$0.isEmpty }
+        guard !haveList.isEmpty else { return nil }
+
+        let prompt = """
+        The user has these ingredients on hand right now:
+        \(haveList.joined(separator: ", "))
+
+        Create ONE delicious, realistic recipe that uses MOSTLY what they already have. Lean \
+        on the on-hand ingredients; add at most a few common pantry staples (salt, oil, basic \
+        dried spices) only if genuinely needed. Do NOT invent exotic ingredients they didn't list.
+        \(avoid.isEmpty ? "" : "\nThe household AVOIDS these — never include any of them in any ingredient: \(avoid.joined(separator: ", ")).")
+
+        SELF-CONTAINED: cook everything from raw, purchasable ingredients — never a pre-cooked or \
+        leftover item, never another finished dish as one ingredient.
+
+        INGREDIENT QUALITY: store-specific names ("chicken thigh", not "chicken"); natural units \
+        (weight for solids/meats, volume for liquids/oils, piece/whole only for countable items; \
+        spices in tsp/tbsp/pinch); human-readable, serving-appropriate quantities. Title-case the \
+        title; sentence-case ingredient names and steps. Give each timed step a timer.
+
+        For unit, use: tsp, tbsp, cup, ml, L, g, kg, oz, lb, piece, whole, loaf, slice, clove, bunch, can, pinch, to taste.
+        For category, use: Dairy, Produce, Protein, Grains & Cereals, Spices & Herbs, Condiments & Sauces, Baking Supplies, Oils & Fats, Other.
+        Each step task object: {"taskIndex": number, "action": string, "ingredient": string or null, "durationSeconds": number, "type": "active" or "passive", "phase": "prep" or "cook" or "finish", "effort": "easy" or "medium" or "hard", "requiresEquipment": string or null, "dependsOn": [number]}
+
+        If you genuinely can't make a sensible dish from these, reject with "rejected": true.
+        Return ONLY the JSON object (rejected / rejectionReason / rejectionMessage / recipe).
+        """
+
+        guard let response = await sendChatRequest(
+            prompt: prompt,
+            responseFormat: ["type": "json_schema", "json_schema": Self.recipeOrRejectionSchema]
+        ) else { return nil }
+        guard let data = response.data(using: .utf8) else { return nil }
+        do {
+            let raw = try JSONDecoder().decode(RawRecipeOrRejection.self, from: data)
+            guard !raw.rejected, let rawRecipe = raw.recipe, !rawRecipe.ingredients.isEmpty else { return nil }
+            let dish = rawRecipe.toDish(preserving: .draft()).withDerivedPlate()
+            return SmartIngredient.promote(dish: dish, rawIngredients: rawRecipe.ingredients)
+        } catch {
+            AppLog.warn("[AIService] Failed to generate pantry recipe: \(error)")
             return nil
         }
     }
