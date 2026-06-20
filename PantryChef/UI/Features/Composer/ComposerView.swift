@@ -11,6 +11,8 @@ struct ComposerView: View {
     /// Open the blank recipe editor (the manual "write a recipe" front door). The root
     /// dismisses the composer and presents the editor.
     var onWriteRecipe: () -> Void = {}
+    /// Open the "paste a recipe → format with AI" import sheet.
+    var onPasteRecipe: () -> Void = {}
 
     /// Where the staged batch lands on commit.
     enum Destination: String, CaseIterable {
@@ -149,6 +151,10 @@ struct ComposerView: View {
             Divider().background(Theme.Palette.hairline)
             doorway("Write a recipe", "square.and.pencil") {
                 onWriteRecipe()
+            }
+            Divider().background(Theme.Palette.hairline)
+            doorway("Paste a recipe · format with AI", "wand.and.stars") {
+                onPasteRecipe()
             }
         }
         .padding(.horizontal, 4)

@@ -464,6 +464,68 @@ final class AIService {
         }
     }
 
+    /// Parse messy freeform recipe text (pasted from anywhere, or roughed out by the
+    /// user) into a clean structured Dish — preserving the original ingredients and
+    /// method faithfully while filling only what's missing: sensible amounts, step
+    /// timers ("simmer 20 minutes" → 20:00), prep/cook times, servings, units, and
+    /// consistent capitalization. Returns nil if the text isn't a recipe, or the chef's
+    /// offline. The plate art is derived from the resolved ingredients afterward.
+    func parseRecipe(text: String, into draft: Dish) async -> Dish? {
+        let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return nil }
+
+        let prompt = """
+        Here is a recipe a user supplied, in whatever messy or freeform shape it arrived:
+        \"\"\"
+        \(trimmed)
+        \"\"\"
+
+        If this is NOT a recipe (random text, code, a bare shopping list with no method), \
+        reject it with "rejected": true.
+
+        Otherwise, turn it into ONE clean, structured recipe. Faithfully preserve the \
+        original's ingredients, quantities, and method — do NOT invent a different dish or \
+        drop anything. Fill in only what is genuinely missing or clearly implied: a sensible \
+        amount where none is given, a step timer where a step states a duration, and \
+        reasonable prep/cook times and a serving count if absent.
+
+        SELF-CONTAINED RECIPE RULES (critical):
+        - The recipe must cook everything from raw, purchasable ingredients — never add a \
+        pre-cooked or leftover item ("cooked rice", "leftover chicken") or another finished \
+        dish as a single ingredient.
+
+        INGREDIENT QUALITY RULES:
+        - Every ingredient name must be specific enough to buy at a store ("chicken thigh", not "chicken").
+        - Use the natural unit per ingredient: weight (g, kg) for solids/meats, volume (ml, L, cup, tbsp) \
+        for liquids/oils, "piece"/"whole" only for naturally countable items (eggs, onions). \
+        Spices/seasonings use tsp/tbsp/pinch, never grams.
+        - Prefer human-readable quantities ("1 kg" not "1000 g"); quantities realistic for the servings.
+
+        IMPORTANT: title-case the recipe title; sentence-case ingredient names and step instructions.
+
+        For unit, use: tsp, tbsp, cup, ml, L, g, kg, oz, lb, piece, whole, loaf, slice, clove, bunch, can, pinch, to taste.
+        For category, use: Dairy, Produce, Protein, Grains & Cereals, Spices & Herbs, Condiments & Sauces, Baking Supplies, Oils & Fats, Other.
+        Each step task object: {"taskIndex": number, "action": string, "ingredient": string or null, "durationSeconds": number, "type": "active" or "passive", "phase": "prep" or "cook" or "finish", "effort": "easy" or "medium" or "hard", "requiresEquipment": string or null, "dependsOn": [number]}
+
+        Return ONLY the JSON object (rejected / rejectionReason / rejectionMessage / recipe), no other text.
+        """
+
+        guard let response = await sendChatRequest(
+            prompt: prompt,
+            responseFormat: ["type": "json_schema", "json_schema": Self.recipeOrRejectionSchema]
+        ) else { return nil }
+        guard let data = response.data(using: .utf8) else { return nil }
+        do {
+            let raw = try JSONDecoder().decode(RawRecipeOrRejection.self, from: data)
+            guard !raw.rejected, let rawRecipe = raw.recipe,
+                  !rawRecipe.ingredients.isEmpty else { return nil }
+            return rawRecipe.toDish(preserving: draft).withDerivedPlate()
+        } catch {
+            AppLog.warn("[AIService] Failed to parse pasted recipe: \(error)")
+            return nil
+        }
+    }
+
     // MARK: - Networking (with retry)
 
     /// Maximum number of retry attempts for transient failures.

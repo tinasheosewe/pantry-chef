@@ -221,6 +221,7 @@
 		B7B98B852A01A38532BDB9E5 /* roasted-vegetable-feta-grain-bowl-base.png in Resources */ = {isa = PBXBuildFile; fileRef = EB5BCB7FE435D5641A1D72C3 /* roasted-vegetable-feta-grain-bowl-base.png */; };
 		B7BB7022389EF56649883E6E /* UnitConversion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46C98542EA16A5B83748C0D7 /* UnitConversion.swift */; };
 		B7BDB8A4DA98D7DE30546B67 /* chickpea-spinach-curry.png in Resources */ = {isa = PBXBuildFile; fileRef = 02F4815CD48EEADA55F6F7F3 /* chickpea-spinach-curry.png */; };
+		B7E950AB1A9629354750DCDC /* RecipeImportSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A8FBACE45531D5CE65F2504 /* RecipeImportSheet.swift */; };
 		B828C43E58C1179E91238DBE /* StockItemCertaintyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04185334BFA1AB8D3A984C73 /* StockItemCertaintyTests.swift */; };
 		B83811D1F586046A8487FF73 /* chicken-stir-fry-with-broccoli.png in Resources */ = {isa = PBXBuildFile; fileRef = E5460D4F9597EE052328D7DC /* chicken-stir-fry-with-broccoli.png */; };
 		B98499806F8A37618CED8820 /* pesto-gnocchi-with-cherry-tomatoes.png in Resources */ = {isa = PBXBuildFile; fileRef = 5AE6653E248BFA4C1B2A05B0 /* pesto-gnocchi-with-cherry-tomatoes.png */; };
@@ -406,6 +407,7 @@
 		3643051113F5FA12AC9EE141 /* tuna-noodle-casserole.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "tuna-noodle-casserole.png"; sourceTree = "<group>"; };
 		36D577F70B693DC5E1824F44 /* hearty-lentil-soup.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "hearty-lentil-soup.png"; sourceTree = "<group>"; };
 		37D2DE4E7AE893634E203960 /* RecipeSeed.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RecipeSeed.swift; sourceTree = "<group>"; };
+		3A8FBACE45531D5CE65F2504 /* RecipeImportSheet.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RecipeImportSheet.swift; sourceTree = "<group>"; };
 		3B99BCD9DB6959A4411DB6CF /* chana-masala.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "chana-masala.png"; sourceTree = "<group>"; };
 		3E8B2D4D276D1DB31BFD0269 /* UserCatalogStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserCatalogStore.swift; sourceTree = "<group>"; };
 		3EC5D21BC90DF8750D325F88 /* coconut-chickpea-curry.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "coconut-chickpea-curry.png"; sourceTree = "<group>"; };
@@ -1225,6 +1227,7 @@
 				7DA1BF81A96A4A7C8DEDFB4E /* ComposerView.swift */,
 				D0BD5F8F5E89DEF2F5F52E23 /* CustomIngredientForm.swift */,
 				BDBDB5E663ABC72EBDE1FAE6 /* IngredientPicker.swift */,
+				3A8FBACE45531D5CE65F2504 /* RecipeImportSheet.swift */,
 			);
 			name = Composer;
 			path = Composer;
@@ -1649,6 +1652,7 @@
 				47B4F2E1FE0A76DC9FFCF07A /* SubscriptionService.swift in Sources */,
 				85102979F8B1C20A210A2ECB /* PaywallView.swift in Sources */,
 				96E0ED7DEE078EFCD4E8BB46 /* OnboardingView.swift in Sources */,
+				B7E950AB1A9629354750DCDC /* RecipeImportSheet.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

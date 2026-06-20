@@ -19,6 +19,14 @@ private struct PlanTarget: Identifiable {
     let date: Date
 }
 
+/// A recipe headed into the editor — a blank manual draft, or an AI-formatted one to
+/// review. The heading distinguishes them ("New recipe" vs "Review recipe").
+private struct RecipeDraft: Identifiable {
+    let id = UUID()
+    var dish: Dish
+    var heading: String
+}
+
 /// The redesign's root: the three spaces over the printed page floor (rule + nav
 /// band + tailpiece), with the composer as a sheet and the cook instrument as a
 /// full-screen cover. Driven by a single `KitchenStore`.
@@ -30,8 +38,10 @@ struct RedesignRootView: View {
     @State private var showSettings = false
     @State private var showPlanAhead = false
     @State private var detailDish: Dish?
-    /// A blank recipe being written from scratch (the manual front door).
-    @State private var newRecipe: Dish?
+    /// A recipe headed into the editor (blank manual draft, or an AI-formatted one).
+    @State private var recipeDraft: RecipeDraft?
+    /// The "paste a recipe → format with AI" import sheet.
+    @State private var showImport = false
     @State private var multiSession: CookSession?
     @State private var planTarget: PlanTarget?
     @State private var editingMeal: PlannedMeal?
@@ -134,16 +144,29 @@ struct RedesignRootView: View {
                                  showComposer = false
                                  // Present the editor on the next runloop — a sheet can't
                                  // open while another is dismissing in the same tick.
-                                 DispatchQueue.main.async { newRecipe = Dish.draft() }
+                                 DispatchQueue.main.async { recipeDraft = RecipeDraft(dish: .draft(), heading: "New recipe") }
+                             },
+                             onPasteRecipe: {
+                                 showComposer = false
+                                 DispatchQueue.main.async { showImport = true }
                              })
                     .presentationDetents([.medium, .large])
             }
-            .sheet(item: $newRecipe) { draft in
-                RecipeEditorView(dish: draft, heading: "New recipe",
+            .sheet(isPresented: $showImport) {
+                RecipeImportSheet(
+                    store: store, subscription: subscription,
+                    onParsed: { dish in
+                        showImport = false
+                        DispatchQueue.main.async { recipeDraft = RecipeDraft(dish: dish, heading: "Review recipe") }
+                    },
+                    onClose: { showImport = false })
+            }
+            .sheet(item: $recipeDraft) { draft in
+                RecipeEditorView(dish: draft.dish, heading: draft.heading,
                                  autofill: { await store.ai.generateIngredientDefinition(name: $0) }) { built in
                     let dish = built.withDerivedPlate()
                     store.addDish(dish)
-                    newRecipe = nil
+                    recipeDraft = nil
                     // Drop straight into the recipe you just wrote.
                     DispatchQueue.main.async { detailDish = dish }
                 }
