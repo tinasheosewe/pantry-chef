@@ -195,13 +195,18 @@ existing editor for review — never forced.
    stripped text) → parseRecipe. RecipeImportSheet auto-detects link vs text. Verified:
    simplyrecipes.com banana bread → fully resolved.
 
-**STILL TO BUILD:**
-- **Photo → recipe** (cookbook page / dish) — NEW infra: a vision request path (image as base64 in
-  the chat content array; sendChatRequest only does text today) + a PhotosPicker UI. Can't verify in
-  the sim without driving the picker, so bundle a test image + temp harness to verify the vision call.
-- **"Polish with AI" in the editor** — serialize the rough dish → parseRecipe → replace (small;
-  needs Plus-gating wired into RecipeEditorView). Overlaps paste/format, so lower priority.
-- **Manual non-blocking smart-item flag** — today the editor opens CustomIngredientForm immediately on
-  an unknown ingredient (interrupts). Make it a quiet "N new ingredients → Smart-fill / Define" flag.
+**DONE 2026-06-19 (stage 5):**
+- **In-editor "Polish with AI"** — `Dish.asPlainText` → `parseRecipe` → replace (preserves identity);
+  Plus-gated, editor presents its own paywall.
+- **Non-blocking smart-item flow** — unknown ingredients stage as freeform "NEW" lines (no
+  interruption); a quiet banner offers "Smart-fill with AI" (defines all) or tap a NEW line to define
+  by hand. `SmartIngredient.register(name:definition:)` shared by import + manual paths.
+
+**STILL TO BUILD — Photo → recipe (the only remaining approach):** NEW infra — a vision request
+path (image as base64 in the chat content array; `sendChatRequest` is text-only today; needs a
+vision-capable model) + a PhotosPicker UI (library-only avoids a camera permission; covers
+screenshots + existing photos). Verify by bundling a test recipe image + temp harness (can't drive
+the picker via simctl). Recipe-photo (cookbook/card/screenshot) is reliable; dish-photo is a flakier
+stretch on the same call.
 
 NOTE: Barcode pantry intake (deterministic) is the v1.5 onboarding add-on, separate from this.
