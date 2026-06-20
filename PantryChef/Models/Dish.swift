@@ -179,6 +179,22 @@ struct Dish: Identifiable, Equatable, Sendable {
 
     var requirements: [IngredientRequirement] { ingredients.map(\.requirement) }
 
+    /// A plain-text rendering of the recipe — fed back to the AI formatter for the
+    /// in-editor "Polish with AI" (clean up, fill amounts/timers, structure).
+    var asPlainText: String {
+        var lines = [name.isEmpty ? "Untitled recipe" : name]
+        if let blurb { lines.append(blurb) }
+        lines.append("Serves \(servings)")
+        if !time.isEmpty && time != "—" { lines.append("Time: \(time)") }
+        lines.append("\nIngredients:")
+        lines += ingredients.map { "- " + [$0.amount, $0.name].compactMap { $0 }.joined(separator: " ") }
+        if !steps.isEmpty {
+            lines.append("\nMethod:")
+            lines += steps.enumerated().map { "\($0 + 1). \($1.instruction)" }
+        }
+        return lines.joined(separator: "\n")
+    }
+
     /// A copy with a fresh identity — for "save as new" after a tweak/edit, so the
     /// original recipe is left untouched. Marked as the user's own, not favorited.
     func copyAsNew() -> Dish {

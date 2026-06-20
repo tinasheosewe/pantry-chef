@@ -208,7 +208,9 @@ struct RedesignRootView: View {
             }
             .sheet(item: $recipeDraft) { draft in
                 RecipeEditorView(dish: draft.dish, heading: draft.heading,
-                                 autofill: { await store.ai.generateIngredientDefinition(name: $0) }) { built in
+                                 autofill: { await store.ai.generateIngredientDefinition(name: $0) },
+                                 polish: { d in await store.ai.parseRecipe(text: d.asPlainText, into: d) },
+                                 subscription: subscription) { built in
                     let dish = built.withDerivedPlate()
                     store.addDish(dish)
                     recipeDraft = nil

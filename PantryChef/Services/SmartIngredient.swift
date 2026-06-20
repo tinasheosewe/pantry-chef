@@ -27,22 +27,30 @@ enum SmartIngredient {
         return dish
     }
 
+    /// Register a user catalog item from a full AI ingredient definition (the manual
+    /// "Smart-fill" path, where the AI proposes category + storage + shelf life).
+    /// Returns the new — or existing — catalog id.
+    static func register(name: String, definition: AIIngredientDefinition) -> String? {
+        var draft = CustomIngredientDraft(name: name)
+        draft.applyAIDefinition(definition)
+        return register(draft.buildDefinition())
+    }
+
     /// Build + register a user catalog item for a novel ingredient; returns its id, the
     /// id of an existing match (dedup / name collision), or nil if it couldn't register.
     private static func registerSmartItem(name: String, category: FoodCategory) -> String? {
         var draft = CustomIngredientDraft(name: name)
         draft.category = category
         draft.defaultStorage = defaultStorage(for: category)   // shelf life defaults off storage
-        let def = draft.buildDefinition()
+        return register(draft.buildDefinition())
+    }
+
+    private static func register(_ def: PantryCatalogItemDefinition) -> String? {
         switch PantryCatalog.registerUserItem(def) {
-        case .success:
-            return def.id
-        case .failure(.duplicateUserItem(let existing)):
-            return existing
-        case .failure(.nameCollision(let existing, _)):
-            return existing          // the catalog already has it under another name
-        case .failure:
-            return nil
+        case .success: return def.id
+        case .failure(.duplicateUserItem(let existing)): return existing
+        case .failure(.nameCollision(let existing, _)): return existing  // exists under another name
+        case .failure: return nil
         }
     }
 

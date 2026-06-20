@@ -10,10 +10,18 @@ struct RecipeEditorView: View {
     /// Header label — "Edit recipe" by default, "New recipe" for the write-from-scratch door.
     var heading: String = "Edit recipe"
     var autofill: (String) async -> AIIngredientDefinition? = { _ in nil }
+    /// AI clean-up of the whole rough recipe (fill amounts, step timers, structure). When
+    /// nil the "Polish with AI" button is hidden. Gated through `subscription`.
+    var polish: ((Dish) async -> Dish?)? = nil
+    /// Drives the Plus gate for the AI affordances (polish, smart-fill); nil = no gate
+    /// surface (AI buttons hidden).
+    var subscription: SubscriptionService? = nil
     var onSave: (Dish) -> Void
 
     @State private var newIngredient = ""
     @State private var resolving: Resolving?
+    @State private var aiBusy = false
+    @State private var showPaywall = false
     /// Steps whose phase the cook set by hand — those keep their tag through later
     /// text edits; untouched steps re-infer their phase from the wording.
     @State private var phaseTagged: Set<UUID> = []
@@ -21,12 +29,22 @@ struct RecipeEditorView: View {
     init(dish: Dish,
          heading: String = "Edit recipe",
          autofill: @escaping (String) async -> AIIngredientDefinition? = { _ in nil },
+         polish: ((Dish) async -> Dish?)? = nil,
+         subscription: SubscriptionService? = nil,
          onSave: @escaping (Dish) -> Void) {
         _dish = State(initialValue: dish)
         self.heading = heading
         self.autofill = autofill
+        self.polish = polish
+        self.subscription = subscription
         self.onSave = onSave
     }
+
+    /// On-hand essentials with no catalog identity — the "new to your kitchen" set.
+    private var unknownLines: [RecipeLine] {
+        dish.ingredients.filter { $0.catalogItemID == nil && !$0.isStaple && !$0.name.trimmed.isEmpty }
+    }
+    private var canUseAI: Bool { subscription?.isPlus == true }
 
     private var canSave: Bool { !dish.name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
 
@@ -45,9 +63,21 @@ struct RecipeEditorView: View {
     var body: some View {
         VStack(spacing: 0) {
             Capsule().fill(Theme.Palette.hairline).frame(width: 36, height: 4).padding(.top, 10)
-            HStack {
+            HStack(spacing: 12) {
                 Text(heading).font(Theme.Typography.dish(20)).foregroundStyle(Theme.Palette.ink)
                 Spacer()
+                if polish != nil && !dish.ingredients.isEmpty {
+                    Button { polishWithAI() } label: {
+                        HStack(spacing: 5) {
+                            if aiBusy { ProgressView().controlSize(.small) }
+                            else { Image(systemName: "wand.and.stars").font(.system(size: 12)) }
+                            Text(aiBusy ? "Polishing…" : "Polish")
+                                .font(.system(size: 12, weight: .medium))
+                        }
+                        .foregroundStyle(Theme.Palette.sage)
+                    }
+                    .buttonStyle(.plain).disabled(aiBusy)
+                }
                 PaprikaButton(title: "Save") { if canSave { onSave(dish) } }
                     .opacity(canSave ? 1 : 0.4)
                     .disabled(!canSave)
@@ -68,6 +98,9 @@ struct RecipeEditorView: View {
             }
         }
         .background(KitchenBackground())
+        .sheet(isPresented: $showPaywall) {
+            if let subscription { PaywallView(subscription: subscription, onClose: { showPaywall = false }) }
+        }
         .sheet(item: $resolving) { r in
             switch r {
             case .pick(let phrase, let lineID, let candidates):
@@ -96,12 +129,24 @@ struct RecipeEditorView: View {
                         get: { line.amount },
                         set: { line = line.withAmount(qty: AmountText.qty($0), unit: AmountText.unit($0)) }),
                         defaultUnit: PantryCatalog.itemsByID[line.catalogItemID ?? ""]?.defaultUnit)
+                    let isNew = line.catalogItemID == nil && !line.isStaple && !line.name.trimmed.isEmpty
                     Button {
-                        beginResolve(phrase: line.name, lineID: line.id)
+                        // A known line re-resolves; a new one opens the define form.
+                        if isNew { resolving = .custom(phrase: line.name, lineID: line.id) }
+                        else { beginResolve(phrase: line.name, lineID: line.id) }
                     } label: {
-                        Text(line.name.isEmpty ? "choose…" : line.name)
-                            .foregroundStyle(line.name.isEmpty ? Theme.Palette.warmGraySoft : Theme.Palette.ink)
-                            .frame(maxWidth: .infinity, alignment: .leading)
+                        HStack(spacing: 6) {
+                            Text(line.name.isEmpty ? "choose…" : line.name)
+                                .foregroundStyle(line.name.isEmpty ? Theme.Palette.warmGraySoft : Theme.Palette.ink)
+                            if isNew {
+                                Text("NEW").font(.system(size: 8, weight: .bold)).tracking(0.8)
+                                    .foregroundStyle(Theme.Palette.paprika)
+                                    .padding(.horizontal, 4).padding(.vertical, 1)
+                                    .overlay(Rectangle().strokeBorder(Theme.Palette.paprika.opacity(0.5), lineWidth: 1))
+                            }
+                            Spacer(minLength: 0)
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
                     }
                     .buttonStyle(.plain)
                     Button { dish.ingredients.removeAll { $0.id == line.id } } label: {
@@ -127,6 +172,75 @@ struct RecipeEditorView: View {
                 }
             }
             .padding(.top, 2)
+            newIngredientsBanner
+        }
+    }
+
+    /// A quiet flag for the catalog-misses, never blocking: Smart-fill them all with AI
+    /// (so they get expiry/aisle/readiness), or tap any "NEW" line to define it by hand.
+    @ViewBuilder private var newIngredientsBanner: some View {
+        let unknowns = unknownLines
+        if !unknowns.isEmpty {
+            VStack(alignment: .leading, spacing: 8) {
+                Text(unknowns.count == 1 ? "1 ingredient is new to your kitchen."
+                                         : "\(unknowns.count) ingredients are new to your kitchen.")
+                    .font(Theme.Typography.fact(12)).foregroundStyle(Theme.Palette.warmGray)
+                    .fixedSize(horizontal: false, vertical: true)
+                HStack(spacing: 10) {
+                    Button { smartFillUnknowns() } label: {
+                        HStack(spacing: 5) {
+                            if aiBusy { ProgressView().controlSize(.small) }
+                            else { Image(systemName: "wand.and.stars").font(.system(size: 11)) }
+                            Text(aiBusy ? "Smart-filling…" : "Smart-fill with AI")
+                                .font(.system(size: 11, weight: .medium))
+                        }
+                        .foregroundStyle(Theme.Palette.sage)
+                        .padding(.horizontal, 10).frame(minHeight: 34)
+                        .overlay(Rectangle().strokeBorder(Theme.Palette.sage.opacity(0.6), lineWidth: 1))
+                    }
+                    .buttonStyle(.plain).disabled(aiBusy)
+                    Text("or tap a NEW line to define it")
+                        .font(Theme.Typography.fact(10.5)).foregroundStyle(Theme.Palette.warmGraySoft)
+                }
+            }
+            .padding(.horizontal, 12).padding(.vertical, 10)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(Rectangle().fill(Theme.Palette.paprika.opacity(0.06)))
+            .overlay(Rectangle().strokeBorder(Theme.Palette.paprika.opacity(0.22), lineWidth: 1))
+            .padding(.top, 8)
+        }
+    }
+
+    // MARK: - AI assists (Plus)
+
+    /// Run the whole rough recipe back through the AI formatter — fill amounts, infer
+    /// step timers, clean structure — preserving this recipe's identity.
+    private func polishWithAI() {
+        guard let polish else { return }
+        guard canUseAI else { showPaywall = true; return }
+        aiBusy = true
+        Task {
+            if let polished = await polish(dish) { dish = polished }
+            aiBusy = false
+        }
+    }
+
+    /// Define every "new" ingredient with one AI call each (category/storage/shelf life),
+    /// register them as smart catalog items, and re-point the lines.
+    private func smartFillUnknowns() {
+        guard canUseAI else { showPaywall = true; return }
+        aiBusy = true
+        Task {
+            for line in unknownLines {
+                guard let def = await autofill(line.name),
+                      let id = SmartIngredient.register(name: line.name, definition: def),
+                      let i = dish.ingredients.firstIndex(where: { $0.id == line.id }) else { continue }
+                let old = dish.ingredients[i]
+                dish.ingredients[i] = RecipeLine(id: old.id, key: old.key, amount: old.amount,
+                                                 name: old.name, isStaple: old.isStaple,
+                                                 essential: old.essential, catalogItemID: id)
+            }
+            aiBusy = false
         }
     }
 
@@ -150,7 +264,12 @@ struct RecipeEditorView: View {
         case .ambiguous(let candidates):
             resolving = .pick(phrase: phrase, lineID: lineID, candidates: candidates)
         case .custom:
-            resolving = .custom(phrase: phrase, lineID: lineID)
+            // Don't interrupt typing — stage it as a working freeform line. The
+            // "new to your kitchen" banner then offers Smart-fill (AI) or Define (the
+            // form), and tapping the line opens the form directly.
+            let name = intake.suggestedName ?? intake.name
+            applyResolved(name: name, key: IngredientLexicon.lookupKey(intake.name),
+                          catalogItemID: nil, lineID: lineID)
         }
     }
 
