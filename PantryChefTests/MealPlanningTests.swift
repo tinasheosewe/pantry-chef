@@ -239,6 +239,18 @@ final class MealPlanningTests: XCTestCase {
         XCTAssertEqual(store.library.count, libraryCount, "recipes stay — only the user's kitchen is emptied")
     }
 
+    func testScannedProductKeepsItsNameDeduplicatesAndUndoes() {
+        let store = KitchenStore()
+        store.startEmpty()
+        let added = store.addScannedProduct(name: "Nutella")
+        XCTAssertEqual(added, "Nutella")
+        XCTAssertTrue(store.stock.contains { $0.name == "Nutella" }, "the scanned product's own name is the label")
+        store.addScannedProduct(name: "nutella")
+        XCTAssertEqual(store.stock.filter { $0.name.lowercased() == "nutella" }.count, 1, "re-scanning de-dupes")
+        store.removeStockByName("Nutella")
+        XCTAssertFalse(store.stock.contains { $0.name == "Nutella" }, "undo removes it")
+    }
+
     func testToggleStapleAddsThenRemovesByCatalogIdentity() {
         let store = KitchenStore()
         store.startEmpty()

@@ -85,6 +85,7 @@
 		3E671F7407B8D5A66CC44047 /* breakfast-burrito.png in Resources */ = {isa = PBXBuildFile; fileRef = 79EF0FD96955E2F196335A05 /* breakfast-burrito.png */; };
 		40B4302ABEBDCF927D16D2B3 /* NowModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9697622A6D46C228E5379556 /* NowModule.swift */; };
 		40BC6FD4A231898D0D1184CA /* big-batch-minestrone-soup.png in Resources */ = {isa = PBXBuildFile; fileRef = 16C428F9B16DD16EDFDBBEE4 /* big-batch-minestrone-soup.png */; };
+		40BE303C64F73730AF5D29D7 /* BarcodeScanSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 139335E06B4A55CE5CF29A48 /* BarcodeScanSheet.swift */; };
 		414F51CECCAB337BD90276A4 /* TimelineComposerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C47829257708E02A5B21FA6D /* TimelineComposerTests.swift */; };
 		4209855AE41E88CABEC911CD /* AppError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EAF4BBB6D4452027050DF1E /* AppError.swift */; };
 		44BFDC19CE8AC3D86746B051 /* steel-cut-oats-with-apple.png in Resources */ = {isa = PBXBuildFile; fileRef = 49E1CC21EC8D7282353CB950 /* steel-cut-oats-with-apple.png */; };
@@ -122,6 +123,7 @@
 		644BFC91D022448F97553433 /* thai-basil-chicken.png in Resources */ = {isa = PBXBuildFile; fileRef = 73D92DF9174E120B75A334AA /* thai-basil-chicken.png */; };
 		64F2B5992FF1EB74F106E85D /* TelemetryReporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A16DF6ABA8E8C73E7BB93F32 /* TelemetryReporter.swift */; };
 		6549EBA56ADD23E3886C4F93 /* korean-braised-short-ribs.png in Resources */ = {isa = PBXBuildFile; fileRef = 8AF51EB1621E970C815A5281 /* korean-braised-short-ribs.png */; };
+		6554F4807049EFCAB6B1593D /* ProductLookup.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF14438B593DA7FA0BACB2BF /* ProductLookup.swift */; };
 		65C2776D81C1E59BCFCE90F3 /* palak-paneer.png in Resources */ = {isa = PBXBuildFile; fileRef = 50D7242190AE8211ED6244AC /* palak-paneer.png */; };
 		6628A8A4336DFBE20336FBAB /* roasted-tomato-basil-soup.png in Resources */ = {isa = PBXBuildFile; fileRef = D23C3650EF7D5C190BA79D8C /* roasted-tomato-basil-soup.png */; };
 		6766D2D8D603460C7DA696CD /* black-bean-tacos.png in Resources */ = {isa = PBXBuildFile; fileRef = F8EA596D363F0CCC8D5D19DC /* black-bean-tacos.png */; };
@@ -367,6 +369,7 @@
 		0FEA952467D85FC0633C1A53 /* vegetable-couscous-tagine.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "vegetable-couscous-tagine.png"; sourceTree = "<group>"; };
 		11832F25E4EDE858376EF759 /* baked-falafel-bowl.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "baked-falafel-bowl.png"; sourceTree = "<group>"; };
 		1383024CEFB446FE515EAD80 /* smoky-bbq-pulled-pork.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "smoky-bbq-pulled-pork.png"; sourceTree = "<group>"; };
+		139335E06B4A55CE5CF29A48 /* BarcodeScanSheet.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BarcodeScanSheet.swift; sourceTree = "<group>"; };
 		1676611A3A7F82D7BAC3B20E /* GlassCard.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GlassCard.swift; sourceTree = "<group>"; };
 		16C428F9B16DD16EDFDBBEE4 /* big-batch-minestrone-soup.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "big-batch-minestrone-soup.png"; sourceTree = "<group>"; };
 		1752D35C18F879CE3D6C56E7 /* high-protein-cottage-cheese-pancakes.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "high-protein-cottage-cheese-pancakes.png"; sourceTree = "<group>"; };
@@ -601,6 +604,7 @@
 		CC7D29C483E721AD3542AB81 /* PantryChef.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = PantryChef.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CCEDED2CE5A479FB65BC6F69 /* DietaryProfile.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DietaryProfile.swift; sourceTree = "<group>"; };
 		CE617E98FF967068CA18F101 /* mushroom-and-white-bean-ragout.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "mushroom-and-white-bean-ragout.png"; sourceTree = "<group>"; };
+		CF14438B593DA7FA0BACB2BF /* ProductLookup.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ProductLookup.swift; sourceTree = "<group>"; };
 		CFBFB6E8EFE8707323970518 /* pad-thai.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "pad-thai.png"; sourceTree = "<group>"; };
 		D054B89672BBCCAB589917C4 /* miso-glazed-eggplant.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "miso-glazed-eggplant.png"; sourceTree = "<group>"; };
 		D0BD5F8F5E89DEF2F5F52E23 /* CustomIngredientForm.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CustomIngredientForm.swift; sourceTree = "<group>"; };
@@ -1194,6 +1198,7 @@
 				5ABA2D7C0D70D34CC6787EB2 /* Nutrition.swift */,
 				C8DDBF8F19D3346B386F7278 /* SubscriptionService.swift */,
 				B7FFD66371695F3C29EC6FA8 /* SmartIngredient.swift */,
+				CF14438B593DA7FA0BACB2BF /* ProductLookup.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -1223,6 +1228,7 @@
 				D0BD5F8F5E89DEF2F5F52E23 /* CustomIngredientForm.swift */,
 				BDBDB5E663ABC72EBDE1FAE6 /* IngredientPicker.swift */,
 				3A8FBACE45531D5CE65F2504 /* RecipeImportSheet.swift */,
+				139335E06B4A55CE5CF29A48 /* BarcodeScanSheet.swift */,
 			);
 			name = Composer;
 			path = Composer;
@@ -1649,6 +1655,8 @@
 				96E0ED7DEE078EFCD4E8BB46 /* OnboardingView.swift in Sources */,
 				B7E950AB1A9629354750DCDC /* RecipeImportSheet.swift in Sources */,
 				B5EF3B84996AFD5752993F07 /* SmartIngredient.swift in Sources */,
+				6554F4807049EFCAB6B1593D /* ProductLookup.swift in Sources */,
+				40BE303C64F73730AF5D29D7 /* BarcodeScanSheet.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

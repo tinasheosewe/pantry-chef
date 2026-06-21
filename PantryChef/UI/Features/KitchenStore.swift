@@ -260,6 +260,21 @@ final class KitchenStore {
         return stock.contains { $0.key == name.lowercased() }
     }
 
+    /// Add a scanned product to the pantry. Keeps the product's own name as the label,
+    /// but resolves to a catalog item (for expiry/aisle/readiness) when one matches.
+    /// De-dupes by name — re-scanning just re-confirms. Returns the display name added.
+    @discardableResult
+    func addScannedProduct(name: String) -> String {
+        let trimmed = name.trimmingCharacters(in: .whitespaces)
+        let display = trimmed.isEmpty ? name : trimmed.prefix(1).capitalized + trimmed.dropFirst()
+        let key = trimmed.lowercased()
+        if let i = stock.firstIndex(where: { $0.key == key }) { stock[i].lastConfirmed = today; return display }
+        let item = IntakePipeline.bestCatalogID(for: trimmed).flatMap { PantryCatalog.itemsByID[$0] }
+        stock.append(makeStockItem(name: display, amount: nil, storage: nil,
+                                   catalogItem: item, lastConfirmed: today))
+        return display
+    }
+
     func toggleStaple(id: String?, name: String) {
         if let id, let i = stock.firstIndex(where: { $0.catalogItemID == id }) { stock.remove(at: i); return }
         if id == nil, let i = stock.firstIndex(where: { $0.key == name.lowercased() }) { stock.remove(at: i); return }
@@ -645,6 +660,14 @@ final class KitchenStore {
     }
 
     func removeStock(_ id: UUID) { stock.removeAll { $0.id == id } }
+
+    /// Remove the most-recently-added stock item with this display name (undo a scan).
+    func removeStockByName(_ name: String) {
+        let key = name.lowercased()
+        if let i = stock.lastIndex(where: { $0.name.lowercased() == key || $0.key == key }) {
+            stock.remove(at: i)
+        }
+    }
 
     func removeFromList(_ name: String) {
         let key = name.lowercased()

@@ -37,6 +37,7 @@ struct OnboardingView: View {
     private enum Step { case welcome, sweep }
     @State private var step: Step = .welcome
     @State private var typed = ""
+    @State private var showScanner = false
     @FocusState private var typing: Bool
 
     private let staples = OnboardingStaples.resolved
@@ -88,6 +89,7 @@ struct OnboardingView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
                     typedAdd
+                    scanRow
                     Text("COMMON STAPLES").font(Theme.Typography.eyebrow)
                         .tracking(Theme.Metric.eyebrowTracking).foregroundStyle(Theme.Palette.warmGraySoft)
                         .padding(.top, 4)
@@ -97,6 +99,25 @@ struct OnboardingView: View {
             }
             footer
         }
+        .sheet(isPresented: $showScanner) {
+            BarcodeScanSheet(store: store, onClose: { showScanner = false })
+        }
+    }
+
+    private var scanRow: some View {
+        Button { showScanner = true } label: {
+            HStack(spacing: 8) {
+                Image(systemName: "barcode.viewfinder").font(.system(size: 15)).foregroundStyle(Theme.Palette.paprika)
+                Text("Scan barcodes").font(Theme.Typography.fact(14, weight: .medium)).foregroundStyle(Theme.Palette.ink)
+                Spacer()
+                Image(systemName: "chevron.right").font(.system(size: 11, weight: .semibold)).foregroundStyle(Theme.Palette.warmGraySoft)
+            }
+            .padding(.horizontal, 14).padding(.vertical, 11)
+            .background(RoundedRectangle(cornerRadius: 3).fill(Theme.Palette.creamRaised))
+            .overlay(RoundedRectangle(cornerRadius: 3).strokeBorder(Theme.Palette.hairline))
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
     }
 
     private var unlockHeader: some View {

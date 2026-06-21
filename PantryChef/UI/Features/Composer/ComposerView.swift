@@ -17,6 +17,8 @@ struct ComposerView: View {
     var onCookWithWhatIHave: () -> Void = {}
     /// Read a recipe from a photo / screenshot (library only).
     var onPhotoRecipe: () -> Void = {}
+    /// Scan product barcodes into the pantry (deterministic, free).
+    var onScanBarcode: () -> Void = {}
 
     /// Where the staged batch lands on commit.
     enum Destination: String, CaseIterable {
@@ -145,6 +147,10 @@ struct ComposerView: View {
             Divider().background(Theme.Palette.hairline)
             doorway("Add to the list", "cart") {
                 withAnimation { destination = .list }
+            }
+            Divider().background(Theme.Palette.hairline)
+            doorway("Scan a barcode", "barcode.viewfinder") {
+                onScanBarcode()
             }
             Divider().background(Theme.Palette.hairline)
             doorway("Paste from the clipboard", "doc.on.clipboard") {

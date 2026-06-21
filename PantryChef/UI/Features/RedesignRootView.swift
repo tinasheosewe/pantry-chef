@@ -50,6 +50,8 @@ struct RedesignRootView: View {
     /// Photo-of-a-recipe import (library/screenshots).
     @State private var showPhotoPicker = false
     @State private var photoItem: PhotosPickerItem?
+    /// Barcode pantry scanner.
+    @State private var showScanner = false
     @State private var multiSession: CookSession?
     @State private var planTarget: PlanTarget?
     @State private var editingMeal: PlannedMeal?
@@ -224,8 +226,15 @@ struct RedesignRootView: View {
                              onPhotoRecipe: {
                                  showComposer = false
                                  DispatchQueue.main.async { photoRecipe() }
+                             },
+                             onScanBarcode: {
+                                 showComposer = false
+                                 DispatchQueue.main.async { showScanner = true }
                              })
                     .presentationDetents([.medium, .large])
+            }
+            .sheet(isPresented: $showScanner) {
+                BarcodeScanSheet(store: store, onClose: { showScanner = false })
             }
             .sheet(isPresented: $showImport) {
                 RecipeImportSheet(
