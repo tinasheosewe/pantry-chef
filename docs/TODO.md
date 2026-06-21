@@ -215,4 +215,12 @@ generation, smart-item promotion, in-editor polish + non-blocking smart flow, ph
 Plus-gated, all land in the "Review recipe" editor. Possible future: cache imports by URL/image
 hash; deterministic JSON-LD→Dish (skip AI entirely for marked-up sites).
 
+**Barcode pantry intake DONE (2026-06-19) — FREE/deterministic.** `ProductLookup` (Open Food Facts,
+keyless) → name → IntakePipeline; `BarcodeScanSheet` (VisionKit DataScanner, continuous, undoable
+"added" list, graceful sim/pre-A12 fallback); `store.addScannedProduct` keeps the product name but
+resolves to a catalog item; wired into the onboarding sweep + composer; NSCameraUsageDescription
+added. Live scanning needs a real device (verified the lookup live; can't drive the camera in sim).
+Caveat: branded names from OFF can mis-resolve (Coca-Cola "Original Taste" → cheese), which is why
+the scan list is reviewable/undoable.
+
 NOTE: Barcode pantry intake (deterministic) is the v1.5 onboarding add-on, separate from this.
