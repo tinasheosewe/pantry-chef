@@ -224,3 +224,20 @@ Caveat: branded names from OFF can mis-resolve (Coca-Cola "Original Taste" → c
 the scan list is reviewable/undoable.
 
 NOTE: Barcode pantry intake (deterministic) is the v1.5 onboarding add-on, separate from this.
+
+### Backlog — optimizations & nice-to-haves (no gaps, all polish)
+Captured 2026-06-19. None block launch; each is an improvement on a feature that already works.
+- **Cache AI imports by URL / image hash** — a re-import of the same link or photo should reuse the
+  prior result instead of paying for another call. Keyed store of url/imageHash → Dish (or raw JSON);
+  check before hitting `parseRecipe`/`importRecipe`/`importRecipeFromImage`. Cuts cost + latency.
+- **Deterministic JSON-LD → Dish (skip AI on marked-up sites)** — `importRecipe(urlString:)` already
+  extracts schema.org/Recipe JSON-LD; today it still hands that to the AI. Map the JSON-LD fields
+  (recipeIngredient / recipeInstructions / etc.) straight to a Dish for the common case, so a clean
+  recipe site costs $0. Fall back to AI only when the markup's missing/partial.
+- **Live camera capture for recipe photos** — today photo import is library/screenshots only
+  (`PhotosPicker`). Add an in-the-moment camera capture (snap a cookbook page). Needs the camera UI;
+  `NSCameraUsageDescription` already exists (added for barcode).
+- **Barcode confidence threshold** — branded Open Food Facts names can fuzzy-mis-resolve (Coca-Cola
+  "Original Taste" → cheese). Only auto-resolve a scan to a catalog item on a *strong* match; else keep
+  it name-only. Needs `IntakePipeline`/`bestCatalogID` to expose a confidence score. The undoable scan
+  list mitigates this for now.
