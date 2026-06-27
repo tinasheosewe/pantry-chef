@@ -291,6 +291,7 @@
 		E75CFC1AA3DD8FE67760BAEA /* tofu-vegetable-stir-fry.png in Resources */ = {isa = PBXBuildFile; fileRef = 5F4314990AF1D8DB0CF016C6 /* tofu-vegetable-stir-fry.png */; };
 		E7F294344D02F2889C525C87 /* KitchenConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1C329655335AFFA3C9D8582 /* KitchenConfig.swift */; };
 		E8B0B35D245ECCEFF9939A78 /* Dish.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7FDE2746EBCA7890C1F77F8 /* Dish.swift */; };
+		ECA39FE2834A523A938061F6 /* MealLogSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8253D346EF23CD1B7FB4D689 /* MealLogSheet.swift */; };
 		ECC719FFDDEB50C03706D5C7 /* apple-crumble.png in Resources */ = {isa = PBXBuildFile; fileRef = 35A35FC77D0D1FCB36B97CE4 /* apple-crumble.png */; };
 		EDF0064F8F36D3C9F4163B3D /* beef-and-broccoli.png in Resources */ = {isa = PBXBuildFile; fileRef = 5EC95E8EAD20FDA6C9C84042 /* beef-and-broccoli.png */; };
 		EE342E43947C6BA8264FD261 /* chicken-rice-casserole.png in Resources */ = {isa = PBXBuildFile; fileRef = 7A9A55706621F897C3C8D7BB /* chicken-rice-casserole.png */; };
@@ -509,6 +510,7 @@
 		813AF015CDFFC4786F074A51 /* yogurt-parfait-with-granola.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "yogurt-parfait-with-granola.png"; sourceTree = "<group>"; };
 		822D5F908F780A317F9B37C1 /* ExpiryEngine.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ExpiryEngine.swift; sourceTree = "<group>"; };
 		8241073BA3C1CE75DE6558C5 /* MultiCookScheduler.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MultiCookScheduler.swift; sourceTree = "<group>"; };
+		8253D346EF23CD1B7FB4D689 /* MealLogSheet.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MealLogSheet.swift; sourceTree = "<group>"; };
 		82608B4151E82DF78FFBA7CC /* eggs-benedict.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "eggs-benedict.png"; sourceTree = "<group>"; };
 		8301E23753E7F9097EFF7403 /* vegan-corn-chowder.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "vegan-corn-chowder.png"; sourceTree = "<group>"; };
 		838737C3617A161CDC50FCD7 /* chicken-shawarma.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "chicken-shawarma.png"; sourceTree = "<group>"; };
@@ -696,6 +698,7 @@
 				039DE23286DA5BF1F840B8EF /* TodayFeed.swift */,
 				37D2DE4E7AE893634E203960 /* RecipeSeed.swift */,
 				95566320DE07DA4B713F4C78 /* RecipeBrowse.swift */,
+				8253D346EF23CD1B7FB4D689 /* MealLogSheet.swift */,
 			);
 			name = Today;
 			path = Today;
@@ -1657,6 +1660,7 @@
 				B5EF3B84996AFD5752993F07 /* SmartIngredient.swift in Sources */,
 				6554F4807049EFCAB6B1593D /* ProductLookup.swift in Sources */,
 				40BE303C64F73730AF5D29D7 /* BarcodeScanSheet.swift in Sources */,
+				ECA39FE2834A523A938061F6 /* MealLogSheet.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

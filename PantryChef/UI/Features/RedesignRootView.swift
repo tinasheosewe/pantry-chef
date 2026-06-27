@@ -1,5 +1,6 @@
 import SwiftUI
 import PhotosUI
+import UIKit
 
 /// The page itself: flat paper, no glow — Field Notes is printed, not lit.
 struct KitchenBackground: View {
@@ -52,6 +53,14 @@ struct RedesignRootView: View {
     @State private var photoItem: PhotosPickerItem?
     /// Barcode pantry scanner.
     @State private var showScanner = false
+    /// "Cook with what I have" — opt-in to bias toward expiring items (default off).
+    @State private var inventUseExpiring = false
+    /// The "log a meal" catch-all sheet.
+    @State private var showMealLog = false
+    /// A link is on the clipboard at launch — offer to import it (read only on accept, so
+    /// the paste banner never fires unless they engage). Offered at most once per launch.
+    @State private var offerClipboardImport = false
+    @State private var clipboardOffered = false
     @State private var multiSession: CookSession?
     @State private var planTarget: PlanTarget?
     @State private var editingMeal: PlannedMeal?
@@ -106,6 +115,7 @@ struct RedesignRootView: View {
                 // First run → the Pantry Sweep, now that readiness is warm so the unlock
                 // counter is live and the app behind is fully loaded.
                 if !OnboardingState.hasCompleted { showOnboarding = true }
+                else { maybeOfferClipboardImport() }
             }
         }
         .fullScreenCover(isPresented: $showOnboarding) {
@@ -124,6 +134,42 @@ struct RedesignRootView: View {
         .alert("Hmm", isPresented: Binding(get: { aiError != nil }, set: { if !$0 { aiError = nil } })) {
             Button("OK", role: .cancel) {}
         } message: { Text(aiError ?? "") }
+        .sheet(isPresented: $showMealLog) {
+            MealLogSheet(store: store, onClose: { showMealLog = false })
+                .presentationDetents([.height(220)])
+        }
+        // Clipboard auto-detect: if a link is sitting on the clipboard at launch, offer to
+        // import it as a recipe (Crouton's trick). `hasURLs` doesn't trip the paste banner —
+        // we only read the URL if the user accepts.
+        .alert("Import a recipe?", isPresented: $offerClipboardImport) {
+            Button("Import") {
+                if let url = UIPasteboard.general.url?.absoluteString ?? UIPasteboard.general.string {
+                    importFromURL(url)
+                }
+            }
+            Button("Not now", role: .cancel) {}
+        } message: { Text("There’s a link on your clipboard — want me to pull the recipe from it?") }
+    }
+
+    /// Offer the clipboard link once readiness is ready (and only once per launch; never
+    /// over onboarding).
+    private func maybeOfferClipboardImport() {
+        guard !clipboardOffered, OnboardingState.hasCompleted, !showOnboarding else { return }
+        guard UIPasteboard.general.hasURLs else { return }
+        clipboardOffered = true
+        offerClipboardImport = true
+    }
+
+    /// Import a recipe from a URL (clipboard path) — Plus-gated, same loader + review editor.
+    private func importFromURL(_ urlString: String) {
+        guard subscription.isPlus else { showPaywall = true; return }
+        aiError = nil; aiGenerating = true
+        Task {
+            let dish = await store.ai.importRecipe(urlString: urlString)
+            aiGenerating = false
+            if let dish { recipeDraft = RecipeDraft(dish: dish, heading: "Review recipe") }
+            else { aiError = "Couldn’t read a recipe from that link — try pasting the recipe text instead." }
+        }
     }
 
     private func finishOnboarding() {
@@ -131,15 +177,18 @@ struct RedesignRootView: View {
         showOnboarding = false
     }
 
-    /// "Cook with what I have" — generate a recipe from the present pantry (Plus). Shows
-    /// a loader while the chef thinks, then opens the result in the review editor.
-    private func cookWithWhatIHave() {
+    /// "Cook with what I have" — generate a recipe from the present pantry (Plus). When
+    /// `useExpiring` is on (opt-in), it builds around what's about to turn. Shows a loader,
+    /// then opens the result in the review editor.
+    private func cookWithWhatIHave(useExpiring: Bool = false) {
         guard subscription.isPlus else { showPaywall = true; return }
         let have = store.stock.map(\.name)
         guard !have.isEmpty else { aiError = "Add a few things to your kitchen first, then I can cook with them."; return }
+        let prioritize = useExpiring ? store.expiringSoon().map(\.name) : []
         aiError = nil; aiGenerating = true
         Task {
-            let dish = await store.ai.generateFromPantry(have: have, avoid: store.profile.avoided.map(\.title))
+            let dish = await store.ai.generateFromPantry(
+                have: have, avoid: store.profile.avoided.map(\.title), prioritize: prioritize)
             aiGenerating = false
             if let dish { recipeDraft = RecipeDraft(dish: dish, heading: "Review recipe") }
             else { aiError = "The chef couldn’t make something from that — try again, or add a few more ingredients." }
@@ -209,26 +258,10 @@ struct RedesignRootView: View {
             }
             .sheet(isPresented: $showComposer) {
                 ComposerView(store: store, onDismiss: { showComposer = false },
-                             onWriteRecipe: {
-                                 showComposer = false
-                                 // Present the editor on the next runloop — a sheet can't
-                                 // open while another is dismissing in the same tick.
-                                 DispatchQueue.main.async { recipeDraft = RecipeDraft(dish: .draft(), heading: "New recipe") }
-                             },
-                             onPasteRecipe: {
-                                 showComposer = false
-                                 DispatchQueue.main.async { showImport = true }
-                             },
-                             onCookWithWhatIHave: {
-                                 showComposer = false
-                                 DispatchQueue.main.async { cookWithWhatIHave() }
-                             },
-                             onPhotoRecipe: {
-                                 showComposer = false
-                                 DispatchQueue.main.async { photoRecipe() }
-                             },
                              onScanBarcode: {
                                  showComposer = false
+                                 // Present the scanner on the next runloop — a sheet can't
+                                 // open while another is dismissing in the same tick.
                                  DispatchQueue.main.async { showScanner = true }
                              })
                     .presentationDetents([.medium, .large])
@@ -468,6 +501,7 @@ struct RedesignRootView: View {
             // ranked so the dish rescuing the soonest item comes first.
             tierRail("Use it up", useItUpSubtitle, .useItUp, rescueByExpiry: true)
             tierRail("Make it now", "Everything's already on hand", .makeNow, excludingName: featureDish?.name)
+            if !store.stock.isEmpty { inventCard }
             if let feature = featureItem {
                 FeatureCard(item: feature, eyebrow: featureEyebrow, subtitle: featureSubtitle,
                             onOpen: { detailDish = $0 })
@@ -485,6 +519,44 @@ struct RedesignRootView: View {
                 .frame(maxWidth: .infinity).padding(.top, 36)
         }
         }
+    }
+
+    /// The AI escape hatch — sits below the real (deterministic) suggestions: when none
+    /// of the curated matches inspire, invent a brand-new recipe from the actual pantry.
+    /// Plus-gated; the expiry bias is opt-in (off by default).
+    private var inventCard: some View {
+        VStack(alignment: .leading, spacing: 11) {
+            HStack(spacing: 10) {
+                Image(systemName: "sparkles").font(.system(size: 16)).foregroundStyle(Theme.Palette.paprika)
+                VStack(alignment: .leading, spacing: 1) {
+                    Text("Nothing grabbing you?").font(Theme.Typography.dish(15)).foregroundStyle(Theme.Palette.ink)
+                    Text("Invent a brand-new recipe from your fridge.")
+                        .font(Theme.Typography.note(12)).foregroundStyle(Theme.Palette.warmGray)
+                }
+                Spacer(minLength: 0)
+            }
+            Toggle(isOn: $inventUseExpiring) {
+                Text("Use up what’s expiring first")
+                    .font(Theme.Typography.fact(12)).foregroundStyle(Theme.Palette.warmGray)
+            }
+            .tint(Theme.Palette.paprika)
+            Button { cookWithWhatIHave(useExpiring: inventUseExpiring) } label: {
+                HStack(spacing: 6) {
+                    Text("Cook with what I have").font(Theme.Typography.fact(13, weight: .medium))
+                    Image(systemName: "arrow.right").font(.system(size: 11, weight: .semibold))
+                }
+                .foregroundStyle(Theme.Palette.paprika)
+                .padding(.horizontal, 14).frame(minHeight: 40)
+                .frame(maxWidth: .infinity)
+                .overlay(Rectangle().strokeBorder(Theme.Palette.paprika, lineWidth: 1.5))
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.pressable)
+        }
+        .padding(14)
+        .background(Rectangle().fill(Theme.Palette.creamRaised))
+        .overlay(Rectangle().strokeBorder(Theme.Palette.hairline, lineWidth: 1))
+        .padding(.horizontal, Theme.Metric.lg).padding(.top, 18)
     }
 
     /// Names the most-urgent turning item in the "use it up" rail subtitle, so the
@@ -651,6 +723,11 @@ struct RedesignRootView: View {
                     .foregroundStyle(Theme.Palette.paprika).fixedSize().contentShape(Rectangle())
             }
             .buttonStyle(.plain)
+            addRecipeMenu {
+                Image(systemName: "plus").font(.system(size: 14, weight: .semibold))
+                    .foregroundStyle(Theme.Palette.paprika).frame(width: 28, height: 28).contentShape(Rectangle())
+            }
+            .accessibilityLabel("Add a recipe")
         }
     }
 
@@ -704,13 +781,37 @@ struct RedesignRootView: View {
     }
 
     private var browseAllFooter: some View {
-        Button { withAnimation { feedLens = .everything } } label: {
-            Text("BROWSE ALL DISHES →")
-                .font(.system(size: 11, weight: .medium)).tracking(1.4)
-                .foregroundStyle(Theme.Palette.paprika)
-                .frame(maxWidth: .infinity).padding(.vertical, 12).contentShape(Rectangle())
+        VStack(spacing: 12) {
+            Button { withAnimation { feedLens = .everything } } label: {
+                Text("BROWSE ALL DISHES →")
+                    .font(.system(size: 11, weight: .medium)).tracking(1.4)
+                    .foregroundStyle(Theme.Palette.paprika)
+                    .frame(maxWidth: .infinity).padding(.vertical, 6).contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            addRecipeMenu {
+                Label("Add your own recipe", systemImage: "plus")
+                    .font(.system(size: 11, weight: .medium)).tracking(1.0)
+                    .foregroundStyle(Theme.Palette.warmGray)
+            }
         }
-        .buttonStyle(.plain)
+    }
+
+    /// The recipe-capture "+" — the home for write / paste-import / photo, relocated out
+    /// of the composer (which is now pantry-only). `label` lets it render as a "+" icon
+    /// in the browse controls or a labelled row in the footer.
+    private func addRecipeMenu<L: View>(@ViewBuilder label: () -> L) -> some View {
+        Menu {
+            Button { recipeDraft = RecipeDraft(dish: .draft(), heading: "New recipe") } label: {
+                Label("Write a recipe", systemImage: "square.and.pencil")
+            }
+            Button { showImport = true } label: {
+                Label("Paste or import a link", systemImage: "wand.and.stars")
+            }
+            Button { photoRecipe() } label: {
+                Label("Photo of a recipe", systemImage: "camera")
+            }
+        } label: { label() }
     }
 
     // MARK: - Feed data (the categorizer)
@@ -749,6 +850,12 @@ struct RedesignRootView: View {
                 Text(DayLabel.eyebrow(for: store.today).uppercased())
                     .font(.system(size: 10)).tracking(Theme.Metric.eyebrowTracking)
                     .foregroundStyle(Theme.Palette.ink.opacity(0.55))
+                Button { showMealLog = true } label: {
+                    Image(systemName: "fork.knife").font(.system(size: 14))
+                        .foregroundStyle(Theme.Palette.ink.opacity(0.5))
+                        .padding(.vertical, 4).padding(.leading, 12).contentShape(Rectangle())
+                }
+                .buttonStyle(.plain).accessibilityLabel("Log a meal")
                 Button { showSettings = true } label: {
                     Image(systemName: "gearshape").font(.system(size: 15))
                         .foregroundStyle(Theme.Palette.ink.opacity(0.5))

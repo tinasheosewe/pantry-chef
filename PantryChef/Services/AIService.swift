@@ -534,9 +534,12 @@ final class AIService {
     /// common staples, honors dietary avoidances, and (like import) promotes any
     /// catalog-miss to a smart item. The app's most differentiated AI use — no
     /// competitor has the pantry to do this. Returns nil if generation fails.
-    func generateFromPantry(have: [String], avoid: [String] = []) async -> Dish? {
+    /// `prioritize` (opt-in) names ingredients to build the recipe around first — e.g.
+    /// what's about to expire. Empty = no bias (a plain "cook with what I have").
+    func generateFromPantry(have: [String], avoid: [String] = [], prioritize: [String] = []) async -> Dish? {
         let haveList = have.map { $0.trimmingCharacters(in: .whitespaces) }.filter { !$0.isEmpty }
         guard !haveList.isEmpty else { return nil }
+        let priority = prioritize.map { $0.trimmingCharacters(in: .whitespaces) }.filter { !$0.isEmpty }
 
         let prompt = """
         The user has these ingredients on hand right now:
@@ -545,6 +548,7 @@ final class AIService {
         Create ONE delicious, realistic recipe that uses MOSTLY what they already have. Lean \
         on the on-hand ingredients; add at most a few common pantry staples (salt, oil, basic \
         dried spices) only if genuinely needed. Do NOT invent exotic ingredients they didn't list.
+        \(priority.isEmpty ? "" : "\nBUILD THE RECIPE AROUND THESE FIRST — they need using up before they spoil: \(priority.joined(separator: ", ")).")
         \(avoid.isEmpty ? "" : "\nThe household AVOIDS these — never include any of them in any ingredient: \(avoid.joined(separator: ", ")).")
 
         SELF-CONTAINED: cook everything from raw, purchasable ingredients — never a pre-cooked or \

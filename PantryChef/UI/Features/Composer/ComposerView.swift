@@ -1,34 +1,23 @@
 import SwiftUI
 import UIKit
 
-/// The composer (spec §13): one bar, living cards. Typed phrases parse live and
-/// crystallize into cards above the bar; the parser never rejects input. Staged
-/// cards are editable and removable; the batch goes to Stock, the list, or
-/// tonight's meal log.
+/// The composer (spec §13): one bar, living cards — now focused on its one real job,
+/// **getting food into your kitchen**. Typed phrases parse live and crystallize into
+/// cards; the parser never rejects input; the batch lands in the pantry by default,
+/// or the shopping list via a quiet toggle. Barcode scanning lives in the bar (it
+/// makes the same cards). Recipe capture and meal-logging moved out to where they
+/// belong (the Recipes "+", Today, the share sheet) — this is no longer a junk drawer.
 struct ComposerView: View {
     var store: KitchenStore
     var onDismiss: () -> Void = {}
-    /// Open the blank recipe editor (the manual "write a recipe" front door). The root
-    /// dismisses the composer and presents the editor.
-    var onWriteRecipe: () -> Void = {}
-    /// Open the "paste a recipe → format with AI" import sheet.
-    var onPasteRecipe: () -> Void = {}
-    /// Generate a recipe from what's in the pantry right now ("cook with what I have").
-    var onCookWithWhatIHave: () -> Void = {}
-    /// Read a recipe from a photo / screenshot (library only).
-    var onPhotoRecipe: () -> Void = {}
-    /// Scan product barcodes into the pantry (deterministic, free).
+    /// Scan product barcodes into the pantry (deterministic, free) — the in-bar icon.
     var onScanBarcode: () -> Void = {}
-
-    /// Where the staged batch lands on commit.
-    enum Destination: String, CaseIterable {
-        case stock = "Stock", list = "List", meal = "Tonight's meal"
-    }
 
     @State private var text = ""
     @State private var staged: [ParsedIntake] = []
     @State private var editing: EditTarget?
-    @State private var destination: Destination = .stock
+    /// Default destination is the kitchen (Stock); the quiet toggle sends to the list.
+    @State private var toList = false
     @State private var resolving: Resolving?
     @FocusState private var focused: Bool
 
@@ -53,26 +42,27 @@ struct ComposerView: View {
     var body: some View {
         VStack(spacing: 0) {
             grabber
-            VStack(alignment: .leading, spacing: 8) {
-                Text("Add anything").font(Theme.Typography.dish(22)).foregroundStyle(Theme.Palette.ink)
-                destinationChips
+            VStack(alignment: .leading, spacing: 3) {
+                Text(toList ? "Add to your list" : "Add to your kitchen")
+                    .font(Theme.Typography.dish(22)).foregroundStyle(Theme.Palette.ink)
+                Text("Type, paste, or scan — I’ll sort it into your pantry.")
+                    .font(Theme.Typography.note(12)).foregroundStyle(Theme.Palette.warmGray)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.horizontal, 20).padding(.top, 12).padding(.bottom, 6)
+            .padding(.horizontal, 20).padding(.top, 12).padding(.bottom, 8)
             ScrollView {
                 VStack(alignment: .leading, spacing: 10) {
+                    bar
+                    if let preview { IntakeCard(item: preview, isPreview: true) }
                     ForEach(Array(staged.enumerated()), id: \.offset) { index, item in
                         IntakeCard(item: item,
                                    onRemove: { remove(index) },
                                    onEdit: { editing = EditTarget(id: index) })
                     }
-                    bar
-                    if let preview { IntakeCard(item: preview, isPreview: true) }
-                    if staged.isEmpty && preview == nil { doorways }
                 }
                 .padding(.horizontal, 20).padding(.top, 8).padding(.bottom, 20)
             }
-            if !staged.isEmpty { commitBar }
+            if !staged.isEmpty || preview != nil { commitBar }
         }
         .background(KitchenBackground())
         .onAppear { focused = true }
@@ -100,22 +90,6 @@ struct ComposerView: View {
         }
     }
 
-    private var destinationChips: some View {
-        HStack(spacing: 8) {
-            ForEach(Destination.allCases, id: \.rawValue) { dest in
-                let selected = destination == dest
-                Button { withAnimation(.easeOut(duration: 0.15)) { destination = dest } } label: {
-                    Text(dest.rawValue).font(Theme.Typography.fact(12))
-                        .foregroundStyle(selected ? Theme.Palette.cream : Theme.Palette.warmGray)
-                        .padding(.horizontal, 12).padding(.vertical, 6)
-                        .background(Capsule().fill(selected ? Theme.Palette.ink : Color.clear))
-                        .overlay(Capsule().strokeBorder(Theme.Palette.hairline, lineWidth: selected ? 0 : 1))
-                }
-                .buttonStyle(.plain)
-            }
-        }
-    }
-
     private func bindingFor(_ index: Int) -> Binding<ParsedIntake> {
         Binding(get: { staged[index] }, set: { staged[index] = $0 })
     }
@@ -133,97 +107,53 @@ struct ComposerView: View {
             TextField("300 g spinach, fridge", text: $text)
                 .font(Theme.Typography.fact(14)).focused($focused)
                 .submitLabel(.next).onSubmit(commitCurrent)
+            if UIPasteboard.general.hasStrings && text.isEmpty {
+                Button { if let p = UIPasteboard.general.string { text = p } } label: {
+                    Text("Paste").font(Theme.Typography.fact(12, weight: .medium)).foregroundStyle(Theme.Palette.paprika)
+                }
+                .buttonStyle(.plain)
+            }
+            Button(action: onScanBarcode) {
+                Image(systemName: "barcode.viewfinder").font(.system(size: 18))
+                    .foregroundStyle(Theme.Palette.paprika)
+            }
+            .buttonStyle(.plain).accessibilityLabel("Scan a barcode")
         }
         .padding(.horizontal, 14).padding(.vertical, 11)
         .background(RoundedRectangle(cornerRadius: 3).fill(Theme.Palette.creamRaised))
         .overlay(RoundedRectangle(cornerRadius: 3).strokeBorder(Theme.Palette.hairline))
     }
 
-    private var doorways: some View {
-        VStack(spacing: 0) {
-            doorway("Log tonight's meal", "fork.knife") {
-                withAnimation { destination = .meal }
-            }
-            Divider().background(Theme.Palette.hairline)
-            doorway("Add to the list", "cart") {
-                withAnimation { destination = .list }
-            }
-            Divider().background(Theme.Palette.hairline)
-            doorway("Scan a barcode", "barcode.viewfinder") {
-                onScanBarcode()
-            }
-            Divider().background(Theme.Palette.hairline)
-            doorway("Paste from the clipboard", "doc.on.clipboard") {
-                if let pasted = UIPasteboard.general.string {
-                    text = pasted
-                }
-            }
-            Divider().background(Theme.Palette.hairline)
-            doorway("Write a recipe", "square.and.pencil") {
-                onWriteRecipe()
-            }
-            Divider().background(Theme.Palette.hairline)
-            doorway("Paste a recipe · format with AI", "wand.and.stars") {
-                onPasteRecipe()
-            }
-            Divider().background(Theme.Palette.hairline)
-            doorway("Photo of a recipe · AI", "camera") {
-                onPhotoRecipe()
-            }
-            Divider().background(Theme.Palette.hairline)
-            doorway("Cook with what I have · AI", "sparkles") {
-                onCookWithWhatIHave()
-            }
-        }
-        .padding(.horizontal, 4)
-    }
-
-    private func doorway(_ title: String, _ icon: String, action: @escaping () -> Void) -> some View {
-        Button(action: action) {
-            HStack(spacing: 10) {
-                Image(systemName: icon).font(.system(size: 15)).foregroundStyle(Theme.Palette.warmGray).frame(width: 22)
-                Text(title).font(Theme.Typography.fact(13)).foregroundStyle(Theme.Palette.ink)
-                Spacer()
-            }
-            .padding(.vertical, 11)
-            .contentShape(Rectangle())
-        }
-        .buttonStyle(.plain)
-    }
-
     private var commitBar: some View {
-        HStack {
-            Text(destinationHint).font(Theme.Typography.fact(11)).foregroundStyle(Theme.Palette.warmGraySoft)
+        let count = staged.count + (preview != nil ? 1 : 0)
+        return HStack(alignment: .firstTextBaseline) {
+            // The quiet secondary: kitchen by default, one tap to the list instead.
+            Button { withAnimation(.easeOut(duration: 0.15)) { toList.toggle() } } label: {
+                Text(toList ? "→ back to your kitchen" : "→ or add to the list")
+                    .font(Theme.Typography.fact(11)).foregroundStyle(Theme.Palette.warmGray)
+            }
+            .buttonStyle(.plain)
             Spacer()
-            PaprikaButton(title: commitTitle, action: commit)
+            PaprikaButton(title: toList ? "Add \(count) to the list" : "Add \(count) to your kitchen", action: commit)
         }
         .padding(.horizontal, 20).padding(.vertical, 14)
         .background(.ultraThinMaterial)
     }
 
-    private var destinationHint: String {
-        switch destination {
-        case .stock: return "Everything goes to Stock"
-        case .list: return "Everything joins your list"
-        case .meal: return "Logged as what you ate tonight"
-        }
-    }
-
-    private var commitTitle: String {
-        switch destination {
-        case .stock: return "Add \(staged.count) to Stock"
-        case .list: return "Add \(staged.count) to the list"
-        case .meal: return "Log tonight's meal"
-        }
-    }
-
     private func commit() {
-        switch destination {
-        case .stock: staged.forEach { store.addToStock($0) }
-        case .list: staged.forEach { store.addToList($0) }
-        case .meal: store.logMeal(staged)
-        }
+        flushPreview()   // never silently drop a typed-but-unsubmitted line
+        if toList { staged.forEach { store.addToList($0) } }
+        else { staged.forEach { store.addToStock($0) } }
         onDismiss()
+    }
+
+    /// Stage whatever's still in the bar before committing — best-effort resolution, so
+    /// "type it, hit Add" never loses the item (the old silent-drop bug).
+    private func flushPreview() {
+        let phrase = text.trimmingCharacters(in: .whitespaces)
+        guard !phrase.isEmpty else { return }
+        staged.append(store.parse(phrase))
+        text = ""
     }
 
     private func commitCurrent() {
