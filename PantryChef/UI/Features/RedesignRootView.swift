@@ -101,10 +101,13 @@ struct RedesignRootView: View {
             // notifications are already granted — no cold prompt here).
             await NotificationService.syncExpiryReminders(store.expiryReminderPlans())
         }
-        // Re-sync when leaving the app, so the freshest pantry drives the reminders.
+        // Re-sync when leaving the app, so the freshest pantry drives the reminders;
+        // on return, pick up any recipe shared into the app while we were away.
         .onChange(of: scenePhase) { _, phase in
             if phase == .background {
                 Task { await NotificationService.syncExpiryReminders(store.expiryReminderPlans()) }
+            } else if phase == .active && store.readinessReady {
+                drainSharedInbox()
             }
         }
         // Tell VoiceOver the moment the loading screen gives way to the real app, so a
@@ -115,7 +118,7 @@ struct RedesignRootView: View {
                 // First run → the Pantry Sweep, now that readiness is warm so the unlock
                 // counter is live and the app behind is fully loaded.
                 if !OnboardingState.hasCompleted { showOnboarding = true }
-                else { maybeOfferClipboardImport() }
+                else { drainSharedInbox(); maybeOfferClipboardImport() }
             }
         }
         .fullScreenCover(isPresented: $showOnboarding) {
@@ -160,7 +163,8 @@ struct RedesignRootView: View {
         offerClipboardImport = true
     }
 
-    /// Import a recipe from a URL (clipboard path) — Plus-gated, same loader + review editor.
+    /// Import a recipe from a URL (clipboard / share-extension path) — Plus-gated, same
+    /// loader + review editor.
     private func importFromURL(_ urlString: String) {
         guard subscription.isPlus else { showPaywall = true; return }
         aiError = nil; aiGenerating = true
@@ -169,6 +173,28 @@ struct RedesignRootView: View {
             aiGenerating = false
             if let dish { recipeDraft = RecipeDraft(dish: dish, heading: "Review recipe") }
             else { aiError = "Couldn’t read a recipe from that link — try pasting the recipe text instead." }
+        }
+    }
+
+    private func importFromText(_ text: String) {
+        guard subscription.isPlus else { showPaywall = true; return }
+        aiError = nil; aiGenerating = true
+        Task {
+            let dish = await store.ai.parseRecipe(text: text, into: .draft())
+            aiGenerating = false
+            if let dish { recipeDraft = RecipeDraft(dish: dish, heading: "Review recipe") }
+            else { aiError = "Couldn’t read a recipe from what was shared — try again." }
+        }
+    }
+
+    /// Drain anything the share extension dropped in the App Group inbox and import the
+    /// most recent one (the app does the AI work the extension deliberately doesn't).
+    private func drainSharedInbox() {
+        guard OnboardingState.hasCompleted else { return }
+        guard let item = SharedRecipeInbox.drain().last else { return }
+        switch item.source {
+        case .url(let u): importFromURL(u)
+        case .text(let t): importFromText(t)
         }
     }
 
