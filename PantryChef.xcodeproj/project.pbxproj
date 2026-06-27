@@ -26,6 +26,7 @@
 		127EC8A5C2324B0941325358 /* hearty-lentil-soup.png in Resources */ = {isa = PBXBuildFile; fileRef = 36D577F70B693DC5E1824F44 /* hearty-lentil-soup.png */; };
 		13056D1F7FA9F38FF08A1B85 /* StockItemStorageMoveTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4EF7D7D249A9E3B0A95E9C2 /* StockItemStorageMoveTests.swift */; };
 		146DA16635D5C37185C943B5 /* high-protein-cottage-cheese-pancakes.png in Resources */ = {isa = PBXBuildFile; fileRef = 1752D35C18F879CE3D6C56E7 /* high-protein-cottage-cheese-pancakes.png */; };
+		1494F35F9544D7C0D18720B3 /* ShareItemExtractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = C03D543DB6AB9A3094B13877 /* ShareItemExtractor.swift */; };
 		15A438CBFDEF0B1DEEEFDF78 /* ConfidenceEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = B34E27A7BCEE70004A4BDFF3 /* ConfidenceEngine.swift */; };
 		15CDBB20426EB7FAC3BC6633 /* chana-masala.png in Resources */ = {isa = PBXBuildFile; fileRef = 3B99BCD9DB6959A4411DB6CF /* chana-masala.png */; };
 		15FE178FE896F53A462EA0D4 /* beef-vegetable-freezer-stew.png in Resources */ = {isa = PBXBuildFile; fileRef = 52D60B775452879B009D459A /* beef-vegetable-freezer-stew.png */; };
@@ -125,6 +126,7 @@
 		64F2B5992FF1EB74F106E85D /* TelemetryReporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A16DF6ABA8E8C73E7BB93F32 /* TelemetryReporter.swift */; };
 		6549EBA56ADD23E3886C4F93 /* korean-braised-short-ribs.png in Resources */ = {isa = PBXBuildFile; fileRef = 8AF51EB1621E970C815A5281 /* korean-braised-short-ribs.png */; };
 		6554F4807049EFCAB6B1593D /* ProductLookup.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF14438B593DA7FA0BACB2BF /* ProductLookup.swift */; };
+		65B41471C8D094690B89EFF1 /* ShareExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 72BAEBE464B6599DD20048A4 /* ShareExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		65C2776D81C1E59BCFCE90F3 /* palak-paneer.png in Resources */ = {isa = PBXBuildFile; fileRef = 50D7242190AE8211ED6244AC /* palak-paneer.png */; };
 		6628A8A4336DFBE20336FBAB /* roasted-tomato-basil-soup.png in Resources */ = {isa = PBXBuildFile; fileRef = D23C3650EF7D5C190BA79D8C /* roasted-tomato-basil-soup.png */; };
 		6766D2D8D603460C7DA696CD /* black-bean-tacos.png in Resources */ = {isa = PBXBuildFile; fileRef = F8EA596D363F0CCC8D5D19DC /* black-bean-tacos.png */; };
@@ -269,8 +271,10 @@
 		DA390A2FB998A6A3E41320AD /* MealPlanningTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DA54DA4B3280DFCD6C1A52C /* MealPlanningTests.swift */; };
 		DAE7AC11853DB1499F672B24 /* catalog.source.json in Resources */ = {isa = PBXBuildFile; fileRef = C76C028AE39F0001065ABA30 /* catalog.source.json */; };
 		DCDC61BAB6E9A4507EAD3C0B /* PlateRenderLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 420C676E86193CE0F9F81388 /* PlateRenderLibrary.swift */; };
+		DD92ADF6A3F057828EAE99C3 /* ShareExtensionUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6286B2C9473BCFE05843190 /* ShareExtensionUITests.swift */; };
 		DE1BBCA57D9126BF3E3DBAF9 /* freezer-breakfast-burritos.png in Resources */ = {isa = PBXBuildFile; fileRef = 7245F09CB8E7CEC31511AA39 /* freezer-breakfast-burritos.png */; };
 		DF8741FF3971AC8DA9A07FCE /* TimelineModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4535B6D4E920E2F41ECD6F29 /* TimelineModels.swift */; };
+		DFBD7EA1CEA2FDAAE2E71870 /* SharedRecipeInbox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A1926276329F15167E13F00 /* SharedRecipeInbox.swift */; };
 		DFD8BF44FE291DD6EF69051F /* green-power-smoothie.png in Resources */ = {isa = PBXBuildFile; fileRef = 2FBCEA4BA0C9A6D0ED8A7FA2 /* green-power-smoothie.png */; };
 		E0AB5D60E582FA331A7EA85B /* chicken-shawarma.png in Resources */ = {isa = PBXBuildFile; fileRef = 838737C3617A161CDC50FCD7 /* chicken-shawarma.png */; };
 		E170BE5955170F8412479C16 /* catalog.json in Resources */ = {isa = PBXBuildFile; fileRef = 67106B750F48353E27DE5B0D /* catalog.json */; };
@@ -320,15 +324,24 @@
 		FB7A5A16F98C393C692C9027 /* batch-turkey-quinoa-meatballs.png in Resources */ = {isa = PBXBuildFile; fileRef = 495AAD3A1F4689F38D809334 /* batch-turkey-quinoa-meatballs.png */; };
 		FC987DF13EFD83895E7CB7E0 /* avocado-toast-with-chili-and-lime.png in Resources */ = {isa = PBXBuildFile; fileRef = 340E65F21E8AA6281D74B00D /* avocado-toast-with-chili-and-lime.png */; };
 		FD78B54015F1E12529DB6DB8 /* teriyaki-salmon-bowl.png in Resources */ = {isa = PBXBuildFile; fileRef = 8CE32C9EB2AD58BAC7D5BEDE /* teriyaki-salmon-bowl.png */; };
+		FE0977FBB674536831E88D7F /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 74DE09D9CD7A1C30587038E4 /* Foundation.framework */; };
 		FE2B99A2D29D4E5737B8ECB7 /* split-pea-soup.png in Resources */ = {isa = PBXBuildFile; fileRef = 0D0F2D0F7962ED1AADC2579C /* split-pea-soup.png */; };
 		FE4A1843BFDCEF80409DF983 /* pulled-bbq-jackfruit.png in Resources */ = {isa = PBXBuildFile; fileRef = 592A6DFFE83518947BDC4098 /* pulled-bbq-jackfruit.png */; };
 		FE61B70553E6B47DCFF3A086 /* RecipeTimeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5372F046B0B6808478D0F1DD /* RecipeTimeTests.swift */; };
 		FE8EFEB7D4E2C8BD2FCBE3D6 /* bibimbap.png in Resources */ = {isa = PBXBuildFile; fileRef = 73E6F6D08E188BBB992C340F /* bibimbap.png */; };
 		FEE2ABF449DFE3A45649467E /* SearchEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CA6FC524D07D4BD4347B74B /* SearchEngineTests.swift */; };
 		FF03EB398C6216AE0D6BC39D /* miso-butter-salmon.png in Resources */ = {isa = PBXBuildFile; fileRef = 8B39024CB6A7E1370C24075B /* miso-butter-salmon.png */; };
+		FF6701DDB1F7198C1D6D06F8 /* ShareViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6ED8092CE5CC1218BBE0612 /* ShareViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		50BFE9DD6E9CFD7C6C22C944 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BF94EFD058C647114E8CD684 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 1BD667D40E6F7C0A9ED14786;
+			remoteInfo = ShareExtension;
+		};
 		603A89D3146FF0F3E22D4C1E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = BF94EFD058C647114E8CD684 /* Project object */;
@@ -345,6 +358,20 @@
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		351F0A5F49DEA1F929180067 /* Embed App Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				65B41471C8D094690B89EFF1 /* ShareExtension.appex in Embed App Extensions */,
+			);
+			name = "Embed App Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		00BA4CD9CAFB39284932DA3A /* hearty-beef-stew.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "hearty-beef-stew.png"; sourceTree = "<group>"; };
 		0124F380C6BD9B6E97C4A3E5 /* ReadinessServiceTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ReadinessServiceTests.swift; sourceTree = "<group>"; };
@@ -354,6 +381,7 @@
 		04185334BFA1AB8D3A984C73 /* StockItemCertaintyTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StockItemCertaintyTests.swift; sourceTree = "<group>"; };
 		0542E87669B0EB9F0ACAA24E /* CatalogInvariantTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CatalogInvariantTests.swift; sourceTree = "<group>"; };
 		05629F5F5A7393838E0D6B7D /* maple-roasted-root-vegetables.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "maple-roasted-root-vegetables.png"; sourceTree = "<group>"; };
+		056BFA7211AE473BE5462891 /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; name = Info.plist; path = ShareExtension/Info.plist; sourceTree = "<group>"; };
 		06D10522CB301DBE5762AC65 /* flourless-chocolate-cake.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "flourless-chocolate-cake.png"; sourceTree = "<group>"; };
 		08EDD65CE72C7FF5BA7B3C1D /* chiles-rellenos.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "chiles-rellenos.png"; sourceTree = "<group>"; };
 		0977B13CC5AFDE6BE97627B2 /* creamy-roasted-carrot-soup.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "creamy-roasted-carrot-soup.png"; sourceTree = "<group>"; };
@@ -379,6 +407,7 @@
 		1752D35C18F879CE3D6C56E7 /* high-protein-cottage-cheese-pancakes.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "high-protein-cottage-cheese-pancakes.png"; sourceTree = "<group>"; };
 		17625D9532976239EB8932D8 /* PlateView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PlateView.swift; sourceTree = "<group>"; };
 		177EB0A8E95D3FAE1B5CF7E4 /* CatalogSearchEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CatalogSearchEngine.swift; sourceTree = "<group>"; };
+		18745D519C652118C82CFE1E /* ShareExtension.entitlements */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.entitlements; name = ShareExtension.entitlements; path = ShareExtension/ShareExtension.entitlements; sourceTree = "<group>"; };
 		19EEBBD2F6F185D8E9A6DE51 /* lamb-rogan-josh.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "lamb-rogan-josh.png"; sourceTree = "<group>"; };
 		1A3FFC7DAF8A7D9B0FE8D2E4 /* Enums.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Enums.swift; sourceTree = "<group>"; };
 		1A6821D523B0FD03562680C2 /* french-onion-soup.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "french-onion-soup.png"; sourceTree = "<group>"; };
@@ -490,8 +519,10 @@
 		7144F7D47271C9BE1D639422 /* carrot-cake.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "carrot-cake.png"; sourceTree = "<group>"; };
 		71CC4323DAF98843D1E361F0 /* PaywallView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PaywallView.swift; sourceTree = "<group>"; };
 		7245F09CB8E7CEC31511AA39 /* freezer-breakfast-burritos.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "freezer-breakfast-burritos.png"; sourceTree = "<group>"; };
+		72BAEBE464B6599DD20048A4 /* ShareExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ShareExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		73D92DF9174E120B75A334AA /* thai-basil-chicken.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "thai-basil-chicken.png"; sourceTree = "<group>"; };
 		73E6F6D08E188BBB992C340F /* bibimbap.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = bibimbap.png; sourceTree = "<group>"; };
+		74DE09D9CD7A1C30587038E4 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
 		765644201EDB0AF6A297833B /* grilled-steak-with-chimichurri.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "grilled-steak-with-chimichurri.png"; sourceTree = "<group>"; };
 		770CCED2339842C3B8D3B4E5 /* banana-walnut-baked-oatmeal.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "banana-walnut-baked-oatmeal.png"; sourceTree = "<group>"; };
 		77352A1B8FA7F6959E86ED68 /* butter-chicken.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "butter-chicken.png"; sourceTree = "<group>"; };
@@ -503,6 +534,7 @@
 		7A6273A9090D3F7CC6B660FC /* chicken-katsu-curry.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "chicken-katsu-curry.png"; sourceTree = "<group>"; };
 		7A9A55706621F897C3C8D7BB /* chicken-rice-casserole.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "chicken-rice-casserole.png"; sourceTree = "<group>"; };
 		7AA50DABAB865D8ED25C90C9 /* margherita-pizza.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "margherita-pizza.png"; sourceTree = "<group>"; };
+		7AC84ABD66093827120FC0AE /* PantryChef.entitlements */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.entitlements; name = PantryChef.entitlements; path = PantryChef/PantryChef.entitlements; sourceTree = "<group>"; };
 		7AD5C2A696139DA1CB982D72 /* FuzzyMatchFloorTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FuzzyMatchFloorTests.swift; sourceTree = "<group>"; };
 		7AE84D32C57047603E654F4E /* Secrets.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Secrets.xcconfig; sourceTree = "<group>"; };
 		7B787E014C9195434E932C7E /* TimelineComposer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TimelineComposer.swift; sourceTree = "<group>"; };
@@ -567,6 +599,7 @@
 		B373F4229381257EA66CDE3C /* Fraunces.ttf */ = {isa = PBXFileReference; includeInIndex = 1; path = Fraunces.ttf; sourceTree = "<group>"; };
 		B3D02E10BC15ED0ADCDC7D1B /* RedesignRootView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RedesignRootView.swift; sourceTree = "<group>"; };
 		B4311CDDF67AA34C2F223237 /* AIModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIModels.swift; sourceTree = "<group>"; };
+		B6ED8092CE5CC1218BBE0612 /* ShareViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ShareViewController.swift; path = ShareExtension/ShareViewController.swift; sourceTree = "<group>"; };
 		B7FFD66371695F3C29EC6FA8 /* SmartIngredient.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SmartIngredient.swift; sourceTree = "<group>"; };
 		B80476BEC5139B370857DEE0 /* NutritionEstimatorTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NutritionEstimatorTests.swift; sourceTree = "<group>"; };
 		B92718BDCE1D03AA6C9B73B7 /* bun-cha.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "bun-cha.png"; sourceTree = "<group>"; };
@@ -654,6 +687,7 @@
 		F4644CA5E60ABD26CABDC2F1 /* lemon-herb-baked-chicken-breast.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "lemon-herb-baked-chicken-breast.png"; sourceTree = "<group>"; };
 		F4EC84421D4A2864AE180C6D /* ResolutionClassTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ResolutionClassTests.swift; sourceTree = "<group>"; };
 		F53D980BFCDC48E0A7F61C5C /* roasted-beet-and-goat-cheese-salad.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "roasted-beet-and-goat-cheese-salad.png"; sourceTree = "<group>"; };
+		F6286B2C9473BCFE05843190 /* ShareExtensionUITests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ShareExtensionUITests.swift; sourceTree = "<group>"; };
 		F708538CBEE0F3594D1F0F65 /* black-bean-and-sweet-potato-enchiladas.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "black-bean-and-sweet-potato-enchiladas.png"; sourceTree = "<group>"; };
 		F709276D3BA2BFCE9D371910 /* vegetable-barley-stew.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "vegetable-barley-stew.png"; sourceTree = "<group>"; };
 		F769E827534D1DE33E44020C /* margherita-flatbread.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "margherita-flatbread.png"; sourceTree = "<group>"; };
@@ -685,6 +719,14 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		45B7E6548E0769941CDD0BB3 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FE0977FBB674536831E88D7F /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -758,6 +800,7 @@
 			isa = PBXGroup;
 			children = (
 				AD6E44F08B08E0C299DB08E1 /* PantryChefUITests.swift */,
+				F6286B2C9473BCFE05843190 /* ShareExtensionUITests.swift */,
 			);
 			path = PantryChefUITests;
 			sourceTree = "<group>";
@@ -1038,6 +1081,14 @@
 			path = Primitives;
 			sourceTree = "<group>";
 		};
+		51ECB6C0ABEEBF18DA96ED29 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				F1D46A41DC31AF48E7B4993D /* iOS */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		53F0D54BB1EE5B5A42D4BD3E /* Stock */ = {
 			isa = PBXGroup;
 			children = (
@@ -1094,6 +1145,7 @@
 				CC7D29C483E721AD3542AB81 /* PantryChef.app */,
 				A078E82E845BCC2B8C09E291 /* PantryChefTests.xctest */,
 				DF1F65D77EABC51B56B50C75 /* PantryChefUITests.xctest */,
+				72BAEBE464B6599DD20048A4 /* ShareExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1152,6 +1204,7 @@
 				A7265D5FA07DE5E6779C8361 /* UI */,
 				87C1763DF8B755493A3C6061 /* Utils */,
 				0289931D5D83E81B6BEEB611 /* Shared */,
+				7AC84ABD66093827120FC0AE /* PantryChef.entitlements */,
 			);
 			path = PantryChef;
 			sourceTree = "<group>";
@@ -1165,6 +1218,8 @@
 				33CB067DE76FEF9BE4B8E365 /* PantryChefUITests */,
 				95D3AF310814F4EA23D09699 /* Products */,
 				CBC1EF90DF342BA7ECC4782C /* PantryChef.storekit */,
+				51ECB6C0ABEEBF18DA96ED29 /* Frameworks */,
+				A8153195DCED6F9DE9CD99F0 /* ShareExtension */,
 			);
 			sourceTree = "<group>";
 		};
@@ -1177,6 +1232,16 @@
 			);
 			path = UI;
 			sourceTree = "<group>";
+		};
+		A8153195DCED6F9DE9CD99F0 /* ShareExtension */ = {
+			isa = PBXGroup;
+			children = (
+				B6ED8092CE5CC1218BBE0612 /* ShareViewController.swift */,
+				056BFA7211AE473BE5462891 /* Info.plist */,
+				18745D519C652118C82CFE1E /* ShareExtension.entitlements */,
+			);
+			name = ShareExtension;
+			sourceTree = SOURCE_ROOT;
 		};
 		B28245B2487C48048E9C336C /* Features */ = {
 			isa = PBXGroup;
@@ -1233,6 +1298,14 @@
 			path = Now;
 			sourceTree = "<group>";
 		};
+		F1D46A41DC31AF48E7B4993D /* iOS */ = {
+			isa = PBXGroup;
+			children = (
+				74DE09D9CD7A1C30587038E4 /* Foundation.framework */,
+			);
+			name = iOS;
+			sourceTree = "<group>";
+		};
 		F382A09D8810CE8B6F786814 /* Timeline */ = {
 			isa = PBXGroup;
 			children = (
@@ -1258,6 +1331,23 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		1BD667D40E6F7C0A9ED14786 /* ShareExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 14E968D9EA468C163DD067D6 /* Build configuration list for PBXNativeTarget "ShareExtension" */;
+			buildPhases = (
+				97C1A89C4F3C13A1E47A1340 /* Sources */,
+				45B7E6548E0769941CDD0BB3 /* Frameworks */,
+				E74463CC6B4D64CD6A052F09 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = ShareExtension;
+			productName = ShareExtension;
+			productReference = 72BAEBE464B6599DD20048A4 /* ShareExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		7DF55A939112E78190C332A7 /* PantryChefTests */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 986860DC2A611983293C05DA /* Build configuration list for PBXNativeTarget "PantryChefTests" */;
@@ -1283,10 +1373,12 @@
 				453DEBC5216E146AD82137C0 /* Sources */,
 				60BAF6A453F8AA4375628043 /* Resources */,
 				0AA5A040131DBA0A7BA02850 /* Frameworks */,
+				351F0A5F49DEA1F929180067 /* Embed App Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				6AE2B8BEFF4F1C0833A3D7CB /* PBXTargetDependency */,
 			);
 			name = PantryChef;
 			packageProductDependencies = (
@@ -1359,6 +1451,7 @@
 				A54241E66050AA8F14CDD78E /* PantryChef */,
 				7DF55A939112E78190C332A7 /* PantryChefTests */,
 				B41A833C099D0BBA08E2A7E2 /* PantryChefUITests */,
+				1BD667D40E6F7C0A9ED14786 /* ShareExtension */,
 			);
 		};
 /* End PBXProject section */
@@ -1581,6 +1674,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		E74463CC6B4D64CD6A052F09 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		FF702633ED1570D8A5A408D9 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1689,6 +1789,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B43DD17764354F6D314C7C00 /* PantryChefUITests.swift in Sources */,
+				DD92ADF6A3F057828EAE99C3 /* ShareExtensionUITests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1727,6 +1828,16 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		97C1A89C4F3C13A1E47A1340 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FF6701DDB1F7198C1D6D06F8 /* ShareViewController.swift in Sources */,
+				DFBD7EA1CEA2FDAAE2E71870 /* SharedRecipeInbox.swift in Sources */,
+				1494F35F9544D7C0D18720B3 /* ShareItemExtractor.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -1734,6 +1845,12 @@
 			isa = PBXTargetDependency;
 			target = A54241E66050AA8F14CDD78E /* PantryChef */;
 			targetProxy = DCE930A967DD2D3117F50015 /* PBXContainerItemProxy */;
+		};
+		6AE2B8BEFF4F1C0833A3D7CB /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = ShareExtension;
+			target = 1BD667D40E6F7C0A9ED14786 /* ShareExtension */;
+			targetProxy = 50BFE9DD6E9CFD7C6C22C944 /* PBXContainerItemProxy */;
 		};
 		DD11AA546ED3EDDBFB223972 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -1743,6 +1860,32 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		46B83311E31A299E51AE66CE /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_ENTITLEMENTS = ShareExtension/ShareExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = WZ7SK754J9;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = ShareExtension/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.tboya.pantrychef.PantryChef.ShareExtension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.9;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
 		542CAB9CC71D4AB6730AF47D /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -1866,6 +2009,7 @@
 			baseConfigurationReference = 7AE84D32C57047603E654F4E /* Secrets.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = PantryChef/PantryChef.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = WZ7SK754J9;
@@ -1902,6 +2046,7 @@
 			baseConfigurationReference = 7AE84D32C57047603E654F4E /* Secrets.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = PantryChef/PantryChef.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = WZ7SK754J9;
@@ -1976,9 +2121,45 @@
 			};
 			name = Release;
 		};
+		F0B9CD0CAB8A713113FD305C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_ENTITLEMENTS = ShareExtension/ShareExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = WZ7SK754J9;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = ShareExtension/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.tboya.pantrychef.PantryChef.ShareExtension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.9;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		14E968D9EA468C163DD067D6 /* Build configuration list for PBXNativeTarget "ShareExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F0B9CD0CAB8A713113FD305C /* Release */,
+				46B83311E31A299E51AE66CE /* Debug */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		39ACA178202F736E6E984A69 /* Build configuration list for PBXProject "PantryChef" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
