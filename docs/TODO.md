@@ -5,6 +5,21 @@ each item.
 
 ## Open
 
+### Composer parser collapses a comma-separated list into one garbage item
+Found while screenshotting the redesigned composer. Typing `2 eggs, a bunch of spinach,
+500g chicken thighs` and committing does **not** stage three items — `store.parse` strips
+the commas, treats the whole word-soup as a single ingredient, and fuzzy-matches it to
+`Chicken Chicken Sausage` (closest token win), offering "New ingredient: <the whole
+string>" as the only escape. The comma in the field is currently overloaded as the
+*storage hint* separator (placeholder `300 g spinach, fridge` = spinach → fridge), which
+is why a list reads as item+location. But users *will* type lists. Decide the model:
+either (a) split top-level on commas into multiple staged items and find another grammar
+for the storage hint (e.g. trailing `@fridge` / `in fridge`), or (b) detect multi-item
+input (≥2 commas, or commas around quantity tokens) and switch to list-mode. The capture
+UI (live preview, confidence pencil, "add N to kitchen"/list toggle) is solid — this is
+purely the parser's multi-item grammar. The redesign (evicting the 9-door junk drawer)
+is done and shipped; this is the next layer.
+
 ### Live-data audit follow-ups (from the two-agent audit)
 The store is `@Observable` and views read live through computed props — cook/eat/shop/
 storage-move all propagate. Fixed already: Stock editor used `Date()` not `store.today`.
