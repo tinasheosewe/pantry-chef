@@ -34,7 +34,6 @@ private struct RecipeDraft: Identifiable {
 /// full-screen cover. Driven by a single `KitchenStore`.
 struct RedesignRootView: View {
     @State private var store = KitchenStore()
-    @State private var subscription = SubscriptionService()
     @State private var showOnboarding = false
     @State private var showComposer = false
     @State private var showSettings = false
@@ -44,10 +43,9 @@ struct RedesignRootView: View {
     @State private var recipeDraft: RecipeDraft?
     /// The "paste a recipe → format with AI" import sheet.
     @State private var showImport = false
-    /// "Cook with what I have" generation in flight, and the paywall it may trigger.
+    /// "Cook with what I have" generation in flight.
     @State private var aiGenerating = false
     @State private var aiError: String?
-    @State private var showPaywall = false
     /// Photo-of-a-recipe import (library/screenshots).
     @State private var showPhotoPicker = false
     @State private var photoItem: PhotosPickerItem?
@@ -131,9 +129,6 @@ struct RedesignRootView: View {
         .animation(reduceMotion ? nil : .easeInOut(duration: 0.2), value: aiGenerating)
         .photosPicker(isPresented: $showPhotoPicker, selection: $photoItem, matching: .images)
         .onChange(of: photoItem) { _, item in if let item { importFromPhoto(item) } }
-        .sheet(isPresented: $showPaywall) {
-            PaywallView(subscription: subscription, onClose: { showPaywall = false })
-        }
         .alert("Hmm", isPresented: Binding(get: { aiError != nil }, set: { if !$0 { aiError = nil } })) {
             Button("OK", role: .cancel) {}
         } message: { Text(aiError ?? "") }
@@ -163,10 +158,9 @@ struct RedesignRootView: View {
         offerClipboardImport = true
     }
 
-    /// Import a recipe from a URL (clipboard / share-extension path) — Plus-gated, same
-    /// loader + review editor.
+    /// Import a recipe from a URL (clipboard / share-extension path) — same loader +
+    /// review editor.
     private func importFromURL(_ urlString: String) {
-        guard subscription.isPlus else { showPaywall = true; return }
         aiError = nil; aiGenerating = true
         Task {
             let dish = await store.ai.importRecipe(urlString: urlString)
@@ -177,7 +171,6 @@ struct RedesignRootView: View {
     }
 
     private func importFromText(_ text: String) {
-        guard subscription.isPlus else { showPaywall = true; return }
         aiError = nil; aiGenerating = true
         Task {
             let dish = await store.ai.parseRecipe(text: text, into: .draft())
@@ -203,11 +196,10 @@ struct RedesignRootView: View {
         showOnboarding = false
     }
 
-    /// "Cook with what I have" — generate a recipe from the present pantry (Plus). When
+    /// "Cook with what I have" — generate a recipe from the present pantry. When
     /// `useExpiring` is on (opt-in), it builds around what's about to turn. Shows a loader,
     /// then opens the result in the review editor.
     private func cookWithWhatIHave(useExpiring: Bool = false) {
-        guard subscription.isPlus else { showPaywall = true; return }
         let have = store.stock.map(\.name)
         guard !have.isEmpty else { aiError = "Add a few things to your kitchen first, then I can cook with them."; return }
         let prioritize = useExpiring ? store.expiringSoon().map(\.name) : []
@@ -221,9 +213,8 @@ struct RedesignRootView: View {
         }
     }
 
-    /// Photo of a recipe → read it (Plus). Library/screenshots only.
+    /// Photo of a recipe → read it. Library/screenshots only.
     private func photoRecipe() {
-        guard subscription.isPlus else { showPaywall = true; return }
         showPhotoPicker = true
     }
 
@@ -297,7 +288,7 @@ struct RedesignRootView: View {
             }
             .sheet(isPresented: $showImport) {
                 RecipeImportSheet(
-                    store: store, subscription: subscription,
+                    store: store,
                     onParsed: { dish in
                         showImport = false
                         DispatchQueue.main.async { recipeDraft = RecipeDraft(dish: dish, heading: "Review recipe") }
@@ -307,8 +298,7 @@ struct RedesignRootView: View {
             .sheet(item: $recipeDraft) { draft in
                 RecipeEditorView(dish: draft.dish, heading: draft.heading,
                                  autofill: { await store.ai.generateIngredientDefinition(name: $0) },
-                                 polish: { d in await store.ai.parseRecipe(text: d.asPlainText, into: d) },
-                                 subscription: subscription) { built in
+                                 polish: { d in await store.ai.parseRecipe(text: d.asPlainText, into: d) }) { built in
                     let dish = built.withDerivedPlate()
                     store.addDish(dish)
                     recipeDraft = nil
@@ -317,7 +307,7 @@ struct RedesignRootView: View {
                 }
             }
             .sheet(isPresented: $showSettings) {
-                SettingsView(store: store, subscription: subscription, onClose: { showSettings = false })
+                SettingsView(store: store, onClose: { showSettings = false })
                     .presentationDetents([.medium, .large])
             }
             .sheet(isPresented: $showPlanAhead) {

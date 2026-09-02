@@ -4,10 +4,8 @@ import UIKit
 /// Paste a recipe in whatever messy shape it arrived — a blog dump, a Notes scrawl, a
 /// text from a friend — and let AI format it: structured ingredients, inferred step
 /// timers, filled-in amounts. The result opens in the editor to review before saving.
-/// Plus-gated (per-use AI); the manual "Write a recipe" door stays free.
 struct RecipeImportSheet: View {
     var store: KitchenStore
-    var subscription: SubscriptionService
     /// The formatted recipe, handed back to open in the editor for review.
     var onParsed: (Dish) -> Void
     var onClose: () -> Void
@@ -15,7 +13,6 @@ struct RecipeImportSheet: View {
     @State private var text = ""
     @State private var busy = false
     @State private var error: String?
-    @State private var showPaywall = false
     @FocusState private var focused: Bool
 
     var body: some View {
@@ -28,9 +25,6 @@ struct RecipeImportSheet: View {
         }
         .background(KitchenBackground())
         .onAppear { focused = true }
-        .sheet(isPresented: $showPaywall) {
-            PaywallView(subscription: subscription, onClose: { showPaywall = false })
-        }
     }
 
     private var header: some View {
@@ -87,8 +81,6 @@ struct RecipeImportSheet: View {
             PaprikaButton(title: busy ? "Reading the recipe…" : "Format with AI") { format() }
                 .frame(maxWidth: .infinity).padding(.horizontal, 20)
                 .disabled(busy || text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
-            Text("PantryChef Plus")
-                .font(.system(size: 9, weight: .medium)).tracking(1.4).foregroundStyle(Theme.Palette.warmGraySoft)
                 .padding(.bottom, 12)
         }
         .padding(.top, 10)
@@ -96,7 +88,6 @@ struct RecipeImportSheet: View {
     }
 
     private func format() {
-        guard subscription.isPlus else { showPaywall = true; return }
         let input = text.trimmingCharacters(in: .whitespacesAndNewlines)
         error = nil; busy = true; focused = false
         Task {

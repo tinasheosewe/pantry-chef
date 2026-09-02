@@ -93,7 +93,6 @@
 		44BFDC19CE8AC3D86746B051 /* steel-cut-oats-with-apple.png in Resources */ = {isa = PBXBuildFile; fileRef = 49E1CC21EC8D7282353CB950 /* steel-cut-oats-with-apple.png */; };
 		44F4D56B2FC32BBD2D8208BB /* DishInsights.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A2E455A1F865ADE8DDEF145 /* DishInsights.swift */; };
 		451444A78CDC52F76E4BB010 /* smoked-salmon-bagel.png in Resources */ = {isa = PBXBuildFile; fileRef = EED293D7F6F5A6B20E6ACC50 /* smoked-salmon-bagel.png */; };
-		47B4F2E1FE0A76DC9FFCF07A /* SubscriptionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8DDBF8F19D3346B386F7278 /* SubscriptionService.swift */; };
 		485950E293963142C51DD248 /* sheet-pan-fajitas.png in Resources */ = {isa = PBXBuildFile; fileRef = 95C9519844097DC56EE0E2AA /* sheet-pan-fajitas.png */; };
 		4962D76399BFCA00634913A7 /* quinoa-tabbouleh.png in Resources */ = {isa = PBXBuildFile; fileRef = 8FBFC564EA27F3946F11716C /* quinoa-tabbouleh.png */; };
 		4C4264D61939374CCF134900 /* AmountField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A08A7BBDF492A235BA75E82 /* AmountField.swift */; };
@@ -163,7 +162,6 @@
 		839DB0CB166B04579245FD26 /* banana-bread.png in Resources */ = {isa = PBXBuildFile; fileRef = F8905232EACFE17246B7FF9F /* banana-bread.png */; };
 		83EACAAE587C4D199BB41D8A /* thai-red-curry-with-vegetables.png in Resources */ = {isa = PBXBuildFile; fileRef = 0ECBCD9CD1772C61D677ED05 /* thai-red-curry-with-vegetables.png */; };
 		8478C7AFF876D186ACB1049D /* mediterranean-baked-cod.png in Resources */ = {isa = PBXBuildFile; fileRef = 50895451A36467648D44D15D /* mediterranean-baked-cod.png */; };
-		85102979F8B1C20A210A2ECB /* PaywallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71CC4323DAF98843D1E361F0 /* PaywallView.swift */; };
 		85E8D29279612925D4B95781 /* minestrone.png in Resources */ = {isa = PBXBuildFile; fileRef = 1B31AA3FF5BBCBAF365A505C /* minestrone.png */; };
 		87019D52E2D0DC17CCF1E0C4 /* ExpiryEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFBF0909FB0DCCC8F82C8915 /* ExpiryEngineTests.swift */; };
 		87C9FDD2FA7EEED7A562F3A2 /* vegetable-barley-stew.png in Resources */ = {isa = PBXBuildFile; fileRef = F709276D3BA2BFCE9D371910 /* vegetable-barley-stew.png */; };
@@ -517,7 +515,6 @@
 		6FA305DB5D5B9FBE02C276BD /* LLMBatchSchedule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMBatchSchedule.swift; sourceTree = "<group>"; };
 		7091D990752C6197CCF02458 /* ShoppingChecklistView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ShoppingChecklistView.swift; sourceTree = "<group>"; };
 		7144F7D47271C9BE1D639422 /* carrot-cake.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "carrot-cake.png"; sourceTree = "<group>"; };
-		71CC4323DAF98843D1E361F0 /* PaywallView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PaywallView.swift; sourceTree = "<group>"; };
 		7245F09CB8E7CEC31511AA39 /* freezer-breakfast-burritos.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "freezer-breakfast-burritos.png"; sourceTree = "<group>"; };
 		72BAEBE464B6599DD20048A4 /* ShareExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ShareExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		73D92DF9174E120B75A334AA /* thai-basil-chicken.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "thai-basil-chicken.png"; sourceTree = "<group>"; };
@@ -634,14 +631,12 @@
 		C76C028AE39F0001065ABA30 /* catalog.source.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = catalog.source.json; sourceTree = "<group>"; };
 		C7D94C0A07FAA72C22764A34 /* peanut-butter-no-bake-bars.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "peanut-butter-no-bake-bars.png"; sourceTree = "<group>"; };
 		C83773423D3A2F57ACBDD0F4 /* greek-style-baked-cod-with-chickpeas.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "greek-style-baked-cod-with-chickpeas.png"; sourceTree = "<group>"; };
-		C8DDBF8F19D3346B386F7278 /* SubscriptionService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SubscriptionService.swift; sourceTree = "<group>"; };
 		C8F8447FD64B783B5D19DCE0 /* lamb-ragu.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "lamb-ragu.png"; sourceTree = "<group>"; };
 		C93C8FDEB9C5D988F3270738 /* UnitConversionTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = UnitConversionTests.swift; sourceTree = "<group>"; };
 		C9B0EE388F85446F2B6D4442 /* PantryCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PantryCatalog.swift; sourceTree = "<group>"; };
 		CA3705EAE3F05B8418E7F52C /* buffalo-cauliflower-wraps.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "buffalo-cauliflower-wraps.png"; sourceTree = "<group>"; };
 		CA385527E6C8A3110BCDB2AE /* EmojiPlate.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EmojiPlate.swift; sourceTree = "<group>"; };
 		CA7710DAEA864CA8E70D8332 /* StepTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StepTask.swift; sourceTree = "<group>"; };
-		CBC1EF90DF342BA7ECC4782C /* PantryChef.storekit */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = file.storekit; path = PantryChef.storekit; sourceTree = "<group>"; };
 		CC7D29C483E721AD3542AB81 /* PantryChef.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = PantryChef.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CCEDED2CE5A479FB65BC6F69 /* DietaryProfile.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DietaryProfile.swift; sourceTree = "<group>"; };
 		CE617E98FF967068CA18F101 /* mushroom-and-white-bean-ragout.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "mushroom-and-white-bean-ragout.png"; sourceTree = "<group>"; };
@@ -1185,7 +1180,6 @@
 			isa = PBXGroup;
 			children = (
 				501A15BF9D50C2FA21FDC847 /* SettingsView.swift */,
-				71CC4323DAF98843D1E361F0 /* PaywallView.swift */,
 			);
 			name = Settings;
 			path = Settings;
@@ -1217,7 +1211,6 @@
 				440477AE846DF251E4900D51 /* PantryChefTests */,
 				33CB067DE76FEF9BE4B8E365 /* PantryChefUITests */,
 				95D3AF310814F4EA23D09699 /* Products */,
-				CBC1EF90DF342BA7ECC4782C /* PantryChef.storekit */,
 				51ECB6C0ABEEBF18DA96ED29 /* Frameworks */,
 				A8153195DCED6F9DE9CD99F0 /* ShareExtension */,
 			);
@@ -1282,7 +1275,6 @@
 				E94F1754D943A372889A09B4 /* PantryPersistence.swift */,
 				0BA90CCC7D9FA8260A9CAA92 /* NotificationService.swift */,
 				5ABA2D7C0D70D34CC6787EB2 /* Nutrition.swift */,
-				C8DDBF8F19D3346B386F7278 /* SubscriptionService.swift */,
 				B7FFD66371695F3C29EC6FA8 /* SmartIngredient.swift */,
 				CF14438B593DA7FA0BACB2BF /* ProductLookup.swift */,
 			);
@@ -1771,8 +1763,6 @@
 				59B384E56F09D1C12D4C4483 /* PantryPersistence.swift in Sources */,
 				297137BC03E053BA90CFA696 /* NotificationService.swift in Sources */,
 				C50767D0B9C91B44F79BBD35 /* Nutrition.swift in Sources */,
-				47B4F2E1FE0A76DC9FFCF07A /* SubscriptionService.swift in Sources */,
-				85102979F8B1C20A210A2ECB /* PaywallView.swift in Sources */,
 				96E0ED7DEE078EFCD4E8BB46 /* OnboardingView.swift in Sources */,
 				B7E950AB1A9629354750DCDC /* RecipeImportSheet.swift in Sources */,
 				B5EF3B84996AFD5752993F07 /* SmartIngredient.swift in Sources */,

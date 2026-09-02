@@ -11,17 +11,13 @@ struct RecipeEditorView: View {
     var heading: String = "Edit recipe"
     var autofill: (String) async -> AIIngredientDefinition? = { _ in nil }
     /// AI clean-up of the whole rough recipe (fill amounts, step timers, structure). When
-    /// nil the "Polish with AI" button is hidden. Gated through `subscription`.
+    /// nil the "Polish with AI" button is hidden.
     var polish: ((Dish) async -> Dish?)? = nil
-    /// Drives the Plus gate for the AI affordances (polish, smart-fill); nil = no gate
-    /// surface (AI buttons hidden).
-    var subscription: SubscriptionService? = nil
     var onSave: (Dish) -> Void
 
     @State private var newIngredient = ""
     @State private var resolving: Resolving?
     @State private var aiBusy = false
-    @State private var showPaywall = false
     /// Steps whose phase the cook set by hand — those keep their tag through later
     /// text edits; untouched steps re-infer their phase from the wording.
     @State private var phaseTagged: Set<UUID> = []
@@ -30,13 +26,11 @@ struct RecipeEditorView: View {
          heading: String = "Edit recipe",
          autofill: @escaping (String) async -> AIIngredientDefinition? = { _ in nil },
          polish: ((Dish) async -> Dish?)? = nil,
-         subscription: SubscriptionService? = nil,
          onSave: @escaping (Dish) -> Void) {
         _dish = State(initialValue: dish)
         self.heading = heading
         self.autofill = autofill
         self.polish = polish
-        self.subscription = subscription
         self.onSave = onSave
     }
 
@@ -44,7 +38,6 @@ struct RecipeEditorView: View {
     private var unknownLines: [RecipeLine] {
         dish.ingredients.filter { $0.catalogItemID == nil && !$0.isStaple && !$0.name.trimmed.isEmpty }
     }
-    private var canUseAI: Bool { subscription?.isPlus == true }
 
     private var canSave: Bool { !dish.name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
 
@@ -98,9 +91,6 @@ struct RecipeEditorView: View {
             }
         }
         .background(KitchenBackground())
-        .sheet(isPresented: $showPaywall) {
-            if let subscription { PaywallView(subscription: subscription, onClose: { showPaywall = false }) }
-        }
         .sheet(item: $resolving) { r in
             switch r {
             case .pick(let phrase, let lineID, let candidates):
@@ -211,13 +201,12 @@ struct RecipeEditorView: View {
         }
     }
 
-    // MARK: - AI assists (Plus)
+    // MARK: - AI assists
 
     /// Run the whole rough recipe back through the AI formatter — fill amounts, infer
     /// step timers, clean structure — preserving this recipe's identity.
     private func polishWithAI() {
         guard let polish else { return }
-        guard canUseAI else { showPaywall = true; return }
         aiBusy = true
         Task {
             if let polished = await polish(dish) { dish = polished }
@@ -228,7 +217,6 @@ struct RecipeEditorView: View {
     /// Define every "new" ingredient with one AI call each (category/storage/shelf life),
     /// register them as smart catalog items, and re-point the lines.
     private func smartFillUnknowns() {
-        guard canUseAI else { showPaywall = true; return }
         aiBusy = true
         Task {
             for line in unknownLines {

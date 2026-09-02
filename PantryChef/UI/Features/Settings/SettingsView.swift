@@ -5,10 +5,7 @@ import SwiftUI
 /// preferences live here (the page floor, not a feature's corner).
 struct SettingsView: View {
     var store: KitchenStore
-    var subscription: SubscriptionService
     var onClose: () -> Void
-
-    @State private var showPaywall = false
 
     private var autoAdjust: Binding<Bool> {
         Binding(get: { store.autoAdjustDaysOnStorageChange },
@@ -44,7 +41,6 @@ struct SettingsView: View {
 
             ScrollView {
                 VStack(alignment: .leading, spacing: 24) {
-                    plusSection
                     pantrySection
                     dietarySection
                 }
@@ -52,36 +48,6 @@ struct SettingsView: View {
             }
         }
         .background(KitchenBackground())
-        .sheet(isPresented: $showPaywall) {
-            PaywallView(subscription: subscription, onClose: { showPaywall = false })
-        }
-    }
-
-    // MARK: - Plus
-
-    private var plusSection: some View {
-        Button { showPaywall = true } label: {
-            HStack(spacing: 12) {
-                Image(systemName: subscription.isPlus ? "checkmark.seal.fill" : "seal")
-                    .font(.system(size: 18)).foregroundStyle(Theme.Palette.sage)
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(subscription.isPlus ? "PantryChef Plus" : "Go Plus")
-                        .font(Theme.Typography.fact(15, weight: .medium)).foregroundStyle(Theme.Palette.ink)
-                    Text(subscription.isPlus ? "Active — thank you" : "Unlimited pantry, reminders, planning & more")
-                        .font(Theme.Typography.note(12)).foregroundStyle(Theme.Palette.warmGray)
-                        .fixedSize(horizontal: false, vertical: true)
-                }
-                Spacer()
-                Image(systemName: "chevron.right").font(.system(size: 12, weight: .semibold))
-                    .foregroundStyle(Theme.Palette.warmGraySoft)
-            }
-            .padding(14)
-            .frame(maxWidth: .infinity)
-            .background(Rectangle().fill(Theme.Palette.creamRaised))
-            .overlay(Rectangle().strokeBorder(Theme.Palette.sage.opacity(0.45), lineWidth: 1))
-            .contentShape(Rectangle())
-        }
-        .buttonStyle(.plain)
     }
 
     // MARK: - Pantry

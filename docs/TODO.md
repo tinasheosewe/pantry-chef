@@ -179,8 +179,13 @@ The skip flags for RealtimeService*Tests are no longer needed.
 free tier at launch (trial-only still lists as "Free" on the store; loosen later if discovery
 needs it — easy to add a capped-pantry free tier, painful to claw back). Sell the anti-waste
 angle, not AI. StoreKit 2 scaffolding shipped 2026-06-19 (SubscriptionService + PantryChef.storekit
-+ PaywallView; product com.tboya.pantrychef.plus.yearly @ $29.99/yr). **Manual step:** select
-PantryChef.storekit in the Run scheme's StoreKit Configuration to test purchases in the sim.
++ PaywallView; product com.tboya.pantrychef.plus.yearly @ $29.99/yr).
+
+**PAYWALL REMOVED 2026-09-01 — sequencing decision.** The paywall is the *very last* thing:
+feature-complete + clean → productionalize → paywall. The alpha may go to friends with no paywall
+at all. So the StoreKit scaffolding (SubscriptionService, PaywallView, PantryChef.storekit) and
+every `isPlus` gate were reverted in one commit (history intact — `git log` has them for when the
+paywall phase comes). All AI paths are simply features now. Don't re-add gating before then.
 
 **DONE 2026-06-19:**
 - **Onboarding / Pantry Sweep** — first-run lands new users on an EMPTY kitchen + the live-unlock
