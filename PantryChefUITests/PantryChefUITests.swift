@@ -10,8 +10,9 @@ final class PantryChefUITests: XCTestCase {
     func testLaunchAndNavigateSpaces() {
         let app = XCUIApplication()
         app.launch()
+        clearLaunchInterruptions(app)
 
-        // The nav band's four spaces and the composer door.
+        // The nav band's three spaces and the composer door.
         XCTAssertTrue(app.buttons["Today"].waitForExistence(timeout: 10))
         XCTAssertTrue(app.buttons["Add"].exists)
 
@@ -21,5 +22,23 @@ final class PantryChefUITests: XCTestCase {
             XCTAssertTrue(app.buttons[tab].waitForExistence(timeout: 5))
             XCTAssertTrue(app.buttons["Add"].exists)
         }
+    }
+
+    /// Two things can sit over the dock after launch. A first launch (clean simulator)
+    /// presents onboarding: wait for whichever comes up first — the dock or onboarding —
+    /// and leave onboarding through its sample-kitchen exit. Later launches offer to
+    /// import a link if one is on the clipboard: decline it.
+    private func clearLaunchInterruptions(_ app: XCUIApplication) {
+        let sample = app.buttons["Explore a sample kitchen first"]
+        let today = app.buttons["Today"]
+        let deadline = Date().addingTimeInterval(30)
+        while !today.exists && !sample.exists && Date() < deadline {
+            _ = sample.waitForExistence(timeout: 0.5)
+        }
+        // Both are presented a beat after the dock first appears, so give them a
+        // moment before deciding they are not coming.
+        if sample.waitForExistence(timeout: 3) { sample.tap() }
+        let decline = app.alerts.buttons["Not now"]
+        if decline.exists { decline.tap() }
     }
 }

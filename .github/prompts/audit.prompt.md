@@ -94,7 +94,7 @@ After completing the audit and resolving all findings, ensure the project has ro
 2. Write the missing tests — do not leave any flow, feature, or public API without test coverage
 3. Run the full test suite and fix every failure — do not leave any test red
 4. Ensure the project builds cleanly with no compile errors or warnings before and after adding tests
-5. If adding new Swift source files to the test targets, regenerate the project with `xcodegen generate` before running `xcodebuild`
+5. If adding new Swift source files to the test targets, register them in the checked-in project with `ruby tools/xcadd.rb <path>` before running `xcodebuild`
 
 ### Dependencies & Configuration
 - Hardcoded secrets, API keys, or URLs that should be in config

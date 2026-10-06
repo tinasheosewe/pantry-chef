@@ -320,7 +320,7 @@ struct RecipeDetailView: View {
             if let result {
                 healthierResult = result
             } else {
-                aiNote = "Couldn't get suggestions — add an OpenAI key in Config.plist, or try again."
+                aiNote = "Couldn't get suggestions — add an OpenAI key in Config/LocalSecrets.xcconfig, or try again."
             }
         }
     }
@@ -338,7 +338,7 @@ struct RecipeDetailView: View {
                 appliedSwaps = [:]
                 withAnimation { pendingChanges = true }   // a tweak is a proposal, not a commit
             } else {
-                aiNote = "Couldn't tweak it — add an OpenAI key in Config.plist, or try again."
+                aiNote = "Couldn't tweak it — add an OpenAI key in Config/LocalSecrets.xcconfig, or try again."
             }
         }
     }

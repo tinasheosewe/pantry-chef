@@ -1,6 +1,6 @@
 import Foundation
 
-/// Loads the bundled recipe dataset (`seed_recipes.json`, 197 recipes generated for
+/// Loads the bundled recipe dataset (`seed_recipes.json`, 188 recipes generated for
 /// breadth) into `Dish`es — so the Today feed and its filters have real variety. Each
 /// ingredient is resolved to a catalog id through the same `IntakePipeline` the editor
 /// uses, so seeded recipes match readiness by identity (and `SeedDishCatalogTests`
@@ -67,9 +67,9 @@ enum RecipeSeed {
         }
         do {
             let payload = try JSONDecoder().decode(Payload.self, from: data)
-            // Resolve each distinct ingredient name at most once — across 197 recipes
+            // Resolve each distinct ingredient name at most once — across 188 recipes
             // the same names (garlic, olive oil…) recur heavily, so memoizing turns
-            // ~1,800 catalog lookups into ~350. Skipped entirely when ids are pre-baked.
+            // ~1,600 catalog lookups into ~350. Skipped entirely when ids are pre-baked.
             var idCache: [String: String?] = [:]
             func resolve(_ name: String) -> String? {
                 let key = name.lowercased()

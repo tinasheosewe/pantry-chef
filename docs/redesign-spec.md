@@ -1,5 +1,8 @@
 # PantryChef Redesign Spec — "The Kitchen Timeline"
 
+> **Note (5 October 2026):** the design spec written for the June 2026 redesign, kept as a record of intent.
+> The build departed from it in places. The spaces became Today, Plan and Pantry instead of Timeline, Library and Stock, with the timeline moved to Plan and a recipe feed on Today. The "cream & glass" visual language was replaced by the flat printed-page style. Voice input and the Explore sheet were not kept. The price positioning in the first paragraph was a working assumption; the app has no paywall. See the root `README.md` for what exists.
+
 Source of truth for the full app redesign (flow + visual language + voice), as converged
 in design sessions, June 2026. Supersedes the current 4-tab IA. Positioning: a $20/month
 product — every decision below must visibly earn that price.

@@ -1,5 +1,8 @@
 # Catalog Remodel Spec — Entity vs. Attribute
 
+> **Note (5 October 2026):** the spec for the remodel of 10 June 2026, with the counts of that day (2,966 → 2,278 items, validator at 0 errors).
+> The catalog now holds 2,888 items after the passes of 18 June, which edited `catalog.json` directly; `validate_catalog.py` predates those passes and reports errors against the current file. See `Scripts/README.md`.
+
 Status: **implemented**. The pipeline in [Scripts/remodel/](../Scripts/remodel/README.md)
 applies this design: 2,966 → 2,278 items, 10-key governed facet taxonomy,
 enrichment (density/allergens/dietary/swaps), validator green (0 errors). Supersedes

@@ -1,5 +1,8 @@
 # PantryChef — running TODO
 
+> **Note (5 October 2026):** five entries still listed under "Open" were finished after they were written and are kept for their context: "Persistence" (the kitchen has been saved as a local JSON snapshot since 19 June 2026; the recipe library is still reloaded from the bundle at launch), "Require hand-painted plate art" (every bundled recipe now ships a generated plate and a test checks it; the emoji fallback stays), "Load-bearing vs droppable ingredients" (the `optional` flag on recipe lines), "Cooked dishes appear under both Stores and Dishes" and "Substitution notes accessible during the cook".
+> The pricing and "Plus-gated" passages under "Done" describe paywall scaffolding that was removed on 1 September 2026.
+
 Deferred work and decisions, flagged as they come up. Newest context at the bottom of
 each item.
 
@@ -30,7 +33,8 @@ Remaining (in priority order):
 2. **`store.today` only re-ticks on app foreground**, so certainty decay, day-part, the
    expiry badge/bands won't roll over while the app stays open overnight. Consistent
    across views (not a divergence) but stale. Consider a midnight/periodic refresh —
-   weigh against the deliberate knowledge-clock freeze ([[pantrychef-two-freshness-clocks]]).
+   weigh against the deliberate knowledge-clock freeze (the two clocks: `ExpiryEngine` for
+   the food, `ConfidenceEngine` for the record).
 3. Low: `readinessReady` is a one-shot latch (no recovery if the warm Task never runs —
    in practice it always does); `fanOptions` is a stored snapshot that can go stale on the
    open fan (mostly moot now the idle fan is gone from Today). Add a comment on

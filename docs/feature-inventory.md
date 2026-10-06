@@ -1,5 +1,9 @@
 # PantryChef — Feature Inventory
 
+> **Note (5 October 2026):** this inventory was written on 10 June 2026 as a record of the app before the redesign.
+> Out of date: voice cooking was removed later that month; the four tabs, cook queue, prepared-dish screens and SwiftData storage were replaced by three spaces (Today, Plan, Pantry) over a JSON snapshot; and three of the "notable absences" (a dietary/allergen profile, barcode scanning, a share extension) now exist. The AI recipe flows, catalog size and test count have also changed.
+> See the root `README.md` for the current feature surface.
+
 A full scan of the app's feature surface (iOS, SwiftUI, SwiftData, local-first).
 
 ## Navigation

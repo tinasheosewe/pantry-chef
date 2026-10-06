@@ -1,5 +1,8 @@
 # Feature audit — old flow vs. Kitchen Timeline redesign
 
+> **Note (5 October 2026):** a snapshot from 10 and 11 June 2026, comparing the old app with the first runnable build of the redesign.
+> Most rows marked missing or partial were built in the following weeks: the recipe page and editor, search, filters and sort, serving scaling, favorites and ratings, the dietary profile, substitutions, AI import and generation, storage editing, the shopping run, planning actions, local persistence of the kitchen, and notifications. Voice input was removed instead. See the root `README.md` for the current feature surface.
+
 Honest accounting as of the runnable redesign (sample data). Legend:
 **✅ present** · **◑ partial** (UI exists but not wired, or display-only) · **✗ missing** ·
 **↔ intentionally changed**.

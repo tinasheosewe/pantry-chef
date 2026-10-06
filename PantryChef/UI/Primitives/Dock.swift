@@ -19,7 +19,7 @@ enum RootSpace: String, CaseIterable, Identifiable, Sendable {
 }
 
 /// The page floor (Field Notes): a solid rule, the inked nav band — TODAY ·
-/// DISHES · STORES · ＋ — and the ❧ tailpiece carrying one true line. Printed
+/// PLAN · PANTRY · ＋ — and the ❧ tailpiece carrying one true line. Printed
 /// furniture, not a floating pill.
 struct Dock: View {
     @Binding var selection: RootSpace
@@ -105,7 +105,7 @@ struct Dock: View {
         var body: some View {
             ZStack(alignment: .bottom) {
                 Theme.Palette.cream.ignoresSafeArea()
-                Dock(selection: $selection, onAdd: {}, tailpiece: "№ 163 · 3 ready tonight")
+                Dock(selection: $selection, onAdd: {}, tailpiece: "3 ready tonight")
             }
         }
     }

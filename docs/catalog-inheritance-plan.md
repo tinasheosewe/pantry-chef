@@ -1,5 +1,8 @@
 # Catalog Inheritance Model — Locked Plan
 
+> **Note (5 October 2026):** a plan from 22 May 2026, kept as the record of that decision.
+> Two later changes: the June remodel turned about 690 subclass rows back into facet values (`docs/catalog-remodel-spec.md`), and the source file is no longer authoritative: `catalog.json` has been edited directly since 18 June 2026 (`Scripts/README.md`). The "Customize" disclosure and the catalog tree view listed below belonged to the earlier interface and were removed with it.
+
 > Status: implemented. Source format is authoritative; `catalog.json` is compiled output.
 
 ## Locked decisions

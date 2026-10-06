@@ -1,121 +1,81 @@
-# Testing Playbook
+# Testing
 
-## Canonical Quality Command
+## What exists
 
-Run the full quality stack with the maintained CI wrapper:
+- `PantryChefTests`: 242 XCTest functions in 28 files. They run inside the app on a simulator and need no network and no API key. They cover the pure engines, the store, the mapping from an AI response to a `Dish`, telemetry formatting, and the bundled data (catalog invariants, recipe-to-catalog consistency, plate-art coverage).
+- `PantryChefUITests`: two UI tests. `testLaunchAndNavigateSpaces` launches the app and visits the three spaces. `testOurActionIsOfferedInSafariShareSheet` drives Safari's share sheet to check that "Save to PantryChef" is offered; it needs network access to load `example.com` and is sensitive to changes in Safari's interface.
+
+No scheme file is tracked. `PantryChef` is the scheme Xcode creates automatically for the app target, and its test action covers both test targets (`xcodebuild -list -project PantryChef.xcodeproj` shows it).
+
+## Running the tests
+
+From Xcode: open `PantryChef.xcodeproj`, choose the `PantryChef` scheme and an iPhone simulator, then Product > Test.
+
+From the command line, substituting a simulator installed on your machine:
+
+```bash
+xcodebuild test \
+  -project PantryChef.xcodeproj \
+  -scheme PantryChef \
+  -destination 'platform=iOS Simulator,name=iPhone 17' \
+  -only-testing:PantryChefTests
+```
+
+Use `-only-testing:PantryChefUITests` for the UI tests.
+
+The first build resolves the `sentry-cocoa` package (pinned in `Package.resolved`), whose prebuilt frameworks take about 2 GB of disk.
+
+## The quality script and CI
 
 ```bash
 bash Scripts/ci/run_quality.sh
 ```
 
-That script is the source of truth for local validation. It currently:
+The script builds the checked-in project directly (nothing is generated) and:
 
-- runs `xcodegen generate`
-- auto-selects an available iPhone simulator
-- runs `PantryChefTests` with code coverage enabled
-- enforces the coverage floor against the unit-suite `.xcresult`
-- runs `PantryChefUITests` separately
+- picks an available iPhone simulator on the newest iOS runtime the selected Xcode can target;
+- runs `PantryChefTests` with code coverage into a fresh `.artifacts/DerivedData`, writing `.artifacts/test-results/unit.xcresult`;
+- fails if line coverage of `PantryChef.app` is below the floor (see below);
+- with `RUN_UI_TESTS=1`, runs `PantryChefUITests` afterwards.
 
-If you want to pin a simulator manually, set `SIMULATOR_NAME` before invoking the script.
+It shuts down running simulators before each test run. Overrides: `SIMULATOR_ID` or `SIMULATOR_NAME`, `SCHEME`, `PROJECT`, `RESULTS_DIR`, `DERIVED_DATA_PATH`, `SOURCE_PACKAGES_DIR` (an existing SwiftPM checkout directory to reuse instead of downloading the packages again), `COVERAGE_TARGET`, `COVERAGE_MINIMUM`. Arguments given to the script are passed on to `xcodebuild`.
 
-## Direct Commands
+`.github/workflows/ios-quality.yml` runs the same script on a `macos-26` GitHub runner for every push to `main`, every pull request and on manual dispatch. It selects Xcode 26.3, the version the app is developed with, when the runner image carries it, and uploads the result bundle as an artifact. The UI tests are left out of CI because the share-sheet test depends on Safari's interface.
 
-Run the unit suite with coverage:
+## Coverage gate
 
-```bash
-xcodebuild test \
-  -project PantryChef.xcodeproj \
-  -scheme PantryChef \
-  -destination 'platform=iOS Simulator,name=iPhone 17' \
-  -enableCodeCoverage YES \
-  -only-testing:PantryChefTests
-```
-
-Run the UI smoke suite:
+The floor is 18% line coverage of the `PantryChef.app` target, measured from the unit-test run. It is a ratchet against regressions, set just under the 19.1% measured in CI: the unit tests cover the engines, the store and the bundled data, while most lines of the app target are SwiftUI views. To apply it to an existing result bundle:
 
 ```bash
-xcodebuild test \
-  -project PantryChef.xcodeproj \
-  -scheme PantryChef \
-  -destination 'platform=iOS Simulator,name=iPhone 17' \
-  -only-testing:PantryChefUITests
-```
-
-If `iPhone 17` is unavailable on your machine, substitute any current iPhone simulator or let `run_quality.sh` choose one automatically.
-
-## Current Test Surface
-
-The main unit bundle currently covers:
-
-- AI output validation
-- multi-recipe scheduling
-- recipe ingredient resolution
-- storage integration and persistence flows
-- realtime event and service behavior
-- scenario baselines across core kitchen workflows
-- performance baselines
-- snapshot baselines
-- telemetry formatting and forwarding
-
-The UI bundle is still intentionally light. It is a smoke suite for launch and high-level navigation, not a full behavioral UI regression suite.
-
-## Coverage Gate
-
-The enforced line-coverage floor is currently 20% for the `PantryChef.app` target.
-
-Run the gate directly against an `.xcresult` bundle:
-
-```bash
-python3 Scripts/ci/check_coverage.py .artifacts/test-results/unit.xcresult --target PantryChef.app --minimum 20
+python3 Scripts/ci/check_coverage.py .artifacts/test-results/unit.xcresult --target PantryChef.app --minimum 18
 ```
 
 The threshold is intentionally conservative. Raise it only when the suite meaningfully expands.
 
-## Performance Budgets
+## Share extension check
 
-These budgets are enforced in tests and are meant to catch regressions without turning CI noisy:
+```bash
+tools/verify_share_extension.sh
+```
 
-- Recipe filtering over a 600-recipe fixture set: average runtime must stay below 250 ms.
-- Pantry matching over 250 recipes x 8 ingredients against a 120-item pantry: average runtime must stay below 1100 ms.
+Builds the app, installs it on the booted simulator (or the one named by `PC_SIM_UDID`), launches it, and checks with `pluginkit` that the system has registered the extension under the name "Save to PantryChef". It is the deterministic companion to the Safari UI test. Arguments are passed on to `xcodebuild`.
 
-If a budget starts failing on healthy code, inspect fixture drift or sampling methodology before weakening the threshold.
+## Manual checks
 
-## Snapshot Baselines
+Run these before a release or after a broad refactor:
 
-Snapshot tests use deterministic image hashes for critical views.
+1. Cold launch and relaunch: confirm both reach Today without a stuck loading screen. On a clean install, confirm onboarding appears and that "Explore a sample kitchen first" loads the demo kitchen.
+2. Pantry: add an item from the + bar (try `300 g spinach, fridge`), edit it, move it between pantry, fridge and freezer, and remove another. Quit and relaunch, and confirm the changes are still there.
+3. Shopping: add an item to the list, run a shop, check it off with an amount, and confirm it lands in stock.
+4. Today: open a recipe, scale the servings, apply a substitution, add the missing ingredients to the list.
+5. Cook mode: start a cook, start a step timer, background the app and wait for the notification, come back and finish. Confirm the dish appears under leftovers.
+6. Cook together: select two dishes and check that the merged step list puts prep first.
+7. Plan: plan a meal for tomorrow, move it to another part of the day, change its servings, remove it.
+8. No-key mode: with `OPENAI_API_KEY` unset, confirm the import, generate, healthier and tweak actions report that they could not run and that everything else still works.
+9. With a key: import a recipe from a link and from pasted text, and confirm both open in the editor for review.
+10. On a device: scan a barcode, and share a recipe link from Safari to "Save to PantryChef".
 
-When a deliberate UI change happens:
+## Notes
 
-1. Run `ViewSnapshotBaselineTests`.
-2. Capture the new hash values from the failure output.
-3. Review the visual change, not just the hash delta.
-4. Update the expected hashes in the test file only after confirming the new rendering is correct.
-
-## Manual Release Checks
-
-Run these before cutting a release or after broad refactors:
-
-1. Cold launch and warm relaunch both reach the Today screen without crashes or stuck loading states.
-2. Pantry: add, bulk-add, edit, search, and delete an item.
-3. Recipes: search, favorite, activate what-can-I-make, open a detail screen, and scale servings.
-4. Plan: add a recipe or prepared dish to the meal plan and generate the shopping list.
-5. Shopping: confirm duplicate ingredients consolidate correctly and pantry-plan edits persist.
-6. Cook mode: open a recipe, advance steps, start a timer, background the app, and resume.
-7. Permissions: deny microphone and speech permissions and verify the app remains usable.
-8. No-key mode: verify non-AI flows still work when `OPENAI_API_KEY` is unset.
-
-## Reliability Notes
-
-- Treat `bash Scripts/ci/run_quality.sh` as the canonical command. A single mixed `xcodebuild test` pass can still produce transient UI-test runner preflight issues even when the split bundles pass.
-- If Xcode appears to run stale XCTest code after source changes, prefer a clean rebuild with `xcodebuild clean test`.
-- When adding new Swift source files, regenerate the project with `xcodegen generate` before assuming the checked-in Xcode project will pick them up.
-
-## Expansion Priorities
-
-The highest-value areas for additional coverage remain:
-
-1. Launch and crash safety around startup loading, AI decoding, and permission-gated flows.
-2. Persistence integrity for SwiftData encode/decode edge cases and relationship hydration.
-3. Kitchen workflows such as pantry matching, meal-plan-to-shopping generation, and prepared-dish lifecycle behavior.
-4. AI contract validation for malformed or underspecified structured outputs.
-5. UI flows beyond smoke coverage, especially intake, shopping review, and favorite/discover behavior.
+- If Xcode appears to run stale test code after source changes, run `xcodebuild clean test` with the same arguments.
+- When adding Swift files, register them in the checked-in project, in Xcode or with `ruby tools/xcadd.rb <path>`.

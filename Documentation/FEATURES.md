@@ -1,5 +1,9 @@
 # PantryChef — Comprehensive Feature Specification
 
+> **Note (5 October 2026):** this document describes the app as of March 2026 and has not been updated since.
+> Out of date: voice cook mode (sections 10 and 11, and the voice parts of section 13) was removed in June 2026, and that month's redesign replaced the four-tab shell and the `Recipe` / `PantryItem` / SwiftData layer described here with three spaces (Today, Plan, Pantry) over a JSON snapshot. Barcode pantry intake, listed below as not shipped, now exists.
+> See the root `README.md` for the current feature surface and architecture.
+
 > This document describes the implemented PantryChef feature set as of March 28, 2026. It focuses on shipped data models, services, workflows, and business logic, and explicitly calls out infrastructure-only or research-only capabilities where relevant.
 
 ## Implementation Status Notes

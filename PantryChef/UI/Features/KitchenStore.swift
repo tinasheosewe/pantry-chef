@@ -202,7 +202,8 @@ struct ShoppingEntry: Identifiable, Equatable, Codable {
 
 /// The redesign's app state: holds the kitchen and derives every surface through
 /// the pure engines (TimelineComposer, ReadinessService, IntakeParser). Seeded with
-/// a sample kitchen; the single seam where real persistence wires in later.
+/// a sample kitchen; user-owned state is snapshotted to disk through
+/// `PantryPersistence` (see `snapshot()` / `apply(_:)`).
 @Observable
 final class KitchenStore {
     var today = Date() { didSet { cachedFingerprint = nil } }
@@ -1128,7 +1129,7 @@ final class KitchenStore {
     func parse(_ phrase: String) -> ParsedIntake { parser.parse(phrase) }
 
     /// Pre-resolved catalog ids for the hand-built seed (curated dishes + demo stock),
-    /// so `init` does ZERO catalog lookups — the 2,277-item catalog index then builds
+    /// so `init` does ZERO catalog lookups — the ~2,900-item catalog index then builds
     /// off the main thread (see the detached warm below) instead of blocking first paint.
     /// Regenerate via SeedDishCatalogTests if the seed's ingredient names change.
     private static let seedCatalogIDs: [String: String] = [

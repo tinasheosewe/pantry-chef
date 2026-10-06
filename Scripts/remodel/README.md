@@ -1,5 +1,8 @@
 # Catalog remodel pipeline
 
+> **Note (5 October 2026):** this describes the one-time remodel of 10 June 2026 and the workflow as it stood that day.
+> The transform cannot be re-run from this repository: its input, `baseline_catalog.json`, is not tracked. And the last line below no longer holds: later passes edited `catalog.json` directly, so `catalog.source.json` is behind it and `compile_catalog.py` stops rather than overwrite the larger file. See `Scripts/README.md` for the current state.
+
 One-time structural remodel + repeatable enrichment that turned the legacy
 "every variation is its own row" catalog into a governed entity + facet model.
 See [docs/catalog-remodel-spec.md](../../docs/catalog-remodel-spec.md) for the design.

@@ -539,7 +539,7 @@ struct RedesignRootView: View {
 
     /// The AI escape hatch — sits below the real (deterministic) suggestions: when none
     /// of the curated matches inspire, invent a brand-new recipe from the actual pantry.
-    /// Plus-gated; the expiry bias is opt-in (off by default).
+    /// The expiry bias is opt-in (off by default).
     private var inventCard: some View {
         VStack(alignment: .leading, spacing: 11) {
             HStack(spacing: 10) {

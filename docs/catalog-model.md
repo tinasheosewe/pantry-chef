@@ -1,5 +1,8 @@
 # Catalog Inheritance Model
 
+> **Note (5 October 2026):** the model described here (entries as classes with parent links, ten facet keys, derived enrichment) is the one the app uses.
+> What has changed is the workflow around it: since 18 June 2026 `catalog.json` has been edited directly, so `catalog.source.json` is behind it, and the rules listed under `validate_catalog.py` are now held by the Swift `CatalogInvariantTests`. See `Scripts/README.md`.
+
 ## Core rules
 
 - Catalog entries are **classes** in an inheritance graph (single-parent trees + rare multi-parent items).

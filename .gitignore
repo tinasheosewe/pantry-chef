@@ -1,8 +1,14 @@
 # Xcode
-*.xcodeproj/
+# Inside the project bundle only project.pbxproj and the SwiftPM lock file are tracked.
+*.xcodeproj/*
 !*.xcodeproj/project.pbxproj
-*.xcworkspace/
-!*.xcworkspace/contents.xcworkspacedata
+!*.xcodeproj/project.xcworkspace/
+*.xcodeproj/project.xcworkspace/*
+!*.xcodeproj/project.xcworkspace/xcshareddata/
+*.xcodeproj/project.xcworkspace/xcshareddata/*
+!*.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/
+*.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/*
+!*.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved
 xcuserdata/
 DerivedData/
 *.hmap
@@ -28,7 +34,6 @@ venv.bak/
 .build/
 .swiftpm/
 Packages/
-Package.resolved
 
 # CocoaPods
 Pods/
@@ -50,19 +55,12 @@ Pods/
 Config/LocalSecrets.xcconfig
 TestResults*
 *.xcresult
+.artifacts/
 
-# Raw MISKG data (large, not needed in repo — only processed output is committed)
-Scripts/miskg_data/
-
-# USDA FoodData Central downloads (large, re-downloadable)
-Scripts/recipe_ingredient_orchestrator/data/
-
-# Orchestrator runtime artifacts
-Scripts/recipe_ingredient_orchestrator/runtime/
-Scripts/recipe_ingredient_orchestrator/accepted/
-Scripts/recipe_ingredient_orchestrator/runtime_*/
-Scripts/recipe_ingredient_orchestrator/accepted_*/
-
-# Large dataset files
+# Large dataset files (downloaded locally, never committed)
 dataset/
 RecipeNLG/
+
+# Generated analysis output
+Scripts/triage_output/
+reports/
